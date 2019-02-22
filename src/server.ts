@@ -1,19 +1,37 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-const s = serve("127.0.0.1:8000");
+const server = serve("127.0.0.1:8000");
 
 const REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
 const REGEX_URI_REPLACEMENT = '([^/]+)';
 
-const Resource = {};
+let Resource = {};
 
-async function main() {
-  for await (const request of s) {
+let favicon_requested = false;
+
+async function handleHttpRequest() {
+  for await (const request of server) {
+    if (request.url == '/favicon.ico') {
+      let headers = new Headers();
+      headers.set('Content-Type', 'image/x-icon');
+      if (!favicon_requested) {
+        favicon_requested = true;
+        console.log('/favicon.ico requested.');
+        console.log('All future log messages for this request will be muted.');
+      }
+      request.respond({
+        status: 200,
+        body: null,
+        headers: headers
+      });
+      continue;
+    }
+
     console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
 
     let resource = getResourceClass(request);
     resource = new resource();
     resource.request = request;
-    resource['HTTP_GET_TEXT']();
+    resource['HTTP_GET_JSON']();
   }
 }
 
@@ -80,13 +98,18 @@ function getResourceClass(request) {
   return matchedResourceClass;
 }
 
-main();
+handleHttpRequest();
 
 addHttpResource({
   paths: ['/hello'],
   class: function HelloResource() {
-    this.HTTP_GET_TEXT = () => {
-      this.request.respond({ body: new TextEncoder().encode("Hello World\n") });
+    this.HTTP_GET_JSON = () => {
+      let headers = new Headers();
+      headers.set('Content-Type', 'text/html');
+      this.request.respond({
+        body: new TextEncoder().encode("Hello World\n"),
+        headers: headers
+      });
     };
   }
 });
