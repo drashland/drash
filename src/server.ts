@@ -31,7 +31,7 @@ async function handleHttpRequest() {
     let resource = getResourceClass(request);
     resource = new resource();
     resource.request = request;
-    resource['HTTP_GET_JSON']();
+    resource['HTTP_GET_HTML']();
   }
 }
 
@@ -105,10 +105,31 @@ addHttpResource({
   class: function HelloResource() {
     this.HTTP_GET_JSON = () => {
       let headers = new Headers();
-      headers.set('Content-Type', 'text/html');
+      headers.set('Content-Type', 'application/json');
       this.request.respond({
+        headers: headers,
         body: new TextEncoder().encode("Hello World\n"),
-        headers: headers
+      });
+    };
+
+    this.HTTP_GET_HTML = () => {
+      let headers = new Headers();
+      headers.set('Content-Type', 'text/html');
+      let body = `<!DOCTYPE html>
+<head>
+  <title>HTML</title>
+  <style>
+    html { font-family: Arial }
+  </style>
+</head>
+<body>
+<h1>Hello World</h1>
+<p>You made it!</p>
+</body>
+</html>`;
+      this.request.respond({
+        headers: headers,
+        body: new TextEncoder().encode(body),
       });
     };
   }
