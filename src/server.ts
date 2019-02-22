@@ -1,15 +1,19 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-const server = serve("127.0.0.1:8000");
+import regex from './regex.ts';
 
-const REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
-const REGEX_URI_REPLACEMENT = '([^/]+)';
+const denoServer = serve("127.0.0.1:8000");
 
 let Resource = {};
-
 let favicon_requested = false;
 
+function Server(configs) {
+  handleHttpRequest();
+}
+
+export default Server
+
 async function handleHttpRequest() {
-  for await (const request of server) {
+  for await (const request of denoServer) {
     if (request.url == '/favicon.ico') {
       let headers = new Headers();
       headers.set('Content-Type', 'image/x-icon');
@@ -41,8 +45,8 @@ function addHttpResource(resourceInfo) {
   resourceInfo.paths.forEach((path, index) => {
     let pathObj = {
       og_path: path,
-      regex_path: '^' + path.replace(REGEX_URI_MATCHES, REGEX_URI_REPLACEMENT) + '$',
-      params: (path.match(REGEX_URI_MATCHES) || []).map((path) => {
+      regex_path: '^' + path.replace(regex.uri_matches, regex.uri_replacement) + '$',
+      params: (path.match(regex.uri_matches) || []).map((path) => {
         return path.replace(':', '').replace('{', '').replace('}', '');
       }),
     };
@@ -97,8 +101,6 @@ function getResourceClass(request) {
 
   return matchedResourceClass;
 }
-
-handleHttpRequest();
 
 addHttpResource({
   paths: ['/hello'],
