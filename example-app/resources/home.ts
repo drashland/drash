@@ -6,7 +6,7 @@ class HomeResource extends BaseResource {
     '/hello',
     '/hello/',
     '/hello/:name',
-    '/test',
+    '/hello/:name/',
   ];
 
   public HTTP_GET_JSON() {
@@ -18,10 +18,10 @@ class HomeResource extends BaseResource {
     return this.response;
   }
   public HTTP_GET_HTML() {
-  this.response.body = this.request.path_params['name']
-    ? `Hello ${this.request.path_params['name']}!`
-    : 'No name provided.';
-    return this.response;
+    this.response.body = this.request.path_params['name']
+      ? `Hello ${this.request.path_params['name']}!`
+      : 'No name provided.';
+      return this.response;
   };
 }
 
