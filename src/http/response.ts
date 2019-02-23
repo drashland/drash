@@ -29,9 +29,6 @@ export default class Response {
   public send() {
     let body;
 
-
-    console.log(this.headers.get('content-type'));
-
     switch (this.headers.get('Content-Type')) {
       case 'text/html':
         body =

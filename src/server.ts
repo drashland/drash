@@ -66,8 +66,6 @@ export default class Server {
       // TODO(crookse) Find a different way to set the defalut output for the response object
       request.headers.set('response-output-default', this.configs.response_output);
 
-      console.log(request.headers.get('response-output-default'));
-
       let resource = this.getResource(request);
 
       // No resource? Send 404 response.
