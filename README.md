@@ -2,6 +2,8 @@
 
 Drash is a modular web app framework for [Deno](https://deno.land) that respects RESTful design principles.
 
+Drash helps you build web apps that handle requests to grab resources and return representations of those resources in different formats based on the requested Content-Type (e.g., application/json, text/html, application/xml, etc.).
+
 ## Quickstart
 
 ### Step 1 of 6: Install Deno
@@ -56,7 +58,7 @@ class HomeResource extends BaseResource {
     this.response.body = this.request.path_params['name']
       ? `Hello ${this.request.path_params['name']}!`
       : 'No name provided.';
-      return this.response;
+    return this.response;
   };
 }
 
