@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-import Response from "./http/response.ts"
-import HttpException404 from "./exceptions/exception404.ts";
-import HttpException405 from "./exceptions/exception405.ts";
+import Response from "./response.ts"
+import HttpException404 from "../exceptions/exception404.ts";
+import HttpException405 from "../exceptions/exception405.ts";
 const denoServer = serve("127.0.0.1:8000");
 
 export default class Server {

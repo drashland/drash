@@ -1,4 +1,4 @@
-import Server from '../server.ts';
+import Server from './server.ts';
 
 export default class Response {
   public allowed_content_types = [

@@ -8,6 +8,10 @@ let server = new Drash.Server({
   response_output: 'text/html',
   resources: [
     HomeResource
+  ],
+  allowed_content_types: [
+    'application/json',
+    'text/html',
   ]
 });
 
