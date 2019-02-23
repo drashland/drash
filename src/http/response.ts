@@ -10,6 +10,7 @@ export default class Response {
     405: 'Method Not Allowed',
     500: 'Internal Server Error',
   }
+  // TODO(crookse) Make this configurable for ease of use without having to define a new class
   public allowed_content_types = [
     'application/json',
     'text/html',
