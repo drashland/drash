@@ -1,5 +1,4 @@
-import Drash from './drash.ts';
-import BaseResource from './src/http/base_resource.ts';
+import BaseResource from '../../src/http/base_resource.ts';
 
 class HomeResource extends BaseResource {
   static paths = [
@@ -23,11 +22,4 @@ class HomeResource extends BaseResource {
   };
 }
 
-// let server = new Drash.Server({
-//   response_output: 'text/html'
-// });
-let server = new Drash.Server();
-
-server.addHttpResource(HomeResource);
-
-server.run();
+export default HomeResource
