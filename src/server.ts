@@ -85,7 +85,7 @@ export default class Server {
         // If we found a resource, but an error occurred, then that's most likely due to the HTTP
         // method not being defined in the resource class; therfore, the method is not allowed.
         if (resource && !error.code) {
-          this.sendErrorResponse(request, new HttpException405());
+          this.sendErrorResponse(request, new HttpException405(), resource);
         } else {
           this.sendErrorResponse(request, error);
         }
@@ -93,7 +93,7 @@ export default class Server {
     }
   }
 
-  public sendErrorResponse(request, error) {
+  public sendErrorResponse(request, error, resource?) {
     console.log(`Error occurred while handling request: ${request.method} ${request.url}`);
     console.log('Stack trace below:');
     console.log(error.stack);
@@ -107,7 +107,9 @@ export default class Server {
         break;
       case 405:
         response.status_code = 405;
-        response.body = `URI '${request.url}' doesn't allow the '${request.method} ${request.requested_response_output.toUpperCase()}' method.`;// eslint-disable-line
+        // TODO(crookse) Make error message say ".. doesn't allow {METHOD} requests for
+        // {CONTENT_TYPE} responses..."
+        response.body = `URI '${request.url}' doesn't allow the '${resource.getHttpMethod()}' method.`;// eslint-disable-line
         break;
       default:
         response.status_code = 400;
