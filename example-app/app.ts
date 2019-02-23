@@ -5,6 +5,7 @@ import HomeResource from './resources/home.ts';
 //   response_output: 'text/html'
 // });
 let server = new Drash.Server({
+  response_output: 'text/html',
   resources: [
     HomeResource
   ]
