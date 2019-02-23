@@ -2,7 +2,7 @@ import Response from './response.ts';
 
 export default class BaseResource {
   protected http_method = 'HTTP_GET_JSON';
-  protected request; // Gets set in `Server.run()`
+  protected request;
   protected response;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////

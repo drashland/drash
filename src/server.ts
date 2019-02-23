@@ -1,4 +1,7 @@
 import { serve } from "https://deno.land/x/http/server.ts";
+import Response from "./http/response.ts"
+import HttpException404 from "./exceptions/exception404.ts";
+import HttpException405 from "./exceptions/exception405.ts";
 const denoServer = serve("127.0.0.1:8000");
 
 export default class Server {
@@ -16,7 +19,7 @@ export default class Server {
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
-  constructor(configs = Server.DEFAULT_CONFIGS) {
+  constructor(configs: any) {
     this.configs = configs;
 
     if (!this.configs.response_output) {
@@ -54,74 +57,89 @@ export default class Server {
   public async run() {
     for await (const request of denoServer) {
       if (request.url == '/favicon.ico') {
-        let headers = new Headers();
-        headers.set('Content-Type', 'image/x-icon');
-        if (!this.trackers.requested_favicon) {
-          this.trackers.requested_favicon = true;
-          console.log('/favicon.ico requested.');
-          console.log('All future log messages for this request will be muted.');
-        }
-        request.respond({
-          status: 200,
-          headers: headers
-        });
+        this.sendResponseForRequestFavicon(request);
         continue;
       }
 
       console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
 
-      let resource = this.getResource(request);
-      let response = resource.handleRequest();;
+      // TODO(crookse) Find a different way to set the defalut output for the response object
+      request.headers.set('response-output-default', this.configs.response_output);
 
-      response.send();
+      console.log(request.headers.get('response-output-default'));
+
+      let resource = this.getResource(request);
+
+      // No resource? Send 404 response.
+      if (!resource) {
+        this.sendErrorResponse(request, new HttpException404());
+        continue;
+      }
+
+      try {
+        let response = resource.handleRequest();
+        response.send();
+      } catch (error) {
+        // If we found a resource, but an error occurred, then that's most likely due to the HTTP
+        // method not being defined in the resource class; therfore, the method is not allowed.
+        if (resource && !error.code) {
+          this.sendErrorResponse(request, new HttpException405());
+        } else {
+          this.sendErrorResponse(request, error);
+        }
+      }
     }
+  }
+
+  public sendErrorResponse(request, error) {
+    console.log(`Error occurred while handling request: ${request.method} ${request.url}`);
+    console.log('Stack trace below:');
+    console.log(error.stack);
+
+    let response = new Response(request);
+
+    switch (error.code) {
+      case 404:
+        response.status_code = 404;
+        response.body = `The requested URL '${request.url}' was not found on this server.`;
+        break;
+      case 405:
+        response.status_code = 405;
+        response.body = `URI '${request.url}' doesn't allow the '${request.method} ${request.requested_response_output.toUpperCase()}' method.`;// eslint-disable-line
+        break;
+      default:
+        response.status_code = 400;
+        response.body = 'Something went wrong.';
+        break;
+    }
+
+    response.send();
+  }
+
+  public sendResponseForRequestFavicon(request) {
+    let headers = new Headers();
+    headers.set('Content-Type', 'image/x-icon');
+    if (!this.trackers.requested_favicon) {
+      this.trackers.requested_favicon = true;
+      console.log('/favicon.ico requested.');
+      console.log('All future log messages for this request will be muted.');
+    }
+    request.respond({
+      status: 200,
+      headers: headers
+    });
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
-  protected getRequestedResponseOutput(request) {
-    let output = this.configs.response_output;
-
-    // Check the request headers to see if `response-output: {output}` has been specified
-    if (
-      request.headers['response-output']
-      && (typeof request.headers['response-output'] === 'string')
-    ) {
-      output = request.headers['response-output'];
-    }
-
-    // Check the request's URL query params to see if ?output={output} has been specified
-    // TODO(crookse) Add this logic
-    // output = request.url_query_params.output
-    //   ? request.url_query_params.output
-    //   : output;
-
-    // Make sure this is lowercase to prevent any "gotchas" later
-    return output.toLowerCase();
-  }
-
   protected getResource(request) {
     let resource = this.getResourceClass(request);
-    resource = new resource(request);
 
-    let mimeType = this.getRequestedResponseOutput(request)
-
-    switch (mimeType) {
-      case 'application/json':
-        resource.response.headers.set('Content-Type', 'application/json');
-        resource.setHttpMethod('HTTP_GET_JSON');
-        break;
-        case 'text/html':
-        resource.response.headers.set('Content-Type', 'text/html');
-        resource.setHttpMethod('HTTP_GET_HTML');
-        break;
-      default:
-        resource.response.headers.set('Content-Type', 'json');
-        resource.setHttpMethod('HTTP_GET_JSON');
-        break;
+    if (!resource) {
+      return resource;
     }
 
-    return resource;
+    return new resource(request);
   }
 
   protected getResourceClass(request) {
