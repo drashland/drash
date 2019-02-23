@@ -52,7 +52,6 @@ export default class Server {
   }
 
   public async run() {
-  // TODO(crookse) Need try-catch logic.
     for await (const request of denoServer) {
       if (request.url == '/favicon.ico') {
         let headers = new Headers();
@@ -71,63 +70,10 @@ export default class Server {
 
       console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
 
-      let resource = this.getResourceClass(request);
-      resource = new resource();
-      resource.request = request;
+      let resource = this.getResource(request);
+      let response = resource.handleRequest();;
 
-      let contentType = this.getRequestedResponseOutput(request);
-      let headers = new Headers();
-      let resourceMethod = 'HTTP_GET_JSON';
-
-      switch (contentType) {
-        case 'application/json':
-          headers.set('Content-Type', 'application/json');
-          resourceMethod = 'HTTP_GET_JSON';
-          break;
-          case 'text/html':
-          headers.set('Content-Type', 'text/html');
-          resourceMethod = 'HTTP_GET_HTML';
-          break;
-        default:
-          headers.set('Content-Type', 'json');
-          resourceMethod = 'HTTP_GET_JSON';
-          break;
-      }
-
-      let response = resource[resourceMethod]();
-
-      switch (contentType) {
-        case 'application/json':
-          headers.set('Content-Type', 'application/json');
-          resourceMethod = 'HTTP_GET_JSON';
-          request.respond({
-            headers: headers,
-            body: new TextEncoder().encode(JSON.stringify(response.body)),
-          });
-          break;
-        case 'text/html':
-            let body = `<!DOCTYPE html>
-<head>
-  <title>HTML</title>
-  <style>
-    html { font-family: Arial }
-  </style>
-</head>
-<body>
-<h1>Hello World</h1>
-<p>${response.body}</p>
-</body>
-</html>`;
-            request.respond({
-              headers: headers,
-              body: new TextEncoder().encode(body),
-            });
-          break;
-        default:
-          headers.set('Content-Type', 'json');
-          resourceMethod = 'HTTP_GET_JSON';
-          break;
-      }
+      response.send();
     }
   }
 
@@ -152,6 +98,30 @@ export default class Server {
 
     // Make sure this is lowercase to prevent any "gotchas" later
     return output.toLowerCase();
+  }
+
+  protected getResource(request) {
+    let resource = this.getResourceClass(request);
+    resource = new resource(request);
+
+    let mimeType = this.getRequestedResponseOutput(request)
+
+    switch (mimeType) {
+      case 'application/json':
+        resource.response.headers.set('Content-Type', 'application/json');
+        resource.setHttpMethod('HTTP_GET_JSON');
+        break;
+        case 'text/html':
+        resource.response.headers.set('Content-Type', 'text/html');
+        resource.setHttpMethod('HTTP_GET_HTML');
+        break;
+      default:
+        resource.response.headers.set('Content-Type', 'json');
+        resource.setHttpMethod('HTTP_GET_JSON');
+        break;
+    }
+
+    return resource;
   }
 
   protected getResourceClass(request) {

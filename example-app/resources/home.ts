@@ -2,6 +2,7 @@ import BaseResource from '../../src/http/base_resource.ts';
 
 class HomeResource extends BaseResource {
   static paths = [
+    '/',
     '/hello',
     '/hello/',
     '/hello/:name',
