@@ -22,7 +22,11 @@ export default class Server {
   constructor(configs: any) {
     this.configs = configs;
 
-    if (!this.configs.response_output || this.configs.response_output.trim() == '') {
+    if (
+      (typeof this.configs.response_output != 'string')
+      || !this.configs.response_output
+      || this.configs.response_output.trim() == ''
+    ) {
       this.configs.response_output = 'application/json';
     }
 

@@ -26,13 +26,45 @@ export default class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
+  public getStatusMessage() {
+    return this.status_messages[this.status_code];
+  }
+
   public send() {
     let body;
 
     switch (this.headers.get('Content-Type')) {
       case 'text/html':
-        body =
-`<!DOCTYPE html>
+        body = this.generateTextHtmlResponse();
+        break;
+      case 'text/xml':
+        body = this.generateTextXmlResponse();
+        break;
+      case 'application/json':
+      default:
+        body = this.generateApplicationJsonResponse();
+        break;
+    }
+
+    this.request.respond({
+      status: this.status_code,
+      headers: this.headers,
+      body: new TextEncoder().encode(body),
+    });
+  }
+
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+
+  protected generateApplicationJsonResponse() {
+    return JSON.stringify({
+      status_code: this.status_code,
+      status_message: this.getStatusMessage(),
+      body: this.body
+    });
+  }
+
+  protected generateTextHtmlResponse() {
+    return `<!DOCTYPE html>
 <head>
   <style>
     html { font-family: Arial }
@@ -43,30 +75,14 @@ export default class Response {
   <p>${this.body}</p>
 </body>
 </html>`;
-        break;
-      case 'text/xml':
-        body =
-`<response>
+  }
+
+  protected generateTextXmlResponse() {
+  return `<response>
   <statuscode>${this.status_code}</statuscode>
   <statusmessage>${this.getStatusMessage()}</statusmessage>
   <body>${this.body}</body>
 </response>`;
-      break;
-      case 'application/json':
-      default:
-        body = JSON.stringify({
-          status_code: this.status_code,
-          status_message: this.getStatusMessage(),
-          body: this.body
-        });
-        break;
-    }
-
-    this.request.respond({
-      status: this.status_code,
-      headers: this.headers,
-      body: new TextEncoder().encode(body),
-    });
   }
 
   protected getHeaderContentType() {
@@ -91,9 +107,5 @@ export default class Response {
     }
 
     return 'application/json';
-  }
-
-  getStatusMessage() {
-    return this.status_messages[this.status_code];
   }
 }
