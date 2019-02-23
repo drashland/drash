@@ -1,11 +1,12 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-import regex from './regex.ts';
 const denoServer = serve("127.0.0.1:8000");
 
 export default class Server {
   static DEFAULT_CONFIGS = {
     response_output: 'application/json'
   };
+  static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
+  static REGEX_URI_REPLACEMENT = '([^/]+)';
 
   protected configs;
   protected resources = {};
@@ -27,8 +28,8 @@ export default class Server {
     resourceClass.paths.forEach((path, index) => {
       let pathObj = {
         og_path: path,
-        regex_path: '^' + path.replace(regex.uri_matches, regex.uri_replacement) + '$',
-        params: (path.match(regex.uri_matches) || []).map((path) => {
+        regex_path: '^' + path.replace(Server.REGEX_URI_MATCHES, Server.REGEX_URI_REPLACEMENT) + '$',
+        params: (path.match(Server.REGEX_URI_MATCHES) || []).map((path) => {
           return path.replace(':', '').replace('{', '').replace('}', '');
         }),
       };
