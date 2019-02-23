@@ -18,6 +18,16 @@ export default class Server {
 
   constructor(configs = Server.DEFAULT_CONFIGS) {
     this.configs = configs;
+
+    if (!this.configs.response_output) {
+      this.configs.response_output = 'application/json';
+    }
+
+    if (this.configs.resources) {
+      this.configs.resources.forEach((resource) => {
+        this.addHttpResource(resource);
+      });
+    }
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
