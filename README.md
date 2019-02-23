@@ -1,11 +1,31 @@
-# Deno Drash
+# Drash
+
+Drash is a modular web app framework for [Deno](https://deno.land) that respects RESTful design principles.
+
+## Install Deno
+
+Installation instructions can be found here: [https://deno.land/](https://deno.land/)
+
+## Make Your App Directory And Download Drash
+
+```shell
+$ mkdir app
+$ mkdir app/resources
+$ cd app
+$ git clone https://github.com/crookse/deno-drash.git drash
+```
+
+## Create An HTTP Resource
 
 ```typescript
-// example-app/resources/home.ts
+// File: app/resources/home.ts
 
-import BaseResource from '../../src/http/base_resource.ts';
+import BaseResource from "../drash/src/http/base_resource.ts";
 
 class HomeResource extends BaseResource {
+  /**
+   * The list of paths (a.k.a endpoints) where clients can access this resource
+   */
   static paths = [
     '/',
     '/hello',
@@ -14,6 +34,9 @@ class HomeResource extends BaseResource {
     '/hello/:name/',
   ];
 
+  /**
+   * Handle GET requests that request responses with a Content-Type of application/json
+   */
   public HTTP_GET_JSON() {
     this.response.body = {
       hello: this.request.path_params['name']
@@ -22,6 +45,11 @@ class HomeResource extends BaseResource {
     }
     return this.response;
   }
+  
+  
+  /**
+   * Handle GET requests that request responses with a Content-Type of text/html
+   */
   public HTTP_GET_HTML() {
     this.response.body = this.request.path_params['name']
       ? `Hello ${this.request.path_params['name']}!`
@@ -33,11 +61,13 @@ class HomeResource extends BaseResource {
 export default HomeResource
 ```
 
-```typescript
-// example-app/app.ts
+## Create The App
 
-import Drash from '../drash.ts';
-import HomeResource from './resources/home.ts';
+```typescript
+// File: app/app.ts
+
+import Drash from "./drash/drash.ts";
+import HomeResource from "./resources/home.ts";
 
 // let server = new Drash.Server({
 //   response_output: 'text/html'
@@ -55,3 +85,17 @@ let server = new Drash.Server({
 
 server.run();
 ```
+
+## Run Your App
+
+```shell
+$ deno app.ts --allow-net
+```
+
+## Make An HTTP Request
+
+* Go to: `localhost:8000/`
+* Go to: `localhost:8000/hello`
+* Go to: `localhost:8000/hello/`
+* Go to: `localhost:8000/hello/:name`
+* Go to: `localhost:8000/hello/:name/`
