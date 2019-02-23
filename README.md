@@ -2,11 +2,13 @@
 
 Drash is a modular web app framework for [Deno](https://deno.land) that respects RESTful design principles.
 
-## Install Deno
+## Quickstart
+
+### Step 1 of 6: Install Deno
 
 Installation instructions can be found here: [https://deno.land/](https://deno.land/)
 
-## Make Your App Directory And Download Drash
+### Step 2 of 6: Make Your App Directory And Download Drash
 
 ```shell
 $ mkdir app
@@ -15,7 +17,7 @@ $ cd app
 $ git clone https://github.com/crookse/deno-drash.git drash
 ```
 
-## Create An HTTP Resource
+### Step 3 of 6: Create An HTTP Resource File
 
 ```typescript
 // File: app/resources/home.ts
@@ -61,7 +63,7 @@ class HomeResource extends BaseResource {
 export default HomeResource
 ```
 
-## Create The App
+### Step 4 of 6: Create Your App File
 
 ```typescript
 // File: app/app.ts
@@ -86,13 +88,13 @@ let server = new Drash.Server({
 server.run();
 ```
 
-## Run Your App
+### Step 5 of 6: Run Your App
 
 ```shell
 $ deno app.ts --allow-net
 ```
 
-## Make An HTTP Request
+### Step 6 of 6: Make An HTTP Request
 
 * Go to: `localhost:8000/`
 * Go to: `localhost:8000/hello`
