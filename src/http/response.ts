@@ -1,4 +1,11 @@
+import Server from '../server.ts';
+
 export default class Response {
+  public allowed_content_types = [
+    'application/json',
+    'text/html',
+    'text/xml',
+  ];
   public body = {};
   public headers: Headers;
   public request;
@@ -10,16 +17,14 @@ export default class Response {
     405: 'Method Not Allowed',
     500: 'Internal Server Error',
   }
-  // TODO(crookse) Make this configurable for ease of use without having to define a new class
-  public allowed_content_types = [
-    'application/json',
-    'text/html',
-    'text/xml',
-  ];
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(request) {
+    if (Server.allowed_content_types.length) {
+      this.allowed_content_types = Server.allowed_content_types;
+    }
+
     this.request = request;
     this.headers = new Headers();
     this.headers.set('Content-Type', this.getHeaderContentType());

@@ -17,6 +17,8 @@ export default class Server {
     requested_favicon: false,
   };
 
+  static allowed_content_types;
+
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(configs: any) {
@@ -34,6 +36,10 @@ export default class Server {
       this.configs.resources.forEach((resource) => {
         this.addHttpResource(resource);
       });
+    }
+
+    if (this.configs.allowed_content_types) {
+      Server.allowed_content_types = configs.allowed_content_types;
     }
   }
 
