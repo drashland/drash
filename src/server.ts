@@ -1,32 +1,30 @@
 import { serve } from "https://deno.land/x/http/server.ts";
 import regex from './regex.ts';
-import Response from './http/response.ts';
+const denoServer = serve("127.0.0.1:8000");
 
-export default function Server(configs = {
-  response_output: 'application/json'
-}) {
-  const denoServer = serve("127.0.0.1:8000");
+export default class Server {
+  static DEFAULT_CONFIGS = {
+    response_output: 'application/json'
+  };
 
-  this.Resource = {};
-  this.configs = configs;
-  this.trackers = {
+  protected configs;
+  protected resources = {};
+  protected trackers = {
     requested_favicon: false,
   };
-  this.response = {
-    body: {}
-  };
 
-  this.addHttpResource = addHttpResource;
-  this.getRequestedResponseOutput = getRequestedResponseOutput;
-  this.getResourceClass = getResourceClass;
-  this.run = run;
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
-  // METHODS - PUBLIC //////////////////////////////////////////////////////////////////////////////
+  constructor(configs = Server.DEFAULT_CONFIGS) {
+    this.configs = configs;
+  }
 
-  function addHttpResource(resourceInfo) {
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
+
+  public addHttpResource(resourceClass) {
     // Everything good? If so, parse the paths so the server can better match a request URI with a
     // resource during request-response cycles.
-    resourceInfo.paths.forEach((path, index) => {
+    resourceClass.paths.forEach((path, index) => {
       let pathObj = {
         og_path: path,
         regex_path: '^' + path.replace(regex.uri_matches, regex.uri_replacement) + '$',
@@ -34,83 +32,15 @@ export default function Server(configs = {
           return path.replace(':', '').replace('{', '').replace('}', '');
         }),
       };
-      resourceInfo.paths[index] = pathObj;
+      resourceClass.paths[index] = pathObj;
     });
 
-    this.Resource[resourceInfo.class.name] = resourceInfo;
+    this.resources[resourceClass.name] = resourceClass;
 
-    console.log(`Resource with class "${resourceInfo.class.name}" added.`);
+    console.log(`Resource with class "${resourceClass.name}" added.`);
   }
 
-  function getRequestedResponseOutput(request) {
-    let output = this.configs.response_output;
-
-    // Check the request headers to see if `response-output: {output}` has been specified
-    if (
-      request.headers['response-output']
-      && (typeof request.headers['response-output'] === 'string')
-    ) {
-      output = request.headers['response-output'];
-    }
-
-    // Check the request's URL query params to see if ?output={output} has been specified
-    // TODO(crookse) Add this logic
-    // output = request.url_query_params.output
-    //   ? request.url_query_params.output
-    //   : output;
-
-    // Make sure this is lowercase to prevent any "gotchas" later
-    return output.toLowerCase();
-  }
-
-  function getResourceClass(request) {
-    let matchedResourceClass = undefined;
-
-    for (let className in this.Resource) {// eslint-disable-line
-      // Break out if a resource was matched with the request.parsed_url.pathname variable
-      if (matchedResourceClass) {
-        break;
-      }
-
-      let resource = this.Resource[className];
-
-      resource.paths.forEach(function getResourceClass_forEachPaths(pathObj, index) {
-        if (!matchedResourceClass) {
-          let thisPathMatchesRequestPathname = null;
-          if (pathObj.og_path === '/' && request.url.pathname === '/') {
-            matchedResourceClass = resource.class;
-            return;
-          }
-
-          // Check if the current path we're working on matches the request's pathname
-          thisPathMatchesRequestPathname = request.url.match(pathObj.regex_path);
-          if (!thisPathMatchesRequestPathname) {
-            return;
-          }
-
-          // Create the path params
-          let requestPathnameParams = request.url.match(pathObj.regex_path);
-          let pathParamsInKvpForm = {};
-          try {
-            requestPathnameParams.shift();
-            pathObj.params.forEach(function closure_getResourceClass_forEach_params_forEach(paramName, index) {
-              pathParamsInKvpForm[paramName] = requestPathnameParams[index];
-            });
-          } catch (error) {
-          }
-          request.path_params = pathParamsInKvpForm;
-
-          // Store the matched resource
-          matchedResourceClass = resource.class;
-        }
-      });
-      return matchedResourceClass;
-    }
-
-    return matchedResourceClass;
-  }
-
-  async function run() {
+  public async run() {
   // TODO(crookse) Need try-catch logic.
     for await (const request of denoServer) {
       if (request.url == '/favicon.ico') {
@@ -133,7 +63,6 @@ export default function Server(configs = {
       let resource = this.getResourceClass(request);
       resource = new resource();
       resource.request = request;
-      resource.response = new Response();
 
       let contentType = this.getRequestedResponseOutput(request);
       let headers = new Headers();
@@ -191,5 +120,73 @@ export default function Server(configs = {
     }
   }
 
-  // METHODS - PRIVATE /////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+
+  protected getRequestedResponseOutput(request) {
+    let output = this.configs.response_output;
+
+    // Check the request headers to see if `response-output: {output}` has been specified
+    if (
+      request.headers['response-output']
+      && (typeof request.headers['response-output'] === 'string')
+    ) {
+      output = request.headers['response-output'];
+    }
+
+    // Check the request's URL query params to see if ?output={output} has been specified
+    // TODO(crookse) Add this logic
+    // output = request.url_query_params.output
+    //   ? request.url_query_params.output
+    //   : output;
+
+    // Make sure this is lowercase to prevent any "gotchas" later
+    return output.toLowerCase();
+  }
+
+  protected getResourceClass(request) {
+    let matchedResourceClass = undefined;
+
+    for (let className in this.resources) {// eslint-disable-line
+      // Break out if a resource was matched with the request.parsed_url.pathname variable
+      if (matchedResourceClass) {
+        break;
+      }
+
+      let resource = this.resources[className];
+
+      resource.paths.forEach(function getResourceClass_forEachPaths(pathObj, index) {
+        if (!matchedResourceClass) {
+          let thisPathMatchesRequestPathname = null;
+          if (pathObj.og_path === '/' && request.url.pathname === '/') {
+            matchedResourceClass = resource;
+            return;
+          }
+
+          // Check if the current path we're working on matches the request's pathname
+          thisPathMatchesRequestPathname = request.url.match(pathObj.regex_path);
+          if (!thisPathMatchesRequestPathname) {
+            return;
+          }
+
+          // Create the path params
+          let requestPathnameParams = request.url.match(pathObj.regex_path);
+          let pathParamsInKvpForm = {};
+          try {
+            requestPathnameParams.shift();
+            pathObj.params.forEach(function closure_getResourceClass_forEach_params_forEach(paramName, index) {
+              pathParamsInKvpForm[paramName] = requestPathnameParams[index];
+            });
+          } catch (error) {
+          }
+          request.path_params = pathParamsInKvpForm;
+
+          // Store the matched resource
+          matchedResourceClass = resource;
+        }
+      });
+      return matchedResourceClass;
+    }
+
+    return matchedResourceClass;
+  }
 }
