@@ -10,7 +10,7 @@ Installation instructions can be found here: [https://deno.land/](https://deno.l
 
 ### Step 2 of 6: Make Your App Directory And Download Drash
 
-```shell
+```
 $ mkdir app
 $ mkdir app/resources
 $ cd app
@@ -90,7 +90,7 @@ server.run();
 
 ### Step 5 of 6: Run Your App
 
-```shell
+```
 $ deno app.ts --allow-net
 ```
 
