@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/x/http/server.ts";
 import HttpException404 from "../exceptions/exception404.ts";
 import HttpException405 from "../exceptions/exception405.ts";
 import Resource from "./resource.ts";
-import Response from "./response.ts"
+import Drash from "../../drash.ts"
 
 const denoServer = serve("127.0.0.1:8000");
 
@@ -119,7 +119,7 @@ export default class Server {
     console.log('Stack trace below:');
     console.log(error.stack);
 
-    let response = new Response(request);
+    let response = new Drash.Response(request);
 
     switch (error.code) {
       case 404:

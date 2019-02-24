@@ -1,7 +1,6 @@
-import Resource from '../../src/http/resource.ts';
-import Response from '../../src/http/response.ts';
+import Drash from "../../drash.ts";
 
-class HomeResource extends Resource {
+class HomeResource extends Drash.Resource {
   static paths = [
     '/',
     '/hello',
@@ -15,7 +14,7 @@ class HomeResource extends Resource {
    * 
    * @return Response
    */
-  public GET(): Response {
+  public GET() {
     this.response.body = `Hello, ${this.request.path_params.name ? this.request.path_params.name : 'world'}!`;
 
     return this.response;
@@ -24,7 +23,7 @@ class HomeResource extends Resource {
   /**
    * Handle POSTS requests.
    */
-  public POST(): Response {
+  public POST() {
     this.response.body = 'POST request received.';
     return this.response;
   }

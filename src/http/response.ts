@@ -1,4 +1,4 @@
-import Server from './server.ts';
+import Drash from "../../drash.ts";
 
 export default class Response {
   public body = {};
@@ -43,7 +43,7 @@ export default class Response {
         body = this.generateXmlResponse();
         break;
       default:
-        this.headers.set('Content-Type', Server.CONFIGS.default_response_content_type);
+        this.headers.set('Content-Type', Drash.Server.CONFIGS.default_response_content_type);
         return this.send();
     }
 
@@ -89,7 +89,7 @@ export default class Response {
   }
 
   protected getHeaderContentType(): string {
-    let contentType = Server.CONFIGS.default_response_content_type
+    let contentType = Drash.Server.CONFIGS.default_response_content_type
 
     // Check the request's headers to see if `response-content-type: {content-type}` has been specified
     contentType = this.request.headers.get('response-content-type')
