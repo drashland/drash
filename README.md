@@ -26,9 +26,9 @@ $ git clone https://github.com/crookse/deno-drash.git drash
 
 ### Step 3 of 6: Create An HTTP Resource File
 
-```typescript
-// File: app/home_resource.ts
+**File: `app/home_resource.ts`**
 
+```typescript
 import Drash from "./drash/mod.ts";
 
 /** Define an HTTP resource that handles HTTP requests to the / URI */
@@ -64,9 +64,9 @@ export default class HomeResource extends Drash.Http.Resource {
 
 ### Step 4 of 6: Create Your App File
 
-```typescript
-// File: app/app.ts
+**File: `app/app.ts`**
 
+```typescript
 import Drash from "./drash/mod.ts";
 import HomeResource from "./home_resource.ts";
 
@@ -105,9 +105,9 @@ Drash servers use `Drash.Http.Response` to generate responses and send them to c
 
 If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response`. See example below.
 
-```typescript
-// File: app/response.ts
+**File: `app/response.ts`**
 
+```typescript
 import Drash from "./drash/mod.ts";
 
 /** Response handles sending a response to the client making the HTTP request. */
@@ -164,9 +164,9 @@ export default class Response extends Drash.Http.Response {
 
 ```
 
-```typescript
-// File: app/app.ts
+**File: `app/app.ts`**
 
+```typescript
 import Drash from "./drash/mod.ts";
 
 // Override `Drash.Http.Response` with a new `Response` class
