@@ -1,17 +1,18 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-import Response from "./response.ts"
+// TODO(crookse) Import from Exceptions
 import HttpException404 from "../exceptions/exception404.ts";
 import HttpException405 from "../exceptions/exception405.ts";
+import Resource from "./resource.ts";
+import Response from "./response.ts"
+
 const denoServer = serve("127.0.0.1:8000");
 
 export default class Server {
-  static DEFAULT_CONFIGS = {
-    response_output: 'application/json'
+  static CONFIGS = {
+    default_response_content_type: 'application/json',
   };
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
   static REGEX_URI_REPLACEMENT = '([^/]+)';
-
-  static resource_method_mappings = null;
 
   protected configs;
   protected resources = {};
@@ -21,15 +22,16 @@ export default class Server {
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
+  /**
+   * Construct an object of this class.
+   *
+   * @param configs 
+   */
   constructor(configs: any) {
     this.configs = configs;
 
-    if (
-      (typeof this.configs.response_output != 'string')
-      || !this.configs.response_output
-      || this.configs.response_output.trim() == ''
-    ) {
-      this.configs.response_output = 'application/json';
+    if (this.configs.response_output) {
+      Server.CONFIGS.default_response_content_type = this.configs.response_output
     }
 
     if (this.configs.resources) {
@@ -37,17 +39,19 @@ export default class Server {
         this.addHttpResource(resource);
       });
     }
-
-    if (this.configs.resource_method_mappings) {
-      Server.resource_method_mappings = configs.resource_method_mappings;
-    }
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
-  public addHttpResource(resourceClass) {
-    // Everything good? If so, parse the paths so the server can better match a request URI with a
-    // resource during request-response cycles.
+  /**
+   * Add an HTTP resource to the server which can be retrieved at specific URIs. Drash defines an
+   * HTTP resource according to the following:
+   * 
+   * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
+   *
+   * @param resourceClass
+   */
+  public addHttpResource(resourceClass): void {
     resourceClass.paths.forEach((path, index) => {
       let pathObj = {
         og_path: path,
@@ -59,47 +63,58 @@ export default class Server {
       resourceClass.paths[index] = pathObj;
     });
 
+    // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
 
-    console.log(`Resource with class "${resourceClass.name}" added.`);
+    console.log(`HTTP resource "${resourceClass.name}" added.`);
   }
+  
+  /**
+   * Handle an HTTP request from the Deno server.
+   *
+   * @param request
+   * @param denoServer 
+   */
+  public handleHttpRequest(request, denoServer): void {
+    if (request.url == '/favicon.ico') {
+      return this.handleHttpRequestForFavicon(request);
+    }
 
-  public async run() {
-    for await (const request of denoServer) {
-      if (request.url == '/favicon.ico') {
-        this.sendResponseForRequestFavicon(request);
-        continue;
+    console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
+
+    let resource = this.getResource(request);
+
+    // No resource? Send a 404 (Not Found) response.
+    if (!resource) {
+      return this.handleHttpRequestError(request, new HttpException404());
+    }
+
+    try {
+      console.log(`Calling ${resource.constructor.name}.${request.method.toUpperCase()}() method.`);
+      let response = resource[request.method.toUpperCase()]();
+      response.send();
+    } catch (error) {
+      // If a resource was found, but an error occurred, then that's most likely due to the HTTP
+      // method not being defined in the resource class; therefore, the method is not allowed. In
+      // this case, we send a 405 (Method Not Allowed) response.
+      if (resource && !error.code) {
+        return this.handleHttpRequestError(request, new HttpException405());
       }
 
-      console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
-
-      // TODO(crookse) Find a different way to set the defalut output for the response object
-      request.headers.set('response-output-default', this.configs.response_output);
-
-      let resource = this.getResource(request);
-
-      // No resource? Send 404 response.
-      if (!resource) {
-        this.sendErrorResponse(request, new HttpException404());
-        continue;
-      }
-
-      try {
-        let response = resource.handleRequest();
-        response.send();
-      } catch (error) {
-        // If we found a resource, but an error occurred, then that's most likely due to the HTTP
-        // method not being defined in the resource class; therfore, the method is not allowed.
-        if (resource && !error.code) {
-          this.sendErrorResponse(request, new HttpException405(), resource);
-        } else {
-          this.sendErrorResponse(request, error);
-        }
-      }
+      // All other errors go here
+      this.handleHttpRequestError(request, error);
     }
   }
 
-  public sendErrorResponse(request, error, resource?) {
+  /**
+   * Handle cases when an error is thrown when handling an HTTP request.
+   * 
+   * TODO(crookse) Request URL parser
+   *
+   * @param request
+   * @param error 
+   */
+  public handleHttpRequestError(request, error): void {
     console.log(`Error occurred while handling request: ${request.method} ${request.url}`);
     console.log('Stack trace below:');
     console.log(error.stack);
@@ -113,7 +128,7 @@ export default class Server {
         break;
       case 405:
         response.status_code = 405;
-        response.body = `URI '${request.url}' does not allow ${request.method.toUpperCase()} requests that request responses with Content-Type ${this.getRequestedResponseContentType(request)}.`;// eslint-disable-line
+        response.body = `URI '${request.url}' does not allow ${request.method.toUpperCase()} requests.`;// eslint-disable-line
         break;
       default:
         response.status_code = 400;
@@ -124,7 +139,12 @@ export default class Server {
     response.send();
   }
 
-  public sendResponseForRequestFavicon(request) {
+  /**
+   * Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs.
+   *
+   * @param request 
+   */
+  public handleHttpRequestForFavicon(request): void {
     let headers = new Headers();
     headers.set('Content-Type', 'image/x-icon');
     if (!this.trackers.requested_favicon) {
@@ -137,19 +157,35 @@ export default class Server {
       headers: headers
     });
   }
+  
+  /**
+   * Run the Deno server.
+   */
+  public async run(): Promise<void> {
+    for await (const request of denoServer) {
+      this.handleHttpRequest(request, denoServer);
+    }
+  }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
-  protected getResource(request) {
+  /**
+   * 
+   * @param {String} request
+   *     The request object from the Deno server.
+   */
+  protected getResource(request): Resource|undefined {
     let resource = this.getResourceClass(request);
 
-    if (!resource) {
-      return resource;
-    }
-
-    return new resource(request);
+    return resource
+      ? new resource(request)
+      : resource;
   }
 
+  /**
+   * 
+   * @param ServerRequest request
+   */
   protected getResourceClass(request) {
     let matchedResourceClass = undefined;
 

@@ -24,11 +24,11 @@ export default class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
-  public getStatusMessage() {
+  public getStatusMessage(): string {
     return this.status_messages[this.status_code];
   }
 
-  public send() {
+  public send(): void {
     let body;
 
     switch (this.headers.get('Content-Type')) {
@@ -43,9 +43,11 @@ export default class Response {
         body = this.generateXmlResponse();
         break;
       default:
-        this.headers.set('Content-Type', this.request.headers.get('response-output-default'));
+        this.headers.set('Content-Type', Server.CONFIGS.default_response_content_type);
         return this.send();
     }
+
+    console.log(`Sending response. Content-Type: ${this.headers.get('Content-Type')}. Status: ${this.status_code} (${this.getStatusMessage()}).`)
 
     this.request.respond({
       status: this.status_code,
@@ -56,7 +58,7 @@ export default class Response {
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
-  protected generateHtmlResponse() {
+  protected generateHtmlResponse(): string {
     return `<!DOCTYPE html>
 <head>
   <style>
@@ -70,7 +72,7 @@ export default class Response {
 </html>`;
   }
 
-  protected generateJsonResponse() {
+  protected generateJsonResponse(): string {
     return JSON.stringify({
       status_code: this.status_code,
       status_message: this.getStatusMessage(),
@@ -78,7 +80,7 @@ export default class Response {
     });
   }
 
-  protected generateXmlResponse() {
+  protected generateXmlResponse(): string {
   return `<response>
   <statuscode>${this.status_code}</statuscode>
   <statusmessage>${this.getStatusMessage()}</statusmessage>
@@ -86,22 +88,21 @@ export default class Response {
 </response>`;
   }
 
-  protected getHeaderContentType() {
-    let contentType = this.request.headers.get('response-output-default');
+  protected getHeaderContentType(): string {
+    let contentType = Server.CONFIGS.default_response_content_type
 
-    // Check the request headers to see if `response-output: {output}` has been specified
-    if (
-      this.request.headers.get('response-output')
-      && (typeof this.request.headers.get('response-output') === 'string')
-    ) {
-      contentType = this.request.headers.get('response-output');
-    }
+    // Check the request's headers to see if `response-content-type: {content-type}` has been specified
+    contentType = this.request.headers.get('response-content-type')
+      ? this.request.headers.get('response-content-type')
+      : contentType;
 
-    // Check the request's URL query params to see if ?output={output} has been specified
+    // Check the request's URL query params to see if ?response_content_type={content-type} has been specified
     // TODO(crookse) Add this logic
-    // output = request.url_query_params.output
-    //   ? request.url_query_params.output
-    //   : output;
+    // contentType = request.query_params.response_content_type
+    //   ? request.url_query_params.response_content_type
+    //   : contentType;
+
+    // TODO(crookse) Check request body
 
     return contentType;
   }

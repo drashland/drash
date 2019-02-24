@@ -1,4 +1,5 @@
 import Resource from '../../src/http/resource.ts';
+import Response from '../../src/http/response.ts';
 
 class HomeResource extends Resource {
   static paths = [
@@ -10,35 +11,20 @@ class HomeResource extends Resource {
   ];
 
   /**
-   * Handle GET requests that request a JSON response.
+   * Handle GET requests.
    * 
    * @return Response
    */
-  public GET_JSON() {
-    this.response.body = {
-      hello: this.request.path_params.name
-        ? `Hello ${this.request.path_params.name}!`
-        : 'No name provided.'
-    }
+  public GET(): Response {
+    this.response.body = `Hello, ${this.request.path_params.name ? this.request.path_params.name : 'world'}!`;
+
     return this.response;
   }
 
   /**
-   * Handle GET requests that request an HTML response.
-   * 
-   * @return Response
+   * Handle POSTS requests.
    */
-  public GET_HTML() {
-    this.response.body = this.request.path_params.name
-      ? `Hello ${this.request.path_params.name}!`
-      : 'No name provided.';
-      return this.response;
-  };
-
-  /**
-   * Handle POSTS requests that request an HTML response.
-   */
-  public POST_HTML() {
+  public POST(): Response {
     this.response.body = 'POST request received.';
     return this.response;
   }
