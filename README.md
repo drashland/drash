@@ -2,7 +2,12 @@
 
 Drash is a modular web app framework for [Deno](https://deno.land) that respects RESTful design principles.
 
-Drash helps you build web apps that handle requests to grab resources. The request can request any representation of a resource (e.g., application/json, text/html, application/xml, etc.) as long as the resource allows the representation to be requested.
+Drash helps you build web apps that handle requests to grab resources. Requests can request any representation of a resource (e.g., application/json, text/html, application/xml, etc.) as long as the resource allows it.
+
+## Features
+* Content Negotation
+* Path Params (e.g., `/uri/with/some/:id`)
+* 
 
 ## Quickstart
 
@@ -99,3 +104,9 @@ $ deno app.ts --allow-net
 * Go to: `localhost:8000/hello/`
 * Go to: `localhost:8000/hello/:name`
 * Go to: `localhost:8000/hello/:name/`
+
+---
+
+TODO:
+* [ ]  Request URL parser
+* [ ]  `static Server.getRequestedResponseContentType`
