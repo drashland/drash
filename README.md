@@ -7,7 +7,6 @@ Drash helps you build web apps that handle requests to grab resources. Requests 
 ## Features
 * Content Negotation
 * Path Params (e.g., `/uri/with/some/:id`)
-* 
 
 ## Quickstart
 
