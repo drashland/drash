@@ -103,7 +103,13 @@ Drash servers use `Drash.Http.Response` to generate responses and send them to c
 * `text/html`
 * `text/xml`
 
-If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response`. See example below.
+If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response`. See steps below to override `Drash.Http.Response`:
+
+*Note: The following steps assume you're using the example code above.*
+
+### Step 1 of 2: Make Your `Response` Class.
+
+*Note: This class only needs to override the `send()` method.*
 
 **File: `app/response.ts`**
 
@@ -164,26 +170,27 @@ export default class Response extends Drash.Http.Response {
 
 ```
 
+### Step 2 of 2: Modify Your App File
+
 **File: `app/app.ts`**
 
-```typescript
-import Drash from "./drash/mod.ts";
-
-// Override `Drash.Http.Response` with a new `Response` class
-import Response from "./response.ts";
-Drash.Http.Response = Response;
-
-import HomeResource from "./home_resource.ts";
-
-let server = new Drash.Http.Server({
-  response_output: 'application/pdf',
-  resources: [
-    HomeResource
-  ]
-});
+```
+  import Drash from "./drash/mod.ts";
++
++ import Response from "./response.ts";
++ Drash.Http.Response = Response;
++
++
+  import HomeResource from "./home_resource.ts";
+  
+  let server = new Drash.Http.Server({
+    response_output: 'text/html',
+    resources: [
+      HomeResource
+    ]
+  });
 
 server.run();
-
 ```
 
 ---
