@@ -1,6 +1,6 @@
-import Drash from "../../drash.ts";
+import Drash from "../../mod.ts";
 
-export default class HomeResource extends Drash.Resource {
+export default class HomeResource extends Drash.Http.Resource {
   static paths = [
     '/',
     '/hello',

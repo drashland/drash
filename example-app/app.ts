@@ -1,14 +1,14 @@
-import Drash from '../drash.ts';
+import Drash from '../mod.ts';
 
 import Response from "./response.ts";
-Drash.Response = Response;
+Drash.Http.Response = Response;
 
 import HomeResource from "./resources/home_resource.ts";
 
-// let server = new Drash.Server({
+// let server = new Drash.Http.Server({
 //   response_output: 'text/html'
 // });
-let server = new Drash.Server({
+let server = new Drash.Http.Server({
   response_output: 'application/pdf',
   resources: [
     HomeResource

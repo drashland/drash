@@ -1,4 +1,4 @@
-import Drash from '../../drash.ts';
+import Drash from '../../mod.ts';
 
 export default class Resource {
   protected request;
@@ -13,6 +13,6 @@ export default class Resource {
    */
   constructor(request) {
     this.request = request;
-    this.response = new Drash.Response(request);
+    this.response = new Drash.Http.Response(request);
   }
 }

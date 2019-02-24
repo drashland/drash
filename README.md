@@ -28,9 +28,9 @@ $ git clone https://github.com/crookse/deno-drash.git drash
 ```typescript
 // File: app/home_resource.ts
 
-import Drash from "./drash/drash.ts";
+import Drash from "./drash/mod.ts";
 
-export default class HomeResource extends Drash.Resource {
+export default class HomeResource extends Drash.Http.Resource {
   static paths = [
     '/',
     '/hello',
@@ -64,10 +64,10 @@ export default class HomeResource extends Drash.Resource {
 ```typescript
 // File: app/app.ts
 
-import Drash from "./drash/drash.ts";
+import Drash from "./drash/mod.ts";
 import HomeResource from "./home_resource.ts";
 
-let server = new Drash.Server({
+let server = new Drash.Http.Server({
   response_output: 'text/html',
   resources: [
     HomeResource
@@ -93,21 +93,21 @@ $ deno app.ts --allow-net
 
 ## Things To Know
 
-Drash servers use `Drash.Response` to generate responses and send them to clients. It can generate responses of the following content types:
+Drash servers use `Drash.Http.Response` to generate responses and send them to clients. It can generate responses of the following content types:
 
 * `application/json`
 * `application/xml`
 * `text/html`
 * `text/xml`
 
-If you want your Drash server to handle more content types, then you will need to override `Drash.Response`. See example below.
+If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response`. See example below.
 
 ```typescript
 // File: app/response.ts
 
-import Drash from "./drash/drash.ts";
+import Drash from "./drash/mod.ts";
 
-export default class Response extends Drash.Response {
+export default class Response extends Drash.Http.Response {
   public send(): void {
     let body;
 
@@ -158,15 +158,15 @@ export default class Response extends Drash.Response {
 ```typescript
 // File: app/app.ts
 
-import Drash from "./drash/drash.ts";
+import Drash from "./drash/mod.ts";
 
-// Override Drash.Response
+// Override Drash.Http.Response
 import Response from "./response.ts";
-Drash.Response = Response;
+Drash.Http.Response = Response;
 
 import HomeResource from "./home_resource.ts";
 
-let server = new Drash.Server({
+let server = new Drash.Http.Server({
   response_output: 'application/pdf',
   resources: [
     HomeResource
@@ -181,4 +181,3 @@ server.run();
 
 TODO:
 * [ ]  Request URL parser
-* [ ]  `static Server.getRequestedResponseContentType`

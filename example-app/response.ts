@@ -1,6 +1,6 @@
-import Drash from "../drash.ts";
+import Drash from "../mod.ts";
 
-export default class Response extends Drash.Response {
+export default class Response extends Drash.Http.Response {
   public send(): void {
     let body;
 

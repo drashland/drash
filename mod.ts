@@ -3,7 +3,9 @@ import Response from './src/http/response.ts';
 import Resource from './src/http/resource.ts';
 
 export default {
-  Server,
-  Response,
-  Resource,
+  Http: {
+    Response: Response,
+    Resource: Resource,
+    Server: Server,
+  }
 }

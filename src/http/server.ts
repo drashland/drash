@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-import Drash from "../../drash.ts";
+import Drash from "../../mod.ts";
 // TODO(crookse) Import Drash -> Exceptions.HttpException404 etc.
 import HttpException404 from "../exceptions/exception404.ts";
 import HttpException405 from "../exceptions/exception405.ts";
@@ -48,7 +48,7 @@ export default class Server {
    * 
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
    *
-   * @param Drash.Resource resourceClass
+   * @param Drash.Http.Resource resourceClass
    */
   public addHttpResource(resourceClass): void {
     resourceClass.paths.forEach((path, index) => {
@@ -118,7 +118,7 @@ export default class Server {
     console.log('Stack trace below:');
     console.log(error.stack);
 
-    let response = new Drash.Response(request);
+    let response = new Drash.Http.Response(request);
 
     switch (error.code) {
       case 404:
@@ -175,7 +175,7 @@ export default class Server {
    * @param ServerRequest request
    *     The request object from the Deno server.
    * 
-   * @return Drash.Resource|undefined
+   * @return Drash.Http.Resource|undefined
    */
   protected getResource(request) {
     let resource = this.getResourceClass(request);
@@ -190,7 +190,7 @@ export default class Server {
    *
    * @param ServerRequest request
    * 
-   * @return Drash.Resource|undefined
+   * @return Drash.Http.Resource|undefined
    */
   protected getResourceClass(request) {
     let matchedResourceClass = undefined;
