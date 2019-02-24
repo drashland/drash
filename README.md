@@ -174,7 +174,7 @@ export default class Response extends Drash.Http.Response {
 
 **File: `app/app.ts`**
 
-```typescript
+```diff
  import Drash from "./drash/mod.ts";
 +
 +import Response from "./response.ts";
