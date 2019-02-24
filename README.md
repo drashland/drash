@@ -59,7 +59,6 @@ export default class HomeResource extends Drash.Http.Resource {
     return this.response;
   }
 }
-
 ```
 
 ### Step 4 of 6: Create Your App File
