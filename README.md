@@ -94,7 +94,7 @@ $ deno app.ts --allow-net
 * Go to: `localhost:8000/hello/:name`
 * Go to: `localhost:8000/hello/:name/`
 
-## Things To Know
+## How To Override `Drash.Http.Response`
 
 Drash servers use `Drash.Http.Response` to generate responses and send them to clients. It can generate responses of the following content types:
 
