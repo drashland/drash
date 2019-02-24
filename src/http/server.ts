@@ -11,8 +11,7 @@ export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
   static REGEX_URI_REPLACEMENT = '([^/]+)';
 
-  static allowed_content_types = [];
-  static resource_method_mappings;
+  static resource_method_mappings = null;
 
   protected configs;
   protected resources = {};
@@ -38,11 +37,7 @@ export default class Server {
         this.addHttpResource(resource);
       });
     }
-    
-    if (this.configs.allowed_content_types) {
-      Server.allowed_content_types = configs.allowed_content_types;
-    }
-        
+
     if (this.configs.resource_method_mappings) {
       Server.resource_method_mappings = configs.resource_method_mappings;
     }
