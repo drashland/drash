@@ -1,9 +1,8 @@
 import { serve } from "https://deno.land/x/http/server.ts";
-// TODO(crookse) Import from Exceptions
+import Drash from "../../drash.ts";
+// TODO(crookse) Import Drash -> Exceptions.HttpException404 etc.
 import HttpException404 from "../exceptions/exception404.ts";
 import HttpException405 from "../exceptions/exception405.ts";
-import Resource from "./resource.ts";
-import Drash from "../../drash.ts"
 
 const denoServer = serve("127.0.0.1:8000");
 
@@ -49,7 +48,7 @@ export default class Server {
    * 
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
    *
-   * @param resourceClass
+   * @param Drash.Resource resourceClass
    */
   public addHttpResource(resourceClass): void {
     resourceClass.paths.forEach((path, index) => {
@@ -72,7 +71,7 @@ export default class Server {
   /**
    * Handle an HTTP request from the Deno server.
    *
-   * @param request
+   * @param ServerRequest request
    * @param denoServer 
    */
   public handleHttpRequest(request, denoServer): void {
@@ -142,7 +141,7 @@ export default class Server {
   /**
    * Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs.
    *
-   * @param request 
+   * @param ServerRequest request
    */
   public handleHttpRequestForFavicon(request): void {
     let headers = new Headers();
@@ -152,6 +151,7 @@ export default class Server {
       console.log('/favicon.ico requested.');
       console.log('All future log messages for this request will be muted.');
     }
+
     request.respond({
       status: 200,
       headers: headers
@@ -170,11 +170,14 @@ export default class Server {
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
   /**
-   * 
-   * @param {String} request
+   * Get the resource based on the request.
+   *
+   * @param ServerRequest request
    *     The request object from the Deno server.
+   * 
+   * @return Drash.Resource|undefined
    */
-  protected getResource(request): Resource|undefined {
+  protected getResource(request) {
     let resource = this.getResourceClass(request);
 
     return resource
@@ -183,8 +186,11 @@ export default class Server {
   }
 
   /**
-   * 
+   * Get the resource class.
+   *
    * @param ServerRequest request
+   * 
+   * @return Drash.Resource|undefined
    */
   protected getResourceClass(request) {
     let matchedResourceClass = undefined;
@@ -231,19 +237,5 @@ export default class Server {
     }
 
     return matchedResourceClass;
-  }
-
-  protected getRequestedResponseContentType(request) {
-    let output = request.headers.get('response-output-default');
-    
-    // Check the request headers to see if `response-output: {output}` has been specified
-    if (
-      request.headers.get('response-output')
-      && (typeof request.headers.get('response-output') === 'string')
-    ) {
-      output = request.headers.get('response-output');
-    }
-
-    return output;
   }
 }
