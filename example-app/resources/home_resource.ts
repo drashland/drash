@@ -1,6 +1,6 @@
 import Drash from "../../drash.ts";
 
-class HomeResource extends Drash.Resource {
+export default class HomeResource extends Drash.Resource {
   static paths = [
     '/',
     '/hello',
@@ -28,5 +28,3 @@ class HomeResource extends Drash.Resource {
     return this.response;
   }
 }
-
-export default HomeResource

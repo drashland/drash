@@ -19,7 +19,6 @@ Installation instructions can be found here: [https://deno.land/](https://deno.l
 
 ```
 $ mkdir app
-$ mkdir app/resources
 $ cd app
 $ git clone https://github.com/crookse/deno-drash.git drash
 ```
@@ -27,12 +26,11 @@ $ git clone https://github.com/crookse/deno-drash.git drash
 ### Step 3 of 6: Create An HTTP Resource File
 
 ```typescript
-// File: app/resources/home_resource.ts
+// File: app/home_resource.ts
 
-import Resource from '../drash/src/http/resource.ts';
-import Response from '../drash/src/http/response.ts';
+import Drash from "./drash/drash.ts";
 
-class HomeResource extends Resource {
+export default class HomeResource extends Drash.Resource {
   static paths = [
     '/',
     '/hello',
@@ -43,10 +41,8 @@ class HomeResource extends Resource {
 
   /**
    * Handle GET requests.
-   * 
-   * @return Response
    */
-  public GET(): Response {
+  public GET() {
     this.response.body = `Hello, ${this.request.path_params.name ? this.request.path_params.name : 'world'}!`;
 
     return this.response;
@@ -55,14 +51,11 @@ class HomeResource extends Resource {
   /**
    * Handle POSTS requests.
    */
-  public POST(): Response {
+  public POST() {
     this.response.body = 'POST request received.';
     return this.response;
   }
 }
-
-export default HomeResource
-
 
 ```
 
@@ -72,7 +65,7 @@ export default HomeResource
 // File: app/app.ts
 
 import Drash from "./drash/drash.ts";
-import HomeResource from "./resources/home_resource.ts";
+import HomeResource from "./home_resource.ts";
 
 let server = new Drash.Server({
   response_output: 'text/html',
@@ -171,7 +164,7 @@ import Drash from "./drash/drash.ts";
 import Response from "./response.ts";
 Drash.Response = Response;
 
-import HomeResource from "./resources/home_resource.ts";
+import HomeResource from "./home_resource.ts";
 
 let server = new Drash.Server({
   response_output: 'application/pdf',
