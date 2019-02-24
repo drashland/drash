@@ -1,5 +1,4 @@
 import Server from './server.ts';
-import HttpException405 from "../exceptions/exception405.ts";
 
 export default class Response {
   public body = {};
