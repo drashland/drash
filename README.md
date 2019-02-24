@@ -100,14 +100,89 @@ $ deno app.ts --allow-net
 
 ## Things To Know
 
-By default, Drash can handle requests for the following content types:
+Drash servers use `Drash.Response` to generate responses and send them to clients. It can generate responses of the following content types:
 
 * `application/json`
 * `application/xml`
 * `text/html`
 * `text/xml`
 
-If you want your Drash server to handle more content types, then you will need to override `response.ts` and `resource.ts`.
+If you want your Drash server to handle more content types, then you will need to override `Drash.Response`. See example below.
+
+```typescript
+// File: app/response.ts
+
+import Drash from "./drash/drash.ts";
+
+export default class Response extends Drash.Response {
+  public send(): void {
+    let body;
+
+    switch (this.headers.get('Content-Type')) {
+      // Handle HTML
+      case 'text/html':
+        body = this.body;
+        break;
+
+      // Handle JSON
+      case 'application/json':
+        body = JSON.stringify({body: this.body});
+        break;
+
+      // Handle PDF
+      case 'application/pdf':
+        this.headers.set('Content-Type', 'text/html');
+        body = `<html><body style="height: 100%; width: 100%; overflow: hidden; margin: 0px; background-color: rgb(82, 86, 89);"><embed width="100%" height="100%" name="plugin" id="plugin" src="https://www.adobe.com/content/dam/acom/en/security/pdfs/AdobeIdentityServices.pdf" type="application/pdf" internalinstanceid="19"></body></html>`;
+        break;
+
+      // Handle XML
+      case 'application/xml':
+      case 'text/xml':
+        body = `<body>${this.body}</body>`;
+        break;
+
+      // Handle plain text
+      case 'text/plain':
+        body = this.body;
+        break;
+
+      // Default to this
+      default:
+        body = this.body;
+        break;
+    }
+
+    this.request.respond({
+      status: this.status_code,
+      headers: this.headers,
+      body: new TextEncoder().encode(body),
+    });
+  }
+}
+
+```
+
+```typescript
+// File: app/app.ts
+
+import Drash from "./drash/drash.ts";
+
+// Override Drash.Response
+import Response from "./response.ts";
+Drash.Response = Response;
+
+import HomeResource from "./resources/home_resource.ts";
+
+let server = new Drash.Server({
+  response_output: 'application/pdf',
+  resources: [
+    HomeResource
+  ]
+});
+
+server.run();
+
+```
 
 ---
 
