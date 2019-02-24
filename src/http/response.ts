@@ -25,8 +25,9 @@ export default class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
+  /** Get the status message based on the status code. */
   public getStatusMessage(): string {
-    return this.status_messages[this.status_code];
+    return Drash.Dictionaries.HttpStatusCodes[this.status_code].response_message;
   }
 
   public send(): void {
