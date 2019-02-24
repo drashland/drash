@@ -30,13 +30,11 @@ $ git clone https://github.com/crookse/deno-drash.git drash
 
 import Drash from "./drash/mod.ts";
 
+/** Define an HTTP resource that handles HTTP requests to the / URI */
 export default class HomeResource extends Drash.Http.Resource {
   static paths = [
     '/',
-    '/hello',
-    '/hello/',
-    '/hello/:name',
-    '/hello/:name/',
+    '/:name',
   ];
 
   /**
@@ -52,7 +50,11 @@ export default class HomeResource extends Drash.Http.Resource {
    * Handle POSTS requests.
    */
   public POST() {
-    this.response.body = 'POST request received.';
+    this.response.body = 'POST request received!';
+    if (this.request.path_params.name) {
+      this.response.body = `Hello, ${this.request.path_params.name}! Your POST request has been received!`;
+    }
+
     return this.response;
   }
 }
@@ -107,7 +109,13 @@ If you want your Drash server to handle more content types, then you will need t
 
 import Drash from "./drash/mod.ts";
 
+/** Response handles sending a response to the client making the HTTP request. */
 export default class Response extends Drash.Http.Response {
+  /**
+   * @overrides `Drash.Http.Response.send()`
+   * 
+   * Send a response to the client.
+   */
   public send(): void {
     let body;
 
@@ -160,7 +168,7 @@ export default class Response extends Drash.Http.Response {
 
 import Drash from "./drash/mod.ts";
 
-// Override Drash.Http.Response
+// Override `Drash.Http.Response` with a new `Response` class
 import Response from "./response.ts";
 Drash.Http.Response = Response;
 
