@@ -16,7 +16,7 @@ Drash helps you build web apps that handle requests to grab resources. Requests 
 
 Installation instructions can be found here: [https://deno.land/](https://deno.land/)
 
-### Step 2 of 6: Make Your App Directory And Download Drash
+### Step 2 of 6: Create Your App Directory And Download Drash
 
 ```
 $ mkdir app
@@ -107,7 +107,7 @@ If you want your Drash server to handle more content types, then you will need t
 
 *Note: The following steps assume you're using the example code above.*
 
-### Step 1 of 2: Make Your `Response` Class.
+### Step 1 of 2: Create Your `Response` Class.
 
 *Note: This class only needs to override the `send()` method.*
 
