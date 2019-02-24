@@ -1,13 +1,23 @@
 import Response from './response.ts';
+import Server from './server.ts';
 
 export default class BaseResource {
   protected http_method = 'HTTP_GET_JSON';
   protected request;
   protected response;
+  protected method_mappings = {
+    'application/json': 'JSON',
+    'application/xml':  'XML',
+    'text/html':        'HTML',
+    'text/xml':         'XML',
+  };
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(request) {
+    if (Server.resource_method_mappings) {
+      this.method_mappings = Server.resource_method_mappings;
+    }
     this.request = request;
     this.response = new Response(request);
     this.http_method = this.getHttpMethod();
@@ -17,13 +27,14 @@ export default class BaseResource {
 
   public getHttpMethod() {
     let output = this.request.headers.get('response-output-default');
+    let resourceMethod = '';
 
     // Check the request headers to see if `response-output: {output}` has been specified
     if (
-      this.request.headers['response-output']
-      && (typeof this.request.headers['response-output'] === 'string')
+      this.request.headers.get('response-output')
+      && (typeof this.request.headers.get('response-output') === 'string')
     ) {
-      output = this.request.headers['response-output'];
+      output = this.request.headers.get('response-output');
     }
 
     // Check the request's URL query params to see if ?output={output} has been specified
@@ -32,18 +43,11 @@ export default class BaseResource {
     //   ? request.url_query_params.output
     //   : output;
 
-    switch (output) {
-      case 'application/json':
-        return 'HTTP_GET_JSON';
-      case 'text/html':
-        return 'HTTP_GET_HTML';
-      case 'text/xml':
-        return 'HTTP_GET_XML';
-      default:
-        break;
+    if (this.method_mappings[output]) {
+      resourceMethod = this.method_mappings[output];
     }
 
-    return 'HTTP_GET_JSON';
+    return `${this.request.method.toUpperCase()}_${resourceMethod.toUpperCase()}`;
   }
 
   public handleRequest() {

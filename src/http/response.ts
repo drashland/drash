@@ -1,11 +1,6 @@
 import Server from './server.ts';
 
 export default class Response {
-  public allowed_content_types = [
-    'application/json',
-    'text/html',
-    'text/xml',
-  ];
   public body = {};
   public headers: Headers;
   public request;
@@ -21,9 +16,6 @@ export default class Response {
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(request) {
-    if (Server.allowed_content_types.length) {
-      this.allowed_content_types = Server.allowed_content_types;
-    }
 
     this.request = request;
     this.headers = new Headers();
@@ -40,16 +32,19 @@ export default class Response {
     let body;
 
     switch (this.headers.get('Content-Type')) {
-      case 'text/html':
-        body = this.generateTextHtmlResponse();
-        break;
-      case 'text/xml':
-        body = this.generateTextXmlResponse();
-        break;
       case 'application/json':
-      default:
-        body = this.generateApplicationJsonResponse();
+        body = this.generateJsonResponse();
         break;
+      case 'text/html':
+        body = this.generateHtmlResponse();
+        break;
+      case 'application/xml':
+      case 'text/xml':
+        body = this.generateXmlResponse();
+        break;
+      default:
+        this.headers.set('Content-Type', this.request.headers.get('response-output-default'));
+        return this.send();
     }
 
     this.request.respond({
@@ -61,15 +56,7 @@ export default class Response {
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
-  protected generateApplicationJsonResponse() {
-    return JSON.stringify({
-      status_code: this.status_code,
-      status_message: this.getStatusMessage(),
-      body: this.body
-    });
-  }
-
-  protected generateTextHtmlResponse() {
+  protected generateHtmlResponse() {
     return `<!DOCTYPE html>
 <head>
   <style>
@@ -83,7 +70,15 @@ export default class Response {
 </html>`;
   }
 
-  protected generateTextXmlResponse() {
+  protected generateJsonResponse() {
+    return JSON.stringify({
+      status_code: this.status_code,
+      status_message: this.getStatusMessage(),
+      body: this.body
+    });
+  }
+
+  protected generateXmlResponse() {
   return `<response>
   <statuscode>${this.status_code}</statuscode>
   <statusmessage>${this.getStatusMessage()}</statusmessage>
@@ -92,14 +87,14 @@ export default class Response {
   }
 
   protected getHeaderContentType() {
-    let output = this.request.headers.get('response-output-default');
+    let contentType = this.request.headers.get('response-output-default');
 
     // Check the request headers to see if `response-output: {output}` has been specified
     if (
-      this.request.headers['response-output']
-      && (typeof this.request.headers['response-output'] === 'string')
+      this.request.headers.get('response-output')
+      && (typeof this.request.headers.get('response-output') === 'string')
     ) {
-      output = this.request.headers['response-output'];
+      contentType = this.request.headers.get('response-output');
     }
 
     // Check the request's URL query params to see if ?output={output} has been specified
@@ -108,10 +103,6 @@ export default class Response {
     //   ? request.url_query_params.output
     //   : output;
 
-    if (this.allowed_content_types.indexOf(output) != -1) {
-      return output;
-    }
-
-    return 'application/json';
+    return contentType;
   }
 }

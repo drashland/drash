@@ -11,13 +11,13 @@ export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
   static REGEX_URI_REPLACEMENT = '([^/]+)';
 
+  static resource_method_mappings = null;
+
   protected configs;
   protected resources = {};
   protected trackers = {
     requested_favicon: false,
   };
-
-  static allowed_content_types;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
@@ -38,8 +38,8 @@ export default class Server {
       });
     }
 
-    if (this.configs.allowed_content_types) {
-      Server.allowed_content_types = configs.allowed_content_types;
+    if (this.configs.resource_method_mappings) {
+      Server.resource_method_mappings = configs.resource_method_mappings;
     }
   }
 
@@ -113,9 +113,7 @@ export default class Server {
         break;
       case 405:
         response.status_code = 405;
-        // TODO(crookse) Make error message say ".. doesn't allow {METHOD} requests for
-        // {CONTENT_TYPE} responses..."
-        response.body = `URI '${request.url}' doesn't allow the '${resource.getHttpMethod()}' method.`;// eslint-disable-line
+        response.body = `URI '${request.url}' does not allow ${request.method.toUpperCase()} requests that request responses with Content-Type ${this.getRequestedResponseContentType(request)}.`;// eslint-disable-line
         break;
       default:
         response.status_code = 400;
@@ -197,5 +195,19 @@ export default class Server {
     }
 
     return matchedResourceClass;
+  }
+
+  protected getRequestedResponseContentType(request) {
+    let output = request.headers.get('response-output-default');
+    
+    // Check the request headers to see if `response-output: {output}` has been specified
+    if (
+      request.headers.get('response-output')
+      && (typeof request.headers.get('response-output') === 'string')
+    ) {
+      output = request.headers.get('response-output');
+    }
+
+    return output;
   }
 }
