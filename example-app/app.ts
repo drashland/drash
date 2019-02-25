@@ -1,8 +1,7 @@
 import Drash from "../mod.ts";
-
+import Response from "./response.ts";
 import resources from "/var/www/deno-drash/example-app/resources/.drash_http_resources.ts";
 
-import Response from "./response.ts";
 Drash.Http.Response = Response;
 
 let server = new Drash.Http.Server({
