@@ -234,7 +234,7 @@ export default class Server {
     let resource = this.getResourceClass(request);
 
     if (resource) {
-      resource = new resource(request response);
+      resource = new resource(request, response);
     }
 
     return resource;
