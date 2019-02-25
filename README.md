@@ -87,7 +87,8 @@ import Drash from "./drash/mod.ts";
 import HomeResource from "./home_resource.ts";
 
 let server = new Drash.Http.Server({
-  response_output: 'text/html',
+  address: 'localhost:8000',
+  response_output: 'application/json',
   resources: [
     HomeResource
   ]
@@ -200,12 +201,13 @@ export default class Response extends Drash.Http.Response {
 +
  import HomeResource from "./home_resource.ts";
 
- let server = new Drash.Http.Server({
-   response_output: 'text/html',
-   resources: [
-     HomeResource
-   ]
- });
+let server = new Drash.Http.Server({
+  address: 'localhost:8000',
+  response_output: 'application/json',
+  resources: [
+    HomeResource
+  ]
+});
 
  server.run();
 ```

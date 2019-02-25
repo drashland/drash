@@ -1,16 +1,16 @@
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
 
-const denoServer = serve("127.0.0.1:8000");
-
 export default class Server {
   static CONFIGS = {
+    address: '127.0.0.1:8000',
     default_response_content_type: 'application/json',
   };
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, 'g');
   static REGEX_URI_REPLACEMENT = '([^/]+)';
 
   protected configs;
+  protected deno_server = null;
   protected resources = {};
   protected trackers = {
     requested_favicon: false,
@@ -69,9 +69,8 @@ export default class Server {
    * Handle an HTTP request from the Deno server.
    *
    * @param Server.ServerRequest request
-   * @param Server denoServer 
    */
-  public handleHttpRequest(request, denoServer): void {
+  public handleHttpRequest(request): void {
     if (request.url == '/favicon.ico') {
       return this.handleHttpRequestForFavicon(request);
     }
@@ -161,8 +160,10 @@ export default class Server {
    * Run the Deno server.
    */
   public async run(): Promise<void> {
-    for await (const request of denoServer) {
-      this.handleHttpRequest(request, denoServer);
+    console.log(`Deno server started at ${Server.CONFIGS.address}.`);
+    this.deno_server = serve(Server.CONFIGS.address);
+    for await (const request of this.deno_server) {
+      this.handleHttpRequest(request);
     }
   }
 
