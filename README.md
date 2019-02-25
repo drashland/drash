@@ -218,4 +218,6 @@ let server = new Drash.Http.Server({
 
 ## Roadmap
 
-[2019-02-25] Currently empty.
+* [ ] Tagged file and console logging
+* [ ] Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
+* [ ] Provide pathname of resources instead adding imported files in the `resources` config
