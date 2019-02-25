@@ -74,7 +74,7 @@ export default class HomeResource extends Drash.Http.Resource {
 
 ### Step 4 of 6: Create Your App File
 
-*Note: You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [How To Override Drash.Http.Response](https://github.com/crookse/deno-drash#how-to-override-drashhttpresponse) below.*
+*Note: You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below.*
 
 **File: `app/app.ts`**
 
@@ -99,6 +99,8 @@ $ deno app.ts --allow-net
 ```
 
 ### Step 6 of 6: Make The Following HTTP Requests
+
+*Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development.*
 
 * GET `localhost:8000/`
 * GET `localhost:8000/:name`
