@@ -2,8 +2,7 @@ import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/hotfix/c
 
 export default class Resource extends Drash.Http.Resource {
   constructor(request, response) {
-    console.log("we out here");
+    consolel.log("Constructing resource.");
     super(request, response);
   }
 }
-
