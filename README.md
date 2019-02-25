@@ -13,7 +13,7 @@ Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Ba
 
 **Content Negotiation**
 
-Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle.
+Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle. See [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below for further information.
 
 **Request Path Params (e.g., `/users/:id`)**
 
