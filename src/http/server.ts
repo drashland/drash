@@ -295,7 +295,6 @@ export default class Server {
           matchedResourceClass = resource;
         }
       });
-      return matchedResourceClass;
     }
 
     return matchedResourceClass;

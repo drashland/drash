@@ -1,4 +1,4 @@
-import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
+import Drash from "../mod.ts";
 
 export default class Response extends Drash.Http.Response {
   public send(): void {
