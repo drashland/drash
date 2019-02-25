@@ -1,3 +1,5 @@
+![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest)
+
 # Drash
 
 Drash is a modular web app framework for [Deno](https://deno.land) based on HTTP resources and content negotiation.
