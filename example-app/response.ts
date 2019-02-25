@@ -1,4 +1,4 @@
-import Drash from "../mod.ts";
+import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"
 
 export default class Response extends Drash.Http.Response {
   public send(): void {
@@ -37,6 +37,8 @@ export default class Response extends Drash.Http.Response {
         body = this.body;
         break;
     }
+
+    console.log("test");
 
     this.request.respond({
       status: this.status_code,

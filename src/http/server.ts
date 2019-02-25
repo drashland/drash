@@ -24,6 +24,7 @@ export default class Server {
    * @param configs
    */
   constructor(configs: any) {
+    console.log(Drash.Http.Response);
     this.configs = configs;
 
     if (this.configs.response_output) {

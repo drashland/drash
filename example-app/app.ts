@@ -1,7 +1,10 @@
-import Drash from "../mod.ts";
+// import Drash from "../mod.ts";
+import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"
 
 import Response from "./response.ts";
-Drash.Http.Response = Response;
+delete Drash.Http.Response;
+
+console.log(Drash.Http.Response);
 
 import HomeResource from "./resources/home_resource.ts";
 
@@ -12,3 +15,4 @@ let server = new Drash.Http.Server({
 });
 
 server.run();
+
