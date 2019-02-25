@@ -83,7 +83,7 @@ export default class Server {
 
     // No resource? Send a 404 (Not Found) response.
     if (!resource) {
-      return this.handleHttpRequestError(request, new Drash.Exceptions.HttpException404());
+      return this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(404));
     }
 
     try {
@@ -95,7 +95,7 @@ export default class Server {
       // method not being defined in the resource class; therefore, the method is not allowed. In
       // this case, we send a 405 (Method Not Allowed) response.
       if (resource && !error.code) {
-        return this.handleHttpRequestError(request, new Drash.Exceptions.HttpException405());
+        return this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(405));
       }
 
       // All other errors go here
@@ -120,18 +120,18 @@ export default class Server {
 
     switch (error.code) {
       case 404:
-        response.status_code = 404;
         response.body = `The requested URL '${request.url}' was not found on this server.`;
         break;
       case 405:
-        response.status_code = 405;
         response.body = `URI '${request.url}' does not allow ${request.method.toUpperCase()} requests.`;// eslint-disable-line
         break;
       default:
-        response.status_code = 400;
+        error.code = 400;
         response.body = 'Something went wrong.';
         break;
     }
+
+    response.status_code = error.code;
 
     response.send();
   }
