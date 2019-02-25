@@ -87,7 +87,7 @@ export default class Server {
 
     request.url_query_params = this.getRequestQueryParams(request);
 
-    let resource = this.getResource(request);
+    let resource = this.getResource(request, new Drash.Http.Response(request));
 
     // No resource? Send a 404 (Not Found) response.
     if (!resource) {
@@ -136,17 +136,20 @@ export default class Server {
     console.log("Stack trace below:");
     console.log(error.stack);
 
+
+    let requestUrl = request.url.split("?")[0];
+
     let response = new Drash.Http.Response(request);
 
     switch (error.code) {
       case 404:
         response.body = `The requested URL '${
-          request.url
+          requestUrl
         }' was not found on this server.`;
         break;
       case 405:
         response.body = `URI '${
-          request.url
+          requestUrl
         }' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
         break;
       default:
@@ -230,10 +233,14 @@ export default class Server {
    *
    * @return Drash.Http.Resource|undefined
    */
-  protected getResource(request) {
+  protected getResource(request, response) {
     let resource = this.getResourceClass(request);
 
-    return resource ? new resource(request) : resource;
+    if (resource) {
+      resource = new resource(request, response);
+    }
+
+    return resource;
   }
 
   /**

@@ -1,4 +1,4 @@
-import Drash from "../mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts"
 
 import Response from "./response.ts";
 Drash.Http.Response = Response;

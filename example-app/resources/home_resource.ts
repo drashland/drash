@@ -1,7 +1,7 @@
-import Drash from "../../mod.ts";
+import Resource from "./resource.ts";
 
 /** Define an HTTP resource that handles HTTP requests to the / URI */
-export default class HomeResource extends Drash.Http.Resource {
+export default class HomeResource extends Resource {
   static paths = ["/", "/:name"];
 
   /**
