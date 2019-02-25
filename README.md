@@ -2,13 +2,13 @@
 
 Drash is a modular web app framework for [Deno](https://deno.land) that respects RESTful design principles.
 
-Drash helps you build web apps that handle requests to grab resources. Requests can request any representation of a resource (e.g., application/json, text/html, application/xml, etc.) as long as the resource allows it.
+Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Clients can make requests to any resource you create and can request any representation your resources allow (e.g., `application/json` format of the resource located at the `/user/1234` URI).
 
 ## Features
 * Uses HTTP resources (not controllers) to process HTTP requests
-* Content negotation (comes standard with handling `JSON`, `HTML`, and `XML`)
+* Content negotation (Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling)
 * Path params (e.g., `/uri/with/some/:id`)
-* Semantic HTTP method routing (e.g., define `GET()` in your resource class to handle `GET` requests)
+* Semantic resource class methods (e.g., define `GET()` in your resource class to allow it to handle `GET` requests)
 
 ## Quickstart
 
