@@ -55,7 +55,7 @@ export default class Response {
     console.log(
       `Sending response. Content-Type: ${this.headers.get(
         "Content-Type"
-      )}. Status: ${this.status_code} (${this.getStatusMessage()}).`
+      )}. Status: ${this.getStatusMessage()}.`
     );
 
     this.request.respond({
