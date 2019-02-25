@@ -1,14 +1,25 @@
 # Drash
 
-Drash is a modular web app framework for [Deno](https://deno.land) that respects RESTful design principles.
+Drash is a modular web app framework for [Deno](https://deno.land).
 
 Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Clients can make requests to any resource you create and can request any representation your resources allow (e.g., `application/json` format of the resource located at the `/user/1234` URI).
 
 ## Features
-* Uses HTTP resources (not controllers) to process HTTP requests
-* Content negotation (Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling)
-* Path params (e.g., `/uri/with/some/:id`)
-* Semantic resource class methods (e.g., define `GET()` in your resource class to allow it to handle `GET` requests)
+**HTTP Resources**
+
+Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web). It doesn't use controllers. Therefore, resources define their own URIs. This means Drash doesn't use syntax like the following: `app.get('/', someHandler()); app.get('/user/:id, someHandler());`. Everything happens in resource classes.
+
+**Content Negotiation**
+
+Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can define more content types for your Drash server to handle.
+
+**Path Params (e.g., `/users/:id`)**
+
+If you want to build your RESTful/ish API, then go ahead and use your path params. Resources can access their URI's path params via `this.request.path_params.some_param`.
+
+**Semantic Method Names**
+
+If you want your resource class to allow `GET` requests, then give it a `GET()` method. If you want your resource class to allow `POST` requests, then give it a `POST()` method. If you don't want your resource class to allow `DELETE` requests, then don't give your resource class a `DELETE()` method. Pretty simple ideology and very semantic.
 
 ## Quickstart
 
