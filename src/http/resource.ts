@@ -13,6 +13,7 @@ export default class Resource {
    */
   constructor(request) {
     this.request = request;
+    console.log(Drash.Http.Response);
     this.response = new Drash.Http.Response(request);
   }
 }
