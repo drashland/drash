@@ -78,7 +78,7 @@ export default class Server {
 
     console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
 
-    request.query = this.getRequestQueryParams(request);
+    request.query_params = this.getRequestQueryParams(request);
 
     let resource = this.getResource(request);
 
@@ -176,10 +176,23 @@ export default class Server {
    */
   protected getRequestQueryParams(request): any {
     let queryParams = {};
-
+    
     let queryParamsString = request.url.split('?')[1];
 
-    console.log(queryParamsString);
+    if (!queryParamsString) {
+      return queryParams;
+    }
+
+    if (queryParamsString.indexOf('#') != -1) {
+      queryParamsString = queryParamsString.split('#')[0];
+    }
+    
+    let queryParamsExploded = queryParamsString.split("&");
+    
+    queryParamsExploded.forEach((kvpString) => {
+        kvpString = kvpString.split("=");
+        queryParams[kvpString[0]] = kvpString[1];
+    });
 
     return queryParams;
   }
@@ -209,6 +222,7 @@ export default class Server {
    */
   protected getResourceClass(request) {
     let matchedResourceClass = undefined;
+    let requestUrl = request.url.split("?")[0];
 
     for (let className in this.resources) {// eslint-disable-line
       // Break out if a resource was matched with the request.parsed_url.pathname variable
@@ -221,19 +235,19 @@ export default class Server {
       resource.paths.forEach(function getResourceClass_forEachPaths(pathObj, index) {
         if (!matchedResourceClass) {
           let thisPathMatchesRequestPathname = null;
-          if (pathObj.og_path === '/' && request.url.pathname === '/') {
+          if (pathObj.og_path === '/' && requestUrl.pathname === '/') {
             matchedResourceClass = resource;
             return;
           }
 
           // Check if the current path we're working on matches the request's pathname
-          thisPathMatchesRequestPathname = request.url.match(pathObj.regex_path);
+          thisPathMatchesRequestPathname = requestUrl.match(pathObj.regex_path);
           if (!thisPathMatchesRequestPathname) {
             return;
           }
 
           // Create the path params
-          let requestPathnameParams = request.url.match(pathObj.regex_path);
+          let requestPathnameParams = requestUrl.match(pathObj.regex_path);
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();
