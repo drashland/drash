@@ -7,54 +7,61 @@ export default class Response {
   public request;
   public status_code = 200;
   public status_messages = {
-    200: 'OK',
-    400: 'Bad Request',
-    404: 'Not Found',
-    405: 'Method Not Allowed',
-    500: 'Internal Server Error',
-  }
+    200: "OK",
+    400: "Bad Request",
+    404: "Not Found",
+    405: "Method Not Allowed",
+    500: "Internal Server Error"
+  };
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(request) {
-
     this.request = request;
     this.headers = new Headers();
-    this.headers.set('Content-Type', this.getHeaderContentType());
+    this.headers.set("Content-Type", this.getHeaderContentType());
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
   /** Get the status message based on the status code. */
   public getStatusMessage(): string {
-    return Drash.Dictionaries.HttpStatusCodes[this.status_code].response_message;
+    return Drash.Dictionaries.HttpStatusCodes[this.status_code]
+      .response_message;
   }
 
   public send(): void {
     let body;
 
-    switch (this.headers.get('Content-Type')) {
-      case 'application/json':
+    switch (this.headers.get("Content-Type")) {
+      case "application/json":
         body = this.generateJsonResponse();
         break;
-      case 'text/html':
+      case "text/html":
         body = this.generateHtmlResponse();
         break;
-      case 'application/xml':
-      case 'text/xml':
+      case "application/xml":
+      case "text/xml":
         body = this.generateXmlResponse();
         break;
       default:
-        this.headers.set('Content-Type', Drash.Http.Server.CONFIGS.default_response_content_type);
+        this.headers.set(
+          "Content-Type",
+          Drash.Http.Server.CONFIGS.default_response_content_type
+        );
         return this.send();
     }
 
-    console.log(`Sending response. Content-Type: ${this.headers.get('Content-Type')}. Status: ${this.status_code} (${this.getStatusMessage()}).`)
+    console.log(
+      `Sending response. Content-Type: ${this.headers.get(
+        "Content-Type"
+      )}. Status: ${this.status_code} (${this.getStatusMessage()}).`
+    );
 
     this.request.respond({
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body),
+      body: new TextEncoder().encode(body)
     });
   }
 
@@ -83,7 +90,7 @@ export default class Response {
   }
 
   protected generateXmlResponse(): string {
-  return `<response>
+    return `<response>
   <statuscode>${this.status_code}</statuscode>
   <statusmessage>${this.getStatusMessage()}</statusmessage>
   <body>${this.body}</body>
@@ -91,11 +98,11 @@ export default class Response {
   }
 
   protected getHeaderContentType(): string {
-    let contentType = Drash.Http.Server.CONFIGS.default_response_content_type
+    let contentType = Drash.Http.Server.CONFIGS.default_response_content_type;
 
     // Check the request's headers to see if `response-content-type: {content-type}` has been specified
-    contentType = this.request.headers.get('response-content-type')
-      ? this.request.headers.get('response-content-type')
+    contentType = this.request.headers.get("response-content-type")
+      ? this.request.headers.get("response-content-type")
       : contentType;
 
     // Check the request's URL query params to see if ?response_content_type={content-type} has been specified

@@ -1,4 +1,4 @@
-import Drash from '../../mod.ts';
+import Drash from "../../mod.ts";
 
 export default class Resource {
   protected request;

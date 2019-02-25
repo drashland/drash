@@ -7,6 +7,7 @@ Drash is a modular web app framework for [Deno](https://deno.land) based on HTTP
 Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Clients can make requests to any resource you create and can request any representation your resources allow (e.g., `application/json` format of the resource located at the `/user/1234` URI).
 
 ## Features
+
 **HTTP Resources**
 
 Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web). It doesn't use controllers and it doesn't use `app.get('/', someHandler())`-like syntax. You create a resource class, define its URIs, and give it HTTP methods (e.g., `GET()`, `POST()`, `PUT()`, `DELETE()`, etc.).
@@ -50,16 +51,15 @@ import Drash from "./drash/mod.ts";
 
 /** Define an HTTP resource that handles HTTP requests to the / URI */
 export default class HomeResource extends Drash.Http.Resource {
-  static paths = [
-    '/',
-    '/:name',
-  ];
+  static paths = ["/", "/:name"];
 
   /**
    * Handle GET requests.
    */
   public GET() {
-    this.response.body = `Hello, ${this.request.path_params.name ? this.request.path_params.name : 'world'}!`;
+    this.response.body = `Hello, ${
+      this.request.path_params.name ? this.request.path_params.name : "world"
+    }!`;
 
     return this.response;
   }
@@ -68,9 +68,11 @@ export default class HomeResource extends Drash.Http.Resource {
    * Handle POSTS requests.
    */
   public POST() {
-    this.response.body = 'POST request received!';
+    this.response.body = "POST request received!";
     if (this.request.path_params.name) {
-      this.response.body = `Hello, ${this.request.path_params.name}! Your POST request has been received!`;
+      this.response.body = `Hello, ${
+        this.request.path_params.name
+      }! Your POST request has been received!`;
     }
 
     return this.response;
@@ -80,7 +82,7 @@ export default class HomeResource extends Drash.Http.Resource {
 
 ### Step 4 of 6: Create Your App File
 
-*Note: The `response_output` config tells your Drash server what content type to send by default. If you don't specify this value, then Drash will automatically set it to `application/json`. You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below.*
+_Note: The `response_output` config tells your Drash server what content type to send by default. If you don't specify this value, then Drash will automatically set it to `application/json`. You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below._
 
 **File: `app/app.ts`**
 
@@ -89,11 +91,9 @@ import Drash from "./drash/mod.ts";
 import HomeResource from "./home_resource.ts";
 
 let server = new Drash.Http.Server({
-  address: 'localhost:8000',
-  response_output: 'application/json',
-  resources: [
-    HomeResource
-  ]
+  address: "localhost:8000",
+  response_output: "application/json",
+  resources: [HomeResource]
 });
 
 server.run();
@@ -107,12 +107,12 @@ $ deno app.ts --allow-net
 
 ### Step 6 of 6: Make The Following HTTP Requests
 
-*Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development.*
+_Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
 
-* GET `localhost:8000/`
-* GET `localhost:8000/:name`
-* POST `localhost:8000/`
-* POST `localhost:8000/:name`
+- GET `localhost:8000/`
+- GET `localhost:8000/:name`
+- POST `localhost:8000/`
+- POST `localhost:8000/:name`
 
 ---
 
@@ -120,14 +120,14 @@ $ deno app.ts --allow-net
 
 Drash servers use the `Drash.Http.Response` class to generate responses and send them to clients. It can generate responses of the following content types:
 
-* `application/json`
-* `application/xml`
-* `text/html`
-* `text/xml`
+- `application/json`
+- `application/xml`
+- `text/html`
+- `text/xml`
 
 If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response` and its `send()` method. See the steps below to override `Drash.Http.Response` and its `send()` method:
 
-*Note: The following steps assume you're using the example code above.*
+_Note: The following steps assume you're using the example code above._
 
 ### Step 1 of 2: Create Your `Response` Class.
 
@@ -140,37 +140,37 @@ import Drash from "./drash/mod.ts";
 export default class Response extends Drash.Http.Response {
   /**
    * @overrides `Drash.Http.Response.send()`
-   * 
+   *
    * Send a response to the client.
    */
   public send(): void {
     let body;
 
-    switch (this.headers.get('Content-Type')) {
+    switch (this.headers.get("Content-Type")) {
       // Handle HTML
-      case 'text/html':
+      case "text/html":
         body = this.body;
         break;
 
       // Handle JSON
-      case 'application/json':
-        body = JSON.stringify({body: this.body});
+      case "application/json":
+        body = JSON.stringify({ body: this.body });
         break;
 
       // Handle PDF
-      case 'application/pdf':
-        this.headers.set('Content-Type', 'text/html');
+      case "application/pdf":
+        this.headers.set("Content-Type", "text/html");
         body = `<html><body style="height: 100%; width: 100%; overflow: hidden; margin: 0px; background-color: rgb(82, 86, 89);"><embed width="100%" height="100%" name="plugin" id="plugin" src="https://www.adobe.com/content/dam/acom/en/security/pdfs/AdobeIdentityServices.pdf" type="application/pdf" internalinstanceid="19"></body></html>`;
         break;
 
       // Handle XML
-      case 'application/xml':
-      case 'text/xml':
+      case "application/xml":
+      case "text/xml":
         body = `<body>${this.body}</body>`;
         break;
 
       // Handle plain text
-      case 'text/plain':
+      case "text/plain":
         body = this.body;
         break;
 
@@ -183,11 +183,10 @@ export default class Response extends Drash.Http.Response {
     this.request.respond({
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body),
+      body: new TextEncoder().encode(body)
     });
   }
 }
-
 ```
 
 ### Step 2 of 2: Modify Your App File
@@ -218,6 +217,6 @@ let server = new Drash.Http.Server({
 
 ## Roadmap
 
-* [ ] Tagged file and console logging
-* [ ] Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
-* [ ] Provide pathname of resources instead adding imported files in the `resources` config
+- [ ] Tagged file and console logging
+- [ ] Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
+- [ ] Provide pathname of resources instead adding imported files in the `resources` config
