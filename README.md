@@ -13,9 +13,13 @@ Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Ba
 
 Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle.
 
-**Path Params (e.g., `/users/:id`)**
+**Request Path Params (e.g., `/users/:id`)**
 
 If you want to build your RESTful/ish API, then go ahead and use your path params. Resources can access their URI's path params via `this.request.path_params.some_param`.
+
+**Request URL Query Params (e.g., `/users?id=1234`)**
+
+Can't have path params and not have request URL query params. Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
 
 **Semantic Method Names**
 
