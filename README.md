@@ -1,6 +1,6 @@
 ![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest)
 
-*Note: Use `import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"`. Importing from https://deno.land/x/ (e.g., `import Drash from "https://deno.land/x/drash/mod.ts"`) is still being processed.*
+_Note: Use `import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"`. Importing from https://deno.land/x/ (e.g., `import Drash from "https://deno.land/x/drash/mod.ts"`) is still being processed._
 
 # Drash
 

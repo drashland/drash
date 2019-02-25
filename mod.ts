@@ -17,5 +17,5 @@ export default {
     Resource: Resource,
     Server: Server
   },
-  Util: Util,
+  Util: Util
 };

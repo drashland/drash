@@ -23,10 +23,14 @@ export class FileCreator {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(imports + exports);
-    console.log(`\nWriting HTTP resources file "${filename}" with the following content:`);
+    console.log(
+      `\nWriting HTTP resources file "${filename}" with the following content:`
+    );
     console.log(imports + exports);
     Deno.writeFileSync(filename, data);
     console.log(`\nFile ${filename} created!`);
-    console.log(`\nMake sure to add the following to your project:\n    import resources from "${filename}";`);
+    console.log(
+      `\nMake sure to add the following to your project:\n    import resources from "${filename}";`
+    );
   }
 }

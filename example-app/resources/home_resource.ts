@@ -9,7 +9,9 @@ export default class HomeResource extends Resource {
    */
   public GET() {
     this.response.body = `Hello, ${
-      this.request.url_query_params.name ? this.request.url_query_params.name : "world"
+      this.request.url_query_params.name
+        ? this.request.url_query_params.name
+        : "world"
     }!`;
 
     return this.response;
