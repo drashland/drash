@@ -21,8 +21,8 @@ export default class UsersResource extends Resource {
    */
   public GET() {
     if (
-      this.request.path_params.user_id
-      && this.users[this.request.path_params.user_id]
+      this.request.path_params.user_id &&
+      this.users[this.request.path_params.user_id]
     ) {
       this.response.body = this.users[this.request.path_params.user_id];
     } else {
@@ -32,4 +32,3 @@ export default class UsersResource extends Resource {
     return this.response;
   }
 }
-
