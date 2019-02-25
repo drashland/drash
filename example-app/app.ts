@@ -1,14 +1,13 @@
-import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
-
+import Drash from "../mod.ts";
 import Response from "./response.ts";
-Drash.Http.Response = Response;
+import resources from "/var/www/deno-drash/example-app/resources/.drash_http_resources.ts";
 
-import HomeResource from "./resources/home_resource.ts";
+Drash.Http.Response = Response;
 
 let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "application/json",
-  resources: [HomeResource]
+  resources: resources
 });
 
 server.run();
