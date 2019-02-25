@@ -78,7 +78,7 @@ export default class Server {
 
     console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
 
-    request.query_params = this.getRequestQueryParams(request);
+    request.url_query_params = this.getRequestQueryParams(request);
 
     let resource = this.getResource(request);
 

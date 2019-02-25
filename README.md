@@ -19,7 +19,7 @@ If you want to build your RESTful/ish API, then go ahead and use your path param
 
 **Request URL Query Params (e.g., `/users?id=1234`)**
 
-Can't have path params and not have request URL query params.
+Can't have path params and not have request URL query params. Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
 
 **Semantic Method Names**
 
