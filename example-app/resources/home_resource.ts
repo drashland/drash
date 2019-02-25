@@ -2,14 +2,14 @@ import Resource from "./resource.ts";
 
 /** Define an HTTP resource that handles HTTP requests to the / URI */
 export default class HomeResource extends Resource {
-  static paths = ["/", "/:name"];
+  static paths = ["/"];
 
   /**
    * Handle GET requests.
    */
   public GET() {
     this.response.body = `Hello, ${
-      this.request.path_params.name ? this.request.path_params.name : "world"
+      this.request.url_query_params.name ? this.request.url_query_params.name : "world"
     }!`;
 
     return this.response;
@@ -20,9 +20,9 @@ export default class HomeResource extends Resource {
    */
   public POST() {
     this.response.body = "POST request received!";
-    if (this.request.path_params.name) {
+    if (this.request.url_query_params.name) {
       this.response.body = `Hello, ${
-        this.request.path_params.name
+        this.request.url_query_params.name
       }! Your POST request has been received!`;
     }
 
