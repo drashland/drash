@@ -52,14 +52,16 @@ import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/m
 
 /** Define an HTTP resource that handles HTTP requests to the / URI */
 export default class HomeResource extends Drash.Http.Resource {
-  static paths = ["/", "/:name"];
+  static paths = ["/"];
 
   /**
    * Handle GET requests.
    */
   public GET() {
     this.response.body = `Hello, ${
-      this.request.path_params.name ? this.request.path_params.name : "world"
+      this.request.url_query_params.name
+        ? this.request.url_query_params.name
+        : "world"
     }!`;
 
     return this.response;
@@ -70,9 +72,9 @@ export default class HomeResource extends Drash.Http.Resource {
    */
   public POST() {
     this.response.body = "POST request received!";
-    if (this.request.path_params.name) {
+    if (this.request.url_query_params.name) {
       this.response.body = `Hello, ${
-        this.request.path_params.name
+        this.request.url_query_params.name
       }! Your POST request has been received!`;
     }
 
@@ -111,9 +113,9 @@ $ deno app.ts --allow-net
 _Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
 
 - GET `localhost:8000/`
-- GET `localhost:8000/:name`
+- GET `localhost:8000?name=Thor`
 - POST `localhost:8000/`
-- POST `localhost:8000/:name`
+- POST `localhost:8000?name=Hulk`
 
 ---
 
