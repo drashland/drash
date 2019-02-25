@@ -11,7 +11,7 @@ Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Ba
 
 **Content Negotiation**
 
-Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can define more content types for your Drash server to handle.
+Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle.
 
 **Path Params (e.g., `/users/:id`)**
 
@@ -105,22 +105,22 @@ $ deno app.ts --allow-net
 * POST `localhost:8000/`
 * POST `localhost:8000/:name`
 
-## How To Override `Drash.Http.Response`
+---
 
-Drash servers use `Drash.Http.Response` to generate responses and send them to clients. It can generate responses of the following content types:
+## Adding More Content Types
+
+Drash servers use the `Drash.Http.Response` class to generate responses and send them to clients. It can generate responses of the following content types:
 
 * `application/json`
 * `application/xml`
 * `text/html`
 * `text/xml`
 
-If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response`. See steps below to override `Drash.Http.Response`:
+If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response` and its `send()` method. See the steps below to override `Drash.Http.Response` and its `send()` method:
 
 *Note: The following steps assume you're using the example code above.*
 
 ### Step 1 of 2: Create Your `Response` Class.
-
-*Note: This class only needs to override the `send()` method.*
 
 **File: `app/response.ts`**
 
