@@ -24,7 +24,6 @@ export default class Server {
    * @param configs
    */
   constructor(configs: any) {
-    console.log(Drash.Http.Response);
     this.configs = configs;
 
     if (this.configs.response_output) {
@@ -234,7 +233,12 @@ export default class Server {
   protected getResource(request) {
     let resource = this.getResourceClass(request);
 
-    return resource ? new resource(request) : resource;
+    if (resource) {
+      resource = new resource(request);
+      resource.Drash = Drash;
+    }
+
+    return resource;
   }
 
   /**

@@ -1,6 +1,5 @@
-import Drash from "../../mod.ts";
-
 export default class Resource {
+  static Drash;
   protected request;
   protected response;
 
