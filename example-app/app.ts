@@ -2,9 +2,7 @@
 import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/hotfix/cant-override-classes/mod.ts"
 
 import Response from "./response.ts";
-delete Drash.Http.Response;
-
-console.log(Drash.Http.Response);
+Drash.Http.Response = Response;
 
 import HomeResource from "./resources/home_resource.ts";
 
@@ -15,4 +13,3 @@ let server = new Drash.Http.Server({
 });
 
 server.run();
-

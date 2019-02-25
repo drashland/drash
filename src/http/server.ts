@@ -136,17 +136,20 @@ export default class Server {
     console.log("Stack trace below:");
     console.log(error.stack);
 
+
+    let requestUrl = request.url.split("?")[0];
+
     let response = new Drash.Http.Response(request);
 
     switch (error.code) {
       case 404:
         response.body = `The requested URL '${
-          request.url
+          requestUrl
         }' was not found on this server.`;
         break;
       case 405:
         response.body = `URI '${
-          request.url
+          requestUrl
         }' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
         break;
       default:
