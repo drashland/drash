@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
-// TODO(crookse) Import Drash -> Exceptions.HttpException404 etc.
-import HttpException404 from "../exceptions/exception404.ts";
-import HttpException405 from "../exceptions/exception405.ts";
 
 const denoServer = serve("127.0.0.1:8000");
 
@@ -85,7 +82,7 @@ export default class Server {
 
     // No resource? Send a 404 (Not Found) response.
     if (!resource) {
-      return this.handleHttpRequestError(request, new HttpException404());
+      return this.handleHttpRequestError(request, new Drash.Exceptions.HttpException404());
     }
 
     try {
@@ -97,7 +94,7 @@ export default class Server {
       // method not being defined in the resource class; therefore, the method is not allowed. In
       // this case, we send a 405 (Method Not Allowed) response.
       if (resource && !error.code) {
-        return this.handleHttpRequestError(request, new HttpException405());
+        return this.handleHttpRequestError(request, new Drash.Exceptions.HttpException405());
       }
 
       // All other errors go here
