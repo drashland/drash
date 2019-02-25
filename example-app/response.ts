@@ -38,8 +38,6 @@ export default class Response extends Drash.Http.Response {
         break;
     }
 
-    console.log("test");
-
     this.request.respond({
       status: this.status_code,
       headers: this.headers,
