@@ -74,7 +74,7 @@ export default class HomeResource extends Drash.Http.Resource {
 
 ### Step 4 of 6: Create Your App File
 
-*Note: You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below.*
+*Note: The `response_output` config tells your Drash server what content type to send by default. If you don't specify this value, then Drash will automatically set it to `application/json`. You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below.*
 
 **File: `app/app.ts`**
 
