@@ -68,8 +68,8 @@ export default class Server {
   /**
    * Handle an HTTP request from the Deno server.
    *
-   * @param ServerRequest request
-   * @param denoServer 
+   * @param Server.ServerRequest request
+   * @param Server denoServer 
    */
   public handleHttpRequest(request, denoServer): void {
     if (request.url == '/favicon.ico') {
@@ -77,6 +77,8 @@ export default class Server {
     }
 
     console.log(`Request received: ${request.method.toUpperCase()} ${request.url}`);
+
+    request.query = this.getRequestQueryParams(request);
 
     let resource = this.getResource(request);
 
@@ -166,6 +168,22 @@ export default class Server {
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
+  /**
+   * Get the request's query params
+   * 
+   * @param Server.ServerRequest request
+   *     The request object.
+   */
+  protected getRequestQueryParams(request): any {
+    let queryParams = {};
+
+    let queryParamsString = request.url.split('?')[1];
+
+    console.log(queryParamsString);
+
+    return queryParams;
+  }
+  
   /**
    * Get the resource based on the request.
    *
