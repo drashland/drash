@@ -14,7 +14,7 @@ Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Ba
 
 **Content Negotiation**
 
-Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle.
+Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle. See [Adding More Content Types](https://github.com/crookse/deno-drash#adding-more-content-types) below for further information.
 
 **Request Path Params (e.g., `/users/:id`)**
 
@@ -82,7 +82,7 @@ export default class HomeResource extends Drash.Http.Resource {
 
 ### Step 4 of 6: Create Your App File
 
-_Note: The `response_output` config tells your Drash server what content type to send by default. If you don't specify this value, then Drash will automatically set it to `application/json`. You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash/blob/master/README.md#adding-more-content-types) below._
+_Note: The `response_output` config tells your Drash server what content type to send by default. If you don't specify this value, then Drash will automatically set it to `application/json`. You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash#adding-more-content-types) below._
 
 **File: `app/app.ts`**
 
