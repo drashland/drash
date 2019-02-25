@@ -7,7 +7,7 @@ Drash helps you quickly build web apps, APIs, services, and whatever else you'd 
 ## Features
 **HTTP Resources**
 
-Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web). It doesn't use controllers. Therefore, resources define their own URIs. This means Drash doesn't use the following syntax: `app.get('/', someHandler()); app.get('/user/:id, someHandler());`. Everything happens in the HTTP methods defined in resource classes.
+Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web). It doesn't use controllers and it doesn't use `app.get('/', someHandler())`-like syntax. You create a resource class, define its URIs, and give it HTTP methods (e.g., `GET()`, `POST()`, `PUT()`, `DELETE()`, etc.).
 
 **Content Negotiation**
 
