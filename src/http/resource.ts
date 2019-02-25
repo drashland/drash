@@ -1,5 +1,4 @@
 export default class Resource {
-  static Drash;
   protected request;
   protected response;
 
@@ -10,9 +9,8 @@ export default class Resource {
    *
    * @param ServerRequest request
    */
-  constructor(request) {
+  constructor(request, response) {
     this.request = request;
-    console.log(Drash.Http.Response);
-    this.response = new Drash.Http.Response(request);
+    this.response = response;
   }
 }

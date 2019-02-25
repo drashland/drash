@@ -87,7 +87,7 @@ export default class Server {
 
     request.url_query_params = this.getRequestQueryParams(request);
 
-    let resource = this.getResource(request);
+    let resource = this.getResource(request, new Drash.Http.Response(request));
 
     // No resource? Send a 404 (Not Found) response.
     if (!resource) {
@@ -230,12 +230,11 @@ export default class Server {
    *
    * @return Drash.Http.Resource|undefined
    */
-  protected getResource(request) {
+  protected getResource(request, response) {
     let resource = this.getResourceClass(request);
 
     if (resource) {
-      resource = new resource(request);
-      resource.Drash = Drash;
+      resource = new resource(request response);
     }
 
     return resource;
