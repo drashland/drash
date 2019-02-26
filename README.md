@@ -197,7 +197,7 @@ export default class Response extends Drash.Http.Response {
 **File: `app/app.ts`**
 
 ```diff
-import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
+ import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
 +
 +import Response from "./response.ts";
 +Drash.Http.Response = Response;
@@ -205,13 +205,11 @@ import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/m
 +
  import HomeResource from "./home_resource.ts";
 
-let server = new Drash.Http.Server({
-  address: 'localhost:8000',
-  response_output: 'application/json',
-  resources: [
-    HomeResource
-  ]
-});
+ let server = new Drash.Http.Server({
+   address: 'localhost:8000',
+   response_output: 'application/json',
+   resources: [HomeResource]
+ });
 
  server.run();
 ```
