@@ -1,0 +1,9 @@
+language: shell
+
+install:
+  - curl -fsSL https://deno.land/x/install/install.sh | sh
+  - export PATH="$HOME/.deno/bin:$PATH"
+
+script:
+  - deno tests/setup.ts --allow-write
+  - deno test/test.ts
