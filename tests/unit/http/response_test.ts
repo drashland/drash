@@ -4,12 +4,15 @@ let response = new members.Drash.Http.Response(members.mockRequest);
 response.body = "This is my body";
 let responseFormatted;
 
-
 members.test(async function Response_generateResponse_json() {
   responseFormatted = response.generateResponse();
   members.assert.equal(
     responseFormatted,
-    JSON.stringify({status_code: 200, status_message: "200 (OK)", body: response.body})
+    JSON.stringify({
+      status_code: 200,
+      status_message: "200 (OK)",
+      body: response.body
+    })
   );
 });
 
@@ -18,7 +21,7 @@ members.test(async function Response_generateResponse_html() {
   responseFormatted = response.generateResponse();
   members.assert.equal(
     responseFormatted,
-`<!DOCTYPE html>
+    `<!DOCTYPE html>
 <head>
   <style>
     html { font-family: Arial }
@@ -37,7 +40,7 @@ members.test(async function Response_generateResponse_xml() {
   responseFormatted = response.generateResponse();
   members.assert.equal(
     responseFormatted,
-`<response>
+    `<response>
   <statuscode>200</statuscode>
   <statusmessage>200 (OK)</statusmessage>
   <body>This is my body</body>

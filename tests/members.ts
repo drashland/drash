@@ -5,11 +5,10 @@ import { ServerRequest } from "https://deno.land/std/http/server.ts";
 let mockRequest = new ServerRequest();
 mockRequest.headers = new Headers();
 
-
 export default {
   Drash,
   ServerRequest,
   assert,
   test,
   mockRequest
-}
+};
