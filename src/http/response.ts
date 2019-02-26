@@ -60,7 +60,7 @@ export default class Response {
    */
   public getStatusMessage(): string {
     return Drash.Dictionaries.HttpStatusCodes[this.status_code]
-      .response_message;
+      .short_description;
   }
 
   /**

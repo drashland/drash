@@ -1,9 +1,8 @@
-// import "./dictionaries/http_status_codes.ts"
-// import "./exceptions/http_exception.ts"
+import "./unit/dictionaries/http_status_codes_test.ts";
+import "./unit/exceptions/http_exception_test.ts";
 import "./unit/http/resource_test.ts";
 import "./unit/http/response_test.ts";
 import "./unit/http/server_test.ts";
-// import "./util.ts"
 
 import { runTests } from "https://deno.land/x/std/testing/mod.ts";
 

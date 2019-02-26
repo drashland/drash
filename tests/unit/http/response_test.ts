@@ -7,7 +7,7 @@ let responseFormatted;
 members.test(async function Response_generateResponse_json_default() {
   members.assert.equal(
     response.generateResponse(),
-    `{"status_code":200,"status_message":"200 (OK)","request":{"url":"/","method":"GET"},"body":"This is my body"}`
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"This is my body"}`
   );
 });
 
@@ -23,7 +23,7 @@ members.test(async function Response_generateResponse_html() {
   </style>
 </head>
 <body>
-  <h1>200 (200 (OK))</h1>
+  <h1>200 (OK)</h1>
   <p>This is my body</p>
 </body>
 </html>`
@@ -37,7 +37,7 @@ members.test(async function Response_generateResponse_xml() {
     responseFormatted,
     `<response>
   <statuscode>200</statuscode>
-  <statusmessage>200 (OK)</statusmessage>
+  <statusmessage>OK</statusmessage>
   <body>This is my body</body>
 </response>`
   );
@@ -47,7 +47,7 @@ members.test(async function Response_generateResponse_xml() {
     responseFormatted,
     `<response>
   <statuscode>200</statuscode>
-  <statusmessage>200 (OK)</statusmessage>
+  <statusmessage>OK</statusmessage>
   <body>This is my body</body>
 </response>`
   );

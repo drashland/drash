@@ -22,10 +22,15 @@ members.test(async function Server_handleHttpRequest() {
 
   request = members.mockRequest();
   response = server.handleHttpRequest(request);
-  members.assert.equal(response, `{"status_code":200,"status_message":"200 (OK)","request":{"url":"/","method":"GET"},"body":"got"}`);
+  members.assert.equal(
+    response,
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
+  );
 
   request = members.mockRequest("/", "POST");
   response = server.handleHttpRequest(request);
-  members.assert.equal(response, `{"status_code":200,"status_message":"200 (OK)","request":{"url":"/","method":"POST"},"body":"got this"}`);
+  members.assert.equal(
+    response,
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"POST"},"body":"got this"}`
+  );
 });
-
