@@ -8,10 +8,12 @@ export default [
   test_resource_1,
 ]
 `;
-  members.Drash.Util.FileCreator.httpResources("tests/data/resources", "./.tmp/.drash_http_resources.ts");
+  members.Drash.Util.FileCreator.httpResources(
+    "tests/data/resources",
+    "./.tmp/.drash_http_resources.ts"
+  );
   const decoder = new TextDecoder("utf-8");
   let data = Deno.readFileSync("./.tmp/.drash_http_resources.ts");
   let actual = decoder.decode(data);
   members.assert.equal(actual, expected);
 });
-

@@ -1,5 +1,4 @@
 export class FileCreator {
-
   static CONFIG = {
     log_enabled: false
   };
@@ -37,10 +36,14 @@ export class FileCreator {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(imports + exports);
-    FileCreator.log(`\nWriting HTTP resources file "${filename}" with the following content:`);
+    FileCreator.log(
+      `\nWriting HTTP resources file "${filename}" with the following content:`
+    );
     FileCreator.log(imports + exports);
     Deno.writeFileSync(filename, data);
     FileCreator.log(`\nFile ${filename} created!`);
-    FileCreator.log(`\nMake sure to add the following to your project:\n    import resources from "${filename}";`);
+    FileCreator.log(
+      `\nMake sure to add the following to your project:\n    import resources from "${filename}";`
+    );
   }
 }

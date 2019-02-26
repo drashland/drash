@@ -71,7 +71,10 @@ export default class Server {
           og_path: path,
           regex_path:
             "^" +
-            path.replace(Server.REGEX_URI_MATCHES, Server.REGEX_URI_REPLACEMENT) +
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT
+            ) +
             "$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path

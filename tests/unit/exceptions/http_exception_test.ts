@@ -6,4 +6,3 @@ let actual = exception.code;
 members.test(async function Resource() {
   members.assert.equal(actual, 405);
 });
-
