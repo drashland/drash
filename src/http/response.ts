@@ -13,6 +13,7 @@ export default class Response {
     405: "Method Not Allowed",
     500: "Internal Server Error"
   };
+  public body_generated = "";
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
@@ -30,18 +31,16 @@ export default class Response {
    * @return string
    */
   public generateResponse(): string {
-    let body;
-
     switch (this.headers.get("Content-Type")) {
       case "application/json":
-        body = this.generateJsonResponse();
+        this.body_generated = this.generateJsonResponse();
         break;
       case "text/html":
-        body = this.generateHtmlResponse();
+        this.body_generated = this.generateHtmlResponse();
         break;
       case "application/xml":
       case "text/xml":
-        body = this.generateXmlResponse();
+        this.body_generated = this.generateXmlResponse();
         break;
       default:
         this.headers.set(
@@ -51,7 +50,7 @@ export default class Response {
         return this.generateResponse();
     }
 
-    return body;
+    return this.body_generated;
   }
 
   /**
@@ -67,12 +66,12 @@ export default class Response {
   /**
    * Send the response to the client making the request.
    *
-   * @return void
+   * @return string
    */
-  public send(): void {
+  public send(): string {
     let body = this.generateResponse();
 
-    console.log(
+    Drash.Http.Server.log.debug(
       `Sending response. Content-Type: ${this.headers.get(
         "Content-Type"
       )}. Status: ${this.getStatusMessage()}.`
@@ -83,6 +82,8 @@ export default class Response {
       headers: this.headers,
       body: new TextEncoder().encode(body)
     });
+
+    return this.body_generated;
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
@@ -105,6 +106,10 @@ export default class Response {
     return JSON.stringify({
       status_code: this.status_code,
       status_message: this.getStatusMessage(),
+      request: {
+        url: this.request.url,
+        method: this.request.method.toUpperCase()
+      },
       body: this.body
     });
   }

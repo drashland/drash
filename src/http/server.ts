@@ -4,7 +4,10 @@ import Drash from "../../mod.ts";
 export default class Server {
   static CONFIGS = {
     address: "127.0.0.1:8000",
-    default_response_content_type: "application/json"
+    default_response_content_type: "application/json",
+    log: {
+      enabled: false
+    }
   };
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
@@ -14,6 +17,14 @@ export default class Server {
   protected resources = {};
   protected trackers = {
     requested_favicon: false
+  };
+
+  static log = {
+    debug: function(message) {
+      if (Server.CONFIGS.log.enabled) {
+        console.log(message);
+      }
+    }
   };
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
@@ -34,6 +45,12 @@ export default class Server {
       this.configs.resources.forEach(resource => {
         this.addHttpResource(resource);
       });
+    }
+
+    if (this.configs.log) {
+      if (this.configs.log.enabled === true) {
+        Server.CONFIGS.log.enabled = this.configs.log.enabled;
+      }
     }
   }
 
@@ -68,7 +85,7 @@ export default class Server {
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
 
-    console.log(`HTTP resource "${resourceClass.name}" added.`);
+    Server.log.debug(`HTTP resource "${resourceClass.name}" added.`);
   }
 
   /**
@@ -76,12 +93,12 @@ export default class Server {
    *
    * @param Server.ServerRequest request
    */
-  public handleHttpRequest(request): void {
+  public handleHttpRequest(request): string {
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }
 
-    console.log(
+    Server.log.debug(
       `Request received: ${request.method.toUpperCase()} ${request.url}`
     );
 
@@ -98,13 +115,13 @@ export default class Server {
     }
 
     try {
-      console.log(
+      Server.log.debug(
         `Calling ${
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
       let response = resource[request.method.toUpperCase()]();
-      response.send();
+      return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely due to the HTTP
       // method not being defined in the resource class; therefore, the method is not allowed. In
@@ -117,7 +134,7 @@ export default class Server {
       }
 
       // All other errors go here
-      this.handleHttpRequestError(request, error);
+      return this.handleHttpRequestError(request, error);
     }
   }
 
@@ -129,12 +146,12 @@ export default class Server {
    * @param request
    * @param error
    */
-  public handleHttpRequestError(request, error): void {
-    console.log(
+  public handleHttpRequestError(request, error): string {
+    Server.log.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
-    console.log("Stack trace below:");
-    console.log(error.stack);
+    Server.log.debug("Stack trace below:");
+    Server.log.debug(error.stack);
 
     let requestUrl = request.url.split("?")[0];
 
@@ -155,7 +172,7 @@ export default class Server {
 
     response.status_code = error.code;
 
-    response.send();
+    return response.send();
   }
 
   /**
@@ -163,26 +180,29 @@ export default class Server {
    *
    * @param ServerRequest request
    */
-  public handleHttpRequestForFavicon(request): void {
+  public handleHttpRequestForFavicon(request): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
-      console.log("/favicon.ico requested.");
-      console.log("All future log messages for this request will be muted.");
+      Server.log.debug("/favicon.ico requested.");
+      Server.log.debug(
+        "All future log messages for this request will be muted."
+      );
     }
-
-    request.respond({
+    let response = {
       status: 200,
       headers: headers
-    });
+    };
+    request.respond(response);
+    return JSON.stringify(response);
   }
 
   /**
    * Run the Deno server.
    */
   public async run(): Promise<void> {
-    console.log(`Deno server started at ${Server.CONFIGS.address}.`);
+    Server.log.debug(`Deno server started at ${Server.CONFIGS.address}.`);
     this.deno_server = serve(Server.CONFIGS.address);
     for await (const request of this.deno_server) {
       this.handleHttpRequest(request);

@@ -7,9 +7,11 @@ class MyResource extends members.Drash.Http.Resource {
   }
 }
 
+let request = members.mockRequest();
+
 let resource = new MyResource(
-  members.mockRequest,
-  new members.Drash.Http.Response(members.mockRequest)
+  request,
+  new members.Drash.Http.Response(request)
 );
 let response = resource.GET();
 

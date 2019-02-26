@@ -1,19 +1,14 @@
 import members from "../../members.ts";
 
-let response = new members.Drash.Http.Response(members.mockRequest);
+let response = new members.Drash.Http.Response(members.mockRequest());
 response.body = "This is my body";
 let responseFormatted;
 
 members.test(async function Response_generateResponse_json_default() {
-  let expected = JSON.stringify({
-    status_code: 200,
-    status_message: "200 (OK)",
-    body: response.body
-  });
-  responseFormatted = response.generateResponse();
-  members.assert.equal(responseFormatted, expected);
-  responseFormatted = response.generateResponse();
-  members.assert.equal(responseFormatted, expected);
+  members.assert.equal(
+    response.generateResponse(),
+    `{"status_code":200,"status_message":"200 (OK)","request":{"url":"/","method":"GET"},"body":"This is my body"}`
+  );
 });
 
 members.test(async function Response_generateResponse_html() {
