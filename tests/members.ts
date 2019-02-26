@@ -22,5 +22,5 @@ export default {
   ServerRequest,
   assert,
   test,
-  mockRequest
+  mockRequest,
 };

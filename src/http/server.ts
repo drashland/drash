@@ -66,20 +66,24 @@ export default class Server {
    */
   public addHttpResource(resourceClass): void {
     resourceClass.paths.forEach((path, index) => {
-      let pathObj = {
-        og_path: path,
-        regex_path:
-          "^" +
-          path.replace(Server.REGEX_URI_MATCHES, Server.REGEX_URI_REPLACEMENT) +
-          "$",
-        params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
-          return path
-            .replace(":", "")
-            .replace("{", "")
-            .replace("}", "");
-        })
-      };
-      resourceClass.paths[index] = pathObj;
+      try {
+        let pathObj = {
+          og_path: path,
+          regex_path:
+            "^" +
+            path.replace(Server.REGEX_URI_MATCHES, Server.REGEX_URI_REPLACEMENT) +
+            "$",
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
+            return path
+              .replace(":", "")
+              .replace("{", "")
+              .replace("}", "");
+          })
+        };
+        resourceClass.paths[index] = pathObj;
+      } catch (error) {
+        Server.log.debug(error);
+      }
     });
 
     // Store the resource so it can be retrieved when requested
