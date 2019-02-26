@@ -202,7 +202,6 @@ export default class Response extends Drash.Http.Response {
 +import Response from "./response.ts";
 +Drash.Http.Response = Response;
 +
-+
  import HomeResource from "./home_resource.ts";
 
  let server = new Drash.Http.Server({
