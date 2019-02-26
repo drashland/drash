@@ -6,4 +6,4 @@ install:
 
 script:
   # - deno tests/setup.ts --allow-write
-  - deno test/test.ts
+  - deno tests/test.ts
