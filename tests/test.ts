@@ -1,7 +1,7 @@
 // import "./dictionaries/http_status_codes.ts"
 // import "./exceptions/http_exception.ts"
-import "./unit/http/resource_test.ts"
-// import "./http/response.ts"
+import "./unit/http/resource_test.ts";
+import "./unit/http/response_test.ts";
 // import "./http/server.ts"
 // import "./util.ts"
 

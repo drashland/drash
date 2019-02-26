@@ -24,13 +24,12 @@ export default class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
-  /** Get the status message based on the status code. */
-  public getStatusMessage(): string {
-    return Drash.Dictionaries.HttpStatusCodes[this.status_code]
-      .response_message;
-  }
-
-  public send(): void {
+  /**
+   * Generate a response.
+   *
+   * @return string
+   */
+  public generateResponse(): string {
     let body;
 
     switch (this.headers.get("Content-Type")) {
@@ -49,8 +48,29 @@ export default class Response {
           "Content-Type",
           Drash.Http.Server.CONFIGS.default_response_content_type
         );
-        return this.send();
+        return this.generateResponse();
     }
+
+    return body;
+  }
+
+  /**
+   * Get the status message based on the status code.
+   *
+   * @return string
+   */
+  public getStatusMessage(): string {
+    return Drash.Dictionaries.HttpStatusCodes[this.status_code]
+      .response_message;
+  }
+
+  /**
+   * Send the response to the client making the request.
+   *
+   * @return void
+   */
+  public send(): void {
+    let body = this.generateResponse();
 
     console.log(
       `Sending response. Content-Type: ${this.headers.get(

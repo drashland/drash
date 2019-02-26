@@ -1,20 +1,18 @@
-import Drash from "../../../mod.ts";
+import members from "../../members.ts";
 
-import { test, assert } from "https://deno.land/x/std/testing/mod.ts";
-import { ServerRequest } from "https://deno.land/std/http/server.ts";
-
-class MyResource extends Drash.Http.Resource {
+class MyResource extends members.Drash.Http.Resource {
   public GET() {
     this.response.body = "got";
     return this.response;
   }
 }
 
-let request = new ServerRequest();
-request.headers = new Headers();
-let resource = new MyResource(request, new Drash.Http.Response(request));
+let resource = new MyResource(
+  members.mockRequest,
+  new members.Drash.Http.Response(members.mockRequest)
+);
 let response = resource.GET();
 
-test(async function DrashHttpResource() {
-  assert.equal(response.body, "got");
+members.test(async function Resource() {
+  members.assert.equal(response.body, "got");
 });
