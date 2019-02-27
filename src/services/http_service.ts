@@ -4,6 +4,11 @@ import { ServerRequest } from "https://deno.land/x/http/server.ts";
  *
  * @param ServerRequest request
  *     The request object.
+ * @param object options
+ *     A list of options:
+ *     {
+ *       headers: {}
+ *     }
  */
 export function hydrateHttpRequest(request, options?) {
   if (options) {
