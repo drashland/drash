@@ -1,4 +1,4 @@
-![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest)
+![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest) [![Build Status](https://travis-ci.org/crookse/deno-drash.svg?branch=master)](https://travis-ci.org/crookse/deno-drash)
 
 `import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";`
 
