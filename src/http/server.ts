@@ -7,7 +7,7 @@ export default class Server {
 
   protected configs_defaults = {
     address: "127.0.0.1:8000",
-    default_response_content_type: "application/json",
+    default_response_content_type: "application/json"
   };
   protected configs;
   protected deno_server;
@@ -128,7 +128,10 @@ export default class Server {
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
           "Content-Type"
-        )}. Status: ${Drash.Dictionaries.HttpStatusCodes[response.status_code].response_message}.`
+        )}. Status: ${
+          Drash.Dictionaries.HttpStatusCodes[response.status_code]
+            .response_message
+        }.`
       );
       return response.send();
     } catch (error) {
@@ -184,7 +187,10 @@ export default class Server {
     this.logger.info(
       `Sending response. Content-Type: ${response.headers.get(
         "Content-Type"
-      )}. Status: ${Drash.Dictionaries.HttpStatusCodes[response.status_code].response_message}.`
+      )}. Status: ${
+        Drash.Dictionaries.HttpStatusCodes[response.status_code]
+          .response_message
+      }.`
     );
 
     return response.send();
@@ -201,7 +207,9 @@ export default class Server {
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logger.debug("/favicon.ico requested.");
-      this.logger.debug("All future log messages for this request will be muted.");
+      this.logger.debug(
+        "All future log messages for this request will be muted."
+      );
     }
     let response = {
       status: 200,

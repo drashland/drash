@@ -1,14 +1,13 @@
 import Drash from "../../mod.ts";
 
 export default class Logger {
-
   static TYPE_CONSOLE = 1;
-  static TYPE_FILE    = 2;
+  static TYPE_FILE = 2;
 
   protected type: number;
   protected level;
   protected level_definition;
-  protected log_levels = Drash.Dictionaries.LogLevels;;
+  protected log_levels = Drash.Dictionaries.LogLevels;
   protected configs = {
     enabled: false,
     level: "debug"
@@ -41,7 +40,7 @@ export default class Logger {
    */
   public debug(message) {
     this.beforeLog(this.log_levels.debug, message);
-  };
+  }
 
   /**
    * Output an ERROR level log message.
@@ -54,7 +53,7 @@ export default class Logger {
    */
   public error(message) {
     this.beforeLog(this.log_levels.error, message);
-  };
+  }
 
   /**
    * Output a FATAL level log message.
@@ -67,7 +66,7 @@ export default class Logger {
    */
   public fatal(message) {
     this.beforeLog(this.log_levels.fatal, message);
-  };
+  }
 
   /**
    * Output an INFO level log message.
@@ -80,7 +79,7 @@ export default class Logger {
    */
   public info(message) {
     this.beforeLog(this.log_levels.info, message);
-  };
+  }
 
   /**
    * Output a TRACE level log message.
@@ -93,7 +92,7 @@ export default class Logger {
    */
   public trace(message) {
     this.beforeLog(this.log_levels.trace, message);
-  };
+  }
 
   /**
    * Output a WARN level log message.
@@ -106,7 +105,7 @@ export default class Logger {
    */
   public warn(message) {
     this.beforeLog(this.log_levels.warn, message);
-  };
+  }
 
   public beforeLog(logMethodLevelDefinition, message) {
     if (!this.configs.enabled) {
