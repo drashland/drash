@@ -146,7 +146,7 @@ export default class Response extends Drash.Http.Response {
    *
    * Send a response to the client.
    */
-  public send(): void {
+  public send(): any {
     let body;
 
     switch (this.headers.get("Content-Type")) {
