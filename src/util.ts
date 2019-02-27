@@ -1,6 +1,19 @@
 export class FileCreator {
-  static httpResources(pathToResources: string) {
+  static CONFIG = {
+    log_enabled: false
+  };
+
+  static log = function(message) {
+    if (FileCreator.CONFIG.log_enabled) {
+      console.log(message);
+    }
+  };
+
+  static httpResources(pathToResources: string, saveFileAs?: string) {
     let filename = `${pathToResources}/.drash_http_resources.ts`;
+    if (saveFileAs) {
+      filename = saveFileAs;
+    }
     const resources = Deno.readDirSync(pathToResources);
 
     let imports = "";
@@ -23,13 +36,13 @@ export class FileCreator {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(imports + exports);
-    console.log(
+    FileCreator.log(
       `\nWriting HTTP resources file "${filename}" with the following content:`
     );
-    console.log(imports + exports);
+    FileCreator.log(imports + exports);
     Deno.writeFileSync(filename, data);
-    console.log(`\nFile ${filename} created!`);
-    console.log(
+    FileCreator.log(`\nFile ${filename} created!`);
+    FileCreator.log(
       `\nMake sure to add the following to your project:\n    import resources from "${filename}";`
     );
   }

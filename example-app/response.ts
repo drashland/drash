@@ -1,7 +1,7 @@
 import Drash from "../mod.ts";
 
 export default class Response extends Drash.Http.Response {
-  public send(): void {
+  public send(): any {
     let body;
 
     switch (this.headers.get("Content-Type")) {
@@ -37,12 +37,6 @@ export default class Response extends Drash.Http.Response {
         body = this.body;
         break;
     }
-
-    console.log(
-      `Sending response. Content-Type: ${this.headers.get(
-        "Content-Type"
-      )}. Status: ${this.getStatusMessage()}.`
-    );
 
     this.request.respond({
       status: this.status_code,
