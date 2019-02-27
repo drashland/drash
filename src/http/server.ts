@@ -31,6 +31,10 @@ export default class Server {
 
     if (configs.logger) {
       this.logger = configs.logger;
+    } else {
+    this.logger = new Drash.Loggers.ConsoleLogger({
+      enabled: false,
+    });
     }
 
     this.configs = configs;
@@ -130,7 +134,7 @@ export default class Server {
         `Sending response. Content-Type: ${response.headers.get(
           "Content-Type"
         )}. Status: ${
-          Drash.Dictionaries.HttpStatusCodes[response.status_codes]
+          Drash.Dictionaries.HttpStatusCodes[response.status_code]
             .response_message
         }.`
       );
