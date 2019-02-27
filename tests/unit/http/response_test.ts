@@ -1,8 +1,7 @@
 import members from "../../members.ts";
 
 let server = new members.Drash.Http.Server({});
-let request = members.mockRequest();
-request = members.Drash.Services.HttpService.hydrateHttpRequest(request, {
+let request = members.mockRequest("/", "get", {
   headers: {
     "Response-Content-Type-Default": "application/json"
   }

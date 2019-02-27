@@ -5,5 +5,4 @@ install:
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
-  # - deno tests/setup.ts --allow-write
   - deno tests/test.ts

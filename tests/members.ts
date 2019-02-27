@@ -6,14 +6,17 @@ const decoder = new TextDecoder("utf-8");
 let mockRequest = function mockRequest(
   url = "/",
   method = "get",
-  headers?: any
-) {
+  headers?: any,
+  hydrate = true
+): any {
   let request = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
-  for (let key in headers) {
-    request.headers.set(key, headers[key]);
+  if (hydrate) {
+    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+      headers: headers
+    });
   }
   return request;
 };

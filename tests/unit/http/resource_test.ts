@@ -12,7 +12,6 @@ let server = new members.Drash.Http.Server({
 });
 
 let request = members.mockRequest();
-request = members.Drash.Services.HttpService.hydrateHttpRequest(request);
 let response = new members.Drash.Http.Response(request);
 
 let resource = new MyResource(request, response, server);
