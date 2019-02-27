@@ -1,6 +1,6 @@
 ![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest) [![Build Status](https://travis-ci.org/crookse/deno-drash.svg?branch=master)](https://travis-ci.org/crookse/deno-drash)
 
-`import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";`
+`import Drash from "https://deno.land/x/deno-drash/mod.ts";`
 
 # Drash
 
@@ -50,7 +50,7 @@ $ cd app
 **File: `app/home_resource.ts`**
 
 ```typescript
-import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
+import Drash from "https://deno.land/x/deno-drash/mod.ts";
 
 /** Define an HTTP resource that handles HTTP requests to the / URI */
 export default class HomeResource extends Drash.Http.Resource {
@@ -92,7 +92,7 @@ _Note: The `response_output` config tells your Drash server what content type to
 **File: `app/app.ts`**
 
 ```typescript
-import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
+import Drash from "https://deno.land/x/deno-drash/mod.ts";
 import HomeResource from "./home_resource.ts";
 
 let server = new Drash.Http.Server({
@@ -139,7 +139,7 @@ _Note: The following steps assume you're using the example code above._
 **File: `app/response.ts`**
 
 ```typescript
-import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
+import Drash from "https://deno.land/x/deno-drash/mod.ts";
 
 /** Response handles sending a response to the client making the HTTP request. */
 export default class Response extends Drash.Http.Response {
@@ -199,7 +199,7 @@ export default class Response extends Drash.Http.Response {
 **File: `app/app.ts`**
 
 ```diff
- import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";
+import Drash from "https://deno.land/x/deno-drash/mod.ts";
 +
 +import Response from "./response.ts";
 +Drash.Http.Response = Response;
