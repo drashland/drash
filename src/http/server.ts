@@ -32,9 +32,9 @@ export default class Server {
     if (configs.logger) {
       this.logger = configs.logger;
     } else {
-    this.logger = new Drash.Loggers.ConsoleLogger({
-      enabled: false,
-    });
+      this.logger = new Drash.Loggers.ConsoleLogger({
+        enabled: false
+      });
     }
 
     this.configs = configs;
