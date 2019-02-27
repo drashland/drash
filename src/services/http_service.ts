@@ -5,7 +5,7 @@ import { ServerRequest } from "https://deno.land/x/http/server.ts";
  * @param ServerRequest request
  *     The request object.
  */
-export function hydrateHttpRequest(request, options?: any): ServerRequest {
+export function hydrateHttpRequest(request, options?) {
   if (options) {
     if (options.headers) {
       for (let key in options.headers) {
@@ -25,7 +25,7 @@ export function hydrateHttpRequest(request, options?: any): ServerRequest {
  * @param ServerRequest request
  *     The request object.
  */
-export function getHttpRequestUrlQueryParams(request): any {
+export function getHttpRequestUrlQueryParams(request) {
   let queryParams = {};
 
   try {
