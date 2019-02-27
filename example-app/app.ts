@@ -1,7 +1,7 @@
 import Drash from "../mod.ts";
 import Response from "./response.ts";
-import Homeresource from "./home_resource.ts";
-import UsersResource from "./users_resource.ts";
+import HomeResource from "./resources/home_resource.ts";
+import UsersResource from "./resources/users_resource.ts";
 
 // Drash.Http.Response = Response;
 
