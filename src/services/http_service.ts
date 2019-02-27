@@ -1,4 +1,11 @@
-export function hydrateHttpRequest(request: any, options?: any): any {
+import { ServerRequest } from "https://deno.land/x/http/server.ts";
+/**
+ * Hydrate the request with data that is useful for the Drash.Http.Server class.
+ *
+ * @param ServerRequest request
+ *     The request object.
+ */
+export function hydrateHttpRequest(request, options?: any): ServerRequest {
   if (options) {
     if (options.headers) {
       for (let key in options.headers) {
@@ -18,7 +25,7 @@ export function hydrateHttpRequest(request: any, options?: any): any {
  * @param ServerRequest request
  *     The request object.
  */
-export function getHttpRequestUrlQueryParams(request: any): any {
+export function getHttpRequestUrlQueryParams(request): any {
   let queryParams = {};
 
   try {
@@ -38,8 +45,7 @@ export function getHttpRequestUrlQueryParams(request: any): any {
       kvpString = kvpString.split("=");
       queryParams[kvpString[0]] = kvpString[1];
     });
-  } catch (error) {
-  }
+  } catch (error) {}
 
   return queryParams;
 }

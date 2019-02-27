@@ -108,7 +108,7 @@ export default class Response {
   }
 
   protected getHeaderContentType(): string {
-    let contentType = this.request.headers.get('Response-Content-Type-Default');
+    let contentType = this.request.headers.get("Response-Content-Type-Default");
 
     // Check the request's headers to see if `response-content-type: {content-type}` has been specified
     contentType = this.request.headers.get("Response-Content-Type")

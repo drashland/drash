@@ -201,9 +201,7 @@ export default class Server {
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.log("/favicon.ico requested.");
-      this.log(
-        "All future log messages for this request will be muted."
-      );
+      this.log("All future log messages for this request will be muted.");
     }
     let response = {
       status: 200,
@@ -220,7 +218,7 @@ export default class Server {
     if (this.configs && this.configs.log.enabled) {
       console.log(message);
     }
-  };
+  }
 
   /**
    * Run the Deno server.
