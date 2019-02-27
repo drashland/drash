@@ -8,9 +8,10 @@ let server1 = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "application/json",
   resources: resources,
-  log: {
-    enabled: true
-  }
+  logger: new Drash.Loggers.ConsoleLogger({
+    enabled: true,
+    level: "info"
+  })
 });
 
 server1.run();
