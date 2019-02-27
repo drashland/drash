@@ -1,17 +1,18 @@
 import Drash from "../mod.ts";
 import Response from "./response.ts";
-import resources from "/var/www/deno-drash/example-app/resources/.drash_http_resources.ts";
+import Homeresource from "./home_resource.ts";
+import UsersResource from "./users_resource.ts";
 
 // Drash.Http.Response = Response;
 
-let server1 = new Drash.Http.Server({
+let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "application/json",
-  resources: resources,
+  resources: [HomeResource, UsersResource],
   logger: new Drash.Loggers.ConsoleLogger({
     enabled: true,
     level: "info"
   })
 });
 
-server1.run();
+server.run();
