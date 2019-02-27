@@ -1,7 +1,7 @@
 import Drash from "../mod.ts";
 
 export default class Response extends Drash.Http.Response {
-  public send(): void|string {
+  public send(): any {
     let body;
 
     switch (this.headers.get("Content-Type")) {

@@ -56,16 +56,19 @@ export default class Response {
   /**
    * Send the response to the client making the request.
    *
-   * @return string|void
+   * @return any
    */
-  public send(): void {
+  public send(): any {
     let body = this.generateResponse();
-
-    this.request.respond({
+    let output = {
       status: this.status_code,
       headers: this.headers,
       body: new TextEncoder().encode(body)
-    });
+    };
+
+    this.request.respond(output);
+
+    return output;
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////

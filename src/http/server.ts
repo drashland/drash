@@ -26,7 +26,7 @@ export default class Server {
    *
    * @param configs
    */
-  constructor(configs: any) {
+  constructor(configs?: any) {
     if (!configs.response_output) {
       configs.response_output = this.configs_defaults.default_response_content_type;
     }
@@ -91,7 +91,7 @@ export default class Server {
    *
    * @param Server.ServerRequest request
    */
-  public handleHttpRequest(request): void {
+  public handleHttpRequest(request): any {
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }
@@ -100,7 +100,11 @@ export default class Server {
       `Request received: ${request.method.toUpperCase()} ${request.url}`
     );
 
-    request.url_query_params = this.getRequestQueryParams(request);
+    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+      headers: {
+        "Response-Content-Type-Default": this.configs.response_output
+      }
+    });
 
     let resource = this.getResourceClass(request);
 
@@ -112,7 +116,6 @@ export default class Server {
       );
     }
 
-    request.headers.set("Response-Content-Type-Default", this.configs.response_output);
     resource = new resource(request, new Drash.Http.Response(request), this);
 
     try {
@@ -127,20 +130,20 @@ export default class Server {
           "Content-Type"
         )}. Status: ${response.getStatusMessage()}.`
       );
-      response.send();
+      return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely due to the HTTP
       // method not being defined in the resource class; therefore, the method is not allowed. In
       // this case, we send a 405 (Method Not Allowed) response.
       if (resource && !error.code) {
-        this.handleHttpRequestError(
+        return this.handleHttpRequestError(
           request,
           new Drash.Exceptions.HttpException(405)
         );
-        } else {
-          // All other errors go here
-          this.handleHttpRequestError(request, error);
-        }
+
+        // All other errors go here
+        return this.handleHttpRequestError(request, error);
+      }
     }
   }
 
@@ -152,7 +155,7 @@ export default class Server {
    * @param request
    * @param error
    */
-  public handleHttpRequestError(request, error): void {
+  public handleHttpRequestError(request, error): any {
     this.log(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -184,7 +187,7 @@ export default class Server {
       )}. Status: ${response.getStatusMessage()}.`
     );
 
-    response.send();
+    return response.send();
   }
 
   /**
@@ -231,35 +234,6 @@ export default class Server {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
-
-  /**
-   * Get the request's query params
-   *
-   * @param Server.ServerRequest request
-   *     The request object.
-   */
-  protected getRequestQueryParams(request): any {
-    let queryParams = {};
-
-    let queryParamsString = request.url.split("?")[1];
-
-    if (!queryParamsString) {
-      return queryParams;
-    }
-
-    if (queryParamsString.indexOf("#") != -1) {
-      queryParamsString = queryParamsString.split("#")[0];
-    }
-
-    let queryParamsExploded = queryParamsString.split("&");
-
-    queryParamsExploded.forEach(kvpString => {
-      kvpString = kvpString.split("=");
-      queryParams[kvpString[0]] = kvpString[1];
-    });
-
-    return queryParams;
-  }
 
   /**
    * Get the resource class.

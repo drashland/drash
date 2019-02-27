@@ -7,10 +7,15 @@ class MyResource extends members.Drash.Http.Resource {
   }
 }
 
+let server = new members.Drash.Http.Server({
+  response_output: "text/html"
+});
+
 let request = members.mockRequest();
+request = members.Drash.Services.HttpService.hydrateHttpRequest(request);
 let response = new members.Drash.Http.Response(request);
 
-let resource = new MyResource(request, response);
+let resource = new MyResource(request, response, server);
 response = resource.GET();
 let actual = response.generateResponse();
 

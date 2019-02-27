@@ -1,6 +1,15 @@
 import members from "../../members.ts";
 
-let response = new members.Drash.Http.Response(members.mockRequest());
+let server = new members.Drash.Http.Server({
+});
+let request = members.mockRequest();
+request = members.Drash.Services.HttpService.hydrateHttpRequest(request, {
+  headers: {
+  "Response-Content-Type-Default": "application/json"
+  }
+});
+
+let response = new members.Drash.Http.Response(request);
 response.body = "This is my body";
 let responseFormatted;
 
