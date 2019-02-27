@@ -117,6 +117,7 @@ export default class Server {
     }
 
     resource = new resource(request, new Drash.Http.Response(request), this);
+    let response;
 
     try {
       this.logger.debug(
@@ -124,12 +125,12 @@ export default class Server {
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
-      let response = resource[request.method.toUpperCase()]();
+      response = resource[request.method.toUpperCase()]();
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
           "Content-Type"
         )}. Status: ${
-          Drash.Dictionaries.HttpStatusCodes[response.status_code]
+          Drash.Dictionaries.HttpStatusCodes[response.status_codes]
             .response_message
         }.`
       );
@@ -139,14 +140,20 @@ export default class Server {
       // method not being defined in the resource class; therefore, the method is not allowed. In
       // this case, we send a 405 (Method Not Allowed) response.
       if (resource && !error.code) {
+        if (!response) {
+          return this.handleHttpRequestError(
+            request,
+            new Drash.Exceptions.HttpException(405)
+          );
+        }
         return this.handleHttpRequestError(
           request,
-          new Drash.Exceptions.HttpException(405)
+          new Drash.Exceptions.HttpException(500)
         );
-
-        // All other errors go here
-        return this.handleHttpRequestError(request, error);
       }
+
+      // All other errors go here
+      return this.handleHttpRequestError(request, error);
     }
   }
 
@@ -175,6 +182,9 @@ export default class Server {
         break;
       case 405:
         response.body = `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+        break;
+      case 500:
+        response.body = `Something went terribly wrong.`; // eslint-disable-line
         break;
       default:
         error.code = 400;
