@@ -2,29 +2,21 @@ import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
 
 export default class Server {
-  static CONFIGS = {
+  static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
+  static REGEX_URI_REPLACEMENT = "([^/]+)";
+
+  protected configs_defaults = {
     address: "127.0.0.1:8000",
     default_response_content_type: "application/json",
     log: {
       enabled: false
     }
   };
-  static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
-  static REGEX_URI_REPLACEMENT = "([^/]+)";
-
   protected configs;
-  protected deno_server = null;
+  protected deno_server;
   protected resources = {};
   protected trackers = {
     requested_favicon: false
-  };
-
-  static log = {
-    debug: function(message) {
-      if (Server.CONFIGS.log.enabled) {
-        console.log(message);
-      }
-    }
   };
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
@@ -35,22 +27,21 @@ export default class Server {
    * @param configs
    */
   constructor(configs: any) {
+    if (!configs.response_output) {
+      configs.response_output = this.configs_defaults.default_response_content_type;
+    }
+
+    if (!configs.log) {
+      configs.log = this.configs_defaults.log;
+    }
+
     this.configs = configs;
 
-    if (this.configs.response_output) {
-      Server.CONFIGS.default_response_content_type = this.configs.response_output;
-    }
-
-    if (this.configs.resources) {
-      this.configs.resources.forEach(resource => {
+    if (configs.resources) {
+      configs.resources.forEach(resource => {
         this.addHttpResource(resource);
       });
-    }
-
-    if (this.configs.log) {
-      if (this.configs.log.enabled === true) {
-        Server.CONFIGS.log.enabled = this.configs.log.enabled;
-      }
+      delete this.configs.resources;
     }
   }
 
@@ -85,14 +76,14 @@ export default class Server {
         };
         resourceClass.paths[index] = pathObj;
       } catch (error) {
-        Server.log.debug(error);
+        this.log(error);
       }
     });
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
 
-    Server.log.debug(`HTTP resource "${resourceClass.name}" added.`);
+    this.log(`HTTP resource "${resourceClass.name}" added.`);
   }
 
   /**
@@ -100,18 +91,18 @@ export default class Server {
    *
    * @param Server.ServerRequest request
    */
-  public handleHttpRequest(request): string {
+  public handleHttpRequest(request): void {
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }
 
-    Server.log.debug(
+    this.log(
       `Request received: ${request.method.toUpperCase()} ${request.url}`
     );
 
     request.url_query_params = this.getRequestQueryParams(request);
 
-    let resource = this.getResource(request, new Drash.Http.Response(request));
+    let resource = this.getResourceClass(request);
 
     // No resource? Send a 404 (Not Found) response.
     if (!resource) {
@@ -121,27 +112,35 @@ export default class Server {
       );
     }
 
+    request.headers.set("Response-Content-Type-Default", this.configs.response_output);
+    resource = new resource(request, new Drash.Http.Response(request), this);
+
     try {
-      Server.log.debug(
+      this.log(
         `Calling ${
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
       let response = resource[request.method.toUpperCase()]();
-      return response.send();
+      this.log(
+        `Sending response. Content-Type: ${response.headers.get(
+          "Content-Type"
+        )}. Status: ${response.getStatusMessage()}.`
+      );
+      response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely due to the HTTP
       // method not being defined in the resource class; therefore, the method is not allowed. In
       // this case, we send a 405 (Method Not Allowed) response.
       if (resource && !error.code) {
-        return this.handleHttpRequestError(
+        this.handleHttpRequestError(
           request,
           new Drash.Exceptions.HttpException(405)
         );
-      }
-
-      // All other errors go here
-      return this.handleHttpRequestError(request, error);
+        } else {
+          // All other errors go here
+          this.handleHttpRequestError(request, error);
+        }
     }
   }
 
@@ -153,12 +152,12 @@ export default class Server {
    * @param request
    * @param error
    */
-  public handleHttpRequestError(request, error): string {
-    Server.log.debug(
+  public handleHttpRequestError(request, error): void {
+    this.log(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
-    Server.log.debug("Stack trace below:");
-    Server.log.debug(error.stack);
+    this.log("Stack trace below:");
+    this.log(error.stack);
 
     let requestUrl = request.url.split("?")[0];
 
@@ -179,7 +178,13 @@ export default class Server {
 
     response.status_code = error.code;
 
-    return response.send();
+    this.log(
+      `Sending response. Content-Type: ${response.headers.get(
+        "Content-Type"
+      )}. Status: ${response.getStatusMessage()}.`
+    );
+
+    response.send();
   }
 
   /**
@@ -192,8 +197,8 @@ export default class Server {
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
-      Server.log.debug("/favicon.ico requested.");
-      Server.log.debug(
+      this.log("/favicon.ico requested.");
+      this.log(
         "All future log messages for this request will be muted."
       );
     }
@@ -206,11 +211,20 @@ export default class Server {
   }
 
   /**
+   * Log a message.
+   */
+  public log(message) {
+    if (this.configs && this.configs.log.enabled) {
+      console.log(message);
+    }
+  };
+
+  /**
    * Run the Deno server.
    */
   public async run(): Promise<void> {
-    Server.log.debug(`Deno server started at ${Server.CONFIGS.address}.`);
-    this.deno_server = serve(Server.CONFIGS.address);
+    this.log(`Deno server started at ${this.configs.address}.`);
+    this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       this.handleHttpRequest(request);
     }
@@ -245,24 +259,6 @@ export default class Server {
     });
 
     return queryParams;
-  }
-
-  /**
-   * Get the resource based on the request.
-   *
-   * @param ServerRequest request
-   *     The request object from the Deno server.
-   *
-   * @return Drash.Http.Resource|undefined
-   */
-  protected getResource(request, response) {
-    let resource = this.getResourceClass(request);
-
-    if (resource) {
-      resource = new resource(request, response);
-    }
-
-    return resource;
   }
 
   /**

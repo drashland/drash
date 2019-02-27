@@ -4,8 +4,8 @@ import resources from "/var/www/deno-drash/example-app/resources/.drash_http_res
 
 Drash.Http.Response = Response;
 
-let server1 = new Drash.Http.Server({
-  address: "localhost:8000",
+let server2 = new Drash.Http.Server({
+  address: "localhost:8001",
   response_output: "application/json",
   resources: resources,
   log: {
@@ -13,4 +13,4 @@ let server1 = new Drash.Http.Server({
   }
 });
 
-server1.run();
+server2.run();

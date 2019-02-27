@@ -1,6 +1,7 @@
 export default class Resource {
   protected request;
   protected response;
+  protected server;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
@@ -9,8 +10,9 @@ export default class Resource {
    *
    * @param ServerRequest request
    */
-  constructor(request, response) {
+  constructor(request, response, server) {
     this.request = request;
     this.response = response;
+    this.server = server;
   }
 }
