@@ -182,17 +182,25 @@ export default class Server {
 
     switch (error.code) {
       case 404:
-        response.body = `The requested URL '${requestUrl}' was not found on this server.`;
+        response.body = error.message
+          ? error.message
+          : `The requested URL '${requestUrl}' was not found on this server.`;
         break;
       case 405:
-        response.body = `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+        response.body = error.message
+          ? error.message
+          : `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
         break;
       case 500:
-        response.body = `Something went terribly wrong.`; // eslint-disable-line
+        response.body = error.message
+          ? error.message
+          : `Something went terribly wrong.`; // eslint-disable-line
         break;
       default:
         error.code = 400;
-        response.body = "Something went wrong.";
+        response.body = error.message
+          ? error.message
+          : "Something went wrong.";
         break;
     }
 
