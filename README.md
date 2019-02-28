@@ -219,8 +219,12 @@ import Drash from "https://deno.land/x/deno-drash/mod.ts";
 
 ## Roadmap
 
-- [ ] Tagged file and console logging
+- [ ] File logging
+- [ ] Tagged logging
 - [ ] Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
-- [ ] Provide pathname of resources instead adding imported files in the `resources` config
+- [ ] `Drash.addApplication(name: string, application: any)` so that any application can be used globally in a Drash project
+- [ ] Middleware
+- [ ] How To: Adding middleware
 - [ ] How To: Grabbing different representations of a resource
-- [ ] CI process
+- [ ] How To: Creating an SPA
+- [ ] How To: Creating GitHub Pages
