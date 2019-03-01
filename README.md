@@ -25,9 +25,11 @@ class HomeResource extends Drash.Http.Resource {
   static paths = ["/"]
   public GET() {
     this.response.body = "GET request received!";
+    return this.response;
   }
   public POST() {
     this.response.body = "POST request received!";
+    return this.response;
   }
 }
 
@@ -50,10 +52,8 @@ $ deno app.ts --allow-net
 
 _Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
 
-- `GET localhost:8000/`
-- `GET localhost:8000?name=Thor`
+- `GET  localhost:8000/`
 - `POST localhost:8000/`
-- `POST localhost:8000?name=Hulk`
 
 ## Features
 
