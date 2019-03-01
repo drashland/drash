@@ -34,11 +34,7 @@ class HomeResource extends Drash.Http.Resource {
 let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
-  resources: [HomeResource],
-  logger: new Drash.Loggers.ConsoleLogger({
-    enabled: true,
-    level: "debug"
-  })
+  resources: [HomeResource]
 });
 
 server.run();
@@ -177,11 +173,7 @@ class HomeResource extends Drash.Http.Resource {
 let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
-  resources: [HomeResource],
-  logger: new Drash.Loggers.ConsoleLogger({
-    enabled: true,
-    level: "debug"
-  })
+  resources: [HomeResource]
 });
 
 server.run();
