@@ -1,6 +1,7 @@
 // Dictionaries
 import HttpStatusCodes from "./src/dictionaries/http_status_codes.ts";
 import LogLevels from "./src/dictionaries/log_levels.ts";
+import MimeDb from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
 // Exceptions
 import HttpException from "./src/exceptions/http_exception.ts";
 // Http
@@ -18,7 +19,8 @@ import * as Util from "./src/util.ts";
 export default {
   Dictionaries: {
     HttpStatusCodes: HttpStatusCodes,
-    LogLevels: LogLevels
+    LogLevels: LogLevels,
+    MimeDb: MimeDb
   },
   Exceptions: {
     HttpException: HttpException

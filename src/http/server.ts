@@ -13,6 +13,7 @@ export default class Server {
   protected deno_server;
   protected logger;
   protected resources = {};
+  protected static_paths = [];
   protected trackers = {
     requested_favicon: false
   };
@@ -45,6 +46,16 @@ export default class Server {
       });
       delete this.configs.resources;
     }
+
+    if (configs.static_paths) {
+      configs.static_paths.forEach((path) => {
+        this.addStaticPath(path);
+      });
+    }
+  }
+
+  public addStaticPath(path) {
+    this.static_paths.push(path);
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
@@ -90,12 +101,55 @@ export default class Server {
     this.logger.debug(`HTTP resource "${resourceClass.name}" added.`);
   }
 
+  public getMimeType(request) {
+    let requestUrl = request.url.split("?")[0];
+    requestUrl = requestUrl.split(".");
+    requestUrl = requestUrl[requestUrl.length - 1];
+    let contentType = null;
+
+    for (let key in Drash.Dictionaries.MimeDb) {
+      if (!contentType) {
+        if (Drash.Dictionaries.MimeDb[key].extensions) {
+          for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
+            if (requestUrl == Drash.Dictionaries.MimeDb[key].extensions[index]) {
+              contentType = key;
+            }
+          }
+        }
+      }
+    }
+
+    return contentType;
+  }
+
+  public getStaticPathData(request) {
+    let requestUrl = `/${request.url.split("/")[1]}`;
+
+    if (this.static_paths.indexOf(requestUrl) != -1) {
+      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+        headers: {
+          "Content-Type-Static": true,
+          "Response-Content-Type": this.getMimeType(request)
+        }
+      });
+      return true;
+    }
+
+    return false;
+  }
+
   /**
    * Handle an HTTP request from the Deno server.
    *
    * @param ServerRequest request
    */
   public handleHttpRequest(request): any {
+    let staticPathData = this.getStaticPathData(request);
+    if (staticPathData) {
+      let staticResponse = new Drash.Http.Response(request);
+      return staticResponse.send();
+    }
+
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }

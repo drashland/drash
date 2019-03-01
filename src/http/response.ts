@@ -24,20 +24,26 @@ export default class Response {
    * @return string
    */
   public generateResponse(): string {
-    switch (this.headers.get("Content-Type")) {
-      case "application/json":
-        this.body_generated = this.generateJsonResponse();
-        break;
-      case "text/html":
-        this.body_generated = this.generateHtmlResponse();
-        break;
-      case "application/xml":
-      case "text/xml":
-        this.body_generated = this.generateXmlResponse();
-        break;
-      default:
-        this.headers.set("Content-Type", "application/json");
-        return this.generateResponse();
+    if (this.request.headers.get("Content-Type-Static")) {
+      const file = this.request.url.split("?")[0];
+      const decoder = new TextDecoder("utf-8");
+      this.body_generated = decoder.decode(Deno.readFileSync(`./${file}`));
+    } else {
+      switch (this.headers.get("Content-Type")) {
+        case "application/json":
+          this.body_generated = this.generateJsonResponse();
+          break;
+        case "text/html":
+          this.body_generated = this.generateHtmlResponse();
+          break;
+        case "application/xml":
+        case "text/xml":
+          this.body_generated = this.generateXmlResponse();
+          break;
+        default:
+          this.headers.set("Content-Type", "application/json");
+          return this.generateResponse();
+      }
     }
 
     return this.body_generated;
