@@ -77,6 +77,27 @@ export default class Response {
     return output;
   }
 
+  /**
+   * Send the response of a "static asset" to the client making the request.
+   *
+   * @return any
+   */
+  public sendStatic(): any {
+    const file = this.request.url.split("?")[0];
+    const decoder = new TextDecoder("utf-8");
+    const contents = decoder.decode(Deno.readFileSync(`./${file}`));
+
+    let output = {
+      status: this.status_code,
+      headers: this.headers,
+      body: new TextEncoder().encode(contents)
+    };
+
+    this.request.respond(output);
+
+    return output;
+  }
+
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
   protected generateHtmlResponse(): string {

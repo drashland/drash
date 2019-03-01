@@ -101,27 +101,6 @@ export default class Server {
     this.logger.debug(`HTTP resource "${resourceClass.name}" added.`);
   }
 
-  public getMimeType(request) {
-    let requestUrl = request.url.split("?")[0];
-    requestUrl = requestUrl.split(".");
-    requestUrl = requestUrl[requestUrl.length - 1];
-    let contentType = null;
-
-    for (let key in Drash.Dictionaries.MimeDb) {
-      if (!contentType) {
-        if (Drash.Dictionaries.MimeDb[key].extensions) {
-          for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
-            if (requestUrl == Drash.Dictionaries.MimeDb[key].extensions[index]) {
-              contentType = key;
-            }
-          }
-        }
-      }
-    }
-
-    return contentType;
-  }
-
   public getStaticPathData(request) {
     let requestUrl = `/${request.url.split("/")[1]}`;
 
@@ -129,7 +108,7 @@ export default class Server {
       request = Drash.Services.HttpService.hydrateHttpRequest(request, {
         headers: {
           "Content-Type-Static": true,
-          "Response-Content-Type": this.getMimeType(request)
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(request.url, true)
         }
       });
       return true;
@@ -145,9 +124,18 @@ export default class Server {
    */
   public handleHttpRequest(request): any {
     let staticPathData = this.getStaticPathData(request);
+    let response;
+
     if (staticPathData) {
-      let staticResponse = new Drash.Http.Response(request);
-      return staticResponse.send();
+      try {
+        response = new Drash.Http.Response(request);
+        return response.sendStatic();
+      } catch (error) {
+        return this.handleHttpRequestError(
+          request,
+          new Drash.Exceptions.HttpException(404)
+        );
+      }
     }
 
     if (request.url == "/favicon.ico") {
@@ -175,7 +163,6 @@ export default class Server {
     }
 
     resource = new resource(request, new Drash.Http.Response(request), this);
-    let response;
 
     try {
       this.logger.debug(
@@ -235,6 +222,12 @@ export default class Server {
     let response = new Drash.Http.Response(request);
 
     switch (error.code) {
+      case 401:
+        error.code = 401;
+        response.body = error.message
+          ? error.message
+          : `The requested URL '${requestUrl} requires authentication.`;
+        break;
       case 404:
         response.body = error.message
           ? error.message
