@@ -10,9 +10,9 @@ Drash is a modular web app framework for [Deno](https://deno.land) based on [HTT
 
 Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using HTTP resources and content negotiation. Clients can make requests to any resource you create and can request any representation your resources allow (e.g., `application/json` format of the resource located at the `/user/1234` URI).
 
-_Documentation is [here](https://crookse.github.io/projects/deno-drash/), but still a work in progress._
+Documentation is [here](https://crookse.github.io/projects/deno-drash/), but still a work in progress.
 
-_Although this module is working, it is still very much under development. [Reporting of bugs](https://github.com/crookse/deno-drash/issues) is greatly appreciated._
+Although this module is working, it is still very much under development. [Reporting of bugs](https://github.com/crookse/deno-drash/issues) is greatly appreciated.
 
 ## Quickstart
 
