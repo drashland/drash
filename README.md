@@ -1,6 +1,8 @@
 ![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest) [![Build Status](https://travis-ci.org/crookse/deno-drash.svg?branch=master)](https://travis-ci.org/crookse/deno-drash)
 
-`import Drash from "https://deno.land/x/deno-drash/mod.ts";`
+`import Drash from "https://deno.land/x/drash/mod.ts";`
+
+`import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";`
 
 # Drash
 
@@ -9,6 +11,51 @@ Drash is a modular web app framework for [Deno](https://deno.land) based on HTTP
 Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Clients can make requests to any resource you create and can request any representation your resources allow (e.g., `application/json` format of the resource located at the `/user/1234` URI).
 
 Documentation is [here](https://crookse.github.io/projects/deno-drash/), but still a work in progress.
+
+## Quickstart
+
+#### Step 1 of 3: Create your `app.ts` file.
+
+```typescript
+import Drash from "https://deno.land/x/drash/mod.ts";
+
+class HomeResource extends Drash.Http.Resource {
+  static paths = ["/"]
+  public GET() {
+    this.response.body = "GET request received!";
+  }
+  public POST() {
+    this.response.body = "POST request received!";
+  }
+}
+
+let server = new Drash.Http.Server({
+  address: "localhost:8000",
+  response_output: "text/html",
+  resources: [HomeResource],
+  logger: new Drash.Loggers.ConsoleLogger({
+    enabled: true,
+    level: "debug"
+  })
+});
+
+server.run();
+```
+
+#### Step 2 of 3: Run your `app.ts` file.
+
+```shell
+$ deno app.ts --allow-net
+```
+
+#### Step 3 of 3: Make the following HTTP requests:
+
+_Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
+
+- `GET localhost:8000/`
+- `GET localhost:8000?name=Thor`
+- `POST localhost:8000/`
+- `POST localhost:8000?name=Hulk`
 
 ## Features
 
@@ -32,93 +79,6 @@ Can't have path params and not have request URL query params. Resources can acce
 
 If you want your resource class to allow `GET` requests, then give it a `GET()` method. If you want your resource class to allow `POST` requests, then give it a `POST()` method. If you don't want your resource class to allow `DELETE` requests, then don't give your resource class a `DELETE()` method. Pretty simple ideology and very semantic.
 
-## Quickstart
-
-### Step 1 of 6: Install Deno
-
-Installation instructions can be found here: [https://deno.land/](https://deno.land/)
-
-### Step 2 of 6: Create Your App Directory
-
-```
-$ mkdir app
-$ cd app
-```
-
-### Step 3 of 6: Create An HTTP Resource File
-
-**File: `app/home_resource.ts`**
-
-```typescript
-import Drash from "https://deno.land/x/deno-drash/mod.ts";
-
-/** Define an HTTP resource that handles HTTP requests to the / URI */
-export default class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"];
-
-  /**
-   * Handle GET requests.
-   */
-  public GET() {
-    this.response.body = `Hello, ${
-      this.request.url_query_params.name
-        ? this.request.url_query_params.name
-        : "world"
-    }!`;
-
-    return this.response;
-  }
-
-  /**
-   * Handle POSTS requests.
-   */
-  public POST() {
-    this.response.body = "POST request received!";
-    if (this.request.url_query_params.name) {
-      this.response.body = `Hello, ${
-        this.request.url_query_params.name
-      }! Your POST request has been received!`;
-    }
-
-    return this.response;
-  }
-}
-```
-
-### Step 4 of 6: Create Your App File
-
-_Note: The `response_output` config tells your Drash server what content type to send by default. If you don't specify this value, then Drash will automatically set it to `application/json`. You can change the `response_output` config to `application/json`, `text/html`, `application/xml`, or `text/xml`. If you want your Drash server to handle more content types, then see [Adding More Content Types](https://github.com/crookse/deno-drash#adding-more-content-types) below._
-
-**File: `app/app.ts`**
-
-```typescript
-import Drash from "https://deno.land/x/deno-drash/mod.ts";
-import HomeResource from "./home_resource.ts";
-
-let server = new Drash.Http.Server({
-  address: "localhost:8000",
-  response_output: "application/json",
-  resources: [HomeResource]
-});
-
-server.run();
-```
-
-### Step 5 of 6: Run Your App
-
-```
-$ deno app.ts --allow-net
-```
-
-### Step 6 of 6: Make The Following HTTP Requests
-
-_Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
-
-- GET `localhost:8000/`
-- GET `localhost:8000?name=Thor`
-- POST `localhost:8000/`
-- POST `localhost:8000?name=Hulk`
-
 ---
 
 ## Adding More Content Types
@@ -134,12 +94,10 @@ If you want your Drash server to handle more content types, then you will need t
 
 _Note: The following steps assume you're using the example code above._
 
-### Step 1 of 2: Create Your `Response` Class.
-
-**File: `app/response.ts`**
+#### Step 1 of 2: Create your `response.ts` file.
 
 ```typescript
-import Drash from "https://deno.land/x/deno-drash/mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts";
 
 /** Response handles sending a response to the client making the HTTP request. */
 export default class Response extends Drash.Http.Response {
@@ -194,25 +152,35 @@ export default class Response extends Drash.Http.Response {
 }
 ```
 
-### Step 2 of 2: Modify Your App File
-
-**File: `app/app.ts`**
+#### Step 2 of 2: Modify your `app.ts` file.
 
 ```diff
-import Drash from "https://deno.land/x/deno-drash/mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts";
 +
 +import Response from "./response.ts";
 +Drash.Http.Response = Response;
 +
- import HomeResource from "./home_resource.ts";
+class HomeResource extends Drash.Http.Resource {
+  static paths = ["/"]
+  public GET() {
+    this.response.body = "GET request received!";
+  }
+  public POST() {
+    this.response.body = "POST request received!";
+  }
+}
 
- let server = new Drash.Http.Server({
-   address: "localhost:8000",
-   response_output: "application/json",
-   resources: [HomeResource]
- });
+let server = new Drash.Http.Server({
+  address: "localhost:8000",
+  response_output: "text/html",
+  resources: [HomeResource],
+  logger: new Drash.Loggers.ConsoleLogger({
+    enabled: true,
+    level: "debug"
+  })
+});
 
- server.run();
+server.run();
 ```
 
 ---
