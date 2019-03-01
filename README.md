@@ -185,10 +185,8 @@ server.run();
 
 - [ ] File logging
 - [ ] Tagged logging
-- [ ] Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
-- [ ] `Drash.addApplication(name: string, application: any)` so that any application can be used globally in a Drash project
+- [ ] Full Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
+- [ ] `Drash.addApplication(name: string, application: any)` so that any application can be used globally
 - [ ] Middleware
 - [ ] How To: Adding middleware
-- [ ] How To: Grabbing different representations of a resource
-- [ ] How To: Creating an SPA
-- [ ] How To: Creating GitHub Pages
+- [ ] Cache static files
