@@ -101,20 +101,24 @@ _Note: The following steps assume you're using the example code above._
 ```typescript
 import Drash from "https://deno.land/x/drash/mod.ts";
 
-/** Response handles sending a response to the client making the HTTP request. */
+/**
+ * Export the `Response` class that `Drash.Http.Server` will use.
+ *
+ * This class will be used to replace `Drash.Http.Response` before `Drash.Http.Server` is created.
+ */
 export default class Response extends Drash.Http.Response {
   /**
-   * @overrides `Drash.Http.Response.send()`
-   *
    * Send a response to the client.
+   * @return any
    */
   public send(): any {
     let body;
 
     switch (this.headers.get("Content-Type")) {
+
       // Handle HTML
       case "text/html":
-        body = this.body;
+        body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10">${this.body}</body></html>`;
         break;
 
       // Handle JSON
@@ -125,7 +129,7 @@ export default class Response extends Drash.Http.Response {
       // Handle PDF
       case "application/pdf":
         this.headers.set("Content-Type", "text/html");
-        body = `<html><body style="height: 100%; width: 100%; overflow: hidden; margin: 0px; background-color: rgb(82, 86, 89);"><embed width="100%" height="100%" name="plugin" id="plugin" src="https://www.adobe.com/content/dam/acom/en/security/pdfs/AdobeIdentityServices.pdf" type="application/pdf" internalinstanceid="19"></body></html>`;
+        body = `<html><body style="height: 100%; width: 100%; overflow: hidden; margin: 0px; background-color: rgb(82, 86, 89);"><embed width="100%" height="100%" name="plugin" id="plugin" src="https://crookse.github.io/public/files/example.pdf" type="application/pdf" internalinstanceid="19"></body></html>`;
         break;
 
       // Handle XML
@@ -134,14 +138,10 @@ export default class Response extends Drash.Http.Response {
         body = `<body>${this.body}</body>`;
         break;
 
-      // Handle plain text
+      // Handle plain text and also default to this
       case "text/plain":
-        body = this.body;
-        break;
-
-      // Default to this
       default:
-        body = this.body;
+        body = `${this.body}`;
         break;
     }
 
@@ -152,6 +152,8 @@ export default class Response extends Drash.Http.Response {
     });
   }
 }
+
+
 ```
 
 #### Step 2 of 2: Modify your `app.ts` file.
