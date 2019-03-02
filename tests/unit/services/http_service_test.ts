@@ -35,3 +35,25 @@ members.test(function HttpService_getHttpRequestUrlQueryParams() {
     cmon_now: undefined
   });
 });
+
+members.test(function HttpService_getMimeType() {
+  let actual;
+
+  let data = {
+    ".js": "application/javascript",
+    ".html": "text/html",
+    ".json": "application/json",
+    "css": "text/css"
+  };
+
+  for (let extension in data) {
+    actual = members.Drash.Services.HttpService.getMimeType(`some/path/file.${extension}?some=param`, true);
+    members.assert.equal(actual, data[extension]);
+  
+    actual = members.Drash.Services.HttpService.getMimeType(`some/path/file.${extension}`, true);
+    members.assert.equal(actual, data[extension]);
+  
+    actual = members.Drash.Services.HttpService.getMimeType(`file.${extension}`);
+    members.assert.equal(actual, data[extension]);
+  }
+});

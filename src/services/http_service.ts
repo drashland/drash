@@ -63,9 +63,10 @@ export function getMimeType(file: any, fileIsUrl?: boolean) {
 
   if (fileIsUrl) {
     file = file.split("?")[0];
-    file = file.split(".");
-    file = file[file.length - 1];
   }
+
+  file = file.split(".");
+  file = file[file.length - 1];
 
   for (let key in Drash.Dictionaries.MimeDb) {
     if (!mimeType) {
