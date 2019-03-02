@@ -1,3 +1,5 @@
+// Deno
+import { env } from "deno";
 // Dictionaries
 import HttpStatusCodes from "./src/dictionaries/http_status_codes.ts";
 import LogLevels from "./src/dictionaries/log_levels.ts";
@@ -18,6 +20,7 @@ import * as Util from "./src/util.ts";
 
 function Drash(): any {
   return {
+    ENV: env(),
     Dictionaries: {
       HttpStatusCodes: HttpStatusCodes,
       LogLevels: LogLevels,
