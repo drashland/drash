@@ -16,8 +16,6 @@ import * as HttpService from "./src/services/http_service.ts";
 // Util
 import * as Util from "./src/util.ts";
 
-let ThirdParty = {};
-
 function Drash(): any {
   return {
     Dictionaries: {
