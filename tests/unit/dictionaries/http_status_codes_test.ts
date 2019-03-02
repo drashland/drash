@@ -318,6 +318,6 @@ let expected = {
   }
 };
 
-members.test(async function HttpStatusCodes() {
+members.test(function HttpStatusCodes() {
   members.assert.equal(members.Drash.Dictionaries.HttpStatusCodes, expected);
 });

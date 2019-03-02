@@ -13,6 +13,7 @@ export default class Server {
   protected deno_server;
   protected logger;
   protected resources = {};
+  protected static_paths = [];
   protected trackers = {
     requested_favicon: false
   };
@@ -45,6 +46,16 @@ export default class Server {
       });
       delete this.configs.resources;
     }
+
+    if (configs.static_paths) {
+      configs.static_paths.forEach((path) => {
+        this.addStaticPath(path);
+      });
+    }
+  }
+
+  public addStaticPath(path) {
+    this.static_paths.push(path);
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
@@ -90,12 +101,42 @@ export default class Server {
     this.logger.debug(`HTTP resource "${resourceClass.name}" added.`);
   }
 
+  public getStaticPathData(request) {
+    let requestUrl = `/${request.url.split("/")[1]}`;
+
+    if (this.static_paths.indexOf(requestUrl) != -1) {
+      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+        headers: {
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(request.url, true)
+        }
+      });
+      return true;
+    }
+
+    return false;
+  }
+
   /**
    * Handle an HTTP request from the Deno server.
    *
    * @param ServerRequest request
    */
   public handleHttpRequest(request): any {
+    let staticPathData = this.getStaticPathData(request);
+    let response;
+
+    if (staticPathData) {
+      try {
+        response = new Drash.Http.Response(request);
+        return response.sendStatic();
+      } catch (error) {
+        return this.handleHttpRequestError(
+          request,
+          new Drash.Exceptions.HttpException(404)
+        );
+      }
+    }
+
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }
@@ -121,7 +162,6 @@ export default class Server {
     }
 
     resource = new resource(request, new Drash.Http.Response(request), this);
-    let response;
 
     try {
       this.logger.debug(
@@ -181,18 +221,32 @@ export default class Server {
     let response = new Drash.Http.Response(request);
 
     switch (error.code) {
+      case 401:
+        error.code = 401;
+        response.body = error.message
+          ? error.message
+          : `The requested URL '${requestUrl} requires authentication.`;
+        break;
       case 404:
-        response.body = `The requested URL '${requestUrl}' was not found on this server.`;
+        response.body = error.message
+          ? error.message
+          : `The requested URL '${requestUrl}' was not found on this server.`;
         break;
       case 405:
-        response.body = `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+        response.body = error.message
+          ? error.message
+          : `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
         break;
       case 500:
-        response.body = `Something went terribly wrong.`; // eslint-disable-line
+        response.body = error.message
+          ? error.message
+          : `Something went terribly wrong.`; // eslint-disable-line
         break;
       default:
         error.code = 400;
-        response.body = "Something went wrong.";
+        response.body = error.message
+          ? error.message
+          : "Something went wrong.";
         break;
     }
 

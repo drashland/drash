@@ -1,4 +1,4 @@
-import { ServerRequest } from "https://deno.land/x/http/server.ts";
+import Drash from "../../mod.ts";
 /**
  * Hydrate the request with data that is useful for the Drash.Http.Server class.
  *
@@ -53,4 +53,32 @@ export function getHttpRequestUrlQueryParams(request) {
   } catch (error) {}
 
   return queryParams;
+}
+
+/**
+ * Get a MIME type for a file based on its extension.
+ */
+export function getMimeType(file: any, fileIsUrl?: boolean) {
+  let mimeType = null;
+
+  if (fileIsUrl) {
+    file = file.split("?")[0];
+  }
+
+  file = file.split(".");
+  file = file[file.length - 1];
+
+  for (let key in Drash.Dictionaries.MimeDb) {
+    if (!mimeType) {
+      if (Drash.Dictionaries.MimeDb[key].extensions) {
+        for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
+          if (file == Drash.Dictionaries.MimeDb[key].extensions[index]) {
+            mimeType = key;
+          }
+        }
+      }
+    }
+  }
+
+  return mimeType;
 }

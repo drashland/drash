@@ -11,14 +11,14 @@ let response = new members.Drash.Http.Response(request);
 response.body = "This is my body";
 let responseFormatted;
 
-members.test(async function Response_generateResponse_json_default() {
+members.test(function Response_generateResponse_json_default() {
   members.assert.equal(
     response.generateResponse(),
     `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"This is my body"}`
   );
 });
 
-members.test(async function Response_generateResponse_html() {
+members.test(function Response_generateResponse_html() {
   response.headers.set("Content-Type", "text/html");
   responseFormatted = response.generateResponse();
   members.assert.equal(
@@ -37,7 +37,7 @@ members.test(async function Response_generateResponse_html() {
   );
 });
 
-members.test(async function Response_generateResponse_xml() {
+members.test(function Response_generateResponse_xml() {
   response.headers.set("Content-Type", "text/xml");
   responseFormatted = response.generateResponse();
   members.assert.equal(

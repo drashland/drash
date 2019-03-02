@@ -20,7 +20,7 @@ class UserResource extends members.Drash.Http.Resource {
   }
 }
 
-members.test(async function Server_handleHttpRequest() {
+members.test(function Server_handleHttpRequest() {
   let request;
   let response;
   let server = new members.Drash.Http.Server({
@@ -42,7 +42,7 @@ members.test(async function Server_handleHttpRequest() {
   // );
 });
 
-members.test(async function Server_handleHttpRequestError() {
+members.test(function Server_handleHttpRequestError() {
   let request;
   let response;
   let server = new members.Drash.Http.Server({

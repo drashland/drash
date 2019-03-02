@@ -1,5 +1,5 @@
 import Drash from "../mod.ts";
-import { test, assert } from "https://deno.land/x/std/testing/mod.ts";
+import { runTests, test, assert } from "https://deno.land/x/std/testing/mod.ts";
 import { ServerRequest } from "https://deno.land/std/http/server.ts";
 const decoder = new TextDecoder("utf-8");
 
@@ -27,5 +27,6 @@ export default {
   assert,
   decoder,
   test,
-  mockRequest
+  mockRequest,
+  runTests
 };
