@@ -41,8 +41,15 @@ function Drash(): any {
     Util: Util,
     Vendor: {},
 
-    addApplication(name, application) {
-      this.Vendor[name] = application;
+    /**
+     * Add a new member to the Vendor namespace.
+     *
+     * @param string name
+     *     The member's name which can be accessed via `Drash.Vendor[name]`.
+     * @param any member
+     */
+    addMember(name, member) {
+      this.Vendor[name] = member;
     },
   };
 }
