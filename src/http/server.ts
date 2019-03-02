@@ -107,7 +107,6 @@ export default class Server {
     if (this.static_paths.indexOf(requestUrl) != -1) {
       request = Drash.Services.HttpService.hydrateHttpRequest(request, {
         headers: {
-          "Content-Type-Static": true,
           "Response-Content-Type": Drash.Services.HttpService.getMimeType(request.url, true)
         }
       });
