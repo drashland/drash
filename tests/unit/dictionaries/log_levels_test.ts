@@ -35,6 +35,6 @@ let expected = {
   }
 };
 
-members.test(async function LogLevels() {
+members.test(function LogLevels() {
   members.assert.equal(members.Drash.Dictionaries.LogLevels, expected);
 });

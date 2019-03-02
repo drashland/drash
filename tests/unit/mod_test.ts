@@ -1,6 +1,6 @@
 import members from "../members.ts";
 
-members.test(async function Drash_addMember_class() {
+members.test(function Drash_addMember_class() {
   class SomeCoolService {
     public coolify() {
       return "OK!";
@@ -12,7 +12,7 @@ members.test(async function Drash_addMember_class() {
   members.assert.equal(service.coolify(), expected);
 });
 
-members.test(async function Drash_addMember_function() {
+members.test(function Drash_addMember_function() {
   let SomeCoolServiceFunction = function(arg: string): string {
     return `You specified the following arg: ${arg}`;
   }
@@ -22,7 +22,7 @@ members.test(async function Drash_addMember_function() {
   members.assert.equal(actual, expected);
 });
 
-members.test(async function Drash_addMember_object() {
+members.test(function Drash_addMember_object() {
   let SomeCoolDictionary = {
     "Item 1": {
       definition: "This is Item 1. It is cool."
@@ -44,7 +44,7 @@ members.test(async function Drash_addMember_object() {
   members.assert.equal(actual, expected);
 });
 
-members.test(async function Drash_addMember_differentName() {
+members.test(function Drash_addMember_differentName() {
   let SomeCoolSomething = "Dr. Seuss";
   members.Drash.addMember("One Fish, Two Fish, Red Fish, Blue Fish", SomeCoolSomething);
   let expected = "Dr. Seuss";
@@ -52,7 +52,7 @@ members.test(async function Drash_addMember_differentName() {
   members.assert.equal(actual, expected);
 });
 
-members.test(async function Drash_addMember_types() {
+members.test(function Drash_addMember_types() {
   let data = {
     myBooleanTrue: true,
     myBooleanFalse: false,

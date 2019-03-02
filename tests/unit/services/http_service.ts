@@ -1,6 +1,6 @@
 import members from "../../members.ts";
 
-members.test(async function HttpService_hydrateHttpRequest() {
+members.test(function HttpService_hydrateHttpRequest() {
   let request = members.mockRequest(
     "/?what=the&ok=then&kthx=bye&empty=&cmon_now",
     "get",
@@ -17,7 +17,7 @@ members.test(async function HttpService_hydrateHttpRequest() {
   });
 });
 
-members.test(async function HttpService_getHttpRequestUrlQueryParams() {
+members.test(function HttpService_getHttpRequestUrlQueryParams() {
   let request = members.mockRequest(
     "/?what=the&ok=then&kthx=bye&empty=&cmon_now",
     "get",

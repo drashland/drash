@@ -19,6 +19,6 @@ import "./unit/util_test.ts";
 // Drash functions
 import "./unit/mod_test.ts";
 
-import { runTests } from "https://deno.land/x/std/testing/mod.ts";
+import members from "./members.ts";
 
-runTests();
+members.runTests();
