@@ -51,9 +51,16 @@ function Drash(): any {
      *     The member's name which can be accessed via `Drash.Vendor[name]`.
      * @param any member
      */
-    addMember(name, member) {
+    addMember(name: string, member: any) {
       this.Vendor[name] = member;
     },
+
+    setEnvVar(variable:string, value: any) {
+      let key = `DRASH_${variable.toUpperCase()}`;
+      if (!this.ENV[key]) {
+        this.ENV[key] = value;
+      }
+    }
   };
 }
 export default Drash();
