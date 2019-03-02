@@ -16,26 +16,36 @@ import * as HttpService from "./src/services/http_service.ts";
 // Util
 import * as Util from "./src/util.ts";
 
-export default {
-  Dictionaries: {
-    HttpStatusCodes: HttpStatusCodes,
-    LogLevels: LogLevels,
-    MimeDb: MimeDb
-  },
-  Exceptions: {
-    HttpException: HttpException
-  },
-  Http: {
-    Response: Response,
-    Resource: Resource,
-    Server: Server
-  },
-  Loggers: {
-    Logger: Logger,
-    ConsoleLogger: ConsoleLogger
-  },
-  Services: {
-    HttpService: HttpService
-  },
-  Util: Util
-};
+let ThirdParty = {};
+
+function Drash(): any {
+  return {
+    Dictionaries: {
+      HttpStatusCodes: HttpStatusCodes,
+      LogLevels: LogLevels,
+      MimeDb: MimeDb
+    },
+    Exceptions: {
+      HttpException: HttpException
+    },
+    Http: {
+      Response: Response,
+      Resource: Resource,
+      Server: Server
+    },
+    Loggers: {
+      Logger: Logger,
+      ConsoleLogger: ConsoleLogger
+    },
+    Services: {
+      HttpService: HttpService
+    },
+    Util: Util,
+    Vendor: {},
+
+    addApplication(name, application) {
+      this.Vendor[name] = application;
+    },
+  };
+}
+export default Drash();
