@@ -72,8 +72,28 @@ export default class Server {
    */
   public addHttpResource(resourceClass): void {
     resourceClass.paths.forEach((path, index) => {
+      let pathObj;
+      if (path == "*" || path.includes("*")) {
+        pathObj = {
+          og_path: path,
+          regex_path:
+            "^." +
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT
+            ) +
+            "$",
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
+            return path
+              .replace(":", "")
+              .replace("{", "")
+              .replace("}", "");
+          })
+        };
+        return;
+      }
       try {
-        let pathObj = {
+        pathObj = {
           og_path: path,
           regex_path:
             "^" +
