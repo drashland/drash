@@ -14,6 +14,10 @@ Documentation is [here](https://crookse.github.io/projects/deno-drash/), but sti
 
 Although this module is working, it is still very much under development. [Reporting of bugs](https://github.com/crookse/deno-drash/issues) is greatly appreciated.
 
+**Contributing**
+
+Want to contribute? Fork and send a pull request.
+
 ## Quickstart
 
 #### Step 1 of 3: Create your `app.ts` file.
@@ -187,7 +191,9 @@ server.run();
 - [ ] File logging
 - [ ] Tagged logging
 - [ ] Full Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
-- [ ] `Drash.addApplication(name: string, application: any)` so that any application can be used globally
 - [ ] Middleware
+- [ ] Request caching
+- [ ] Style Guide
+- [ ] `DRASH_{SOME_VAR}` env variables
 - [ ] How To: Adding middleware
-- [ ] Cache static files
+- [ ] How To: Adding vendor modules (like dotenv for people who want to use dotenv)
