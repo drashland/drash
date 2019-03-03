@@ -1,3 +1,6 @@
+// Compilers
+import * as TemplateEngine from "./src/compilers/template_engine.ts";
+
 // Dictionaries
 import HttpStatusCodes from "./src/dictionaries/http_status_codes.ts";
 import LogLevels from "./src/dictionaries/log_levels.ts";
@@ -38,6 +41,9 @@ class EnvVar {
 
 function Drash(): any {
   return {
+    Compilers: {
+      TemplateEngine: TemplateEngine
+    },
     Dictionaries: {
       HttpStatusCodes: HttpStatusCodes,
       LogLevels: LogLevels,
