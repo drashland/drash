@@ -22,40 +22,80 @@ export function render(file, data) {
 
   variables = [...new Set(variables)]; // Only keep unique values
 
+  console.log("\n\nvariables\n");
+  console.log(variables);
+  console.log("\n\n");
+
   // Transform variables from `variable.variable` to `{variable: { variable: value }}`
-  let variablesTransformedStep2 = {};
+  let variablesTransformedStep2 = [];
   for (let index in variables) {
     try {
       if (variables[index].indexOf(".") != -1) {
         let split = variables[index].split(".");
         let key = split.shift();
-        split.unshift(variables[index]); // This is the `originalKey`
-        variablesTransformedStep2[key] = split;
+        variablesTransformedStep2.push({
+          variable: key,
+          variable_og: variables[index],
+          args: split
+        });
       } else {
-        variablesTransformedStep2[variables[index]] = variables[index];
+        // FIXME(crookse) THIS IS OVERWRITING THE ABOVE. If a template has {{ my_var.var }}, it
+        // gets transformed into { my_var: ["my_var.var", "var"] }. If the template also has
+        // {{ my_var }}, then {{ my_var }} will overwrite the `my_var` key previously made.
+        variablesTransformedStep2.push({
+          variable: variables[index]
+        });
       }
     } catch (error) {
     }
   }
 
+  console.log("\n\nvariables transformed\n");
+  console.log(variablesTransformedStep2);
+  console.log("\n\n");
+
   for (let index in variablesTransformedStep2) {
     let variable = variablesTransformedStep2[index];
-    if (Array.isArray(variable)) {
-      if (data.hasOwnProperty(index)) {
-        let originalVariable = variable.shift();
-        let nestedPropertyValue = Drash.Util.ObjectParser.getNestedPropertyValue(data[index], variable);
-        var reJson = new RegExp(`!{{ ${originalVariable} }}`,"g");
+    // I AM RIGHT HERE
+    if (variable.args && Array.isArray(variable.args)) {
+      let variableObject = variable; // Change the lingo because this shit is confusing me... ugh bad dev
+      console.log("\n\variable.args is array\n");
+      console.log(variableObject);
+      console.log("\n\n");
+      if (data.hasOwnProperty(variableObject.variable)) {
+
+        console.log("\n\noriginal\n");
+        console.log(variable.variable_og);
+        console.log("\n\ndata\n");
+        console.log(data[variableObject.variable]);
+
+        // The `variable` is the array of arugments to pass to the spread operator
+        let nestedPropertyValue = Drash.Util.ObjectParser
+          .getNestedPropertyValue(data[variableObject.variable], variable.args);
+
+        console.log("\n\nnested property value\n");
+        console.log(nestedPropertyValue);
+        console.log("\n\n");
+
+        var reJson = new RegExp(`!{{ ${variableObject.variable_og} }}`,"g");
         renderedResult = renderedResult.replace(reJson, JSON.stringify(nestedPropertyValue));
-        var re = new RegExp(`{{ ${originalVariable} }}`,"g");
+        var re = new RegExp(`{{ ${variableObject.variable_og} }}`,"g");
         renderedResult = renderedResult.replace(re, nestedPropertyValue);
       }
     } else {
-      if (data[variable] || data[variable] === "") {
+      console.log("\n\nBROOOOOOO we're only doing one\n");
+      console.log(variable.variable);
+
+      console.log("\n\n");
+      console.log(data[variable.variable]);
+      console.log("\n\n");
+
+      if (data[variable.variable] || data[variable.variable] === "") {
         // Render over and over and over and over and over and over
-        var reJson = new RegExp(`!{{ ${variablesTransformedStep2[index]} }}`,"g");
-        renderedResult = renderedResult.replace(reJson, JSON.stringify(data[variable]));
-        var re = new RegExp(`{{ ${variablesTransformedStep2[index]} }}`,"g");
-        renderedResult = renderedResult.replace(re, data[variable]);
+        var reJson = new RegExp(`!{{ ${variable.variable} }}`,"g");
+        renderedResult = renderedResult.replace(reJson, JSON.stringify(data[variable.variable]));
+        var re = new RegExp(`{{ ${variable.variable} }}`,"g");
+        renderedResult = renderedResult.replace(re, data[variable.variable]);
       }
     }
   }

@@ -64,6 +64,8 @@ export class ObjectParser {
    *     Returns the value of the targeted property.
    */
   static getNestedPropertyValue(inputObject: any, ...properties) {
+      console.log("\ninput object\n");
+      console.log(inputObject);
     // We start off with a null value. This could change if the targeted property exists and has a
     // value other than null.
     let nestedProperty = undefined;
@@ -71,6 +73,8 @@ export class ObjectParser {
 
     if (Array.isArray(properties)) {
       properties = properties[0];
+      console.log("\nproperties\n");
+      console.log(properties);
     }
 
     // We start off with the current object and use the forEach() function to iterate into the
@@ -104,6 +108,13 @@ export class ObjectParser {
       }
 
       if (!currentObject.hasOwnProperty(property)) {
+        return;
+      }
+
+      // TODO(crookse) Keep an eye on this fix.
+      if (index === numberOfChecks) {
+        nestedProperty = currentObject[property];
+        nestedPropertyWasSet = true;
         return;
       }
 
