@@ -19,6 +19,9 @@ import "./unit/util_test.ts";
 // Drash functions
 import "./unit/mod_test.ts";
 
+// EnvVar
+import "./unit/env_var.ts";
+
 import members from "./members.ts";
 
 members.runTests();

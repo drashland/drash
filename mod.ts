@@ -22,11 +22,11 @@ interface OptionsForEnv {
 }
 
 class EnvVar {
-  protected key;
+  protected name;
   protected value;
 
-  constructor(key: string, value: any) {
-    this.key = value;
+  constructor(name: string, value: any) {
+    this.name = name;
     this.value = value;
   }
 
