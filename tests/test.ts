@@ -23,7 +23,7 @@ import "./unit/util_test.ts";
 import "./unit/mod_test.ts";
 
 // EnvVar
-import "./unit/env_var.ts";
+import "./unit/env_var_test.ts";
 
 import members from "./members.ts";
 

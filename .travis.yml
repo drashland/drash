@@ -1,5 +1,8 @@
 language: python
 
+env:
+  - DRASH_CUR_DIR=$TRAVIS_BUILD_DIR
+
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh
   - export PATH="$HOME/.deno/bin:$PATH"
