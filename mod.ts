@@ -16,22 +16,18 @@ import * as HttpService from "./src/services/http_service.ts";
 // Util
 import * as Util from "./src/util.ts";
 
-interface OptionsForEnv {
-  default_value?: string;
-  to_array?: boolean;
-}
-
 class EnvVar {
+  public value;
   protected name;
-  protected value;
 
-  constructor(name: string, value: any) {
+  constructor(name: string, value: string) {
     this.name = name;
     this.value = value;
   }
 
   public toArray() {
-    return JSON.parse(this.value);
+    this.value = JSON.parse(this.value);
+    return this;
   }
 }
 
