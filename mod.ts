@@ -25,6 +25,11 @@ class EnvVar {
     this.value = value;
   }
 
+  /**
+   * Convert an env var to a JSON array.
+   *
+   * @return this
+   */
   public toArray() {
     this.value = JSON.parse(this.value);
     return this;
