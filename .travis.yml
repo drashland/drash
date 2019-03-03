@@ -1,7 +1,7 @@
 language: python
 
 env:
-  - DRASH_CUR_DIR=$TRAVIS_BUILD_DIR
+  - DRASH_CUR_DIR="/home/travis/build/crookse"
 
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh

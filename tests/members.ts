@@ -1,13 +1,11 @@
 import Drash from "../mod.ts";
 import { runTests, test, assert } from "https://deno.land/x/std/testing/mod.ts";
 import { ServerRequest } from "https://deno.land/std/http/server.ts";
-import conf from "../.conf/conf.ts";
 const decoder = new TextDecoder("utf-8");
 
 // No cur dir? Set cur dir...
 if (!Drash.getEnvVar("cur_dir").value) {
-  Drash.setEnvVar("cur_dir", conf.tests.cur_dir);
-  console.log(Drash.getEnvVar("cur_dir"));
+  Drash.setEnvVar("cur_dir", "/var/www");
 }
 
 let mockRequest = function mockRequest(
