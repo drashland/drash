@@ -5,4 +5,4 @@ install:
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
-  - deno tests/test.ts
+  - deno tests/test.ts --allow-env --allow-read
