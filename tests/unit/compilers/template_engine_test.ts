@@ -12,23 +12,27 @@ let expected = `<body>
   };
   let actual = engine.render("/var/www/deno-drash/tests/data/templates/test_template_1.html", data);
   members.assert.equal(
-    expected,
-    actual
+    actual,
+    expected
   );
 });
 
 members.test(function TemplateEngine_render_json() {
 let expected = `<body>
-\t<div>This is my body.</div>
+\t<div>{"body":{"key":"value"}}</div>
 </body>
 `; // fkn newline
   let data = {
-    my_var: "This is my body."
+    my_var: {
+      body: {
+        key: "value"
+      }
+    }
   };
-  let actual = engine.render("/var/www/deno-drash/tests/data/templates/test_template_1.html", data);
+  let actual = engine.render("/var/www/deno-drash/tests/data/templates/test_template_json.html", data);
   members.assert.equal(
-    expected,
-    actual
+    actual,
+    expected
   );
 });
 
