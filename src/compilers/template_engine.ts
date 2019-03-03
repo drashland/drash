@@ -22,10 +22,6 @@ export function render(file, data) {
 
   variables = [...new Set(variables)]; // Only keep unique values
 
-  console.log("\n\nvariables\n");
-  console.log(variables);
-  console.log("\n\n");
-
   // Transform variables from `variable.variable` to `{variable: { variable: value }}`
   let variablesTransformedStep2 = [];
   for (let index in variables) {
@@ -50,32 +46,16 @@ export function render(file, data) {
     }
   }
 
-  console.log("\n\nvariables transformed\n");
-  console.log(variablesTransformedStep2);
-  console.log("\n\n");
-
   for (let index in variablesTransformedStep2) {
     let variable = variablesTransformedStep2[index];
     // I AM RIGHT HERE
     if (variable.args && Array.isArray(variable.args)) {
       let variableObject = variable; // Change the lingo because this shit is confusing me... ugh bad dev
-      console.log("\n\variable.args is array\n");
-      console.log(variableObject);
-      console.log("\n\n");
       if (data.hasOwnProperty(variableObject.variable)) {
-
-        console.log("\n\noriginal\n");
-        console.log(variable.variable_og);
-        console.log("\n\ndata\n");
-        console.log(data[variableObject.variable]);
 
         // The `variable` is the array of arugments to pass to the spread operator
         let nestedPropertyValue = Drash.Util.ObjectParser
           .getNestedPropertyValue(data[variableObject.variable], variable.args);
-
-        console.log("\n\nnested property value\n");
-        console.log(nestedPropertyValue);
-        console.log("\n\n");
 
         var reJson = new RegExp(`!{{ ${variableObject.variable_og} }}`,"g");
         renderedResult = renderedResult.replace(reJson, JSON.stringify(nestedPropertyValue));
@@ -83,13 +63,6 @@ export function render(file, data) {
         renderedResult = renderedResult.replace(re, nestedPropertyValue);
       }
     } else {
-      console.log("\n\nBROOOOOOO we're only doing one\n");
-      console.log(variable.variable);
-
-      console.log("\n\n");
-      console.log(data[variable.variable]);
-      console.log("\n\n");
-
       if (data[variable.variable] || data[variable.variable] === "") {
         // Render over and over and over and over and over and over
         var reJson = new RegExp(`!{{ ${variable.variable} }}`,"g");
