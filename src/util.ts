@@ -49,7 +49,6 @@ export class FileCreator {
 }
 
 export class ObjectParser {
-
   /**
    * Get the value of a deeply nested property
    *
@@ -116,7 +115,7 @@ export class ObjectParser {
 
       currentObject = currentObject[property];
 
-      if (typeof currentObject !== 'object') {
+      if (typeof currentObject !== "object") {
         if (index === numberOfChecks) {
           // Current object is not an object and we're at the last step... that means we found the
           // nested property, can set it, and can return it.
@@ -132,5 +131,5 @@ export class ObjectParser {
     });
 
     return nestedProperty;
-  };
+  }
 }

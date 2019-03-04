@@ -48,7 +48,7 @@ export default class Server {
     }
 
     if (configs.static_paths) {
-      configs.static_paths.forEach((path) => {
+      configs.static_paths.forEach(path => {
         this.addStaticPath(path);
       });
     }
@@ -127,7 +127,10 @@ export default class Server {
     if (this.static_paths.indexOf(requestUrl) != -1) {
       request = Drash.Services.HttpService.hydrateHttpRequest(request, {
         headers: {
-          "Response-Content-Type": Drash.Services.HttpService.getMimeType(request.url, true)
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+            request.url,
+            true
+          )
         }
       });
       return true;
@@ -264,9 +267,7 @@ export default class Server {
         break;
       default:
         error.code = 400;
-        response.body = error.message
-          ? error.message
-          : "Something went wrong.";
+        response.body = error.message ? error.message : "Something went wrong.";
         break;
     }
 

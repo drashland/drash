@@ -91,7 +91,7 @@ function Drash(): any {
      *
      * @return void
      */
-    setEnvVar(variableName:string, value: string): void {
+    setEnvVar(variableName: string, value: string): void {
       let key = `DRASH_${variableName.toUpperCase()}`;
       if (!Deno.env()[key]) {
         Deno.env()[key] = value;
@@ -113,9 +113,7 @@ function Drash(): any {
       let exists = Deno.env().hasOwnProperty(key);
       let value;
 
-      value = exists
-        ? Deno.env()[key]
-        : undefined;
+      value = exists ? Deno.env()[key] : undefined;
 
       return new EnvVar(key, value);
     }

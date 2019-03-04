@@ -15,10 +15,13 @@ members.test(function Drash_addMember_class() {
 members.test(function Drash_addMember_function() {
   let SomeCoolServiceFunction = function(arg: string): string {
     return `You specified the following arg: ${arg}`;
-  }
+  };
   members.Drash.addMember("SomeCoolServiceFunction", SomeCoolServiceFunction);
-  let expected = "You specified the following arg: All your base are belong to us!";
-  let actual = members.Drash.Vendor.SomeCoolServiceFunction("All your base are belong to us!");
+  let expected =
+    "You specified the following arg: All your base are belong to us!";
+  let actual = members.Drash.Vendor.SomeCoolServiceFunction(
+    "All your base are belong to us!"
+  );
   members.assert.equal(actual, expected);
 });
 
@@ -46,7 +49,10 @@ members.test(function Drash_addMember_object() {
 
 members.test(function Drash_addMember_differentName() {
   let SomeCoolSomething = "Dr. Seuss";
-  members.Drash.addMember("One Fish, Two Fish, Red Fish, Blue Fish", SomeCoolSomething);
+  members.Drash.addMember(
+    "One Fish, Two Fish, Red Fish, Blue Fish",
+    SomeCoolSomething
+  );
   let expected = "Dr. Seuss";
   let actual = members.Drash.Vendor["One Fish, Two Fish, Red Fish, Blue Fish"];
   members.assert.equal(actual, expected);

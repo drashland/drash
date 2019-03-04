@@ -16,8 +16,8 @@ export function render(file, data) {
 
   // Transform variables from `{{ variable }}` to `variable` or `variable.variable.and.so.on`
   for (let index in variables) {
-    variables[index] = variables[index].replace(/\{\{ /g, '');
-    variables[index] = variables[index].replace(/ \}\}/g, '');
+    variables[index] = variables[index].replace(/\{\{ /g, "");
+    variables[index] = variables[index].replace(/ \}\}/g, "");
   }
 
   variables = [...new Set(variables)]; // Only keep unique values
@@ -42,8 +42,7 @@ export function render(file, data) {
           variable: variables[index]
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   for (let index in variablesTransformedStep2) {
@@ -52,22 +51,29 @@ export function render(file, data) {
     if (variable.args && Array.isArray(variable.args)) {
       let variableObject = variable; // Change the lingo because this shit is confusing me... ugh bad dev
       if (data.hasOwnProperty(variableObject.variable)) {
-
         // The `variable` is the array of arugments to pass to the spread operator
-        let nestedPropertyValue = Drash.Util.ObjectParser
-          .getNestedPropertyValue(data[variableObject.variable], variable.args);
+        let nestedPropertyValue = Drash.Util.ObjectParser.getNestedPropertyValue(
+          data[variableObject.variable],
+          variable.args
+        );
 
-        var reJson = new RegExp(`!{{ ${variableObject.variable_og} }}`,"g");
-        renderedResult = renderedResult.replace(reJson, JSON.stringify(nestedPropertyValue));
-        var re = new RegExp(`{{ ${variableObject.variable_og} }}`,"g");
+        var reJson = new RegExp(`!{{ ${variableObject.variable_og} }}`, "g");
+        renderedResult = renderedResult.replace(
+          reJson,
+          JSON.stringify(nestedPropertyValue)
+        );
+        var re = new RegExp(`{{ ${variableObject.variable_og} }}`, "g");
         renderedResult = renderedResult.replace(re, nestedPropertyValue);
       }
     } else {
       if (data[variable.variable] || data[variable.variable] === "") {
         // Render over and over and over and over and over and over
-        var reJson = new RegExp(`!{{ ${variable.variable} }}`,"g");
-        renderedResult = renderedResult.replace(reJson, JSON.stringify(data[variable.variable]));
-        var re = new RegExp(`{{ ${variable.variable} }}`,"g");
+        var reJson = new RegExp(`!{{ ${variable.variable} }}`, "g");
+        renderedResult = renderedResult.replace(
+          reJson,
+          JSON.stringify(data[variable.variable])
+        );
+        var re = new RegExp(`{{ ${variable.variable} }}`, "g");
         renderedResult = renderedResult.replace(re, data[variable.variable]);
       }
     }

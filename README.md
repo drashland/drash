@@ -22,7 +22,7 @@ Although this module is working, it is still very much under development. [Repor
 import Drash from "https://deno.land/x/drash/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"]
+  static paths = ["/"];
   public GET() {
     this.response.body = "GET request received!";
     return this.response;
@@ -52,7 +52,7 @@ $ deno app.ts --allow-net
 
 _Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
 
-- `GET  localhost:8000/`
+- `GET localhost:8000/`
 - `POST localhost:8000/`
 
 ## Features
@@ -111,10 +111,11 @@ export default class Response extends Drash.Http.Response {
     let body;
 
     switch (this.headers.get("Content-Type")) {
-
       // Handle HTML
       case "text/html":
-        body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10">${this.body}</body></html>`;
+        body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10">${
+          this.body
+        }</body></html>`;
         break;
 
       // Handle JSON
@@ -148,8 +149,6 @@ export default class Response extends Drash.Http.Response {
     });
   }
 }
-
-
 ```
 
 #### Step 2 of 2: Modify your `app.ts` file.
