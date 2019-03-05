@@ -1,5 +1,15 @@
 import Drash from "../../mod.ts";
 
+function debug(message, title?) {
+  console.log("\n\n");
+  if (title) {
+    console.log(title);
+    console.log("\n");
+  }
+  console.log(message);
+  console.log("\n\n");
+}
+
 /**
  * Render an HTML file--resolving template variables to the data in the specified data.
  *
@@ -12,7 +22,7 @@ export function render(file, data) {
   let contents = decoder.decode(Deno.readFileSync(file));
   let renderedResult = contents; // Make a copy for rendering over and over and over and over . . .
 
-  let variables = contents.match(/({{ .* }})/g);
+  let variables = contents.match(/{{ [.a-zA-z0-9]* }}/g);
 
   // Transform variables from `{{ variable }}` to `variable` or `variable.variable.and.so.on`
   for (let index in variables) {
@@ -21,6 +31,7 @@ export function render(file, data) {
   }
 
   variables = [...new Set(variables)]; // Only keep unique values
+  // log(variables);
 
   // Transform variables from `variable.variable` to `{variable: { variable: value }}`
   let variablesTransformedStep2 = [];

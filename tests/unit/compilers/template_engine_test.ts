@@ -192,3 +192,31 @@ members.test(function TemplateEngine_render_json_6() {
   );
   members.assert.equal(actual, expected);
 });
+
+members.test(function TemplateEngine_render_full() {
+  let date = (new Date()).getTime();
+  let expected = `<body>
+\t<div>{"key":"value"}</div>
+\t<div>{"body":{"key":"value"}}</div>
+\t<div>[object Object]${date}</div>
+</body>
+`; // fkn newline
+  let data = {
+    my_var: {
+      body: {
+        key: "value"
+      }
+    },
+    my_var_2: {
+      this_wont: "parse"
+    },
+    my_var_3: date
+  };
+  let actual = engine.render(
+    `${
+      members.Drash.getEnvVar("cur_dir").value
+    }/deno-drash/tests/data/templates/test_template_full.html`,
+    data
+  );
+  members.assert.equal(actual, expected);
+});
