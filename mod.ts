@@ -2,7 +2,6 @@
 import * as TemplateEngine from "./src/compilers/template_engine.ts";
 
 // Dictionaries
-import HttpStatusCodes from "./src/dictionaries/http_status_codes.ts";
 import LogLevels from "./src/dictionaries/log_levels.ts";
 import MimeDb from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
 // Exceptions
@@ -45,7 +44,6 @@ function Drash(): any {
       TemplateEngine: TemplateEngine
     },
     Dictionaries: {
-      HttpStatusCodes: HttpStatusCodes,
       LogLevels: LogLevels,
       MimeDb: MimeDb
     },

@@ -24,6 +24,8 @@ resource.server = request;
 response = resource.GET();
 let actual = response.generateResponse();
 
+console.log(actual);
+
 members.test(function Resource() {
   members.assert.equal(
     actual,

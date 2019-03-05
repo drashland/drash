@@ -1,4 +1,5 @@
 import Drash from "../../mod.ts";
+import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
 /** Response handles sending a response to the client making the request. */
 export default class Response {
@@ -6,7 +7,7 @@ export default class Response {
   public body_generated = "";
   public headers: Headers;
   public request;
-  public status_code = 200;
+  public status_code = Status.OK;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
@@ -49,8 +50,19 @@ export default class Response {
    * @return string
    */
   public getStatusMessage(): string {
-    return Drash.Dictionaries.HttpStatusCodes[this.status_code]
-      .short_description;
+    let message = STATUS_TEXT.get(this.status_code);
+    return message ? message : null;
+  }
+
+  /**
+   * Get the full status message based on the status code. This is just the status code and the
+   * status message together.
+   *
+   * @return string
+   */
+  public getStatusMessageFull(): string {
+    let message = STATUS_TEXT.get(this.status_code);
+    return message ? `${this.status_code} (${message})` : null;
   }
 
   /**

@@ -2,7 +2,6 @@
 import "./unit/compilers/template_engine_test.ts";
 
 // Dictionaries
-import "./unit/dictionaries/http_status_codes_test.ts";
 import "./unit/dictionaries/log_levels_test.ts";
 
 // Exceptions

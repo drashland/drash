@@ -196,10 +196,7 @@ export default class Server {
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
           "Content-Type"
-        )}. Status: ${
-          Drash.Dictionaries.HttpStatusCodes[response.status_code]
-            .response_message
-        }.`
+        )}. Status: ${response.getStatusMessageFull()}.`
       );
       return response.send();
     } catch (error) {
@@ -276,17 +273,15 @@ export default class Server {
     this.logger.info(
       `Sending response. Content-Type: ${response.headers.get(
         "Content-Type"
-      )}. Status: ${
-        Drash.Dictionaries.HttpStatusCodes[response.status_code]
-          .response_message
-      }.`
+      )}. Status: ${response.getStatusMessageFull()}.`
     );
 
     return response.send();
   }
 
   /**
-   * Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs.
+   * Handle HTTP requests for the favicon. This method only exists to short-circuit favicon
+   * requests--preventing the requests from clogging the logs.
    *
    * @param ServerRequest request
    */
