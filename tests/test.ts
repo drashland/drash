@@ -1,6 +1,3 @@
-// Compilers
-import "./unit/compilers/template_engine_test.ts";
-
 // Dictionaries
 import "./unit/dictionaries/log_levels_test.ts";
 

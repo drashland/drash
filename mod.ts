@@ -1,6 +1,3 @@
-// Compilers
-import * as TemplateEngine from "./src/compilers/template_engine.ts";
-
 // Dictionaries
 import LogLevels from "./src/dictionaries/log_levels.ts";
 import MimeDb from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
@@ -40,9 +37,6 @@ class EnvVar {
 
 function Drash(): any {
   return {
-    Compilers: {
-      TemplateEngine: TemplateEngine
-    },
     Dictionaries: {
       LogLevels: LogLevels,
       MimeDb: MimeDb
