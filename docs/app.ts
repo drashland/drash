@@ -1,14 +1,14 @@
 import Drash from "./bootstrap.ts";
 
-// Only one resource is needed because this app only has an index.html file
-import Resource from "./src/resource.ts";
+import "./src/app_response.ts";
+import AppResource from "./src/app_resource.ts";
 
 // Create and run the server
 let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
   logger: Drash.Vendor.ConsoleLogger,
-  resources: [Resource],
+  resources: [AppResource],
   static_paths: ["/public"]
 });
 

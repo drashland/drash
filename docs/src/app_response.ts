@@ -1,12 +1,7 @@
-import Drash from "../../deno-drash/mod.ts";
-const { cwd, stdout, copy } = Deno;
-import { renderFile } from 'https://deno.land/x/dejs/dejs.ts';
+import Drash from "../bootstrap.ts";
 import * as ResponseService from "./response_service.ts";
 
-/**
- * Export the `Response` class that will be used in place of `Drash.Http.Response`
- */
-export default class Response extends Drash.Http.Response {
+class AppResponse extends Drash.Http.Response {
   /**
    * Send a response to the client.
    */
@@ -24,7 +19,7 @@ export default class Response extends Drash.Http.Response {
           Drash.Vendor.ConsoleLogger.debug("WTF.");
           Drash.Vendor.ConsoleLogger.debug("Error below:");
           console.log(error);
-          body = "Eric... you fkd up.";
+          body = "mmmmm.... you/something fkd up.";
         }
         break;
       // Handle JSON
@@ -41,3 +36,5 @@ export default class Response extends Drash.Http.Response {
     });
   }
 }
+
+Drash.Http.Response = AppResponse;
