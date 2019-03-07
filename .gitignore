@@ -2,3 +2,4 @@
 .console
 .tmp
 docs/dist
+docs/node_modules
