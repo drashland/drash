@@ -18,9 +18,7 @@
 		<script>
 			window.app_data = <%- app_data %>;
 		</script>
-		<% scripts.forEach(script => { %>
-		<script src="<%= script %>"></script>
-		<% }); %>
+		<% scripts.forEach(script => { %><script src="<%= conf.base_url %><%= script %>"></script><% }); %>
 		<script src="<%= conf.base_url %>/public/assets/js/bundle.js?version=<%= build_timestamp %>"></script>
 	</body>
 </html>
