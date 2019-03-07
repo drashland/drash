@@ -1,0 +1,26 @@
+.c-misc-function-doc-block {
+    .description {
+        display: block;
+    }
+}
+
+.c-misc-date-last-updated-bar {
+    background: #efefef;
+    font-size: rem(1.1);
+    margin-bottom: rem(4);
+    padding: rem(1);
+    text-align: right;
+    p {
+        margin-bottom: 0;
+    }
+}
+
+
+.c-misc-data-type {
+    &:before {
+        content: "<";
+    }
+    &:after {
+        content: ">";
+    }
+}

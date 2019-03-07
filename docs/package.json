@@ -1,0 +1,48 @@
+{
+  "name": "crookse-node-docs",
+  "version": "1.0.0",
+  "description": "crookse.Node Documentation Site",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "vue": "^2.6.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.0",
+    "mime-types": "^2.1.22",
+    "node-sass": "^4.11.0",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
+    "sass-loader": "^7.1.0",
+    "scss-loader": "0.0.1",
+    "vue-loader": "^15.6.4",
+    "vue-router": "^3.0.2",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.6.7",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  },
+  "scripts": {
+    "start": "nodemon index.js",
+    "sass-build": "sass public/assets/css/style.scss public/assets/css/style.css --sourcemap=none --style=compressed",
+    "sass-watch": "sass --watch public/assets/css/:public/assets/css/ --sourcemap=none --style=compressed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crookse/crookse-node-docs.git"
+  },
+  "author": "Eric Crooks",
+  "license": "MIT",
+  "nodemonConfig": {
+    "ext": "js,json,jsx,pug,scss,txt",
+    "ignore": [
+      "dist/*"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/crookse/crookse-node-docs/issues"
+  },
+  "homepage": "https://github.com/crookse/crookse-node-docs#readme"
+}

@@ -1,0 +1,83 @@
+//
+// Header
+//
+.c-header {
+    border-bottom: 1px solid transparent;
+    left: 0;
+    position: fixed;
+    top: 0;
+    transition-duration: 0.3s;
+    transition-property: background, border;
+    width: 100%;
+    z-index: 100;
+    //
+    // Navigation
+    //
+    .c-nav {
+        border-right: 1px solid #efefef;
+        //
+        // Links
+        //
+        .c-nav__link {
+            border-left: 1px solid #efefef;
+            color: #ffffff;
+            padding-right: rem(2);
+            padding-left: rem(2);
+            text-transform: uppercase;
+            font-size: rem(1.2);
+        }
+    }
+    //
+    // Logo (the containing link)
+    //
+    .c-logo-link {
+        text-decoration: none;
+    }
+    //
+    // Logo (the heading)
+    //
+    .c-logo-heading {
+        color: #ffffff;
+        display: inline-block;
+        font-size: rem(1.8);
+        font-style: italic;
+        opacity: 0;
+        text-transform: uppercase;
+        transition-duration: 0.2s;
+        transition-property: opacity;
+    }
+    //
+    // Gravatar
+    //
+    .c-image-gravatar {
+        border-radius: 5000px;
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+        margin-top: 1rem;
+        max-height: 35px;
+        max-width: 35px;
+        transition-duration: 0.3s;
+        transition-property: margin;
+    }
+}
+    //
+    // Modifier: has-white-background
+    //
+    // This header has a white background.
+    //
+    .c-header--has-white-background {
+        // border-bottom: 1px solid #e4e4e4;
+        border-bottom: 2px solid #e4e4e4;
+        background: #ffffff;
+        .c-nav .c-nav__link {
+            color: #333333;
+        }
+        .c-logo-heading {
+            opacity: 1;
+            color: #333333;
+        }
+       .c-image-gravatar {
+           margin-top: rem(2);
+           margin-bottom: rem(2);
+       }
+    }

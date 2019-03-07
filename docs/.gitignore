@@ -1,0 +1,20 @@
+# App - Directories
+build/*
+logs/*
+!logs/.gitkeep
+
+# App - Files
+conf/*.json
+!conf/*.sample.json
+env.*.json
+!env.*.sample.json
+
+# OS X
+.DS_Store*
+
+# npm
+node_modules
+package-lock.json
+
+# Sass
+.sass-cache

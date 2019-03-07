@@ -1,0 +1,35 @@
+{
+  "environment": "development",
+
+  "development": {
+    "module_name": "Drash",
+    "base_url": "",
+    "paths": {
+      "app_root": "/var/www/deno-drash-docs"
+    },
+    "webpack": {
+      "entry": "public/assets/js/_bundle.js",
+      "mode": "development",
+      "output": {
+        "path": "public/assets/js/",
+        "filename": "bundle.js"
+      }
+    },
+
+    "production": {
+      "module_name": "Drash",
+      "base_url": "/projects/deno-drash",
+      "paths": {
+        "app_root": "/var/www/deno-drash-docs"
+      },
+      "webpack": {
+        "entry": "public/assets/js/_bundle.js",
+        "mode": "production",
+        "output": {
+          "path": "dist/public/assets/js/",
+          "filename": "bundle.js"
+        }
+      }
+    }
+  }
+}
