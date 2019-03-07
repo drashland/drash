@@ -1,11 +1,10 @@
 const webpack = require("webpack");
 const path = require("path");
-const APP_CONF = require(path.resolve(__dirname, "conf/app.json"));
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = envVars => {
-  let conf = APP_CONF[envVars.environment];
-  let resolveAliasVue = conf.webpack.mode == "production" ? "vue/dist/vue.min.js" : "vue/dist/vue.js"
+  const confFile = require(path.resolve(__dirname, "conf/conf.json"));
+  const conf = confFile[envVars.environment];
 
   console.log(`\nRunning "${envVars.environment}" configs.\n`);
 
@@ -56,7 +55,7 @@ module.exports = envVars => {
     ],
     resolve: {
       alias: {
-        vue: resolveAliasVue,
+        vue: conf.webpack.mode == "production" ? "vue/dist/vue.min.js" : "vue/dist/vue.js",
         "/components": path.resolve(__dirname, "src/vue/components"),
         "/conf": path.resolve(__dirname, "conf")
       },
