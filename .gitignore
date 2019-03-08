@@ -1,6 +1,7 @@
 .drash_http_resources.ts
-.console
 .tmp
+.console
+!docs/.console
 docs/node_modules
 docs/conf/*.json
 !docs/conf/*.sample.json
