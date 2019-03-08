@@ -1,0 +1,20 @@
+.c-btn {
+    cursor: pointer;
+    font-size: rem(1.35);
+    padding: $g_padding_for_buttons;
+}
+
+
+
+
+.c-btn-back-to-top {
+    border: none;
+    background: #000000;
+    color: #ffffff;
+    padding: rem(2);
+    text-align: center;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+}

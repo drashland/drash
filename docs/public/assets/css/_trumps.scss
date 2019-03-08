@@ -1,0 +1,166 @@
+.background--white {
+    background-color: #ffffff !important;
+}
+
+.background-color--that-red {
+    background-color: $g-color-that-red;
+}
+
+.border--none {
+    border: none;
+}
+
+.border-top--none {
+    border-top: none !important;
+}
+
+.border-right-with-disappear--style-1 {
+    border-right: 1px solid rgba(0,0,0,.1);
+    @media screen and (max-width: 767px) {
+        border-right: none;
+    }
+}
+
+.color--that-red {
+    color: $g-color-that-red;
+}
+
+.cursor--pointer {
+    cursor: pointer;
+}
+
+.font-size--12 {
+    font-size: 12px !important;
+}
+
+.font-size--3rem {
+    font-size: rem(3);
+}
+
+.font-style--italic {
+    font-style: italic;
+}
+
+.font-style--normal {
+    font-style: normal;
+}
+
+.hide--soft {
+    display: none;
+}
+
+.margin--0 {
+    margin: 0;
+}
+
+.margin-top--1rem {
+    margin-top: rem(1);
+}
+
+.margin-top--2rem {
+    margin-top: rem(2);
+}
+
+.margin-top--3rem {
+    margin-top: rem(3);
+}
+
+.margin-top--8rem {
+    margin-top: rem(8) !important;
+}
+
+.margin-bottom--0 {
+    margin-bottom: 0 !important;
+}
+
+.margin-bottom--1rem {
+    margin-bottom: rem(1) !important;
+}
+
+.margin-bottom--1_5rem {
+    margin-bottom: rem(1.5) !important;
+}
+
+.margin-bottom--2rem {
+    margin-bottom: rem(2) !important;
+}
+
+.margin-bottom--4rem {
+    margin-bottom: rem(4) !important;
+}
+
+.margin-bottom--5rem {
+    margin-bottom: rem(5) !important;
+}
+
+.margin-bottom--6rem {
+    margin-bottom: rem(6) !important;
+}
+
+.margin-bottom--7rem {
+    margin-bottom: rem(7) !important;
+}
+
+.margin-bottom--8rem {
+    margin-bottom: rem(8) !important;
+}
+
+.outline--none {
+    outline: none !important;
+}
+
+.padding--0 {
+    padding: 0 !important;
+}
+
+.padding--15px {
+    padding: 15px !important;
+}
+
+.padding--20px {
+    padding: 20px !important;
+}
+
+.padding--25px {
+    padding: 25px !important;
+}
+
+.padding-left--20px {
+    padding-left: 20px !important;
+}
+
+.position--relative {
+    position: relative;
+}
+
+.width--100 {
+    width: 100%;
+}
+
+.text-align--center {
+    text-align: center;
+}
+
+.text-align--left {
+    text-align: left;
+}
+
+.text-align--right {
+    text-align: right;
+}
+
+.text-decoration--none {
+    text-decoration: none;
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.text-transform--uppercase {
+    text-transform: uppercase;
+}
+
+.text--help {
+    color: #999999;
+    font-style: italic;
+}
