@@ -1,3 +1,6 @@
+// Webpack
+let conf = process.env.conf;
+
 // Vue
 import Vue from "vue";
 import VueRouter from "vue-router";
@@ -38,7 +41,7 @@ routes.push({
 
 // Vue - Global registration
 Vue.use(VueRouter);
-Vue.prototype.$conf = process.env.conf;
+Vue.prototype.$conf = conf;
 Vue.prototype.$app_data = window.app_data;
 Vue.component('code-block', CodeBlock);
 Vue.component('heading-h2', HeadingH2);
@@ -56,7 +59,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = window.app_data.conf.module_name + ' - ' + to.meta.title;
+  document.title = conf.module_name + ' - ' + to.meta.title;
   next();
 });
 

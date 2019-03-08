@@ -37,24 +37,24 @@ div
                                 code.header File: /path/to/your/project/app.ts
                             pre.body
                                 code.language-typescript import Drash from " https://deno.land/x/drash/mod.ts";
-                    li Importing Drash release v0.4.0 through the Deno Registry
+                    li Importing Drash latest release through the Deno Registry
                         div.b-code-example
                             pre.header
                                 code.header File: /path/to/your/project/app.ts
                             pre.body
-                                code.language-typescript import Drash from " https://deno.land/x/drash@v0.4.0/mod.ts";
+                                code.language-typescript import Drash from " https://deno.land/x/drash@{{ $conf.latest_release }}/mod.ts";
                     li Importing Drash master branch from GitHub
                         div.b-code-example
                             pre.header
                                 code.header File: /path/to/your/project/app.ts
                             pre.body
                                 code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"
-                    li Importing Drash release v0.4.0 from GitHub
+                    li Importing Drash latest release from GitHub
                         div.b-code-example
                             pre.header
                                 code.header File: /path/to/your/project/app.ts
                             pre.body
-                                code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/v0.4.0/mod.ts"
+                                code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/{{ $conf.latest_release }}/mod.ts"
         hr
         div.row
             div.col

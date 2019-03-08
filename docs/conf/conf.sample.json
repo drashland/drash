@@ -1,4 +1,6 @@
 {
+  "latest_release": "v0.5.0",
+
   "development": {
     "module_name": "Drash",
     "base_url": "",
