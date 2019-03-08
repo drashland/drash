@@ -1,0 +1,46 @@
+.c-footer {
+    background: #efefef;
+    color: #333333;
+    padding: rem(5) 0 0 0;
+}
+
+
+
+
+//
+// Footer column content (essentially the inner container)
+//
+.c-footer .column-content {
+    margin-bottom: rem(4);
+}
+
+
+
+
+//
+// Footer social icons
+//
+.c-footer .icon {
+    // background: $g-colorset-sidebar-tab-background;
+    // color: #ffffff;
+    background: rgba(255, 255, 255, 0.4);
+    color: #333333;
+    display: inline-block;
+    text-align: center;
+    font-size: rem(2);
+    padding: rem(0.5) rem(1);
+    margin-right: rem(1);
+    &:last-of-type {
+        margin-right: 0;
+    }
+}
+
+
+
+
+//
+// crookse.Node text
+//
+.c-footer .crookse-node {
+    color: #ff7700;
+}

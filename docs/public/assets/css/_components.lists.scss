@@ -1,0 +1,36 @@
+.c-list {
+}
+    //
+    // Modifier: neutralized
+    //
+    // This has 0 padding and margins.
+    //
+    .c-list--neutralized {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+    }
+    //
+    // Modifier: horizontal
+    //
+    // The list items are vertical
+    //
+    .c-list--horizontal {
+        li {
+            display: inline-block;
+        }
+    }
+
+
+
+
+//
+// Function Parameters
+//
+.c-list-function-parameters-for-docs {
+    padding-left: rem(1.5);
+    .description {
+        display: block;
+        margin-left: rem(2);
+    }
+}

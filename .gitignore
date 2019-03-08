@@ -1,8 +1,7 @@
-# /docs > files
-docs/.console/deploy
-docs/conf/*.json
+# files
+.DS_Store
+conf.json
 package-lock.json
 
-# /docs > directories
-docs/node_modules
-!docs/conf/*.sample.json
+# directories
+node_modules
