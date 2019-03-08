@@ -1,5 +1,7 @@
 .drash_http_resources.ts
 .console
 .tmp
-docs/dist
 docs/node_modules
+docs/conf/*.json
+!docs/conf/*.sample.json
+package-lock.json
