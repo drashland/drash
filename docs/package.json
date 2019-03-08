@@ -20,6 +20,7 @@
   },
   "scripts": {
     "app-dev" : ".console/app.dev",
+    "deploy": ".console/webpack.prod; .console/deploy",
     "webpack-dev" : ".console/webpack.dev",
     "webpack-dev-watch" : ".console/webpack.dev --watch",
     "build": ".console/build"
