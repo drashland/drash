@@ -4,7 +4,8 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = envVars => {
   const confFile = require(path.resolve(__dirname, "conf/conf.json"));
-  const conf = confFile[envVars.environment];
+  let conf = confFile[envVars.environment];
+  conf.latest_release = confFile.latest_release;
 
   console.log(`\nRunning "${envVars.environment}" configs.\n`);
 
