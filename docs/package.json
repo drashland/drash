@@ -17,5 +17,10 @@
     "vue-template-compiler": "^2.6.7",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"
+  },
+  "scripts": {
+    "app-dev" : ".console/app.dev",
+    "webpack-dev" : ".console/webpack.dev",
+    "build": ".console/build"
   }
 }
