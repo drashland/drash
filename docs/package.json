@@ -21,6 +21,7 @@
   "scripts": {
     "app-dev" : ".console/app.dev",
     "webpack-dev" : ".console/webpack.dev",
+    "webpack-dev-watch" : ".console/webpack.dev --watch",
     "build": ".console/build"
   }
 }
