@@ -1,3 +1,7 @@
-.drash_http_resources.ts
-.console
-.tmp
+# files
+.DS_Store
+conf.json
+package-lock.json
+
+# directories
+node_modules
