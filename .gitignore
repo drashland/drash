@@ -1,8 +1,8 @@
-.drash_http_resources.ts
-.tmp
-.console
-!docs/.console
-docs/node_modules
+# /docs > files
+docs/.console/deploy
 docs/conf/*.json
-!docs/conf/*.sample.json
 package-lock.json
+
+# /docs > directories
+docs/node_modules
+!docs/conf/*.sample.json
