@@ -41,7 +41,7 @@ let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
   resources: [HomeResource],
-  static_paths: ["/public"],
+  static_paths: ["/public"]
 });
 
 server.run();

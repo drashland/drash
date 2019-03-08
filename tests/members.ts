@@ -31,7 +31,7 @@ export default {
   Drash,
   ServerRequest,
   assert: {
-    equal: asserts.assertEquals,
+    equal: asserts.assertEquals
   },
   decoder,
   test,

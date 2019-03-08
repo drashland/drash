@@ -11,15 +11,19 @@ export default class Response extends Drash.Http.Response {
     let body;
 
     switch (this.headers.get("Content-Type")) {
-
       // Handle HTML
       case "text/html":
-        body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10"><h1>Hello</h1><p>Status: ${this.status_code}</p><div class="content">${this.body}</div></body></html>`;
+        body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10"><h1>Hello</h1><p>Status: ${
+          this.status_code
+        }</p><div class="content">${this.body}</div></body></html>`;
         break;
 
       // Handle JSON
       case "application/json":
-        body = JSON.stringify({ status_code: this.status_code, body: this.body });
+        body = JSON.stringify({
+          status_code: this.status_code,
+          body: this.body
+        });
         break;
 
       // Handle PDF
@@ -31,7 +35,9 @@ export default class Response extends Drash.Http.Response {
       // Handle XML
       case "application/xml":
       case "text/xml":
-        body = `<response><statuscode>${this.status_code}</statuscode><body>${this.body}</body></response>`;
+        body = `<response><statuscode>${this.status_code}</statuscode><body>${
+          this.body
+        }</body></response>`;
         break;
 
       // Handle plain text and also default to this
@@ -48,4 +54,3 @@ export default class Response extends Drash.Http.Response {
     });
   }
 }
-

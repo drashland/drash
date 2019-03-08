@@ -18,21 +18,21 @@ export default class UsersResource extends Drash.Http.Resource {
       alias: "Captain America",
       name: "Steve Rogers",
       api_key: "46096ec9-5bf9-4978-b77b-07018dc32a74",
-      api_secret: "1b64d3ac-7e19-4018-ab99-29f50e097f4b",
+      api_secret: "1b64d3ac-7e19-4018-ab99-29f50e097f4b"
     },
     2: {
       id: 2,
       alias: "Iron Man",
       name: "Tony Stark",
       api_key: "3d93a3f9-c5ad-439d-bacb-75a9e4fb2b42",
-      api_secret: "e5b11faa-629f-4255-bf3a-ee736dc9468d",
+      api_secret: "e5b11faa-629f-4255-bf3a-ee736dc9468d"
     },
     3: {
       id: 3,
       alias: "Thor",
       name: "Thor Odinson",
       api_key: "7442f354-2a89-47ef-a3ce-5a7c68e82157",
-      api_secret: "365e362f-fa21-4e5a-bb84-9da76e1c5f49",
+      api_secret: "365e362f-fa21-4e5a-bb84-9da76e1c5f49"
     }
   };
 
@@ -48,7 +48,6 @@ export default class UsersResource extends Drash.Http.Resource {
     }
 
     switch (this.response.headers.get("Content-Type")) {
-
       case "application/json":
         // Simulate authentication
         if (this.request.url_query_params.auth_token != "shield") {
@@ -95,4 +94,3 @@ export default class UsersResource extends Drash.Http.Resource {
     return this.response;
   }
 }
-

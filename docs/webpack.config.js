@@ -20,17 +20,17 @@ module.exports = envVars => {
       rules: [
         {
           test: /\.pug$/,
-          loader: 'pug-plain-loader'
+          loader: "pug-plain-loader"
         },
         {
           test: /\.vue$/,
-          loader: 'vue-loader'
+          loader: "vue-loader"
         },
         // this will apply to both plain `.js` files
         // AND `<script>` blocks in `.vue` files
         {
           test: /\.js$/,
-          loader: 'babel-loader'
+          loader: "babel-loader"
         },
         // this will apply to both plain `.css` files
         // AND `<style>` blocks in `.vue` files
@@ -49,17 +49,20 @@ module.exports = envVars => {
       new VueLoaderPlugin(),
       // Add compile time vars
       new webpack.DefinePlugin({
-        'process.env': {
-          conf: JSON.stringify(conf),
+        "process.env": {
+          conf: JSON.stringify(conf)
         }
       })
     ],
     resolve: {
       alias: {
-        vue: conf.webpack.mode == "production" ? "vue/dist/vue.min.js" : "vue/dist/vue.js",
+        vue:
+          conf.webpack.mode == "production"
+            ? "vue/dist/vue.min.js"
+            : "vue/dist/vue.js",
         "/components": path.resolve(__dirname, "src/vue/components"),
         "/conf": path.resolve(__dirname, "conf")
-      },
+      }
     }
   };
-}
+};

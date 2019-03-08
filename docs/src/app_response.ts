@@ -14,7 +14,9 @@ class AppResponse extends Drash.Http.Response {
         Drash.Vendor.ConsoleLogger.debug("Rendering HTML response.");
         try {
           const conf = Drash.getEnvVar("conf").toArray().value;
-          body = await ResponseService.getAppDataInHtml(`${conf.paths.app_root}/src/templates/index.ejs`);
+          body = await ResponseService.getAppDataInHtml(
+            `${conf.paths.app_root}/src/templates/index.ejs`
+          );
         } catch (error) {
           Drash.Vendor.ConsoleLogger.debug("WTF.");
           Drash.Vendor.ConsoleLogger.debug("Error below:");
@@ -25,7 +27,10 @@ class AppResponse extends Drash.Http.Response {
       // Handle JSON
       case "application/json":
         Drash.Vendor.ConsoleLogger.debug("Stringifying JSON response.");
-        body = JSON.stringify({ status_code: this.status_code, body: this.body });
+        body = JSON.stringify({
+          status_code: this.status_code,
+          body: this.body
+        });
         break;
     }
 

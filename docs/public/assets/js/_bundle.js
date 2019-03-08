@@ -22,16 +22,15 @@ const routeModules = [
   AddingContentTypes,
   HandlingContentNegotiation,
   Introduction,
-  Tutorials,
-].forEach((component) => {
-  component.resource.paths.forEach((path) => {
+  Tutorials
+].forEach(component => {
+  component.resource.paths.forEach(path => {
     routes.push({
       path: path,
       component: component.default,
       meta: component.resource.meta
     });
   });
-
 });
 
 routes.push({
@@ -43,23 +42,23 @@ routes.push({
 Vue.use(VueRouter);
 Vue.prototype.$conf = conf;
 Vue.prototype.$app_data = window.app_data;
-Vue.component('code-block', CodeBlock);
-Vue.component('heading-h2', HeadingH2);
+Vue.component("code-block", CodeBlock);
+Vue.component("heading-h2", HeadingH2);
 
 const router = new VueRouter({
   routes: routes,
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
-        selector: to.hash
-        , offset: { x: 0, y: 10 }
-      }
+        selector: to.hash,
+        offset: { x: 0, y: 10 }
+      };
     }
   }
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = conf.module_name + ' - ' + to.meta.title;
+  document.title = conf.module_name + " - " + to.meta.title;
   next();
 });
 
@@ -71,7 +70,7 @@ router.afterEach((to, from) => {
 window.app = new Vue({
   el: "#vue_app_mount",
   components: {
-    VueAppRoot,
+    VueAppRoot
   },
   router: router,
   mounted() {
@@ -123,7 +122,7 @@ function fade_out_element(jQueryObject, duration) {
  * Toggle the "Back To Top" button
  */
 function toggleBackToTopButton() {
-  if($(window).scrollTop() >= 90) {
+  if ($(window).scrollTop() >= 90) {
     $(".c-btn-back-to-top").fadeIn(100);
   } else {
     $(".c-btn-back-to-top").fadeOut(100);

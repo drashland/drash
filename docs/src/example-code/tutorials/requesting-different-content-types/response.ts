@@ -14,7 +14,6 @@ export default class Response extends Drash.Http.Response {
     let body;
 
     switch (this.headers.get("Content-Type")) {
-
       // Handle HTML
       case "text/html":
         body = `<!DOCTYPE html>
@@ -47,4 +46,3 @@ export default class Response extends Drash.Http.Response {
     });
   }
 }
-
