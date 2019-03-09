@@ -61,10 +61,19 @@ export function getAppData() {
           logging: {
             server_logging_to_files: {
               app: code("/tutorials/logging/server-logging-to-files/app.ts"),
-              folder_structure: code("/tutorials/logging/server-logging-to-files/folder_structure.txt"),
-              folder_structure_setup: code("/tutorials/logging/server-logging-to-files/folder_structure_setup.sh"),
-              home_resource: code("/tutorials/logging/server-logging-to-files/home_resource.ts"),
-              server_log: code("/tutorials/logging/server-logging-to-files/tmp/server.log", "tmp/server.log")
+              folder_structure: code(
+                "/tutorials/logging/server-logging-to-files/folder_structure.txt"
+              ),
+              folder_structure_setup: code(
+                "/tutorials/logging/server-logging-to-files/folder_structure_setup.sh"
+              ),
+              home_resource: code(
+                "/tutorials/logging/server-logging-to-files/home_resource.ts"
+              ),
+              server_log: code(
+                "/tutorials/logging/server-logging-to-files/tmp/server.log",
+                "tmp/server.log"
+              )
             }
           }
         }
