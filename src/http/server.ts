@@ -307,7 +307,7 @@ export default class Server {
    * Run the Deno server.
    */
   public async run(): Promise<void> {
-    this.logger.info(`Deno server started at ${this.configs.address}.`);
+    console.log(`Deno server started at ${this.configs.address}.`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       this.handleHttpRequest(request);
