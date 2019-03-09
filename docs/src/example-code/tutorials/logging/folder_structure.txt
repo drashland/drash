@@ -1,0 +1,4 @@
+▾ /path/to/your/project/
+	▸ .tmp/
+	app.ts
+	home_resource.ts

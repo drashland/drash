@@ -17,48 +17,45 @@ export function getAppData() {
       conf: Drash.getEnvVar("conf").toArray().value,
       example_code: {
         getting_started: {
-          importing_deno: code("/getting-started/importing_deno.ts", ""),
-          quickstart: code("/getting-started/quickstart.ts", "app.ts")
+          importing_deno: code("/getting-started/importing_deno.ts"),
+          quickstart: code("/getting-started/quickstart.ts")
         },
         tutorials: {
           adding_more_content_types: {
-            app: code("/tutorials/adding-more-content-types/app.ts", "app.ts"),
+            app: code("/tutorials/adding-more-content-types/app.ts"),
             folder_structure: code(
-              "/tutorials/adding-more-content-types/folder_structure.txt",
-              " "
+              "/tutorials/adding-more-content-types/folder_structure.txt"
             ),
             folder_structure_setup: code(
               "/tutorials/adding-more-content-types/folder_structure_setup.sh"
             ),
             home_resource: code(
-              "/tutorials/adding-more-content-types/home_resource.ts",
-              "home_resource.ts"
+              "/tutorials/adding-more-content-types/home_resource.ts"
             ),
-            response: code(
-              "/tutorials/adding-more-content-types/response.ts",
-              "response.ts"
-            )
+            response: code("/tutorials/adding-more-content-types/response.ts")
           },
           requesting_different_content_types: {
-            app: code(
-              "/tutorials/requesting-different-content-types/app.ts",
-              "app.ts"
-            ),
+            app: code("/tutorials/requesting-different-content-types/app.ts"),
             folder_structure: code(
-              "/tutorials/requesting-different-content-types/folder_structure.txt",
-              " "
+              "/tutorials/requesting-different-content-types/folder_structure.txt"
             ),
             folder_structure_setup: code(
               "/tutorials/requesting-different-content-types/folder_structure_setup.sh"
             ),
             response: code(
-              "/tutorials/requesting-different-content-types/response.ts",
-              "response.ts"
+              "/tutorials/requesting-different-content-types/response.ts"
             ),
             users_resource: code(
-              "/tutorials/requesting-different-content-types/users_resource.ts",
-              "users_resource.ts"
+              "/tutorials/requesting-different-content-types/users_resource.ts"
             )
+          },
+          logging: {
+            app: code("/tutorials/logging/app.ts"),
+            folder_structure: code("/tutorials/logging/folder_structure.txt"),
+            folder_structure_setup: code(
+              "/tutorials/logging/folder_structure_setup.sh"
+            ),
+            home_resource: code("/tutorials/logging/home_resource.ts")
           }
         }
       }
@@ -73,16 +70,19 @@ export async function compile(inputFile, outputFile): Promise<any> {
   Deno.writeFileSync(outputFile, encoded);
 }
 
-export function code(file, filename?) {
+export function code(file: string) {
   const decoder = new TextDecoder("utf-8");
   let contents = decoder.decode(Deno.readFileSync(`./src/example-code${file}`));
-  if (!filename) {
-    filename = file.split(".");
-    filename = filename[filename.length - 1];
-  }
+
+  let fileExtensionSplit = file.split(".");
+  let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
+
+  let fileSplit = file.split("/");
+  let fileName = fileSplit[fileSplit.length - 1];
 
   return {
-    file: filename,
+    file: fileName,
+    file_extension: fileExtension,
     code: contents
   };
 }

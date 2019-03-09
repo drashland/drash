@@ -1,5 +1,5 @@
 #!/bin/bash
 
 (
-  webpack --env.environment=development $@
+  webpack --env.environment=development --hide-modules $@
 )

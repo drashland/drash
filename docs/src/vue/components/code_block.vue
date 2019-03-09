@@ -9,46 +9,36 @@ div.b-code-example
 <script>
 export default {
     props: [
-        'data',
-        'options'
+        'data'
     ],
-    data() {
-        return {
-            file: this.data.file,
-        };
-    },
     computed: {
         code() {
             return this.data.code
         },
         heading() {
-            if (this.options && this.options.heading) {
-                return this.options.heading;
+            switch (this.data.file_extension) {
+                case "txt":
+                    return "Project Folder";
+                case "sh":
+                    return "Terminal";
+                default:
+                    return `/path/to/your/project/${this.data.file}`;
             }
-            if (this.data.file) {
-              if (this.data.file.split(".")[1] == "sh") {
-                  return "Terminal";
-              }
-              return `File: /path/to/your/project/${this.data.file}`;
-            }
-            return this.data.heading;
         },
         prism() {
-            if (this.data.file) {
-                let prism = "language-text";
-                switch (this.data.file.split(".")[1]) {
-                  case 'ts':
-                    prism = 'language-typescript';
-                    break;
-                  case 'sh':
-                    prism = 'language-shell';
-                    break;
-                  case 'txt':
-                    prism = 'language-text';
-                    break;
-                }
-                return prism;
-              }
+            let prism = "language-text";
+            switch (this.data.file_extension) {
+              case 'ts':
+                prism = 'language-typescript';
+                break;
+              case 'sh':
+                prism = 'language-shell';
+                break;
+              case 'txt':
+                prism = 'language-text';
+                break;
+            }
+            return prism;
         }
     },
     mounted() {

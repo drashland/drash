@@ -23,6 +23,7 @@ div.c-sidebar
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
+                a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
     div.c-sidebar__footer
         div.row
             div.col.text-align--center
