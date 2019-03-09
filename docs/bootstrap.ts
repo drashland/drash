@@ -14,3 +14,5 @@ Drash.addMember(
 );
 
 export default Drash;
+
+export { conf };

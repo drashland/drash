@@ -15,7 +15,7 @@ class AppResponse extends Drash.Http.Response {
         try {
           const conf = Drash.getEnvVar("conf").toArray().value;
           body = await ResponseService.getAppDataInHtml(
-            `${conf.paths.app_root}/src/templates/index.ejs`
+            `${conf.paths.docs_root}/src/templates/index.ejs`
           );
         } catch (error) {
           Drash.Vendor.ConsoleLogger.debug("WTF.");
