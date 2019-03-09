@@ -22,6 +22,7 @@
     "dev": ".console/dev",
     "webpack-dev": ".console/webpack.dev",
     "webpack-dev-watch": ".console/webpack.dev --watch",
-    "build": ".console/build"
+    "build": ".console/build",
+    "prettier": "../.console/prettier"
   }
 }
