@@ -292,7 +292,7 @@ export default class Server {
       this.trackers.requested_favicon = true;
       this.logger.debug("/favicon.ico requested.");
       this.logger.debug(
-        "All future log messages for this request will be muted."
+        "All future log messages for /favicon.ico will be muted."
       );
     }
     let response = {

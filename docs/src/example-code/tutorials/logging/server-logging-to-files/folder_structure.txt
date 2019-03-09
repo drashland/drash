@@ -1,4 +1,5 @@
 ▾ /path/to/your/project/
-	▸ .tmp/
+	▾ tmp/
+		server.log
 	app.ts
 	home_resource.ts

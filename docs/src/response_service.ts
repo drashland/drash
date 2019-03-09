@@ -1,6 +1,15 @@
 import Drash from "../bootstrap.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
 
+// FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////////////////////////
+
+export async function compile(inputFile, outputFile): Promise<any> {
+  let body = await getAppDataInHtml(inputFile);
+  const encoder = new TextEncoder();
+  let encoded = encoder.encode(body);
+  Deno.writeFileSync(outputFile, encoded);
+}
+
 export function getAppData() {
   return {
     // The below is transferred to index.ejs
@@ -50,12 +59,13 @@ export function getAppData() {
             )
           },
           logging: {
-            app: code("/tutorials/logging/app.ts"),
-            folder_structure: code("/tutorials/logging/folder_structure.txt"),
-            folder_structure_setup: code(
-              "/tutorials/logging/folder_structure_setup.sh"
-            ),
-            home_resource: code("/tutorials/logging/home_resource.ts")
+            server_logging_to_files: {
+              app: code("/tutorials/logging/server-logging-to-files/app.ts"),
+              folder_structure: code("/tutorials/logging/server-logging-to-files/folder_structure.txt"),
+              folder_structure_setup: code("/tutorials/logging/server-logging-to-files/folder_structure_setup.sh"),
+              home_resource: code("/tutorials/logging/server-logging-to-files/home_resource.ts"),
+              server_log: code("/tutorials/logging/server-logging-to-files/tmp/server.log", "tmp/server.log")
+            }
           }
         }
       }
@@ -63,14 +73,15 @@ export function getAppData() {
   };
 }
 
-export async function compile(inputFile, outputFile): Promise<any> {
-  let body = await getAppDataInHtml(inputFile);
-  const encoder = new TextEncoder();
-  let encoded = encoder.encode(body);
-  Deno.writeFileSync(outputFile, encoded);
+export async function getAppDataInHtml(inputFile) {
+  const output = await renderFile(inputFile, getAppData());
+  let html = output.toString();
+  return html;
 }
 
-export function code(file: string) {
+// FILE MARKER: FUNCTIONS - LOCAL //////////////////////////////////////////////////////////////////
+
+function code(file: string, filenameOverride?: string) {
   const decoder = new TextDecoder("utf-8");
   let contents = decoder.decode(Deno.readFileSync(`./src/example-code${file}`));
 
@@ -78,17 +89,11 @@ export function code(file: string) {
   let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
 
   let fileSplit = file.split("/");
-  let fileName = fileSplit[fileSplit.length - 1];
+  let filename = fileSplit[fileSplit.length - 1];
 
   return {
-    file: fileName,
+    file: filenameOverride ? filenameOverride : filename,
     file_extension: fileExtension,
     code: contents
   };
-}
-
-export async function getAppDataInHtml(inputFile) {
-  const output = await renderFile(inputFile, getAppData());
-  let html = output.toString();
-  return html;
 }

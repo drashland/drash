@@ -14,7 +14,7 @@ export default class HomeResource extends Drash.Http.Resource {
    */
   public GET() {
     // Write an info log message to .tmp/server.log
-    this.server.logger.info("Handling GET request.");
+    this.server.logger.info("Howdy! I'm handling your GET request.");
 
     this.response.body = "GET request received!";
 

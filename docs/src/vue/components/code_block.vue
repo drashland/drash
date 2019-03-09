@@ -28,21 +28,21 @@ export default {
         prism() {
             let prism = "language-text";
             switch (this.data.file_extension) {
-              case 'ts':
-                prism = 'language-typescript';
-                break;
-              case 'sh':
-                prism = 'language-shell';
-                break;
-              case 'txt':
-                prism = 'language-text';
-                break;
+                case 'sh':
+                    prism = 'language-shell';
+                    break;
+                case 'ts':
+                    prism = 'language-typescript';
+                    break;
+                case 'txt':
+                    prism = 'language-text';
+                    break;
             }
             return prism;
         }
     },
     mounted() {
-      Prism.highlightAll();
+        Prism.highlightAll();
     }
 }
 </script>
