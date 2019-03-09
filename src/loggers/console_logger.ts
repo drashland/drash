@@ -5,4 +5,8 @@ export default class ConsoleLogger extends Logger {
     super(configs);
     super.type = Logger.TYPE_CONSOLE;
   }
+
+  public write(logMethodLevelDefinition, message) {
+    console.log(`${logMethodLevelDefinition.name} | ${message}`);
+  }
 }

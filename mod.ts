@@ -12,6 +12,7 @@ import Server from "./src/http/server.ts";
 // Loggers
 import Logger from "./src/loggers/logger.ts";
 import ConsoleLogger from "./src/loggers/console_logger.ts";
+import FileLogger from "./src/loggers/file_logger.ts";
 // Services
 import * as HttpService from "./src/services/http_service.ts";
 // Util
@@ -37,7 +38,8 @@ function Drash(): any {
     },
     Loggers: {
       Logger: Logger,
-      ConsoleLogger: ConsoleLogger
+      ConsoleLogger: ConsoleLogger,
+      FileLogger: FileLogger
     },
     Services: {
       HttpService: HttpService

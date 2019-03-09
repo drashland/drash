@@ -1,6 +1,6 @@
 import Drash from "../../mod.ts";
 
-export default class Logger {
+export default abstract class Logger {
   static TYPE_CONSOLE = 1;
   static TYPE_FILE = 2;
 
@@ -123,13 +123,5 @@ export default class Logger {
     this.write(logMethodLevelDefinition, message);
   }
 
-  public write(logMethodLevelDefinition, message) {
-    switch (this.type) {
-      case Logger.TYPE_CONSOLE:
-        console.log(`${logMethodLevelDefinition.name} | ${message}`);
-        break;
-      default:
-        break;
-    }
-  }
+  abstract write(logMethodLevelDefinition, message);
 }
