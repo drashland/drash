@@ -122,6 +122,8 @@ export default class Server {
   }
 
   public getStaticPathData(request) {
+    // If the request URL is "/public/assets/js/bundle.js", then we take out "/public" and use that
+    // to check against the static paths
     let requestUrl = `/${request.url.split("/")[1]}`;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
@@ -236,8 +238,6 @@ export default class Server {
     this.logger.trace("Stack trace below:");
     this.logger.trace(error.stack);
 
-    let requestUrl = request.url.split("?")[0];
-
     let response = new Drash.Http.Response(request);
 
     switch (error.code) {
@@ -245,17 +245,17 @@ export default class Server {
         error.code = 401;
         response.body = error.message
           ? error.message
-          : `The requested URL '${requestUrl} requires authentication.`;
+          : `The requested URL '${request.url_path} requires authentication.`;
         break;
       case 404:
         response.body = error.message
           ? error.message
-          : `The requested URL '${requestUrl}' was not found on this server.`;
+          : `The requested URL '${request.url_path}' was not found on this server.`;
         break;
       case 405:
         response.body = error.message
           ? error.message
-          : `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+          : `URI '${request.url_path}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
         break;
       case 500:
         response.body = error.message
@@ -325,7 +325,6 @@ export default class Server {
    */
   protected getResourceClass(request) {
     let matchedResourceClass = undefined;
-    let requestUrl = request.url.split("?")[0];
 
     for (let className in this.resources) {
       // eslint-disable-line
@@ -342,19 +341,19 @@ export default class Server {
       ) {
         if (!matchedResourceClass) {
           let thisPathMatchesRequestPathname = null;
-          if (pathObj.og_path === "/" && requestUrl.pathname === "/") {
+          if (pathObj.og_path === "/" && request.url_path === "/") {
             matchedResourceClass = resource;
             return;
           }
 
           // Check if the current path we're working on matches the request's pathname
-          thisPathMatchesRequestPathname = requestUrl.match(pathObj.regex_path);
+          thisPathMatchesRequestPathname = request.url_path.match(pathObj.regex_path);
           if (!thisPathMatchesRequestPathname) {
             return;
           }
 
           // Create the path params
-          let requestPathnameParams = requestUrl.match(pathObj.regex_path);
+          let requestPathnameParams = request.url_path.match(pathObj.regex_path);
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();
