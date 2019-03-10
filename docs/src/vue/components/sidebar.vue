@@ -19,7 +19,7 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/introduction#features'") Features
                 a(:href="$conf.base_url + '/#/introduction#importing'") Importing
                 a(:href="$conf.base_url + '/#/introduction#quickstart'") Quickstart
-            a.heading-link(:href="$conf.base_url + '/#/tutorials'") Tutorials
+            a.heading-link Tutorials
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation

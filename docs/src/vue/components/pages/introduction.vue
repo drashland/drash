@@ -91,7 +91,7 @@ div
 
 <script>
 export const resource = {
-    paths: ["/", "/introduction"],
+    paths: ["/", "/introduction", "/tutorials"],
     meta: {
         title: "Introduction",
     }

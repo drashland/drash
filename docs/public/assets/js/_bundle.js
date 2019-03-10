@@ -14,7 +14,6 @@ import VueAppRoot from "/components/vue_app_root.vue";
 import * as AddingContentTypes from "/components/pages/tutorials/adding_content_types.vue";
 import * as HandlingContentNegotiation from "/components/pages/tutorials/handling_content_negotiation.vue";
 import * as Introduction from "/components/pages/introduction.vue";
-import * as Tutorials from "/components/pages/tutorials.vue";
 import * as Logging from "/components/pages/tutorials/logging.vue";
 import Error404 from "/components/pages/error_404.vue";
 
@@ -23,7 +22,6 @@ const routeModules = [
   AddingContentTypes,
   HandlingContentNegotiation,
   Introduction,
-  Tutorials,
   Logging
 ].forEach(component => {
   component.resource.paths.forEach(path => {
