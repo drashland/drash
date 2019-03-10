@@ -20,8 +20,46 @@ export function hydrateHttpRequest(request, options?) {
   }
 
   request.url_query_params = getHttpRequestUrlQueryParams(request);
+  request.url_query_string = getHttpRequestUrlQueryString(request);
+  request.url_path = getHttpRequestUrlPath(request);
 
   return request;
+}
+
+export function getHttpRequestUrlPath(request) {
+  let path = request.url;
+
+  if (path == "/") {
+    return path;
+  }
+
+  if (request.url.indexOf("?") == -1) {
+    return path;
+  }
+
+  try {
+    path = request.url.split("?")[0];
+  } catch (error) {
+    // ha.. do nothing
+  }
+
+  return path;
+}
+
+export function getHttpRequestUrlQueryString(request) {
+  let queryString = null;
+
+  if (request.url.indexOf("?") == -1) {
+    return queryString;
+  }
+
+  try {
+    queryString = request.url.split("?")[1];
+  } catch (error) {
+    // ha.. do nothing
+  }
+
+  return queryString;
 }
 
 /**
