@@ -122,7 +122,11 @@ export default class Server {
   }
 
   public getStaticPathData(request) {
-    if (this.static_paths.indexOf(request.url_path) != -1) {
+    // If the request URL is "/public/assets/js/bundle.js", then we take out "/public" and use that
+    // to check against the static paths
+    let requestUrl = `/${request.url.split("/")[1]}`;
+
+    if (this.static_paths.indexOf(requestUrl) != -1) {
       request = Drash.Services.HttpService.hydrateHttpRequest(request, {
         headers: {
           "Response-Content-Type": Drash.Services.HttpService.getMimeType(
