@@ -67,12 +67,33 @@ export function getAppData() {
               folder_structure_setup: code(
                 "/tutorials/logging/server-logging-to-files/folder_structure_setup.sh"
               ),
+              get_request: code(
+                "/tutorials/logging/server-logging-to-files/get_request.sh"
+              ),
               home_resource: code(
                 "/tutorials/logging/server-logging-to-files/home_resource.ts"
               ),
               server_log: code(
                 "/tutorials/logging/server-logging-to-files/tmp/server.log",
                 "tmp/server.log"
+              )
+            },
+            server_logging_to_the_terminal: {
+              app: code("/tutorials/logging/server-logging-to-the-terminal/app.ts"),
+              folder_structure: code(
+                "/tutorials/logging/server-logging-to-the-terminal/folder_structure.txt"
+              ),
+              folder_structure_setup: code(
+                "/tutorials/logging/server-logging-to-the-terminal/folder_structure_setup.sh"
+              ),
+              get_request: code(
+                "/tutorials/logging/server-logging-to-the-terminal/get_request.sh"
+              ),
+              home_resource: code(
+                "/tutorials/logging/server-logging-to-the-terminal/home_resource.ts"
+              ),
+              terminal: code(
+                "/tutorials/logging/server-logging-to-the-terminal/terminal.sh"
               )
             }
           }

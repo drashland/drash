@@ -6,10 +6,9 @@ let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "application/json",
   resources: [HomeResource],
-  logger: new Drash.Loggers.FileLogger({
+  logger: new Drash.Loggers.ConsoleLogger({
     enabled: true,
-    level: "debug", // Accepts all, trace, debug, info, warn, error, fatal, and off
-    file: "/path/to/your/project/.tmp/server.log"
+    level: "debug" // Accepts all, trace, debug, info, warn, error, fatal, and off
   })
 });
 
