@@ -55,38 +55,7 @@ div
                             pre.body
                                 code.language-typescript deno /path/to/your/project/app.ts --allow-net
                     li Make the following <code>GET</code> requests:
-                        p.text--help I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.
-                        ul
-                            li
-                                code localhost:8000/users/1?response_content_type=text/html&auth_token=shield
-                            li
-                                code localhost:8000/users/2?response_content_type=text/html&auth_token=shield
-                            li
-                                code localhost:8000/users/3?response_content_type=text/html&auth_token=shield
-                            li
-                                code localhost:8000/users/1?response_content_type=text/html
-                            li
-                                code localhost:8000/users/2?response_content_type=text/html
-                            li
-                                code localhost:8000/users/3?response_content_type=text/html
-                            li
-                                code localhost:8000/users/1?response_content_type=application/json&auth_token=shield
-                            li
-                                code localhost:8000/users/2?response_content_type=application/json&auth_token=shield
-                            li
-                                code localhost:8000/users/3?response_content_type=application/json&auth_token=shield
-                            li
-                                code localhost:8000/users/1?response_content_type=application/json
-                            li
-                                code localhost:8000/users/2?response_content_type=application/json
-                            li
-                                code localhost:8000/users/3?response_content_type=application/json
-                            li
-                                code localhost:8000/users/4
-                            li
-                                code localhost:8000/users/4?response_content_type=text/html
-                            li
-                                code localhost:8000/users/4?response_content_type=text/html&auth_token=shield
+                        code-block(:data="example_code.curl")
                 p.text--help This is the end of this tutorial.
 </template>
 

@@ -56,6 +56,9 @@ export function getAppData() {
             ),
             users_resource: code(
               "/tutorials/requesting-different-content-types/users_resource.ts"
+            ),
+            curl: code(
+              "/tutorials/requesting-different-content-types/curl.sh"
             )
           },
           logging: {
