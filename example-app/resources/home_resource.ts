@@ -7,11 +7,7 @@ export default class HomeResource extends Resource {
   /**
    * Handle GET requests.
    */
-  public async GET() {
-    console.log("The request body is as follows");
-    let decoder = new TextDecoder();
-    let decoded = await decoder.decode(this.request.body);
-    console.log(decoded);
+  public GET() {
     this.response.body = `Hello, ${
       this.request.url_query_params.name
         ? this.request.url_query_params.name
