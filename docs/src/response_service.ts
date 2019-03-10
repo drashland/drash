@@ -57,9 +57,7 @@ export function getAppData() {
             users_resource: code(
               "/tutorials/requesting-different-content-types/users_resource.ts"
             ),
-            curl: code(
-              "/tutorials/requesting-different-content-types/curl.sh"
-            )
+            curl: code("/tutorials/requesting-different-content-types/curl.sh")
           },
           logging: {
             server_logging_to_files: {
@@ -82,7 +80,9 @@ export function getAppData() {
               )
             },
             server_logging_to_the_terminal: {
-              app: code("/tutorials/logging/server-logging-to-the-terminal/app.ts"),
+              app: code(
+                "/tutorials/logging/server-logging-to-the-terminal/app.ts"
+              ),
               folder_structure: code(
                 "/tutorials/logging/server-logging-to-the-terminal/folder_structure.txt"
               ),
