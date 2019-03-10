@@ -10,15 +10,18 @@ assignees: ''
 Summary
 ---
 
-What: HTTP responses should send an ETag header for caching purposes.
-Why: Improve caching.
+What: Explain ...
+
+Why: Explain ...
 
 Acceptance Critera
 ---
 
-* `ETag` header should be present in the response's headers
+* Add acceptance critera as bullted list
 
 Example Pseudo Code (for implementation)
 ---
 
-None.
+```typescript
+// Add example pseudo code for implementation
+```
