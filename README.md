@@ -183,19 +183,3 @@ let server = new Drash.Http.Server({
 
 server.run();
 ```
-
----
-
-## Roadmap
-
-- [ ] File logging
-- [ ] Tagged logging
-- [ ] Full Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
-- [ ] Middleware
-- [ ] Request caching
-- [ ] Sessions
-- [ ] Style Guide
-- [ ] `DRASH_{SOME_VAR}` env variables
-- [ ] How To: Adding middleware
-- [ ] How To: Adding vendor modules (like dotenv for people who want to use dotenv)
-- [ ] Switch HTTP status codes to https://deno.land/x/http/http_status.ts
