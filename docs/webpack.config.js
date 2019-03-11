@@ -3,7 +3,7 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = envVars => {
-  const CONF_FILE = require(path.resolve(__dirname, ".conf/conf.json"));
+  const CONF_FILE = require(path.resolve(__dirname, "conf/conf.json"));
   let conf = CONF_FILE[envVars.environment];
   conf.latest_release = CONF_FILE.latest_release;
 

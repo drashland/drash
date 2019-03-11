@@ -13,7 +13,7 @@ class AppResponse extends Drash.Http.Response {
       case "text/html":
         Drash.Vendor.ConsoleLogger.debug("Rendering HTML response.");
         try {
-          const conf = Drash.getEnvVar("conf").toArray().value;
+          const conf = Drash.getEnvVar("DRASH_CONF").toArray().value;
           body = await ResponseService.getAppDataInHtml(
             `${conf.paths.docs_root}/src/templates/index.ejs`
           );
