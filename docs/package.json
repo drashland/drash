@@ -19,10 +19,10 @@
     "webpack-cli": "^3.2.3"
   },
   "scripts": {
-    "dev": ".console/dev",
-    "webpack-dev": ".console/webpack.dev",
-    "webpack-dev-watch": ".console/webpack.dev --watch",
-    "build": ".console/build",
-    "prettier": "../.console/prettier"
+    "dev": "console/dev",
+    "webpack-dev": "console/webpack.dev",
+    "webpack-dev-watch": "console/webpack.dev --watch",
+    "build": "console/build",
+    "prettier": "../console/prettier"
   }
 }

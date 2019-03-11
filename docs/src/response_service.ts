@@ -19,11 +19,11 @@ export function getAppData() {
       "/public/assets/vendor/bootstrap-4.1.3-dist/js/bootstrap.min.js"
     ],
     build_timestamp: new Date().getTime(),
-    conf: Drash.getEnvVar("conf").toArray().value,
+    conf: Drash.getEnvVar("DRASH_CONF").toArray().value,
 
     // The below is transferred to vue_app_root.vue
     app_data: JSON.stringify({
-      conf: Drash.getEnvVar("conf").toArray().value,
+      conf: Drash.getEnvVar("DRASH_CONF").toArray().value,
       example_code: {
         getting_started: {
           importing_deno: code("/getting-started/importing_deno.ts"),
