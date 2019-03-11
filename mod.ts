@@ -1,3 +1,6 @@
+// Deno
+import {env} from "deno";
+
 // Classes
 import EnvVar from "./src/classes/env_var.ts";
 // Dictionaries
@@ -70,10 +73,10 @@ function Drash(): any {
      *     parsable JSON array before retrieving the actual value.
      */
     getEnvVar(variableName: string): EnvVar {
-      let exists = Deno.env().hasOwnProperty(variableName);
+      let exists = env().hasOwnProperty(variableName);
       let value;
 
-      value = exists ? Deno.env()[variableName] : undefined;
+      value = exists ? env()[variableName] : undefined;
 
       return new EnvVar(variableName, value);
     },
@@ -90,8 +93,8 @@ function Drash(): any {
      * @return void
      */
     setEnvVar(variableName: string, value: string): void {
-      if (!Deno.env()[variableName]) {
-        Deno.env()[variableName] = value;
+      if (!env()[variableName]) {
+        env()[variableName] = value;
       }
     }
   }; // close return
