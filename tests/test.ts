@@ -11,6 +11,7 @@ import "./unit/http/server_test.ts";
 
 // Loggers
 import "./unit/loggers/console_logger_test.ts";
+import "./unit/loggers/file_logger_test.ts";
 
 // Services
 import "./unit/services/http_service_test.ts";

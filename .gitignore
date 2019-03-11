@@ -1,6 +1,6 @@
 # files
 .DS_Store
-conf.json
+*conf.json
 package-lock.json
 
 # directories
