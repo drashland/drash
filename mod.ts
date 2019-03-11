@@ -60,6 +60,7 @@ function Drash(): any {
 
     /**
      * Set an environment variable in `Deno.env()`.
+
      * @param string variableName
      *     The variable name.
      *
@@ -69,21 +70,17 @@ function Drash(): any {
      *     parsable JSON array before retrieving the actual value.
      */
     getEnvVar(variableName: string): EnvVar {
-      let key = `DRASH_${variableName.toUpperCase()}`;
-      let exists = Deno.env().hasOwnProperty(key);
+      let exists = Deno.env().hasOwnProperty(variableName);
       let value;
 
-      value = exists ? Deno.env()[key] : undefined;
+      value = exists ? Deno.env()[variableName] : undefined;
 
-      return new EnvVar(key, value);
+      return new EnvVar(variableName, value);
     },
 
     /**
-     * Set an environment variable in `Deno.env()`. The environment variable will be converted to an
-     * uppercase string and prefixed with "DRASH_." For example, if `Drash.setEnvVar("test", "ok")`
-     * is called, then this function will set the environment variable as `DRASH_TEST` with a value
-     * of "ok".
-
+     * Set an environment variable in `Deno.env()`.
+     *
      * @param string variableName
      *     The variable name which can be accessed via `Drash.getEnvVar(variableName)`.
      * @param string value
@@ -93,9 +90,8 @@ function Drash(): any {
      * @return void
      */
     setEnvVar(variableName: string, value: string): void {
-      let key = `DRASH_${variableName.toUpperCase()}`;
-      if (!Deno.env()[key]) {
-        Deno.env()[key] = value;
+      if (!Deno.env()[variableName]) {
+        Deno.env()[variableName] = value;
       }
     }
   }; // close return
