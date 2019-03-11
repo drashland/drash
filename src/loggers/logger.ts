@@ -16,7 +16,7 @@ export default abstract class Logger {
   protected tag_string_fns: any;
   protected test: boolean = false;
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   constructor(configs: any) {
     if (configs.test === true) {
@@ -44,11 +44,11 @@ export default abstract class Logger {
     this.level_definition = this.log_levels[this.configs.level];
   }
 
-  // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////
 
   abstract write(logMethodLevelDefinition, message);
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
    * Output a DEBUG level log message.
@@ -110,7 +110,7 @@ export default abstract class Logger {
     return this.sendToWriteMethod(this.log_levels.warn, message);
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   /**
    * Get the parsed version of the raw tag string.
@@ -139,12 +139,13 @@ export default abstract class Logger {
       tagString = tagString.replace(tag, this.tag_string_fns[key]);
     }
 
-    return tagString + " "; // Add a space so the log message isn't up against the tag string
+    // Add a space so the log message isn't up against the tag string
+    return tagString + " ";
   }
 
   /**
-   * Send the message to the write method (which should be in the child class). Also, do some
-   * prechecks before sending.
+   * Send the message to the write method (which should be in the child class).
+   * Also, do some prechecks before sending.
    *
    * @param any logMethodLevelDefinition
    *     The dictionary definition of the log message's level.
@@ -164,11 +165,12 @@ export default abstract class Logger {
       return;
     }
 
-    // We only want to output messages that have a lower rank than the specified level in the
-    // configs. This ensures that we only show the least amount of log messages as specified by the
-    // user. For example, if the user only wants to output FATAL log messages (has a rank of 400),
-    // then any log message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE) will NOT
-    // be processed.
+    // We only want to output messages that have a lower rank than the specified
+    // level in the configs. This ensures that we only show the least amount of
+    // log messages as specified by the user. For example, if the user only
+    // wants to output FATAL log messages (has a rank of 400), then any log
+    // message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE)
+    // will NOT be processed.
     if (logMethodLevelDefinition.rank > this.level_definition.rank) {
       return;
     }

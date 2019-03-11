@@ -9,7 +9,7 @@ export default class Response {
   public request;
   public status_code = Status.OK;
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   constructor(request) {
     this.request = request;
@@ -17,7 +17,7 @@ export default class Response {
     this.headers.set("Content-Type", this.getHeaderContentType());
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
    * Generate a response.
@@ -55,8 +55,8 @@ export default class Response {
   }
 
   /**
-   * Get the full status message based on the status code. This is just the status code and the
-   * status message together.
+   * Get the full status message based on the status code. This is just the
+   * status code and the status message together.
    *
    * @return string
    */
@@ -104,7 +104,7 @@ export default class Response {
     return output;
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   protected generateHtmlResponse(): string {
     return `<!DOCTYPE html>
@@ -143,12 +143,14 @@ export default class Response {
   protected getHeaderContentType(): string {
     let contentType = this.request.headers.get("Response-Content-Type-Default");
 
-    // Check the request's headers to see if `response-content-type: {content-type}` has been specified
+    // Check the request's headers to see if `response-content-type:
+    // {content-type}` has been specified
     contentType = this.request.headers.get("Response-Content-Type")
       ? this.request.headers.get("Response-Content-Type")
       : contentType;
 
-    // Check the request's URL query params to see if ?response_content_type={content-type} has been specified
+    // Check the request's URL query params to see if
+    // ?response_content_type={content-type} has been specified
     contentType = this.request.url_query_params.response_content_type
       ? this.request.url_query_params.response_content_type
       : contentType;

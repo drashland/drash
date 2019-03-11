@@ -5,14 +5,14 @@ export default class EnvVar {
   public value;
   protected name;
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   constructor(name: string, value: string) {
     this.name = name;
     this.value = value;
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
    * Convert a JSON string env var to a JSON array.

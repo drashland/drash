@@ -21,9 +21,9 @@ import * as HttpService from "./src/services/http_service.ts";
 // Util
 import * as Util from "./src/util.ts";
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// DRASH ///////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// DRASH ///////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 function Drash(): any {
   return {
@@ -68,9 +68,10 @@ function Drash(): any {
      *     The variable name.
      *
      * @return EnvVar
-     *     Returns a new EnvVar object with helper functions. For example, if the value of the
-     *     environment variable is a JSON string, you can call `.toArray().value` to turn it into a
-     *     parsable JSON array before retrieving the actual value.
+     *     Returns a new EnvVar object with helper functions. For example, if
+     *     the value of the environment variable is a JSON string, you can call
+     *     `.toArray().value` to turn it into a parsable JSON array before
+     *     retrieving the actual value.
      */
     getEnvVar(variableName: string): EnvVar {
       let exists = env().hasOwnProperty(variableName);
@@ -85,7 +86,8 @@ function Drash(): any {
      * Set an environment variable in `Deno.env()`.
      *
      * @param string variableName
-     *     The variable name which can be accessed via `Drash.getEnvVar(variableName)`.
+     *     The variable name which can be accessed via
+     *     `Drash.getEnvVar(variableName)`.
      * @param string value
      *     The value of the variable. `Deno.env()` only accepts strings. See
      *     https://deno.land/typedoc/index.html#env for more info.

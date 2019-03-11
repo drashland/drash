@@ -3,7 +3,7 @@ export default class Resource {
   protected response;
   protected server;
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
