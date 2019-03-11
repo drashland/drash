@@ -1,5 +1,6 @@
 # files
 .DS_Store
+.env
 *conf.json
 package-lock.json
 

@@ -5,7 +5,7 @@ const ANIMALS = {
 };
 
 const epoch = (new Date).getTime();
-const file = members.Drash.getEnvVar("dirs_base").value + members.CONF.file_logger_test.file.replace("{time}", `${epoch}`);
+const file = Drash.getEnvVar("dir_root").value + members.conf.file_logger_test.file.replace("{time}", `${epoch}`);
 
 members.test(function FileLogger() {
   let expected = "some_date | hello | tiger | This is cool!\n";

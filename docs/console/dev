@@ -3,5 +3,5 @@
 (
   export DRASH_MODE="development";
   echo -e "Don't forget to run \`npm run webpack-dev-watch\`\n"
-  deno $DRASH_DIRS_BASE/docs/docs.ts --allow-net --allow-env --allow-read $@
+  deno $DRASH_DIR_ROOT/docs/docs.ts --allow-net --allow-env --allow-read $@
 )
