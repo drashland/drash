@@ -4,10 +4,10 @@ const ANIMALS = {
   "#1235": "tiger"
 };
 
-const epoch = (new Date).getTime();
-const file = members.Drash.getEnvVar("dir_root").value + `/tmp/file_logger_test_${epoch}.log`;
+const file = members.Drash.getEnvVar("dir_root").value + `/tmp/file_logger_test.log`;
 
 members.test(function FileLogger() {
+  Deno.removeSync(file, {recursive: false});
   let expected = "some_date | hello | tiger | This is cool!\n";
   let logger = new members.Drash.Loggers.FileLogger({
     enabled: true,
@@ -26,4 +26,5 @@ members.test(function FileLogger() {
   const decoder = new TextDecoder();
   let actual = decoder.decode(Deno.readFileSync(file));
   members.assert.equal(actual, expected);
+  Deno.removeSync(file, {recursive: false});
 });
