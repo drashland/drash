@@ -1,5 +1,5 @@
 // Deno
-import {env} from "deno";
+import { env } from "deno";
 
 // Classes
 import EnvVar from "./src/classes/env_var.ts";

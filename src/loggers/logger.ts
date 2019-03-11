@@ -177,6 +177,9 @@ export default abstract class Logger {
 
     this.current_log_message_level_name = logMethodLevelDefinition.name;
 
-    return this.write(logMethodLevelDefinition, this.getTagStringParsed() + message);
+    return this.write(
+      logMethodLevelDefinition,
+      this.getTagStringParsed() + message
+    );
   }
 }
