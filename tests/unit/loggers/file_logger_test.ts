@@ -5,7 +5,6 @@ const ANIMALS = {
 };
 
 const file = members.Drash.getEnvVar("dir_root").value + `/tmp/file_logger_test.log`;
-console.log(file);
 
 members.test(function FileLogger() {
   Deno.removeSync(file, {recursive: false});
