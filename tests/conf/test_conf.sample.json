@@ -1,0 +1,7 @@
+{
+  "file_logger_test": {
+    "enabled": true,
+    "file": "/.tmp/file_logger_test_{time}.log"
+  }
+}
+
