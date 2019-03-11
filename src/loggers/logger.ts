@@ -4,6 +4,7 @@ export default abstract class Logger {
   static TYPE_CONSOLE = 1;
   static TYPE_FILE = 2;
 
+  protected current_log_message_level_name: string;
   protected type: number;
   protected level;
   protected level_definition;
@@ -12,6 +13,10 @@ export default abstract class Logger {
     enabled: false,
     level: "debug"
   };
+  protected tag_string: string;
+  protected tag_string_fns: any;
+
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(configs: any) {
     if (configs.enabled !== true) {
@@ -22,10 +27,22 @@ export default abstract class Logger {
       configs.level = this.configs.level;
     }
 
+    if (configs.tag_string) {
+      this.tag_string = configs.tag_string;
+    }
+
+    if (configs.tag_string_fns) {
+      this.tag_string_fns = configs.tag_string_fns;
+    }
+
     this.configs = configs;
 
     this.level_definition = this.log_levels[this.configs.level];
   }
+
+  // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////////////////////////
+
+  abstract write(logMethodLevelDefinition, message);
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
 
@@ -120,8 +137,31 @@ export default abstract class Logger {
       return;
     }
 
-    this.write(logMethodLevelDefinition, message);
+    this.current_log_message_level_name = logMethodLevelDefinition.name;
+
+    this.write(logMethodLevelDefinition, this.getTagStringParsed() + message);
   }
 
-  abstract write(logMethodLevelDefinition, message);
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+
+  protected getTagStringParsed(): string {
+    if (this.tag_string.trim() == "") {
+      return "";
+    }
+
+    let tagString = this.tag_string;
+
+    try {
+      tagString = tagString.replace('{level}', this.current_log_message_level_name);
+    } catch (error) {
+      // ha... do nothing
+    }
+
+    for (let key in this.tag_string_fns) {// eslint-disable-line
+      let tag = `{${key}}`;
+      tagString = tagString.replace(tag, this.tag_string_fns[key]);
+    }
+
+    return tagString + " "; // Add a space so the log message isn't up against the tag string
+  }
 }
