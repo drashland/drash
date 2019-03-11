@@ -5,12 +5,12 @@ const ANIMALS = {
 };
 
 const epoch = (new Date).getTime();
-const file = Drash.getEnvVar("dir_root").value + members.conf.file_logger_test.file.replace("{time}", `${epoch}`);
+const file = members.Drash.getEnvVar("dir_root").value + `/tmp/file_logger_test_${epoch}.log`;
 
 members.test(function FileLogger() {
   let expected = "some_date | hello | tiger | This is cool!\n";
   let logger = new members.Drash.Loggers.FileLogger({
-    enabled: members.CONF.file_logger_test.enabled,
+    enabled: true,
     level: "debug",
     tag_string: "{date} | {greeting} | {animal} |",
     tag_string_fns: {

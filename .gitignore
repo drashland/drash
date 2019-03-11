@@ -5,5 +5,5 @@
 package-lock.json
 
 # directories
-.tmp
+tmp
 node_modules
