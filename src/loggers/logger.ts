@@ -48,101 +48,70 @@ export default abstract class Logger {
   /**
    * Output a DEBUG level log message.
    *
-   * @param {String} message
-   *     The log message to write.
-   * @param {mixed} object
-   *     If an object is passed, then output it on the next line after the message. This ensures
-   *     that the object is written to the log as is and not as a string (unless it's a string).
+   * @param string message
+   *     The log message.
    */
   public debug(message) {
-    this.beforeLog(this.log_levels.debug, message);
+    this.sendToWriteMethod(this.log_levels.debug, message);
   }
 
   /**
    * Output an ERROR level log message.
    *
-   * @param {String} message
-   *     The log message to write.
-   * @param {mixed} object
-   *     If an object is passed, then output it on the next line after the message. This ensures
-   *     that the object is written to the log as is and not as a string (unless it's a string).
+   * @param string message
+   *     The log message.
    */
   public error(message) {
-    this.beforeLog(this.log_levels.error, message);
+    this.sendToWriteMethod(this.log_levels.error, message);
   }
 
   /**
    * Output a FATAL level log message.
    *
-   * @param {String} message
-   *     The log message to write.
-   * @param {mixed} object
-   *     If an object is passed, then output it on the next line after the message. This ensures
-   *     that the object is written to the log as is and not as a string (unless it's a string).
+   * @param string message
+   *     The log message.
    */
   public fatal(message) {
-    this.beforeLog(this.log_levels.fatal, message);
+    this.sendToWriteMethod(this.log_levels.fatal, message);
   }
 
   /**
    * Output an INFO level log message.
    *
-   * @param {String} message
-   *     The log message to write.
-   * @param {mixed} object
-   *     If an object is passed, then output it on the next line after the message. This ensures
-   *     that the object is written to the log as is and not as a string (unless it's a string).
+   * @param string message
+   *     The log message.
    */
   public info(message) {
-    this.beforeLog(this.log_levels.info, message);
+    this.sendToWriteMethod(this.log_levels.info, message);
   }
 
   /**
    * Output a TRACE level log message.
    *
-   * @param {String} message
-   *     The log message to write.
-   * @param {mixed} object
-   *     If an object is passed, then output it on the next line after the message. This ensures
-   *     that the object is written to the log as is and not as a string (unless it's a string).
+   * @param string message
+   *     The log message.
    */
   public trace(message) {
-    this.beforeLog(this.log_levels.trace, message);
+    this.sendToWriteMethod(this.log_levels.trace, message);
   }
 
   /**
    * Output a WARN level log message.
    *
-   * @param {String} message
-   *     The log message to write.
-   * @param {mixed} object
-   *     If an object is passed, then output it on the next line after the message. This ensures
-   *     that the object is written to the log as is and not as a string (unless it's a string).
+   * @param string message
+   *     The log message.
    */
   public warn(message) {
-    this.beforeLog(this.log_levels.warn, message);
-  }
-
-  public beforeLog(logMethodLevelDefinition, message) {
-    if (!this.configs.enabled) {
-      return;
-    }
-
-    if (!this.log_levels[this.configs.level]) {
-      return;
-    }
-
-    if (logMethodLevelDefinition.rank > this.level_definition.rank) {
-      return;
-    }
-
-    this.current_log_message_level_name = logMethodLevelDefinition.name;
-
-    this.write(logMethodLevelDefinition, this.getTagStringParsed() + message);
+    this.sendToWriteMethod(this.log_levels.warn, message);
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
 
+  /**
+   * Get the parsed version of the raw tag string.
+   *
+   * @return string
+   */
   protected getTagStringParsed(): string {
     if (this.tag_string.trim() == "") {
       return "";
@@ -162,5 +131,41 @@ export default abstract class Logger {
     }
 
     return tagString + " "; // Add a space so the log message isn't up against the tag string
+  }
+
+  /**
+   * Send the message to the write method (which should be in the child class). Also, do some
+   * prechecks before sending.
+   *
+   * @param any logMethodLevelDefinition
+   *     The dictionary definition of the log message's level.
+   * @param string message
+   *     The log message.
+   *
+   * @return void
+   */
+  protected sendToWriteMethod(logMethodLevelDefinition, message) {
+    // Logger not enabled? Womp womp...
+    if (!this.configs.enabled) {
+      return;
+    }
+
+    // Log level specified in the configs doesn't exist? Womp womp...
+    if (!this.log_levels[this.configs.level]) {
+      return;
+    }
+
+    // We only want to output messages that have a lower rank than the specified level in the
+    // configs. This ensures that we only show the least amount of log messages as specified by the
+    // user. For example, if the user only wants to output FATAL log messages (has a rank of 400),
+    // then any log message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE) will NOT
+    // be processed.
+    if (logMethodLevelDefinition.rank > this.level_definition.rank) {
+      return;
+    }
+
+    this.current_log_message_level_name = logMethodLevelDefinition.name;
+
+    this.write(logMethodLevelDefinition, this.getTagStringParsed() + message);
   }
 }
