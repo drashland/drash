@@ -11,9 +11,7 @@ export default class FileLogger extends Logger {
 
   public write(logMethodLevelDefinition, message) {
     const encoder = new TextEncoder();
-    let encoded = encoder.encode(
-      `${logMethodLevelDefinition.name} | ${message}\n`
-    );
+    let encoded = encoder.encode(message + "\n");
     Deno.writeFileSync(this.file, encoded, { append: true });
   }
 }
