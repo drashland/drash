@@ -7,6 +7,7 @@ const ANIMALS = {
 members.test(function ConsoleLogger() {
   let expected = "some_date | hello | tiger | This is cool!";
   let logger = new members.Drash.Loggers.ConsoleLogger({
+    test: true,
     enabled: true,
     level: "debug",
     tag_string: "{date} | {greeting} | {animal} |",
@@ -18,4 +19,6 @@ members.test(function ConsoleLogger() {
       animal: ANIMALS["#1235"]
     }
   });
+  let actual = logger.info("This is cool!");
+  members.assert.equal(actual, expected);
 });

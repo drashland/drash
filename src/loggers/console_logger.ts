@@ -7,7 +7,10 @@ export default class ConsoleLogger extends Logger {
   }
 
   public write(logMethodLevelDefinition, message): string {
+    if (this.test) {
+      return message;
+    }
+
     console.log(message);
-    return message; // return the message for testing purposes
   }
 }

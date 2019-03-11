@@ -14,10 +14,15 @@ export default abstract class Logger {
   protected log_levels = Drash.Dictionaries.LogLevels;
   protected tag_string: string;
   protected tag_string_fns: any;
+  protected test: boolean = false;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
 
   constructor(configs: any) {
+    if (configs.test === true) {
+      this.test = true;
+    }
+
     if (configs.enabled !== true) {
       configs.enabled = this.configs.enabled;
     }
@@ -52,7 +57,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public debug(message) {
-    this.sendToWriteMethod(this.log_levels.debug, message);
+    return this.sendToWriteMethod(this.log_levels.debug, message);
   }
 
   /**
@@ -62,7 +67,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public error(message) {
-    this.sendToWriteMethod(this.log_levels.error, message);
+    return this.sendToWriteMethod(this.log_levels.error, message);
   }
 
   /**
@@ -72,7 +77,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public fatal(message) {
-    this.sendToWriteMethod(this.log_levels.fatal, message);
+    return this.sendToWriteMethod(this.log_levels.fatal, message);
   }
 
   /**
@@ -82,7 +87,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public info(message) {
-    this.sendToWriteMethod(this.log_levels.info, message);
+    return this.sendToWriteMethod(this.log_levels.info, message);
   }
 
   /**
@@ -92,7 +97,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public trace(message) {
-    this.sendToWriteMethod(this.log_levels.trace, message);
+    return this.sendToWriteMethod(this.log_levels.trace, message);
   }
 
   /**
@@ -102,7 +107,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public warn(message) {
-    this.sendToWriteMethod(this.log_levels.warn, message);
+    return this.sendToWriteMethod(this.log_levels.warn, message);
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
@@ -113,7 +118,7 @@ export default abstract class Logger {
    * @return string
    */
   protected getTagStringParsed(): string {
-    if (this.tag_string.trim() == "") {
+    if (this.tag_string && this.tag_string.trim() == "") {
       return "";
     }
 
@@ -170,6 +175,6 @@ export default abstract class Logger {
 
     this.current_log_message_level_name = logMethodLevelDefinition.name;
 
-    this.write(logMethodLevelDefinition, this.getTagStringParsed() + message);
+    return this.write(logMethodLevelDefinition, this.getTagStringParsed() + message);
   }
 }
