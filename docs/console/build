@@ -9,7 +9,7 @@
   webpack --env.environment=production $@
 
   echo "Running build.ts..."
-  deno $DRASH_DIRS_BASE/docs/.console/build.ts --allow-env --allow-read --allow-write $@
+  deno $DRASH_DIR_ROOT/docs/.console/build.ts --allow-env --allow-read --allow-write $@
 
   echo "Done building."
 )

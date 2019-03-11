@@ -250,12 +250,16 @@ export default class Server {
       case 404:
         response.body = error.message
           ? error.message
-          : `The requested URL '${request.url_path}' was not found on this server.`;
+          : `The requested URL '${
+              request.url_path
+            }' was not found on this server.`;
         break;
       case 405:
         response.body = error.message
           ? error.message
-          : `URI '${request.url_path}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+          : `URI '${
+              request.url_path
+            }' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
         break;
       case 500:
         response.body = error.message
@@ -347,13 +351,17 @@ export default class Server {
           }
 
           // Check if the current path we're working on matches the request's pathname
-          thisPathMatchesRequestPathname = request.url_path.match(pathObj.regex_path);
+          thisPathMatchesRequestPathname = request.url_path.match(
+            pathObj.regex_path
+          );
           if (!thisPathMatchesRequestPathname) {
             return;
           }
 
           // Create the path params
-          let requestPathnameParams = request.url_path.match(pathObj.regex_path);
+          let requestPathnameParams = request.url_path.match(
+            pathObj.regex_path
+          );
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();

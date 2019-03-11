@@ -4,11 +4,6 @@ import * as asserts from "https://deno.land/x/std/testing/asserts.ts";
 import { ServerRequest } from "https://deno.land/std/http/server.ts";
 const decoder = new TextDecoder("utf-8");
 
-// No cur dir? Set cur dir...
-if (!Drash.getEnvVar("cur_dir").value) {
-  Drash.setEnvVar("cur_dir", "/var/www");
-}
-
 let mockRequest = function mockRequest(
   url = "/",
   method = "get",
@@ -34,7 +29,7 @@ export default {
     equal: asserts.assertEquals
   },
   decoder,
-  test,
   mockRequest,
-  runTests
+  runTests,
+  test
 };

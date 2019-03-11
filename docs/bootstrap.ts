@@ -9,7 +9,13 @@ Drash.addMember(
   "ConsoleLogger",
   new Drash.Loggers.ConsoleLogger({
     enabled: true,
-    level: "debug"
+    level: "debug",
+    tag_string: "{date} | {level} |",
+    tag_string_fns: {
+      date: function() {
+        return new Date().toISOString().replace("T", " ");
+      }
+    }
   })
 );
 

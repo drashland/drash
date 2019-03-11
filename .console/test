@@ -1,5 +1,0 @@
-#!/bin/bash
-
-(
-  deno tests/test.ts --allow-env --allow-read $@
-)
