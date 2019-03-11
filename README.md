@@ -1,4 +1,4 @@
-![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest) [![Build Status](https://travis-ci.org/crookse/deno-drash.svg?branch=master)](https://travis-ci.org/crookse/deno-drash)
+![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest) ![Travis (.org) branch](https://img.shields.io/travis/crookse/deno-drash/v0.5.0.svg)
 
 `import Drash from "https://deno.land/x/drash/mod.ts";`
 
@@ -182,19 +182,3 @@ let server = new Drash.Http.Server({
 
 server.run();
 ```
-
----
-
-## Roadmap
-
-- [ ] File logging
-- [ ] Tagged logging
-- [ ] Full Documentation and API reference pages (to be located at https://crookse.github.io/projects/deno-drash/)
-- [ ] Middleware
-- [ ] Request caching
-- [ ] Sessions
-- [ ] Style Guide
-- [ ] `DRASH_{SOME_VAR}` env variables
-- [ ] How To: Adding middleware
-- [ ] How To: Adding vendor modules (like dotenv for people who want to use dotenv)
-- [ ] Switch HTTP status codes to https://deno.land/x/http/http_status.ts
