@@ -13,8 +13,8 @@ Drash.addMember(
     tag_string: "{date} | {level} |",
     tag_string_fns: {
       date: function() {
-        return (new Date()).toISOString().replace("T", " ");
-      },
+        return new Date().toISOString().replace("T", " ");
+      }
     }
   })
 );

@@ -120,12 +120,16 @@ export default abstract class Logger {
     let tagString = this.tag_string;
 
     try {
-      tagString = tagString.replace('{level}', this.current_log_message_level_name);
+      tagString = tagString.replace(
+        "{level}",
+        this.current_log_message_level_name
+      );
     } catch (error) {
       // ha... do nothing
     }
 
-    for (let key in this.tag_string_fns) {// eslint-disable-line
+    for (let key in this.tag_string_fns) {
+      // eslint-disable-line
       let tag = `{${key}}`;
       tagString = tagString.replace(tag, this.tag_string_fns[key]);
     }

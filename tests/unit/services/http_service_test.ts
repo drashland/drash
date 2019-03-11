@@ -15,7 +15,10 @@ members.test(function HttpService_hydrateHttpRequest() {
     empty: "",
     cmon_now: undefined
   });
-  members.assert.equal(request.url_query_string, "what=the&ok=then&kthx=bye&empty=&cmon_now");
+  members.assert.equal(
+    request.url_query_string,
+    "what=the&ok=then&kthx=bye&empty=&cmon_now"
+  );
   members.assert.equal(request.url_path, "/");
 });
 
@@ -94,10 +97,14 @@ members.test(function HttpService_getHttpRequestUrlQueryString() {
   let request;
 
   request = members.mockRequest("/what/the?ok=then");
-  actual = members.Drash.Services.HttpService.getHttpRequestUrlQueryString(request);
+  actual = members.Drash.Services.HttpService.getHttpRequestUrlQueryString(
+    request
+  );
   members.assert.equal(actual, "ok=then");
 
   request = members.mockRequest("/what/the");
-  actual = members.Drash.Services.HttpService.getHttpRequestUrlQueryString(request);
+  actual = members.Drash.Services.HttpService.getHttpRequestUrlQueryString(
+    request
+  );
   members.assert.equal(actual, null);
 });
