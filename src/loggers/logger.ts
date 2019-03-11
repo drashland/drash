@@ -4,15 +4,14 @@ export default abstract class Logger {
   static TYPE_CONSOLE = 1;
   static TYPE_FILE = 2;
 
-  protected current_log_message_level_name: string;
-  protected type: number;
-  protected level;
-  protected level_definition;
-  protected log_levels = Drash.Dictionaries.LogLevels;
   protected configs = {
     enabled: false,
     level: "debug"
   };
+  protected current_log_message_level_name: string;
+  protected type: number;
+  protected level_definition: any;
+  protected log_levels = Drash.Dictionaries.LogLevels;
   protected tag_string: string;
   protected tag_string_fns: any;
 
