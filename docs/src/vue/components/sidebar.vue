@@ -9,8 +9,9 @@ div.c-sidebar
                 h1.module-name(style="margin-top: 2rem;")
                     a(:href="$conf.base_url + '/#/'") Drash
                 p
-                    | <img alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=green&label=latest">
-                    | <img alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg?branch=master">
+                    img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=green&label=latest")
+                    | &nbsp;
+                    img(alt="Travis CI Build" :src="'https://travis-ci.org/crookse/deno-drash.svg?branch=' + $conf.latest_release")
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
