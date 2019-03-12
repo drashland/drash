@@ -1,7 +1,7 @@
 import Drash from "../bootstrap.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
 
-// FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////////////////////////
+// FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////
 
 export async function compile(inputFile, outputFile): Promise<any> {
   let body = await getAppDataInHtml(inputFile);
@@ -99,7 +99,24 @@ export function getAppData() {
                 "/tutorials/logging/server-logging-to-the-terminal/terminal.sh"
               )
             }
-          }
+          }, // close logging
+          creating_a_server: {
+            app: code(
+              "/tutorials/creating-a-server/app.ts"
+            ),
+            folder_structure: code(
+              "/tutorials/creating-a-server/folder_structure.txt"
+            ),
+            folder_structure_setup: code(
+              "/tutorials/creating-a-server/folder_structure_setup.sh"
+            ),
+            get_request: code(
+              "/tutorials/creating-a-server/get_request.sh"
+            ),
+            home_resource: code(
+              "/tutorials/creating-a-server/home_resource.ts"
+            )
+          } // close creating_a_server
         }
       }
     })
@@ -112,17 +129,22 @@ export async function getAppDataInHtml(inputFile) {
   return html;
 }
 
-// FILE MARKER: FUNCTIONS - LOCAL //////////////////////////////////////////////////////////////////
+// FILE MARKER: FUNCTIONS - LOCAL //////////////////////////////////////////////
 
 function code(file: string, filenameOverride?: string) {
-  const decoder = new TextDecoder("utf-8");
-  let contents = decoder.decode(Deno.readFileSync(`./src/example-code${file}`));
-
   let fileExtensionSplit = file.split(".");
   let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
-
   let fileSplit = file.split("/");
   let filename = fileSplit[fileSplit.length - 1];
+
+  const decoder = new TextDecoder("utf-8");
+  let contents;
+
+  try {
+    contents = decoder.decode(Deno.readFileSync(`./src/example-code${file}`));
+  } catch (error) {
+    contents = "File not found.";
+  }
 
   return {
     file: filenameOverride ? filenameOverride : filename,

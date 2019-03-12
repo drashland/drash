@@ -12,6 +12,7 @@ import VueAppRoot from "/components/vue_app_root.vue";
 
 // Vue - Components - Pages
 import * as AddingContentTypes from "/components/pages/tutorials/adding_content_types.vue";
+import * as CreatingAServer from "/components/pages/tutorials/creating_a_server.vue";
 import * as HandlingContentNegotiation from "/components/pages/tutorials/handling_content_negotiation.vue";
 import * as Introduction from "/components/pages/introduction.vue";
 import * as Logging from "/components/pages/tutorials/logging.vue";
@@ -20,6 +21,7 @@ import Error404 from "/components/pages/error_404.vue";
 const routes = [];
 const routeModules = [
   AddingContentTypes,
+  CreatingAServer,
   HandlingContentNegotiation,
   Introduction,
   Logging

@@ -111,14 +111,14 @@ export default class Server {
         };
         resourceClass.paths[index] = pathObj;
       } catch (error) {
-        this.logger.trace(error);
+        this.serverLog(error);
       }
     });
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
 
-    this.logger.debug(`HTTP resource "${resourceClass.name}" added.`);
+    this.serverLog(`HTTP resource "${resourceClass.name}" added.`);
   }
 
   public getStaticPathData(request) {
@@ -311,7 +311,7 @@ export default class Server {
    * Run the Deno server.
    */
   public async run(): Promise<void> {
-    console.log(`Deno server started at ${this.configs.address}.`);
+    this.serverLog(`Deno server started at ${this.configs.address}.`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       this.handleHttpRequest(request);
@@ -319,6 +319,13 @@ export default class Server {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+
+  /**
+   * console.log() something.
+   */
+  protected serverLog(message: any) {
+    console.log(`[Drash] ${message}`);
+  }
 
   /**
    * Get the resource class.
