@@ -6,6 +6,9 @@ module.exports = envVars => {
   const CONF_FILE = require(path.resolve(__dirname, "conf/conf.json"));
   let conf = CONF_FILE[envVars.environment];
   conf.latest_release = CONF_FILE.latest_release;
+  conf.deno_version = envVars.deno_version.replace("deno: ", "Deno v")
+    .replace("\nv8: ", ", V8 v")
+    .replace("\ntypescript: ", ", and TypeScript v");
 
   console.log(`\nRunning "${envVars.environment}" configs.\n`);
 

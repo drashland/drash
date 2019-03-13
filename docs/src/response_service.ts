@@ -23,7 +23,6 @@ export function getAppData() {
 
     // The below is transferred to vue_app_root.vue
     app_data: JSON.stringify({
-      conf: Drash.getEnvVar("DRASH_CONF").toArray().value,
       example_code: {
         getting_started: {
           importing_deno: code("/getting-started/importing_deno.ts"),

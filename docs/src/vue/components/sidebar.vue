@@ -9,7 +9,7 @@ div.c-sidebar
                 h1.module-name(style="margin-top: 2rem;")
                     a(:href="$conf.base_url + '/#/'") Drash
                 p
-                    img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=green&label=latest")
+                    img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest")
                     | &nbsp;
                     img(alt="Travis CI Build" :src="'https://travis-ci.org/crookse/deno-drash.svg?branch=' + $conf.latest_release")
     div.c-sidebar__body
@@ -34,6 +34,7 @@ div.c-sidebar
                         i.fab.fa-github
                 hr
                 p <a href="https://github.com/crookse/deno-drash" style="text-decoration: underline">Drash</a> is a <a href="//crookse.github.io" style="text-decoration: underline"> CROOKSE</a> project.
+                p Drash {{ $conf.latest_release }} was developed using {{ $conf.deno_version }}.
 </template>
 
 <script>

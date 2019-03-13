@@ -1,5 +1,5 @@
 // Webpack
-let conf = process.env.conf;
+let conf = process.env.conf; // This variable comes from webpack.config.js under `plugins`
 
 // Vue
 import Vue from "vue";
@@ -42,10 +42,10 @@ routes.push({
 
 // Vue - Global registration
 Vue.use(VueRouter);
-Vue.prototype.$conf = conf;
-Vue.prototype.$app_data = window.app_data;
 Vue.component("code-block", CodeBlock);
 Vue.component("heading-h2", HeadingH2);
+Vue.prototype.$conf = conf;
+Vue.prototype.$app_data = window.app_data;
 
 const router = new VueRouter({
   routes: routes,
