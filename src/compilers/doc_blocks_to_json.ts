@@ -195,7 +195,7 @@ export default class DocBlocksToJson {
       .trim();
 
     let name = signature;
-    name = signature.split("(")[0];
+    name = signature.replace("async ", "").split("(")[0];
     if (name != "constructor") {
       name = name.split(" ")[1];
     } else {

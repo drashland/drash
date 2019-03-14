@@ -20,7 +20,7 @@ export default class Server {
     requested_favicon: false
   };
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
@@ -56,19 +56,16 @@ export default class Server {
     }
   }
 
-  public addStaticPath(path) {
-    this.static_paths.push(path);
-  }
-
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
-   * Add an HTTP resource to the server which can be retrieved at specific URIs. Drash defines an
-   * HTTP resource according to the following:
+   * Add an HTTP resource to the server which can be retrieved at specific URIs.
+   * Drash defines an HTTP resource according to the following:
    *
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
    *
    * @param Drash.Http.Resource resourceClass
+   *     The resource class to add.
    *
    * @return void
    */
@@ -123,24 +120,13 @@ export default class Server {
     this.serverLog(`HTTP resource "${resourceClass.name}" added.`);
   }
 
-  public getStaticPathData(request) {
-    // If the request URL is "/public/assets/js/bundle.js", then we take out "/public" and use that
-    // to check against the static paths
-    let requestUrl = `/${request.url.split("/")[1]}`;
-
-    if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-        headers: {
-          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
-            request.url,
-            true
-          )
-        }
-      });
-      return true;
-    }
-
-    return false;
+  /**
+   * Add a static path for serving static assets like CSS files and stuff.
+   *
+   * @param string path
+   */
+  public addStaticPath(path) {
+    this.static_paths.push(path);
   }
 
   /**
@@ -149,10 +135,10 @@ export default class Server {
    * @param ServerRequest request
    */
   public handleHttpRequest(request): any {
-    let staticPathData = this.getStaticPathData(request);
+    let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
     let response;
 
-    if (staticPathData) {
+    if (getStaticPathAsset) {
       try {
         response = new Drash.Http.Response(request);
         return response.sendStatic();
@@ -204,9 +190,10 @@ export default class Server {
       );
       return response.send();
     } catch (error) {
-      // If a resource was found, but an error occurred, then that's most likely due to the HTTP
-      // method not being defined in the resource class; therefore, the method is not allowed. In
-      // this case, we send a 405 (Method Not Allowed) response.
+      // If a resource was found, but an error occurred, then that's most likely
+      // due to the HTTP method not being defined in the resource class;
+      // therefore, the method is not allowed. In this case, we send a 405
+      // (Method Not Allowed) response.
       if (resource && !error.code) {
         if (!response) {
           return this.handleHttpRequestError(
@@ -286,8 +273,9 @@ export default class Server {
   }
 
   /**
-   * Handle HTTP requests for the favicon. This method only exists to short-circuit favicon
-   * requests--preventing the requests from clogging the logs.
+   * Handle HTTP requests for the favicon. This method only exists to
+   * short-circuit favicon requests--preventing the requests from clogging the
+   * logs.
    *
    * @param ServerRequest request
    */
@@ -320,14 +308,7 @@ export default class Server {
     }
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
-
-  /**
-   * console.log() something.
-   */
-  protected serverLog(message: any) {
-    console.log(`[Drash] ${message}`);
-  }
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   /**
    * Get the resource class.
@@ -340,8 +321,8 @@ export default class Server {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
-      // eslint-disable-line
-      // Break out if a resource was matched with the request.parsed_url.pathname variable
+      // Break out if a resource was matched with the
+      // request.parsed_url.pathname variable
       if (matchedResourceClass) {
         break;
       }
@@ -359,7 +340,8 @@ export default class Server {
             return;
           }
 
-          // Check if the current path we're working on matches the request's pathname
+          // Check if the current path we're working on matches the request's
+          // pathname
           thisPathMatchesRequestPathname = request.url_path.match(
             pathObj.regex_path
           );
@@ -392,5 +374,40 @@ export default class Server {
     }
 
     return matchedResourceClass;
+  }
+
+  /**
+   * Is the request for a static path asset?
+   *
+   * @param ServerRequest request
+   *
+   * @return boolean
+   *     Returns true if the request is for an asset in a static path.
+   */
+  protected requestIsForStaticPathAsset(request) {
+    // If the request URL is "/public/assets/js/bundle.js", then we take out
+    // "/public" and use that to check against the static paths
+    let requestUrl = `/${request.url.split("/")[1]}`;
+
+    if (this.static_paths.indexOf(requestUrl) != -1) {
+      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+        headers: {
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+            request.url,
+            true
+          )
+        }
+      });
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * console.log() something.
+   */
+  protected serverLog(message: any) {
+    console.log(`[Drash] ${message}`);
   }
 }

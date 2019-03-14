@@ -17,6 +17,7 @@ body {
 code {
   border-radius: 0.18125rem; }
 
+.font-family--code,
 code[class*="language-"] {
   line-height: 1.7;
   margin: 0; }
@@ -461,6 +462,9 @@ a {
 .background--white {
   background-color: #ffffff !important; }
 
+.background-color--efefef {
+  background-color: #efefef !important; }
+
 .background-color--that-red {
   background-color: #e40002; }
 
@@ -493,6 +497,9 @@ a {
 
 .font-style--normal {
   font-style: normal; }
+
+.font-family--code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
 .hide--soft {
   display: none; }
@@ -544,6 +551,9 @@ a {
 
 .padding--0 {
   padding: 0 !important; }
+
+.padding--5px {
+  padding: 5px !important; }
 
 .padding--15px {
   padding: 15px !important; }

@@ -1,0 +1,166 @@
+{
+  "Drash.Http": {
+    "Server": {
+      "properties": {},
+      "methods": [
+        {
+          "name": "constructor",
+          "type": "constructor",
+          "signature": "constructor(configs: any)",
+          "params": [
+            {
+              "name": "configs",
+              "type": "any",
+              "description": []
+            }
+          ],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "name": "addHttpResource",
+          "type": "public",
+          "signature": "public addHttpResource(resourceClass): void",
+          "params": [
+            {
+              "name": "resourceClass",
+              "type": "Drash.Http.Resource",
+              "description": [
+                "The resource class to add."
+              ]
+            }
+          ],
+          "returns": [
+            {
+              "type": "void",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "name": "addStaticPath",
+          "type": "public",
+          "signature": "public addStaticPath(path)",
+          "params": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": []
+            }
+          ],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "name": "handleHttpRequest",
+          "type": "public",
+          "signature": "public handleHttpRequest(request): any",
+          "params": [
+            {
+              "name": "request",
+              "type": "ServerRequest",
+              "description": []
+            }
+          ],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "name": "handleHttpRequestError",
+          "type": "public",
+          "signature": "public handleHttpRequestError(request, error): any",
+          "params": [
+            {
+              "name": "request",
+              "type": "ServerRequest",
+              "description": []
+            },
+            {
+              "name": "error",
+              "type": "any",
+              "description": []
+            }
+          ],
+          "returns": [
+            {
+              "type": "any",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "name": "handleHttpRequestForFavicon",
+          "type": "public",
+          "signature": "public handleHttpRequestForFavicon(request): any",
+          "params": [
+            {
+              "name": "request",
+              "type": "ServerRequest",
+              "description": []
+            }
+          ],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "name": "run",
+          "type": "public",
+          "signature": "public async run(): Promise<void>",
+          "params": [],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "name": "getResourceClass",
+          "type": "protected",
+          "signature": "protected getResourceClass(request)",
+          "params": [
+            {
+              "name": "request",
+              "type": "ServerRequest",
+              "description": []
+            }
+          ],
+          "returns": [
+            {
+              "type": "Drash.Http.Resource|undefined",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "name": "requestIsForStaticPathAsset",
+          "type": "protected",
+          "signature": "protected requestIsForStaticPathAsset(request)",
+          "params": [
+            {
+              "name": "request",
+              "type": "ServerRequest",
+              "description": []
+            }
+          ],
+          "returns": [
+            {
+              "type": "boolean",
+              "description": [
+                "Returns true if the request is for an asset in a static path."
+              ]
+            }
+          ],
+          "throws": []
+        },
+        {
+          "name": "serverLog",
+          "type": "protected",
+          "signature": "protected serverLog(message: any)",
+          "params": [],
+          "returns": [],
+          "throws": []
+        }
+      ]
+    }
+  }
+}

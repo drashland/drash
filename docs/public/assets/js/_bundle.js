@@ -16,11 +16,13 @@ import * as CreatingAServer from "/components/pages/tutorials/creating_a_server.
 import * as HandlingContentNegotiation from "/components/pages/tutorials/handling_content_negotiation.vue";
 import * as Introduction from "/components/pages/introduction.vue";
 import * as Logging from "/components/pages/tutorials/logging.vue";
+import * as APIReference from "/components/pages/api_reference.vue";
 import Error404 from "/components/pages/error_404.vue";
 
 const routes = [];
 const routeModules = [
   AddingContentTypes,
+  APIReference,
   CreatingAServer,
   HandlingContentNegotiation,
   Introduction,

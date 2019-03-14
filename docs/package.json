@@ -24,6 +24,8 @@
     "webpack-dev": "console/webpack.dev",
     "webpack-dev-watch": "console/webpack.dev --watch",
     "build": "console/build",
-    "prettier": "../console/prettier"
+    "prettier": "../console/prettier",
+    "build-reference": "console/build.reference",
+    "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css"
   }
 }

@@ -63,6 +63,7 @@ module.exports = envVars => {
           conf.webpack.mode == "production"
             ? "vue/dist/vue.min.js"
             : "vue/dist/vue.js",
+        "/src": path.resolve(__dirname, "src"),
         "/components": path.resolve(__dirname, "src/vue/components"),
         "/conf": path.resolve(__dirname, "conf")
       }

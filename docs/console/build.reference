@@ -1,0 +1,8 @@
+#!/bin/bash
+
+(
+  echo "Running build.reference.ts..."
+  deno $DRASH_DIR_ROOT/docs/console/build.reference.ts --allow-env --allow-read --allow-write $@
+
+  echo "Done building."
+)

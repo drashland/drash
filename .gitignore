@@ -5,6 +5,7 @@
 package-lock.json
 
 # directories
+.sass-cache
 tmp/*
 node_modules
 
