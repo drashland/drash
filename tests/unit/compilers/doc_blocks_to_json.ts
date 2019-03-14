@@ -7,14 +7,6 @@ let expected = {
       "properties": {},
       "methods": [
         {
-          "name": "",
-          "type": "",
-          "signature": "",
-          "params": [],
-          "returns": [],
-          "throws": []
-        },
-        {
           "name": "constructor",
           "type": "constructor",
           "signature": "constructor()",
@@ -101,14 +93,6 @@ let expected = {
     "ClassTwo": {
       "properties": {},
       "methods": [
-        {
-          "name": "",
-          "type": "",
-          "signature": "",
-          "params": [],
-          "returns": [],
-          "throws": []
-        },
         {
           "name": "classTwoMethodOne",
           "type": "private",

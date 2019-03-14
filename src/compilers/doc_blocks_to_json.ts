@@ -9,11 +9,12 @@ export default class DocBlocksToJson {
 
   public parseFiles(files: string[]) {
     const decoder = new TextDecoder();
+
     for (let index in files) {
       let fileContentsRaw = Deno.readFileSync(files[index]);
       let fileContents = decoder.decode(fileContentsRaw);
       let contentsByLine = fileContents.toString().split("\n");
-      let namespace = null;
+      let currentNamespace = null;
 
       // No namespace given? GTFO.
       if (contentsByLine[0].indexOf(this.namespace_tag)) {
@@ -21,9 +22,9 @@ export default class DocBlocksToJson {
       }
 
       // Create the namespace
-      namespace = contentsByLine[0].substring(this.namespace_tag.length).trim();
-      if (!this.parsed.hasOwnProperty(namespace)) {
-        this.parsed[namespace] = {};
+      currentNamespace = contentsByLine[0].substring(this.namespace_tag.length).trim();
+      if (!this.parsed.hasOwnProperty(currentNamespace)) {
+        this.parsed[currentNamespace] = {};
       }
 
       // Get the class name of the file
@@ -38,7 +39,7 @@ export default class DocBlocksToJson {
 
       className = classNameSplit[classNameSplit.length - 1].trim();
 
-      this.parsed[namespace][className] = this.parseDocBlocks(fileContents);
+      this.parsed[currentNamespace][className] = this.parseDocBlocks(fileContents);
     }
 
     return this.parsed;
@@ -51,6 +52,7 @@ export default class DocBlocksToJson {
     let methods = [];
 
     let docBlocks = fileContents.toString().split("/**");
+    docBlocks.shift(); // Whatever is first doesn't belong
 
     docBlocks.forEach((docBlock) => {
       methods.push(this.parseDocBlock(docBlock))
