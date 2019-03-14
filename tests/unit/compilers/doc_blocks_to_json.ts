@@ -15,7 +15,15 @@ let expected = {
           "throws": []
         },
         {
-          "name": "public classOneMethodOne",
+          "name": "constructor",
+          "type": "constructor",
+          "signature": "constructor()",
+          "params": [],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "name": "classOneMethodOne",
           "type": "public",
           "signature": "public classOneMethodOne(myObject: any, myString: string)",
           "params": [
@@ -46,7 +54,7 @@ let expected = {
           "throws": []
         },
         {
-          "name": "protected classOneMethodTwo",
+          "name": "classOneMethodTwo",
           "type": "protected",
           "signature": "protected classOneMethodTwo(myBool: boolean, myAny: any)",
           "params": [
@@ -102,7 +110,7 @@ let expected = {
           "throws": []
         },
         {
-          "name": "private classTwoMethodOne",
+          "name": "classTwoMethodOne",
           "type": "private",
           "signature": "private classTwoMethodOne(myObject: any, myString: string)",
           "params": [
@@ -130,7 +138,7 @@ let expected = {
           "throws": []
         },
         {
-          "name": "protected classTwoMethodTwo",
+          "name": "classTwoMethodTwo",
           "type": "protected",
           "signature": "protected classTwoMethodTwo()",
           "params": [],

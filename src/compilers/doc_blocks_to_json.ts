@@ -194,6 +194,11 @@ export default class DocBlocksToJson {
 
     let name = signature;
     name = signature.split("(")[0];
+    if (name != "constructor") {
+      name = name.split(" ")[1];
+    } else {
+      type = "constructor";
+    }
 
     return {
       signature: signature,

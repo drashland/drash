@@ -1,6 +1,13 @@
 // namespace Drash.Services
 
 export default class ClassOne {
+
+  /**
+   * Construct an object of this class.
+   */
+  constructor() {
+  }
+
   /**
    * Class one method one.
    *
