@@ -1,8 +1,11 @@
 // Deno
 import { env } from "deno";
 
-// Classes
+// Random Classes
 import EnvVar from "./src/classes/env_var.ts";
+
+// Compilers
+import DocBlocksToJson from "./src/compilers/doc_blocks_to_json.ts";
 // Dictionaries
 import LogLevels from "./src/dictionaries/log_levels.ts";
 import MimeDb from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
@@ -27,6 +30,9 @@ import * as Util from "./src/util.ts";
 
 function Drash(): any {
   return {
+    Compilers: {
+      DocBlocksToJson: DocBlocksToJson
+    },
     Dictionaries: {
       LogLevels: LogLevels,
       MimeDb: MimeDb

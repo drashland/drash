@@ -1,3 +1,5 @@
+// namespace Drash.Dictionaries
+
 import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
 let parsed = {};
@@ -12,7 +14,5 @@ for (let name in Status) {
     response_message: responseMessage
   };
 }
-
-console.log(parsed);
 
 export default parsed;

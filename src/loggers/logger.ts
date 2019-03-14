@@ -1,3 +1,5 @@
+// namespace Drash.Loggers
+
 import Drash from "../../mod.ts";
 
 export default abstract class Logger {

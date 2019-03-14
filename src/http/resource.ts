@@ -1,3 +1,5 @@
+// namespace Drash.Http
+
 export default class Resource {
   protected request;
   protected response;

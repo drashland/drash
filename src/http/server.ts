@@ -1,3 +1,5 @@
+// namespace Drash.Http
+
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
 

@@ -1,4 +1,7 @@
+// namespace Drash.Services.HttpService
+
 import Drash from "../../mod.ts";
+
 /**
  * Hydrate the request with data that is useful for the Drash.Http.Server class.
  *

@@ -1,3 +1,5 @@
+// namespace Drash.Loggers
+
 import Logger from "./logger.ts";
 
 export default class ConsoleLogger extends Logger {

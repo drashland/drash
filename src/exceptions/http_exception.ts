@@ -1,3 +1,5 @@
+// namespace Drash.Exceptions
+
 export default class HttpException extends Error {
   public code: number;
 
