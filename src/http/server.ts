@@ -2,6 +2,8 @@
 
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
+import {DrashHttpServerConfigs} from "../interfaces.ts";
+import DrashHttpResource from "../http/resource.ts";
 
 export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -25,19 +27,15 @@ export default class Server {
   /**
    * Construct an object of this class.
    *
-   * @param any configs
+   * @param DrashHttpServerConfigs configs
    */
-  constructor(configs: any) {
-    if (!configs.response_output) {
-      configs.response_output = this.configs_defaults.default_response_content_type;
-    }
-
-    if (configs.logger) {
-      this.logger = configs.logger;
-    } else {
+  constructor(configs: DrashHttpServerConfigs) {
+    if (!configs.logger) {
       this.logger = new Drash.Loggers.ConsoleLogger({
         enabled: false
       });
+    } else {
+      this.logger = configs.logger;
     }
 
     this.configs = configs;
@@ -57,68 +55,6 @@ export default class Server {
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
-
-  /**
-   * Add an HTTP resource to the server which can be retrieved at specific URIs.
-   * Drash defines an HTTP resource according to the following:
-   *
-   * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
-   *
-   * @param Drash.Http.Resource resourceClass
-   *     The resource class to add.
-   *
-   * @return void
-   */
-  public addHttpResource(resourceClass): void {
-    resourceClass.paths.forEach((path, index) => {
-      let pathObj;
-      if (path == "*" || path.includes("*")) {
-        pathObj = {
-          og_path: path,
-          regex_path:
-            "^." +
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT
-            ) +
-            "$",
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
-            return path
-              .replace(":", "")
-              .replace("{", "")
-              .replace("}", "");
-          })
-        };
-        return;
-      }
-      try {
-        pathObj = {
-          og_path: path,
-          regex_path:
-            "^" +
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT
-            ) +
-            "$",
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
-            return path
-              .replace(":", "")
-              .replace("{", "")
-              .replace("}", "");
-          })
-        };
-        resourceClass.paths[index] = pathObj;
-      } catch (error) {
-        this.serverLog(error);
-      }
-    });
-
-    // Store the resource so it can be retrieved when requested
-    this.resources[resourceClass.name] = resourceClass;
-
-    this.serverLog(`HTTP resource "${resourceClass.name}" added.`);
-  }
 
   /**
    * Add a static path for serving static assets like CSS files and stuff.
@@ -309,6 +245,70 @@ export default class Server {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+
+  /**
+   * Add an HTTP resource to the server which can be retrieved at specific URIs.
+   *
+   * Drash defines an HTTP resource according to the [MDN web
+   * docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
+   *
+   * @param Drash.Http.Resource resourceClass
+   *     A child object of the Drash.Http.Resource class.
+   *
+   * @return void
+   *     This method just adds `resourceClass` to the resources property so
+   *     it can be retrieved if matched during an HTTP request.
+   */
+  protected addHttpResource(resourceClass: DrashHttpResource): void {
+    resourceClass.paths.forEach((path, index) => {
+      let pathObj;
+      if (path == "*" || path.includes("*")) {
+        pathObj = {
+          og_path: path,
+          regex_path:
+            "^." +
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT
+            ) +
+            "$",
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
+            return path
+              .replace(":", "")
+              .replace("{", "")
+              .replace("}", "");
+          })
+        };
+        return;
+      }
+      try {
+        pathObj = {
+          og_path: path,
+          regex_path:
+            "^" +
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT
+            ) +
+            "$",
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
+            return path
+              .replace(":", "")
+              .replace("{", "")
+              .replace("}", "");
+          })
+        };
+        resourceClass.paths[index] = pathObj;
+      } catch (error) {
+        this.serverLog(error);
+      }
+    });
+
+    // Store the resource so it can be retrieved when requested
+    this.resources[resourceClass.name] = resourceClass;
+
+    this.serverLog(`HTTP resource "${resourceClass.name}" added.`);
+  }
 
   /**
    * Get the resource class.

@@ -4,6 +4,7 @@
     "@babel/core": "^7.3.4",
     "babel-loader": "^8.0.5",
     "css-loader": "^2.1.0",
+    "markdown-it": "^8.4.2",
     "mime-types": "^2.1.22",
     "node-sass": "^4.11.0",
     "pug": "^2.0.3",

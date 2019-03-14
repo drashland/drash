@@ -16,21 +16,21 @@ div
                             div.card-title
                                 strong {{ method.signature }}
                             hr(style="margin: 1rem 0")
+                            p(style="margin-bottom: 1rem" v-show="method.description.length > 0")
+                                p(v-for="description in method.description" :inner-html.prop="description | markdown-it")
                             p(style="margin-bottom: 1rem" v-show="method.params.length > 0")
                                 strong Params
                                 ul
-                                    li(v-for="param in method.params") {{ param.name }}
+                                    li(v-for="param in method.params") <strong>{{ param.name }}:</strong> <span class="font-style--italic">{{ param.type }}</span>
                                         ul(v-show="param.description && param.description.length > 0")
-                                            li Description
-                                                ul
-                                                    li(v-for="description in param.description") {{ description }}
+                                            li(v-for="description in param.description") {{ description | markdown-it }}
                             p(style="margin-bottom: 1rem" v-show="method.returns.length > 0")
                                 strong Returns
                                 ul
                                     li(v-for="ret in method.returns")
-                                        div {{ ret.type }}
+                                        div.font-style--italic {{ ret.type }}
                                         ul(v-show="ret.description.length > 0")
-                                            li(v-for="description in ret.description") {{ description }}
+                                            li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
 </template>
 
 <script>

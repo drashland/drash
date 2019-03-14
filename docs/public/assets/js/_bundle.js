@@ -19,6 +19,9 @@ import * as Logging from "/components/pages/tutorials/logging.vue";
 import * as APIReference from "/components/pages/api_reference.vue";
 import Error404 from "/components/pages/error_404.vue";
 
+// Vendor
+import MarkdownIt from "markdown-it";
+
 const routes = [];
 const routeModules = [
   AddingContentTypes,
@@ -46,6 +49,10 @@ routes.push({
 Vue.use(VueRouter);
 Vue.component("code-block", CodeBlock);
 Vue.component("heading-h2", HeadingH2);
+Vue.filter('markdown-it', function(value) {
+  window.markdownIt = new MarkdownIt();
+  return window.markdownIt.render(value);
+});
 Vue.prototype.$conf = conf;
 Vue.prototype.$app_data = window.app_data;
 

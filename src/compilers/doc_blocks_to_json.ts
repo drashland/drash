@@ -70,6 +70,7 @@ export default class DocBlocksToJson {
     // These will be in the final returned object
     let methodName = "";
     let methodSignature = "";
+    let methodDescription= [];
     let methodType = "";
     let methodParams = [];
     let methodReturns = [];
@@ -77,8 +78,9 @@ export default class DocBlocksToJson {
 
     let nextLineIsMethodSignature = false;
     let endOfDocBlock = false;
+    let firstParamIndex = -1;
 
-    docBlockLines.forEach((line) => {
+    docBlockLines.forEach((line, index) => {
       if (endOfDocBlock) {
         return;
       }
@@ -135,6 +137,9 @@ export default class DocBlocksToJson {
       }
 
       if (line.indexOf("@param") != -1) {
+        if (firstParamIndex === -1) {
+          firstParamIndex = index;
+        }
         // Clean up last param definition
         let lineSplit = line.split(" ");
         methodParams.push({
@@ -152,8 +157,22 @@ export default class DocBlocksToJson {
       }
     });
 
+
+    let description = "";
+    for (let i = 0; i < firstParamIndex; i++) {
+      let line = docBlockLines[i];
+      line = line.replace(" * ", "").trim();
+      if (line != "*") {
+        description += ` ${line}`;
+      } else {
+        methodDescription.push(description);
+        description = "";
+      }
+    }
+
     return {
       name: methodName,
+      description: methodDescription,
       type: methodType,
       signature: methodSignature,
       params: methodParams,
@@ -174,7 +193,7 @@ export default class DocBlocksToJson {
     if (member.description.length <= 0 || newParagraph) {
       member.description.push(line);
     } else {
-      member.description[member.description.length - 1] += line;
+      member.description[member.description.length - 1] += ` ${line}`;
     }
 
     return member;
