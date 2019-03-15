@@ -26,6 +26,16 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
+            a.heading-link(:href="$conf.base_url + '/#/api-reference#top'") API Reference
+            div.c-sidebar__menu-body
+                a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Drash.Compilers
+                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Dictionaries
+                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Exceptions
+                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Loggers
+                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Loggers
+                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Drash.Services
+                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Drash.Util
+                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Drash.Vendor
     div.c-sidebar__footer
         div.row
             div.col.text-align--center

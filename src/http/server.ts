@@ -4,7 +4,15 @@ import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
 import {DrashHttpServerConfigs} from "../interfaces.ts";
 import DrashHttpResource from "../http/resource.ts";
+import DrashHttpRequest from "../http/request.ts";
 
+/**
+ * @class Server
+ * Server handles the entire request-resource-response lifecycle. It is in
+ * charge of handling HTTP requests to resources, static paths, sending
+ * appropriate responses, and handling any errors that bubble up within the
+ * request-resource-response lifecycle.
+ */
 export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
@@ -17,7 +25,18 @@ export default class Server {
   protected deno_server;
   protected logger;
   protected resources = {};
-  protected static_paths = [];
+
+  /**
+   * This server's list of static paths. HTTP requests to a static path are
+   * usually intended to retrieve some type of concrete resource (e.g., a CSS
+   * file or a JS file). If an HTTP request is matched to a static path and the
+   * resource the HTTP request is trying to get is found, then
+   * `Drash.Http.Response` will use its `sendStatic()` method to send the static
+   * asset back to the client.
+   *
+   * @property string[] static_paths
+   */
+  protected static_paths: string[] = [];
   protected trackers = {
     requested_favicon: false
   };
@@ -57,20 +76,15 @@ export default class Server {
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
-   * Add a static path for serving static assets like CSS files and stuff.
-   *
-   * @param string path
-   */
-  public addStaticPath(path) {
-    this.static_paths.push(path);
-  }
-
-  /**
    * Handle an HTTP request from the Deno server.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
+   *
+   * @return any
+   *    See _Drash.Http.Response.send()_.
    */
-  public handleHttpRequest(request): any {
+  public handleHttpRequest(request: DrashHttpRequest): any {
     let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
     let response;
 
@@ -151,12 +165,15 @@ export default class Server {
   /**
    * Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
    * @param any error
+   *     The error object.
    *
    * @return any
+   *     See _Drash.Http.Response.send()_.
    */
-  public handleHttpRequestError(request, error): any {
+  public handleHttpRequestError(request: DrashHttpRequest, error: any): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -213,9 +230,9 @@ export default class Server {
    * short-circuit favicon requests--preventing the requests from clogging the
    * logs.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
    */
-  public handleHttpRequestForFavicon(request): any {
+  public handleHttpRequestForFavicon(request: DrashHttpRequest): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -234,13 +251,20 @@ export default class Server {
   }
 
   /**
-   * Run the Deno server.
+   * Run the Deno server at the address specified in the configs. This method
+   * takes each HTTP request and creates a new and more workable request object
+   * and passes it to _Drash.Http.Server.handleHttpRequest()_.
+   *
+   * @return Promise<void>
+   *     This method just listens for requests at the address you provide in the
+   *     configs.
    */
   public async run(): Promise<void> {
     this.serverLog(`Deno server started at ${this.configs.address}.`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
-      this.handleHttpRequest(request);
+      let drashRequest = new Drash.Http.Request(request);
+      this.handleHttpRequest(drashRequest);
     }
   }
 
@@ -253,11 +277,11 @@ export default class Server {
    * docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
    *
    * @param Drash.Http.Resource resourceClass
-   *     A child object of the Drash.Http.Resource class.
+   *     A child object of the `Drash.Http.Resource` class.
    *
    * @return void
    *     This method just adds `resourceClass` to the resources property so
-   *     it can be retrieved if matched during an HTTP request.
+   *     it can be used (if matched) during an HTTP request.
    */
   protected addHttpResource(resourceClass: DrashHttpResource): void {
     resourceClass.paths.forEach((path, index) => {
@@ -311,13 +335,26 @@ export default class Server {
   }
 
   /**
+   * Add a static path for serving static assets like CSS files and stuff.
+   *
+   * @param string path
+   */
+  protected addStaticPath(path) {
+    this.static_paths.push(path);
+  }
+
+  /**
    * Get the resource class.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
    *
    * @return Drash.Http.Resource|undefined
+   *     - Returns a `Drash.Http.Resource` object if the URL path of the request
+   *     can be matched to a `Drash.Http.Resource` object's paths.
+   *     - Returns undefined if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request) {
+  protected getResourceClass(request: DrashHttpRequest) {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -379,7 +416,7 @@ export default class Server {
   /**
    * Is the request for a static path asset?
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
    *
    * @return boolean
    *     Returns true if the request is for an asset in a static path.

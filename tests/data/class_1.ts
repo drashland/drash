@@ -1,6 +1,17 @@
 // namespace Drash.Services
 
+/**
+ * @class ClassOne
+ * Class one does class one things.
+ */
 export default class ClassOne {
+
+  /**
+   * A string property.
+   *
+   * @property string property_string
+   */
+  public property_string: string;
 
   /**
    * Construct an object of this class.

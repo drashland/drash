@@ -1,19 +1,61 @@
 // namespace Drash.Http
 
 import Drash from "../../mod.ts";
+import DrashHttpRequest from "./request.ts";
 import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
-/** Response handles sending a response to the client making the request. */
+/**
+ * @class Response
+ * Response handles sending a response to the client making the request.
+ */
 export default class Response {
-  public body = {};
-  public body_generated = "";
+
+  /**
+   * The body of this response.
+   *
+   * @examplecode app.ts typescript /api-reference/http/response/p_body.ts 6
+   *
+   * @property any body
+   */
+  public body: any = {};
+
+  /**
+   * The body of this response as a string.
+   *
+   * @property string body_generated
+   */
+  public body_generated: string = "";
+
+  /**
+   * This response's headers.
+   *
+   * @property Headers headers
+   */
   public headers: Headers;
-  public request;
-  public status_code = Status.OK;
+
+  /**
+   * The request object.
+   *
+   * @property Drash.Http.Request request
+   */
+  public request: DrashHttpRequest;
+
+  /**
+   * This response's status code (e.g., 200 for OK). _Drash.Http.Response_
+   * objects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts).
+   *
+   * @property number status_code
+   */
+  public status_code: number = Status.OK;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
-  constructor(request) {
+  /**
+   * Construct an object of this class.
+   *
+   * @param Drash.Http.Request request
+   */
+  constructor(request: DrashHttpRequest) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", this.getHeaderContentType());
@@ -49,7 +91,12 @@ export default class Response {
   /**
    * Get the status message based on the status code.
    *
+   * @examplecode app.ts typescript /api-reference/http/response/m_getStatusMessage.ts 8
+   *
    * @return string
+   *     Returns the status message associated with `this.status_code`. For
+   *     example, if the response's `status_code` is `200`, then this method
+   *     will return "OK" as the status message.
    */
   public getStatusMessage(): string {
     let message = STATUS_TEXT.get(this.status_code);
@@ -58,7 +105,8 @@ export default class Response {
 
   /**
    * Get the full status message based on the status code. This is just the
-   * status code and the status message together.
+   * status code and the status message together (e.g., `200 (OK)`, `401
+   * (Unauthorized)`, etc.).
    *
    * @return string
    */
@@ -71,6 +119,10 @@ export default class Response {
    * Send the response to the client making the request.
    *
    * @return any
+   *     Returns the output which is passed to `Drash.Http.Request.respond()`.
+   *     The output is only returned for unit testing purposes. It is not
+   *     intended to be used elsewhere as this call is the last call in the
+   *     request-resource-response lifecycle.
    */
   public send(): any {
     let body = this.generateResponse();

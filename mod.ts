@@ -12,6 +12,7 @@ import MimeDb from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.j
 // Exceptions
 import HttpException from "./src/exceptions/http_exception.ts";
 // Http
+import Request from "./src/http/request.ts";
 import Resource from "./src/http/resource.ts";
 import Response from "./src/http/response.ts";
 import Server from "./src/http/server.ts";
@@ -41,6 +42,7 @@ function Drash(): any {
       HttpException: HttpException
     },
     Http: {
+      Request: Request,
       Response: Response,
       Resource: Resource,
       Server: Server

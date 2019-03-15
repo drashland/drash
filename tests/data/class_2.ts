@@ -1,5 +1,9 @@
 // namespace Drash.Services
 
+/**
+ * @class ClassTwo
+ * Class two does class two things.
+ */
 export default class ClassTwo {
   /**
    * Class two method one.

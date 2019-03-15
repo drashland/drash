@@ -19,7 +19,6 @@ code {
 
 .font-family--code,
 code[class*="language-"] {
-  line-height: 1.7;
   margin: 0; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -222,9 +221,6 @@ ol li ul {
   .b-code-example .body {
     border-radius: 0 0 1.0875rem 1.0875rem;
     margin-top: 0; }
-  @media screen and (max-width: 950px) {
-    .b-code-example {
-      margin-left: -2.9rem; } }
 
 .c-code-table-of-contents {
   padding: 1.45rem;

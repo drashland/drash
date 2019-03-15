@@ -7,6 +7,7 @@ import VueRouter from "vue-router";
 
 // Vue - Components
 import CodeBlock from "/components/code_block.vue";
+import CodeBlockForReference from "/components/code_block_for_reference.vue";
 import HeadingH2 from "/components/heading_h2.vue";
 import VueAppRoot from "/components/vue_app_root.vue";
 
@@ -21,6 +22,7 @@ import Error404 from "/components/pages/error_404.vue";
 
 // Vendor
 import MarkdownIt from "markdown-it";
+window.markdownIt = new MarkdownIt();
 
 const routes = [];
 const routeModules = [
@@ -48,10 +50,14 @@ routes.push({
 // Vue - Global registration
 Vue.use(VueRouter);
 Vue.component("code-block", CodeBlock);
+Vue.component("code-block-for-reference", CodeBlockForReference);
 Vue.component("heading-h2", HeadingH2);
 Vue.filter('markdown-it', function(value) {
-  window.markdownIt = new MarkdownIt();
-  return window.markdownIt.render(value);
+  if (value.indexOf("```") != -1) {
+    return window.markdownIt.render(value);
+  }
+
+  return window.markdownIt.renderInline(value);
 });
 Vue.prototype.$conf = conf;
 Vue.prototype.$app_data = window.app_data;

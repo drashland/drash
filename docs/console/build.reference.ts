@@ -3,7 +3,8 @@ import Drash from "../../mod.ts";
 let drashDirRoot = Drash.getEnvVar("DRASH_DIR_ROOT").value;
 
 let compiler = new Drash.Compilers.DocBlocksToJson();
-let compiled = compiler.parseFiles([
+let compiled = compiler.compile([
+  "/var/www/deno-drash/src/http/response.ts",
   "/var/www/deno-drash/src/http/server.ts"
 ]);
 

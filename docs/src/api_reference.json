@@ -1,12 +1,200 @@
 {
   "Drash.Http": {
-    "Server": {
-      "properties": {},
+    "Response": {
+      "properties": [
+        {
+          "name": "body:",
+          "description": [
+            "The body of this response."
+          ],
+          "type": "any",
+          "access_modifier": "public",
+          "signature": "public body: any = {};",
+          "example_code": [
+            {
+              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public GET() {\n    this.response.body = \"Ok... you got me.\";\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n",
+              "filename": "app.ts",
+              "language": "typescript",
+              "line_highlight": "6"
+            }
+          ]
+        },
+        {
+          "name": "body_generated:",
+          "description": [
+            "The body of this response as a string."
+          ],
+          "type": "string",
+          "access_modifier": "public",
+          "signature": "public body_generated: string = \"\";",
+          "example_code": []
+        },
+        {
+          "name": "headers:",
+          "description": [
+            "This response's headers."
+          ],
+          "type": "Headers",
+          "access_modifier": "public",
+          "signature": "public headers: Headers;",
+          "example_code": []
+        },
+        {
+          "name": "request:",
+          "description": [
+            "The request object."
+          ],
+          "type": "Drash.Http.Request",
+          "access_modifier": "public",
+          "signature": "public request: DrashHttpRequest;",
+          "example_code": []
+        },
+        {
+          "name": "status_code:",
+          "description": [
+            "This response's status code (e.g., 200 for OK). _Drash.Http.Response_ objects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)."
+          ],
+          "type": "number",
+          "access_modifier": "public",
+          "signature": "public status_code: number = Status.OK;",
+          "example_code": []
+        }
+      ],
       "methods": [
         {
           "name": "constructor",
           "description": [
-            "  Construct an object of this class."
+            "Construct an object of this class."
+          ],
+          "type": "constructor",
+          "signature": "constructor(request: DrashHttpRequest)",
+          "params": [
+            {
+              "name": "request",
+              "type": "Drash.Http.Request",
+              "description": []
+            }
+          ],
+          "returns": [],
+          "throws": [],
+          "example_code": []
+        },
+        {
+          "name": "generateResponse",
+          "description": [
+            "Generate a response."
+          ],
+          "type": "public",
+          "signature": "public generateResponse(): string",
+          "params": [],
+          "returns": [
+            {
+              "type": "string",
+              "description": []
+            }
+          ],
+          "throws": [],
+          "example_code": []
+        },
+        {
+          "name": "getStatusMessage",
+          "description": [
+            "Get the status message based on the status code."
+          ],
+          "type": "public",
+          "signature": "public getStatusMessage(): string",
+          "params": [],
+          "returns": [
+            {
+              "type": "string",
+              "description": [
+                "Returns the status message associated with `this.status_code`. For example, if the response's `status_code` is `200`, then this method will return \"OK\" as the status message."
+              ]
+            }
+          ],
+          "throws": [],
+          "example_code": [
+            {
+              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\nimport { Status } from \"https://deno.land/x/http/http_status.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public PUT() {\n    this.response.status_code = Status.NoContent;\n    console.log(this.response.getStatusMessage()); // Outputs => \"No Content\"\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n",
+              "filename": "app.ts",
+              "language": "typescript",
+              "line_highlight": "8"
+            }
+          ]
+        },
+        {
+          "name": "getStatusMessageFull",
+          "description": [
+            "Get the full status message based on the status code. This is just the status code and the status message together (e.g., `200 (OK)`, `401 (Unauthorized)`, etc.)."
+          ],
+          "type": "public",
+          "signature": "public getStatusMessageFull(): string",
+          "params": [],
+          "returns": [
+            {
+              "type": "string",
+              "description": []
+            }
+          ],
+          "throws": [],
+          "example_code": []
+        },
+        {
+          "name": "send",
+          "description": [
+            "Send the response to the client making the request."
+          ],
+          "type": "public",
+          "signature": "public send(): any",
+          "params": [],
+          "returns": [
+            {
+              "type": "any",
+              "description": [
+                "Returns the output which is passed to `Drash.Http.Request.respond()`. The output is only returned for unit testing purposes. It is not intended to be used elsewhere as this call is the last call in the request-resource-response lifecycle."
+              ]
+            }
+          ],
+          "throws": [],
+          "example_code": []
+        },
+        {
+          "name": "sendStatic",
+          "description": [
+            "Send the response of a \"static asset\" to the client making the request."
+          ],
+          "type": "public",
+          "signature": "public sendStatic(): any",
+          "params": [],
+          "returns": [
+            {
+              "type": "any",
+              "description": []
+            }
+          ],
+          "throws": [],
+          "example_code": []
+        }
+      ]
+    },
+    "Server": {
+      "properties": [
+        {
+          "name": "static_paths:",
+          "description": [
+            "This server's list of static paths. HTTP requests to a static path are usually intended to retrieve some type of concrete resource (e.g., a CSS file or a JS file). If an HTTP request is matched to a static path and the resource the HTTP request is trying to get is found, then `Drash.Http.Response` will use its `sendStatic()` method to send the static asset back to the client."
+          ],
+          "type": "string[]",
+          "access_modifier": "protected",
+          "signature": "protected static_paths: string[] = [];",
+          "example_code": []
+        }
+      ],
+      "methods": [
+        {
+          "name": "constructor",
+          "description": [
+            "Construct an object of this class."
           ],
           "type": "constructor",
           "signature": "constructor(configs: DrashHttpServerConfigs)",
@@ -18,100 +206,112 @@
             }
           ],
           "returns": [],
-          "throws": []
-        },
-        {
-          "name": "addStaticPath",
-          "description": [
-            "  Add a static path for serving static assets like CSS files and stuff."
-          ],
-          "type": "public",
-          "signature": "public addStaticPath(path)",
-          "params": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": []
-            }
-          ],
-          "returns": [],
-          "throws": []
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "handleHttpRequest",
           "description": [
-            "  Handle an HTTP request from the Deno server."
+            "Handle an HTTP request from the Deno server."
           ],
           "type": "public",
-          "signature": "public handleHttpRequest(request): any",
+          "signature": "public handleHttpRequest(request: DrashHttpRequest): any",
           "params": [
             {
               "name": "request",
-              "type": "ServerRequest",
-              "description": []
-            }
-          ],
-          "returns": [],
-          "throws": []
-        },
-        {
-          "name": "handleHttpRequestError",
-          "description": [
-            "  Handle cases when an error is thrown when handling an HTTP request."
-          ],
-          "type": "public",
-          "signature": "public handleHttpRequestError(request, error): any",
-          "params": [
-            {
-              "name": "request",
-              "type": "ServerRequest",
-              "description": []
-            },
-            {
-              "name": "error",
-              "type": "any",
-              "description": []
+              "type": "Drash.Http.Request",
+              "description": [
+                "The request object. "
+              ]
             }
           ],
           "returns": [
             {
               "type": "any",
-              "description": []
+              "description": [
+                "See _Drash.Http.Response.send()_."
+              ]
             }
           ],
-          "throws": []
+          "throws": [],
+          "example_code": []
+        },
+        {
+          "name": "handleHttpRequestError",
+          "description": [
+            "Handle cases when an error is thrown when handling an HTTP request."
+          ],
+          "type": "public",
+          "signature": "public handleHttpRequestError(request: DrashHttpRequest, error: any): any",
+          "params": [
+            {
+              "name": "request",
+              "type": "Drash.Http.Request",
+              "description": [
+                "The request object. "
+              ]
+            },
+            {
+              "name": "error",
+              "type": "any",
+              "description": [
+                "The error object. "
+              ]
+            }
+          ],
+          "returns": [
+            {
+              "type": "any",
+              "description": [
+                "See _Drash.Http.Response.send()_."
+              ]
+            }
+          ],
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "handleHttpRequestForFavicon",
           "description": [
-            "  Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs."
+            "Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs."
           ],
           "type": "public",
-          "signature": "public handleHttpRequestForFavicon(request): any",
+          "signature": "public handleHttpRequestForFavicon(request: DrashHttpRequest): any",
           "params": [
             {
               "name": "request",
-              "type": "ServerRequest",
+              "type": "Drash.Http.Request",
               "description": []
             }
           ],
           "returns": [],
-          "throws": []
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "run",
-          "description": [],
+          "description": [
+            "Run the Deno server at the address specified in the configs. This method takes each HTTP request and creates a new and more workable request object and passes it to _Drash.Http.Server.handleHttpRequest()_."
+          ],
           "type": "public",
           "signature": "public async run(): Promise<void>",
           "params": [],
-          "returns": [],
-          "throws": []
+          "returns": [
+            {
+              "type": "Promise<void>",
+              "description": [
+                "This method just listens for requests at the address you provide in the configs."
+              ]
+            }
+          ],
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "addHttpResource",
           "description": [
-            "  Add an HTTP resource to the server which can be retrieved at specific URIs.",
-            " Drash defines an HTTP resource according to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
+            "Add an HTTP resource to the server which can be retrieved at specific URIs.",
+            "Drash defines an HTTP resource according to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
           ],
           "type": "protected",
           "signature": "protected addHttpResource(resourceClass: DrashHttpResource): void",
@@ -120,7 +320,7 @@
               "name": "resourceClass",
               "type": "Drash.Http.Resource",
               "description": [
-                "A child object of the Drash.Http.Resource class."
+                "A child object of the `Drash.Http.Resource` class. "
               ]
             }
           ],
@@ -128,45 +328,70 @@
             {
               "type": "void",
               "description": [
-                "This method just adds `resourceClass` to the resources property so it can be retrieved if matched during an HTTP request."
+                "This method just adds `resourceClass` to the resources property so it can be used (if matched) during an HTTP request."
               ]
             }
           ],
-          "throws": []
+          "throws": [],
+          "example_code": []
+        },
+        {
+          "name": "addStaticPath",
+          "description": [
+            "Add a static path for serving static assets like CSS files and stuff."
+          ],
+          "type": "protected",
+          "signature": "protected addStaticPath(path)",
+          "params": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": []
+            }
+          ],
+          "returns": [],
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "getResourceClass",
           "description": [
-            "  Get the resource class."
+            "Get the resource class."
           ],
           "type": "protected",
-          "signature": "protected getResourceClass(request)",
+          "signature": "protected getResourceClass(request: DrashHttpRequest)",
           "params": [
             {
               "name": "request",
-              "type": "ServerRequest",
-              "description": []
+              "type": "Drash.Http.Request",
+              "description": [
+                "The request object. "
+              ]
             }
           ],
           "returns": [
             {
               "type": "Drash.Http.Resource|undefined",
-              "description": []
+              "description": [
+                "Returns a `Drash.Http.Resource` object if the URL path of the request can be matched to a `Drash.Http.Resource` object's paths.",
+                "Returns undefined if a `Drash.Http.Resource` object can't be matched."
+              ]
             }
           ],
-          "throws": []
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "requestIsForStaticPathAsset",
           "description": [
-            "  Is the request for a static path asset?"
+            "Is the request for a static path asset?"
           ],
           "type": "protected",
           "signature": "protected requestIsForStaticPathAsset(request)",
           "params": [
             {
               "name": "request",
-              "type": "ServerRequest",
+              "type": "Drash.Http.Request",
               "description": []
             }
           ],
@@ -178,7 +403,8 @@
               ]
             }
           ],
-          "throws": []
+          "throws": [],
+          "example_code": []
         },
         {
           "name": "serverLog",
@@ -187,7 +413,8 @@
           "signature": "protected serverLog(message: any)",
           "params": [],
           "returns": [],
-          "throws": []
+          "throws": [],
+          "example_code": []
         }
       ]
     }
