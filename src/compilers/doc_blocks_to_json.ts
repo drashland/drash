@@ -49,12 +49,11 @@ export default class DocBlocksToJson {
 
       // let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
       let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
-
-      let methods = this.parseDocBlocksForMethods(methodDocBlocks);
+      let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*;/g);
 
       this.parsed[currentNamespace][className] = {
-        // properties: this.parseDocBlocksForProperties(fileContents),
-        methods: methods,
+        properties: this.getClassProperties(propertyDocBlocks),
+        methods: this.getClassMethods(methodDocBlocks),
       };
     });
 
@@ -64,12 +63,15 @@ export default class DocBlocksToJson {
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
 
   /**
-   * Parse the specified array of method doc blocks.
+   * Parse the specified array of method doc blocks and return an array of
+   * method-related data.
+   *
+   * @param string[] docBlocks
    */
-  protected parseDocBlocksForMethods(methodDocBlocks: string[]) {
+  protected getClassMethods(docBlocks: string[]): any {
     let methods = [];
 
-    methodDocBlocks.forEach((docBlock) => {
+    docBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
 
@@ -85,7 +87,38 @@ export default class DocBlocksToJson {
     return methods;
   }
 
-  protected getDocBlockDescription(docBlock) {
+  /**
+   * Parse the specified array of property doc blocks and return an array of
+   * property-related data.
+   *
+   * @param string[] docBlocks
+   */
+  protected getClassProperties(docBlocks: string[]): any {
+    let properties = [];
+
+    docBlocks.forEach((docBlock) => {
+      let docBlockLinesAsArray = docBlock.split("\n");
+      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
+      let annotation = this.getDocBlockAnnotation("@property", docBlock);
+      console.log(annotation);
+
+      properties.push({
+        access_modifier: signature.split(" ")[0],
+        annotation: annotation,
+        data_type: annotation.split(" ")[1],
+        description: this.getDocBlockDescription(docBlock),
+        name: annotation.split(" ")[2],
+        signature: signature,
+      });
+    });
+
+    return properties;
+  }
+
+  /**
+   * Get the doc block's description.
+   */
+  protected getDocBlockDescription(docBlock: string) {
     let docBlocksByLine = docBlock.split("\n");
     let textBlock = "";
     let endOfDescription = false;
@@ -122,9 +155,10 @@ export default class DocBlocksToJson {
    *
    * @return any
    */
-  protected getDocBlockParams(docBlock) {
+  protected getDocBlockParams(docBlock: string): any {
     let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
     let paramBlocks = docBlock.match(reParams);
+    let params = [];
 
     if (paramBlocks) {
       //
@@ -133,7 +167,7 @@ export default class DocBlocksToJson {
       //     @param type name
       //         Some description.
       //
-      paramBlocks = paramBlocks.map((paramBlock) => {
+      params = paramBlocks.map((paramBlock) => {
         // Clean up each line and return an overall clean description
         let paramBlockInLines = paramBlock.split("\n");
         let annotation = paramBlockInLines.shift();
@@ -143,18 +177,56 @@ export default class DocBlocksToJson {
         return {
           annotation: annotation,
           data_type: annotation.split(" ")[1],
+          description: description,
           name: annotation.split(" ")[2],
-          description: description
         };
       });
     }
 
-    return paramBlocks;
+    return params;
   }
 
-  protected getParagraphs(textBlock) {
-    let array = textBlock.split("\n");
-    array = array.map((line) => {
+  /**
+   * Get the `@property` definitions from the doc block.
+   *
+   * @param string annotation
+   *     The annotation to get from the doc block.
+   * @param string docBlock
+   *     The doc block to get the `@property` definitions from.
+   *
+   * @return string
+   */
+  protected getDocBlockAnnotation(annotation: string, docBlock: string): string {
+    let reProperty;
+    switch (annotation) {
+      case "@property":
+        reProperty = new RegExp(/@property.+/, "g");
+        break;
+    }
+
+    let match = docBlock.match(reProperty);
+    let line = "";
+
+    if (match) {
+      line = match[0];
+    }
+
+    return line;
+  }
+
+  /**
+   * Get paragraphs from a text block string.
+   *
+   * @param string textBlock
+   *     The text block containing the paragraph(s).
+   *
+   * @return string[]
+   *     Returns an array of strings. Each element in the array is a paragraph.
+   */
+  protected getParagraphs(textBlock: string): string[] {
+    let textBlockInLines = textBlock.split("\n");
+
+    textBlockInLines = textBlockInLines.map((line) => {
       if (line.trim() === "*") {
         return "---para-break---"
       }
@@ -163,17 +235,18 @@ export default class DocBlocksToJson {
       return line.replace(" * ", "").trim();
     });
 
-    return this.getParagraphsJoined(array);
-  }
+    textBlockInLines = textBlockInLines
+      .join(" ")
+      .split("---para-break---")
+      .map((val) => {
+        return val.trim();
+      });
 
-  protected getParagraphsJoined(array) {
-    array = array.join(" ").split("---para-break---").map((val) => {
-      return val.trim();
-    });
-    if (array[array.length - 1] == "") {
-      array.pop();
+    // Any empty elements need to go bye bye
+    if (textBlockInLines[textBlockInLines.length - 1] == "") {
+      textBlockInLines.pop();
     }
 
-    return array;
+    return textBlockInLines;
   }
 }

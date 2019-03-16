@@ -6,6 +6,20 @@
  */
 export default class ClassOne {
   /**
+   * Class one property one.
+   *
+   * This is a second paragraph.
+   *
+   * This is a third paragraph.
+   * There is also a sentence below this third paragraph.
+   *
+   * This is a fourth paragraph.
+   *
+   * @property string property_one
+   */
+  public property_one: string = "";
+
+  /**
    * Class one method one.
    *
    * This is a second paragraph.

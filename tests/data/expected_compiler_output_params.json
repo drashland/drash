@@ -1,6 +1,21 @@
 {
   "Drash.Services": {
     "ClassOne": {
+      "properties": [
+        {
+          "signature": "public property_one: string = \"\";",
+          "annotation": "@property string property_one",
+          "access_modifier": "public",
+          "name": "property_one",
+          "data_type": "string",
+          "description": [
+            "Class one property one.",
+            "This is a second paragraph.",
+            "This is a third paragraph. There is also a sentence below this third paragraph.",
+            "This is a fourth paragraph."
+          ]
+        }
+      ],
       "methods": [
         {
           "signature": "public classOneMethodOne(myObject: any, myString: string)",
