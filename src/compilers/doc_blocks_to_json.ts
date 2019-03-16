@@ -90,7 +90,7 @@ export default class DocBlocksToJson {
         : signature.split(" ")[0];
 
       methods.push({
-        access_modifier: accessModifier,
+        access_modifier: accessModifier, // FIXME(crookse) This is turned into "constructor" sometimes
         description: this.getDocBlockDescription(docBlock),
         example_code: this.getDocBlockExampleCode(docBlock),
         name: accessModifier == "constructor" ? "constructor" : signature.split(" ")[1].split("(")[0], // This could use some work
