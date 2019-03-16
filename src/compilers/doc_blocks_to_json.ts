@@ -81,6 +81,7 @@ export default class DocBlocksToJson {
         name: signature.split(" ")[1].split("(")[0], // This could use some work
         params: this.getDocBlockParams(docBlock),
         signature: signature,
+        returns: this.getDocBlockReturns(docBlock),
         throws: this.getDocBlockThrows(docBlock),
       });
     });
@@ -185,6 +186,45 @@ export default class DocBlocksToJson {
     }
 
     return params;
+  }
+
+  /**
+   * Get the `@return` definitions from the doc block.
+   *
+   * @param string docBlock
+   *     The docBlock to get the `@return` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockReturns(docBlock: string): any {
+    let reReturn = new RegExp(/@return.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    let retBlocks = docBlock.match(reReturn);
+    let ret = [];
+
+    if (retBlocks) {
+      //
+      // A `retBlock` is the entire `@param` annotation. Example:
+      //
+      //     @param type name
+      //         Some description.
+      //
+      ret = retBlocks.map((retBlock) => {
+        // Clean up each line and return an overall clean description
+        let retBlockInLines = retBlock.split("\n");
+        retBlockInLines.shift(); // remove the annotation line
+        let annotation = this.getDocBlockAnnotation("@return", retBlock);
+        let textBlock = retBlockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotation,
+          data_type: annotation.split(" ")[1],
+          description: description,
+        };
+      });
+    }
+
+    return ret;
   }
 
   /**

@@ -45,8 +45,12 @@ export default class ClassOne {
    *     This is a second paragraph.
    *
    * @return any|undefined
-   *     - any: Returns any when something cool happens.
-   *     - undefined: Returns undefined when uhhhhhhhhhh k.
+   *     Returns any when something cool happens.
+   *
+   *     Returns undefined when uhhhhhhhhhh k.
+   *
+   * @return string
+   *     Returns a string when the other two don't get got returRrRrRrned.
    *
    * @throws SomeException
    *     Thrown when something happens.

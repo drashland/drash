@@ -43,6 +43,18 @@
               ]
             }
           ],
+          "returns": [
+            {
+              "annotation": "@return any|undefined",
+              "data_type": "any|undefined",
+              "description": ["Returns any when something cool happens.", "Returns undefined when uhhhhhhhhhh k."]
+            },
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": ["Returns a string when the other two don't get got returRrRrRrned."]
+            }
+          ],
           "signature": "public classOneMethodOne(myObject: any, myString: string)",
           "throws": [
             {
