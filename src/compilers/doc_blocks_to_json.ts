@@ -192,8 +192,9 @@ export default class DocBlocksToJson {
    * @return any
    */
   protected getDocBlockParams(docBlock: string): any {
-    let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    // let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
     // let reParams = new RegExp(/@param.+((\s.*).+     .*)*((\s*\*\s*).+)+(\w).*/, "g");
+    let reParams = new RegExp(/@param[^@\/]+/, "g");
     let paramBlocks = docBlock.match(reParams);
     let params = [];
 
@@ -233,7 +234,8 @@ export default class DocBlocksToJson {
    * @return any
    */
   protected getDocBlockReturns(docBlock: string): any {
-    let reReturn = new RegExp(/@return.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    // let reReturn = new RegExp(/@return.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    let reReturn= new RegExp(/@return[^@\/]+/, "g");
     let retBlocks = docBlock.match(reReturn);
     let ret = [];
 
@@ -272,7 +274,8 @@ export default class DocBlocksToJson {
    * @return any
    */
   protected getDocBlockThrows(docBlock: string): any {
-    let reThrows = new RegExp(/@throws.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    // let reThrows = new RegExp(/@throws.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    let reThrows= new RegExp(/@throws[^@\/]+/, "g");
     let throwsBlocks = docBlock.match(reThrows);
     let throws = [];
 
@@ -359,10 +362,9 @@ export default class DocBlocksToJson {
         return val;
       });
 
-    // Any empty elements need to go bye bye
-    if (textBlockInLines[textBlockInLines.length - 1] == "") {
-      textBlockInLines.pop();
-    }
+    textBlockInLines = textBlockInLines.filter((val) => {
+      return val.trim() != "";
+    });
 
     return textBlockInLines;
   }

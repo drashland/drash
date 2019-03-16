@@ -53,6 +53,8 @@ export default class ClassOne {
    *
    *     This is a second paragraph.
    *
+   *     This is a third paragraph.
+   *
    * @return any|undefined
    *     Returns any when something cool happens.
    *
