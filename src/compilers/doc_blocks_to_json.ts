@@ -48,7 +48,8 @@ export default class DocBlocksToJson {
       let className = fileContents.match(/@class \w+/)[0].substring("@class".length).trim();
 
       // let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
-      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
+      // let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
+      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\) {/g);
       let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*;/g);
 
       this.parsed[currentNamespace][className] = {
@@ -74,6 +75,7 @@ export default class DocBlocksToJson {
     docBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
+      signature = signature.replace(" {", "");
 
       methods.push({
         access_modifier: signature.split(" ")[0],
