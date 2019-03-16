@@ -5,7 +5,7 @@
     "module_name": "Drash",
     "base_url": "",
     "paths": {
-      "app_root": "/var/www/deno-drash/docs"
+      "docs_root": "/var/www/deno-drash/docs"
     },
     "webpack": {
       "mode": "development",
@@ -21,7 +21,7 @@
     "module_name": "Drash",
     "base_url": "/deno-drash",
     "paths": {
-      "app_root": "/var/www/deno-drash/docs"
+      "docs_root": "/var/www/deno-drash/docs"
     },
     "webpack": {
       "mode": "production",
