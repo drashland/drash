@@ -110,15 +110,9 @@
               "annotation": "@param string docBlock",
               "data_type": "string",
               "description": [
-                "The docBlock to get the `"
+                "The docBlock to get the `@param` definitions from."
               ],
               "name": "docBlock"
-            },
-            {
-              "annotation": "@param` definitions from.",
-              "data_type": "definitions",
-              "description": [],
-              "name": "from."
             }
           ],
           "signature": "protected getDocBlockParams(docBlock: string): any",
@@ -141,7 +135,7 @@
               "annotation": "@param string docBlock",
               "data_type": "string",
               "description": [
-                "The docBlock to get the `"
+                "The docBlock to get the `@return` definitions from."
               ],
               "name": "docBlock"
             }
@@ -176,7 +170,7 @@
               "annotation": "@param string docBlock",
               "data_type": "string",
               "description": [
-                "The docBlock to get the `"
+                "The docBlock to get the `@throws` definitions from."
               ],
               "name": "docBlock"
             }
@@ -220,7 +214,7 @@
               "annotation": "@param string docBlock",
               "data_type": "string",
               "description": [
-                "The doc block to get the `"
+                "The doc block to get the `@property` definitions from."
               ],
               "name": "docBlock"
             }
@@ -819,7 +813,7 @@
               "annotation": "@param any configs",
               "data_type": "any",
               "description": [
-                "See [Drash.Loggers.Logger.configs](.."
+                "See [Drash.Loggers.Logger.configs](/#/api-reference/loggers/logger#configs)."
               ],
               "name": "configs"
             }
@@ -1023,7 +1017,9 @@
             {
               "annotation": "@param any configs",
               "data_type": "any",
-              "description": [],
+              "description": [
+                "*/"
+              ],
               "name": "configs"
             }
           ],
