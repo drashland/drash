@@ -197,22 +197,7 @@ export default class DocBlocksToJson {
    * @return string
    */
   protected getDocBlockAnnotation(annotation: string, docBlock: string): string {
-    let reProperty;
-    switch (annotation) {
-      case "@param":
-        reProperty = new RegExp(/@param.+/, "g");
-        break;
-      case "@property":
-        reProperty = new RegExp(/@property.+/, "g");
-        break;
-      case "@returns":
-        reProperty = new RegExp(/@returns.+/, "g");
-        break;
-      case "@throws":
-        reProperty = new RegExp(/@throws.+/, "g");
-        break;
-    }
-
+    let reProperty = new RegExp(annotation + ".+", "g");
     let match = docBlock.match(reProperty);
     let line = "";
 
