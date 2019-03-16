@@ -214,13 +214,16 @@
           "name": "constructor",
           "params": [
             {
-              "annotation": "@param DrashHttpServerConfigs configs",
-              "data_type": "DrashHttpServerConfigs",
-              "description": [],
+              "annotation": "@param any configs",
+              "data_type": "any",
+              "description": [
+                "address: string",
+                "logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger"
+              ],
               "name": "configs"
             }
           ],
-          "signature": "constructor(configs: DrashHttpServerConfigs)",
+          "signature": "constructor(configs: any)",
           "returns": [],
           "throws": []
         },
@@ -236,7 +239,8 @@
               "annotation": "@param Drash.Http.Request request",
               "data_type": "Drash.Http.Request",
               "description": [
-                "The request object."
+                "The request object.",
+                "This is a cool request."
               ],
               "name": "request"
             }

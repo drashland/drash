@@ -193,6 +193,7 @@ export default class DocBlocksToJson {
    */
   protected getDocBlockParams(docBlock: string): any {
     let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    // let reParams = new RegExp(/@param.+((\s.*).+     .*)*((\s*\*\s*).+)+(\w).*/, "g");
     let paramBlocks = docBlock.match(reParams);
     let params = [];
 

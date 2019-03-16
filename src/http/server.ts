@@ -2,7 +2,6 @@
 
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
-import {DrashHttpServerConfigs} from "../interfaces.ts";
 import DrashHttpResource from "../http/resource.ts";
 import DrashHttpRequest from "../http/request.ts";
 
@@ -17,14 +16,10 @@ export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
 
-  protected configs_defaults = {
-    address: "127.0.0.1:8000",
-    default_response_content_type: "application/json"
-  };
-  protected configs;
+  protected configs: any;
   protected deno_server;
   protected logger;
-  protected resources = {};
+  protected resources: any = {};
 
   /**
    * This server's list of static paths. HTTP requests to a static path are
@@ -46,15 +41,32 @@ export default class Server {
   /**
    * Construct an object of this class.
    *
-   * @param DrashHttpServerConfigs configs
+   * @param any configs
+   *     address: string
+   *
+   *     logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger
+   *
+   *     response_output: string (a proper MIME type)
+   *
+   *     resources: Drash.Http.Resource[]
+   *
+   *     static_paths: string[]
    */
-  constructor(configs: DrashHttpServerConfigs) {
+  constructor(configs: any) {
     if (!configs.logger) {
       this.logger = new Drash.Loggers.ConsoleLogger({
         enabled: false
       });
     } else {
       this.logger = configs.logger;
+    }
+
+    if (!configs.address) {
+      configs.address = "127.0.0.1:8000";
+    }
+
+    if (!configs.response_output) {
+      configs.response_output = "application/json"
     }
 
     this.configs = configs;
