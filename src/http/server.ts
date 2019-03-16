@@ -447,7 +447,7 @@ export default class Server {
    * @return boolean
    *     Returns true if the request is for an asset in a static path.
    */
-  protected requestIsForStaticPathAsset(request) {
+  protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean {
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
     let requestUrl = `/${request.url.split("/")[1]}`;
@@ -469,8 +469,20 @@ export default class Server {
 
   /**
    * console.log() something.
+   *
+   * @param any message
+   *     The message to output in the console. String messages are prefixed with
+   *     [Drash]; and all other data types are logged on a new line.
+   *
+   * @return void
+   *     This method just logs a message to the console.
    */
-  protected serverLog(message: any) {
-    console.log(`[Drash] ${message}`);
+  protected serverLog(message: any): void {
+    if (typeof message != "string") {
+      console.log("[Drash]");
+      console.log(message);
+    } else {
+      console.log(`[Drash] ${message}`);
+    }
   }
 }

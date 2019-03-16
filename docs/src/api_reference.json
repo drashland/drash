@@ -19,7 +19,7 @@
             }
           ],
           "name": "body",
-          "signature": "public body: any = {};"
+          "signature": "public body: any = {}"
         },
         {
           "access_modifier": "public",
@@ -30,7 +30,7 @@
           ],
           "example_code": [],
           "name": "body_generated",
-          "signature": "public body_generated: string = \"\";"
+          "signature": "public body_generated: string = \"\""
         },
         {
           "access_modifier": "public",
@@ -41,7 +41,7 @@
           ],
           "example_code": [],
           "name": "headers",
-          "signature": "public headers: Headers;"
+          "signature": "public headers: Headers"
         },
         {
           "access_modifier": "public",
@@ -52,7 +52,7 @@
           ],
           "example_code": [],
           "name": "request",
-          "signature": "public request: DrashHttpRequest;"
+          "signature": "public request: DrashHttpRequest"
         },
         {
           "access_modifier": "public",
@@ -63,7 +63,7 @@
           ],
           "example_code": [],
           "name": "status_code",
-          "signature": "public status_code: number = Status.OK;"
+          "signature": "public status_code: number = Status.OK"
         }
       ],
       "methods": [
@@ -201,7 +201,7 @@
           ],
           "example_code": [],
           "name": "static_paths",
-          "signature": "protected static_paths: string[] = [];"
+          "signature": "protected static_paths: string[] = []"
         }
       ],
       "methods": [
@@ -437,7 +437,7 @@
               "name": "request"
             }
           ],
-          "signature": "protected requestIsForStaticPathAsset(request)",
+          "signature": "protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean",
           "returns": [
             {
               "annotation": "@return boolean",
@@ -456,9 +456,26 @@
           ],
           "example_code": [],
           "name": "serverLog",
-          "params": [],
-          "signature": "protected serverLog(message: any)",
-          "returns": [],
+          "params": [
+            {
+              "annotation": "@param any message",
+              "data_type": "any",
+              "description": [
+                "The message to output in the console. String messages are prefixed with [Drash]; and all other data types are logged on a new line."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "protected serverLog(message: any): void",
+          "returns": [
+            {
+              "annotation": "@return void",
+              "data_type": "void",
+              "description": [
+                "This method just logs a message to the console."
+              ]
+            }
+          ],
           "throws": []
         }
       ]
