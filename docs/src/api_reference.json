@@ -353,7 +353,7 @@
               "annotation": "@return void",
               "data_type": "void",
               "description": [
-                "This method just adds `resourceClass` to the resources property so it can be used (if matched) during an HTTP request."
+                "This method just adds `resourceClass` to `this.resources` so it can be used (if matched) during an HTTP request."
               ]
             }
           ],
@@ -362,7 +362,7 @@
         {
           "access_modifier": "protected",
           "description": [
-            "Add a static path for serving static assets like CSS files and stuff."
+            "Add a static path for serving static assets like CSS files, JS files, PDF files, etc."
           ],
           "example_code": [],
           "name": "addStaticPath",
@@ -374,8 +374,16 @@
               "name": "path"
             }
           ],
-          "signature": "protected addStaticPath(path)",
-          "returns": [],
+          "signature": "protected addStaticPath(path: string): void",
+          "returns": [
+            {
+              "annotation": "@return void",
+              "data_type": "void",
+              "description": [
+                "This method just adds `path` to `this.static_paths` so it can be used (if matched) during an HTTP request."
+              ]
+            }
+          ],
           "throws": []
         },
         {
@@ -395,14 +403,14 @@
               "name": "request"
             }
           ],
-          "signature": "protected getResourceClass(request: DrashHttpRequest)",
+          "signature": "protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined",
           "returns": [
             {
               "annotation": "@return Drash.Http.Resource|undefined",
               "data_type": "Drash.Http.Resource|undefined",
               "description": [
                 "Returns a `Drash.Http.Resource` object if the URL path of the request can be matched to a `Drash.Http.Resource` object's paths.",
-                "Returns undefined if a `Drash.Http.Resource` object can't be matched."
+                "Returns `undefined` if a `Drash.Http.Resource` object can't be matched."
               ]
             }
           ],

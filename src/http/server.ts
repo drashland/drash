@@ -114,17 +114,25 @@ export default class Server {
       }
     });
 
-    let resource = this.getResourceClass(request);
+    let resourceClass = this.getResourceClass(request);
 
     // No resource? Send a 404 (Not Found) response.
-    if (!resource) {
+    if (!resourceClass) {
       return this.handleHttpRequestError(
         request,
         new Drash.Exceptions.HttpException(404)
       );
     }
 
-    resource = new resource(request, new Drash.Http.Response(request), this);
+    // @ts-ignore
+    // We ignore this because `resourceClass` could be `undefined` and that
+    // doens't have a construct signature. If this isn't ignored, then the
+    // following error will occur:
+    //
+    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+    // construct signature.
+    //
+    let resource = new resourceClass(request, new Drash.Http.Response(request), this);
 
     try {
       this.logger.debug(
@@ -358,9 +366,9 @@ export default class Server {
    *     Returns a `Drash.Http.Resource` object if the URL path of the request
    *     can be matched to a `Drash.Http.Resource` object's paths.
    *
-   *     Returns undefined if a `Drash.Http.Resource` object can't be matched.
+   *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: DrashHttpRequest) {
+  protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
