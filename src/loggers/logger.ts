@@ -24,6 +24,12 @@ export default abstract class Logger {
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
+  /**
+   * Construct an object of this class.
+   *
+   * @param any configs
+   *     See [Drash.Loggers.Logger.configs](../api-reference/loggers/logger#configs).
+   */
   constructor(configs: any) {
     if (configs.test === true) {
       this.test = true;
@@ -52,6 +58,9 @@ export default abstract class Logger {
 
   // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////
 
+  /**
+   * Write a log message.
+   */
   abstract write(logMethodLevelDefinition, message);
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
