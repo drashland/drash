@@ -76,11 +76,12 @@ export default class DocBlocksToJson {
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
 
       methods.push({
-        signature: signature,
         access_modifier: signature.split(" ")[0],
+        description: this.getDocBlockDescription(docBlock),
         name: signature.split(" ")[1].split("(")[0], // This could use some work
         params: this.getDocBlockParams(docBlock),
-        description: this.getDocBlockDescription(docBlock)
+        signature: signature,
+        throws: this.getDocBlockThrows(docBlock),
       });
     });
 
@@ -184,6 +185,45 @@ export default class DocBlocksToJson {
     }
 
     return params;
+  }
+
+  /**
+   * Get the `@throws` definitions from the doc block.
+   *
+   * @param string docBlock
+   *     The docBlock to get the `@throws` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockThrows(docBlock: string): any {
+    let reThrows = new RegExp(/@throws.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    let throwsBlocks = docBlock.match(reThrows);
+    let throws = [];
+
+    if (throwsBlocks) {
+      //
+      // A `throwsBlock` is the entire `@param` annotation. Example:
+      //
+      //     @param type name
+      //         Some description.
+      //
+      throws = throwsBlocks.map((throwsBlock) => {
+        // Clean up each line and return an overall clean description
+        let throwsBlockInLines = throwsBlock.split("\n");
+        throwsBlockInLines.shift(); // remove the annotation line
+        let annotation = this.getDocBlockAnnotation("@throws", throwsBlock);
+        let textBlock = throwsBlockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotation,
+          data_type: annotation.split(" ")[1],
+          description: description,
+        };
+      });
+    }
+
+    return throws;
   }
 
   /**

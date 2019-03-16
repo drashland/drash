@@ -1,16 +1,6 @@
 {
   "Drash.Services": {
     "ClassOne": {
-      "properties": [
-        {
-          "name": "property_string:",
-          "description": ["A string property."],
-          "type": "string",
-          "access_modifier": "public",
-          "signature": "public property_string: string;",
-          "example_code": []
-        }
-      ],
       "methods": [
         {
           "name": "constructor",
@@ -92,6 +82,16 @@
               ]
             }
           ],
+          "example_code": []
+        }
+      ],
+      "properties": [
+        {
+          "access_modifier": "public",
+          "description": ["A string property."],
+          "name": "property_string:",
+          "type": "string",
+          "signature": "public property_string: string;",
           "example_code": []
         }
       ]
