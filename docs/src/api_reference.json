@@ -808,6 +808,27 @@
       "properties": [],
       "methods": [
         {
+          "access_modifier": "constructor",
+          "description": [
+            "Construct an object of this class."
+          ],
+          "example_code": [],
+          "name": "constructor",
+          "params": [
+            {
+              "annotation": "@param any configs",
+              "data_type": "any",
+              "description": [
+                "See [Drash.Loggers.Logger.configs](.."
+              ],
+              "name": "configs"
+            }
+          ],
+          "signature": "constructor(configs: any)",
+          "returns": [],
+          "throws": []
+        },
+        {
           "access_modifier": "public",
           "description": [
             "Output a DEBUG level log message."
@@ -990,7 +1011,39 @@
     },
     "ConsoleLogger": {
       "properties": [],
-      "methods": []
+      "methods": [
+        {
+          "access_modifier": "constructor",
+          "description": [
+            "Construct an object of this class."
+          ],
+          "example_code": [],
+          "name": "constructor",
+          "params": [
+            {
+              "annotation": "@param any configs",
+              "data_type": "any",
+              "description": [],
+              "name": "configs"
+            }
+          ],
+          "signature": "constructor(configs)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "@inheritdoc"
+          ],
+          "example_code": [],
+          "name": "write",
+          "params": [],
+          "signature": "public write(logMethodLevelDefinition, message): string",
+          "returns": [],
+          "throws": []
+        }
+      ]
     },
     "FileLogger": {
       "properties": [],
