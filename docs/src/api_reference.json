@@ -9,7 +9,15 @@
           "description": [
             "The body of this response."
           ],
-          "example_code": [],
+          "example_code": [
+            {
+              "filename": "app.ts",
+              "filepath": "/api-reference/http/response/p_body.ts",
+              "language": "typescript",
+              "line_highlight": "6",
+              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public GET() {\n    this.response.body = \"Ok... you got me.\";\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n"
+            }
+          ],
           "name": "body",
           "signature": "public body: any = {};"
         },
@@ -60,22 +68,12 @@
       ],
       "methods": [
         {
-          "access_modifier": "*",
-          "description": [
-            "This response's status code (e.g., 200 for OK). _Drash.Http.Response_ objects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)"
-          ],
-          "name": "objects",
-          "params": [],
-          "signature": "* objects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)",
-          "returns": [],
-          "throws": []
-        },
-        {
-          "access_modifier": "constructor(request:",
+          "access_modifier": "constructor",
           "description": [
             "Construct an object of this class."
           ],
-          "name": "DrashHttpRequest)",
+          "example_code": [],
+          "name": "constructor",
           "params": [
             {
               "annotation": "@param Drash.Http.Request request",
@@ -93,9 +91,10 @@
           "description": [
             "Generate a response."
           ],
+          "example_code": [],
           "name": "generateResponse",
           "params": [],
-          "signature": "public generateResponse()",
+          "signature": "public generateResponse(): string",
           "returns": [
             {
               "annotation": "@return string",
@@ -110,9 +109,18 @@
           "description": [
             "Get the status message based on the status code."
           ],
+          "example_code": [
+            {
+              "filename": "app.ts",
+              "filepath": "/api-reference/http/response/m_getStatusMessage.ts",
+              "language": "typescript",
+              "line_highlight": "8",
+              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\nimport { Status } from \"https://deno.land/x/http/http_status.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public PUT() {\n    this.response.status_code = Status.NoContent;\n    console.log(this.response.getStatusMessage()); // Outputs => \"No Content\"\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n"
+            }
+          ],
           "name": "getStatusMessage",
           "params": [],
-          "signature": "public getStatusMessage()",
+          "signature": "public getStatusMessage(): string",
           "returns": [
             {
               "annotation": "@return string",
@@ -129,9 +137,10 @@
           "description": [
             "Get the full status message based on the status code. This is just the status code and the status message together (e.g., `200 (OK)`, `401 (Unauthorized)`, etc.)."
           ],
+          "example_code": [],
           "name": "getStatusMessageFull",
           "params": [],
-          "signature": "public getStatusMessageFull()",
+          "signature": "public getStatusMessageFull(): string",
           "returns": [
             {
               "annotation": "@return string",
@@ -146,9 +155,10 @@
           "description": [
             "Send the response to the client making the request."
           ],
+          "example_code": [],
           "name": "send",
           "params": [],
-          "signature": "public send()",
+          "signature": "public send(): any",
           "returns": [
             {
               "annotation": "@return any",
@@ -165,9 +175,10 @@
           "description": [
             "Send the response of a \"static asset\" to the client making the request."
           ],
+          "example_code": [],
           "name": "sendStatic",
           "params": [],
-          "signature": "public sendStatic()",
+          "signature": "public sendStatic(): any",
           "returns": [
             {
               "annotation": "@return any",
@@ -195,22 +206,12 @@
       ],
       "methods": [
         {
-          "access_modifier": "*",
-          "description": [
-            "This server's list of static paths. HTTP requests to a static path are usually intended to retrieve some type of concrete resource (e.g., a CSS file or a JS file). If an HTTP request is matched to a static path and the resource the HTTP request is trying to get is found, then `Drash.Http.Response` will use its `sendStatic()"
-          ],
-          "name": "`Drash.Http.Response`",
-          "params": [],
-          "signature": "* `Drash.Http.Response` will use its `sendStatic()",
-          "returns": [],
-          "throws": []
-        },
-        {
-          "access_modifier": "constructor(configs:",
+          "access_modifier": "constructor",
           "description": [
             "Construct an object of this class."
           ],
-          "name": "DrashHttpServerConfigs)",
+          "example_code": [],
+          "name": "constructor",
           "params": [
             {
               "annotation": "@param DrashHttpServerConfigs configs",
@@ -228,6 +229,7 @@
           "description": [
             "Handle an HTTP request from the Deno server."
           ],
+          "example_code": [],
           "name": "handleHttpRequest",
           "params": [
             {
@@ -239,7 +241,7 @@
               "name": "request"
             }
           ],
-          "signature": "public handleHttpRequest(request: DrashHttpRequest)",
+          "signature": "public handleHttpRequest(request: DrashHttpRequest): any",
           "returns": [
             {
               "annotation": "@return any",
@@ -256,6 +258,7 @@
           "description": [
             "Handle cases when an error is thrown when handling an HTTP request."
           ],
+          "example_code": [],
           "name": "handleHttpRequestError",
           "params": [
             {
@@ -275,7 +278,7 @@
               "name": "error"
             }
           ],
-          "signature": "public handleHttpRequestError(request: DrashHttpRequest, error: any)",
+          "signature": "public handleHttpRequestError(request: DrashHttpRequest, error: any): any",
           "returns": [
             {
               "annotation": "@return any",
@@ -292,6 +295,7 @@
           "description": [
             "Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs."
           ],
+          "example_code": [],
           "name": "handleHttpRequestForFavicon",
           "params": [
             {
@@ -301,7 +305,7 @@
               "name": "request"
             }
           ],
-          "signature": "public handleHttpRequestForFavicon(request: DrashHttpRequest)",
+          "signature": "public handleHttpRequestForFavicon(request: DrashHttpRequest): any",
           "returns": [],
           "throws": []
         },
@@ -310,9 +314,10 @@
           "description": [
             "Run the Deno server at the address specified in the configs. This method takes each HTTP request and creates a new and more workable request object and passes it to _Drash.Http.Server.handleHttpRequest()_."
           ],
+          "example_code": [],
           "name": "async",
           "params": [],
-          "signature": "public async run()",
+          "signature": "public async run(): Promise<void>",
           "returns": [
             {
               "annotation": "@return Promise<void>",
@@ -330,6 +335,7 @@
             "Add an HTTP resource to the server which can be retrieved at specific URIs.",
             "Drash defines an HTTP resource according to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
           ],
+          "example_code": [],
           "name": "addHttpResource",
           "params": [
             {
@@ -341,7 +347,7 @@
               "name": "resourceClass"
             }
           ],
-          "signature": "protected addHttpResource(resourceClass: DrashHttpResource)",
+          "signature": "protected addHttpResource(resourceClass: DrashHttpResource): void",
           "returns": [
             {
               "annotation": "@return void",
@@ -358,6 +364,7 @@
           "description": [
             "Add a static path for serving static assets like CSS files and stuff."
           ],
+          "example_code": [],
           "name": "addStaticPath",
           "params": [
             {
@@ -376,6 +383,7 @@
           "description": [
             "Get the resource class."
           ],
+          "example_code": [],
           "name": "getResourceClass",
           "params": [
             {
@@ -393,7 +401,8 @@
               "annotation": "@return Drash.Http.Resource|undefined",
               "data_type": "Drash.Http.Resource|undefined",
               "description": [
-                "- Returns a `Drash.Http.Resource` object if the URL path of the request can be matched to a `Drash.Http.Resource` object's paths. - Returns undefined if a `Drash.Http.Resource` object can't be matched."
+                "Returns a `Drash.Http.Resource` object if the URL path of the request can be matched to a `Drash.Http.Resource` object's paths.",
+                "Returns undefined if a `Drash.Http.Resource` object can't be matched."
               ]
             }
           ],
@@ -404,6 +413,7 @@
           "description": [
             "Is the request for a static path asset?"
           ],
+          "example_code": [],
           "name": "requestIsForStaticPathAsset",
           "params": [
             {
@@ -428,8 +438,9 @@
         {
           "access_modifier": "protected",
           "description": [
-            "console.log() something. */ protected serverLog(message: any)"
+            "console.log() something."
           ],
+          "example_code": [],
           "name": "serverLog",
           "params": [],
           "signature": "protected serverLog(message: any)",

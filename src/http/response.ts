@@ -13,9 +13,16 @@ export default class Response {
   /**
    * The body of this response.
    *
-   * @examplecode app.ts typescript /api-reference/http/response/p_body.ts 6
-   *
    * @property any body
+   *
+   * @examplecode [
+   *   {
+   *     "filename": "app.ts",
+   *     "filepath": "/api-reference/http/response/p_body.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "6"
+   *   }
+   * ]
    */
   public body: any = {};
 
@@ -91,12 +98,19 @@ export default class Response {
   /**
    * Get the status message based on the status code.
    *
-   * @examplecode app.ts typescript /api-reference/http/response/m_getStatusMessage.ts 8
-   *
    * @return string
    *     Returns the status message associated with `this.status_code`. For
    *     example, if the response's `status_code` is `200`, then this method
    *     will return "OK" as the status message.
+   *
+   * @examplecode [
+   *   {
+   *     "filename": "app.ts",
+   *     "filepath": "/api-reference/http/response/m_getStatusMessage.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "8"
+   *   }
+   * ]
    */
   public getStatusMessage(): string {
     let message = STATUS_TEXT.get(this.status_code);

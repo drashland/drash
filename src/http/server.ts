@@ -280,8 +280,8 @@ export default class Server {
    *     A child object of the `Drash.Http.Resource` class.
    *
    * @return void
-   *     This method just adds `resourceClass` to the resources property so
-   *     it can be used (if matched) during an HTTP request.
+   *     This method just adds `resourceClass` to `this.resources` so it can be
+   *     used (if matched) during an HTTP request.
    */
   protected addHttpResource(resourceClass: DrashHttpResource): void {
     resourceClass.paths.forEach((path, index) => {
@@ -335,11 +335,16 @@ export default class Server {
   }
 
   /**
-   * Add a static path for serving static assets like CSS files and stuff.
+   * Add a static path for serving static assets like CSS files, JS files, PDF
+   * files, etc.
    *
    * @param string path
+   *
+   * @return void
+   *     This method just adds `path` to `this.static_paths` so it can be used (if
+   *     matched) during an HTTP request.
    */
-  protected addStaticPath(path) {
+  protected addStaticPath(path: string): void {
     this.static_paths.push(path);
   }
 
@@ -350,9 +355,10 @@ export default class Server {
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
-   *     - Returns a `Drash.Http.Resource` object if the URL path of the request
+   *     Returns a `Drash.Http.Resource` object if the URL path of the request
    *     can be matched to a `Drash.Http.Resource` object's paths.
-   *     - Returns undefined if a `Drash.Http.Resource` object can't be matched.
+   *
+   *     Returns undefined if a `Drash.Http.Resource` object can't be matched.
    */
   protected getResourceClass(request: DrashHttpRequest) {
     let matchedResourceClass = undefined;

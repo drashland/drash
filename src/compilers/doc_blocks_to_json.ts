@@ -49,7 +49,7 @@ export default class DocBlocksToJson {
 
       // let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
       // let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
-      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\) {/g);
+      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
       let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*;/g);
 
       this.parsed[currentNamespace][className] = {
@@ -83,7 +83,8 @@ export default class DocBlocksToJson {
       methods.push({
         access_modifier: accessModifier,
         description: this.getDocBlockDescription(docBlock),
-        name: signature.split(" ")[1].split("(")[0], // This could use some work
+        example_code: this.getDocBlockExampleCode(docBlock),
+        name: accessModifier == "constructor" ? "constructor" : signature.split(" ")[1].split("(")[0], // This could use some work
         params: this.getDocBlockParams(docBlock),
         signature: signature,
         returns: this.getDocBlockReturns(docBlock),
@@ -143,7 +144,7 @@ export default class DocBlocksToJson {
 
       // If we hit an annotation tag, then that means the we've reached the end
       // of the description
-      if (reAnnotationTag.test(line)) {
+      if (reAnnotationTag.test(line) || line.trim() == "*/") {
         endOfDescription = true;
         return;
       }
@@ -162,18 +163,21 @@ export default class DocBlocksToJson {
     let match = docBlock.match(reExampleCode);
     let exampleCodeFiles = [];
 
-    if (match) {
-      let matchAsString = match[0]
-        .replace(/\*/g, "")
-        .replace("@examplecode ", "")
-        .trim();
-      exampleCodeFiles = JSON.parse(matchAsString);
+    if (!match) {
+      return exampleCodeFiles;
     }
 
+    let matchAsString = match[0]
+      .replace(/\*/g, "")
+      .replace("@examplecode ", "")
+      .trim();
+    exampleCodeFiles = JSON.parse(matchAsString);
+
     exampleCodeFiles.forEach((fileData, index) => {
+      let decoder = new TextDecoder();
       let fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
       let fileContentsRaw = Deno.readFileSync(fullFilepath);
-      exampleCodeFiles[index].code = this.decoder.decode(fileContentsRaw);
+      exampleCodeFiles[index].code = decoder.decode(fileContentsRaw);
     });
 
     return exampleCodeFiles;
@@ -344,7 +348,14 @@ export default class DocBlocksToJson {
       .join(" ")
       .split("---para-break---")
       .map((val) => {
-        return val.trim();
+        val = val.trim();
+        // Remove dashes
+        // TODO(crookse) This isn't working correctly and idk if I really care
+        // to support it. Might delete.
+        if (val.charAt(0) == "-") {
+          val.replace("-", "").trim();
+        }
+        return val;
       });
 
     // Any empty elements need to go bye bye
