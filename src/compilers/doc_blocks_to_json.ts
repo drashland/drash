@@ -76,9 +76,12 @@ export default class DocBlocksToJson {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
       signature = signature.replace(" {", "");
+      let accessModifier = /constructor/.test(signature)
+        ? "constructor"
+        : signature.split(" ")[0];
 
       methods.push({
-        access_modifier: signature.split(" ")[0],
+        access_modifier: accessModifier,
         description: this.getDocBlockDescription(docBlock),
         name: signature.split(" ")[1].split("(")[0], // This could use some work
         params: this.getDocBlockParams(docBlock),
