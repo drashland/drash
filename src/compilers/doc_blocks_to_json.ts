@@ -92,7 +92,7 @@ export default class DocBlocksToJson {
 
   protected getDocBlockDescription(docBlock) {
     let docBlocksByLine = docBlock.split("\n");
-    let paragraphs = [];
+    let textBlock = "";
     let endOfDescription = false;
 
     let reAnnotationTag = new RegExp(/@(param|examplecode|return|throws|property)/, "g");
@@ -106,18 +106,17 @@ export default class DocBlocksToJson {
         return;
       }
 
+      // If we hit an annotation tag, then that means the we've reached the end
+      // of the description
       if (reAnnotationTag.test(line)) {
         endOfDescription = true;
         return;
       }
 
-      paragraphs.push(line);
+      textBlock += `${line}\n`;
     });
 
-    paragraphs = this.splitParagraph(paragraphs);
-    paragraphs = this.getParagraphs(paragraphs);
-
-    return paragraphs;
+    return this.getParagraphs(textBlock);
   }
 
   /**
@@ -130,15 +129,21 @@ export default class DocBlocksToJson {
    */
   protected getDocBlockParams(docBlock) {
     let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
-    let params = docBlock.match(reParams);
+    let paramBlocks = docBlock.match(reParams);
 
-    if (params) {
-      params = params.map((val) => {
+    if (paramBlocks) {
+      //
+      // A `paramBlock` is the entire `@param` annotation. Example:
+      //
+      //     @param type name
+      //         Some description.
+      //
+      paramBlocks = paramBlocks.map((paramBlock) => {
         // Clean up each line and return an overall clean description
-        let split = val.split("\n");
-        split = this.splitParagraph(split);
-        let annotation = split.shift();
-        let description = this.getParagraphs(split);
+        let paramBlockInLines = paramBlock.split("\n");
+        let annotation = paramBlockInLines.shift();
+        let textBlock = paramBlockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
 
         return {
           annotation: annotation,
@@ -149,11 +154,12 @@ export default class DocBlocksToJson {
       });
     }
 
-    return params;
+    return paramBlocks;
   }
 
-  protected splitParagraph(array) {
-    return array.map((line) => {
+  protected getParagraphs(textBlock) {
+    let array = textBlock.split("\n");
+    array = array.map((line) => {
       if (line.trim() === "*") {
         return "---para-break---"
       }
@@ -161,9 +167,11 @@ export default class DocBlocksToJson {
       // can use this fact to separate paragraphs.
       return line.replace(" * ", "").trim();
     });
+
+    return this.getParagraphsJoined(array);
   }
 
-  protected getParagraphs(array) {
+  protected getParagraphsJoined(array) {
     array = array.join(" ").split("---para-break---").map((val) => {
       return val.trim();
     });
