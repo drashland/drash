@@ -2,6 +2,10 @@
 
 import Logger from "./logger.ts";
 
+/**
+ * @class FileLogger
+ * This logger allows you to log messages to a file.
+ */
 export default class FileLogger extends Logger {
   protected file;
 

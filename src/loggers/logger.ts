@@ -2,52 +2,58 @@
 
 import Drash from "../../mod.ts";
 
+/**
+ * @class Logger
+ * This logger is the base logger class for all logger classes.
+ */
 export default abstract class Logger {
   static TYPE_CONSOLE = 1;
   static TYPE_FILE = 2;
 
-  protected configs = {
-    enabled: false,
-    level: "debug"
-  };
+  protected configs: any;
   protected current_log_message_level_name: string;
-  protected type: number;
-  protected level_definition: any;
   protected log_levels = Drash.Dictionaries.LogLevels;
-  protected tag_string: string;
-  protected tag_string_fns: any;
   protected test: boolean = false;
+  protected type: number;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
+  /**
+   * Construct an object of this class.
+   *
+   * @param any configs
+   *     See [Drash.Loggers.Logger.configs](/#/api-reference/loggers/logger#configs).
+   */
   constructor(configs: any) {
     if (configs.test === true) {
       this.test = true;
     }
 
     if (configs.enabled !== true) {
-      configs.enabled = this.configs.enabled;
+      configs.enabled = false;
     }
 
-    if (!this.log_levels[configs.level]) {
-      configs.level = this.configs.level;
+    if (!this.log_levels.hasOwnProperty(configs.level)) {
+      configs.level = "debug";
+    }
+    configs.level_definition = this.log_levels[configs.level];
+
+    if (!configs.tag_string) {
+      configs.tag_string = null;
     }
 
-    if (configs.tag_string) {
-      this.tag_string = configs.tag_string;
-    }
-
-    if (configs.tag_string_fns) {
-      this.tag_string_fns = configs.tag_string_fns;
+    if (!configs.tag_string_fns) {
+      configs.tag_string_fns = {};
     }
 
     this.configs = configs;
-
-    this.level_definition = this.log_levels[this.configs.level];
   }
 
   // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////
 
+  /**
+   * Write a log message.
+   */
   abstract write(logMethodLevelDefinition, message);
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
@@ -120,11 +126,11 @@ export default abstract class Logger {
    * @return string
    */
   protected getTagStringParsed(): string {
-    if (this.tag_string && this.tag_string.trim() == "") {
+    if (this.configs.tag_string && this.configs.tag_string.trim() == "") {
       return "";
     }
 
-    let tagString = this.tag_string;
+    let tagString = this.configs.tag_string;
 
     try {
       tagString = tagString.replace(
@@ -135,10 +141,10 @@ export default abstract class Logger {
       // ha... do nothing
     }
 
-    for (let key in this.tag_string_fns) {
+    for (let key in this.configs.tag_string_fns) {
       // eslint-disable-line
       let tag = `{${key}}`;
-      tagString = tagString.replace(tag, this.tag_string_fns[key]);
+      tagString = tagString.replace(tag, this.configs.tag_string_fns[key]);
     }
 
     // Add a space so the log message isn't up against the tag string
@@ -173,7 +179,7 @@ export default abstract class Logger {
     // wants to output FATAL log messages (has a rank of 400), then any log
     // message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE)
     // will NOT be processed.
-    if (logMethodLevelDefinition.rank > this.level_definition.rank) {
+    if (logMethodLevelDefinition.rank > this.configs.level_definition.rank) {
       return;
     }
 

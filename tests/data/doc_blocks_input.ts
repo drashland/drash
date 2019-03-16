@@ -6,19 +6,37 @@
  */
 export default class ClassOne {
   /**
-   * A string property.
+   * Class one property one.
    *
-   * @property string property_string
+   * This is a second paragraph.
+   *
+   * This is a third paragraph.
+   * There is also a sentence below this third paragraph.
+   *
+   * This is a fourth paragraph.
+   *
+   * @property string property_one
+   *
+   * @examplecode [
+   *   {
+   *     "filename": "app.ts",
+   *     "filepath": "/class_one_p_property_one.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "8,10"
+   *   }
+   * ]
    */
-  public property_string: string;
-
-  /**
-   * Construct an object of this class.
-   */
-  constructor() {}
+  public property_one: string = "";
 
   /**
    * Class one method one.
+   *
+   * This is a second paragraph.
+   *
+   * This is a third paragraph.
+   * There is also a sentence below this third paragraph.
+   *
+   * This is a fourth paragraph.
    *
    * @param any myObject
    *     My object.
@@ -35,16 +53,21 @@ export default class ClassOne {
    *
    *     This is a second paragraph.
    *
-   * @return any|undefined
-   *     - any: Returns any when something cool happens.
-   *     - undefined: Returns undefined when uhhhhhhhhhh k.
-   */
-  public classOneMethodOne(myObject: any, myString: string) {}
-
-  /**
-   * Class one method two.
+   *     This is a third paragraph.
    *
-   * @param boolean myBool
+   * @return any|undefined
+   *     Returns any when something cool happens.
+   *
+   *     Returns undefined when uhhhhhhhhhh k.
+   *
+   * @return string
+   *     Returns a string when the other two don't get got returRrRrRrned.
+   *
+   * @throws SomeException
+   *     Thrown when something happens.
+   *
+   *     Thrown when something else happens too.
+   * @throws SomeOtherException
    *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus
    *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat
    *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora
@@ -54,16 +77,8 @@ export default class ClassOne {
    *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean
    *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id
    *     tortor et sem semper imperdiet in ut libero.
-   * @param any myAny
-   *     My my my... this is any.
    *
-   * @return boolean
-   *     Returns true if true and false if false. Duh. BoolLife.
-   *
-   * @throws ExceptionOne
-   *     Thrown when exception one is called... duh...
-   * @throws ExceptionTwo
-   *     Thrown when exception two is called... cmon man...
+   *     This is a second paragraph.
    */
-  protected classOneMethodTwo(myBool: boolean, myAny: any) {}
+  public classOneMethodOne(myObject: any, myString: string) {}
 }

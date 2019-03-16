@@ -2,7 +2,6 @@
 
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
-import {DrashHttpServerConfigs} from "../interfaces.ts";
 import DrashHttpResource from "../http/resource.ts";
 import DrashHttpRequest from "../http/request.ts";
 
@@ -17,14 +16,10 @@ export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
 
-  protected configs_defaults = {
-    address: "127.0.0.1:8000",
-    default_response_content_type: "application/json"
-  };
-  protected configs;
+  protected configs: any;
   protected deno_server;
   protected logger;
-  protected resources = {};
+  protected resources: any = {};
 
   /**
    * This server's list of static paths. HTTP requests to a static path are
@@ -46,15 +41,32 @@ export default class Server {
   /**
    * Construct an object of this class.
    *
-   * @param DrashHttpServerConfigs configs
+   * @param any configs
+   *     address: string
+   *
+   *     logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger
+   *
+   *     response_output: string (a proper MIME type)
+   *
+   *     resources: Drash.Http.Resource[]
+   *
+   *     static_paths: string[]
    */
-  constructor(configs: DrashHttpServerConfigs) {
+  constructor(configs: any) {
     if (!configs.logger) {
       this.logger = new Drash.Loggers.ConsoleLogger({
         enabled: false
       });
     } else {
       this.logger = configs.logger;
+    }
+
+    if (!configs.address) {
+      configs.address = "127.0.0.1:8000";
+    }
+
+    if (!configs.response_output) {
+      configs.response_output = "application/json"
     }
 
     this.configs = configs;
@@ -114,17 +126,25 @@ export default class Server {
       }
     });
 
-    let resource = this.getResourceClass(request);
+    let resourceClass = this.getResourceClass(request);
 
     // No resource? Send a 404 (Not Found) response.
-    if (!resource) {
+    if (!resourceClass) {
       return this.handleHttpRequestError(
         request,
         new Drash.Exceptions.HttpException(404)
       );
     }
 
-    resource = new resource(request, new Drash.Http.Response(request), this);
+    // @ts-ignore
+    // We ignore this because `resourceClass` could be `undefined` and that
+    // doens't have a construct signature. If this isn't ignored, then the
+    // following error will occur:
+    //
+    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+    // construct signature.
+    //
+    let resource = new resourceClass(request, new Drash.Http.Response(request), this);
 
     try {
       this.logger.debug(
@@ -280,8 +300,8 @@ export default class Server {
    *     A child object of the `Drash.Http.Resource` class.
    *
    * @return void
-   *     This method just adds `resourceClass` to the resources property so
-   *     it can be used (if matched) during an HTTP request.
+   *     This method just adds `resourceClass` to `this.resources` so it can be
+   *     used (if matched) during an HTTP request.
    */
   protected addHttpResource(resourceClass: DrashHttpResource): void {
     resourceClass.paths.forEach((path, index) => {
@@ -335,11 +355,16 @@ export default class Server {
   }
 
   /**
-   * Add a static path for serving static assets like CSS files and stuff.
+   * Add a static path for serving static assets like CSS files, JS files, PDF
+   * files, etc.
    *
    * @param string path
+   *
+   * @return void
+   *     This method just adds `path` to `this.static_paths` so it can be used (if
+   *     matched) during an HTTP request.
    */
-  protected addStaticPath(path) {
+  protected addStaticPath(path: string): void {
     this.static_paths.push(path);
   }
 
@@ -350,11 +375,12 @@ export default class Server {
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
-   *     - Returns a `Drash.Http.Resource` object if the URL path of the request
+   *     Returns a `Drash.Http.Resource` object if the URL path of the request
    *     can be matched to a `Drash.Http.Resource` object's paths.
-   *     - Returns undefined if a `Drash.Http.Resource` object can't be matched.
+   *
+   *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: DrashHttpRequest) {
+  protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -421,7 +447,7 @@ export default class Server {
    * @return boolean
    *     Returns true if the request is for an asset in a static path.
    */
-  protected requestIsForStaticPathAsset(request) {
+  protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean {
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
     let requestUrl = `/${request.url.split("/")[1]}`;
@@ -443,8 +469,20 @@ export default class Server {
 
   /**
    * console.log() something.
+   *
+   * @param any message
+   *     The message to output in the console. String messages are prefixed with
+   *     [Drash]; and all other data types are logged on a new line.
+   *
+   * @return void
+   *     This method just logs a message to the console.
    */
-  protected serverLog(message: any) {
-    console.log(`[Drash] ${message}`);
+  protected serverLog(message: any): void {
+    if (typeof message != "string") {
+      console.log("[Drash]");
+      console.log(message);
+    } else {
+      console.log(`[Drash] ${message}`);
+    }
   }
 }

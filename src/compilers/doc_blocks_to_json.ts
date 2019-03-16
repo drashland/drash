@@ -1,5 +1,9 @@
 // namespace Drash.Compilers
 
+/**
+ * @class DocBlocksToJson
+ * This compiler reads doc blocks and converts them to parsable JSON.
+ */
 export default class DocBlocksToJson {
 
   protected decoder: TextDecoder;
@@ -21,11 +25,10 @@ export default class DocBlocksToJson {
   public compile(files: string[]): any {
     this.decoder = new TextDecoder();
 
-    for (let index in files) {
-      let fileContentsRaw = Deno.readFileSync(files[index]);
+    files.forEach((file) => {
+      let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
       let contentsByLine = fileContents.toString().split("\n");
-      let currentNamespace = null;
 
       // No namespace given? GTFO.
       if (contentsByLine[0].indexOf(this.namespace_tag)) {
@@ -33,397 +36,351 @@ export default class DocBlocksToJson {
       }
 
       // Create the namespace
-      currentNamespace = contentsByLine[0].substring(this.namespace_tag.length).trim();
+      // Take the `// namespace Some.Namespace` and transform it into
+      // `Some.Namespace`
+      let currentNamespace = contentsByLine[0].substring(this.namespace_tag.length).trim();
+
+      // Create the namespace in the `parsed` property so we can start storing
+      // the namespace's members in it
       if (!this.parsed.hasOwnProperty(currentNamespace)) {
         this.parsed[currentNamespace] = {};
       }
 
-      // Get the class name of the file
-      let className = contentsByLine.filter((line) => {
-        return (line.indexOf("@class") != -1);
-      })[0];
-      className = className.replace(" * ", "").trim().split(" ")[1];
+      // Get the class name of the current file being parsed. There should only
+      // be one `@class` tag in the file. If there are more than one `@class`
+      // tag, then the first one will be chosen. The others won't matter. Sorry.
+      let className = fileContents.match(/@class \w+/)[0].substring("@class".length).trim();
+
+      // let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
+      // let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
+      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
+      // let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*;/g);
+      let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
 
       this.parsed[currentNamespace][className] = {
-        properties: this.parseDocBlocksForProperties(fileContents),
-        methods: this.parseDocBlocksForMethods(fileContents)
+        properties: this.getClassProperties(propertyDocBlocks),
+        methods: this.getClassMethods(methodDocBlocks),
       };
-    }
+    });
 
     return this.parsed;
   }
 
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
 
-  protected parseDocBlocksForProperties(fileContents: string) {
-    let properties = [];
-
-    let docBlocks = fileContents.toString().split("/**");
-    // Whatever is first doesn't belong because no doc blocks are contained in the first element
-    docBlocks.shift();
-
-    docBlocks.forEach((docBlock) => {
-      if (docBlock.indexOf("@property") != -1) {
-        properties.push(this.parseDocBlockForProperty(docBlock))
-      }
-    });
-
-    return properties;
-  }
-
-  protected parseDocBlockForProperty(docBlock: string) {
-    let docBlockLines = docBlock.split("\n");
-
-    // These will be in the final returned object
-    let propertyName = "";
-    let propertyType = "";
-    let propertySignature = "";
-    let propertyDescription = [];
-    let propertyAccessModifier = "";
-    let propertyExampleCode = [];
-
-    let nextLineIsPropertySignature = false;
-    let endOfDocBlock = false;
-    let firstParamIndex = -1;
-
-    docBlockLines.forEach((line, index) => {
-      if (endOfDocBlock) {
-        return;
-      }
-
-      if (nextLineIsPropertySignature) {
-        endOfDocBlock = true;
-        let propertySignatureDetails = this.getPropertySignature(line);
-        propertyName = propertySignatureDetails.name;
-        propertySignature = propertySignatureDetails.signature;
-        propertyAccessModifier = propertySignatureDetails.access_modifier;
-        return;
-      }
-
-      // Clean up the line
-      line = line.replace(" * ", "").trim();
-
-      if (line == "*/") {
-        nextLineIsPropertySignature = true;
-        return;
-      }
-
-      // Line doesn't have any words and junk? Go to the next line.
-      if (line == "*") {
-        return;
-      }
-
-      if (line.indexOf("@property") != -1) {
-        if (firstParamIndex === -1) {
-          firstParamIndex = index;
-        }
-        let propertyDetails = line.split(" "); // makes ['access', 'type', 'name']
-        propertyType = propertyDetails[1];
-        propertyName = propertyDetails[2];
-        return;
-      }
-
-      if (line.indexOf("@examplecode") != -1) {
-        if (firstParamIndex === -1) {
-          firstParamIndex = index;
-        }
-        line = line.replace("@examplecode ", "");
-        let fileDetails = line.split(" ");
-        let filename = fileDetails[0];
-        let language = fileDetails[1];
-        let filepath = fileDetails[2];
-        let lineHighlight = fileDetails[3] ? fileDetails[3] : '';
-        filepath = Deno.env().DRASH_DIR_EXAMPLE_CODE_FOR_DOC_BLOCKS + filepath;
-        let fileContentsRaw = Deno.readFileSync(filepath);
-        let code = this.decoder.decode(fileContentsRaw);
-        propertyExampleCode.push({
-          code: code,
-          filename: filename,
-          language: language,
-          line_highlight: lineHighlight
-        });
-        return;
-      }
-    });
-
-
-    let description = "";
-    for (let i = 0; i < firstParamIndex; i++) {
-      let line = docBlockLines[i];
-      line = line.replace(" * ", "").trim();
-      if (line != "*") {
-        description += `${line} `;
-      } else {
-        if (description.trim() != "") {
-          propertyDescription.push(description.trim());
-        }
-        description = "";
-      }
-    }
-
-    return {
-      name: propertyName,
-      description: propertyDescription,
-      type: propertyType,
-      access_modifier: propertyAccessModifier,
-      signature: propertySignature,
-      example_code: propertyExampleCode
-    };
-  }
-
-  protected getPropertySignature(line: string) {
-    let accessModifier = "private";
-
-    line = line.trim();
-
-    if (line.indexOf("protected") != -1) {
-      accessModifier = "protected";
-    } else if (line.indexOf("public") != -1) {
-      accessModifier = "public";
-    }
-
-    let signature = line;
-
-    let name = line.split(" ")[1];
-
-    return {
-      access_modifier: accessModifier,
-      name: name,
-      signature: signature
-    };
-  }
-
-  protected parseDocBlocksForMethods(fileContents: string) {
+  /**
+   * Parse the specified array of method doc blocks and return an array of
+   * method-related data.
+   *
+   * @param string[] docBlocks
+   */
+  protected getClassMethods(docBlocks: string[]): any {
     let methods = [];
 
-    let docBlocks = fileContents.toString().split("/**");
-    docBlocks.shift(); // Whatever is first doesn't belong
-
-    let reForClassDefinition = RegExp('(export default).+class.+{?', "g");
+    if (!docBlocks || docBlocks.length == 0) {
+      return methods;
+    }
 
     docBlocks.forEach((docBlock) => {
-      if (reForClassDefinition.test(docBlock)) {
-        return;
-      }
-      if (docBlock.indexOf("@property") != -1) {
-        return;
-      }
-      methods.push(this.parseDocBlockForMethod(docBlock));
+      let docBlockLinesAsArray = docBlock.split("\n");
+      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
+      signature = signature.replace(" {", "");
+      let accessModifier = /constructor/.test(signature)
+        ? "constructor"
+        : signature.split(" ")[0];
+
+      methods.push({
+        access_modifier: accessModifier, // FIXME(crookse) This is turned into "constructor" sometimes
+        description: this.getDocBlockDescription(docBlock),
+        example_code: this.getDocBlockExampleCode(docBlock),
+        name: accessModifier == "constructor" ? "constructor" : signature.split(" ")[1].split("(")[0], // This could use some work
+        params: this.getDocBlockParams(docBlock),
+        signature: signature,
+        returns: this.getDocBlockReturns(docBlock),
+        throws: this.getDocBlockThrows(docBlock),
+      });
     });
 
     return methods;
   }
 
-  protected parseDocBlockForMethod(docBlock: string) {
-    let docBlockLines = docBlock.split("\n");
+  /**
+   * Parse the specified array of property doc blocks and return an array of
+   * property-related data.
+   *
+   * @param string[] docBlocks
+   */
+  protected getClassProperties(docBlocks: string[]): any {
+    let properties = [];
 
-    // These will be in the final returned object
-    let methodName = "";
-    let methodSignature = "";
-    let methodDescription= [];
-    let methodType = "";
-    let methodParams = [];
-    let methodReturns = [];
-    let methodThrows = [];
-    let methodExampleCode = [];
-
-    let nextLineIsMethodSignature = false;
-    let endOfDocBlock = false;
-    let firstParamIndex = -1;
-
-    docBlockLines.forEach((line, index) => {
-      if (endOfDocBlock) {
-        return;
-      }
-
-      if (nextLineIsMethodSignature) {
-        endOfDocBlock = true;
-        let methodSignatureDetails = this.getMethodSignature(line);
-        methodName = methodSignatureDetails.name;
-        methodSignature = methodSignatureDetails.signature;
-        methodType = methodSignatureDetails.type;
-        return;
-      }
-
-      // Clean up the line
-      line = line.replace(" * ", "").trim();
-
-      if (line == "*/") {
-        nextLineIsMethodSignature = true;
-        return;
-      }
-
-      if (line == "*") {
-        return;
-      }
-
-      if (line.indexOf("@examplecode") != -1) {
-        if (firstParamIndex === -1) {
-          firstParamIndex = index;
-        }
-        line = line.replace("@examplecode ", "");
-        let fileDetails = line.split(" ");
-        let filename = fileDetails[0];
-        let language = fileDetails[1];
-        let filepath = fileDetails[2];
-        let lineHighlight = fileDetails[3] ? fileDetails[3] : '';
-        filepath = Deno.env().DRASH_DIR_EXAMPLE_CODE_FOR_DOC_BLOCKS + filepath;
-        let fileContentsRaw = Deno.readFileSync(filepath);
-        let code = this.decoder.decode(fileContentsRaw);
-        methodExampleCode.push({
-          code: code,
-          filename: filename,
-          language: language,
-          line_highlight: lineHighlight
-        });
-        return;
-      }
-
-      if (line.indexOf("@throws") != -1) {
-        if (firstParamIndex === -1) {
-          firstParamIndex = index;
-        }
-        let lineSplit = line.split(" ");
-        methodThrows.push({
-          type: lineSplit[1],
-          description: []
-        });
-        return;
-      }
-
-      if (methodThrows.length > 0) {
-        let currentMember = methodThrows[methodThrows.length - 1];
-        currentMember = this.getMemberDescriptions(currentMember, line);
-        return;
-      }
-
-      if (line.indexOf("@return") != -1) {
-        if (firstParamIndex === -1) {
-          firstParamIndex = index;
-        }
-        let lineSplit = line.split(" ");
-        methodReturns.push({
-          type: lineSplit[1],
-          description: []
-        });
-        return;
-      }
-
-      if (methodReturns.length > 0) {
-        let currentMember = methodReturns[methodReturns.length - 1];
-        currentMember = this.getMemberDescriptions(currentMember, line);
-        return;
-      }
-
-      if (line.indexOf("@param") != -1) {
-        if (firstParamIndex === -1) {
-          firstParamIndex = index;
-        }
-        // Clean up last param definition
-        let lineSplit = line.split(" ");
-        methodParams.push({
-          name: lineSplit[2],
-          type: lineSplit[1],
-          description: []
-        });
-        return;
-      }
-
-      if (methodParams.length > 0) {
-        let currentMember = methodParams[methodParams.length - 1];
-        currentMember = this.getMemberDescriptions(currentMember, line);
-        return;
-      }
-    });
-
-
-    let description = "";
-    for (let i = 0; i < firstParamIndex; i++) {
-      let line = docBlockLines[i];
-      line = line.replace(" * ", "").trim();
-      if (line != "*") {
-        description += `${line} `;
-      } else {
-        methodDescription.push(description);
-        description = "";
-      }
+    if (!docBlocks || docBlocks.length == 0) {
+      return properties;
     }
 
-    methodDescription.forEach((description, index) => {
-      methodDescription[index] = description.trim();
-    });
-    methodReturns.forEach((ret, index) => {
-      ret.description.forEach((description, index) => {
-        ret.description[index] = description.trim();
-      });
-    });
-    methodParams.forEach((param, index) => {
-      param.description.forEach((description, index) => {
-        param.description[index] = description.trim();
-      });
-    });
-    methodThrows.forEach((error, index) => {
-      error.description.forEach((description, index) => {
-        error.description[index] = description.trim();
+    docBlocks.forEach((docBlock) => {
+      let docBlockLinesAsArray = docBlock.split("\n");
+      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim().replace(";", "");
+      let annotation = this.getDocBlockAnnotation("@property", docBlock);
+
+      properties.push({
+        access_modifier: signature.split(" ")[0],
+        annotation: annotation,
+        data_type: annotation.split(" ")[1],
+        description: this.getDocBlockDescription(docBlock),
+        example_code: this.getDocBlockExampleCode(docBlock),
+        name: annotation.split(" ")[2],
+        signature: signature,
       });
     });
 
-    return {
-      name: methodName,
-      description: methodDescription,
-      type: methodType,
-      signature: methodSignature,
-      params: methodParams,
-      returns: methodReturns,
-      throws: methodThrows,
-      example_code: methodExampleCode
-    };
+    return properties;
   }
 
-  protected getMemberDescriptions(member: any, line: string) {
-    let newParagraph = false;
-    line = line.trim();
-    if (line.charAt(0) === "-") {
-      // Remove the "-"" bullet
-      line = line.substring(2);
-      newParagraph = true;
-    }
+  /**
+   * Get the doc block's description.
+   */
+  protected getDocBlockDescription(docBlock: string) {
+    let docBlocksByLine = docBlock.split("\n");
+    let textBlock = "";
+    let endOfDescription = false;
 
-    if (member.description.length <= 0 || newParagraph) {
-      member.description.push(`${line} `);
-    } else {
-      member.description[member.description.length - 1] += `${line} `;
-    }
+    let reAnnotationTag = new RegExp(/@(param|examplecode|return|throws|property)/, "g");
 
-    return member;
+    docBlocksByLine.forEach((line) => {
+      if (endOfDescription) {
+        return;
+      }
+
+      if (line.trim() == "/**") {
+        return;
+      }
+
+      // If we hit an annotation tag, then that means the we've reached the end
+      // of the description
+      if (reAnnotationTag.test(line) || line.trim() == "*/") {
+        endOfDescription = true;
+        return;
+      }
+
+      textBlock += `${line}\n`;
+    });
+
+    return this.getParagraphs(textBlock);
   }
 
-  protected getMethodSignature(line: string) {
-    let type = "private";
+  /**
+   * Get the doc block's example code.
+   */
+  protected getDocBlockExampleCode(docBlock: string) {
+    let reExampleCode = new RegExp(/@examplecode.+((\s).+)+\* ]/, "g");
+    let match = docBlock.match(reExampleCode);
+    let exampleCodeFiles = [];
 
-    if (line.indexOf("protected") != -1) {
-      type = "protected";
-    } else if (line.indexOf("public") != -1) {
-      type = "public";
+    if (!match) {
+      return exampleCodeFiles;
     }
 
-    let signature = line
-      .replace("function ", "")
-      .slice(0, -2)
+    let matchAsString = match[0]
+      .replace(/\*/g, "")
+      .replace("@examplecode ", "")
       .trim();
+    exampleCodeFiles = JSON.parse(matchAsString);
 
-    let name = signature;
-    name = signature.replace("async ", "").split("(")[0];
-    if (name != "constructor") {
-      name = name.split(" ")[1];
-    } else {
-      type = "constructor";
+    exampleCodeFiles.forEach((fileData, index) => {
+      let decoder = new TextDecoder();
+      let fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
+      let fileContentsRaw = Deno.readFileSync(fullFilepath);
+      exampleCodeFiles[index].code = decoder.decode(fileContentsRaw);
+    });
+
+    return exampleCodeFiles;
+  }
+
+  /**
+   * Get the `@param` definitions from the doc block.
+   *
+   * @param string docBlock
+   *     The docBlock to get the `@param` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockParams(docBlock: string): any {
+    // let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    // let reParams = new RegExp(/@param.+((\s.*).+     .*)*((\s*\*\s*).+)+(\w).*/, "g");
+    // let reParams = new RegExp(/@param(.+)(\s +\*( |\n)?.+)(\n +\* +.+)?(\n +\*\n)?( +\* +\w.+)?/, "gm");
+    // let reParams = new RegExp(/@param.+((\n +\* +)[^@param].+)*(\n +\*\n +\* + .*)?/, "g");
+    let reParams = new RegExp(/@param.+((\n +\* +)[^@param].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
+    let paramBlocks = docBlock.match(reParams);
+    let params = [];
+
+    if (paramBlocks) {
+      //
+      // A `paramBlock` is the entire `@param` annotation. Example:
+      //
+      //     @param type name
+      //         Some description.
+      //
+      params = paramBlocks.map((paramBlock) => {
+        // Clean up each line and return an overall clean description
+        let paramBlockInLines = paramBlock.split("\n");
+        paramBlockInLines.shift(); // remove the annotation line
+        let annotation = this.getDocBlockAnnotation("@param", paramBlock);
+        let textBlock = paramBlockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotation,
+          data_type: annotation.split(" ")[1],
+          description: description,
+          name: annotation.split(" ")[2],
+        };
+      });
     }
 
-    return {
-      signature: signature,
-      type: type,
-      name: name
-    };
+    return params;
+  }
+
+  /**
+   * Get the `@return` definitions from the doc block.
+   *
+   * @param string docBlock
+   *     The docBlock to get the `@return` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockReturns(docBlock: string): any {
+    // let reReturn = new RegExp(/@return.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    let reReturn= new RegExp(/@return[^@\/]+/, "g");
+    let retBlocks = docBlock.match(reReturn);
+    let ret = [];
+
+    if (retBlocks) {
+      //
+      // A `retBlock` is the entire `@param` annotation. Example:
+      //
+      //     @param type name
+      //         Some description.
+      //
+      ret = retBlocks.map((retBlock) => {
+        // Clean up each line and return an overall clean description
+        let retBlockInLines = retBlock.split("\n");
+        retBlockInLines.shift(); // remove the annotation line
+        let annotation = this.getDocBlockAnnotation("@return", retBlock);
+        let textBlock = retBlockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotation,
+          data_type: annotation.split(" ")[1],
+          description: description,
+        };
+      });
+    }
+
+    return ret;
+  }
+
+  /**
+   * Get the `@throws` definitions from the doc block.
+   *
+   * @param string docBlock
+   *     The docBlock to get the `@throws` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockThrows(docBlock: string): any {
+    // let reThrows = new RegExp(/@throws.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
+    let reThrows= new RegExp(/@throws[^@\/]+/, "g");
+    let throwsBlocks = docBlock.match(reThrows);
+    let throws = [];
+
+    if (throwsBlocks) {
+      //
+      // A `throwsBlock` is the entire `@param` annotation. Example:
+      //
+      //     @param type name
+      //         Some description.
+      //
+      throws = throwsBlocks.map((throwsBlock) => {
+        // Clean up each line and return an overall clean description
+        let throwsBlockInLines = throwsBlock.split("\n");
+        throwsBlockInLines.shift(); // remove the annotation line
+        let annotation = this.getDocBlockAnnotation("@throws", throwsBlock);
+        let textBlock = throwsBlockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotation,
+          data_type: annotation.split(" ")[1],
+          description: description,
+        };
+      });
+    }
+
+    return throws;
+  }
+
+  /**
+   * Get the `@property` definitions from the doc block.
+   *
+   * @param string annotation
+   *     The annotation to get from the doc block.
+   * @param string docBlock
+   *     The doc block to get the `@property` definitions from.
+   *
+   * @return string
+   */
+  protected getDocBlockAnnotation(annotation: string, docBlock: string): string {
+    let reProperty = new RegExp(annotation + ".+", "g");
+    let match = docBlock.match(reProperty);
+    let line = "";
+
+    if (match) {
+      line = match[0];
+    }
+
+    return line;
+  }
+
+  /**
+   * Get paragraphs from a text block string.
+   *
+   * @param string textBlock
+   *     The text block containing the paragraph(s).
+   *
+   * @return string[]
+   *     Returns an array of strings. Each element in the array is a paragraph.
+   */
+  protected getParagraphs(textBlock: string): string[] {
+    let textBlockInLines = textBlock.split("\n");
+
+    textBlockInLines = textBlockInLines.map((line) => {
+      if (line.trim() === "*") {
+        return "---para-break---"
+      }
+      // A new paragraph is preceded by a "*" and it won't be replaced. We
+      // can use this fact to separate paragraphs.
+      return line.replace(" * ", "").trim();
+    });
+
+    textBlockInLines = textBlockInLines
+      .join(" ")
+      .split("---para-break---")
+      .map((val) => {
+        val = val.trim();
+        // Remove dashes
+        // TODO(crookse) This isn't working correctly and idk if I really care
+        // to support it. Might delete.
+        if (val.charAt(0) == "-") {
+          val.replace("-", "").trim();
+        }
+        return val;
+      });
+
+    textBlockInLines = textBlockInLines.filter((val) => {
+      return val.trim() != "";
+    });
+
+    return textBlockInLines;
   }
 }
