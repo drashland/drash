@@ -47,7 +47,8 @@ export default class DocBlocksToJson {
       // tag, then the first one will be chosen. The others won't matter. Sorry.
       let className = fileContents.match(/@class \w+/)[0].substring("@class".length).trim();
 
-      let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
+      // let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
+      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
 
       let methods = this.parseDocBlocksForMethods(methodDocBlocks);
 
@@ -65,16 +66,10 @@ export default class DocBlocksToJson {
   /**
    * Parse the specified array of method doc blocks.
    */
-  protected parseDocBlocksForMethods(docBlocks: string[]) {
+  protected parseDocBlocksForMethods(methodDocBlocks: string[]) {
     let methods = [];
 
-    let reIsClassDefinition = new RegExp('(export default).+class.+{?', "g");
-
-    docBlocks.forEach((docBlock) => {
-      if (reIsClassDefinition.test(docBlock)) {
-        return;
-      }
-
+    methodDocBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
 
