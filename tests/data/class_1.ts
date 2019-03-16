@@ -35,6 +35,8 @@ export default class ClassOne {
    *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id
    *     tortor et sem semper imperdiet in ut libero.
    *
+   *     This is a second paragraph.
+   *
    * @return any|undefined
    *     - any: Returns any when something cool happens.
    *     - undefined: Returns undefined when uhhhhhhhhhh k.
