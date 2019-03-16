@@ -218,7 +218,10 @@
               "data_type": "any",
               "description": [
                 "address: string",
-                "logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger"
+                "logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger",
+                "response_output: string (a proper MIME type)",
+                "resources: Drash.Http.Resource[]",
+                "static_paths: string[]"
               ],
               "name": "configs"
             }
@@ -239,8 +242,7 @@
               "annotation": "@param Drash.Http.Request request",
               "data_type": "Drash.Http.Request",
               "description": [
-                "The request object.",
-                "This is a cool request."
+                "The request object."
               ],
               "name": "request"
             }

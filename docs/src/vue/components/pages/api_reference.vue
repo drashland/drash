@@ -44,6 +44,7 @@
     }
     .tag-row ul li ul,
     .tag-row ul ul {
+        margin-top: 1rem;
         margin-bottom: 0;
     }
 </style>
@@ -104,14 +105,16 @@ div
                                 div.tag-row(v-show="method.params.length > 0")
                                     strong.tag-row__heading Params
                                     ul
-                                        li(v-for="param in method.params") <strong>{{ param.name }}:</strong> <span class="font-style--italic">{{ param.data_type }}</span>
+                                        li(v-for="param in method.params")
+                                            strong {{ param.name }}: 
+                                            span.font-style--italic {{ param.data_type }}
                                             ul(v-show="param.description.length > 0")
                                                 li(v-for="description in param.description" :inner-html.prop="description | markdown-it")
                                 div.tag-row(v-show="method.returns.length > 0")
                                     strong.tag-row__heading Returns
                                     ul
                                         li(v-for="ret in method.returns")
-                                            div.font-style--italic {{ ret.data_type }}
+                                            span.font-style--italic {{ ret.data_type }}
                                             ul(v-show="ret.description.length > 0")
                                                 li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
                                 //- EXAMPLE CODE
