@@ -1,6 +1,3 @@
-// Deno
-import { env } from "deno";
-
 // Random Classes
 import EnvVar from "./src/classes/env_var.ts";
 
@@ -82,10 +79,10 @@ function Drash(): any {
      *     retrieving the actual value.
      */
     getEnvVar(variableName: string): EnvVar {
-      let exists = env().hasOwnProperty(variableName);
+      let exists = Deno.env().hasOwnProperty(variableName);
       let value;
 
-      value = exists ? env()[variableName] : undefined;
+      value = exists ? Deno.env()[variableName] : undefined;
 
       return new EnvVar(variableName, value);
     },
@@ -103,8 +100,8 @@ function Drash(): any {
      * @return void
      */
     setEnvVar(variableName: string, value: string): void {
-      if (!env()[variableName]) {
-        env()[variableName] = value;
+      if (!Deno.env()[variableName]) {
+        Deno.env()[variableName] = value;
       }
     }
   }; // close return
