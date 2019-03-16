@@ -22,7 +22,7 @@
             }
           ],
           "name": "property_one",
-          "signature": "public property_one: string = \"\";"
+          "signature": "public property_one: string = \"\""
         }
       ],
       "methods": [
