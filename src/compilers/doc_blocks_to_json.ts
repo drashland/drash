@@ -100,7 +100,6 @@ export default class DocBlocksToJson {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
       let annotation = this.getDocBlockAnnotation("@property", docBlock);
-      console.log(annotation);
 
       properties.push({
         access_modifier: signature.split(" ")[0],
@@ -170,7 +169,8 @@ export default class DocBlocksToJson {
       params = paramBlocks.map((paramBlock) => {
         // Clean up each line and return an overall clean description
         let paramBlockInLines = paramBlock.split("\n");
-        let annotation = paramBlockInLines.shift();
+        paramBlockInLines.shift(); // remove the annotation line
+        let annotation = this.getDocBlockAnnotation("@param", paramBlock);
         let textBlock = paramBlockInLines.join("\n");
         let description = this.getParagraphs(textBlock);
 
@@ -199,8 +199,17 @@ export default class DocBlocksToJson {
   protected getDocBlockAnnotation(annotation: string, docBlock: string): string {
     let reProperty;
     switch (annotation) {
+      case "@param":
+        reProperty = new RegExp(/@param.+/, "g");
+        break;
       case "@property":
         reProperty = new RegExp(/@property.+/, "g");
+        break;
+      case "@returns":
+        reProperty = new RegExp(/@returns.+/, "g");
+        break;
+      case "@throws":
+        reProperty = new RegExp(/@throws.+/, "g");
         break;
     }
 
