@@ -4,9 +4,7 @@
       "properties": [
         {
           "name": "property_string:",
-          "description": [
-            "A string property."
-          ],
+          "description": ["A string property."],
           "type": "string",
           "access_modifier": "public",
           "signature": "public property_string: string;",
@@ -26,18 +24,14 @@
         },
         {
           "name": "classOneMethodOne",
-          "description": [
-            "Class one method one."
-          ],
+          "description": ["Class one method one."],
           "type": "public",
           "signature": "public classOneMethodOne(myObject: any, myString: string)",
           "params": [
             {
               "name": "myObject",
               "type": "any",
-              "description": [
-                "My object."
-              ]
+              "description": ["My object."]
             },
             {
               "name": "myString",
@@ -61,9 +55,7 @@
         },
         {
           "name": "classOneMethodTwo",
-          "description": [
-            "Class one method two."
-          ],
+          "description": ["Class one method two."],
           "type": "protected",
           "signature": "protected classOneMethodTwo(myBool: boolean, myAny: any)",
           "params": [
@@ -77,9 +69,7 @@
             {
               "name": "myAny",
               "type": "any",
-              "description": [
-                "My my my... this is any."
-              ]
+              "description": ["My my my... this is any."]
             }
           ],
           "returns": [
@@ -93,9 +83,7 @@
           "throws": [
             {
               "type": "ExceptionOne",
-              "description": [
-                "Thrown when exception one is called... duh..."
-              ]
+              "description": ["Thrown when exception one is called... duh..."]
             },
             {
               "type": "ExceptionTwo",
@@ -113,25 +101,19 @@
       "methods": [
         {
           "name": "classTwoMethodOne",
-          "description": [
-            "Class two method one."
-          ],
+          "description": ["Class two method one."],
           "type": "private",
           "signature": "private classTwoMethodOne(myObject: any, myString: string)",
           "params": [
             {
               "name": "myBool",
               "type": "boolean",
-              "description": [
-                "Short."
-              ]
+              "description": ["Short."]
             },
             {
               "name": "myString",
               "type": "string",
-              "description": [
-                "Short."
-              ]
+              "description": ["Short."]
             }
           ],
           "returns": [
@@ -145,9 +127,7 @@
         },
         {
           "name": "classTwoMethodTwo",
-          "description": [
-            "Class two method two."
-          ],
+          "description": ["Class two method two."],
           "type": "protected",
           "signature": "protected classTwoMethodTwo()",
           "params": [],

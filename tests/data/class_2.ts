@@ -15,8 +15,7 @@ export default class ClassTwo {
    *
    * @return boolean
    */
-  private classTwoMethodOne(myObject: any, myString: string) {
-  }
+  private classTwoMethodOne(myObject: any, myString: string) {}
 
   /**
    * Class two method two.
@@ -24,6 +23,5 @@ export default class ClassTwo {
    * @return boolean
    *     Returns true if true and false if false. Duh. BoolLife.
    */
-  protected classTwoMethodTwo() {
-  }
+  protected classTwoMethodTwo() {}
 }

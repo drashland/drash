@@ -5,7 +5,6 @@
  * Class one does class one things.
  */
 export default class ClassOne {
-
   /**
    * A string property.
    *
@@ -16,8 +15,7 @@ export default class ClassOne {
   /**
    * Construct an object of this class.
    */
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Class one method one.
@@ -41,8 +39,7 @@ export default class ClassOne {
    *     - any: Returns any when something cool happens.
    *     - undefined: Returns undefined when uhhhhhhhhhh k.
    */
-  public classOneMethodOne(myObject: any, myString: string) {
-  }
+  public classOneMethodOne(myObject: any, myString: string) {}
 
   /**
    * Class one method two.
@@ -68,6 +65,5 @@ export default class ClassOne {
    * @throws ExceptionTwo
    *     Thrown when exception two is called... cmon man...
    */
-  protected classOneMethodTwo(myBool: boolean, myAny: any) {
-  }
+  protected classOneMethodTwo(myBool: boolean, myAny: any) {}
 }

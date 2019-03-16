@@ -11,9 +11,7 @@
               "annotation": "@param any myObject",
               "name": "myObject",
               "data_type": "any",
-              "description": [
-                "My object."
-              ]
+              "description": ["My object."]
             },
             {
               "annotation": "@param string myString",
