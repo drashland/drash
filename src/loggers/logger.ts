@@ -2,6 +2,10 @@
 
 import Drash from "../../mod.ts";
 
+/**
+ * @class Logger
+ * This logger is the base logger class for all logger classes.
+ */
 export default abstract class Logger {
   static TYPE_CONSOLE = 1;
   static TYPE_FILE = 2;

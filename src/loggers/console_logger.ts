@@ -2,6 +2,10 @@
 
 import Logger from "./logger.ts";
 
+/**
+ * @class ConsoleLogger
+ * This logger allows you to log messages to the console.
+ */
 export default class ConsoleLogger extends Logger {
   constructor(configs) {
     super(configs);

@@ -1,5 +1,327 @@
 {
+  "Drash.Compilers": {
+    "DocBlocksToJson": {
+      "properties": [],
+      "methods": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "Compile a JSON string containing classes, properties, and methods in the Drash namespace."
+          ],
+          "example_code": [],
+          "name": "compile",
+          "params": [
+            {
+              "annotation": "@param string[] files",
+              "data_type": "string[]",
+              "description": [
+                "The array of files containing doc blocks to parse."
+              ],
+              "name": "files"
+            }
+          ],
+          "signature": "public compile(files: string[]): any",
+          "returns": [
+            {
+              "annotation": "@return any",
+              "data_type": "any",
+              "description": [
+                "Returns the JSON array."
+              ]
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Parse the specified array of method doc blocks and return an array of method-related data."
+          ],
+          "example_code": [],
+          "name": "getClassMethods",
+          "params": [
+            {
+              "annotation": "@param string[] docBlocks",
+              "data_type": "string[]",
+              "description": [],
+              "name": "docBlocks"
+            }
+          ],
+          "signature": "protected getClassMethods(docBlocks: string[]): any",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Parse the specified array of property doc blocks and return an array of property-related data."
+          ],
+          "example_code": [],
+          "name": "getClassProperties",
+          "params": [
+            {
+              "annotation": "@param string[] docBlocks",
+              "data_type": "string[]",
+              "description": [],
+              "name": "docBlocks"
+            }
+          ],
+          "signature": "protected getClassProperties(docBlocks: string[]): any",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Get the doc block's description."
+          ],
+          "example_code": [],
+          "name": "getDocBlockDescription",
+          "params": [],
+          "signature": "protected getDocBlockDescription(docBlock: string)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Get the doc block's example code."
+          ],
+          "example_code": [],
+          "name": "getDocBlockExampleCode",
+          "params": [],
+          "signature": "protected getDocBlockExampleCode(docBlock: string)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [],
+          "example_code": [],
+          "name": "getDocBlockParams",
+          "params": [
+            {
+              "annotation": "@param` definitions from the doc block.",
+              "data_type": "definitions",
+              "description": [],
+              "name": "from"
+            },
+            {
+              "annotation": "@param string docBlock",
+              "data_type": "string",
+              "description": [
+                "The docBlock to get the `"
+              ],
+              "name": "docBlock"
+            },
+            {
+              "annotation": "@param` definitions from.",
+              "data_type": "definitions",
+              "description": [],
+              "name": "from."
+            }
+          ],
+          "signature": "protected getDocBlockParams(docBlock: string): any",
+          "returns": [
+            {
+              "annotation": "@return any",
+              "data_type": "any",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [],
+          "example_code": [],
+          "name": "getDocBlockReturns",
+          "params": [
+            {
+              "annotation": "@param string docBlock",
+              "data_type": "string",
+              "description": [
+                "The docBlock to get the `"
+              ],
+              "name": "docBlock"
+            }
+          ],
+          "signature": "protected getDocBlockReturns(docBlock: string): any",
+          "returns": [
+            {
+              "annotation": "@return` definitions from the doc block.",
+              "data_type": "definitions",
+              "description": []
+            },
+            {
+              "annotation": "@return` definitions from.",
+              "data_type": "definitions",
+              "description": []
+            },
+            {
+              "annotation": "@return any",
+              "data_type": "any",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [],
+          "example_code": [],
+          "name": "getDocBlockThrows",
+          "params": [
+            {
+              "annotation": "@param string docBlock",
+              "data_type": "string",
+              "description": [
+                "The docBlock to get the `"
+              ],
+              "name": "docBlock"
+            }
+          ],
+          "signature": "protected getDocBlockThrows(docBlock: string): any",
+          "returns": [
+            {
+              "annotation": "@return any",
+              "data_type": "any",
+              "description": []
+            }
+          ],
+          "throws": [
+            {
+              "annotation": "@throws` definitions from the doc block.",
+              "data_type": "definitions",
+              "description": []
+            },
+            {
+              "annotation": "@throws` definitions from.",
+              "data_type": "definitions",
+              "description": []
+            }
+          ]
+        },
+        {
+          "access_modifier": "protected",
+          "description": [],
+          "example_code": [],
+          "name": "getDocBlockAnnotation",
+          "params": [
+            {
+              "annotation": "@param string annotation",
+              "data_type": "string",
+              "description": [
+                "The annotation to get from the doc block."
+              ],
+              "name": "annotation"
+            },
+            {
+              "annotation": "@param string docBlock",
+              "data_type": "string",
+              "description": [
+                "The doc block to get the `"
+              ],
+              "name": "docBlock"
+            }
+          ],
+          "signature": "protected getDocBlockAnnotation(annotation: string, docBlock: string): string",
+          "returns": [
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Get paragraphs from a text block string."
+          ],
+          "example_code": [],
+          "name": "getParagraphs",
+          "params": [
+            {
+              "annotation": "@param string textBlock",
+              "data_type": "string",
+              "description": [
+                "The text block containing the paragraph(s)."
+              ],
+              "name": "textBlock"
+            }
+          ],
+          "signature": "protected getParagraphs(textBlock: string): string[]",
+          "returns": [
+            {
+              "annotation": "@return string[]",
+              "data_type": "string[]",
+              "description": [
+                "Returns an array of strings. Each element in the array is a paragraph."
+              ]
+            }
+          ],
+          "throws": []
+        }
+      ]
+    }
+  },
+  "Drash.Exceptions": {
+    "HttpException": {
+      "properties": [],
+      "methods": []
+    }
+  },
   "Drash.Http": {
+    "Request": {
+      "properties": [],
+      "methods": [
+        {
+          "access_modifier": "constructor",
+          "description": [
+            "Construct an object of this class."
+          ],
+          "example_code": [],
+          "name": "constructor",
+          "params": [
+            {
+              "annotation": "@param ServerRequest request",
+              "data_type": "ServerRequest",
+              "description": [],
+              "name": "request"
+            }
+          ],
+          "signature": "constructor(request: ServerRequest)",
+          "returns": [],
+          "throws": []
+        }
+      ]
+    },
+    "Resource": {
+      "properties": [],
+      "methods": [
+        {
+          "access_modifier": "constructor",
+          "description": [
+            "Construct an object of this class."
+          ],
+          "example_code": [],
+          "name": "constructor",
+          "params": [
+            {
+              "annotation": "@param ServerRequest request",
+              "data_type": "ServerRequest",
+              "description": [],
+              "name": "request"
+            }
+          ],
+          "signature": "constructor(request: ServerRequest, response: DrashHttpResponse, server: DrashHttpServer)",
+          "returns": [],
+          "throws": []
+        }
+      ]
+    },
     "Response": {
       "properties": [
         {
@@ -479,6 +801,200 @@
           "throws": []
         }
       ]
+    }
+  },
+  "Drash.Loggers": {
+    "Logger": {
+      "properties": [],
+      "methods": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "Output a DEBUG level log message."
+          ],
+          "example_code": [],
+          "name": "debug",
+          "params": [
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "public debug(message)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Output an ERROR level log message."
+          ],
+          "example_code": [],
+          "name": "error",
+          "params": [
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "public error(message)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Output a FATAL level log message."
+          ],
+          "example_code": [],
+          "name": "fatal",
+          "params": [
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "public fatal(message)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Output an INFO level log message."
+          ],
+          "example_code": [],
+          "name": "info",
+          "params": [
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "public info(message)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Output a TRACE level log message."
+          ],
+          "example_code": [],
+          "name": "trace",
+          "params": [
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "public trace(message)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Output a WARN level log message."
+          ],
+          "example_code": [],
+          "name": "warn",
+          "params": [
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "public warn(message)",
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Get the parsed version of the raw tag string."
+          ],
+          "example_code": [],
+          "name": "getTagStringParsed",
+          "params": [],
+          "signature": "protected getTagStringParsed(): string",
+          "returns": [
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": []
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Send the message to the write method (which should be in the child class). Also, do some prechecks before sending."
+          ],
+          "example_code": [],
+          "name": "sendToWriteMethod",
+          "params": [
+            {
+              "annotation": "@param any logMethodLevelDefinition",
+              "data_type": "any",
+              "description": [
+                "The dictionary definition of the log message's level."
+              ],
+              "name": "logMethodLevelDefinition"
+            },
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The log message."
+              ],
+              "name": "message"
+            }
+          ],
+          "signature": "protected sendToWriteMethod(logMethodLevelDefinition, message)",
+          "returns": [
+            {
+              "annotation": "@return void",
+              "data_type": "void",
+              "description": []
+            }
+          ],
+          "throws": []
+        }
+      ]
+    },
+    "ConsoleLogger": {
+      "properties": [],
+      "methods": []
+    },
+    "FileLogger": {
+      "properties": [],
+      "methods": []
     }
   }
 }

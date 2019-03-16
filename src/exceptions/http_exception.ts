@@ -1,5 +1,9 @@
 // namespace Drash.Exceptions
 
+/**
+ * @class HttpException
+ * This class helps you throw HTTP errors in a semantic way.
+ */
 export default class HttpException extends Error {
   public code: number;
 

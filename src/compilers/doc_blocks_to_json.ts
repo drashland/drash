@@ -1,5 +1,9 @@
 // namespace Drash.Compilers
 
+/**
+ * @class DocBlocksToJson
+ * This compiler reads doc blocks and converts them to parsable JSON.
+ */
 export default class DocBlocksToJson {
 
   protected decoder: TextDecoder;
@@ -73,6 +77,10 @@ export default class DocBlocksToJson {
   protected getClassMethods(docBlocks: string[]): any {
     let methods = [];
 
+    if (!docBlocks || docBlocks.length == 0) {
+      return methods;
+    }
+
     docBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
@@ -104,6 +112,10 @@ export default class DocBlocksToJson {
    */
   protected getClassProperties(docBlocks: string[]): any {
     let properties = [];
+
+    if (!docBlocks || docBlocks.length == 0) {
+      return properties;
+    }
 
     docBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");

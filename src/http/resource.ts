@@ -5,8 +5,9 @@ import DrashHttpResponse from "./response.ts";
 import DrashHttpServer from "./server.ts";
 
 /**
- * @property string[] paths - The paths that clients can use to access this resource.
- * @property string   name  - The name of this resource.
+ * @class Resource
+ * This is the base resource class for all resources. All resource classes must
+ * be derived from this class.
  */
 export default class Resource {
 
