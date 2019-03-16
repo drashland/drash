@@ -10,9 +10,11 @@ export default class ClassOne {
    * Class one method one.
    *
    * This is a second paragraph.
-   *
+   * 
    * This is a third paragraph.
    * There is also a sentence below this third paragraph.
+   *
+   * This is a fourth paragraph.
    *
    * @param any myObject
    *     My object.
