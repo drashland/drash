@@ -30,5 +30,5 @@
     "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css",
     "webpack-dev": "console/webpack.dev",
     "webpack-dev-watch": "console/webpack.dev --watch"
-  
+  }
 }
