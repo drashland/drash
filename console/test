@@ -1,5 +1,6 @@
 #!/bin/bash
 
 (
+  export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/tests/data/example-code"
   deno tests/test.ts --allow-env --allow-read --allow-write $@
 )

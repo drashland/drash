@@ -31,9 +31,9 @@
 <template lang="pug">
 div.b-code-example.code-block-for-reference
     pre.header
-        code.header {{ filename }}
+        code.header {{ data.filename }}
     pre.body(:data-line="data.line_highlight")
-        code(:class="'language-' + language") {{ code }}
+        code(:class="'language-' + data.language") {{ data.code }}
 </template>
 
 <script>
@@ -41,17 +41,6 @@ export default {
     props: [
         'data'
     ],
-    computed: {
-        code() {
-            return this.data.code;
-        },
-        filename() {
-            return this.data.filename;
-        },
-        language() {
-            return this.data.language;
-        }
-    },
     mounted() {
         Prism.highlightAll();
     }

@@ -16,6 +16,15 @@ export default class ClassOne {
    * This is a fourth paragraph.
    *
    * @property string property_one
+   *
+   * @examplecode [
+   *   {
+   *     "filename": "app.ts",
+   *     "filepath": "/class_one_p_property_one.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "8,10"
+   *   }
+   * ]
    */
   public property_one: string = "";
 

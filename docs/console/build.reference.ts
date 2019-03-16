@@ -4,8 +4,8 @@ let drashDirRoot = Drash.getEnvVar("DRASH_DIR_ROOT").value;
 
 let compiler = new Drash.Compilers.DocBlocksToJson();
 let compiled = compiler.compile([
-  "/var/www/deno-drash/src/http/response.ts",
-  "/var/www/deno-drash/src/http/server.ts"
+  `${drashDirRoot}/src/http/response.ts`,
+  `${drashDirRoot}/src/http/server.ts`
 ]);
 
 const encoder = new TextEncoder();

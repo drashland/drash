@@ -12,6 +12,15 @@
             "This is a third paragraph. There is also a sentence below this third paragraph.",
             "This is a fourth paragraph."
           ],
+          "example_code": [
+            {
+              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\n// This is just an example file for testing... nothing else to see here.\n",
+              "filename": "app.ts",
+              "filepath": "/class_one_p_property_one.ts",
+              "language": "typescript",
+              "line_highlight": "8,10"
+            }
+          ],
           "name": "property_one",
           "signature": "public property_one: string = \"\";"
         }

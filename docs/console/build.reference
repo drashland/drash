@@ -1,6 +1,8 @@
 #!/bin/bash
 
 (
+  export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example-code"
+
   echo "Running build.reference.ts..."
   deno $DRASH_DIR_ROOT/docs/console/build.reference.ts --allow-env --allow-read --allow-write $@
 

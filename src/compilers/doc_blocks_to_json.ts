@@ -108,6 +108,7 @@ export default class DocBlocksToJson {
         annotation: annotation,
         data_type: annotation.split(" ")[1],
         description: this.getDocBlockDescription(docBlock),
+        example_code: this.getDocBlockExampleCode(docBlock),
         name: annotation.split(" ")[2],
         signature: signature,
       });
@@ -146,6 +147,31 @@ export default class DocBlocksToJson {
     });
 
     return this.getParagraphs(textBlock);
+  }
+
+  /**
+   * Get the doc block's example code.
+   */
+  protected getDocBlockExampleCode(docBlock: string) {
+    let reExampleCode = new RegExp(/@examplecode.+((\s).+)+\* ]/, "g");
+    let match = docBlock.match(reExampleCode);
+    let exampleCodeFiles = [];
+
+    if (match) {
+      let matchAsString = match[0]
+        .replace(/\*/g, "")
+        .replace("@examplecode ", "")
+        .trim();
+      exampleCodeFiles = JSON.parse(matchAsString);
+    }
+
+    exampleCodeFiles.forEach((fileData, index) => {
+      let fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
+      let fileContentsRaw = Deno.readFileSync(fullFilepath);
+      exampleCodeFiles[index].code = this.decoder.decode(fileContentsRaw);
+    });
+
+    return exampleCodeFiles;
   }
 
   /**
