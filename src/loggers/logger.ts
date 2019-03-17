@@ -142,7 +142,6 @@ export default abstract class Logger {
     }
 
     for (let key in this.configs.tag_string_fns) {
-      // eslint-disable-line
       let tag = `{${key}}`;
       tagString = tagString.replace(tag, this.configs.tag_string_fns[key]);
     }

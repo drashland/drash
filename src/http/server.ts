@@ -221,12 +221,12 @@ export default class Server {
           ? error.message
           : `URI '${
               request.url_path
-            }' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+            }' does not allow ${request.method.toUpperCase()} requests.`;
         break;
       case 500:
         response.body = error.message
           ? error.message
-          : `Something went terribly wrong.`; // eslint-disable-line
+          : `Something went terribly wrong.`;
         break;
       default:
         error.code = 400;
