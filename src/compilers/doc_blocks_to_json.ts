@@ -79,27 +79,20 @@ export default class DocBlocksToJson {
     }
 
     docBlocks.forEach((docBlock) => {
-      let docBlockLinesAsArray = docBlock.split("\n");
-      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
-      signature = signature.replace(/ ?{/g, "");
-      let accessModifier = /constructor/.test(signature)
-        ? "public"
-        : signature.split(" ")[0];
+      let commonData = this.getClassCommonData(docBlock);
+      commonData.signature = commonData.signature.replace(/ ?{/g, "");
       // TODO(crookse) This could use some work
-      let name = accessModifier == "constructor"
-        ? accessModifier
-        : signature.split(" ")[1].split("(")[0];
+      let name = commonData.access_modifier == "constructor"
+        ? "constructor"
+        : commonData.signature.split(" ")[1].split("(")[0];
 
-      methods.push({
-        access_modifier: accessModifier,
-        description: this.getDocBlockDescription(docBlock),
-        example_code: this.getDocBlockExampleCode(docBlock),
+      methods.push(Object.assign(commonData, {
+        access_modifier: commonData.access_modifier,
         name: name,
         params: this.getDocBlockAnnotationBlocks("@param", docBlock),
         returns: this.getDocBlockAnnotationBlocks("@return", docBlock),
-        signature: signature,
         throws: this.getDocBlockAnnotationBlocks("@throws", docBlock),
-      });
+      }));
     });
 
     return methods;
@@ -119,22 +112,33 @@ export default class DocBlocksToJson {
     }
 
     docBlocks.forEach((docBlock) => {
-      let docBlockLinesAsArray = docBlock.split("\n");
-      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim().replace(";", "");
+      let commonData = this.getClassCommonData(docBlock);
+      commonData.signature = commonData.signature.replace(";", "");
       let annotation = this.getDocBlockAnnotationLine("@property", docBlock);
 
-      properties.push({
-        access_modifier: signature.split(" ")[0],
+      properties.push(Object.assign(commonData, {
         annotation: annotation.line,
         data_type: annotation.data_type,
-        description: this.getDocBlockDescription(docBlock),
-        example_code: this.getDocBlockExampleCode(docBlock),
         name: annotation.name,
-        signature: signature,
-      });
+      }));
     });
 
     return properties;
+  }
+
+  protected getClassCommonData(docBlock: string) {
+    let docBlockLinesAsArray = docBlock.split("\n") ;
+    let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim()
+    let accessModifier = /constructor/.test(signature)
+      ? "public"
+      : signature.split(" ")[0];
+
+    return {
+      access_modifier: accessModifier,
+      description: this.getDocBlockDescription(docBlock),
+      example_code: this.getDocBlockExampleCode(docBlock),
+      signature: signature
+    };
   }
 
   /**
@@ -246,28 +250,29 @@ export default class DocBlocksToJson {
    * Get the doc block's example code.
    */
   protected getDocBlockExampleCode(docBlock: string) {
-    let reExampleCode = new RegExp(/@examplecode.+((\s).+)+\* ]/, "g");
+    let reExampleCode = new RegExp(/@examplecode.+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?]/, "g");
     let match = docBlock.match(reExampleCode);
-    let exampleCodeFiles = [];
+    let exampleCode = [];
 
     if (!match) {
-      return exampleCodeFiles;
+      return exampleCode;
     }
 
-    let matchAsString = match[0]
+    let jsonString = match[0]
       .replace(/\*/g, "")
       .replace("@examplecode ", "")
       .trim();
-    exampleCodeFiles = JSON.parse(matchAsString);
+    exampleCode = JSON.parse(jsonString);
 
-    exampleCodeFiles.forEach((fileData, index) => {
+    exampleCode.forEach((fileData, index) => {
       let decoder = new TextDecoder();
       let fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
       let fileContentsRaw = Deno.readFileSync(fullFilepath);
-      exampleCodeFiles[index].code = decoder.decode(fileContentsRaw);
+      // Add the `code` property to the beginning
+      exampleCode[index].code = decoder.decode(fileContentsRaw);
     });
 
-    return exampleCodeFiles;
+    return exampleCode;
   }
 
   /**

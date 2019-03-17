@@ -4,8 +4,6 @@
       "properties": [
         {
           "access_modifier": "public",
-          "annotation": "@property string property_one",
-          "data_type": "string",
           "description": [
             "Class one property one.",
             "This is a second paragraph.",
@@ -19,10 +17,19 @@
               "language": "typescript",
               "line_highlight": "8,10",
               "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\n// This is just an example file for testing... nothing else to see here.\n"
+            },
+            {
+              "filename": "app.ts",
+              "filepath": "/class_one_p_property_two.ts",
+              "language": "typescript",
+              "line_highlight": "11",
+              "code": "// comment\n"
             }
           ],
-          "name": "property_one",
-          "signature": "public property_one: string = \"\""
+          "signature": "public property_one: string = \"\"",
+          "annotation": "@property string property_one",
+          "data_type": "string",
+          "name": "property_one"
         }
       ],
       "methods": [
@@ -35,6 +42,7 @@
             "This is a fourth paragraph."
           ],
           "example_code": [],
+          "signature": "public classOneMethodOne(myObject: any, myString: string)",
           "name": "classOneMethodOne",
           "params": [
             {
@@ -75,7 +83,6 @@
               "name": null
             }
           ],
-          "signature": "public classOneMethodOne(myObject: any, myString: string)",
           "throws": [
             {
               "annotation": "@throws SomeException",

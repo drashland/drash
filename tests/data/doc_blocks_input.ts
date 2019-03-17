@@ -23,6 +23,12 @@ export default class ClassOne {
    *     "filepath": "/class_one_p_property_one.ts",
    *     "language": "typescript",
    *     "line_highlight": "8,10"
+   *   },
+   *   {
+   *     "filename": "app.ts",
+   *     "filepath": "/class_one_p_property_two.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "11"
    *   }
    * ]
    */
