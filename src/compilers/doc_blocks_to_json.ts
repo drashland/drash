@@ -12,8 +12,8 @@ export default class DocBlocksToJson {
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
   /**
-   * Compile a JSON string containing classes, properties, and methods in the
-   * Drash namespace.
+   * Compile a JSON array containing classes, properties, and methods from the
+   * specified files by parsing the doc blocks of each file.
    *
    * @param string[] files
    *     The array of files containing doc blocks to parse.
@@ -70,8 +70,12 @@ export default class DocBlocksToJson {
    * method-related data.
    *
    * @param string[] docBlocks
+   *     The array of doc blocks to parse.
+   *
+   * @return any[]
+   *     Returns an array of method-related data.
    */
-  protected getClassMethods(docBlocks: string[]): any {
+  protected getClassMethods(docBlocks: string[]): any[] {
     let methods = [];
 
     if (!docBlocks || docBlocks.length == 0) {
@@ -82,9 +86,15 @@ export default class DocBlocksToJson {
       let commonData = this.getClassCommonData(docBlock);
       commonData.signature = commonData.signature.replace(/ ?{/g, "");
       // TODO(crookse) This could use some work
-      let name = commonData.access_modifier == "constructor"
+      let name = commonData.signature.split(" ");
+      if (name[1]) {
+        name = name[1].split("(")[0];
+      } else {
+        name = null;
+      }
+      name = commonData.access_modifier == "constructor"
         ? "constructor"
-        : commonData.signature.split(" ")[1].split("(")[0];
+        : name;
 
       methods.push(Object.assign(commonData, {
         access_modifier: commonData.access_modifier,
@@ -103,8 +113,12 @@ export default class DocBlocksToJson {
    * property-related data.
    *
    * @param string[] docBlocks
+   *     The array of doc blocks to parse.
+   *
+   * @return any[]
+   *     Returns an array of property-related data.
    */
-  protected getClassProperties(docBlocks: string[]): any {
+  protected getClassProperties(docBlocks: string[]): any[] {
     let properties = [];
 
     if (!docBlocks || docBlocks.length == 0) {
@@ -159,9 +173,10 @@ export default class DocBlocksToJson {
    * @param string docBlock
    *     The docBlock to get the `@annotationname` definitions from.
    *
-   * @return any
+   * @return any[]
+   *     Returns an array of data related to the specified annotation.
    */
-  protected getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any {
+  protected getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[] {
     //
     // The original regex (without doubling the backslashes) is:
     //
@@ -204,6 +219,7 @@ export default class DocBlocksToJson {
    *     The doc block to get the `@annotationname` definitions from.
    *
    * @return any
+   *     Returns an object containing the annotation lines data.
    */
   protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any {
     let re = new RegExp(annotation + ".+", "g");
@@ -225,9 +241,15 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the doc block's description.
+   * Get the description of the specified doc block.
+   *
+   * @param string docblock
+   *     The doc block in question.
+   *
+   * @return string[]
+   *     Returns an array of descriptions.
    */
-  protected getDocBlockDescription(docBlock: string) {
+  protected getDocBlockDescription(docBlock: string): string[] {
     let docBlocksByLine = docBlock.split("\n");
     let textBlock = "";
     let endOfDescription = false;
@@ -257,9 +279,15 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the doc block's example code.
+   * Get the example code of the specified doc block.
+   *
+   * @param string docblock
+   *     The doc block in question.
+   *
+   * @return any[]
+   *     Returns an array of the example code.
    */
-  protected getDocBlockExampleCode(docBlock: string) {
+  protected getDocBlockExampleCode(docBlock: string): any[] {
     let reExampleCode = new RegExp(/@examplecode.+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?]/, "g");
     let match = docBlock.match(reExampleCode);
     let exampleCode = [];
