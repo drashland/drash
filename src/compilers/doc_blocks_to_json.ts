@@ -7,7 +7,6 @@
 export default class DocBlocksToJson {
 
   protected decoder: TextDecoder;
-  protected namespace_tag = "// namespace";
   protected parsed = {};
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
@@ -31,14 +30,15 @@ export default class DocBlocksToJson {
       let contentsByLine = fileContents.toString().split("\n");
 
       // No namespace given? GTFO.
-      if (contentsByLine[0].indexOf(this.namespace_tag)) {
+      let reNamespace = new RegExp(/\/\/ namespace .+/, "g");
+      if (!reNamespace.test(fileContents)) {
         return;
       }
 
       // Create the namespace
       // Take the `// namespace Some.Namespace` and transform it into
       // `Some.Namespace`
-      let currentNamespace = contentsByLine[0].substring(this.namespace_tag.length).trim();
+      let currentNamespace = fileContents.match(reNamespace)[0].split(" ").pop();
 
       // Create the namespace in the `parsed` property so we can start storing
       // the namespace's members in it
@@ -51,10 +51,7 @@ export default class DocBlocksToJson {
       // tag, then the first one will be chosen. The others won't matter. Sorry.
       let className = fileContents.match(/@class \w+/)[0].substring("@class".length).trim();
 
-      // let methodDocBlocks = fileContents.match(/\/\*\*((\s).+)+\*\/+\s.+\(*\)/g);
-      // let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\)/g);
       let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
-      // let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*;/g);
       let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
 
       this.parsed[currentNamespace][className] = {
@@ -84,20 +81,24 @@ export default class DocBlocksToJson {
     docBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim();
-      signature = signature.replace(" {", "");
+      signature = signature.replace(/ ?{/g, "");
       let accessModifier = /constructor/.test(signature)
-        ? "constructor"
+        ? "public"
         : signature.split(" ")[0];
+      // TODO(crookse) This could use some work
+      let name = accessModifier == "constructor"
+        ? accessModifier
+        : signature.split(" ")[1].split("(")[0];
 
       methods.push({
-        access_modifier: accessModifier, // FIXME(crookse) This is turned into "constructor" sometimes
+        access_modifier: accessModifier,
         description: this.getDocBlockDescription(docBlock),
         example_code: this.getDocBlockExampleCode(docBlock),
-        name: accessModifier == "constructor" ? "constructor" : signature.split(" ")[1].split("(")[0], // This could use some work
-        params: this.getDocBlockParams(docBlock),
+        name: name,
+        params: this.getDocBlockAnnotationBlocks("@param", docBlock),
+        returns: this.getDocBlockAnnotationBlocks("@return", docBlock),
         signature: signature,
-        returns: this.getDocBlockReturns(docBlock),
-        throws: this.getDocBlockThrows(docBlock),
+        throws: this.getDocBlockAnnotationBlocks("@throws", docBlock),
       });
     });
 
@@ -120,20 +121,93 @@ export default class DocBlocksToJson {
     docBlocks.forEach((docBlock) => {
       let docBlockLinesAsArray = docBlock.split("\n");
       let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim().replace(";", "");
-      let annotation = this.getDocBlockAnnotation("@property", docBlock);
+      let annotation = this.getDocBlockAnnotationLine("@property", docBlock);
 
       properties.push({
         access_modifier: signature.split(" ")[0],
-        annotation: annotation,
-        data_type: annotation.split(" ")[1],
+        annotation: annotation.line,
+        data_type: annotation.data_type,
         description: this.getDocBlockDescription(docBlock),
         example_code: this.getDocBlockExampleCode(docBlock),
-        name: annotation.split(" ")[2],
+        name: annotation.name,
         signature: signature,
       });
     });
 
     return properties;
+  }
+
+  /**
+   * Get the `@annotationname` definitions from the doc block.
+   *
+   * @param string annotation
+   *     The annotation to get in the following format: @annotationname.
+   * @param string docBlock
+   *     The docBlock to get the `@annotationname` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any {
+    //
+    // The original regex (without doubling the backslashes) is:
+    //
+    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
+    //
+    // @annotation is the targeted annotation block (e.g., @param).
+    //
+    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?", "g");
+    let matches = docBlock.match(re);
+    let annotationBlocks = [];
+
+    if (matches) {
+      annotationBlocks = matches.map((block) => {
+        // Clean up each line and return an overall clean description
+        let blockInLines = block.split("\n");
+        // Remove the annotation line and get it using the method
+        blockInLines.shift();
+        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
+        let textBlock = blockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotationLine.line,
+          data_type: annotationLine.data_type,
+          description: description,
+          name: annotationLine.name
+        };
+      });
+    }
+
+    return annotationBlocks;
+  }
+
+  /**
+   * Get the `@annotationname` line.
+   *
+   * @param string annotation
+   *     The annotation to get from the doc block.
+   * @param string docBlock
+   *     The doc block to get the `@annotationname` definitions from.
+   *
+   * @return any
+   */
+  protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any {
+    let re = new RegExp(annotation + ".+", "g");
+    let match = docBlock.match(re);
+    let line = {
+      line: null,
+      data_type: null,
+      name: null
+    };
+
+    if (match) {
+      let lineParts = match[0].split(" ");
+      line.line = match[0];
+      line.data_type = lineParts[1];
+      line.name = lineParts[2] ? lineParts[2] : null;
+    }
+
+    return line;
   }
 
   /**
@@ -194,152 +268,6 @@ export default class DocBlocksToJson {
     });
 
     return exampleCodeFiles;
-  }
-
-  /**
-   * Get the `@param` definitions from the doc block.
-   *
-   * @param string docBlock
-   *     The docBlock to get the `@param` definitions from.
-   *
-   * @return any
-   */
-  protected getDocBlockParams(docBlock: string): any {
-    // let reParams = new RegExp(/@param.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
-    // let reParams = new RegExp(/@param.+((\s.*).+     .*)*((\s*\*\s*).+)+(\w).*/, "g");
-    // let reParams = new RegExp(/@param(.+)(\s +\*( |\n)?.+)(\n +\* +.+)?(\n +\*\n)?( +\* +\w.+)?/, "gm");
-    // let reParams = new RegExp(/@param.+((\n +\* +)[^@param].+)*(\n +\*\n +\* + .*)?/, "g");
-    let reParams = new RegExp(/@param.+((\n +\* +)[^@param].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
-    let paramBlocks = docBlock.match(reParams);
-    let params = [];
-
-    if (paramBlocks) {
-      //
-      // A `paramBlock` is the entire `@param` annotation. Example:
-      //
-      //     @param type name
-      //         Some description.
-      //
-      params = paramBlocks.map((paramBlock) => {
-        // Clean up each line and return an overall clean description
-        let paramBlockInLines = paramBlock.split("\n");
-        paramBlockInLines.shift(); // remove the annotation line
-        let annotation = this.getDocBlockAnnotation("@param", paramBlock);
-        let textBlock = paramBlockInLines.join("\n");
-        let description = this.getParagraphs(textBlock);
-
-        return {
-          annotation: annotation,
-          data_type: annotation.split(" ")[1],
-          description: description,
-          name: annotation.split(" ")[2],
-        };
-      });
-    }
-
-    return params;
-  }
-
-  /**
-   * Get the `@return` definitions from the doc block.
-   *
-   * @param string docBlock
-   *     The docBlock to get the `@return` definitions from.
-   *
-   * @return any
-   */
-  protected getDocBlockReturns(docBlock: string): any {
-    // let reReturn = new RegExp(/@return.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
-    let reReturn= new RegExp(/@return[^@\/]+/, "g");
-    let retBlocks = docBlock.match(reReturn);
-    let ret = [];
-
-    if (retBlocks) {
-      //
-      // A `retBlock` is the entire `@param` annotation. Example:
-      //
-      //     @param type name
-      //         Some description.
-      //
-      ret = retBlocks.map((retBlock) => {
-        // Clean up each line and return an overall clean description
-        let retBlockInLines = retBlock.split("\n");
-        retBlockInLines.shift(); // remove the annotation line
-        let annotation = this.getDocBlockAnnotation("@return", retBlock);
-        let textBlock = retBlockInLines.join("\n");
-        let description = this.getParagraphs(textBlock);
-
-        return {
-          annotation: annotation,
-          data_type: annotation.split(" ")[1],
-          description: description,
-        };
-      });
-    }
-
-    return ret;
-  }
-
-  /**
-   * Get the `@throws` definitions from the doc block.
-   *
-   * @param string docBlock
-   *     The docBlock to get the `@throws` definitions from.
-   *
-   * @return any
-   */
-  protected getDocBlockThrows(docBlock: string): any {
-    // let reThrows = new RegExp(/@throws.+((\s.*).+     .*)*(\s*\*\s+)*(\w).*/, "g");
-    let reThrows= new RegExp(/@throws[^@\/]+/, "g");
-    let throwsBlocks = docBlock.match(reThrows);
-    let throws = [];
-
-    if (throwsBlocks) {
-      //
-      // A `throwsBlock` is the entire `@param` annotation. Example:
-      //
-      //     @param type name
-      //         Some description.
-      //
-      throws = throwsBlocks.map((throwsBlock) => {
-        // Clean up each line and return an overall clean description
-        let throwsBlockInLines = throwsBlock.split("\n");
-        throwsBlockInLines.shift(); // remove the annotation line
-        let annotation = this.getDocBlockAnnotation("@throws", throwsBlock);
-        let textBlock = throwsBlockInLines.join("\n");
-        let description = this.getParagraphs(textBlock);
-
-        return {
-          annotation: annotation,
-          data_type: annotation.split(" ")[1],
-          description: description,
-        };
-      });
-    }
-
-    return throws;
-  }
-
-  /**
-   * Get the `@property` definitions from the doc block.
-   *
-   * @param string annotation
-   *     The annotation to get from the doc block.
-   * @param string docBlock
-   *     The doc block to get the `@property` definitions from.
-   *
-   * @return string
-   */
-  protected getDocBlockAnnotation(annotation: string, docBlock: string): string {
-    let reProperty = new RegExp(annotation + ".+", "g");
-    let match = docBlock.match(reProperty);
-    let line = "";
-
-    if (match) {
-      line = match[0];
-    }
-
-    return line;
   }
 
   /**
