@@ -126,7 +126,17 @@ export default class DocBlocksToJson {
     return properties;
   }
 
-  protected getClassCommonData(docBlock: string) {
+  /**
+   * Get the common doc block data between a class' property doc blocks and
+   * method doc blocks.
+   *
+   * @param string docBlock
+   *     The doc block in question.
+   *
+   * @return any
+   *     Returns an access modifier, description, example code, and signature.
+   */
+  protected getClassCommonData(docBlock: string): any {
     let docBlockLinesAsArray = docBlock.split("\n") ;
     let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim()
     let accessModifier = /constructor/.test(signature)
