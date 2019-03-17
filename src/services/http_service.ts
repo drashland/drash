@@ -3,6 +3,10 @@
 import Drash from "../../mod.ts";
 import DrashHttpRequest from "../http/request.ts";
 
+/**
+ * @class HttpService
+ * This class helps perform HTTP-related processes.
+ */
 class HttpService {
   /**
    * Hydrate the request with data that is useful for the Drash.Http.Server class.
