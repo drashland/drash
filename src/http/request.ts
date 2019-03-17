@@ -14,6 +14,7 @@ export default class Request extends ServerRequest {
   public path_params: any = {};
   public url_path: string;
   public url_query_params: any = {};
+  public url_query_string: string = null;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 

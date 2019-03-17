@@ -18,7 +18,7 @@ import Logger from "./src/loggers/logger.ts";
 import ConsoleLogger from "./src/loggers/console_logger.ts";
 import FileLogger from "./src/loggers/file_logger.ts";
 // Services
-import * as HttpService from "./src/services/http_service.ts";
+import HttpService from "./src/services/http_service.ts";
 // Util
 import * as Util from "./src/util.ts";
 
