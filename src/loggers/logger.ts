@@ -1,6 +1,7 @@
 // namespace Drash.Loggers
 
 import Drash from "../../mod.ts";
+import LogLevels from "../dictionaries/log_levels.ts";
 
 /**
  * @class Logger
@@ -10,9 +11,16 @@ export default abstract class Logger {
   static TYPE_CONSOLE = 1;
   static TYPE_FILE = 2;
 
+  /**
+   * This logger's configs. See example code below.
+   * @examplecode [
+   *    "title": "Logger Configs",
+   *    filepath: "",
+   * ]
+   */
   protected configs: any;
   protected current_log_message_level_name: string;
-  protected log_levels = Drash.Dictionaries.LogLevels;
+  protected log_levels = LogLevels;
   protected test: boolean = false;
   protected type: number;
 
@@ -39,7 +47,7 @@ export default abstract class Logger {
     configs.level_definition = this.log_levels[configs.level];
 
     if (!configs.tag_string) {
-      configs.tag_string = null;
+      configs.tag_string = "";
     }
 
     if (!configs.tag_string_fns) {
@@ -126,7 +134,7 @@ export default abstract class Logger {
    * @return string
    */
   protected getTagStringParsed(): string {
-    if (this.configs.tag_string && this.configs.tag_string.trim() == "") {
+    if (this.configs.tag_string.trim() == "") {
       return "";
     }
 
@@ -152,7 +160,8 @@ export default abstract class Logger {
 
   /**
    * Send the message to the write method (which should be in the child class).
-   * Also, do some prechecks before sending.
+   * Also, do some prechecks before sending to see if the log message should be
+   * written.
    *
    * @param any logMethodLevelDefinition
    *     The dictionary definition of the log message's level.

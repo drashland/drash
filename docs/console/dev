@@ -2,6 +2,8 @@
 
 (
   export DRASH_MODE="development";
+  export DRASH_CORE_LOGGER_ENABLED=true
+  export DRASH_CORE_LOGGER_LEVEL="debug"
   echo -e "Don't forget to run \`npm run webpack-dev-watch\`\n"
   deno $DRASH_DIR_ROOT/docs/docs.ts --allow-net --allow-env --allow-read $@
 )

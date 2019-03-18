@@ -12,14 +12,14 @@
           ],
           "example_code": [
             {
-              "filename": "app.ts",
+              "title": "app.ts",
               "filepath": "/class_one_p_property_one.ts",
               "language": "typescript",
               "line_highlight": "8,10",
               "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\n// This is just an example file for testing... nothing else to see here.\n"
             },
             {
-              "filename": "app.ts",
+              "title": "app.ts",
               "filepath": "/class_one_p_property_two.ts",
               "language": "typescript",
               "line_highlight": "11",

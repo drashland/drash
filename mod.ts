@@ -1,6 +1,5 @@
-// Random Classes
-import EnvVar from "./src/classes/env_var.ts";
-
+// Core
+import EnvVar from "./src/core/env_var.ts";
 // Compilers
 import DocBlocksToJson from "./src/compilers/doc_blocks_to_json.ts";
 // Dictionaries
@@ -16,6 +15,7 @@ import Server from "./src/http/server.ts";
 // Loggers
 import Logger from "./src/loggers/logger.ts";
 import ConsoleLogger from "./src/loggers/console_logger.ts";
+import CoreLogger from "./src/loggers/core_logger.ts";
 import FileLogger from "./src/loggers/file_logger.ts";
 // Services
 import HttpService from "./src/services/http_service.ts";
@@ -56,6 +56,15 @@ function Drash(): any {
     Vendor: {},
 
     /**
+     * @property CoreLogger core_logger
+     */
+    core_logger: new CoreLogger({
+      enabled: Deno.env().DRASH_CORE_LOGGER_ENABLED === "true",
+      level: Deno.env().DRASH_CORE_LOGGER_LEVEL,
+      tag_string: "{level} |",
+    }),
+
+    /**
      * Add a new member to the Vendor namespace.
      *
      * @param string name
@@ -68,7 +77,7 @@ function Drash(): any {
 
     /**
      * Set an environment variable in `Deno.env()`.
-
+     *
      * @param string variableName
      *     The variable name.
      *

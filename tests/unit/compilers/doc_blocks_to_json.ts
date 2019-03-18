@@ -4,7 +4,7 @@ members.test(function DocBlocksToJson_compile_params() {
   const decoder = new TextDecoder();
   let rawContents = Deno.readFileSync(
     members.Drash.getEnvVar("DRASH_DIR_ROOT").value +
-      "/tests/data/doc_blocks_output.json"
+      "/tests/data/doc_blocks_output_expected.json"
   );
   let expected = JSON.parse(decoder.decode(rawContents));
 

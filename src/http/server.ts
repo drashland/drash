@@ -280,7 +280,7 @@ export default class Server {
    *     configs.
    */
   public async run(): Promise<void> {
-    this.serverLog(`Deno server started at ${this.configs.address}.`);
+    console.log(`Deno server started at ${this.configs.address}.`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);
@@ -344,14 +344,14 @@ export default class Server {
         };
         resourceClass.paths[index] = pathObj;
       } catch (error) {
-        this.serverLog(error);
+        Drash.core_logger.error(error);
       }
     });
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
 
-    this.serverLog(`HTTP resource "${resourceClass.name}" added.`);
+    Drash.core_logger.debug(`HTTP resource "${resourceClass.name}" added.`);
   }
 
   /**
@@ -465,24 +465,5 @@ export default class Server {
     }
 
     return false;
-  }
-
-  /**
-   * console.log() something.
-   *
-   * @param any message
-   *     The message to output in the console. String messages are prefixed with
-   *     [Drash]; and all other data types are logged on a new line.
-   *
-   * @return void
-   *     This method just logs a message to the console.
-   */
-  protected serverLog(message: any): void {
-    if (typeof message != "string") {
-      console.log("[Drash]");
-      console.log(message);
-    } else {
-      console.log(`[Drash] ${message}`);
-    }
   }
 }

@@ -1,4 +1,17 @@
 // namespace Drash.Compilers
+//
+// TODO(crookse)
+//     [ ] Check for multiline method signatures. Example:
+//         someMethod(
+//           arg1,
+//           arg2,
+//           arg3
+//         ) {
+//           // method body
+//         }
+//
+
+import Drash from "../../mod.ts";
 
 /**
  * @class DocBlocksToJson
@@ -8,6 +21,7 @@ export default class DocBlocksToJson {
 
   protected decoder: TextDecoder;
   protected parsed = {};
+  protected current_file: string = "";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
@@ -25,6 +39,7 @@ export default class DocBlocksToJson {
     this.decoder = new TextDecoder();
 
     files.forEach((file) => {
+      this.current_file = file;
       let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
       let contentsByLine = fileContents.toString().split("\n");
@@ -49,7 +64,10 @@ export default class DocBlocksToJson {
       // Get the class name of the current file being parsed. There should only
       // be one `@class` tag in the file. If there are more than one `@class`
       // tag, then the first one will be chosen. The others won't matter. Sorry.
-      let className = fileContents.match(/@class \w+/)[0].substring("@class".length).trim();
+      let className = fileContents
+        .match(/@class \w+/)[0]
+        .substring("@class".length)
+        .trim();
 
       let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
       let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
@@ -300,7 +318,15 @@ export default class DocBlocksToJson {
       .replace(/\*/g, "")
       .replace("@examplecode ", "")
       .trim();
-    exampleCode = JSON.parse(jsonString);
+
+    try {
+      Drash.core_logger.debug(`Parsing @examplecode block for ${this.current_file}.`);
+      exampleCode = JSON.parse(jsonString);
+    } catch (error) {
+      Drash.core_logger.error(`Error occurred while parsing @examplecode block for ${this.current_file}:`);
+      Drash.core_logger.error(error.message);
+      return exampleCode;
+    }
 
     exampleCode.forEach((fileData, index) => {
       let decoder = new TextDecoder();
@@ -309,6 +335,8 @@ export default class DocBlocksToJson {
       // Add the `code` property to the beginning
       exampleCode[index].code = decoder.decode(fileContentsRaw);
     });
+
+    Drash.core_logger.debug(`Succesfully parsed.`);
 
     return exampleCode;
   }
