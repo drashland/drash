@@ -20,7 +20,21 @@ import Drash from "../../mod.ts";
 export default class DocBlocksToJson {
 
   protected decoder: TextDecoder;
-  protected parsed = {};
+
+  /**
+   * A property to hold the final result of the compilation.
+   *
+   * @property any parsed
+   */
+  protected parsed: any = {};
+
+  /**
+   * A property to hold the name of the current file being parsed. This property
+   * only exists for debugging purposes. This class has logging to make it
+   * easier for Drash developers and users to find errors during compilation.
+   *
+   * @property string current_file
+   */
   protected current_file: string = "";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
@@ -34,6 +48,24 @@ export default class DocBlocksToJson {
    *
    * @return any
    *     Returns the JSON array.
+   *
+   * @examplecode [
+   *   {
+   *     "title": "Example Call",
+   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
+   *     "language": "typescript"
+   *   },
+   *   {
+   *     "title": "Example file.ts",
+   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
+   *     "language": "typescript"
+   *   },
+   *   {
+   *     "title": "Example Output",
+   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
+   *     "language": "json"
+   *   }
+   * ]
    */
   public compile(files: string[]): any {
     this.decoder = new TextDecoder();
@@ -306,7 +338,7 @@ export default class DocBlocksToJson {
    *     Returns an array of the example code.
    */
   protected getDocBlockExampleCode(docBlock: string): any[] {
-    let reExampleCode = new RegExp(/@examplecode.+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?]/, "g");
+    let reExampleCode = new RegExp(/\* @examplecode.+\[((\n +\\* +).+)*(?:(\n +\\*\n +\\* + .*)+)?\* ]/, "g");
     let match = docBlock.match(reExampleCode);
     let exampleCode = [];
 
@@ -322,21 +354,28 @@ export default class DocBlocksToJson {
     try {
       Drash.core_logger.debug(`Parsing @examplecode block for ${this.current_file}.`);
       exampleCode = JSON.parse(jsonString);
+      Drash.core_logger.debug(`Succesfully parsed.`);
     } catch (error) {
       Drash.core_logger.error(`Error occurred while parsing @examplecode block for ${this.current_file}:`);
       Drash.core_logger.error(error.message);
       return exampleCode;
     }
 
-    exampleCode.forEach((fileData, index) => {
-      let decoder = new TextDecoder();
-      let fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
-      let fileContentsRaw = Deno.readFileSync(fullFilepath);
-      // Add the `code` property to the beginning
-      exampleCode[index].code = decoder.decode(fileContentsRaw);
-    });
+    let fullFilepath = "";
 
-    Drash.core_logger.debug(`Succesfully parsed.`);
+    exampleCode.forEach((fileData, index) => {
+      try {
+        let decoder = new TextDecoder();
+        fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
+        Drash.core_logger.debug(`Getting file contents from ${fullFilepath}.`);
+        let fileContentsRaw = Deno.readFileSync(fullFilepath);
+        // Add the `code` property to the beginning
+        exampleCode[index].code = decoder.decode(fileContentsRaw);
+      } catch (error) {
+        Drash.core_logger.error(`Error occurred while getting file contents from ${fullFilepath}:`);
+        Drash.core_logger.error(error.message);
+      }
+    });
 
     return exampleCode;
   }

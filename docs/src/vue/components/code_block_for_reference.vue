@@ -8,6 +8,10 @@
         position: relative;
         width: 100%;
     }
+    .card .code-block-for-reference .body {
+        max-height: 500px;
+        overflow: auto;
+    }
     @media screen and (max-width: 950px) {
         .card .code-block-for-reference {
             margin-left: -1.25rem;
@@ -31,7 +35,7 @@
 <template lang="pug">
 div.b-code-example.code-block-for-reference
     pre.header
-        code.header {{ data.filename }}
+        code.header {{ data.title }}
     pre.body(:data-line="data.line_highlight")
         code(:class="'language-' + data.language") {{ data.code }}
 </template>

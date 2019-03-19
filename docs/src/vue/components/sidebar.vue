@@ -28,14 +28,13 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
             a.heading-link(:href="$conf.base_url + '/#/api-reference#top'") API Reference
             div.c-sidebar__menu-body
-                a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Drash.Compilers
-                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Dictionaries
-                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Exceptions
-                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Loggers
-                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Drash.Loggers
-                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Drash.Services
-                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Drash.Util
-                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Drash.Vendor
+                a(:href="$conf.base_url + '/#/api-reference/compilers'") Drash.Compilers
+                a(:href="$conf.base_url + '/#/api-reference/dictionaries'") Drash.Dictionaries
+                a(:href="$conf.base_url + '/#/api-reference/exceptions'") Drash.Exceptions
+                a(:href="$conf.base_url + '/#/api-reference/loggers'") Drash.Loggers
+                a(:href="$conf.base_url + '/#/api-reference/services'") Drash.Services
+                a(:href="$conf.base_url + '/#/api-reference/util'") Drash.Util
+                a(:href="$conf.base_url + '/#/api-reference/vendor'") Drash.Vendor
     div.c-sidebar__footer
         div.row
             div.col.text-align--center

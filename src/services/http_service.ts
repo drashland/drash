@@ -9,9 +9,10 @@ import DrashHttpRequest from "../http/request.ts";
  */
 class HttpService {
   /**
-   * Hydrate the request with data that is useful for the Drash.Http.Server class.
+   * Hydrate the request with data that is useful for the `Drash.Http.Server`
+   * class.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
    *     The request object.
    * @param any options
    *     A list of options:

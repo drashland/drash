@@ -13,9 +13,14 @@ export default abstract class Logger {
 
   /**
    * This logger's configs. See example code below.
+   *
    * @examplecode [
-   *    "title": "Logger Configs",
-   *    filepath: "",
+   *   {
+   *     "title": "Logger Configs",
+   *     "filepath": "/api-reference/http/response/p_body.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "6"
+   *   }
    * ]
    */
   protected configs: any;

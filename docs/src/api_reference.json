@@ -1,14 +1,56 @@
 {
   "Drash.Compilers": {
     "DocBlocksToJson": {
-      "properties": [],
+      "properties": [
+        {
+          "access_modifier": "protected",
+          "description": [
+            "A property to hold the final result of the compilation."
+          ],
+          "example_code": [],
+          "signature": "protected parsed: any = {}",
+          "annotation": "@property any parsed",
+          "data_type": "any",
+          "name": "parsed"
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "A property to hold the name of the current file being parsed. This property only exists for debugging purposes. This class has logging to make it easier for Drash developers and users to find errors during compilation."
+          ],
+          "example_code": [],
+          "signature": "protected current_file: string = \"\"",
+          "annotation": "@property string current_file",
+          "data_type": "string",
+          "name": "current_file"
+        }
+      ],
       "methods": [
         {
           "access_modifier": "public",
           "description": [
             "Compile a JSON array containing classes, properties, and methods from the specified files by parsing the doc blocks of each file."
           ],
-          "example_code": [],
+          "example_code": [
+            {
+              "title": "Example Call",
+              "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
+              "language": "typescript",
+              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\nconst compiler = new Drash.Compilers.DocBlocksToJson();\nconst result = compiler.compile([\"file.ts\"]);\n\nconst encoder = new TextEncoder();\nconst data = encoder.encode(JSON.stringify(result, null, 2));\nDeno.writeFileSync(\"output.json\", data);\n"
+            },
+            {
+              "title": "Example file.ts",
+              "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
+              "language": "typescript",
+              "code": "// namespace Drash.Services\n\n/**\n * @class ClassOne\n * Class one does class one things.\n */\nexport default class ClassOne {\n  /**\n   * Class one property one.\n   *\n   * This is a second paragraph.\n   *\n   * This is a third paragraph.\n   * There is also a sentence below this third paragraph.\n   *\n   * This is a fourth paragraph.\n   *\n   * @property string property_one\n   *\n   * @examplecode [\n   *   {\n   *     \"title\": \"app.ts\",\n   *     \"filepath\": \"/class_one_p_property_one.ts\",\n   *     \"language\": \"typescript\",\n   *     \"line_highlight\": \"8,10\"\n   *   },\n   *   {\n   *     \"title\": \"app.ts\",\n   *     \"filepath\": \"/class_one_p_property_two.ts\",\n   *     \"language\": \"typescript\",\n   *     \"line_highlight\": \"11\"\n   *   }\n   * ]\n   */\n  public property_one: string = \"\";\n\n  /**\n   * Class one method one.\n   *\n   * This is a second paragraph.\n   *\n   * This is a third paragraph.\n   * There is also a sentence below this third paragraph.\n   *\n   * This is a fourth paragraph.\n   *\n   * @param any myObject\n   *     My object.\n   * @param string myString\n   *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n   *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n   *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n   *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n   *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n   *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n   *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n   *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n   *     tortor et sem semper imperdiet in ut libero.\n   *\n   *     This is a second paragraph.\n   *\n   *     This is a third paragraph.\n   *\n   * @return any|undefined\n   *     Returns any when something cool happens.\n   *\n   *     Returns undefined when uhhhhhhhhhh k.\n   *\n   * @return string\n   *     Returns a string when the other two don't get got returRrRrRrned.\n   *\n   * @throws SomeException\n   *     Thrown when something happens.\n   *\n   *     Thrown when something else happens too.\n   * @throws SomeOtherException\n   *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n   *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n   *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n   *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n   *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n   *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n   *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n   *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n   *     tortor et sem semper imperdiet in ut libero.\n   *\n   *     This is a second paragraph.\n   */\n  public classOneMethodOne(myObject: any, myString: string) {}\n}\n"
+            },
+            {
+              "title": "Example Output",
+              "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
+              "language": "json",
+              "code": "{\n  \"Drash.Services\": {\n    \"ClassOne\": {\n      \"properties\": [\n        {\n          \"access_modifier\": \"public\",\n          \"annotation\": \"@property string property_one\",\n          \"data_type\": \"string\",\n          \"description\": [\n            \"Class one property one.\",\n            \"This is a second paragraph.\",\n            \"This is a third paragraph. There is also a sentence below this third paragraph.\",\n            \"This is a fourth paragraph.\"\n          ],\n          \"example_code\": [\n            {\n              \"title\": \"app.ts\",\n              \"filepath\": \"/class_one_p_property_one.ts\",\n              \"language\": \"typescript\",\n              \"line_highlight\": \"8,10\",\n              \"code\": \"import Drash from \\\"https://deno.land/x/drash/mod.ts\\\";\\n\\n// This is just an example file for testing... nothing else to see here.\\n\"\n            },\n            {\n              \"title\": \"app.ts\",\n              \"filepath\": \"/class_one_p_property_two.ts\",\n              \"language\": \"typescript\",\n              \"line_highlight\": \"11\",\n              \"code\": \"// comment\\n\"\n            }\n          ],\n          \"name\": \"property_one\",\n          \"signature\": \"public property_one: string = \\\"\\\"\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"access_modifier\": \"public\",\n          \"description\": [\n            \"Class one method one.\",\n            \"This is a second paragraph.\",\n            \"This is a third paragraph. There is also a sentence below this third paragraph.\",\n            \"This is a fourth paragraph.\"\n          ],\n          \"example_code\": [],\n          \"name\": \"classOneMethodOne\",\n          \"params\": [\n            {\n              \"annotation\": \"@param any myObject\",\n              \"data_type\": \"any\",\n              \"description\": [\n                \"My object.\"\n              ],\n              \"name\": \"myObject\"\n            },\n            {\n              \"annotation\": \"@param string myString\",\n              \"data_type\": \"string\",\n              \"description\": [\n                \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n                \"This is a second paragraph.\",\n                \"This is a third paragraph.\"\n              ],\n              \"name\": \"myString\"\n            }\n          ],\n          \"returns\": [\n            {\n              \"annotation\": \"@return any|undefined\",\n              \"data_type\": \"any|undefined\",\n              \"description\": [\n                \"Returns any when something cool happens.\",\n                \"Returns undefined when uhhhhhhhhhh k.\"\n              ],\n              \"name\": null\n            },\n            {\n              \"annotation\": \"@return string\",\n              \"data_type\": \"string\",\n              \"description\": [\n                \"Returns a string when the other two don't get got returRrRrRrned.\"\n              ],\n              \"name\": null\n            }\n          ],\n          \"signature\": \"public classOneMethodOne(myObject: any, myString: string)\",\n          \"throws\": [\n            {\n              \"annotation\": \"@throws SomeException\",\n              \"data_type\": \"SomeException\",\n              \"description\": [\n                \"Thrown when something happens.\",\n                \"Thrown when something else happens too.\"\n              ],\n              \"name\": null\n            },\n            {\n              \"annotation\": \"@throws SomeOtherException\",\n              \"data_type\": \"SomeOtherException\",\n              \"description\": [\n                \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n                \"This is a second paragraph.\"\n              ],\n              \"name\": null\n            }\n          ]\n        }\n      ]\n    }\n  }\n}\n"
+            }
+          ],
           "signature": "public compile(files: string[]): any",
           "name": "compile",
           "params": [
@@ -295,7 +337,37 @@
   "Drash.Exceptions": {
     "HttpException": {
       "properties": [],
-      "methods": []
+      "methods": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "Construct an object of this class."
+          ],
+          "example_code": [],
+          "signature": "constructor(code: number, message?: string)",
+          "name": "number,",
+          "params": [
+            {
+              "annotation": "@param number code",
+              "data_type": "number",
+              "description": [
+                "The code to associate this error with. This should be a valid HTTP status code."
+              ],
+              "name": "code"
+            },
+            {
+              "annotation": "@param string message",
+              "data_type": "string",
+              "description": [
+                "The error message."
+              ],
+              "name": "message"
+            }
+          ],
+          "returns": [],
+          "throws": []
+        }
+      ]
     }
   },
   "Drash.Http": {
@@ -819,7 +891,15 @@
           "description": [
             "This logger's configs. See example code below."
           ],
-          "example_code": [],
+          "example_code": [
+            {
+              "title": "Logger Configs",
+              "filepath": "/api-reference/http/response/p_body.ts",
+              "language": "typescript",
+              "line_highlight": "6",
+              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public GET() {\n    this.response.body = \"Ok... you got me.\";\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n"
+            }
+          ],
           "signature": "protected configs: any",
           "annotation": null,
           "data_type": null,
