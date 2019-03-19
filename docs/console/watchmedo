@@ -1,0 +1,12 @@
+#!/bin/bash
+
+(
+  watchmedo shell-command \
+    --command='npm run reference' \
+    --recursive \
+    --drop \
+    --ignore-directories \
+    --patterns="*.ts" \
+    --ignore-pattern="*.json;*/.#*.ts;*.swp" \
+    ..
+)

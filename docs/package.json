@@ -24,11 +24,12 @@
   },
   "scripts": {
     "build": "console/build",
-    "build-reference": "console/build.reference",
+    "reference": "console/build.reference",
     "dev": "console/dev",
     "prettier": "../console/prettier",
     "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css",
     "test": "../console/test",
+    "watchmedo": "console/watchmedo",
     "webpack-dev": "console/webpack.dev",
     "webpack-dev-watch": "console/webpack.dev --watch"
   }
