@@ -55,7 +55,8 @@ div.page.page--reference
                                 strong.tag-row__heading Params
                                 ul
                                     li(v-for="param in method.params")
-                                        code.c-code-parameter {{ param.name }} 
+                                        code.c-code-parameter {{ param.name }}
+                                        span : 
                                         code.c-code-data-type {{ param.data_type }}
                                         ul(v-show="param.description.length > 0")
                                             li(v-for="description in param.description" :inner-html.prop="description | markdown-it")
