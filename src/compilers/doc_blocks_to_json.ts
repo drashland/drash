@@ -56,12 +56,12 @@ export default class DocBlocksToJson {
    *     "language": "typescript"
    *   },
    *   {
-   *     "title": "Example file.ts",
+   *     "title": "file.ts",
    *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
    *     "language": "typescript"
    *   },
    *   {
-   *     "title": "Example Output",
+   *     "title": "output.json",
    *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
    *     "language": "json"
    *   }
@@ -111,6 +111,70 @@ export default class DocBlocksToJson {
     });
 
     return this.parsed;
+  }
+
+  /**
+   * Get the specified `@annotationname` definitions from the specified doc
+   * block.
+   *
+   * @param string annotation
+   *     The annotation to get in the following format: `@annotationname`.
+   * @param string docBlock
+   *     The docBlock to get the `@annotationname` definitions from.
+   *
+   * @return any[]
+   *     Returns an array of data related to the specified annotation.
+   *
+   * @examplecode [
+   *   {
+   *     "title": "Example Call",
+   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
+   *     "language": "typescript"
+   *   },
+   *   {
+   *     "title": "doc_block.txt",
+   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
+   *     "language": "text"
+   *   },
+   *   {
+   *     "title": "output.json",
+   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
+   *     "language": "json"
+   *   }
+   * ]
+   */
+  public getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[] {
+    //
+    // The original regex (without doubling the backslashes) is:
+    //
+    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
+    //
+    // @annotation is the targeted annotation block (e.g., @param).
+    //
+    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?", "g");
+    let matches = docBlock.match(re);
+    let annotationBlocks = [];
+
+    if (matches) {
+      annotationBlocks = matches.map((block) => {
+        // Clean up each line and return an overall clean description
+        let blockInLines = block.split("\n");
+        // Remove the annotation line and get it using the method
+        blockInLines.shift();
+        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
+        let textBlock = blockInLines.join("\n");
+        let description = this.getParagraphs(textBlock);
+
+        return {
+          annotation: annotationLine.line,
+          data_type: annotationLine.data_type,
+          description: description,
+          name: annotationLine.name
+        };
+      });
+    }
+
+    return annotationBlocks;
   }
 
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
@@ -213,51 +277,6 @@ export default class DocBlocksToJson {
       example_code: this.getDocBlockExampleCode(docBlock),
       signature: signature
     };
-  }
-
-  /**
-   * Get the `@annotationname` definitions from the doc block.
-   *
-   * @param string annotation
-   *     The annotation to get in the following format: @annotationname.
-   * @param string docBlock
-   *     The docBlock to get the `@annotationname` definitions from.
-   *
-   * @return any[]
-   *     Returns an array of data related to the specified annotation.
-   */
-  protected getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[] {
-    //
-    // The original regex (without doubling the backslashes) is:
-    //
-    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
-    //
-    // @annotation is the targeted annotation block (e.g., @param).
-    //
-    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?", "g");
-    let matches = docBlock.match(re);
-    let annotationBlocks = [];
-
-    if (matches) {
-      annotationBlocks = matches.map((block) => {
-        // Clean up each line and return an overall clean description
-        let blockInLines = block.split("\n");
-        // Remove the annotation line and get it using the method
-        blockInLines.shift();
-        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
-        let textBlock = blockInLines.join("\n");
-        let description = this.getParagraphs(textBlock);
-
-        return {
-          annotation: annotationLine.line,
-          data_type: annotationLine.data_type,
-          description: description,
-          name: annotationLine.name
-        };
-      });
-    }
-
-    return annotationBlocks;
   }
 
   /**
@@ -381,13 +400,14 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get paragraphs from a text block string.
+   * Get paragraphs from a text block.
    *
    * @param string textBlock
    *     The text block containing the paragraph(s).
    *
    * @return string[]
-   *     Returns an array of strings. Each element in the array is a paragraph.
+   *     Returns an array of strings. Each element in the array is a separate
+   *     paragraph.
    */
   protected getParagraphs(textBlock: string): string[] {
     let textBlockInLines = textBlock.split("\n");
