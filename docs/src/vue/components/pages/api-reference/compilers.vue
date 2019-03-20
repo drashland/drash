@@ -3,8 +3,6 @@ page-api-reference(:namespace="namespace")
 </template>
 
 <script>
-import apiReferenceData from "/src/api_reference.json";
-
 export const resource = {
     paths: ["/api-reference/compilers"],
     meta: {
@@ -15,10 +13,15 @@ export const resource = {
 export default {
     data() {
         return {
-            namespace: apiReferenceData["Drash.Compilers"]
+            namespace: {}
         };
+    },
+    mounted() {
+        axios.get("/public/assets/json/api_reference.json")
+            .then(response => {
+                console.log(response.data);
+                this.namespace = response.data['Drash.Compilers'];
+            });
     }
 }
 </script>
-
-
