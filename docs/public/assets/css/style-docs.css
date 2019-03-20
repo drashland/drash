@@ -228,13 +228,13 @@ ol li ul {
   .c-code-table-of-contents .link {
     color: #007bff; }
 
+.c-code-signature {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 1.0875rem !important;
+  padding: 0.0725rem 0.3625rem !important; }
+
 .c-code-parameter {
   margin-right: 0.725rem; }
-
-.c-code-data-type:after {
-  content: ">"; }
-.c-code-data-type:before {
-  content: "<"; }
 
 .c-code-header {
   background: #ffffff;
@@ -376,6 +376,41 @@ ol li ul {
   content: "<"; }
 .c-misc-data-type:after {
   content: ">"; }
+
+.page--reference p {
+  margin-bottom: 1rem; }
+.page--reference .type-heading {
+  margin-bottom: 2rem;
+  padding: 1rem; }
+  .page--reference .type-heading.--methods {
+    background: #ff7700;
+    color: #efefef; }
+  .page--reference .type-heading.--properties {
+    background: #03a9f4;
+    color: #efefef; }
+.page--reference .card {
+  margin-bottom: 2rem; }
+  .page--reference .card.--method {
+    border-left: 4px solid #ff7700; }
+  .page--reference .card.--property {
+    border-left: 4px solid #03a9f4; }
+.page--reference .card-title {
+  font-size: 1.2rem; }
+.page--reference .tag-row {
+  margin-bottom: 1rem; }
+  .page--reference .tag-row:last-of-type {
+    margin-bottom: 0; }
+.page--reference .tag-row__heading {
+  display: block;
+  margin-bottom: 1rem; }
+.page--reference .tag-row p:last-of-type {
+  margin-bottom: 0; }
+.page--reference .tag-row ul {
+  margin-top: 0; }
+.page--reference .tag-row ul li ul,
+.page--reference .tag-row ul ul {
+  margin-top: 1rem;
+  margin-bottom: 0; }
 
 #resource_reference .c-page-section-heading-block .l-heading {
   word-break: break-all; }

@@ -1,0 +1,50 @@
+.page--reference {
+    p {
+        margin-bottom: 1rem;
+    }
+    .type-heading {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        &.--methods {
+            background: #ff7700;
+            color: #efefef;
+        }
+        &.--properties {
+            background: #03a9f4;
+            color: #efefef;
+        }
+    }
+    .card {
+        margin-bottom: 2rem;
+        &.--method {
+            border-left: 4px solid #ff7700;
+        }
+        &.--property {
+            border-left: 4px solid #03a9f4;
+        }
+    }
+    .card-title {
+        font-size: 1.2rem;
+    }
+    .tag-row {
+        margin-bottom: 1rem;
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+    .tag-row__heading {
+        display: block;
+        margin-bottom: 1rem;
+    }
+    .tag-row p:last-of-type {
+        margin-bottom: 0;
+    }
+    .tag-row ul {
+        margin-top: 0;
+    }
+    .tag-row ul li ul,
+    .tag-row ul ul {
+        margin-top: 1rem;
+        margin-bottom: 0;
+    }
+}

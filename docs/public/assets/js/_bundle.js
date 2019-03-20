@@ -10,6 +10,7 @@ import CodeBlock from "/components/code_block.vue";
 import CodeBlockForReference from "/components/code_block_for_reference.vue";
 import HeadingH2 from "/components/heading_h2.vue";
 import VueAppRoot from "/components/vue_app_root.vue";
+import Page_ApiReference from "/components/page_api_reference.vue";
 
 // Vue - Components - Pages
 import * as AddingContentTypes from "/components/pages/tutorials/adding_content_types.vue";
@@ -17,7 +18,6 @@ import * as CreatingAServer from "/components/pages/tutorials/creating_a_server.
 import * as HandlingContentNegotiation from "/components/pages/tutorials/handling_content_negotiation.vue";
 import * as Introduction from "/components/pages/introduction.vue";
 import * as Logging from "/components/pages/tutorials/logging.vue";
-import * as APIReference from "/components/pages/api_reference.vue";
 import * as APIReference_Compilers from "/components/pages/api-reference/compilers.vue";
 import Error404 from "/components/pages/error_404.vue";
 
@@ -28,7 +28,6 @@ window.markdownIt = new MarkdownIt();
 const routes = [];
 const routeModules = [
   AddingContentTypes,
-  APIReference,
   APIReference_Compilers,
   CreatingAServer,
   HandlingContentNegotiation,
@@ -54,6 +53,7 @@ Vue.use(VueRouter);
 Vue.component("code-block", CodeBlock);
 Vue.component("code-block-for-reference", CodeBlockForReference);
 Vue.component("heading-h2", HeadingH2);
+Vue.component("page-api-reference", Page_ApiReference);
 Vue.filter('markdown-it', function(value) {
   if (value.indexOf("```") != -1) {
     return window.markdownIt.render(value);

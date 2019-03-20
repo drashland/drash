@@ -36,16 +36,16 @@
               "title": "Example Call",
               "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
               "language": "typescript",
-              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\nconst compiler = new Drash.Compilers.DocBlocksToJson();\nconst result = compiler.compile([\"file.ts\"]);\n\nconst encoder = new TextEncoder();\nconst data = encoder.encode(JSON.stringify(result, null, 2));\nDeno.writeFileSync(\"output.json\", data);\n"
+              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\nconst compiler = new Drash.Compilers.DocBlocksToJson();\nconst result = compiler.compile([\"file.ts\"]); // See file.ts example code below\n\nconst encoder = new TextEncoder();\nconst data = encoder.encode(JSON.stringify(result, null, 2));\nDeno.writeFileSync(\"output.json\", data); // See output.json example code below\n"
             },
             {
-              "title": "Example file.ts",
+              "title": "file.ts",
               "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
               "language": "typescript",
               "code": "// namespace Drash.Services\n\n/**\n * @class ClassOne\n * Class one does class one things.\n */\nexport default class ClassOne {\n  /**\n   * Class one property one.\n   *\n   * This is a second paragraph.\n   *\n   * This is a third paragraph.\n   * There is also a sentence below this third paragraph.\n   *\n   * This is a fourth paragraph.\n   *\n   * @property string property_one\n   *\n   * @examplecode [\n   *   {\n   *     \"title\": \"app.ts\",\n   *     \"filepath\": \"/class_one_p_property_one.ts\",\n   *     \"language\": \"typescript\",\n   *     \"line_highlight\": \"8,10\"\n   *   },\n   *   {\n   *     \"title\": \"app.ts\",\n   *     \"filepath\": \"/class_one_p_property_two.ts\",\n   *     \"language\": \"typescript\",\n   *     \"line_highlight\": \"11\"\n   *   }\n   * ]\n   */\n  public property_one: string = \"\";\n\n  /**\n   * Class one method one.\n   *\n   * This is a second paragraph.\n   *\n   * This is a third paragraph.\n   * There is also a sentence below this third paragraph.\n   *\n   * This is a fourth paragraph.\n   *\n   * @param any myObject\n   *     My object.\n   * @param string myString\n   *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n   *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n   *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n   *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n   *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n   *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n   *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n   *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n   *     tortor et sem semper imperdiet in ut libero.\n   *\n   *     This is a second paragraph.\n   *\n   *     This is a third paragraph.\n   *\n   * @return any|undefined\n   *     Returns any when something cool happens.\n   *\n   *     Returns undefined when uhhhhhhhhhh k.\n   *\n   * @return string\n   *     Returns a string when the other two don't get got returRrRrRrned.\n   *\n   * @throws SomeException\n   *     Thrown when something happens.\n   *\n   *     Thrown when something else happens too.\n   * @throws SomeOtherException\n   *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n   *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n   *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n   *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n   *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n   *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n   *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n   *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n   *     tortor et sem semper imperdiet in ut libero.\n   *\n   *     This is a second paragraph.\n   */\n  public classOneMethodOne(myObject: any, myString: string) {}\n}\n"
             },
             {
-              "title": "Example Output",
+              "title": "output.json",
               "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
               "language": "json",
               "code": "{\n  \"Drash.Services\": {\n    \"ClassOne\": {\n      \"properties\": [\n        {\n          \"access_modifier\": \"public\",\n          \"annotation\": \"@property string property_one\",\n          \"data_type\": \"string\",\n          \"description\": [\n            \"Class one property one.\",\n            \"This is a second paragraph.\",\n            \"This is a third paragraph. There is also a sentence below this third paragraph.\",\n            \"This is a fourth paragraph.\"\n          ],\n          \"example_code\": [\n            {\n              \"title\": \"app.ts\",\n              \"filepath\": \"/class_one_p_property_one.ts\",\n              \"language\": \"typescript\",\n              \"line_highlight\": \"8,10\",\n              \"code\": \"import Drash from \\\"https://deno.land/x/drash/mod.ts\\\";\\n\\n// This is just an example file for testing... nothing else to see here.\\n\"\n            },\n            {\n              \"title\": \"app.ts\",\n              \"filepath\": \"/class_one_p_property_two.ts\",\n              \"language\": \"typescript\",\n              \"line_highlight\": \"11\",\n              \"code\": \"// comment\\n\"\n            }\n          ],\n          \"name\": \"property_one\",\n          \"signature\": \"public property_one: string = \\\"\\\"\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"access_modifier\": \"public\",\n          \"description\": [\n            \"Class one method one.\",\n            \"This is a second paragraph.\",\n            \"This is a third paragraph. There is also a sentence below this third paragraph.\",\n            \"This is a fourth paragraph.\"\n          ],\n          \"example_code\": [],\n          \"name\": \"classOneMethodOne\",\n          \"params\": [\n            {\n              \"annotation\": \"@param any myObject\",\n              \"data_type\": \"any\",\n              \"description\": [\n                \"My object.\"\n              ],\n              \"name\": \"myObject\"\n            },\n            {\n              \"annotation\": \"@param string myString\",\n              \"data_type\": \"string\",\n              \"description\": [\n                \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n                \"This is a second paragraph.\",\n                \"This is a third paragraph.\"\n              ],\n              \"name\": \"myString\"\n            }\n          ],\n          \"returns\": [\n            {\n              \"annotation\": \"@return any|undefined\",\n              \"data_type\": \"any|undefined\",\n              \"description\": [\n                \"Returns any when something cool happens.\",\n                \"Returns undefined when uhhhhhhhhhh k.\"\n              ],\n              \"name\": null\n            },\n            {\n              \"annotation\": \"@return string\",\n              \"data_type\": \"string\",\n              \"description\": [\n                \"Returns a string when the other two don't get got returRrRrRrned.\"\n              ],\n              \"name\": null\n            }\n          ],\n          \"signature\": \"public classOneMethodOne(myObject: any, myString: string)\",\n          \"throws\": [\n            {\n              \"annotation\": \"@throws SomeException\",\n              \"data_type\": \"SomeException\",\n              \"description\": [\n                \"Thrown when something happens.\",\n                \"Thrown when something else happens too.\"\n              ],\n              \"name\": null\n            },\n            {\n              \"annotation\": \"@throws SomeOtherException\",\n              \"data_type\": \"SomeOtherException\",\n              \"description\": [\n                \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n                \"This is a second paragraph.\"\n              ],\n              \"name\": null\n            }\n          ]\n        }\n      ]\n    }\n  }\n}\n"
@@ -69,6 +69,63 @@
               "data_type": "any",
               "description": [
                 "Returns the JSON array."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Get the `@annotationname` definitions from the doc block."
+          ],
+          "example_code": [
+            {
+              "title": "Example Call",
+              "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
+              "language": "typescript",
+              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\nconst decoder = new TextDecoder();\nconst fileContentsRaw = Deno.readFileSync(\"doc_block.txt\");  // See doc_block.txt example code below\nconst docBlock = decoder.decode(fileContentsRaw);\n\nconst compiler = new Drash.Compilers.DocBlocksToJson();\nconst results = {\n  params: compiler.getDocBlockAnnotationBlocks(\"@param\", docBlock);\n  returns: compiler.getDocBlockAnnotationBlocks(\"@returns\", docBlock);\n  throws: compiler.getDocBlockAnnotationBlocks(\"@throws\", docBlock);\n};\n\nconst encoder = new TextEncoder();\nconst data = encoder.encode(JSON.stringify(results, null, 2));\nDeno.writeFileSync(\"output.json\", data); // See output.json example code below\n"
+            },
+            {
+              "title": "doc_block.txt",
+              "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
+              "language": "text",
+              "code": "/**\n * Class one method one.\n *\n * This is a second paragraph.\n *\n * This is a third paragraph.\n * There is also a sentence below this third paragraph.\n *\n * This is a fourth paragraph.\n *\n * @param any myObject\n *     My object.\n * @param string myString\n *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n *     tortor et sem semper imperdiet in ut libero.\n *\n *     This is a second paragraph.\n *\n *     This is a third paragraph.\n *\n * @return any|undefined\n *     Returns any when something cool happens.\n *\n *     Returns undefined when uhhhhhhhhhh k.\n *\n * @return string\n *     Returns a string when the other two don't get got returRrRrRrned.\n *\n * @throws SomeException\n *     Thrown when something happens.\n *\n *     Thrown when something else happens too.\n * @throws SomeOtherException\n *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n *     tortor et sem semper imperdiet in ut libero.\n *\n *     This is a second paragraph.\n */\n"
+            },
+            {
+              "title": "output.json",
+              "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
+              "language": "json",
+              "code": "{\n  \"params\": [\n    {\n      \"annotation\": \"@param any myObject\",\n      \"data_type\": \"any\",\n      \"description\": [\n        \"My object.\"\n      ],\n      \"name\": \"myObject\"\n    },\n    {\n      \"annotation\": \"@param string myString\",\n      \"data_type\": \"string\",\n      \"description\": [\n        \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n        \"This is a second paragraph.\",\n        \"This is a third paragraph.\"\n      ],\n      \"name\": \"myString\"\n    }\n  ],\n  \"returns\": [\n    {\n      \"annotation\": \"@return any|undefined\",\n      \"data_type\": \"any|undefined\",\n      \"description\": [\n        \"Returns any when something cool happens.\",\n        \"Returns undefined when uhhhhhhhhhh k.\"\n      ],\n      \"name\": null\n    },\n    {\n      \"annotation\": \"@return string\",\n      \"data_type\": \"string\",\n      \"description\": [\n        \"Returns a string when the other two don't get got returRrRrRrned.\"\n      ],\n      \"name\": null\n    }\n  ],\n  \"throws\": [\n    {\n      \"annotation\": \"@throws SomeException\",\n      \"data_type\": \"SomeException\",\n      \"description\": [\n        \"Thrown when something happens.\",\n        \"Thrown when something else happens too.\"\n      ],\n      \"name\": null\n    },\n    {\n      \"annotation\": \"@throws SomeOtherException\",\n      \"data_type\": \"SomeOtherException\",\n      \"description\": [\n        \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n        \"This is a second paragraph.\"\n      ],\n      \"name\": null\n    }\n  ]\n}\n"
+            }
+          ],
+          "signature": "public getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[]",
+          "name": "getDocBlockAnnotationBlocks",
+          "params": [
+            {
+              "annotation": "@param string annotation",
+              "data_type": "string",
+              "description": [
+                "The annotation to get in the following format: `@annotationname`."
+              ],
+              "name": "annotation"
+            },
+            {
+              "annotation": "@param string docBlock",
+              "data_type": "string",
+              "description": [
+                "The docBlock to get the `@annotationname` definitions from."
+              ],
+              "name": "docBlock"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return any[]",
+              "data_type": "any[]",
+              "description": [
+                "Returns an array of data related to the specified annotation."
               ],
               "name": null
             }
@@ -159,44 +216,6 @@
               "data_type": "any",
               "description": [
                 "Returns an access modifier, description, example code, and signature."
-              ],
-              "name": null
-            }
-          ],
-          "throws": []
-        },
-        {
-          "access_modifier": "protected",
-          "description": [
-            "Get the `@annotationname` definitions from the doc block."
-          ],
-          "example_code": [],
-          "signature": "protected getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[]",
-          "name": "getDocBlockAnnotationBlocks",
-          "params": [
-            {
-              "annotation": "@param string annotation",
-              "data_type": "string",
-              "description": [
-                "The annotation to get in the following format: @annotationname."
-              ],
-              "name": "annotation"
-            },
-            {
-              "annotation": "@param string docBlock",
-              "data_type": "string",
-              "description": [
-                "The docBlock to get the `@annotationname` definitions from."
-              ],
-              "name": "docBlock"
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of data related to the specified annotation."
               ],
               "name": null
             }
