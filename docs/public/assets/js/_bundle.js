@@ -19,6 +19,7 @@ import * as HandlingContentNegotiation from "/components/pages/tutorials/handlin
 import * as Introduction from "/components/pages/introduction.vue";
 import * as Logging from "/components/pages/tutorials/logging.vue";
 import * as APIReference_Compilers from "/components/pages/api-reference/compilers.vue";
+import * as APIReference_Exceptions from "/components/pages/api-reference/exceptions.vue";
 import Error404 from "/components/pages/error_404.vue";
 
 // Vendor
@@ -29,6 +30,7 @@ const routes = [];
 const routeModules = [
   AddingContentTypes,
   APIReference_Compilers,
+  APIReference_Exceptions,
   CreatingAServer,
   HandlingContentNegotiation,
   Introduction,
