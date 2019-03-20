@@ -78,7 +78,7 @@
         {
           "access_modifier": "public",
           "description": [
-            "Get the `@annotationname` definitions from the doc block."
+            "Get the specified `@annotationname` definitions from the specified doc block."
           ],
           "example_code": [
             {
@@ -323,7 +323,7 @@
         {
           "access_modifier": "protected",
           "description": [
-            "Get paragraphs from a text block string."
+            "Get paragraphs from a text block."
           ],
           "example_code": [],
           "signature": "protected getParagraphs(textBlock: string): string[]",
@@ -343,7 +343,7 @@
               "annotation": "@return string[]",
               "data_type": "string[]",
               "description": [
-                "Returns an array of strings. Each element in the array is a paragraph."
+                "Returns an array of strings. Each element in the array is a separate paragraph."
               ],
               "name": null
             }

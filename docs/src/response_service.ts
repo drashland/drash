@@ -14,6 +14,7 @@ export function getAppData() {
   return {
     // The below is transferred to index.ejs
     scripts: [
+      "https://unpkg.com/axios/dist/axios.min.js",
       "/public/assets/vendor/prismjs/prism.js",
       "/public/assets/vendor/jquery-3.3.1/jquery.min.js",
       "/public/assets/vendor/bootstrap-4.1.3-dist/js/bootstrap.min.js"

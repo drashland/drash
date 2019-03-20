@@ -17,4 +17,4 @@ let compiled = compiler.compile([
 
 const encoder = new TextEncoder();
 const data = encoder.encode(JSON.stringify(compiled, null, 2));
-Deno.writeFileSync(`${drashDirRoot}/docs/src/api_reference.json`, data);
+Deno.writeFileSync(`${drashDirRoot}/docs/public/assets/json/api_reference.json`, data);
