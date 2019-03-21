@@ -12,7 +12,7 @@ let server = new Drash.Http.Server({
   logger: new Drash.Loggers.FileLogger({
     enabled: true,
     level: "info",
-    file: "./.tmp/log.log"
+    file: "./tmp/log.log"
   })
 });
 
