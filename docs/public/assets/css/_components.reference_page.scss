@@ -2,16 +2,20 @@
     p {
         margin-bottom: 1rem;
     }
+    .heading-class-name {
+        background: #000;
+        color: #efefef;
+        font-family: $g-font-family-code;
+        padding: rem(1);
+    }
     .type-heading {
         margin-bottom: 2rem;
         padding: 1rem;
         &.--methods {
-            background: #ff7700;
-            color: #efefef;
+            border-bottom: 4px solid #ff7700;
         }
         &.--properties {
-            background: #03a9f4;
-            color: #efefef;
+            border-bottom: 4px solid #03a9f4;
         }
     }
     .card {
