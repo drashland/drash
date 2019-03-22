@@ -16,6 +16,14 @@ import Drash from "../../mod.ts";
 /**
  * @class DocBlocksToJson
  * This compiler reads doc blocks and converts them to parsable JSON.
+ *
+ * @examplecode [
+ *   {
+ *     "title": "Example Call",
+ *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
+ *     "language": "typescript"
+ *   }
+ * ]
  */
 export default class DocBlocksToJson {
 
@@ -103,11 +111,18 @@ export default class DocBlocksToJson {
 
       let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
       let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
+      let classDocBlock = fileContents.match(/@class.+((\n .*)*)?\*\//);
+
+      let classDocBlockResults = this.getClassDocBlock(classDocBlock[0] ? classDocBlock[0] : "");
 
       this.parsed[currentNamespace][className] = {
+        annotation: classDocBlockResults.annotation,
+        description: classDocBlockResults.description,
+        example_code: classDocBlockResults.example_code,
         properties: this.getClassProperties(propertyDocBlocks),
         methods: this.getClassMethods(methodDocBlocks),
       };
+      
     });
 
     return this.parsed;
@@ -223,6 +238,37 @@ export default class DocBlocksToJson {
   }
 
   /**
+   * Parse the specified class doc block.
+   *
+   * @param string[] docBlocks
+   *     The array of doc blocks to parse.
+   *
+   * @return any[]
+   *     Returns an array of property-related data.
+   */
+  protected getClassDocBlock(docBlock: string): any {
+    let classDocBlock = {
+      annotation: null,
+      description: [],
+      example_code: []
+    };
+
+    if (!docBlock || docBlock.trim() == "") {
+      return classDocBlock;
+    }
+
+    let docBlockInLines = docBlock.split("\n");
+    let annotation = docBlockInLines.shift();
+    let description = docBlockInLines.join("\n");
+
+    classDocBlock.annotation = annotation;
+    classDocBlock.description = this.getDocBlockDescription(description);
+    classDocBlock.example_code = this.getDocBlockExampleCode(description);
+
+    return classDocBlock;
+  }
+
+  /**
    * Parse the specified array of property doc blocks and return an array of
    * property-related data.
    *
@@ -242,6 +288,7 @@ export default class DocBlocksToJson {
     docBlocks.forEach((docBlock) => {
       let commonData = this.getClassCommonData(docBlock);
       commonData.signature = commonData.signature.replace(";", "");
+      // TODO(crookse) Is there a bug here because @property is hard-coded?
       let annotation = this.getDocBlockAnnotationLine("@property", docBlock);
 
       properties.push(Object.assign(commonData, {
@@ -357,7 +404,7 @@ export default class DocBlocksToJson {
    *     Returns an array of the example code.
    */
   protected getDocBlockExampleCode(docBlock: string): any[] {
-    let reExampleCode = new RegExp(/\* @examplecode.+\[((\n +\\* +).+)*(?:(\n +\\*\n +\\* + .*)+)?\* ]/, "g");
+    let reExampleCode = new RegExp(/\* @examplecode.+\[((\n +?\\* +).+)*(?:(\n +\\*\n +\\* + .*)+)?\* ]/, "g");
     let match = docBlock.match(reExampleCode);
     let exampleCode = [];
 

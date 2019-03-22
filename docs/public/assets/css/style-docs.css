@@ -376,15 +376,18 @@ ol li ul {
 
 .page--reference p {
   margin-bottom: 1rem; }
+.page--reference .heading-class-name {
+  background: #000;
+  color: #efefef;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  padding: 0.725rem; }
 .page--reference .type-heading {
   margin-bottom: 2rem;
   padding: 1rem; }
   .page--reference .type-heading.--methods {
-    background: #ff7700;
-    color: #efefef; }
+    border-bottom: 4px solid #ff7700; }
   .page--reference .type-heading.--properties {
-    background: #03a9f4;
-    color: #efefef; }
+    border-bottom: 4px solid #03a9f4; }
 .page--reference .card {
   margin-bottom: 2rem; }
   .page--reference .card.--method {

@@ -1,6 +1,11 @@
 {
   "Drash.Compilers": {
     "DocBlocksToJson": {
+      "annotation": "@class DocBlocksToJson",
+      "description": [
+        "This compiler reads doc blocks and converts them to parsable JSON."
+      ],
+      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
@@ -156,6 +161,36 @@
               "data_type": "any[]",
               "description": [
                 "Returns an array of method-related data."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Parse the specified class doc block."
+          ],
+          "example_code": [],
+          "signature": "protected getClassDocBlock(docBlock: string): any",
+          "name": "getClassDocBlock",
+          "params": [
+            {
+              "annotation": "@param string[] docBlocks",
+              "data_type": "string[]",
+              "description": [
+                "The array of doc blocks to parse."
+              ],
+              "name": "docBlocks"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return any[]",
+              "data_type": "any[]",
+              "description": [
+                "Returns an array of property-related data."
               ],
               "name": null
             }
@@ -355,6 +390,11 @@
   },
   "Drash.Exceptions": {
     "HttpException": {
+      "annotation": "@class HttpException",
+      "description": [
+        "This class helps you throw HTTP errors in a semantic way."
+      ],
+      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -391,6 +431,11 @@
   },
   "Drash.Http": {
     "Request": {
+      "annotation": "@class Request",
+      "description": [
+        "This is a wrapper class for ServerRequest. It just adds more properties to the request object--allowing Drash to work with a more flexible request object."
+      ],
+      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -415,6 +460,11 @@
       ]
     },
     "Resource": {
+      "annotation": "@class Resource",
+      "description": [
+        "This is the base resource class for all resources. All resource classes must be derived from this class."
+      ],
+      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -439,6 +489,11 @@
       ]
     },
     "Response": {
+      "annotation": "@class Response",
+      "description": [
+        "Response handles sending a response to the client making the request."
+      ],
+      "example_code": [],
       "properties": [
         {
           "access_modifier": "public",
@@ -634,6 +689,11 @@
       ]
     },
     "Server": {
+      "annotation": "@class Server",
+      "description": [
+        "Server handles the entire request-resource-response lifecycle. It is in charge of handling HTTP requests to resources, static paths, sending appropriate responses, and handling any errors that bubble up within the request-resource-response lifecycle."
+      ],
+      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
@@ -904,6 +964,11 @@
   },
   "Drash.Loggers": {
     "Logger": {
+      "annotation": "@class Logger",
+      "description": [
+        "This logger is the base logger class for all logger classes."
+      ],
+      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
@@ -913,10 +978,9 @@
           "example_code": [
             {
               "title": "Logger Configs",
-              "filepath": "/api-reference/http/response/p_body.ts",
-              "language": "typescript",
-              "line_highlight": "6",
-              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public GET() {\n    this.response.body = \"Ok... you got me.\";\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n"
+              "filepath": "/api-reference/loggers/logger_p_configs.ts",
+              "language": "text",
+              "code": ""
             }
           ],
           "signature": "protected configs: any",
@@ -1131,6 +1195,11 @@
       ]
     },
     "ConsoleLogger": {
+      "annotation": "@class ConsoleLogger",
+      "description": [
+        "This logger allows you to log messages to the console."
+      ],
+      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -1167,6 +1236,11 @@
       ]
     },
     "FileLogger": {
+      "annotation": "@class FileLogger",
+      "description": [
+        "This logger allows you to log messages to a file."
+      ],
+      "example_code": [],
       "properties": [],
       "methods": []
     }

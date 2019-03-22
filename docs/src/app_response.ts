@@ -6,22 +6,22 @@ class AppResponse extends Drash.Http.Response {
    * Send a response to the client.
    */
   public async send(): Promise<any> {
+    const conf = Drash.getEnvVar("DRASH_CONF").toArray().value;
     let body;
 
     switch (this.headers.get("Content-Type")) {
       // Handle HTML
       case "text/html":
+        let indexEjsFile = `${conf.paths.docs_root}/src/templates/index.ejs`;
         Drash.Vendor.ConsoleLogger.debug("Rendering HTML response.");
         try {
-          const conf = Drash.getEnvVar("DRASH_CONF").toArray().value;
-          body = await ResponseService.getAppDataInHtml(
-            `${conf.paths.docs_root}/src/templates/index.ejs`
-          );
+          body = await ResponseService.getAppDataInHtml(indexEjsFile);
         } catch (error) {
-          Drash.Vendor.ConsoleLogger.debug("WTF.");
+          Drash.Vendor.ConsoleLogger.debug("WTF... tried rendering an HTML response, but I don't even know.");
+          Drash.Vendor.ConsoleLogger.debug(`Attempted rendering file: ${indexEjsFile}`);
           Drash.Vendor.ConsoleLogger.debug("Error below:");
           console.log(error);
-          body = "mmmmm.... you/something fkd up.";
+          body = "<img src='/public/assets/img/meme-congrats-you-fucked-up.jpg'>";
         }
         break;
       // Handle JSON
