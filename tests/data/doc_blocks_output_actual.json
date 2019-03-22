@@ -2,9 +2,7 @@
   "Drash.Services": {
     "ClassOne": {
       "annotation": "@class ClassOne",
-      "description": [
-        "Class one does class one things."
-      ],
+      "description": ["Class one does class one things."],
       "example_code": [],
       "properties": [
         {
@@ -53,9 +51,7 @@
             {
               "annotation": "@param any myObject",
               "data_type": "any",
-              "description": [
-                "My object."
-              ],
+              "description": ["My object."],
               "name": "myObject"
             },
             {

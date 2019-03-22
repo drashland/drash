@@ -17,7 +17,11 @@ members.test(function DocBlocksToJson_compile_params() {
 
   const encoder = new TextEncoder();
   const data = encoder.encode(JSON.stringify(actual, null, 2));
-  Deno.writeFileSync(members.Drash.getEnvVar("DRASH_DIR_ROOT").value + "/tests/data/doc_blocks_output_actual.json", data);
+  Deno.writeFileSync(
+    members.Drash.getEnvVar("DRASH_DIR_ROOT").value +
+      "/tests/data/doc_blocks_output_actual.json",
+    data
+  );
 
   members.assert.equal(expected, actual);
 });

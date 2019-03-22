@@ -61,7 +61,7 @@ function Drash(): any {
     core_logger: new CoreLogger({
       enabled: Deno.env().DRASH_CORE_LOGGER_ENABLED === "true",
       level: Deno.env().DRASH_CORE_LOGGER_LEVEL,
-      tag_string: "{level} |",
+      tag_string: "{level} |"
     }),
 
     /**
