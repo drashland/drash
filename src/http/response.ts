@@ -157,14 +157,13 @@ export default class Response {
    * @return any
    */
   public sendStatic(): any {
-    const file = this.request.url.split("?")[0];
-    const decoder = new TextDecoder("utf-8");
-    const contents = decoder.decode(Deno.readFileSync(`./${file}`));
+    const file = this.request.url_path;
+    const fullFilepath = `/var/www/deno-drash/docs/${file}`;
 
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(contents)
+      body: Deno.readFileSync(fullFilepath)
     };
 
     this.request.respond(output);
