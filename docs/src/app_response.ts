@@ -17,9 +17,10 @@ class AppResponse extends Drash.Http.Response {
         try {
           body = await ResponseService.getAppDataInHtml(indexEjsFile);
         } catch (error) {
-          Drash.Vendor.ConsoleLogger.debug("WTF... tried rendering an HTML response, but I don't even know.");
-          Drash.Vendor.ConsoleLogger.debug(`Attempted rendering file: ${indexEjsFile}`);
-          Drash.Vendor.ConsoleLogger.debug("Error below:");
+          Drash.Vendor.ConsoleLogger.error("WTF... tried rendering an HTML response, but I don't even know.");
+          Drash.Vendor.ConsoleLogger.error(`Attempted rendering file: ${indexEjsFile}`);
+          Drash.Vendor.ConsoleLogger.error("Error below:");
+          console.log(error);
           let error500template = `<!DOCTYPE html>
 <html class="w-full h-full">
   <head>

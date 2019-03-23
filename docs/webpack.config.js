@@ -2,6 +2,45 @@ const webpack = require("webpack");
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
+
+const conf = {
+  latest_release: "v0.5.0",
+
+  development: {
+    module_name: "Drash",
+    module_namespace: "Drash",
+    base_url: "",
+    paths: {
+      docs_root: "/var/www/deno-drash/docs"
+    },
+    webpack: {
+      mode: "development",
+      entry: "public/assets/js/_bundle.js",
+      output: {
+        path: "public/assets/js/",
+        filename: "bundle.js"
+      }
+    }
+  },
+
+  production: {
+    module_name: "Drash",
+    module_namespace: "Drash",
+    base_url: "/deno-drash",
+    paths: {
+      docs_root: "/var/www/deno-drash/docs"
+    },
+    webpack: {
+      mode: "production",
+      entry: "public/assets/js/_bundle.js",
+      output: {
+        path: "public/assets/js/",
+        filename: "bundle.js"
+      }
+    }
+  }
+}
+
 module.exports = envVars => {
   const CONF_FILE = require(path.resolve(__dirname, "conf/conf.json"));
   let conf = CONF_FILE[envVars.environment];

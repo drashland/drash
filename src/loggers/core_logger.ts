@@ -1,4 +1,5 @@
 import Logger from "./logger.ts";
+import {colorize} from "../util.ts";
 
 /**
  * @class CoreLogger
@@ -29,6 +30,10 @@ export default class CoreLogger extends Logger {
       return message;
     }
 
-    console.log(message);
+    let colorizeOpts = {
+      color: "yellow"
+    };
+
+    console.log(colorize(message, colorizeOpts));
   }
 }

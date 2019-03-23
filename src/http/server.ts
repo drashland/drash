@@ -280,7 +280,7 @@ export default class Server {
    *     configs.
    */
   public async run(): Promise<void> {
-    console.log(`Deno server started at ${this.configs.address}.`);
+    console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);

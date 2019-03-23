@@ -2,5 +2,9 @@
 
 (
   deno_version=$(deno --version)
-  webpack --env.environment=development --env.deno_version="$deno_version" --hide-modules $@
+  webpack \
+    --env.environment="development" \
+    --env.deno_version="$deno_version" \
+    --hide-modules \
+    $@
 )

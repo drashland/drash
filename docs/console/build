@@ -3,14 +3,22 @@
 (
   export DRASH_MODE="production"
 
-  echo -e "\nDrash mode is: $DRASH_MODE\n"
-
-  echo "Building new webpack bundle with prod configs..."
   deno_version=$(deno --version)
-  webpack --env.environment=production --env.deno_version="$deno_version" --hide-modules
+
+  echo -e "\nDrash mode is: $DRASH_MODE\n"
+  echo "Building new webpack bundle with prod configs..."
+
+  webpack \
+    --env.environment="production" \
+    --env.deno_version="$deno_version" \
+    --hide-modules
 
   echo "Running build.ts..."
-  deno $DRASH_DIR_ROOT/docs/console/build.ts --allow-env --allow-read --allow-write
+
+  deno $DRASH_DIR_ROOT/docs/console/build.ts \
+    --allow-env \
+    --allow-read \
+    --allow-write
 
   echo "Done building."
 )
