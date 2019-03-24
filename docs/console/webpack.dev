@@ -2,9 +2,12 @@
 
 (
   deno_version=$(deno --version)
+  export DRASH_DOCS_BASE_URL=""
+
   webpack \
     --env.environment="development" \
     --env.deno_version="$deno_version" \
+    --env.drash_base_url="$DRASH_DOCS_BASE_URL" \
     --hide-modules \
     $@
 )

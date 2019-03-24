@@ -1,9 +1,5 @@
 import Drash from "../mod.ts";
 
-import CONF_FILE from "./conf/conf.json";
-let conf = CONF_FILE[Drash.getEnvVar("DRASH_MODE").value];
-Drash.setEnvVar("DRASH_CONF", JSON.stringify(conf));
-
 // Add a global console logger because server logging when needed is cool
 Drash.addMember(
   "ConsoleLogger",
@@ -20,5 +16,3 @@ Drash.addMember(
 );
 
 export default Drash;
-
-export { conf };

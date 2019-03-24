@@ -1,8 +1,6 @@
 #!/bin/bash
 
 (
-  export DRASH_MODE="development"
-
   echo -e "Don't forget to run the following:"
   echo -e "    \`npm run webpack-dev-watch\`"
   echo -e "    \`npm run watchmedo\`"

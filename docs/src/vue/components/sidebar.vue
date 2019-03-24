@@ -1,17 +1,17 @@
 <template lang="pug">
 div.c-sidebar
-    div(v-if="$conf.webpack.mode != 'production'")
+    div(v-if="$conf.webpack_mode != 'production'")
         p.l-environment-text
-            span.text ENV: {{ $conf.webpack.mode }}
+            span.text ENV: {{ $conf.webpack_mode }}
     div.c-sidebar__header
         div.row.align-items-center.text-align--center
             div.col
                 h1.module-name(style="margin-top: 2rem;")
                     a(:href="$conf.base_url + '/#/'") Drash
                 p
-                    img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest")
+                    img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="90" height="20")
                     | &nbsp;
-                    img(alt="Travis CI Build" :src="'https://travis-ci.org/crookse/deno-drash.svg?branch=' + $conf.latest_release")
+                    img(alt="Travis CI Build" :src="'https://travis-ci.org/crookse/deno-drash.svg?branch=' + $conf.latest_release" width="90" height="20")
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction

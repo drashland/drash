@@ -6,13 +6,12 @@ class AppResponse extends Drash.Http.Response {
    * Send a response to the client.
    */
   public async send(): Promise<any> {
-    const conf = Drash.getEnvVar("DRASH_CONF").toArray().value;
     let body;
 
     switch (this.headers.get("Content-Type")) {
       // Handle HTML
       case "text/html":
-        let indexEjsFile = `${conf.paths.docs_root}/src/templates/index.ejs`;
+        let indexEjsFile = `${Deno.env().DRASH_DIR_ROOT}/docs/src/templates/index.ejs`;
         Drash.Vendor.ConsoleLogger.debug("Rendering HTML response.");
         try {
           body = await ResponseService.getAppDataInHtml(indexEjsFile);
