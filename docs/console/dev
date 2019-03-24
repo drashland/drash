@@ -3,9 +3,11 @@
 (
   npm run dev-docs
   watchmedo shell-command \
-    --command="npm run dev-docs -- restart" \
+    --command='npm run dev-docs -- restart' \
     --recursive \
     --drop \
     --ignore-directories \
+    --patterns="*.ts;*.json;$DRASH_DIR_ROOT/docs/console/*" \
+    --ignore-pattern="*/.#*.ts;*.swp" \
     $DRASH_DIR_ROOT
 )
