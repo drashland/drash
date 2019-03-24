@@ -3,7 +3,8 @@ div.page.page--reference
     div.c-page__header
         div.row
             div.col
-                h1.c-heading.c-heading--style-2 {{ data.class.fully_qualified_name }}
+                h1.c-heading.c-heading--style-2 API Reference
+                h2 {{ data.class.fully_qualified_name }}
     div.c-page__body
         hr
         div.row
