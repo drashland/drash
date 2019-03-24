@@ -16,7 +16,6 @@ export default class CoreLogger extends Logger {
    */
   constructor(configs) {
     super(configs);
-    super.type = Logger.TYPE_CONSOLE;
   }
 
   /**
