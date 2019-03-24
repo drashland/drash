@@ -1,6 +1,8 @@
 {
   "Drash.Compilers": {
     "DocBlocksToJson": {
+      "fully_qualified_name": "Drash.Compilers.DocBlocksToJson",
+      "name": "DocBlocksToJson",
       "annotation": "@class DocBlocksToJson",
       "description": [
         "This compiler reads doc blocks and converts them to parsable JSON."
@@ -390,6 +392,8 @@
   },
   "Drash.Exceptions": {
     "HttpException": {
+      "fully_qualified_name": "Drash.Exceptions.HttpException",
+      "name": "HttpException",
       "annotation": "@class HttpException",
       "description": [
         "This class helps you throw HTTP errors in a semantic way."
@@ -431,6 +435,8 @@
   },
   "Drash.Http": {
     "Request": {
+      "fully_qualified_name": "Drash.Http.Request",
+      "name": "Request",
       "annotation": "@class Request",
       "description": [
         "This is a wrapper class for ServerRequest. It just adds more properties to the request object--allowing Drash to work with a more flexible request object."
@@ -460,6 +466,8 @@
       ]
     },
     "Resource": {
+      "fully_qualified_name": "Drash.Http.Resource",
+      "name": "Resource",
       "annotation": "@class Resource",
       "description": [
         "This is the base resource class for all resources. All resource classes must be derived from this class."
@@ -489,6 +497,8 @@
       ]
     },
     "Response": {
+      "fully_qualified_name": "Drash.Http.Response",
+      "name": "Response",
       "annotation": "@class Response",
       "description": [
         "Response handles sending a response to the client making the request."
@@ -689,6 +699,8 @@
       ]
     },
     "Server": {
+      "fully_qualified_name": "Drash.Http.Server",
+      "name": "Server",
       "annotation": "@class Server",
       "description": [
         "Server handles the entire request-resource-response lifecycle. It is in charge of handling HTTP requests to resources, static paths, sending appropriate responses, and handling any errors that bubble up within the request-resource-response lifecycle."
@@ -964,6 +976,8 @@
   },
   "Drash.Loggers": {
     "Logger": {
+      "fully_qualified_name": "Drash.Loggers.Logger",
+      "name": "Logger",
       "annotation": "@class Logger",
       "description": [
         "This logger is the base logger class for all logger classes."
@@ -1195,6 +1209,8 @@
       ]
     },
     "ConsoleLogger": {
+      "fully_qualified_name": "Drash.Loggers.ConsoleLogger",
+      "name": "ConsoleLogger",
       "annotation": "@class ConsoleLogger",
       "description": [
         "This logger allows you to log messages to the console."
@@ -1236,6 +1252,8 @@
       ]
     },
     "FileLogger": {
+      "fully_qualified_name": "Drash.Loggers.FileLogger",
+      "name": "FileLogger",
       "annotation": "@class FileLogger",
       "description": [
         "This logger allows you to log messages to a file."

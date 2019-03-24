@@ -64,7 +64,7 @@ Vue.filter('markdown-it', function(value) {
   }
   return window.markdownIt.renderInline(value);
 });
-Vue.prototype.$app_data = window.app_data;
+Vue.prototype.$app_data = window.app_data; // The `app_data` variable comes from response_service.ts
 Vue.prototype.$conf = conf;
 Vue.prototype.$store = window.app_data.store;
 

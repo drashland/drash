@@ -1,5 +1,6 @@
 import Drash from "../bootstrap.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
+const decoder = new TextDecoder();
 
 // FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////
 
@@ -127,8 +128,13 @@ export function getAppData() {
             )
           } // close creating_a_server
         }
+      },
+      store: {
+        page_data: {
+          api_reference: getPageDataApiReference()
+        }
       }
-    })
+    }) // close app_data
   };
 }
 
@@ -146,7 +152,6 @@ function code(file: string, filenameOverride?: string) {
   let fileSplit = file.split("/");
   let filename = fileSplit[fileSplit.length - 1];
 
-  const decoder = new TextDecoder("utf-8");
   let contents;
 
   try {
@@ -160,4 +165,15 @@ function code(file: string, filenameOverride?: string) {
     file_extension: fileExtension,
     code: contents
   };
+}
+
+function getPageDataApiReference() {
+  let contents = "";
+  try {
+    contents = decoder.decode(Deno.readFileSync(`./public/assets/json/api_reference.json`));
+  } catch (error) {
+    Drash.core_logger.error(error);
+  }
+
+  return JSON.parse(contents);
 }

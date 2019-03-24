@@ -12,19 +12,25 @@
         margin-bottom: 2rem;
         padding: 1rem;
         &.--methods {
-            border-bottom: 4px solid #ff7700;
+            // border-bottom: 4px solid #ff7700;
+            color: #efefef;
+            background: #ff7700;
+            padding: 0.5rem 1rem;
         }
         &.--properties {
-            border-bottom: 4px solid #03a9f4;
+            color: #efefef;
+            background: #03a9f4;
+            padding: 0.5rem 1rem;
+            // border-bottom: 4px solid #03a9f4;
         }
     }
     .card {
         margin-bottom: 2rem;
         &.--method {
-            border-left: 4px solid #ff7700;
+            border-left: 10px solid #ff7700;
         }
         &.--property {
-            border-left: 4px solid #03a9f4;
+            border-left: 10px solid #03a9f4;
         }
     }
     .card-title {

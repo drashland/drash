@@ -116,13 +116,14 @@ export default class DocBlocksToJson {
       let classDocBlockResults = this.getClassDocBlock(classDocBlock[0] ? classDocBlock[0] : "");
 
       this.parsed[currentNamespace][className] = {
+        fully_qualified_name: currentNamespace + "." + className,
+        name: className,
         annotation: classDocBlockResults.annotation,
         description: classDocBlockResults.description,
         example_code: classDocBlockResults.example_code,
         properties: this.getClassProperties(propertyDocBlocks),
         methods: this.getClassMethods(methodDocBlocks),
       };
-      
     });
 
     return this.parsed;

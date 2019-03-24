@@ -3,16 +3,15 @@ div.page.page--reference
     div.c-page__header
         div.row
             div.col
-                h1.c-heading.c-heading--style-2 {{ $route.meta.title }}
-    hr
+                h1.c-heading.c-heading--style-2 {{ data.class.fully_qualified_name }}
     div.c-page__body
-        div.row(v-for="(classData, className) in namespace")
+        hr
+        div.row
             div.col
-                h2.font-family--code.margin-bottom--2rem Drash.{{ className }}
                 //- CLASS PROPERTIES
-                h3.type-heading.--properties Properties
+                h2.type-heading.--properties Properties
                 div.properites
-                    div.card.--property(v-for="property in classData.properties" v-show="hasProperties(classData)")
+                    div.card.--property(v-for="property in data.class.properties" v-show="hasProperties(data.class.properties)")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ property.signature }}
@@ -34,14 +33,17 @@ div.page.page--reference
                                 ul
                                     li See the highlighted line(s) below.
                                 code-block-for-reference(v-for="example_code, index in property.example_code" :key="index" :data="example_code")
-                    div.card(v-show="!hasProperties(classData)")
+                    div.card(v-show="!hasProperties(data.class.properties)")
                         div.card-body
                             div.tag-row
                                 p This class doesn't have any properties.
+        hr
+        div.row
+            div.col
                 //- CLASS METHODS
-                h3.type-heading.--methods Methods
+                h2.type-heading.--methods Methods
                 div.methods
-                    div.card.--method(v-for="method in classData.methods" v-if="classData.methods.length > 0")
+                    div.card.--method(v-for="method in data.class.methods" v-if="data.class.methods.length > 0")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ method.signature }}
@@ -80,12 +82,11 @@ div.page.page--reference
 <script>
 export default {
     props: [
-        'page_title',
-        'namespace'
+        'data'
     ],
     methods: {
-        hasProperties(classData) {
-            return classData.properties && classData.properties.length > 0;
+        hasProperties(properties) {
+            return properties && properties.length > 0;
         }
     }
 }

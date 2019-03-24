@@ -6,7 +6,7 @@ page-api-reference(:data="data")
 export const resource = {
     paths: ["/api-reference/loggers/logger"],
     meta: {
-        title: "Loggers",
+        title: "Logger",
     }
 }
 
@@ -14,7 +14,7 @@ export default {
     data() {
         return {
             data: {
-                namespace: "Loggers",
+                fully_qualified_name: "Loggers",
                 class: this.$store.page_data.api_reference["Drash.Loggers"].Logger
             }
         };

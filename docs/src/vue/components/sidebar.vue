@@ -32,6 +32,10 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/api-reference/dictionaries'") Dictionaries
                 a(:href="$conf.base_url + '/#/api-reference/exceptions'") Exceptions
                 a(:href="$conf.base_url + '/#/api-reference/loggers'") Loggers
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/api-reference/loggers/logger'") Logger
+                    a(:href="$conf.base_url + '/#/api-reference/loggers/console-logger'") ConsoleLogger
+                    a(:href="$conf.base_url + '/#/api-reference/loggers/file-logger'") FileLogger
                 a(:href="$conf.base_url + '/#/api-reference/services'") Services
                 a(:href="$conf.base_url + '/#/api-reference/util'") Util
                 a(:href="$conf.base_url + '/#/api-reference/vendor'") Vendor
