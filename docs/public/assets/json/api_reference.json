@@ -994,13 +994,35 @@
               "title": "Logger Configs",
               "filepath": "/api-reference/loggers/logger_p_configs.ts",
               "language": "typescript",
-              "code": "{\n  //\n  // enabled: boolean\n  //\n  //     OPTIONS/VALUE\n  //         true, false\n  //\n  //     DEFAULT VALUE\n  //         false\n  //\n  //     DESCRIPTION\n  //         Is the logger enabled?\n  //\n  enabled: true,\n\n  //\n  // level: string\n  //\n  //     OPTIONS/VALUE\n  //         all, trace, debug, info, warn, error, fatal, off\n  //\n  //     DEFAULT VALUE\n  //         debug\n  //\n  //     DESCRIPTION\n  //         Control the number of messages logged by the logger.\n  //\n  level: \"debug\",\n\n  //\n  // tag_string: string\n  //\n  //    OPTIONS/VALUE\n  //         This only takes a string with tags formatted as {tag}. Example:\n  //\n  //             {this_tag} | {that_tag} | {another_tag}\n  //             {this_tag} * {that_tag} * {another_tag}\n  //             [{this_tag}] [{that_tag}] [{another_tag}]\n  //\n  //     DEFAULT VALUE\n  //         None.\n  //\n  //     DESCRIPTION\n  //         This tag string will be parsed by the logger object and tags will\n  //         be replaced based on the `tag_string_fns` config.\n  //\n  tag_string: \"\",\n\n  //\n  // tag_string_fns: any\n  //\n  //     OPTIONS/VALUE\n  //         This takes an object of key-value pairs where the key is the name\n  //         of a tag defined in the `tag_string` config.\n  //\n  //     DEFAULT VALUE\n  //         None.\n  //\n  //     DESCRIPTION\n  //         This object is used to replace tags in the `tag_string` config by\n  //         matching keys to tags and replacing tags with the values of the\n  //         keys. For example, if the `tag_string` and `tag_string_fns` configs\n  //         were ...\n  //\n  //             {\n  //               enabled: true,\n  //               level: \"debug\",\n  //               tag_string: \"[ - {datetime} - ] {your_tag} === {level} ===\"\n  //               tag_string_fns: {\n  //                 datetime: function datetime() {\n  //                   let dateTime = new Date();\n  //                   dateTime.setUTCHours(dateTime.getUTCHours() - 5);\n  //                   return dateTime.toISOString().replace(\"T\", \" \");\n  //                 },\n  //                 your_tag: \"This-Is-Your-Tag\"\n  //               }\n  //             }\n  //\n  //         ... then the tags string would output something like ...\n  //\n  //             [ - 2018-08-26 00:10:02.590Z - ] This-Is-Your-Tag === DEBUG === {log message would be appended here}\n  //\n  //         The {level} tag is reserved and cannot be defined. It is replaced\n  //         with the `level` config.\n  //\n  tag_string_fns: {},\n}\n"
+              "code": "{\n  //\n  // enabled: boolean\n  //\n  //     OPTIONS/VALUE\n  //         true, false\n  //\n  //     DEFAULT VALUE\n  //         false\n  //\n  //     DESCRIPTION\n  //         Is the logger enabled?\n  //\n  enabled: true,\n\n  //\n  // level: string\n  //\n  //     OPTIONS/VALUE\n  //         all, trace, debug, info, warn, error, fatal, off\n  //\n  //     DEFAULT VALUE\n  //         debug\n  //\n  //     DESCRIPTION\n  //         Control the number of messages logged by the logger.\n  //\n  level: \"debug\",\n\n  //\n  // tag_string: string\n  //\n  //    OPTIONS/VALUE\n  //         This only takes a string with tags formatted as {tag}. Example:\n  //\n  //             {this_tag} | {that_tag} | {another_tag}\n  //             {this_tag} * {that_tag} * {another_tag}\n  //             [{this_tag}] [{that_tag}] [{another_tag}]\n  //\n  //     DEFAULT VALUE\n  //         None.\n  //\n  //     DESCRIPTION\n  //         This tag string will be parsed by the logger object and tags will\n  //         be replaced based on the `tag_string_fns` config.\n  //\n  tag_string: \"\",\n\n  //\n  // tag_string_fns: any\n  //\n  //     OPTIONS/VALUE\n  //         This takes an object of key-value pairs where the key is the name\n  //         of a tag defined in the `tag_string` config.\n  //\n  //     DEFAULT VALUE\n  //         None.\n  //\n  //     DESCRIPTION\n  //         This object is used to replace tags in the `tag_string` config by\n  //         matching keys to tags and replacing tags with the values of the\n  //         keys. For example, if the `tag_string` and `tag_string_fns` configs\n  //         were ...\n  //\n  //             {\n  //               enabled: true,\n  //               level: \"debug\",\n  //               tag_string: \"[ - {datetime} - ] {your_tag} === {level} ===\"\n  //               tag_string_fns: {\n  //                 datetime: function datetime() {\n  //                   let dateTime = new Date();\n  //                   dateTime.setUTCHours(dateTime.getUTCHours() - 5);\n  //                   return dateTime.toISOString().replace(\"T\", \" \");\n  //                 },\n  //                 your_tag: \"This-Is-Your-Tag\"\n  //               }\n  //             }\n  //\n  //         ... then the tags string would output something like ...\n  //\n  //             [ - 2018-08-26 00:10:02.590Z - ] This-Is-Your-Tag === DEBUG === {log message would be appended here}\n  //\n  //         The {level} tag is reserved and cannot be defined. It is replaced\n  //         with the level of the current log message being written. For\n  //         example, if `MyLogger.info(\"some message\")` is called, then the\n  //         {level} tag will be replaced with INFO.\n  //\n  tag_string_fns: {},\n}\n"
             }
           ],
           "signature": "protected configs: any",
-          "annotation": null,
-          "data_type": null,
-          "name": null
+          "annotation": "@property any configs",
+          "data_type": "any",
+          "name": "configs"
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "The level of the log message currently being written."
+          ],
+          "example_code": [],
+          "signature": "protected current_log_message_level_name: string",
+          "annotation": "@property string current_log_message_level_name",
+          "data_type": "string",
+          "name": "current_log_message_level_name"
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "See `Drash.Dictionaries.LogLevels`."
+          ],
+          "example_code": [],
+          "signature": "protected log_levels: any = LogLevels",
+          "annotation": "@property any current_log_message_level_name",
+          "data_type": "any",
+          "name": "current_log_message_level_name"
         }
       ],
       "methods": [
