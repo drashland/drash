@@ -11,8 +11,7 @@
   if [[ $DRASH_STATUS_BUILDING_REFERENCE == "off" ]]; then
     echo "Running build.reference.ts..."
     export DRASH_STATUS_BUILDING_REFERENCE="on"
-    user=$(whoami)
-    /Users/$user/.deno/bin/deno $DRASH_DIR_ROOT/docs/console/build.reference.ts --allow-env --allow-read --allow-write $@
+    deno $DRASH_DIR_ROOT/docs/console/build.reference.ts --allow-env --allow-read --allow-write $@
     echo "Done building."
     export DRASH_STATUS_BUILDING_REFERENCE="off"
   fi
