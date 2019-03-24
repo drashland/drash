@@ -11,6 +11,8 @@ export default abstract class Logger {
   /**
    * This logger's configs.
    *
+   * @property any configs
+   *
    * @examplecode [
    *   {
    *     "title": "Logger Configs",
@@ -20,8 +22,21 @@ export default abstract class Logger {
    * ]
    */
   protected configs: any;
+
+  /**
+   * The level of the log message currently being written.
+   *
+   * @property string current_log_message_level_name
+   */
   protected current_log_message_level_name: string;
-  protected log_levels = LogLevels;
+
+  /**
+   * See `Drash.Dictionaries.LogLevels`.
+   *
+   * @property any current_log_message_level_name
+   */
+  protected log_levels: any = LogLevels;
+
   protected test: boolean = false;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
