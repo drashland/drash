@@ -1,16 +1,23 @@
 #!/bin/bash
 
 (
-  export DRASH_MODE="production"
-
-  echo -e "\nDrash mode is: $DRASH_MODE\n"
+  deno_version=$(deno --version)
+  export DRASH_DOCS_BASE_URL="/deno-drash"
 
   echo "Building new webpack bundle with prod configs..."
-  deno_version=$(deno --version)
-  webpack --env.environment=production --env.deno_version="$deno_version" --hide-modules
+
+  webpack \
+    --env.environment="production" \
+    --env.deno_version="$deno_version" \
+    --env.base_url="$DRASH_DOCS_BASE_URL" \
+    --hide-modules
 
   echo "Running build.ts..."
-  deno $DRASH_DIR_ROOT/docs/console/build.ts --allow-env --allow-read --allow-write
+
+  deno $DRASH_DIR_ROOT/docs/console/build.ts \
+    --allow-env \
+    --allow-read \
+    --allow-write
 
   echo "Done building."
 )

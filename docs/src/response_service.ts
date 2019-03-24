@@ -11,16 +11,25 @@ export async function compile(inputFile, outputFile): Promise<any> {
 }
 
 export function getAppData() {
+  const buildTimestamp = new Date().getTime();
   return {
     // The below is transferred to index.ejs
-    scripts: [
-      "https://unpkg.com/axios/dist/axios.min.js",
-      "/public/assets/vendor/prismjs/prism.js",
-      "/public/assets/vendor/jquery-3.3.1/jquery.min.js",
-      "/public/assets/vendor/bootstrap-4.1.3-dist/js/bootstrap.min.js"
-    ],
-    build_timestamp: new Date().getTime(),
-    conf: Drash.getEnvVar("DRASH_CONF").toArray().value,
+    scripts: {
+      local: [
+        "/public/assets/vendor/prismjs/prism.js",
+        "/public/assets/vendor/jquery-3.3.1/jquery.min.js",
+        "/public/assets/vendor/bootstrap-4.1.3-dist/js/bootstrap.min.js",
+        `/public/assets/js/bundle.js?version=${buildTimestamp}`
+      ],
+      external: [
+        "https://unpkg.com/axios/dist/axios.min.js",
+      ]
+    },
+    conf: {
+      base_url: Deno.env().DRASH_DOCS_BASE_URL
+        ? Deno.env().DRASH_DOCS_BASE_URL
+        : ""
+    },
 
     // The below is transferred to vue_app_root.vue
     app_data: JSON.stringify({

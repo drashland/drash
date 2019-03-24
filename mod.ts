@@ -27,7 +27,7 @@ import * as Util from "./src/util.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 function Drash(): any {
-  return {
+  let Drash = {
     Compilers: {
       DocBlocksToJson: DocBlocksToJson
     },
@@ -114,5 +114,12 @@ function Drash(): any {
       }
     }
   }; // close return
+
+  if (Deno.env().DRASH_CORE_LOGGER_ENABLED === "true") {
+    Drash.core_logger.debug("Drash.core_logger is enabled.");
+    Drash.core_logger.debug(`Drash.core_logger.level is set to: ${Deno.env().DRASH_CORE_LOGGER_LEVEL}.`);
+  }
+
+  return Drash;
 }
 export default Drash();
