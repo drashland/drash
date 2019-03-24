@@ -470,7 +470,7 @@ export default class DocBlocksToJson {
     });
 
     textBlockInLines = textBlockInLines
-      .join(" ")
+      .join("\n")
       .split("---para-break---")
       .map((val) => {
         val = val.trim();

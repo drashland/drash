@@ -19,8 +19,7 @@ div.page.page--reference
                             //- DESCRIPTIONS
                             div.tag-row(v-show="property.description.length > 0")
                                 strong.tag-row__heading Description
-                                ul
-                                    li(v-for="description in property.description" :inner-html.prop="description | markdown-it")
+                                div(v-for="description in property.description" :inner-html.prop="description | markdown-it")
                             //- TYPE
                             div.tag-row(v-show="property.data_type")
                                 strong.tag-row__heading Type

@@ -12,13 +12,13 @@ export default abstract class Logger {
   static TYPE_FILE = 2;
 
   /**
-   * This logger's configs. See example code below.
+   * This logger's configs.
    *
    * @examplecode [
    *   {
    *     "title": "Logger Configs",
    *     "filepath": "/api-reference/loggers/logger_p_configs.ts",
-   *     "language": "text"
+   *     "language": "typescript"
    *   }
    * ]
    */
