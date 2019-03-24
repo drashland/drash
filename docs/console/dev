@@ -7,7 +7,7 @@
     --recursive \
     --drop \
     --ignore-directories \
-    --patterns="*.ts;*.json;$DRASH_DIR_ROOT/docs/console/*" \
+    --patterns="*.ts;*.json;$DRASH_DIR_ROOT/docs/console/*;*.vue;*.js" \
     --ignore-pattern="*/.#*.ts;*.swp" \
     $DRASH_DIR_ROOT
 )

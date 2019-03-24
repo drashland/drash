@@ -21,6 +21,7 @@ import * as Logging from "/components/pages/tutorials/logging.vue";
 import * as APIReference_Loggers_Logger from "/components/pages/api-reference/loggers/logger.vue";
 import * as APIReference_Loggers_FileLogger from "/components/pages/api-reference/loggers/file_logger.vue";
 import * as APIReference_Loggers_ConsoleLogger from "/components/pages/api-reference/loggers/console_logger.vue";
+import * as APIReference_Compilers_DocBlocksToJson from "/components/pages/api-reference/compilers/doc_blocks_to_json.vue";
 import Error404 from "/components/pages/error_404.vue";
 
 // Vendor
@@ -30,6 +31,7 @@ window.markdownIt = new MarkdownIt();
 const routes = [];
 const routeModules = [
   AddingContentTypes,
+  APIReference_Compilers_DocBlocksToJson,
   APIReference_Loggers_Logger,
   APIReference_Loggers_ConsoleLogger,
   APIReference_Loggers_FileLogger,
