@@ -26,6 +26,7 @@
     "build": "console/build",
     "reference": "console/build.reference",
     "dev": "console/dev",
+    "dev-docs": "console/dev.docs",
     "prettier": "../console/prettier",
     "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css",
     "test": "../console/test",

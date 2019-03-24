@@ -1,14 +1,11 @@
 #!/bin/bash
 
 (
-  echo -e "Don't forget to run the following:"
-  echo -e "    \`npm run webpack-dev-watch\`"
-  echo -e "    \`npm run watchmedo\`"
-  echo -e ""
-
-  deno $DRASH_DIR_ROOT/docs/docs.ts \
-    --allow-net \
-    --allow-env \
-    --allow-read \
-    $@
+  npm run dev-docs
+  watchmedo shell-command \
+    --command="npm run dev-docs -- restart" \
+    --recursive \
+    --drop \
+    --ignore-directories \
+    $DRASH_DIR_ROOT
 )
