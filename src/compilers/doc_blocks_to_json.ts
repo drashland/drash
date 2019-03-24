@@ -9,6 +9,10 @@
 //         ) {
 //           // method body
 //         }
+//     [ ] Check if properties and methods have access modifier. If not, then
+//         those members should be placed at the bottom of their respective
+//         list.
+//     [ ] Check for abstract access modifier.
 //
 
 import Drash from "../../mod.ts";
