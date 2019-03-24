@@ -81,7 +81,9 @@
   //             [ - 2018-08-26 00:10:02.590Z - ] This-Is-Your-Tag === DEBUG === {log message would be appended here}
   //
   //         The {level} tag is reserved and cannot be defined. It is replaced
-  //         with the `level` config.
+  //         with the level of the current log message being written. For
+  //         example, if `MyLogger.info("some message")` is called, then the
+  //         {level} tag will be replaced with INFO.
   //
   tag_string_fns: {},
 }
