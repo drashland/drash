@@ -29,9 +29,7 @@ div.page.page--reference
                                         code.c-code-data-type {{ property.data_type }}
                             //- EXAMPLE CODE
                             div.tag-row(v-show="property.example_code.length > 0")
-                                strong.tag-row__heading Example Usage
-                                ul
-                                    li See the highlighted line(s) below.
+                                strong.tag-row__heading Example Code
                                 code-block-for-reference(v-for="example_code, index in property.example_code" :key="index" :data="example_code")
                     div.card(v-show="!hasProperties(data.class.properties)")
                         div.card-body

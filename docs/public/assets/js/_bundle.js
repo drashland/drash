@@ -59,10 +59,7 @@ Vue.component("code-block-for-reference", CodeBlockForReference);
 Vue.component("heading-h2", HeadingH2);
 Vue.component("page-api-reference", Page_ApiReference);
 Vue.filter('markdown-it', function(value) {
-  if (value.indexOf("```") != -1) {
-    return window.markdownIt.render(value);
-  }
-  return window.markdownIt.renderInline(value);
+  return window.markdownIt.render(value);
 });
 Vue.prototype.$app_data = window.app_data; // The `app_data` variable comes from response_service.ts
 Vue.prototype.$conf = conf;
