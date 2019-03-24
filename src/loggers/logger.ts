@@ -8,9 +8,6 @@ import LogLevels from "../dictionaries/log_levels.ts";
  * This logger is the base logger class for all logger classes.
  */
 export default abstract class Logger {
-  static TYPE_CONSOLE = 1;
-  static TYPE_FILE = 2;
-
   /**
    * This logger's configs.
    *
@@ -26,7 +23,6 @@ export default abstract class Logger {
   protected current_log_message_level_name: string;
   protected log_levels = LogLevels;
   protected test: boolean = false;
-  protected type: number;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 

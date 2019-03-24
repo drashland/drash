@@ -7,11 +7,10 @@ import Logger from "./logger.ts";
  * This logger allows you to log messages to a file.
  */
 export default class FileLogger extends Logger {
-  protected file;
+  protected file: string;
 
   constructor(configs) {
     super(configs);
-    super.type = Logger.TYPE_FILE;
     this.file = configs.file;
   }
 
