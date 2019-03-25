@@ -11,7 +11,7 @@ div.c-sidebar
                 p
                     img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="90" height="20")
                     | &nbsp;
-                    img(alt="Travis CI Build" :src="'https://travis-ci.org/crookse/deno-drash.svg?branch=' + $conf.latest_release" width="90" height="20")
+                    img(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="90" height="20")
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
