@@ -13,6 +13,7 @@
 //         those members should be placed at the bottom of their respective
 //         list.
 //     [ ] Check for abstract access modifier.
+//     [ ] Support @inheritdoc
 //
 
 import Drash from "../../mod.ts";

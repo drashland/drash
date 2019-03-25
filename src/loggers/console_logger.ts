@@ -12,6 +12,7 @@ export default class ConsoleLogger extends Logger {
    * Construct an object of this class.
    *
    * @param any configs
+   *     See Drash.Loggers.Logger.configs
    *
    */
   constructor(configs) {
