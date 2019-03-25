@@ -86,7 +86,7 @@ div
         div.row
             div.col
                 heading-h2#something_missing(heading="Something Missing?")
-                p If you find that something is missing in these pages (or if you find that something needs more clarification), then please file an issue at <a href="https://github.com/crookse/deno-drash-docs/issues" target="_BLANK">https://github.com/crookse/deno-drash-docs/issues</a>. I would love to hear from you! You can also send me an <a href="mailto:eric.crooks@gmail.com">email</a>.
+                p If you find that something is missing in these pages (or if you find that something needs more clarification), then please file an issue at <a href="https://github.com/crookse/deno-drash/issues" target="_BLANK">https://github.com/crookse/deno-drash/issues</a>. We would love to hear from you!
 </template>
 
 <script>
