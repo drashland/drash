@@ -1252,7 +1252,9 @@
             {
               "annotation": "@param any configs",
               "data_type": "any",
-              "description": [],
+              "description": [
+                "See Drash.Loggers.Logger.configs"
+              ],
               "name": "configs"
             }
           ],
