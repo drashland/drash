@@ -27,11 +27,11 @@
     "build-dry-run": "console/build.dryrun",
     "dev": "console/dev",
     "dev-docs": "console/dev.docs",
+    "dev-webpack": "console/webpack.dev",
+    "dev-webpack-watch": "console/webpack.dev --watch",
     "install-watchdog": "console/pip.install.watchdog",
     "prettier": "../console/prettier",
     "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css",
-    "tests": "../console/test",
-    "webpack-dev": "console/webpack.dev",
-    "webpack-dev-watch": "console/webpack.dev --watch"
+    "tests": "../console/test"
   }
 }
