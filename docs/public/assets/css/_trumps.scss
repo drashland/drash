@@ -2,6 +2,10 @@
     background-color: #ffffff !important;
 }
 
+.background-color--efefef {
+    background-color: #efefef !important;
+}
+
 .background-color--that-red {
     background-color: $g-color-that-red;
 }
@@ -43,6 +47,10 @@
 
 .font-style--normal {
     font-style: normal;
+}
+
+.font-family--code {
+    font-family: $g-font-family-code;
 }
 
 .hide--soft {
@@ -111,6 +119,10 @@
 
 .padding--0 {
     padding: 0 !important;
+}
+
+.padding--5px {
+    padding: 5px !important;
 }
 
 .padding--15px {

@@ -17,8 +17,8 @@ body {
 code {
   border-radius: 0.18125rem; }
 
+.font-family--code,
 code[class*="language-"] {
-  line-height: 1.7;
   margin: 0; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -184,9 +184,9 @@ ol li ul {
         .c-sidebar__menu .c-sidebar__menu-body a {
           font-size: 0.87rem; } }
     .c-sidebar__menu .c-sidebar__menu-body .l-submenu-1 a {
-      padding-left: 3.2625rem; }
+      padding-left: 3.9875rem; }
     .c-sidebar__menu .c-sidebar__menu-body .l-submenu-2 a {
-      padding-left: 4.35rem; }
+      padding-left: 5.075rem; }
 
 .c-btn {
   cursor: pointer;
@@ -221,9 +221,6 @@ ol li ul {
   .b-code-example .body {
     border-radius: 0 0 1.0875rem 1.0875rem;
     margin-top: 0; }
-  @media screen and (max-width: 950px) {
-    .b-code-example {
-      margin-left: -2.9rem; } }
 
 .c-code-table-of-contents {
   padding: 1.45rem;
@@ -231,13 +228,10 @@ ol li ul {
   .c-code-table-of-contents .link {
     color: #007bff; }
 
-.c-code-parameter {
-  margin-right: 0.725rem; }
-
-.c-code-data-type:after {
-  content: ">"; }
-.c-code-data-type:before {
-  content: "<"; }
+.c-code-signature {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 1.0875rem !important;
+  padding: 0.0725rem 0.3625rem !important; }
 
 .c-code-header {
   background: #ffffff;
@@ -461,6 +455,9 @@ a {
 .background--white {
   background-color: #ffffff !important; }
 
+.background-color--efefef {
+  background-color: #efefef !important; }
+
 .background-color--that-red {
   background-color: #e40002; }
 
@@ -493,6 +490,9 @@ a {
 
 .font-style--normal {
   font-style: normal; }
+
+.font-family--code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
 .hide--soft {
   display: none; }
@@ -544,6 +544,9 @@ a {
 
 .padding--0 {
   padding: 0 !important; }
+
+.padding--5px {
+  padding: 5px !important; }
 
 .padding--15px {
   padding: 15px !important; }

@@ -1,5 +1,5 @@
 // Webpack
-let conf = process.env.conf;
+let conf = process.env.conf; // This variable comes from webpack.config.js under `plugins`
 
 // Vue
 import Vue from "vue";
@@ -7,31 +7,64 @@ import VueRouter from "vue-router";
 
 // Vue - Components
 import CodeBlock from "/components/code_block.vue";
+import CodeBlockForReference from "/components/code_block_for_reference.vue";
 import HeadingH2 from "/components/heading_h2.vue";
 import VueAppRoot from "/components/vue_app_root.vue";
+import Page_ApiReference from "/components/page_api_reference.vue";
 
 // Vue - Components - Pages
+import * as APIReference_Compilers from "/components/pages/api-reference/compilers.vue";
+import * as APIReference_Compilers_DocBlocksToJson from "/components/pages/api-reference/compilers/doc_blocks_to_json.vue";
+import * as APIReference_Http from "/components/pages/api-reference/http.vue";
+import * as APIReference_Http_Request from "/components/pages/api-reference/http/request.vue";
+import * as APIReference_Http_Resource from "/components/pages/api-reference/http/resource.vue";
+import * as APIReference_Http_Response from "/components/pages/api-reference/http/response.vue";
+import * as APIReference_Http_Server from "/components/pages/api-reference/http/server.vue";
+import * as APIReference_Loggers from "/components/pages/api-reference/loggers.vue";
+import * as APIReference_Loggers_ConsoleLogger from "/components/pages/api-reference/loggers/console_logger.vue";
+import * as APIReference_Loggers_FileLogger from "/components/pages/api-reference/loggers/file_logger.vue";
+import * as APIReference_Loggers_Logger from "/components/pages/api-reference/loggers/logger.vue";
+import * as APIReference_Services from "/components/pages/api-reference/services.vue";
+import * as APIReference_Services_HttpService from "/components/pages/api-reference/services/http_service.vue";
 import * as AddingContentTypes from "/components/pages/tutorials/adding_content_types.vue";
+import * as CreatingAServer from "/components/pages/tutorials/creating_a_server.vue";
 import * as HandlingContentNegotiation from "/components/pages/tutorials/handling_content_negotiation.vue";
 import * as Introduction from "/components/pages/introduction.vue";
-import * as Tutorials from "/components/pages/tutorials.vue";
+import * as Logging from "/components/pages/tutorials/logging.vue";
 import Error404 from "/components/pages/error_404.vue";
+
+// Vendor
+import MarkdownIt from "markdown-it";
+window.markdownIt = new MarkdownIt();
 
 const routes = [];
 const routeModules = [
+  APIReference_Compilers,
+  APIReference_Compilers_DocBlocksToJson,
+  APIReference_Http,
+  APIReference_Http_Request,
+  APIReference_Http_Resource,
+  APIReference_Http_Response,
+  APIReference_Http_Server,
+  APIReference_Loggers,
+  APIReference_Loggers_ConsoleLogger,
+  APIReference_Loggers_FileLogger,
+  APIReference_Loggers_Logger,
+  APIReference_Services,
+  APIReference_Services_HttpService,
   AddingContentTypes,
+  CreatingAServer,
   HandlingContentNegotiation,
   Introduction,
-  Tutorials,
-].forEach((component) => {
-  component.resource.paths.forEach((path) => {
+  Logging
+].forEach(component => {
+  component.resource.paths.forEach(path => {
     routes.push({
       path: path,
       component: component.default,
       meta: component.resource.meta
     });
   });
-
 });
 
 routes.push({
@@ -41,25 +74,32 @@ routes.push({
 
 // Vue - Global registration
 Vue.use(VueRouter);
+Vue.component("code-block", CodeBlock);
+Vue.component("code-block-for-reference", CodeBlockForReference);
+Vue.component("heading-h2", HeadingH2);
+Vue.component("page-api-reference", Page_ApiReference);
+Vue.filter('markdown-it', function(value) {
+  return window.markdownIt.render(value);
+});
+Vue.prototype.$app_data = window.app_data; // The `app_data` variable comes from response_service.ts
 Vue.prototype.$conf = conf;
-Vue.prototype.$app_data = window.app_data;
-Vue.component('code-block', CodeBlock);
-Vue.component('heading-h2', HeadingH2);
+Vue.prototype.$store = window.app_data.store;
 
 const router = new VueRouter({
   routes: routes,
   scrollBehavior(to, from, savedPosition) {
+    // Make "#" anchor links work as expected
     if (to.hash) {
       return {
-        selector: to.hash
-        , offset: { x: 0, y: 10 }
-      }
+        selector: to.hash,
+        offset: { x: 0, y: 10 }
+      };
     }
   }
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = conf.module_name + ' - ' + to.meta.title;
+  document.title = conf.module_name + " - " + to.meta.title;
   next();
 });
 
@@ -71,7 +111,7 @@ router.afterEach((to, from) => {
 window.app = new Vue({
   el: "#vue_app_mount",
   components: {
-    VueAppRoot,
+    VueAppRoot
   },
   router: router,
   mounted() {
@@ -123,7 +163,7 @@ function fade_out_element(jQueryObject, duration) {
  * Toggle the "Back To Top" button
  */
 function toggleBackToTopButton() {
-  if($(window).scrollTop() >= 90) {
+  if ($(window).scrollTop() >= 90) {
     $(".c-btn-back-to-top").fadeIn(100);
   } else {
     $(".c-btn-back-to-top").fadeOut(100);

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+(
+  npm run dev-docs
+  watchmedo shell-command \
+    --command='npm run dev-docs -- restart' \
+    --recursive \
+    --drop \
+    --ignore-directories \
+    --patterns="*.ts;*.json;$DRASH_DIR_ROOT/docs/console/*;*.vue;*.js" \
+    --ignore-pattern="*/api_reference.json;*/.#*.ts;*.swp" \
+    $DRASH_DIR_ROOT
+)

@@ -27,4 +27,3 @@ export default class HomeResource extends Drash.Http.Resource {
     return this.response;
   }
 }
-

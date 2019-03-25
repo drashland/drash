@@ -1,3 +1,5 @@
+// namespace Drash.Dictionaries
+
 export default {
   all: {
     rank: 1000,

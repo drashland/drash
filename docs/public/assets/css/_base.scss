@@ -16,8 +16,8 @@ code {
     border-radius: $g-border-radius-pre-code;
 }
 
+.font-family--code,
 code[class*="language-"] {
-    line-height: 1.7;
     margin: 0;
 }
 

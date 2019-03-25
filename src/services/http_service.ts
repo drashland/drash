@@ -1,84 +1,163 @@
+// namespace Drash.Services
+
 import Drash from "../../mod.ts";
+import DrashHttpRequest from "../http/request.ts";
+
 /**
- * Hydrate the request with data that is useful for the Drash.Http.Server class.
- *
- * @param ServerRequest request
- *     The request object.
- * @param object options
- *     A list of options:
- *     {
- *       headers: {}
- *     }
+ * @class HttpService
+ * This class helps perform HTTP-related processes.
  */
-export function hydrateHttpRequest(request, options?) {
-  if (options) {
-    if (options.headers) {
-      for (let key in options.headers) {
-        request.headers.set(key, options.headers[key]);
+class HttpService {
+  /**
+   * Hydrate the request with data that is useful for the `Drash.Http.Server`
+   * class.
+   *
+   * @param Drash.Http.Request request
+   *     The request object.
+   * @param any options
+   *     A list of options.
+   */
+  public hydrateHttpRequest(request: DrashHttpRequest, options?: any) {
+    if (options) {
+      if (options.headers) {
+        for (let key in options.headers) {
+          request.headers.set(key, options.headers[key]);
+        }
       }
     }
+
+    request.url_query_params = this.getHttpRequestUrlQueryParams(request);
+    request.url_query_string = this.getHttpRequestUrlQueryString(request);
+    request.url_path = this.getHttpRequestUrlPath(request);
+
+    return request;
   }
 
-  request.url_query_params = getHttpRequestUrlQueryParams(request);
+  /**
+   * Get the specified HTTP request's URL path.
+   *
+   * @param Drash.Http.Request request
+   *     The request object.
+   *
+   * @return string
+   *     Returns the URL path.
+   */
+  public getHttpRequestUrlPath(request: DrashHttpRequest): string {
+    let path = request.url;
 
-  return request;
-}
-
-/**
- * Get the request's query params from by parsing its URL.
- *
- * @param ServerRequest request
- *     The request object.
- */
-export function getHttpRequestUrlQueryParams(request) {
-  let queryParams = {};
-
-  try {
-    let queryParamsString = request.url.split("?")[1];
-
-    if (!queryParamsString) {
-      return queryParams;
+    if (path == "/") {
+      return path;
     }
 
-    if (queryParamsString.indexOf("#") != -1) {
-      queryParamsString = queryParamsString.split("#")[0];
+    if (request.url.indexOf("?") == -1) {
+      return path;
     }
 
-    let queryParamsExploded = queryParamsString.split("&");
+    try {
+      path = request.url.split("?")[0];
+    } catch (error) {
+      // ha.. do nothing
+    }
 
-    queryParamsExploded.forEach(kvpString => {
-      kvpString = kvpString.split("=");
-      queryParams[kvpString[0]] = kvpString[1];
-    });
-  } catch (error) {}
-
-  return queryParams;
-}
-
-/**
- * Get a MIME type for a file based on its extension.
- */
-export function getMimeType(file: any, fileIsUrl?: boolean) {
-  let mimeType = null;
-
-  if (fileIsUrl) {
-    file = file.split("?")[0];
+    return path;
   }
 
-  file = file.split(".");
-  file = file[file.length - 1];
+  /**
+   * Get the specified HTTP request's URL query string.
+   *
+   * @param Drash.Http.Request request
+   *     The request object.
+   *
+   * @return string
+   *     Returns the URL query string (e.g., key1=value1&key2=value2) without
+   *     the leading "?" character.
+   */
+  public getHttpRequestUrlQueryString(request: DrashHttpRequest): string {
+    let queryString = null;
 
-  for (let key in Drash.Dictionaries.MimeDb) {
-    if (!mimeType) {
-      if (Drash.Dictionaries.MimeDb[key].extensions) {
-        for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
-          if (file == Drash.Dictionaries.MimeDb[key].extensions[index]) {
-            mimeType = key;
+    if (request.url.indexOf("?") == -1) {
+      return queryString;
+    }
+
+    try {
+      queryString = request.url.split("?")[1];
+    } catch (error) {
+      // ha.. do nothing
+    }
+
+    return queryString;
+  }
+
+  /**
+   * Get the HTTP request's URL query params by parsing the URL query string.
+   *
+   * @param Drash.Http.Request request
+   *     The request object.
+   *
+   * @return any
+   *     Returns the URL query string in key-value pair format.
+   */
+  public getHttpRequestUrlQueryParams(request: DrashHttpRequest): any {
+    let queryParams = {};
+
+    try {
+      let queryParamsString = request.url.split("?")[1];
+
+      if (!queryParamsString) {
+        return queryParams;
+      }
+
+      if (queryParamsString.indexOf("#") != -1) {
+        queryParamsString = queryParamsString.split("#")[0];
+      }
+
+      let queryParamsExploded = queryParamsString.split("&");
+
+      queryParamsExploded.forEach(kvpString => {
+        let kvpStringSplit = kvpString.split("=");
+        queryParams[kvpStringSplit[0]] = kvpStringSplit[1];
+      });
+    } catch (error) {}
+
+    return queryParams;
+  }
+
+  /**
+   * Get a MIME type for a file based on its extension.
+   *
+   * @param string filename
+   *     The filename in question.
+   * @param boolean fileIsUrl
+   *     Is the filename a URL/path to a file? Defaults to false.
+   *
+   * @return string
+   *     Returns the name of the MIME type based on the extension of the
+   *     filename.
+   */
+  public getMimeType(file: string, fileIsUrl: boolean = false): string {
+    let mimeType = null;
+
+    if (fileIsUrl) {
+      file = file.split("?")[0];
+    }
+
+    let fileParts = file.split(".");
+    file = fileParts.pop();
+
+    for (let key in Drash.Dictionaries.MimeDb) {
+      if (!mimeType) {
+        if (Drash.Dictionaries.MimeDb[key].extensions) {
+          for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
+            if (file == Drash.Dictionaries.MimeDb[key].extensions[index]) {
+              mimeType = key;
+            }
           }
         }
       }
     }
-  }
 
-  return mimeType;
+    return mimeType;
+  }
 }
+
+export default new HttpService();

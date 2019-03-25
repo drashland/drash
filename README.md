@@ -26,7 +26,7 @@ Want to contribute? Fork and send a pull request.
 import Drash from "https://deno.land/x/drash/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"]
+  static paths = ["/"];
   public GET() {
     this.response.body = "GET request received!";
     return this.response;
@@ -41,7 +41,7 @@ let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
   resources: [HomeResource],
-  static_paths: ["/public"],
+  static_paths: ["/public"]
 });
 
 server.run();
@@ -57,7 +57,7 @@ $ deno app.ts --allow-net
 
 _Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
 
-- `GET  localhost:8000/`
+- `GET localhost:8000/`
 - `POST localhost:8000/`
 
 ## Features
@@ -81,3 +81,104 @@ Can't have path params and not have request URL query params. Resources can acce
 **Semantic Method Names**
 
 If you want your resource class to allow `GET` requests, then give it a `GET()` method. If you want your resource class to allow `POST` requests, then give it a `POST()` method. If you don't want your resource class to allow `DELETE` requests, then don't give your resource class a `DELETE()` method. Pretty simple ideology and very semantic.
+
+---
+
+## Adding More Content Types
+
+Drash servers use the `Drash.Http.Response` class to generate responses and send them to clients. It can generate responses of the following content types:
+
+- `application/json`
+- `application/xml`
+- `text/html`
+- `text/xml`
+
+If you want your Drash server to handle more content types, then you will need to override `Drash.Http.Response` and its `send()` method. See the steps below to override `Drash.Http.Response` and its `send()` method:
+
+_Note: The following steps assume you're using the example code above._
+
+#### Step 1 of 2: Create your `response.ts` file.
+
+```typescript
+import Drash from "https://deno.land/x/drash/mod.ts";
+
+/**
+ * Export the `Response` class that `Drash.Http.Server` will use.
+ *
+ * This class will be used to replace `Drash.Http.Response` before `Drash.Http.Server` is created.
+ */
+export default class Response extends Drash.Http.Response {
+  /**
+   * Send a response to the client.
+   * @return any
+   */
+  public send(): any {
+    let body;
+
+    switch (this.headers.get("Content-Type")) {
+      // Handle HTML
+      case "text/html":
+        body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10">${
+          this.body
+        }</body></html>`;
+        break;
+
+      // Handle JSON
+      case "application/json":
+        body = JSON.stringify({ body: this.body });
+        break;
+
+      // Handle PDF
+      case "application/pdf":
+        this.headers.set("Content-Type", "text/html");
+        body = `<html><body style="height: 100%; width: 100%; overflow: hidden; margin: 0px; background-color: rgb(82, 86, 89);"><embed width="100%" height="100%" name="plugin" id="plugin" src="https://crookse.github.io/public/files/example.pdf" type="application/pdf" internalinstanceid="19"></body></html>`;
+        break;
+
+      // Handle XML
+      case "application/xml":
+      case "text/xml":
+        body = `<body>${this.body}</body>`;
+        break;
+
+      // Handle plain text and also default to this
+      case "text/plain":
+      default:
+        body = `${this.body}`;
+        break;
+    }
+
+    this.request.respond({
+      status: this.status_code,
+      headers: this.headers,
+      body: new TextEncoder().encode(body)
+    });
+  }
+}
+```
+
+#### Step 2 of 2: Modify your `app.ts` file.
+
+```diff
+import Drash from "https://deno.land/x/drash/mod.ts";
++
++import Response from "./response.ts";
++Drash.Http.Response = Response;
++
+class HomeResource extends Drash.Http.Resource {
+  static paths = ["/"]
+  public GET() {
+    this.response.body = "GET request received!";
+  }
+  public POST() {
+    this.response.body = "POST request received!";
+  }
+}
+
+let server = new Drash.Http.Server({
+  address: "localhost:8000",
+  response_output: "text/html",
+  resources: [HomeResource]
+});
+
+server.run();
+```

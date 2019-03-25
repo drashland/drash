@@ -1,22 +1,74 @@
+// namespace Drash.Http
+
 import Drash from "../../mod.ts";
+import DrashHttpRequest from "./request.ts";
+import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
-/** Response handles sending a response to the client making the request. */
+/**
+ * @class Response
+ * Response handles sending a response to the client making the request.
+ */
 export default class Response {
-  public body = {};
-  public body_generated = "";
+
+  /**
+   * The body of this response.
+   *
+   * @property any body
+   *
+   * @examplecode [
+   *   {
+   *     "title": "app.ts",
+   *     "filepath": "/api-reference/http/response/p_body.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "6"
+   *   }
+   * ]
+   */
+  public body: any = {};
+
+  /**
+   * The body of this response as a string.
+   *
+   * @property string body_generated
+   */
+  public body_generated: string = "";
+
+  /**
+   * This response's headers.
+   *
+   * @property Headers headers
+   */
   public headers: Headers;
-  public request;
-  public status_code = 200;
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  /**
+   * The request object.
+   *
+   * @property Drash.Http.Request request
+   */
+  public request: DrashHttpRequest;
 
-  constructor(request) {
+  /**
+   * This response's status code (e.g., 200 for OK). _Drash.Http.Response_
+   * objects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts).
+   *
+   * @property number status_code
+   */
+  public status_code: number = Status.OK;
+
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+
+  /**
+   * Construct an object of this class.
+   *
+   * @param Drash.Http.Request request
+   */
+  constructor(request: DrashHttpRequest) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", this.getHeaderContentType());
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
    * Generate a response.
@@ -47,16 +99,44 @@ export default class Response {
    * Get the status message based on the status code.
    *
    * @return string
+   *     Returns the status message associated with `this.status_code`. For
+   *     example, if the response's `status_code` is `200`, then this method
+   *     will return "OK" as the status message.
+   *
+   * @examplecode [
+   *   {
+   *     "title": "app.ts",
+   *     "filepath": "/api-reference/http/response/m_getStatusMessage.ts",
+   *     "language": "typescript",
+   *     "line_highlight": "8"
+   *   }
+   * ]
    */
   public getStatusMessage(): string {
-    return Drash.Dictionaries.HttpStatusCodes[this.status_code]
-      .short_description;
+    let message = STATUS_TEXT.get(this.status_code);
+    return message ? message : null;
+  }
+
+  /**
+   * Get the full status message based on the status code. This is just the
+   * status code and the status message together (e.g., `200 (OK)`, `401
+   * (Unauthorized)`, etc.).
+   *
+   * @return string
+   */
+  public getStatusMessageFull(): string {
+    let message = STATUS_TEXT.get(this.status_code);
+    return message ? `${this.status_code} (${message})` : null;
   }
 
   /**
    * Send the response to the client making the request.
    *
    * @return any
+   *     Returns the output which is passed to `Drash.Http.Request.respond()`.
+   *     The output is only returned for unit testing purposes. It is not
+   *     intended to be used elsewhere as this call is the last call in the
+   *     request-resource-response lifecycle.
    */
   public send(): any {
     let body = this.generateResponse();
@@ -77,14 +157,13 @@ export default class Response {
    * @return any
    */
   public sendStatic(): any {
-    const file = this.request.url.split("?")[0];
-    const decoder = new TextDecoder("utf-8");
-    const contents = decoder.decode(Deno.readFileSync(`./${file}`));
+    const file = this.request.url_path;
+    const fullFilepath = `/var/www/deno-drash/docs/${file}`;
 
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(contents)
+      body: Deno.readFileSync(fullFilepath)
     };
 
     this.request.respond(output);
@@ -92,7 +171,7 @@ export default class Response {
     return output;
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   protected generateHtmlResponse(): string {
     return `<!DOCTYPE html>
@@ -131,12 +210,14 @@ export default class Response {
   protected getHeaderContentType(): string {
     let contentType = this.request.headers.get("Response-Content-Type-Default");
 
-    // Check the request's headers to see if `response-content-type: {content-type}` has been specified
+    // Check the request's headers to see if `response-content-type:
+    // {content-type}` has been specified
     contentType = this.request.headers.get("Response-Content-Type")
       ? this.request.headers.get("Response-Content-Type")
       : contentType;
 
-    // Check the request's URL query params to see if ?response_content_type={content-type} has been specified
+    // Check the request's URL query params to see if
+    // ?response_content_type={content-type} has been specified
     contentType = this.request.url_query_params.response_content_type
       ? this.request.url_query_params.response_content_type
       : contentType;

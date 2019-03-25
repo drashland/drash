@@ -1,41 +1,72 @@
+// namespace Drash.Http
+
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
+import DrashHttpResource from "../http/resource.ts";
+import DrashHttpRequest from "../http/request.ts";
 
+/**
+ * @class Server
+ * Server handles the entire request-resource-response lifecycle. It is in
+ * charge of handling HTTP requests to resources, static paths, sending
+ * appropriate responses, and handling any errors that bubble up within the
+ * request-resource-response lifecycle.
+ */
 export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
 
-  protected configs_defaults = {
-    address: "127.0.0.1:8000",
-    default_response_content_type: "application/json"
-  };
-  protected configs;
+  protected configs: any;
   protected deno_server;
   protected logger;
-  protected resources = {};
-  protected static_paths = [];
+  protected resources: any = {};
+
+  /**
+   * This server's list of static paths. HTTP requests to a static path are
+   * usually intended to retrieve some type of concrete resource (e.g., a CSS
+   * file or a JS file). If an HTTP request is matched to a static path and the
+   * resource the HTTP request is trying to get is found, then
+   * `Drash.Http.Response` will use its `sendStatic()` method to send the static
+   * asset back to the client.
+   *
+   * @property string[] static_paths
+   */
+  protected static_paths: string[] = [];
   protected trackers = {
     requested_favicon: false
   };
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
    *
    * @param any configs
+   *     address: string
+   *
+   *     logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger
+   *
+   *     response_output: string (a proper MIME type)
+   *
+   *     resources: Drash.Http.Resource[]
+   *
+   *     static_paths: string[]
    */
   constructor(configs: any) {
-    if (!configs.response_output) {
-      configs.response_output = this.configs_defaults.default_response_content_type;
-    }
-
-    if (configs.logger) {
-      this.logger = configs.logger;
-    } else {
+    if (!configs.logger) {
       this.logger = new Drash.Loggers.ConsoleLogger({
         enabled: false
       });
+    } else {
+      this.logger = configs.logger;
+    }
+
+    if (!configs.address) {
+      configs.address = "127.0.0.1:8000";
+    }
+
+    if (!configs.response_output) {
+      configs.response_output = "application/json"
     }
 
     this.configs = configs;
@@ -48,84 +79,28 @@ export default class Server {
     }
 
     if (configs.static_paths) {
-      configs.static_paths.forEach((path) => {
+      configs.static_paths.forEach(path => {
         this.addStaticPath(path);
       });
     }
   }
 
-  public addStaticPath(path) {
-    this.static_paths.push(path);
-  }
-
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////////////////////////
-
-  /**
-   * Add an HTTP resource to the server which can be retrieved at specific URIs. Drash defines an
-   * HTTP resource according to the following:
-   *
-   * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
-   *
-   * @param Drash.Http.Resource resourceClass
-   *
-   * @return void
-   */
-  public addHttpResource(resourceClass): void {
-    resourceClass.paths.forEach((path, index) => {
-      try {
-        let pathObj = {
-          og_path: path,
-          regex_path:
-            "^" +
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT
-            ) +
-            "$",
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
-            return path
-              .replace(":", "")
-              .replace("{", "")
-              .replace("}", "");
-          })
-        };
-        resourceClass.paths[index] = pathObj;
-      } catch (error) {
-        this.logger.trace(error);
-      }
-    });
-
-    // Store the resource so it can be retrieved when requested
-    this.resources[resourceClass.name] = resourceClass;
-
-    this.logger.debug(`HTTP resource "${resourceClass.name}" added.`);
-  }
-
-  public getStaticPathData(request) {
-    let requestUrl = `/${request.url.split("/")[1]}`;
-
-    if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-        headers: {
-          "Response-Content-Type": Drash.Services.HttpService.getMimeType(request.url, true)
-        }
-      });
-      return true;
-    }
-
-    return false;
-  }
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
    * Handle an HTTP request from the Deno server.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
+   *
+   * @return any
+   *    See _Drash.Http.Response.send()_.
    */
-  public handleHttpRequest(request): any {
-    let staticPathData = this.getStaticPathData(request);
+  public handleHttpRequest(request: DrashHttpRequest): any {
+    let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
     let response;
 
-    if (staticPathData) {
+    if (getStaticPathAsset) {
       try {
         response = new Drash.Http.Response(request);
         return response.sendStatic();
@@ -151,17 +126,25 @@ export default class Server {
       }
     });
 
-    let resource = this.getResourceClass(request);
+    let resourceClass = this.getResourceClass(request);
 
     // No resource? Send a 404 (Not Found) response.
-    if (!resource) {
+    if (!resourceClass) {
       return this.handleHttpRequestError(
         request,
         new Drash.Exceptions.HttpException(404)
       );
     }
 
-    resource = new resource(request, new Drash.Http.Response(request), this);
+    // @ts-ignore
+    // We ignore this because `resourceClass` could be `undefined` and that
+    // doens't have a construct signature. If this isn't ignored, then the
+    // following error will occur:
+    //
+    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+    // construct signature.
+    //
+    let resource = new resourceClass(request, new Drash.Http.Response(request), this);
 
     try {
       this.logger.debug(
@@ -173,16 +156,14 @@ export default class Server {
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
           "Content-Type"
-        )}. Status: ${
-          Drash.Dictionaries.HttpStatusCodes[response.status_code]
-            .response_message
-        }.`
+        )}. Status: ${response.getStatusMessageFull()}.`
       );
       return response.send();
     } catch (error) {
-      // If a resource was found, but an error occurred, then that's most likely due to the HTTP
-      // method not being defined in the resource class; therefore, the method is not allowed. In
-      // this case, we send a 405 (Method Not Allowed) response.
+      // If a resource was found, but an error occurred, then that's most likely
+      // due to the HTTP method not being defined in the resource class;
+      // therefore, the method is not allowed. In this case, we send a 405
+      // (Method Not Allowed) response.
       if (resource && !error.code) {
         if (!response) {
           return this.handleHttpRequestError(
@@ -204,19 +185,20 @@ export default class Server {
   /**
    * Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
    * @param any error
+   *     The error object.
    *
    * @return any
+   *     See _Drash.Http.Response.send()_.
    */
-  public handleHttpRequestError(request, error): any {
+  public handleHttpRequestError(request: DrashHttpRequest, error: any): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
     this.logger.trace("Stack trace below:");
     this.logger.trace(error.stack);
-
-    let requestUrl = request.url.split("?")[0];
 
     let response = new Drash.Http.Response(request);
 
@@ -225,28 +207,30 @@ export default class Server {
         error.code = 401;
         response.body = error.message
           ? error.message
-          : `The requested URL '${requestUrl} requires authentication.`;
+          : `The requested URL '${request.url_path} requires authentication.`;
         break;
       case 404:
         response.body = error.message
           ? error.message
-          : `The requested URL '${requestUrl}' was not found on this server.`;
+          : `The requested URL '${
+              request.url_path
+            }' was not found on this server.`;
         break;
       case 405:
         response.body = error.message
           ? error.message
-          : `URI '${requestUrl}' does not allow ${request.method.toUpperCase()} requests.`; // eslint-disable-line
+          : `URI '${
+              request.url_path
+            }' does not allow ${request.method.toUpperCase()} requests.`;
         break;
       case 500:
         response.body = error.message
           ? error.message
-          : `Something went terribly wrong.`; // eslint-disable-line
+          : `Something went terribly wrong.`;
         break;
       default:
         error.code = 400;
-        response.body = error.message
-          ? error.message
-          : "Something went wrong.";
+        response.body = error.message ? error.message : "Something went wrong.";
         break;
     }
 
@@ -255,28 +239,27 @@ export default class Server {
     this.logger.info(
       `Sending response. Content-Type: ${response.headers.get(
         "Content-Type"
-      )}. Status: ${
-        Drash.Dictionaries.HttpStatusCodes[response.status_code]
-          .response_message
-      }.`
+      )}. Status: ${response.getStatusMessageFull()}.`
     );
 
     return response.send();
   }
 
   /**
-   * Handle HTTP requests for the favicon. This method only exists to short-circuit favicon requests--preventing the requests from clogging the logs.
+   * Handle HTTP requests for the favicon. This method only exists to
+   * short-circuit favicon requests--preventing the requests from clogging the
+   * logs.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
    */
-  public handleHttpRequestForFavicon(request): any {
+  public handleHttpRequestForFavicon(request: DrashHttpRequest): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logger.debug("/favicon.ico requested.");
       this.logger.debug(
-        "All future log messages for this request will be muted."
+        "All future log messages for /favicon.ico will be muted."
       );
     }
     let response = {
@@ -288,32 +271,121 @@ export default class Server {
   }
 
   /**
-   * Run the Deno server.
+   * Run the Deno server at the address specified in the configs. This method
+   * takes each HTTP request and creates a new and more workable request object
+   * and passes it to _Drash.Http.Server.handleHttpRequest()_.
+   *
+   * @return Promise<void>
+   *     This method just listens for requests at the address you provide in the
+   *     configs.
    */
   public async run(): Promise<void> {
-    this.logger.info(`Deno server started at ${this.configs.address}.`);
+    console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
-      this.handleHttpRequest(request);
+      let drashRequest = new Drash.Http.Request(request);
+      this.handleHttpRequest(drashRequest);
     }
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+
+  /**
+   * Add an HTTP resource to the server which can be retrieved at specific URIs.
+   *
+   * Drash defines an HTTP resource according to the [MDN web
+   * docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
+   *
+   * @param Drash.Http.Resource resourceClass
+   *     A child object of the `Drash.Http.Resource` class.
+   *
+   * @return void
+   *     This method just adds `resourceClass` to `this.resources` so it can be
+   *     used (if matched) during an HTTP request.
+   */
+  protected addHttpResource(resourceClass: DrashHttpResource): void {
+    resourceClass.paths.forEach((path, index) => {
+      let pathObj;
+      if (path == "*" || path.includes("*")) {
+        pathObj = {
+          og_path: path,
+          regex_path:
+            "^." +
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT
+            ) +
+            "$",
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
+            return path
+              .replace(":", "")
+              .replace("{", "")
+              .replace("}", "");
+          })
+        };
+        return;
+      }
+      try {
+        pathObj = {
+          og_path: path,
+          regex_path:
+            "^" +
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT
+            ) +
+            "$",
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
+            return path
+              .replace(":", "")
+              .replace("{", "")
+              .replace("}", "");
+          })
+        };
+        resourceClass.paths[index] = pathObj;
+      } catch (error) {
+        Drash.core_logger.error(error);
+      }
+    });
+
+    // Store the resource so it can be retrieved when requested
+    this.resources[resourceClass.name] = resourceClass;
+
+    Drash.core_logger.debug(`HTTP resource "${resourceClass.name}" added.`);
+  }
+
+  /**
+   * Add a static path for serving static assets like CSS files, JS files, PDF
+   * files, etc.
+   *
+   * @param string path
+   *
+   * @return void
+   *     This method just adds `path` to `this.static_paths` so it can be used (if
+   *     matched) during an HTTP request.
+   */
+  protected addStaticPath(path: string): void {
+    this.static_paths.push(path);
+  }
 
   /**
    * Get the resource class.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
    *
    * @return Drash.Http.Resource|undefined
+   *     Returns a `Drash.Http.Resource` object if the URL path of the request
+   *     can be matched to a `Drash.Http.Resource` object's paths.
+   *
+   *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request) {
+  protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined {
     let matchedResourceClass = undefined;
-    let requestUrl = request.url.split("?")[0];
 
     for (let className in this.resources) {
-      // eslint-disable-line
-      // Break out if a resource was matched with the request.parsed_url.pathname variable
+      // Break out if a resource was matched with the
+      // request.parsed_url.pathname variable
       if (matchedResourceClass) {
         break;
       }
@@ -326,19 +398,24 @@ export default class Server {
       ) {
         if (!matchedResourceClass) {
           let thisPathMatchesRequestPathname = null;
-          if (pathObj.og_path === "/" && requestUrl.pathname === "/") {
+          if (pathObj.og_path === "/" && request.url_path === "/") {
             matchedResourceClass = resource;
             return;
           }
 
-          // Check if the current path we're working on matches the request's pathname
-          thisPathMatchesRequestPathname = requestUrl.match(pathObj.regex_path);
+          // Check if the current path we're working on matches the request's
+          // pathname
+          thisPathMatchesRequestPathname = request.url_path.match(
+            pathObj.regex_path
+          );
           if (!thisPathMatchesRequestPathname) {
             return;
           }
 
           // Create the path params
-          let requestPathnameParams = requestUrl.match(pathObj.regex_path);
+          let requestPathnameParams = request.url_path.match(
+            pathObj.regex_path
+          );
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();
@@ -360,5 +437,33 @@ export default class Server {
     }
 
     return matchedResourceClass;
+  }
+
+  /**
+   * Is the request for a static path asset?
+   *
+   * @param Drash.Http.Request request
+   *
+   * @return boolean
+   *     Returns true if the request is for an asset in a static path.
+   */
+  protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean {
+    // If the request URL is "/public/assets/js/bundle.js", then we take out
+    // "/public" and use that to check against the static paths
+    let requestUrl = `/${request.url.split("/")[1]}`;
+
+    if (this.static_paths.indexOf(requestUrl) != -1) {
+      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+        headers: {
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+            request.url,
+            true
+          )
+        }
+      });
+      return true;
+    }
+
+    return false;
   }
 }

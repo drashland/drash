@@ -1,0 +1,7 @@
+#!/bin/bash
+
+(
+  export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/tests/data/example-code"
+  export DRASH_CORE_LOGGER_ENABLED=false
+  deno $DRASH_DIR_ROOT/tests/test.ts --allow-env --allow-read --allow-write $@
+)

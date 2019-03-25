@@ -9,9 +9,10 @@ let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "application/json",
   resources: [HomeResource, UsersResource],
-  logger: new Drash.Loggers.ConsoleLogger({
+  logger: new Drash.Loggers.FileLogger({
     enabled: true,
-    level: "info"
+    level: "info",
+    file: "./tmp/log.log"
   })
 });
 

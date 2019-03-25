@@ -22,9 +22,6 @@
         border-radius: 0 0 rem(1.5) rem(1.5);
         margin-top: 0;
     }
-    @media screen and (max-width: 950px) {
-        margin-left: rem(-4);
-    }
 }
 
 
@@ -58,23 +55,31 @@
 }
 
 //
+// Signature
+//
+.c-code-signature {
+    font-family: $g-font-family-code !important;
+    font-size: rem(1.5) !important;
+    padding: rem(0.1) rem(0.5) !important;
+}
+
+//
 // Parameter
 //
 .c-code-parameter {
     @extend %c-code-function-parameter;
-    margin-right: rem(1);
 }
 
 //
 // Data Type (e.g., <Object>)
 //
 .c-code-data-type {
-    &:after {
-        content: ">";
-    }
-    &:before {
-        content: "<";
-    }
+    // &:after {
+    //     content: ">";
+    // }
+    // &:before {
+    //     content: "<";
+    // }
 }
 
 //

@@ -1,8 +1,11 @@
 language: python
 
+env:
+  - DRASH_DIR_ROOT="/home/travis/build/crookse/deno-drash"
+
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
-  - deno tests/test.ts
+  - console/test

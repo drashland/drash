@@ -1,7 +1,0 @@
-#!/bin/bash
-
-(
-  export DRASH_MODE="development";
-  deno $DRASH_DIRS_BASE/docs/docs.ts --allow-net --allow-env --allow-read $@
-  echo "Don't forget to run $DRASH_DIRS_BASE/docs/.console/webpack.dev"
-)

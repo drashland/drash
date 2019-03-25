@@ -7,20 +7,17 @@ assignees: ''
 
 ---
 
-Summary
----
+## Summary
 
 What: Explain ...
 
 Why: Explain ...
 
-Acceptance Critera
----
+## Acceptance Critera
 
-* Add acceptance critera as bullted list
+- Add acceptance critera as bullted list
 
-Example Pseudo Code (for implementation)
----
+## Example Pseudo Code (for implementation)
 
 ```typescript
 // Add example pseudo code for implementation

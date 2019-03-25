@@ -46,6 +46,8 @@ body {
     font-size: $g-body-font-size;
 }
 
+$g-font-family-code: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // VARIABLES ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,6 +116,7 @@ $config-color-function-parameter: $g-color-ainc-orange;
 @import 'components.lists';
 @import 'components.logo';
 @import 'components.misc';
+@import 'components.reference_page';
 @import 'resources';
 @import "trumps.bootstrap";
 @import "trumps";

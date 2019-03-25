@@ -1,0 +1,164 @@
+<style lang="scss">
+$g-font-family-code: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+.page--reference {
+    p {
+        margin-bottom: 1rem;
+    }
+    .heading-class-name {
+        background: #000;
+        color: #efefef;
+        font-family: $g-font-family-code;
+        padding: rem(1);
+    }
+    .type-heading {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        &.--class {
+            color: #efefef;
+            background: #000;
+        }
+        &.--methods {
+            // border-bottom: 4px solid #ff7700;
+            color: #efefef;
+            background: #ff7700;
+            padding: 0.5rem 1rem;
+        }
+        &.--properties {
+            color: #efefef;
+            background: #03a9f4;
+            padding: 0.5rem 1rem;
+            // border-bottom: 4px solid #03a9f4;
+        }
+    }
+    .card {
+        margin-bottom: 2rem;
+        &.--method {
+            border-left: 10px solid #ff7700;
+        }
+        &.--property {
+            border-left: 10px solid #03a9f4;
+        }
+    }
+    .card-title {
+        font-size: 1.2rem;
+    }
+    .tag-row {
+        margin-bottom: 1rem;
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+    .tag-row__heading {
+        display: block;
+        margin-bottom: 1rem;
+    }
+    .tag-row p:last-of-type {
+        margin-bottom: 0;
+    }
+    .tag-row ul {
+        margin-top: 0;
+    }
+    .tag-row ul li ul,
+    .tag-row ul ul {
+        margin-top: 1rem;
+        margin-bottom: 0;
+    }
+}
+</style>
+
+<template lang="pug">
+div.page.page--reference
+    div.c-page__header
+        div.row
+            div.col
+                h1.c-heading.c-heading--style-2 API Reference
+    div.c-page__body
+        hr
+        div.row
+            div.col
+                h2 {{ data.class.fully_qualified_name }}
+                p(v-for="description in  data.class.description") {{ description }}
+        hr
+        div.row
+            div.col
+                //- CLASS PROPERTIES
+                h2.type-heading.--properties Properties
+                div.properites
+                    div.card.--property(v-for="property in data.class.properties" v-show="hasProperties(data.class.properties)")
+                        div.card-body
+                            div.card-title
+                                code.c-code-signature.language-typescript {{ property.signature }}
+                            hr(style="margin: 1rem 0")
+                            //- DESCRIPTIONS
+                            div.tag-row(v-show="property.description.length > 0")
+                                strong.tag-row__heading Description
+                                ul
+                                    li(v-for="description in property.description" :inner-html.prop="description | markdown-it")
+                            //- TYPE
+                            div.tag-row(v-show="property.data_type")
+                                strong.tag-row__heading Type
+                                ul
+                                    li
+                                        code.c-code-data-type {{ property.data_type }}
+                            //- EXAMPLE CODE
+                            div.tag-row(v-show="property.example_code.length > 0")
+                                strong.tag-row__heading Example Code
+                                code-block-for-reference(v-for="example_code, index in property.example_code" :key="index" :data="example_code")
+                    div.card(v-show="!hasProperties(data.class.properties)")
+                        div.card-body
+                            div.tag-row
+                                p This class doesn't have any properties.
+        hr
+        div.row
+            div.col
+                //- CLASS METHODS
+                h2.type-heading.--methods Methods
+                div.methods
+                    div.card.--method(v-for="method in data.class.methods" v-if="data.class.methods.length > 0")
+                        div.card-body
+                            div.card-title
+                                code.c-code-signature.language-typescript {{ method.signature }}
+                            hr(style="margin: 1rem 0")
+                            //- DESCRIPTIONS
+                            div.tag-row(v-show="method.description.length > 0")
+                                strong.tag-row__heading Description
+                                ul
+                                    li(v-for="description in method.description" :inner-html.prop="description | markdown-it")
+                            div.tag-row(v-show="method.params.length > 0")
+                                strong.tag-row__heading Params
+                                ul
+                                    li(v-for="param in method.params")
+                                        code.c-code-parameter {{ param.name }}
+                                        span : 
+                                        code.c-code-data-type {{ param.data_type }}
+                                        ul(v-show="param.description.length > 0")
+                                            li(v-for="description in param.description" :inner-html.prop="description | markdown-it")
+                            div.tag-row(v-show="method.returns.length > 0")
+                                strong.tag-row__heading Returns
+                                ul
+                                    li(v-for="ret in method.returns")
+                                        code.c-code-data-type {{ ret.data_type }}
+                                        ul(v-show="ret.description.length > 0")
+                                            li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
+                            //- EXAMPLE CODE
+                            div.tag-row(v-show="method.example_code.length > 0")
+                                strong.tag-row__heading Example Code
+                                code-block-for-reference(v-for="example_code, index in method.example_code" :key="index" :data="example_code")
+                    div.card(v-else)
+                        div.card-body
+                            div.tag-row
+                                p This class doesn't have any methods.
+</template>
+
+<script>
+export default {
+    props: [
+        'data'
+    ],
+    methods: {
+        hasProperties(properties) {
+            return properties && properties.length > 0;
+        }
+    }
+}
+</script>

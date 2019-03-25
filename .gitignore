@@ -1,8 +1,13 @@
 # files
 .DS_Store
-conf.json
+.env
+*conf.json
 package-lock.json
 
 # directories
-.tmp
+.sass-cache
+tmp/*
 node_modules
+
+# exceptions
+!.gitkeep

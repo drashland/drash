@@ -1,5 +1,0 @@
-#!/bin/bash
-
-(
-  webpack --env.environment=development $@
-)
