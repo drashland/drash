@@ -21,6 +21,9 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
+**Suggested Solution(s)**
+A list of suggested solutions to try/implement.
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
