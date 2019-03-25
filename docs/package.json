@@ -24,6 +24,7 @@
   },
   "scripts": {
     "build": "console/build",
+    "build-dry-run": "console/build.dryrun",
     "dev": "console/dev",
     "dev-docs": "console/dev.docs",
     "install-watchdog": "console/pip.install.watchdog",

@@ -22,18 +22,4 @@
     --allow-write
 
   echo "Done."
-
-  echo "Performing git commit..."
-
-  git add index.html
-  git add public/assets/js/bundle.js
-  git commit -m "npm run build"
-
-  echo "Done."
-
-  echo "Performing git push..."
-
-  git push
-
-  echo "Done."
 )
