@@ -473,7 +473,41 @@
         "This is the base resource class for all resources. All resource classes must\nbe derived from this class."
       ],
       "example_code": [],
-      "properties": [],
+      "properties": [
+        {
+          "access_modifier": "protected",
+          "description": [
+            "The request object."
+          ],
+          "example_code": [],
+          "signature": "protected request: DrashHttpRequest",
+          "annotation": "@property Drash.Http.Request request",
+          "data_type": "Drash.Http.Request",
+          "name": "request"
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "The response object."
+          ],
+          "example_code": [],
+          "signature": "protected response: DrashHttpResponse",
+          "annotation": "@property Drash.Http.Response response",
+          "data_type": "Drash.Http.Response",
+          "name": "response"
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "The server object."
+          ],
+          "example_code": [],
+          "signature": "protected server: DrashHttpServer",
+          "annotation": "@property Drash.Http.Server server",
+          "data_type": "Drash.Http.Server",
+          "name": "server"
+        }
+      ],
       "methods": [
         {
           "access_modifier": "public",
@@ -481,14 +515,32 @@
             "Construct an object of this class."
           ],
           "example_code": [],
-          "signature": "constructor(request: ServerRequest, response: DrashHttpResponse, server: DrashHttpServer)",
-          "name": "ServerRequest,",
+          "signature": "constructor(request: DrashHttpRequest, response: DrashHttpResponse, server: DrashHttpServer)",
+          "name": "DrashHttpRequest,",
           "params": [
             {
-              "annotation": "@param ServerRequest request",
-              "data_type": "ServerRequest",
-              "description": [],
+              "annotation": "@param Drash.Http.Request request",
+              "data_type": "Drash.Http.Request",
+              "description": [
+                "The request object."
+              ],
               "name": "request"
+            },
+            {
+              "annotation": "@param Drash.Http.Response response",
+              "data_type": "Drash.Http.Response",
+              "description": [
+                "The response object."
+              ],
+              "name": "response"
+            },
+            {
+              "annotation": "@param Drash.Http.Server server",
+              "data_type": "Drash.Http.Server",
+              "description": [
+                "The server object."
+              ],
+              "name": "server"
             }
           ],
           "returns": [],
@@ -1264,7 +1316,7 @@
         {
           "access_modifier": "public",
           "description": [
-            "@inheritdoc"
+            "Write a log message to the console."
           ],
           "example_code": [],
           "signature": "public write(logMethodLevelDefinition, message): string",
@@ -1283,8 +1335,225 @@
         "This logger allows you to log messages to a file."
       ],
       "example_code": [],
+      "properties": [
+        {
+          "access_modifier": "protected",
+          "description": [
+            "The file this logger will write log messages to."
+          ],
+          "example_code": [],
+          "signature": "protected file: string",
+          "annotation": "@property string file",
+          "data_type": "string",
+          "name": "file"
+        }
+      ],
+      "methods": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "Construct an object of this class."
+          ],
+          "example_code": [],
+          "signature": "constructor(configs)",
+          "name": null,
+          "params": [
+            {
+              "annotation": "@param any configs",
+              "data_type": "any",
+              "description": [
+                "See Drash.Loggers.Logger.configs"
+              ],
+              "name": "configs"
+            }
+          ],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Write a log message to `this.file`."
+          ],
+          "example_code": [],
+          "signature": "public write(logMethodLevelDefinition, message): string",
+          "name": "write",
+          "params": [],
+          "returns": [],
+          "throws": []
+        }
+      ]
+    }
+  },
+  "Drash.Services": {
+    "HttpService": {
+      "fully_qualified_name": "Drash.Services.HttpService",
+      "name": "HttpService",
+      "annotation": "@class HttpService",
+      "description": [
+        "This class helps perform HTTP-related processes."
+      ],
+      "example_code": [],
       "properties": [],
-      "methods": []
+      "methods": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "Hydrate the request with data that is useful for the `Drash.Http.Server`\nclass."
+          ],
+          "example_code": [],
+          "signature": "public hydrateHttpRequest(request: DrashHttpRequest, options?: any)",
+          "name": "hydrateHttpRequest",
+          "params": [
+            {
+              "annotation": "@param Drash.Http.Request request",
+              "data_type": "Drash.Http.Request",
+              "description": [
+                "The request object."
+              ],
+              "name": "request"
+            },
+            {
+              "annotation": "@param any options",
+              "data_type": "any",
+              "description": [
+                "A list of options."
+              ],
+              "name": "options"
+            }
+          ],
+          "returns": [],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Get the specified HTTP request's URL path."
+          ],
+          "example_code": [],
+          "signature": "public getHttpRequestUrlPath(request: DrashHttpRequest): string",
+          "name": "getHttpRequestUrlPath",
+          "params": [
+            {
+              "annotation": "@param Drash.Http.Request request",
+              "data_type": "Drash.Http.Request",
+              "description": [
+                "The request object."
+              ],
+              "name": "request"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": [
+                "Returns the URL path."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Get the specified HTTP request's URL query string."
+          ],
+          "example_code": [],
+          "signature": "public getHttpRequestUrlQueryString(request: DrashHttpRequest): string",
+          "name": "getHttpRequestUrlQueryString",
+          "params": [
+            {
+              "annotation": "@param Drash.Http.Request request",
+              "data_type": "Drash.Http.Request",
+              "description": [
+                "The request object."
+              ],
+              "name": "request"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": [
+                "Returns the URL query string (e.g., key1=value1&key2=value2) without\nthe leading \"?\" character."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Get the HTTP request's URL query params by parsing the URL query string."
+          ],
+          "example_code": [],
+          "signature": "public getHttpRequestUrlQueryParams(request: DrashHttpRequest): any",
+          "name": "getHttpRequestUrlQueryParams",
+          "params": [
+            {
+              "annotation": "@param Drash.Http.Request request",
+              "data_type": "Drash.Http.Request",
+              "description": [
+                "The request object."
+              ],
+              "name": "request"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return any",
+              "data_type": "any",
+              "description": [
+                "Returns the URL query string in key-value pair format."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "Get a MIME type for a file based on its extension."
+          ],
+          "example_code": [],
+          "signature": "public getMimeType(file: string, fileIsUrl: boolean = false): string",
+          "name": "getMimeType",
+          "params": [
+            {
+              "annotation": "@param string filename",
+              "data_type": "string",
+              "description": [
+                "The filename in question."
+              ],
+              "name": "filename"
+            },
+            {
+              "annotation": "@param boolean fileIsUrl",
+              "data_type": "boolean",
+              "description": [
+                "Is the filename a URL/path to a file? Defaults to false."
+              ],
+              "name": "fileIsUrl"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": [
+                "Returns the name of the MIME type based on the extension of the\nfilename."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        }
+      ]
     }
   }
 }

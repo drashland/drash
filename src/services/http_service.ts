@@ -15,10 +15,7 @@ class HttpService {
    * @param Drash.Http.Request request
    *     The request object.
    * @param any options
-   *     A list of options:
-   *     {
-   *       headers: {}
-   *     }
+   *     A list of options.
    */
   public hydrateHttpRequest(request: DrashHttpRequest, options?: any) {
     if (options) {
@@ -128,9 +125,16 @@ class HttpService {
   /**
    * Get a MIME type for a file based on its extension.
    *
-   * @param any file
+   * @param string filename
+   *     The filename in question.
+   * @param boolean fileIsUrl
+   *     Is the filename a URL/path to a file? Defaults to false.
+   *
+   * @return string
+   *     Returns the name of the MIME type based on the extension of the
+   *     filename.
    */
-  public getMimeType(file: string, fileIsUrl: boolean = false) {
+  public getMimeType(file: string, fileIsUrl: boolean = false): string {
     let mimeType = null;
 
     if (fileIsUrl) {

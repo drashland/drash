@@ -13,15 +13,24 @@ import VueAppRoot from "/components/vue_app_root.vue";
 import Page_ApiReference from "/components/page_api_reference.vue";
 
 // Vue - Components - Pages
+import * as APIReference_Compilers from "/components/pages/api-reference/compilers.vue";
+import * as APIReference_Compilers_DocBlocksToJson from "/components/pages/api-reference/compilers/doc_blocks_to_json.vue";
+import * as APIReference_Http from "/components/pages/api-reference/http.vue";
+import * as APIReference_Http_Request from "/components/pages/api-reference/http/request.vue";
+import * as APIReference_Http_Resource from "/components/pages/api-reference/http/resource.vue";
+import * as APIReference_Http_Response from "/components/pages/api-reference/http/response.vue";
+import * as APIReference_Http_Server from "/components/pages/api-reference/http/server.vue";
+import * as APIReference_Loggers from "/components/pages/api-reference/loggers.vue";
+import * as APIReference_Loggers_ConsoleLogger from "/components/pages/api-reference/loggers/console_logger.vue";
+import * as APIReference_Loggers_FileLogger from "/components/pages/api-reference/loggers/file_logger.vue";
+import * as APIReference_Loggers_Logger from "/components/pages/api-reference/loggers/logger.vue";
+import * as APIReference_Services from "/components/pages/api-reference/services.vue";
+import * as APIReference_Services_HttpService from "/components/pages/api-reference/services/http_service.vue";
 import * as AddingContentTypes from "/components/pages/tutorials/adding_content_types.vue";
 import * as CreatingAServer from "/components/pages/tutorials/creating_a_server.vue";
 import * as HandlingContentNegotiation from "/components/pages/tutorials/handling_content_negotiation.vue";
 import * as Introduction from "/components/pages/introduction.vue";
 import * as Logging from "/components/pages/tutorials/logging.vue";
-import * as APIReference_Loggers_Logger from "/components/pages/api-reference/loggers/logger.vue";
-import * as APIReference_Loggers_FileLogger from "/components/pages/api-reference/loggers/file_logger.vue";
-import * as APIReference_Loggers_ConsoleLogger from "/components/pages/api-reference/loggers/console_logger.vue";
-import * as APIReference_Compilers_DocBlocksToJson from "/components/pages/api-reference/compilers/doc_blocks_to_json.vue";
 import Error404 from "/components/pages/error_404.vue";
 
 // Vendor
@@ -30,11 +39,20 @@ window.markdownIt = new MarkdownIt();
 
 const routes = [];
 const routeModules = [
-  AddingContentTypes,
+  APIReference_Compilers,
   APIReference_Compilers_DocBlocksToJson,
-  APIReference_Loggers_Logger,
+  APIReference_Http,
+  APIReference_Http_Request,
+  APIReference_Http_Resource,
+  APIReference_Http_Response,
+  APIReference_Http_Server,
+  APIReference_Loggers,
   APIReference_Loggers_ConsoleLogger,
   APIReference_Loggers_FileLogger,
+  APIReference_Loggers_Logger,
+  APIReference_Services,
+  APIReference_Services_HttpService,
+  AddingContentTypes,
   CreatingAServer,
   HandlingContentNegotiation,
   Introduction,

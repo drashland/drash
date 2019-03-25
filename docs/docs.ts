@@ -17,7 +17,8 @@ let compiled = compiler.compile([
   `${drashDirRoot}/src/http/server.ts`,
   `${drashDirRoot}/src/loggers/logger.ts`,
   `${drashDirRoot}/src/loggers/console_logger.ts`,
-  `${drashDirRoot}/src/loggers/file_logger.ts`
+  `${drashDirRoot}/src/loggers/file_logger.ts`,
+  `${drashDirRoot}/src/services/http_service.ts`
 ]);
 
 const encoder = new TextEncoder();

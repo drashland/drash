@@ -1,6 +1,6 @@
 // namespace Drash.Http
 
-import { ServerRequest } from "https://deno.land/x/http/server.ts";
+import DrashHttpRequest from "./request.ts";
 import DrashHttpResponse from "./response.ts";
 import DrashHttpServer from "./server.ts";
 
@@ -14,18 +14,40 @@ export default class Resource {
   public paths;
   public name;
 
-  protected request;
-  protected response;
-  protected server;
+  /**
+   * The request object.
+   *
+   * @property Drash.Http.Request request
+   */
+  protected request: DrashHttpRequest;
+
+  /**
+   * The response object.
+   *
+   * @property Drash.Http.Response response
+   */
+  protected response: DrashHttpResponse;
+
+  /**
+   * The server object.
+   *
+   * @property Drash.Http.Server server
+   */
+  protected server: DrashHttpServer;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
    *
-   * @param ServerRequest request
+   * @param Drash.Http.Request request
+   *     The request object.
+   * @param Drash.Http.Response response
+   *     The response object.
+   * @param Drash.Http.Server server
+   *     The server object.
    */
-  constructor(request: ServerRequest, response: DrashHttpResponse, server: DrashHttpServer) {
+  constructor(request: DrashHttpRequest, response: DrashHttpResponse, server: DrashHttpServer) {
     this.request = request;
     this.response = response;
     this.server = server;

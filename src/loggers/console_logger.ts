@@ -20,7 +20,7 @@ export default class ConsoleLogger extends Logger {
   }
 
   /**
-   * @inheritdoc
+   * Write a log message to the console.
    */
   public write(logMethodLevelDefinition, message): string {
     if (this.test) {
