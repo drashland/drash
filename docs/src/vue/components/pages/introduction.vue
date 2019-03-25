@@ -76,7 +76,7 @@ div
                         pre.header
                             code.header Terminal
                         pre.body
-                            code.language-typescript deno /path/to/your/project/app.ts --allow-net
+                            code.language-typescript deno /path/to/your/project/quickstart.ts --allow-net
                     li Make the following <code>GET</code> and <code>POST</code> requests:
                         p.text--help I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.
                         ul
