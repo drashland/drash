@@ -67,6 +67,7 @@ div
                             li <code>text/html</code>
                             li <code>application/xml</code>
                             li <code>text/xml</code>
+                    li The <code>quickstart.ts</code> code below gives you one resource class (<code>HomeResource</code>) that handles <code>GET</code> and <code>POST</code> requests at the <code>/</code> URI.
                 h3 Steps
                 ol
                     li Create your app file.
