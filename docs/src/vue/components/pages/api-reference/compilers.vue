@@ -12,7 +12,7 @@ div.page.page--reference
                 p Below are the list of classes under this namespace:
                 ul
                     li
-                        a(href="/#/api-reference/compilers/doc-blocks-to-json") Drash.Compilers.DocBlocksToJson
+                        a(:href="$conf.base_url + '/#/api-reference/compilers/doc-blocks-to-json'") Drash.Compilers.DocBlocksToJson
 </template>
 
 <script>

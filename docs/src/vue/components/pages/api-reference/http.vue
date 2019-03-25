@@ -12,13 +12,13 @@ div.page.page--reference
                 p Below are the list of classes under this namespace:
                 ul
                     li
-                        a(href="/#/api-reference/http/request") Drash.Http.Request
+                        a(:href="$conf.base_url + '/#/api-reference/http/request'") Drash.Http.Request
                     li
-                        a(href="/#/api-reference/http/resource") Drash.Http.Resource
+                        a(:href="$conf.base_url + '/#/api-reference/http/resource'") Drash.Http.Resource
                     li
-                        a(href="/#/api-reference/http/response") Drash.Http.Response
+                        a(:href="$conf.base_url + '/#/api-reference/http/response'") Drash.Http.Response
                     li
-                        a(href="/#/api-reference/http/server") Drash.Http.Server
+                        a(:href="$conf.base_url + '/#/api-reference/http/server'") Drash.Http.Server
 </template>
 
 <script>

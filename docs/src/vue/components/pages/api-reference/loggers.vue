@@ -12,11 +12,11 @@ div.page.page--reference
                 p Below are the list of classes under this namespace:
                 ul
                     li
-                        a(href="/#/api-reference/loggers/logger") Drash.Loggers.Logger
+                        a(:href="$conf.base_url + '/#/api-reference/loggers/logger'") Drash.Loggers.Logger
                     li
-                        a(href="/#/api-reference/loggers/console-logger") Drash.Loggers.ConsoleLogger
+                        a(:href="$conf.base_url + '/#/api-reference/loggers/console-logger'") Drash.Loggers.ConsoleLogger
                     li
-                        a(href="/#/api-reference/loggers/file-logger") Drash.Loggers.FileLogger
+                        a(:href="$conf.base_url + '/#/api-reference/loggers/file-logger'") Drash.Loggers.FileLogger
 </template>
 
 <script>
