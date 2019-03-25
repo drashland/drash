@@ -18,7 +18,8 @@ div
                 h3 HTTP Resources
                 p Drash uses HTTP resources. It doesn't use controllers and it doesn't use <code>app.get('/', someHandler())</code>-like syntax. You create a resource class, define its URIs, and give it HTTP methods (e.g., <code>GET()</code>, <code>POST()</code>, <code>PUT()</code>, <code>DELETE()</code>, etc.).
                 h3 Content Negotiation
-                p Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through content negotiation. Drash ships with <code>application/json</code>, <code>text/html</code>, <code>application/xml</code>, and <code>text/xml</code> handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle. See the <a href="/projects/deno-drash/#/tutorials/adding-content-types">Adding Content Types</a> tutorial for more information.
+                p Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through content negotiation. Drash ships with <code>application/json</code>, <code>text/html</code>, <code>application/xml</code>, and <code>text/xml</code> handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle.
+                p See the <a :href="$conf.base_url + '/#/tutorials/adding-content-types'">Adding Content Types</a> tutorial for more information.
                 h3 Request Path Params (e.g., <code>/users/:id</code>)
                 p Resources can access their URI's path params via <code>this.request.path_params.some_param</code>--allowing you to build RESTful/ish APIs.
                 h3 Request URL Query Params (e.g., <code>/users?id=1234</code>)
