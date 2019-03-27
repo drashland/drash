@@ -12,13 +12,13 @@ export default class AppResponse extends Drash.Http.Response {
       // Handle HTML
       case "text/html":
         let indexEjsFile = `${Deno.env().DRASH_DIR_ROOT}/docs/src/templates/index.ejs`;
-        Drash.Vendor.ConsoleLogger.debug("Rendering HTML response.");
+        Drash.Members.ConsoleLogger.debug("Rendering HTML response.");
         try {
           body = await ResponseService.getAppDataInHtml(indexEjsFile);
         } catch (error) {
-          Drash.Vendor.ConsoleLogger.error("WTF... tried rendering an HTML response, but I don't even know.");
-          Drash.Vendor.ConsoleLogger.error(`Attempted rendering file: ${indexEjsFile}`);
-          Drash.Vendor.ConsoleLogger.error("Error below:");
+          Drash.Members.ConsoleLogger.error("WTF... tried rendering an HTML response, but I don't even know.");
+          Drash.Members.ConsoleLogger.error(`Attempted rendering file: ${indexEjsFile}`);
+          Drash.Members.ConsoleLogger.error("Error below:");
           console.log(error);
           let error500template = `<!DOCTYPE html>
 <html class="w-full h-full">
@@ -52,7 +52,7 @@ export default class AppResponse extends Drash.Http.Response {
         break;
       // Handle JSON
       case "application/json":
-        Drash.Vendor.ConsoleLogger.debug("Stringifying JSON response.");
+        Drash.Members.ConsoleLogger.debug("Stringifying JSON response.");
         body = JSON.stringify({
           status_code: this.status_code,
           body: this.body

@@ -49,11 +49,11 @@ function Drash(): any {
       ConsoleLogger: ConsoleLogger,
       FileLogger: FileLogger
     },
+    Members: {},
     Services: {
       HttpService: HttpService
     },
     Util: Util,
-    Vendor: {},
 
     /**
      * @property CoreLogger core_logger
@@ -65,14 +65,16 @@ function Drash(): any {
     }),
 
     /**
-     * Add a new member to the Vendor namespace.
+     * Add an app to the Members namespace. After adding an app, you can use the
+     * app via `Drash.Members.YourApp.doSomething()`.
      *
      * @param string name
-     *     The member's name which can be accessed via `Drash.Vendor[name]`.
-     * @param any member
+     *     The app's name which can be accessed via `Drash.Members[name]`.
+     * @param any app
+     *     The app.
      */
-    addMember(name: string, member: any) {
-      this.Vendor[name] = member;
+    addMember(name: string, app: any) {
+      this.Members[name] = app;
     },
 
     /**
