@@ -8,7 +8,7 @@ members.test(function Drash_addMember_class() {
   }
   members.Drash.addMember("SomeCoolService", SomeCoolService);
   let expected = "OK!";
-  let service = new members.Drash.Vendor.SomeCoolService();
+  let service = new members.Drash.Members.SomeCoolService();
   members.assert.equal(service.coolify(), expected);
 });
 
@@ -19,7 +19,7 @@ members.test(function Drash_addMember_function() {
   members.Drash.addMember("SomeCoolServiceFunction", SomeCoolServiceFunction);
   let expected =
     "You specified the following arg: All your base are belong to us!";
-  let actual = members.Drash.Vendor.SomeCoolServiceFunction(
+  let actual = members.Drash.Members.SomeCoolServiceFunction(
     "All your base are belong to us!"
   );
   members.assert.equal(actual, expected);
@@ -43,7 +43,7 @@ members.test(function Drash_addMember_object() {
       definition: "This is Item 2. It is super cool."
     }
   };
-  let actual = members.Drash.Vendor.SomeCoolDictionary;
+  let actual = members.Drash.Members.SomeCoolDictionary;
   members.assert.equal(actual, expected);
 });
 
@@ -54,7 +54,7 @@ members.test(function Drash_addMember_differentName() {
     SomeCoolSomething
   );
   let expected = "Dr. Seuss";
-  let actual = members.Drash.Vendor["One Fish, Two Fish, Red Fish, Blue Fish"];
+  let actual = members.Drash.Members["One Fish, Two Fish, Red Fish, Blue Fish"];
   members.assert.equal(actual, expected);
 });
 
@@ -73,6 +73,6 @@ members.test(function Drash_addMember_types() {
   }
 
   for (let key in data) {
-    members.assert.equal(members.Drash.Vendor[key], data[key]);
+    members.assert.equal(members.Drash.Members[key], data[key]);
   }
 });
