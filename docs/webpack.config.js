@@ -76,7 +76,8 @@ module.exports = envVars => {
             ? "vue/dist/vue.min.js"
             : "vue/dist/vue.js",
         "/src": path.resolve(__dirname, "src"),
-        "/components": path.resolve(__dirname, "src/vue/components")
+        "/components": path.resolve(__dirname, "src/vue/components"),
+        "/public": path.resolve(__dirname, "public")
       }
     }
   };
