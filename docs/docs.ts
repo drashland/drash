@@ -32,7 +32,7 @@ console.log("[docs.ts] Starting server...");
 let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
-  logger: Drash.Vendor.ConsoleLogger,
+  logger: Drash.Members.ConsoleLogger,
   resources: [AppResource],
   static_paths: ["/public"]
 });
