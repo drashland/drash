@@ -1,7 +1,7 @@
 import Drash from "../bootstrap.ts";
 import * as ResponseService from "./response_service.ts";
 
-class AppResponse extends Drash.Http.Response {
+export default class AppResponse extends Drash.Http.Response {
   /**
    * Send a response to the client.
    */
@@ -67,5 +67,3 @@ class AppResponse extends Drash.Http.Response {
     });
   }
 }
-
-Drash.Http.Response = AppResponse;

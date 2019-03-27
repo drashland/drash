@@ -18,7 +18,6 @@ export const resource = {
 export default {
     data() {
         return {
-            example_code: this.$app_data.example_code.getting_started
         };
     },
 }
