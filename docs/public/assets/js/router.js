@@ -4,11 +4,15 @@ let conf = process.env.conf; // This variable comes from webpack.config.js under
 // Vue Router
 import VueRouter from "vue-router";
 
-import routesCompiled from "/public/assets/js/compiled_routes.js"
-import Error404 from "/components/pages/error_404.vue";
+import compiledRoutes from "/public/assets/js/compiled_routes.js"
 
 let routes = [];
-routesCompiled.forEach(component => {
+let routesForErrors = {};
+compiledRoutes.forEach(component => {
+  if (component.resource.meta && component.resource.meta.error_code) {
+    routesForErrors[component.resource.meta.error_code] = component.default;
+    return;
+  }
   component.resource.paths.forEach(path => {
     routes.push({
       path: path,
@@ -18,9 +22,11 @@ routesCompiled.forEach(component => {
   });
 });
 
+console.log(routesForErrors);
+
 routes.push({
   path: "*",
-  component: Error404
+  component: routesForErrors['404']
 });
 
 const router = new VueRouter({
@@ -37,6 +43,14 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  if (!to.meta) {
+    to.meta = {
+      title: "404 (Not Found)"
+    };
+  }
+  if (!to.meta.title) {
+    to.meta.title = "404 (Not Found)";
+  }
   document.title = conf.module_name + " - " + to.meta.title;
   next();
 });
