@@ -23,6 +23,7 @@ div.c-sidebar
             a.heading-link Tutorials
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
+                a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
