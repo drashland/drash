@@ -66,7 +66,7 @@ function getPageDataApiReference() {
 
 function getExampleCode() {
   let languages = {
-    sh: "text",
+    sh: "shell",
     ts: "typescript",
     css: "css",
     js: "javascript"
