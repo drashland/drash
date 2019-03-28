@@ -173,18 +173,14 @@ export default class Response {
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
+  /**
+   * Generate an HTML response. The `this.body` property should be the entire
+   * HTML document.
+   *
+   * @return string
+   */
   protected generateHtmlResponse(): string {
-    return `<!DOCTYPE html>
-<head>
-  <style>
-    html { font-family: Arial }
-  </style>
-</head>
-<body>
-  <h1>${this.status_code} (${this.getStatusMessage()})</h1>
-  <p>${this.body}</p>
-</body>
-</html>`;
+    return this.body;
   }
 
   protected generateJsonResponse(): string {
