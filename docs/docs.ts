@@ -42,6 +42,11 @@ function compileApiReferencePageData() {
 
 function compileExampleCodePageData() {
   console.log("[docs.ts] Compiling example code page data...");
+  let languages = {
+    sh: "text",
+    ts: "typescript"
+  };
+
   let exampleCode = {};
   let ignore = [
     "api_reference",
@@ -77,12 +82,26 @@ function compileExampleCodePageData() {
         store[fileNamespace][filename] = {
           contents: fileContents,
           extension: fileExtension,
+          title: getTitle(file, fileExtension),
           name: file.name,
+          language: languages[fileExtension]
         };
       } else {
         iterateDirectoryFiles(store[fileNamespace], file.path);
       }
     });
+  }
+
+  function getTitle(file, fileExtension) {
+    let title = (fileExtension == "sh")
+      ? "Terminal"
+      : `/path/to/your/project/${file.name}`;
+
+    title = (file.name == "folder_structure.txt")
+      ? "Project Folder Structure"
+      : title;
+
+    return title;
   }
 
   iterateDirectoryFiles(exampleCode, `${DRASH_DIR_ROOT}/docs/src/example_code`);

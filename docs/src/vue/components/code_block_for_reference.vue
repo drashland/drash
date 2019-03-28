@@ -22,15 +22,6 @@
         }
     }
 </style>
-<style lang="scss">
-    .line-highlight {
-        background: rgba(255,255,255,0.1);
-        width: 100%;
-    }
-    .line-highlight:before {
-        display: none;
-    }
-</style>
 
 <template lang="pug">
 div.b-code-example.code-block-for-reference

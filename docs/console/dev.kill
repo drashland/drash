@@ -1,0 +1,8 @@
+#!/bin/bash
+
+(
+  for pid in $(ps aux | grep 'docs.ts' | grep 'allow' | awk '{print $2}'); do
+    echo "[watchmedo] Killing $pid"
+    kill -9 $pid
+  done
+)

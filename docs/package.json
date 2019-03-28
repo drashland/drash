@@ -27,6 +27,7 @@
     "build-dry-run": "console/build.dryrun",
     "dev": "console/dev",
     "dev-docs": "console/dev.docs",
+    "dev-kill": "console/dev.kill",
     "dev-webpack": "console/webpack.dev",
     "dev-webpack-watch": "console/webpack.dev --watch",
     "install-watchdog": "console/pip.install.watchdog",

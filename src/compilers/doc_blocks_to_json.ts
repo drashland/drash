@@ -25,7 +25,7 @@ import Drash from "../../mod.ts";
  * @examplecode [
  *   {
  *     "title": "Example Call",
- *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
+ *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
  *     "language": "typescript"
  *   }
  * ]
@@ -65,17 +65,17 @@ export default class DocBlocksToJson {
    * @examplecode [
    *   {
    *     "title": "Example Call",
-   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
+   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
    *     "language": "typescript"
    *   },
    *   {
    *     "title": "file.ts",
-   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
+   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
    *     "language": "typescript"
    *   },
    *   {
    *     "title": "output.json",
-   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
+   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
    *     "language": "json"
    *   }
    * ]
@@ -149,17 +149,17 @@ export default class DocBlocksToJson {
    * @examplecode [
    *   {
    *     "title": "Example Call",
-   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
+   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
    *     "language": "typescript"
    *   },
    *   {
    *     "title": "doc_block.txt",
-   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
+   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
    *     "language": "text"
    *   },
    *   {
    *     "title": "output.json",
-   *     "filepath": "/api-reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
+   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
    *     "language": "json"
    *   }
    * ]
