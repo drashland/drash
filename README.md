@@ -1,8 +1,6 @@
 ![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?label=latest) ![Travis (.org) branch](https://img.shields.io/travis/crookse/deno-drash/v0.5.0.svg)
 
-`import Drash from "https://deno.land/x/drash/mod.ts";`
-
-`import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts";`
+`import Drash from "https://deno.land/x/drash@v0.6.2/mod.ts";`
 
 # Drash
 
