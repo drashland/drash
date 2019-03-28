@@ -15,6 +15,7 @@ import * as error_404_vue from "/var/www/deno-drash/docs/src/vue/components/page
 import * as creating_a_server_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_a_server.vue";
 import * as adding_global_members_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/adding_global_members.vue";
 import * as adding_content_types_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/adding_content_types.vue";
+import * as serving_static_paths_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/serving_static_paths.vue";
 import * as handling_content_negotiation_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/handling_content_negotiation.vue";
 import * as logging_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/logging.vue";
 import * as introduction_vue from "/var/www/deno-drash/docs/src/vue/components/pages/introduction.vue";
@@ -37,6 +38,7 @@ export default [
   creating_a_server_vue,
   adding_global_members_vue,
   adding_content_types_vue,
+  serving_static_paths_vue,
   handling_content_negotiation_vue,
   logging_vue,
   introduction_vue,

@@ -1,5 +1,6 @@
 import Drash from "../bootstrap.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
+import compiledExampleCodeJson from "./../public/assets/json/compiled_example_code.json";
 const decoder = new TextDecoder();
 
 // FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////
@@ -34,101 +35,7 @@ export function getAppData() {
 
     // The below is transferred to vue_app_root.vue
     app_data: JSON.stringify({
-      example_code: {
-        getting_started: {
-          importing_deno: code("/getting-started/importing_deno.ts"),
-          quickstart: code("/getting-started/quickstart.ts")
-        },
-        tutorials: {
-          adding_more_content_types: {
-            app: code("/tutorials/adding-more-content-types/app.ts"),
-            folder_structure: code(
-              "/tutorials/adding-more-content-types/folder_structure.txt"
-            ),
-            folder_structure_setup: code(
-              "/tutorials/adding-more-content-types/folder_structure_setup.sh"
-            ),
-            home_resource: code(
-              "/tutorials/adding-more-content-types/home_resource.ts"
-            ),
-            response: code("/tutorials/adding-more-content-types/response.ts")
-          },
-          requesting_different_content_types: {
-            app: code("/tutorials/requesting-different-content-types/app.ts"),
-            folder_structure: code(
-              "/tutorials/requesting-different-content-types/folder_structure.txt"
-            ),
-            folder_structure_setup: code(
-              "/tutorials/requesting-different-content-types/folder_structure_setup.sh"
-            ),
-            response: code(
-              "/tutorials/requesting-different-content-types/response.ts"
-            ),
-            users_resource: code(
-              "/tutorials/requesting-different-content-types/users_resource.ts"
-            ),
-            curl: code("/tutorials/requesting-different-content-types/curl.sh")
-          },
-          logging: {
-            server_logging_to_files: {
-              app: code("/tutorials/logging/server-logging-to-files/app.ts"),
-              folder_structure: code(
-                "/tutorials/logging/server-logging-to-files/folder_structure.txt"
-              ),
-              folder_structure_setup: code(
-                "/tutorials/logging/server-logging-to-files/folder_structure_setup.sh"
-              ),
-              get_request: code(
-                "/tutorials/logging/server-logging-to-files/get_request.sh"
-              ),
-              home_resource: code(
-                "/tutorials/logging/server-logging-to-files/home_resource.ts"
-              ),
-              server_log: code(
-                "/tutorials/logging/server-logging-to-files/tmp/server.log",
-                "tmp/server.log"
-              )
-            },
-            server_logging_to_the_terminal: {
-              app: code(
-                "/tutorials/logging/server-logging-to-the-terminal/app.ts"
-              ),
-              folder_structure: code(
-                "/tutorials/logging/server-logging-to-the-terminal/folder_structure.txt"
-              ),
-              folder_structure_setup: code(
-                "/tutorials/logging/server-logging-to-the-terminal/folder_structure_setup.sh"
-              ),
-              get_request: code(
-                "/tutorials/logging/server-logging-to-the-terminal/get_request.sh"
-              ),
-              home_resource: code(
-                "/tutorials/logging/server-logging-to-the-terminal/home_resource.ts"
-              ),
-              terminal: code(
-                "/tutorials/logging/server-logging-to-the-terminal/terminal.sh"
-              )
-            }
-          }, // close logging
-          creating_a_server: {
-            app: code(
-              "/tutorials/creating-a-server/app.ts"
-            ),
-            folder_structure: code(
-              "/tutorials/creating-a-server/folder_structure.txt"
-            ),
-            folder_structure_setup: code(
-              "/tutorials/creating-a-server/folder_structure_setup.sh"
-            ),
-            get_request: code(
-              "/tutorials/creating-a-server/get_request.sh"
-            ),
-            home_resource: code(
-              "/tutorials/creating-a-server/home_resource.ts"
-            )
-          } // close creating_a_server
-        }
-      },
+      example_code: compiledExampleCodeJson.example_code,
       store: {
         page_data: {
           api_reference: getPageDataApiReference()
@@ -145,27 +52,6 @@ export async function getAppDataInHtml(inputFile) {
 }
 
 // FILE MARKER: FUNCTIONS - LOCAL //////////////////////////////////////////////
-
-function code(file: string, filenameOverride?: string) {
-  let fileExtensionSplit = file.split(".");
-  let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
-  let fileSplit = file.split("/");
-  let filename = fileSplit[fileSplit.length - 1];
-
-  let contents;
-
-  try {
-    contents = decoder.decode(Deno.readFileSync(`./src/example-code${file}`));
-  } catch (error) {
-    contents = "File not found.";
-  }
-
-  return {
-    file: filenameOverride ? filenameOverride : filename,
-    file_extension: fileExtension,
-    code: contents
-  };
-}
 
 function getPageDataApiReference() {
   let contents = "";
