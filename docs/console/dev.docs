@@ -7,6 +7,7 @@
   done
 
   export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
+  export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
   export DRASH_CORE_LOGGER_ENABLED="true"
   export DRASH_CORE_LOGGER_LEVEL="error"
 
@@ -18,13 +19,13 @@
 
   deno $DRASH_DIR_ROOT/docs/docs.ts --allow-net --allow-env --allow-read --allow-write &
 
-  echo -e "[watchmedo] docs.ts app started."
-  echo -e "\n[watchmedo] !!! IMPORTANT !!!"
-  echo -e "[watchmedo] [ctrl] + [c] will NOT kill the docs.ts app. Run \`npm run dev-kill\` to kill the app.\n"
+  echo -e "[watchmedo] docs.ts app started.\n"
+  echo -e "[watchmedo] !!! IMPORTANT !!!"
+  echo -e "[watchmedo] [ctrl] + [c] will NOT kill the docs.ts app. Run the following to kill the app:"
+  echo -e "    \`npm run dev-kill\`\n"
 
   if [[ -z $1 ]]; then
     echo -e "[watchmedo] Don't forget to run the following:"
-    echo -e "    \`npm run webpack-dev-watch\`"
-    echo -e ""
+    echo -e "    \`npm run webpack-dev-watch\`\n"
   fi
 )
