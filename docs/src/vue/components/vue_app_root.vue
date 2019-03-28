@@ -1,3 +1,13 @@
+<style lang="scss">
+    .line-highlight {
+        background: rgba(255,255,255,0.1);
+        width: 100%;
+    }
+    .line-highlight:before {
+        display: none;
+    }
+</style>
+
 <template lang="pug">
 div#vue_app
     button.c-btn.c-btn-mobile.hide--soft(type="button", @click="openSidebar()")

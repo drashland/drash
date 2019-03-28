@@ -27,6 +27,7 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
+                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
             a.heading-link(:href="$conf.base_url + '/#/api-reference#top'") API Reference
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/api-reference/compilers'") Compilers

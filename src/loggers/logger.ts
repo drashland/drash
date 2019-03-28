@@ -16,7 +16,7 @@ export default abstract class Logger {
    * @examplecode [
    *   {
    *     "title": "Logger Configs",
-   *     "filepath": "/api-reference/loggers/logger_p_configs.ts",
+   *     "filepath": "/api_reference/loggers/logger_p_configs.ts",
    *     "language": "typescript"
    *   }
    * ]

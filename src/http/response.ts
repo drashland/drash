@@ -18,7 +18,7 @@ export default class Response {
    * @examplecode [
    *   {
    *     "title": "app.ts",
-   *     "filepath": "/api-reference/http/response/p_body.ts",
+   *     "filepath": "/api_reference/http/response/p_body.ts",
    *     "language": "typescript",
    *     "line_highlight": "6"
    *   }
@@ -106,7 +106,7 @@ export default class Response {
    * @examplecode [
    *   {
    *     "title": "app.ts",
-   *     "filepath": "/api-reference/http/response/m_getStatusMessage.ts",
+   *     "filepath": "/api_reference/http/response/m_getStatusMessage.ts",
    *     "language": "typescript",
    *     "line_highlight": "8"
    *   }
