@@ -39,18 +39,14 @@ div
                         ul
                             li This is the file that will be passed to the <code>deno</code> command in the terminal.
                         code-block(:data="example_code.serving_static_paths.app")
+                    li Create your <code>style.css</code> file.
+                        code-block(:data="example_code.serving_static_paths.public.style" title="/path/to/your/project/public/style.css")
                     li Run your app.
                       div.b-code-example
                             pre.header
                                 code.header Terminal
                             pre.body
                                 code.language-shell deno /path/to/your/project/app.ts --allow-net
-                    li Make the following <code>GET</code> request:
-                        code-block(:data="example_code.serving_static_paths.get_request")
-                    li Check the terminal you used to start <code>app.ts</code>. The <code>INFO | Howdy! I'm handling your GET request.</code> log message from the <code>HomeResource</code> class was written to the terminal.
-                        ul
-                            li The other log messages are written from the <code><a href="https://github.com/crookse/deno-drash/blob/master/src/http/server.ts" target="_BLANK">Drash.Http.Server</a></code> class.
-                        code-block(:data="example_code.serving_static_paths.terminal")
                 p.text--help This is the end of this tutorial.
 </template>
 

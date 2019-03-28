@@ -34,9 +34,13 @@ div.b-code-example.code-block-default
 <script>
 export default {
     props: [
-        'data'
+        'data',
+        'title',
     ],
     mounted() {
+        if (this.title) {
+            this.data.title = this.title;
+        }
         Prism.highlightAll();
     }
 }

@@ -1,6 +1,5 @@
 ▾ /path/to/your/project/
 	▾ public/
 		style.css
-		script.js
 	app.ts
 	home_resource.ts
