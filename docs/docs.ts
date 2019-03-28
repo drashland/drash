@@ -10,7 +10,6 @@ Drash.Http.Response = AppResponse;
 import AppResource from "./src/app_resource.ts";
 
 compileApiReferencePageData();
-compileExampleCodePageData();
 compileVueRouterRoutes();
 runServer();
 
@@ -38,77 +37,6 @@ function compileApiReferencePageData() {
   const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
   Deno.writeFileSync(apiReferenceOutputFile, apiReferenceData);
   console.log(`[docs.ts] Done. API Reference page data was written to:\n    ${apiReferenceOutputFile}.`);
-}
-
-function compileExampleCodePageData() {
-  console.log("[docs.ts] Compiling example code page data...");
-  let languages = {
-    sh: "text",
-    ts: "typescript"
-  };
-
-  let exampleCode = {};
-  let ignore = [
-    "api_reference",
-    ".DS_Store"
-  ];
-
-  function iterateDirectoryFiles(store, directory) {
-    let files = Deno.readDirSync(directory);
-    let fileNamespace;
-    try {
-      let fileNamespaceSplit = directory.split("/");
-      fileNamespace = fileNamespaceSplit[fileNamespaceSplit.length - 1];
-    } catch (error) {
-    }
-    if (!store[fileNamespace]) {
-      store[fileNamespace] = {};
-    }
-    files.forEach(file => {
-      if (ignore.indexOf(file.name) != -1) {
-        return;
-      }
-      if (file.isFile()) {
-        let fileContentsRaw = Deno.readFileSync(file.path);
-        let fileContents = Decoder.decode(fileContentsRaw);
-        let filename;
-        try {
-          filename = file.name.split(".")[0];
-        } catch (error) {
-          filename = file.name;
-        }
-        let fileExtensionSplit = file.name.split(".");
-        let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
-        store[fileNamespace][filename] = {
-          contents: fileContents,
-          extension: fileExtension,
-          title: getTitle(file, fileExtension),
-          name: file.name,
-          language: languages[fileExtension]
-        };
-      } else {
-        iterateDirectoryFiles(store[fileNamespace], file.path);
-      }
-    });
-  }
-
-  function getTitle(file, fileExtension) {
-    let title = (fileExtension == "sh")
-      ? "Terminal"
-      : `/path/to/your/project/${file.name}`;
-
-    title = (file.name == "folder_structure.txt")
-      ? "Project Folder Structure"
-      : title;
-
-    return title;
-  }
-
-  iterateDirectoryFiles(exampleCode, `${DRASH_DIR_ROOT}/docs/src/example_code`);
-  let outputFileContents = Encoder.encode(JSON.stringify(exampleCode, null, 2));
-  let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/compiled_example_code.json`;
-  Deno.writeFileSync(outputFile, outputFileContents);
-  console.log(`[docs.ts] Done. Example code page data was written to:\n    ${outputFile}.`);
 }
 
 function compileVueRouterRoutes() {

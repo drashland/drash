@@ -1,14 +1,13 @@
 import Drash from "../bootstrap.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
-import compiledExampleCodeJson from "./../public/assets/json/compiled_example_code.json";
-const decoder = new TextDecoder();
+const Decoder = new TextDecoder();
+const Encoder = new TextEncoder();
 
 // FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////
 
 export async function compile(inputFile, outputFile): Promise<any> {
   let body = await getAppDataInHtml(inputFile);
-  const encoder = new TextEncoder();
-  let encoded = encoder.encode(body);
+  let encoded = Encoder.encode(body);
   Deno.writeFileSync(outputFile, encoded);
 }
 
@@ -35,7 +34,7 @@ export function getAppData() {
 
     // The below is transferred to vue_app_root.vue
     app_data: JSON.stringify({
-      example_code: compiledExampleCodeJson.example_code,
+      example_code: getExampleCode().example_code,
       store: {
         page_data: {
           api_reference: getPageDataApiReference()
@@ -56,10 +55,81 @@ export async function getAppDataInHtml(inputFile) {
 function getPageDataApiReference() {
   let contents = "";
   try {
-    contents = decoder.decode(Deno.readFileSync(`./public/assets/json/api_reference.json`));
+    contents = Decoder.decode(Deno.readFileSync(`./public/assets/json/api_reference.json`));
   } catch (error) {
     Drash.core_logger.error(error);
   }
 
   return JSON.parse(contents);
+}
+
+
+function getExampleCode() {
+  let languages = {
+    sh: "text",
+    ts: "typescript"
+  };
+
+  let exampleCode: any = {};
+  let ignore = [
+    "api_reference",
+    ".DS_Store"
+  ];
+
+  function iterateDirectoryFiles(store, directory) {
+    let files = Deno.readDirSync(directory);
+    let fileNamespace;
+    try {
+      let fileNamespaceSplit = directory.split("/");
+      fileNamespace = fileNamespaceSplit[fileNamespaceSplit.length - 1];
+    } catch (error) {
+    }
+    if (!store[fileNamespace]) {
+      store[fileNamespace] = {};
+    }
+    files.forEach(file => {
+      if (ignore.indexOf(file.name) != -1) {
+        return;
+      }
+      if (file.isFile()) {
+        let fileContentsRaw = Deno.readFileSync(file.path);
+        let fileContents = Decoder.decode(fileContentsRaw);
+        let filename;
+        try {
+          filename = file.name.split(".")[0];
+        } catch (error) {
+          filename = file.name;
+        }
+        let fileExtensionSplit = file.name.split(".");
+        let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
+        store[fileNamespace][filename] = {
+          contents: fileContents,
+          extension: fileExtension,
+          title: getTitle(file, fileExtension),
+          name: file.name,
+          language: languages[fileExtension]
+        };
+      } else {
+        iterateDirectoryFiles(store[fileNamespace], file.path);
+      }
+    });
+  }
+
+  function getTitle(file, fileExtension) {
+    let title = (fileExtension == "sh")
+      ? "Terminal"
+      : `/path/to/your/project/${file.name}`;
+
+    title = (file.name == "folder_structure.txt")
+      ? "Project Folder Structure"
+      : title;
+
+    return title;
+  }
+
+  iterateDirectoryFiles(exampleCode, "./src/example_code");
+
+  // We get example_code because that's the name of the first directory being
+  // passed to iterateDirectoryFiles()
+  return exampleCode;
 }
