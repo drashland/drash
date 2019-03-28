@@ -15,7 +15,12 @@
   else
     echo -e "[watchmedo] Starting docs.ts app..."
   fi
-
+  # FIXME(crookse) Shouldn't need to do this twice
+  deno $DRASH_DIR_ROOT/docs/docs.ts --allow-net --allow-env --allow-read --allow-write &
+  for pid in $(ps aux | grep 'docs.ts' | grep 'allow' | awk '{print $2}'); do
+    echo "[watchmedo] Killing $pid"
+    kill -9 $pid
+  done
   deno $DRASH_DIR_ROOT/docs/docs.ts --allow-net --allow-env --allow-read --allow-write &
 
   echo -e "[watchmedo] docs.ts app started."
@@ -25,7 +30,6 @@
   if [[ -z $1 ]]; then
     echo -e "[watchmedo] Don't forget to run the following:"
     echo -e "    \`npm run webpack-dev-watch\`"
-    echo -e "    \`npm run watchmedo\`"
     echo -e ""
   fi
 )

@@ -137,7 +137,9 @@ function compileVueRouterRoutes() {
     importString += `  ${pathObj.name},\n`;
   });
   importString += "];";
-  Deno.writeFileSync(`${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`, Encoder.encode(importString));
+  let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
+  Deno.writeFileSync(outputFile, Encoder.encode(importString));
+  console.log(`[docs.ts] Done. vue-router routes were written to:\n    ${outputFile}.`);
 }
 
 function runServer() {
