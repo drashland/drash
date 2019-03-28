@@ -158,7 +158,7 @@ export default class Response {
    */
   public sendStatic(): any {
     const file = this.request.url_path;
-    const fullFilepath = `/var/www/deno-drash/docs/${file}`;
+    const fullFilepath = `${Deno.env().DRASH_SERVER_DIRECTORY}${file}`;
 
     let output = {
       status: this.status_code,
