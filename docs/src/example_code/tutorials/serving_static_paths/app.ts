@@ -4,12 +4,10 @@ import HomeResource from "./home_resource.ts";
 
 let server = new Drash.Http.Server({
   address: "localhost:8001",
-  response_output: "text/html", // Accepts text/html, text/xml, application/xml, or other MIME types you define
+  directory: "/path/to/your/project",
+  logger: new Drash.Loggers.ConsoleLogger({ enabled: true, level: "debug" }),
   resources: [HomeResource],
-  logger: new Drash.Loggers.ConsoleLogger({
-    enabled: true,
-    level: "debug"
-  }),
+  response_output: "text/html",
   static_paths: ["/public"]
 });
 
