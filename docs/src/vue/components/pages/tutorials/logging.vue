@@ -69,7 +69,7 @@ div
                     li Create your HTTP resource class file and have it log an <code>INFO</code> message when handling a <code>GET</code> request.
                         ul
                             li This class will handle <code>GET</code> requests to the <code>/</code> URI.
-                            li This class will write a log message to <code>/path/to/your/project/tmp/server.log</code> for every <code>GET</code> request received.
+                            li This class will write a log message to <code>/path/to/your/project/server.log</code> for every <code>GET</code> request received.
                         code-block(:data="example_code.server_logging_to_files.home_resource")
                     li Create your app file.
                         ul
@@ -83,10 +83,10 @@ div
                                 code.language-shell deno /path/to/your/project/app.ts --allow-net --allow-write
                     li Make the following <code>GET</code> request:
                         code-block(:data="example_code.server_logging_to_files.get_request")
-                    li Check <code>/path/to/your/project/tmp/server.log</code> to see the below log messages. The <code>INFO | Howdy! I'm handling your GET request.</code> log message from the <code>HomeResource</code> class was written to the file.
+                    li Check <code>/path/to/your/project/server.log</code> to see the below log messages. The <code>INFO | Howdy! I'm handling your GET request.</code> log message from the <code>HomeResource</code> class was written to the file.
                         ul
                             li The other log messages are written from the <code><a href="https://github.com/crookse/deno-drash/blob/master/src/http/server.ts" target="_BLANK">Drash.Http.Server</a></code> class.
-                        code-block(:data="example_code.server_logging_to_files.server_log")
+                        code-block(:data="example_code.server_logging_to_files.server")
                 p.text--help This is the end of this tutorial.
 </template>
 

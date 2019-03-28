@@ -9,7 +9,7 @@ let server = new Drash.Http.Server({
   logger: new Drash.Loggers.FileLogger({
     enabled: true,
     level: "debug", // Accepts all, trace, debug, info, warn, error, fatal, and off
-    file: "/path/to/your/project/.tmp/server.log"
+    file: "/path/to/your/project/server.log"
   })
 });
 
