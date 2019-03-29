@@ -18,19 +18,25 @@ Contributions are appreciated. Fork and send a pull request :)
 
 ## Quickstart
 
-#### Step 1 of 3: Create your `app.ts` file.
+#### Step 1 of 3: Create your `/path/to/your/project/app.ts` file.
 
 ```typescript
+Deno.env().DRASH_SERVER_DIRECTORY = "/path/to/your/project"; // no trailing slash
+
 import Drash from "https://deno.land/x/drash/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
-    this.response.body = "GET request received!";
-    return this.response;
-  }
-  public POST() {
-    this.response.body = "POST request received!";
+    this.response.body = `<!DOCTYPE html>
+<html>
+  <head>
+    <title>My App</title>
+  </head>
+  <body>
+    <p>GET request received!</p>
+  </body>
+</html>`;
     return this.response;
   }
 }
@@ -39,16 +45,16 @@ let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
   resources: [HomeResource],
-  static_paths: ["/public"]
+  static_paths: ["/public"] // The logic that handles static paths will prepend the value of Deno.env().DRASH_SERVER_DIRECTORY to "/public"
 });
 
 server.run();
 ```
 
-#### Step 2 of 3: Run your `app.ts` file.
+#### Step 2 of 3: Run your `/path/to/your/project/app.ts` file.
 
 ```shell
-$ deno app.ts --allow-net
+$ deno /path/to/your/project/app.ts --allow-net
 ```
 
 #### Step 3 of 3: Make the following HTTP requests:
