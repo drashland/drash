@@ -32,9 +32,10 @@ class HomeResource extends Drash.Http.Resource {
 <html>
   <head>
     <title>My App</title>
+    <link rel="stylesheet" type="text/css" href="/public/style.css">
   </head>
   <body>
-    <p style="font-family: Arial">GET request received!</p>
+    <p>GET request received!</p>
   </body>
 </html>`;
     return this.response;
@@ -51,18 +52,24 @@ let server = new Drash.Http.Server({
 server.run();
 ```
 
-#### Step 2 of 3: Run your `/path/to/your/project/app.ts` file.
+#### Step 2 of 4: Create your `/path/to/your/project/public/style.css` file
+
+```css
+body {
+    font-family: Arial;
+    color: #4bb543;
+}
+```
+
+#### Step 3 of 4: Run your `/path/to/your/project/app.ts` file.
 
 ```shell
 $ deno /path/to/your/project/app.ts --allow-net --allow-env
 ```
 
-#### Step 3 of 3: Make the following HTTP requests:
+#### Step 4 of 4: Check out your app in the browser.
 
-_Note: I recommend using [Postman](https://www.getpostman.com/) to make these requests. It's fast and versatile for web development._
-
-- `GET localhost:8000/`
-- `POST localhost:8000/`
+Navigate to `localhost:8000`.
 
 ## Features
 
