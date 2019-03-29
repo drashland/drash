@@ -18,7 +18,7 @@ Contributions are appreciated. Fork and send a pull request :)
 
 ## Quickstart
 
-#### Step 1 of 3: Create your `/path/to/your/project/app.ts` file.
+#### Step 1 of 4: Create your `/path/to/your/project/app.ts` file.
 
 ```typescript
 Deno.env().DRASH_SERVER_DIRECTORY = "/path/to/your/project"; // no trailing slash
