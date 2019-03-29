@@ -747,6 +747,25 @@
             }
           ],
           "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Generate an HTML response. The `this.body` property should be the entire\nHTML document."
+          ],
+          "example_code": [],
+          "signature": "protected generateHtmlResponse(): string",
+          "name": "generateHtmlResponse",
+          "params": [],
+          "returns": [
+            {
+              "annotation": "@return string",
+              "data_type": "string",
+              "description": [],
+              "name": null
+            }
+          ],
+          "throws": []
         }
       ]
     },
