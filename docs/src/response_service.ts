@@ -13,6 +13,14 @@ export async function compile(inputFile, outputFile): Promise<any> {
 
 export function getAppData() {
   const buildTimestamp = new Date().getTime();
+  const env = Deno.env().DRASH_DOCS_BASE_URL == "/deno-drash"
+    ? "production"
+    : "development";
+  let bundleVersion = "";
+  if (env == "production") {
+    bundleVersion = ".min";
+  }
+
   return {
     // The below is transferred to index.ejs
     scripts: {
@@ -20,7 +28,7 @@ export function getAppData() {
         "/public/assets/vendor/prismjs/prism.js",
         "/public/assets/vendor/jquery-3.3.1/jquery.min.js",
         "/public/assets/vendor/bootstrap-4.1.3-dist/js/bootstrap.min.js",
-        `/public/assets/js/bundle.js?version=${buildTimestamp}`
+        `/public/assets/js/bundle${bundleVersion}.js?version=${buildTimestamp}`
       ],
       external: [
         "https://unpkg.com/axios/dist/axios.min.js",

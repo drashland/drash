@@ -24,12 +24,17 @@ module.exports = envVars => {
 
   console.log(`\nRunning "${envVars.environment}" configs.\n`);
 
+  let bundleVersion = "";
+  if (envVars.environment == "production") {
+    bundleVersion = ".min";
+  }
+
   return {
     entry: path.resolve(__dirname, "public/assets/js/_bundle.js"),
     mode: envVars.environment,
     output: {
       path: path.resolve(__dirname, "public/assets/js/"),
-      filename: "bundle.js"
+      filename: `bundle${bundleVersion}.js`
     },
     module: {
       rules: [
