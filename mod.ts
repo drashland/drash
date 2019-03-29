@@ -74,6 +74,7 @@ function Drash(): any {
      *     The app.
      */
     addMember(name: string, app: any) {
+      this.core_logger.debug(`Add member "${name}" to Drash.Members namespace.`);
       this.Members[name] = app;
     },
 
