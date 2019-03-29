@@ -36,11 +36,17 @@ export default {
     props: [
         'data',
         'title',
+        'line_highlight',
     ],
-    mounted() {
+    beforeMount() {
         if (this.title) {
             this.data.title = this.title;
         }
+        if (this.line_highlight) {
+            this.data.line_highlight = this.line_highlight;
+        }
+    },
+    mounted() {
         Prism.highlightAll();
     }
 }

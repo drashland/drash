@@ -68,7 +68,11 @@ pre[class*="language-"] {
 
 ul pre[class*="language-"],
 ol pre[class*="language-"] {
-  margin-bottom: 0.725rem; }
+  margin-bottom: 1.8125rem; }
+
+ol .b-code-example,
+ul .b-code-example {
+  margin-top: 1.45rem; }
 
 ol,
 ul {
@@ -78,13 +82,13 @@ ul > *,
 ol > *,
 ul > * > *,
 ol > * > * {
-  margin-bottom: 0.725rem; }
+  margin-bottom: 1.45rem; }
 
 ul li ul,
 ul li ol,
 ol li ol,
 ol li ul {
-  margin-top: 0.725rem; }
+  margin-top: 1.45rem; }
 
 .c-sidebar {
   -webkit-overflow-scrolling: touch;
