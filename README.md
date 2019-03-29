@@ -64,8 +64,12 @@ body {
 #### Step 3 of 4: Run your `/path/to/your/project/app.ts` file.
 
 ```shell
-$ deno /path/to/your/project/app.ts --allow-net --allow-env
+$ deno /path/to/your/project/app.ts --allow-net --allow-env --allow-read
 ```
+
+* `--allow-net` is needed to run the server.
+* `--allow-env` is needed to set `Deno.env().DRASH_SERVER_DIRECTORY`.
+* `--allow-read` is needed to read the `/path/to/your/project/public/style.css` file.
 
 #### Step 4 of 4: Check out your app in the browser.
 
