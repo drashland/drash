@@ -1,7 +1,8 @@
 # files
+*conf.json
 .DS_Store
 .env
-*conf.json
+bundle.js
 package-lock.json
 
 # directories
