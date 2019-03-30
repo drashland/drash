@@ -16,10 +16,7 @@ let response = new members.Drash.Http.Response(request);
 
 // TODO(crookse) This needs to be fixed by passing in the constructor args. This is stupid. The test
 // is saying it expected 0 arguments, but got 3... there is supposed to be 3 arguments.
-let resource = new MyResource();
-resource.request = request;
-resource.response = response;
-resource.server = request;
+let resource = new MyResource(request, response, server);
 
 response = resource.GET();
 let actual = response.generateResponse();
