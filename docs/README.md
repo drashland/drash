@@ -17,8 +17,9 @@ $ npm install
 
 ## Running Dev Environment
 
-* The dev environment requires two shells: a shell to run the `docs.ts` app server and a shell to run `webpack`.
-* The dev environment is watched by `watchmedo`. `watchmedo` acts like `nodemon` for Node.js projects. Every time you save a file, the dev environment will be reloaded.
+The dev environment requires two shells: a shell to run the `docs.ts` app server and a shell to run `webpack`.
+
+The dev environment is watched by `watchmedo`. `watchmedo` acts like `nodemon` for Node.js projects. Every time you save a file, the dev environment will be reloaded.
 
 Run the `docs.ts` app server.
 
