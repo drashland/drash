@@ -604,7 +604,7 @@
             "The request object."
           ],
           "example_code": [],
-          "signature": "public request: DrashHttpRequest",
+          "signature": "public request: Drash.Http.Request",
           "annotation": "@property Drash.Http.Request request",
           "data_type": "Drash.Http.Request",
           "name": "request"
@@ -628,8 +628,8 @@
             "Construct an object of this class."
           ],
           "example_code": [],
-          "signature": "constructor(request: DrashHttpRequest)",
-          "name": "DrashHttpRequest)",
+          "signature": "constructor(request: Drash.Http.Request)",
+          "name": "Drash.Http.Request)",
           "params": [
             {
               "annotation": "@param Drash.Http.Request request",
@@ -822,7 +822,7 @@
             "Handle an HTTP request from the Deno server."
           ],
           "example_code": [],
-          "signature": "public handleHttpRequest(request: DrashHttpRequest): any",
+          "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
           "name": "handleHttpRequest",
           "params": [
             {
@@ -852,7 +852,7 @@
             "Handle cases when an error is thrown when handling an HTTP request."
           ],
           "example_code": [],
-          "signature": "public handleHttpRequestError(request: DrashHttpRequest, error: any): any",
+          "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
           "name": "handleHttpRequestError",
           "params": [
             {
@@ -890,7 +890,7 @@
             "Handle HTTP requests for the favicon. This method only exists to\nshort-circuit favicon requests--preventing the requests from clogging the\nlogs."
           ],
           "example_code": [],
-          "signature": "public handleHttpRequestForFavicon(request: DrashHttpRequest): any",
+          "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
           "name": "handleHttpRequestForFavicon",
           "params": [
             {
@@ -931,7 +931,7 @@
             "Drash defines an HTTP resource according to the [MDN web\ndocs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
           ],
           "example_code": [],
-          "signature": "protected addHttpResource(resourceClass: DrashHttpResource): void",
+          "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void",
           "name": "addHttpResource",
           "params": [
             {
@@ -989,7 +989,7 @@
             "Get the resource class."
           ],
           "example_code": [],
-          "signature": "protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined",
+          "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined",
           "name": "getResourceClass",
           "params": [
             {
@@ -1020,7 +1020,7 @@
             "Is the request for a static path asset?"
           ],
           "example_code": [],
-          "signature": "protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean",
+          "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean",
           "name": "requestIsForStaticPathAsset",
           "params": [
             {

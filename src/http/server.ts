@@ -2,8 +2,6 @@
 
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
-import DrashHttpResource from "../http/resource.ts";
-import DrashHttpRequest from "../http/request.ts";
 
 /**
  * @class Server
@@ -96,7 +94,7 @@ export default class Server {
    * @return any
    *    See _Drash.Http.Response.send()_.
    */
-  public handleHttpRequest(request: DrashHttpRequest): any {
+  public handleHttpRequest(request: Drash.Http.Request): any {
     let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
     let response;
 
@@ -193,7 +191,7 @@ export default class Server {
    * @return any
    *     See _Drash.Http.Response.send()_.
    */
-  public handleHttpRequestError(request: DrashHttpRequest, error: any): any {
+  public handleHttpRequestError(request: Drash.Http.Request, error: any): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -252,7 +250,7 @@ export default class Server {
    *
    * @param Drash.Http.Request request
    */
-  public handleHttpRequestForFavicon(request: DrashHttpRequest): any {
+  public handleHttpRequestForFavicon(request: Drash.Http.Request): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -303,7 +301,7 @@ export default class Server {
    *     This method just adds `resourceClass` to `this.resources` so it can be
    *     used (if matched) during an HTTP request.
    */
-  protected addHttpResource(resourceClass: DrashHttpResource): void {
+  protected addHttpResource(resourceClass: Drash.Http.Resource): void {
     resourceClass.paths.forEach((path, index) => {
       let pathObj;
       if (path == "*" || path.includes("*")) {
@@ -380,7 +378,7 @@ export default class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined {
+  protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -447,7 +445,7 @@ export default class Server {
    * @return boolean
    *     Returns true if the request is for an asset in a static path.
    */
-  protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean {
+  protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean {
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
     let requestUrl = `/${request.url.split("/")[1]}`;
