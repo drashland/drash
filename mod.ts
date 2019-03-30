@@ -66,15 +66,13 @@ namespace Drash {
   export const Util = util;
 
   /**
-   * @property Drash.Members Members
-   *
    * A property to hold all members added via `Drash.addMember()`.
+   *
+   * @property Drash.Members Members
    */
   export const Members = {};
 
   /**
-   * @property Drash.Loggers.CoreLogger core_logger
-   *
    * A property to hold the core logger. This logger is for debugging purposes.
    * It helps Drash developers debug issues within the Drash namespace. For
    * example, the `DocBlocksToJson` compiler could run into issues while parsing
@@ -84,6 +82,8 @@ namespace Drash {
    * This logger can only be enabled using the `DRASH_CORE_LOGGER_ENABLED`
    * environment variable. You can also set the logger's output level using the
    * `DRASH_CORE_LOGGER_LEVEL` environment variable.
+   *
+   * @property Drash.Loggers.CoreLogger core_logger
    */
   export const core_logger = new Drash.Loggers.CoreLogger({
     enabled: Deno.env().DRASH_CORE_LOGGER_ENABLED === "true",

@@ -439,10 +439,66 @@
       "name": "Request",
       "annotation": "@class Request",
       "description": [
-        "This is a wrapper class for ServerRequest. It just adds more properties to\nthe request object--allowing Drash to work with a more flexible request\nobject."
+        "This is a wrapper class for `ServerRequest`. It just adds more properties to\nthe request object--allowing Drash to work with a more flexible request\nobject."
       ],
       "example_code": [],
-      "properties": [],
+      "properties": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to access the original `ServerRequest` object."
+          ],
+          "example_code": [],
+          "signature": "public original_request_object: ServerRequest",
+          "annotation": "@property ServerRequest original_request_object",
+          "data_type": "ServerRequest",
+          "name": "original_request_object"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the path params of the request. For example, if a\nrequest with the URI `/users/1234` is sent by a client and the request is\nmatched to a resource class with a path of `/users/:id`, then\n`this.path_params.id == 1234`."
+          ],
+          "example_code": [],
+          "signature": "public path_params: any = {}",
+          "annotation": "@property any path_params",
+          "data_type": "any",
+          "name": "path_params"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the path of the request's URL. For example, if a request\nwith the URL `localhost:8000/users/1234` is sent by a client, then the path\nto this request is `/users/1234`."
+          ],
+          "example_code": [],
+          "signature": "public url_path: string",
+          "annotation": "@property string url_path",
+          "data_type": "string",
+          "name": "url_path"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the query params of the request's URL in key-value pair\nformat. For example, if a request with the URL\n`localhost:8000?response_content_type=text/html` is sent by a client, then\n`this.url_query_params == {response_content_type: \"text/html\"}`."
+          ],
+          "example_code": [],
+          "signature": "public url_query_params: any = {}",
+          "annotation": "@property any url_query_params",
+          "data_type": "any",
+          "name": "url_query_params"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the query string of the request's URL. For example, if a\nrequest with the URL `localhost:8000?response_content_type=text/html` is\nsent by a client, then `this.url_query_string ==\n\"response_content_type=text/html\"`. Note that the leading\n`?` is removed."
+          ],
+          "example_code": [],
+          "signature": "public url_query_string: string = null",
+          "annotation": "@property string url_query_string",
+          "data_type": "string",
+          "name": "url_query_string"
+        }
+      ],
       "methods": [
         {
           "access_modifier": "public",
