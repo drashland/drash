@@ -27,8 +27,8 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
-                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating An Application: API
-                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating An Application: HTML
+                a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") [x] Creating An Application: API
+                a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") [x] Creating An Application: HTML
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
                 a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
