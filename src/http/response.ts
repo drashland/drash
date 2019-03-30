@@ -1,7 +1,6 @@
 // namespace Drash.Http
 
 import Drash from "../../mod.ts";
-import DrashHttpRequest from "./request.ts";
 import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
 /**
@@ -45,7 +44,7 @@ export default class Response {
    *
    * @property Drash.Http.Request request
    */
-  public request: DrashHttpRequest;
+  public request: Drash.Http.Request;
 
   /**
    * This response's status code (e.g., 200 for OK). _Drash.Http.Response_
@@ -62,7 +61,7 @@ export default class Response {
    *
    * @param Drash.Http.Request request
    */
-  constructor(request: DrashHttpRequest) {
+  constructor(request: Drash.Http.Request) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", this.getHeaderContentType());

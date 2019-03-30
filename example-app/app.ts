@@ -6,7 +6,7 @@ import UsersResource from "./resources/users_resource.ts";
 // Drash.Http.Response = Response;
 
 let server = new Drash.Http.Server({
-  address: "localhost:8000",
+  address: "localhost:1337",
   response_output: "application/json",
   resources: [HomeResource, UsersResource],
   logger: new Drash.Loggers.FileLogger({

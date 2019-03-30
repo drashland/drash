@@ -1,7 +1,7 @@
 import Drash from "../mod.ts";
 import { runTests, test } from "https://deno.land/x/std/testing/mod.ts";
 import * as asserts from "https://deno.land/x/std/testing/asserts.ts";
-import { ServerRequest } from "https://deno.land/std/http/server.ts";
+import { ServerRequest } from "https://deno.land/x/http/server.ts";
 const decoder = new TextDecoder("utf-8");
 
 let mockRequest = function mockRequest(
@@ -14,12 +14,13 @@ let mockRequest = function mockRequest(
   request.url = url;
   request.method = method;
   request.headers = new Headers();
+  let drashRequest = new Drash.Http.Request(request);
   if (hydrate) {
-    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+    drashRequest = Drash.Services.HttpService.hydrateHttpRequest(drashRequest, {
       headers: headers
     });
   }
-  return request;
+  return drashRequest;
 };
 
 export default {

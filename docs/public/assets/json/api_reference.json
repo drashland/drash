@@ -439,10 +439,66 @@
       "name": "Request",
       "annotation": "@class Request",
       "description": [
-        "This is a wrapper class for ServerRequest. It just adds more properties to\nthe request object--allowing Drash to work with a more flexible request\nobject."
+        "This is a wrapper class for `ServerRequest` (from\nhttps://deno.land/x/http/server.ts). It just adds more properties to the\nrequest object--allowing Drash to work with a more flexible request object."
       ],
       "example_code": [],
-      "properties": [],
+      "properties": [
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to access the original `ServerRequest` object."
+          ],
+          "example_code": [],
+          "signature": "public original_request_object: ServerRequest",
+          "annotation": "@property ServerRequest original_request_object",
+          "data_type": "ServerRequest",
+          "name": "original_request_object"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the path params of the request. For example, if a\nrequest with the URI `/users/1234` is sent by a client and the request is\nmatched to a resource class with a path of `/users/:id`, then\n`this.path_params.id == 1234`."
+          ],
+          "example_code": [],
+          "signature": "public path_params: any = {}",
+          "annotation": "@property any path_params",
+          "data_type": "any",
+          "name": "path_params"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the path of the request's URL. For example, if a request\nwith the URL `localhost:8000/users/1234` is sent by a client, then the path\nto this request is `/users/1234`."
+          ],
+          "example_code": [],
+          "signature": "public url_path: string",
+          "annotation": "@property string url_path",
+          "data_type": "string",
+          "name": "url_path"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the query params of the request's URL in key-value pair\nformat. For example, if a request with the URL\n`localhost:8000?response_content_type=text/html` is sent by a client, then\n`this.url_query_params == {response_content_type: \"text/html\"}`."
+          ],
+          "example_code": [],
+          "signature": "public url_query_params: any = {}",
+          "annotation": "@property any url_query_params",
+          "data_type": "any",
+          "name": "url_query_params"
+        },
+        {
+          "access_modifier": "public",
+          "description": [
+            "A property to hold the query string of the request's URL. For example, if a\nrequest with the URL `localhost:8000?response_content_type=text/html` is\nsent by a client, then `this.url_query_string ==\n\"response_content_type=text/html\"`. Note that the leading\n`?` is removed."
+          ],
+          "example_code": [],
+          "signature": "public url_query_string: string = null",
+          "annotation": "@property string url_query_string",
+          "data_type": "string",
+          "name": "url_query_string"
+        }
+      ],
       "methods": [
         {
           "access_modifier": "public",
@@ -480,7 +536,7 @@
             "The request object."
           ],
           "example_code": [],
-          "signature": "protected request: DrashHttpRequest",
+          "signature": "protected request: Drash.Http.Request",
           "annotation": "@property Drash.Http.Request request",
           "data_type": "Drash.Http.Request",
           "name": "request"
@@ -491,7 +547,7 @@
             "The response object."
           ],
           "example_code": [],
-          "signature": "protected response: DrashHttpResponse",
+          "signature": "protected response: Drash.Http.Response",
           "annotation": "@property Drash.Http.Response response",
           "data_type": "Drash.Http.Response",
           "name": "response"
@@ -502,7 +558,7 @@
             "The server object."
           ],
           "example_code": [],
-          "signature": "protected server: DrashHttpServer",
+          "signature": "protected server: Drash.Http.Server",
           "annotation": "@property Drash.Http.Server server",
           "data_type": "Drash.Http.Server",
           "name": "server"
@@ -515,8 +571,8 @@
             "Construct an object of this class."
           ],
           "example_code": [],
-          "signature": "constructor(request: DrashHttpRequest, response: DrashHttpResponse, server: DrashHttpServer)",
-          "name": "DrashHttpRequest,",
+          "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
+          "name": "Drash.Http.Request,",
           "params": [
             {
               "annotation": "@param Drash.Http.Request request",
@@ -604,7 +660,7 @@
             "The request object."
           ],
           "example_code": [],
-          "signature": "public request: DrashHttpRequest",
+          "signature": "public request: Drash.Http.Request",
           "annotation": "@property Drash.Http.Request request",
           "data_type": "Drash.Http.Request",
           "name": "request"
@@ -628,8 +684,8 @@
             "Construct an object of this class."
           ],
           "example_code": [],
-          "signature": "constructor(request: DrashHttpRequest)",
-          "name": "DrashHttpRequest)",
+          "signature": "constructor(request: Drash.Http.Request)",
+          "name": "Drash.Http.Request)",
           "params": [
             {
               "annotation": "@param Drash.Http.Request request",
@@ -822,7 +878,7 @@
             "Handle an HTTP request from the Deno server."
           ],
           "example_code": [],
-          "signature": "public handleHttpRequest(request: DrashHttpRequest): any",
+          "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
           "name": "handleHttpRequest",
           "params": [
             {
@@ -852,7 +908,7 @@
             "Handle cases when an error is thrown when handling an HTTP request."
           ],
           "example_code": [],
-          "signature": "public handleHttpRequestError(request: DrashHttpRequest, error: any): any",
+          "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
           "name": "handleHttpRequestError",
           "params": [
             {
@@ -890,7 +946,7 @@
             "Handle HTTP requests for the favicon. This method only exists to\nshort-circuit favicon requests--preventing the requests from clogging the\nlogs."
           ],
           "example_code": [],
-          "signature": "public handleHttpRequestForFavicon(request: DrashHttpRequest): any",
+          "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
           "name": "handleHttpRequestForFavicon",
           "params": [
             {
@@ -931,7 +987,7 @@
             "Drash defines an HTTP resource according to the [MDN web\ndocs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
           ],
           "example_code": [],
-          "signature": "protected addHttpResource(resourceClass: DrashHttpResource): void",
+          "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void",
           "name": "addHttpResource",
           "params": [
             {
@@ -989,7 +1045,7 @@
             "Get the resource class."
           ],
           "example_code": [],
-          "signature": "protected getResourceClass(request: DrashHttpRequest): DrashHttpResource|undefined",
+          "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined",
           "name": "getResourceClass",
           "params": [
             {
@@ -1020,7 +1076,7 @@
             "Is the request for a static path asset?"
           ],
           "example_code": [],
-          "signature": "protected requestIsForStaticPathAsset(request: DrashHttpRequest): boolean",
+          "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean",
           "name": "requestIsForStaticPathAsset",
           "params": [
             {
@@ -1421,7 +1477,7 @@
             "Hydrate the request with data that is useful for the `Drash.Http.Server`\nclass."
           ],
           "example_code": [],
-          "signature": "public hydrateHttpRequest(request: DrashHttpRequest, options?: any)",
+          "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)",
           "name": "hydrateHttpRequest",
           "params": [
             {
@@ -1450,7 +1506,7 @@
             "Get the specified HTTP request's URL path."
           ],
           "example_code": [],
-          "signature": "public getHttpRequestUrlPath(request: DrashHttpRequest): string",
+          "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string",
           "name": "getHttpRequestUrlPath",
           "params": [
             {
@@ -1480,7 +1536,7 @@
             "Get the specified HTTP request's URL query string."
           ],
           "example_code": [],
-          "signature": "public getHttpRequestUrlQueryString(request: DrashHttpRequest): string",
+          "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string",
           "name": "getHttpRequestUrlQueryString",
           "params": [
             {
@@ -1510,7 +1566,7 @@
             "Get the HTTP request's URL query params by parsing the URL query string."
           ],
           "example_code": [],
-          "signature": "public getHttpRequestUrlQueryParams(request: DrashHttpRequest): any",
+          "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any",
           "name": "getHttpRequestUrlQueryParams",
           "params": [
             {

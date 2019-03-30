@@ -1,4 +1,19 @@
-export function colorize(message, options) {
+interface ColorizeOptions {
+  color?: string,
+  background?: string,
+  style?: string
+}
+
+/**
+ * A util function that helps colorize text in the console.
+ *
+ * @param string message
+ * @param ColorizeOptions options
+ *
+ * @return string
+ *     Returns the colorized message.
+ */
+export function colorize(message: string, options: ColorizeOptions): string {
   /* eslint key-spacing: ["off"] */
   // Foreground colors
   let colors = {
@@ -59,8 +74,10 @@ export function colorize(message, options) {
   return message;
 };
 
-
-
+/**
+ * @class ObjectParser
+ * A util class to help parse objects.
+ */
 export class ObjectParser {
   /**
    * Get the value of a deeply nested property

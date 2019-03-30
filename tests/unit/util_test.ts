@@ -1,5 +1,11 @@
 import members from "../members.ts";
 
+members.test(function colorize_color() {
+  let expected = "\x1b[30mMy message\x1b[39m\x1b[49m\x1b[0m";
+  let actual = members.Drash.Util.colorize("My message", {color: "black"});
+  members.assert.equal(actual, expected);
+});
+
 members.test(function ObjectParser_step_1() {
   let expected = "you found me!";
   let myObject = {
