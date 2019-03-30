@@ -22,8 +22,6 @@ compiledRoutes.forEach(component => {
   });
 });
 
-console.log(routesForErrors);
-
 routes.push({
   path: "*",
   component: routesForErrors['404']
