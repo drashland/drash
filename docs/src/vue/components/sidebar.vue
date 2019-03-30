@@ -62,6 +62,7 @@ div.c-sidebar
                 hr
                 p <a href="https://github.com/crookse/deno-drash" style="text-decoration: underline">Drash</a> is a <a href="//crookse.github.io" style="text-decoration: underline"> CROOKSE</a> project.
                 p Drash {{ $conf.latest_release }} was developed using {{ $conf.deno_version }}.
+                p Drash Documentation was last updated on {{ $conf.build_date }}
 </template>
 
 <script>

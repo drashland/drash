@@ -1,4 +1,7 @@
 <style lang="scss">
+    .c-main {
+        padding-top: 5rem;
+    }
     .line-highlight {
         background: rgba(255,255,255,0.1);
         width: 100%;
@@ -25,10 +28,6 @@ div#vue_app
           RETURNS
           EXAMPLE USAGE
           NOTES
-        div.c-misc-date-last-updated-bar
-            div.row.text-align--right
-                div.col
-                    p Last updated: {{ date_last_updated }}
         div.container.c-container--docs
             transition
                 keep-alive
@@ -41,11 +40,6 @@ import Sidebar from "./sidebar.vue";
 export default {
     components: {
         Sidebar
-    },
-    data() {
-        return {
-            date_last_updated: "271641R022019",
-        };
     },
     methods: {
         scrollToTop: function scrollToTop() {

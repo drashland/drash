@@ -7,6 +7,7 @@ function getConf(envVars) {
     base_url: !envVars.base_url
       ? ""
       : envVars.base_url,
+    build_date: new Date().toISOString(),
     deno_version: envVars.deno_version.replace("deno: ", "Deno v")
       .replace("\nv8: ", ", V8 v")
       .replace("\ntypescript: ", ", and TypeScript v"),

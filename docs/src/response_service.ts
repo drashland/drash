@@ -37,7 +37,7 @@ export function getAppData() {
     conf: {
       base_url: Deno.env().DRASH_DOCS_BASE_URL
         ? Deno.env().DRASH_DOCS_BASE_URL
-        : ""
+        : "",
     },
 
     // The below is transferred to vue_app_root.vue
