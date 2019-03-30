@@ -25,6 +25,7 @@
   "scripts": {
     "build": "console/build",
     "build-dry-run": "console/build.dryrun",
+    "docs-deploy": "console/build",
     "dev": "console/dev",
     "dev-docs": "console/dev.docs",
     "dev-kill": "console/dev.kill",
