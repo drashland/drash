@@ -9,9 +9,11 @@ div.c-sidebar
                 h1.module-name(style="margin-top: 2rem;")
                     a(:href="$conf.base_url + '/#/'") Drash
                 p
-                    img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="90" height="20")
+                    a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
+                        img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="90" height="20")
                     | &nbsp;
-                    img(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="90" height="20")
+                    a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
+                        img(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="90" height="20")
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
@@ -23,9 +25,13 @@ div.c-sidebar
             a.heading-link Tutorials
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
+                a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
+                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating An Application: API
+                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating An Application: HTML
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
+                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
             a.heading-link(:href="$conf.base_url + '/#/api-reference#top'") API Reference
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/api-reference/compilers'") Compilers
@@ -58,6 +64,7 @@ div.c-sidebar
                 hr
                 p <a href="https://github.com/crookse/deno-drash" style="text-decoration: underline">Drash</a> is a <a href="//crookse.github.io" style="text-decoration: underline"> CROOKSE</a> project.
                 p Drash {{ $conf.latest_release }} was developed using {{ $conf.deno_version }}.
+                p Drash Documentation was last updated on {{ $conf.build_date }}
 </template>
 
 <script>

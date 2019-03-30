@@ -24,17 +24,7 @@ members.test(function Response_generateResponse_html() {
   responseFormatted = response.generateResponse();
   members.assert.equal(
     responseFormatted,
-    `<!DOCTYPE html>
-<head>
-  <style>
-    html { font-family: Arial }
-  </style>
-</head>
-<body>
-  <h1>200 (OK)</h1>
-  <p>This is my body</p>
-</body>
-</html>`
+    `This is my body`
   );
 });
 

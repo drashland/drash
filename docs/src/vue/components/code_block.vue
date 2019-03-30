@@ -1,44 +1,53 @@
+<style lang="scss" scoped>
+    pre {
+        margin-bottom: 0;
+        padding: 0;
+    }
+    pre.body code {
+        padding: 1rem;
+        position: relative;
+        width: 100%;
+    }
+    .card .code-block-for-reference .body {
+        max-height: 500px;
+        overflow: auto;
+    }
+    @media screen and (max-width: 950px) {
+        .code-block-default {
+            margin-left: -2rem;
+            margin-right: -2rem;
+            pre {
+                border-radius: 0;
+            }
+        }
+        li .code-block-default {
+            margin-left: -4.75rem;
+            margin-right: -2rem;
+        }
+    }
+</style>
+
 <template lang="pug">
-div.b-code-example
+div.b-code-example.code-block-default
     pre.header
-        code.header {{ heading }}
-    pre.body
-        code(:class="prism") {{ code }}
+        code.header {{ data.title }}
+    pre.body(:data-line="data.line_highlight")
+        code(:class="'language-' + data.language") {{ data.contents }}
 </template>
 
 <script>
 export default {
     props: [
-        'data'
+        'data',
+        'title',
+        'line_highlight',
     ],
-    computed: {
-        code() {
-            return this.data.code
-        },
-        heading() {
-            switch (this.data.file_extension) {
-                case "txt":
-                    return "Project Folder";
-                case "sh":
-                    return "Terminal";
-                default:
-                    return `/path/to/your/project/${this.data.file}`;
-            }
-        },
-        prism() {
-            let prism = "language-text";
-            switch (this.data.file_extension) {
-                case 'sh':
-                    prism = 'language-shell';
-                    break;
-                case 'ts':
-                    prism = 'language-typescript';
-                    break;
-                case 'txt':
-                    prism = 'language-text';
-                    break;
-            }
-            return prism;
+    beforeMount() {
+        if (this.title) {
+            this.data.title = this.title;
+        }
+        if (this.line_highlight) {
+            this.data.line_highlight = this.line_highlight;
         }
     },
     mounted() {

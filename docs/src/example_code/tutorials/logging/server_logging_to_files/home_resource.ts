@@ -13,7 +13,7 @@ export default class HomeResource extends Drash.Http.Resource {
    * Handle GET requests.
    */
   public GET() {
-    // Write an INFO log message to /path/to/your/project/tmp/server.log. The `server.logger` object
+    // Write an INFO log message to /path/to/your/project/server.log. The `server.logger` object
     // can accept the following methods:
     //
     //     debug() (e.g., this.server.logger.debug(message);)

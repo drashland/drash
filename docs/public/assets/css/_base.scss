@@ -1,4 +1,5 @@
 $local_rem: rem(2.5);
+$local_rem_01: rem(2);
 
 address {
     font-style: italic;
@@ -73,7 +74,12 @@ pre[class*="language-"] {
 
 ul pre[class*="language-"],
 ol pre[class*="language-"] {
-    margin-bottom: rem(1);
+    margin-bottom: $local_rem;
+}
+
+ol .b-code-example,
+ul .b-code-example {
+    margin-top: $local_rem_01;
 }
 
 ol,
@@ -85,7 +91,7 @@ ul > *,
 ol > *,
 ul > * > *,
 ol > * > * {
-    margin-bottom: rem(1);
+    margin-bottom: $local_rem_01;
 }
 
 //
@@ -94,8 +100,8 @@ ol > * > * {
 ul li ul,
 ul li ol,
 ol li ol,
-ol li ul {
-    margin-top: rem(1);
+ol li ul, {
+    margin-top: $local_rem_01;
 }
 
 

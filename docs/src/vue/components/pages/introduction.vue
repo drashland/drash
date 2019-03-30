@@ -30,31 +30,7 @@ div
             div.col
                 heading-h2#importing(heading="Importing")
                 p There are multiple ways to import Drash (and its different versions) into your project. See below:
-                ul
-                    li Importing Drash master branch through the Deno Registry
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from " https://deno.land/x/drash/mod.ts";
-                    li Importing Drash latest release through the Deno Registry
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from " https://deno.land/x/drash@{{ $conf.latest_release }}/mod.ts";
-                    li Importing Drash master branch from GitHub
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"
-                    li Importing Drash latest release from GitHub
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/{{ $conf.latest_release }}/mod.ts"
+                code-block(:data="example_code.importing.app")
         hr
         div.row
             div.col
@@ -71,13 +47,9 @@ div
                 h3 Steps
                 ol
                     li Create your app file.
-                        code-block(:data="example_code.quickstart")
+                        code-block(:data="example_code.quickstart.app")
                     li Run your app.
-                    div.b-code-example
-                        pre.header
-                            code.header Terminal
-                        pre.body
-                            code.language-typescript deno /path/to/your/project/quickstart.ts --allow-net
+                        code-block(:data="example_code.quickstart.execute")
                     li Make the following <code>GET</code> and <code>POST</code> requests:
                         p.text--help I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.
                         ul

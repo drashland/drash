@@ -46,11 +46,7 @@ div
                             li This is the file that will be passed to the <code>deno</code> command in the terminal.
                         code-block(:data="example_code.app")
                     li Run your app.
-                      div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-typescript deno /path/to/your/project/app.ts --allow-net
+                        code-block(:data="example_code.run")
                     li Make the following <code>GET</code> and <code>POST</code> requests:
                         p.text--help I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.
                         ul

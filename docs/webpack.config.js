@@ -1,16 +1,18 @@
 const webpack = require("webpack");
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const latestRelease = "v0.6.2";
 
 function getConf(envVars) {
   let conf = {
     base_url: !envVars.base_url
       ? ""
       : envVars.base_url,
+    build_date: new Date().toISOString(),
     deno_version: envVars.deno_version.replace("deno: ", "Deno v")
       .replace("\nv8: ", ", V8 v")
       .replace("\ntypescript: ", ", and TypeScript v"),
-    latest_release: "v0.6.0",
+    latest_release: latestRelease,
     module_name: "Drash",
     module_namespace: "Drash",
     webpack_mode: envVars.environment
@@ -24,12 +26,17 @@ module.exports = envVars => {
 
   console.log(`\nRunning "${envVars.environment}" configs.\n`);
 
+  let bundleVersion = "";
+  if (envVars.environment == "production") {
+    bundleVersion = ".min";
+  }
+
   return {
     entry: path.resolve(__dirname, "public/assets/js/_bundle.js"),
     mode: envVars.environment,
     output: {
       path: path.resolve(__dirname, "public/assets/js/"),
-      filename: "bundle.js"
+      filename: `bundle${bundleVersion}.js`
     },
     module: {
       rules: [
@@ -76,7 +83,8 @@ module.exports = envVars => {
             ? "vue/dist/vue.min.js"
             : "vue/dist/vue.js",
         "/src": path.resolve(__dirname, "src"),
-        "/components": path.resolve(__dirname, "src/vue/components")
+        "/components": path.resolve(__dirname, "src/vue/components"),
+        "/public": path.resolve(__dirname, "public")
       }
     }
   };
