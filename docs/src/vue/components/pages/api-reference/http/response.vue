@@ -1,5 +1,5 @@
 <template lang="pug">
-page-api-reference(:data="data")
+page-api-reference(:data="data" link="/src/http/response.ts")
 </template>
 
 <script>

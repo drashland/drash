@@ -1,5 +1,5 @@
 <template lang="pug">
-page-api-reference(:data="data")
+page-api-reference(:data="data" link="/src/compilers/doc_blocks_to_json.ts")
 </template>
 
 <script>

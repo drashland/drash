@@ -77,6 +77,8 @@ div.page.page--reference
         div.row
             div.col
                 h2 {{ data.class.fully_qualified_name }}
+                p
+                    a(:href="'https://github.com/crookse/deno-drash/tree/master' + link" target="_BLANK" v-if="link") View raw code
                 p(v-for="description in  data.class.description") {{ description }}
         hr
         div.row
@@ -153,9 +155,29 @@ div.page.page--reference
 <script>
 export default {
     props: [
-        'data'
+        'data',
+        'link'
     ],
+    data() {
+        return {
+            raw_code_data: ""
+        };
+    },
+    watch: {
+        raw_code_data() {
+            setTimeout(function() {
+                Prism.highlightAll();
+            }, 2000);
+        }
+    },
     methods: {
+        // getRawCode() {
+        //     axios.get('https://raw.githubusercontent.com/crookse/deno-drash/master' + this.link)
+        //         .then(response => {
+        //             console.log(response);
+        //             this.raw_code_data = response.data;
+        //         });
+        // },
         hasProperties(properties) {
             return properties && properties.length > 0;
         }

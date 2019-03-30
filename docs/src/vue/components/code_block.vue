@@ -30,9 +30,9 @@
 <template lang="pug">
 div.b-code-example.code-block-default
     pre.header
-        code.header {{ data.title }}
+        code.header {{ data.title ? data.title : "(no title)" }}
     pre.body(:data-line="data.line_highlight")
-        code(:class="'language-' + data.language") {{ data.contents }}
+        code(:class="'language-' + data.language") {{ data.contents ? data.contents : "(contents could not be loaded)" }}
 </template>
 
 <script>
