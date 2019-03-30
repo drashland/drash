@@ -1,13 +1,12 @@
 // namespace Drash.Services
 
 import Drash from "../../mod.ts";
-import DrashHttpRequest from "../http/request.ts";
 
 /**
  * @class HttpService
  * This class helps perform HTTP-related processes.
  */
-class HttpService {
+export default class HttpService {
   /**
    * Hydrate the request with data that is useful for the `Drash.Http.Server`
    * class.
@@ -17,7 +16,7 @@ class HttpService {
    * @param any options
    *     A list of options.
    */
-  public hydrateHttpRequest(request: DrashHttpRequest, options?: any) {
+  public hydrateHttpRequest(request: Drash.Http.Request, options?: any) {
     if (options) {
       if (options.headers) {
         for (let key in options.headers) {
@@ -42,7 +41,7 @@ class HttpService {
    * @return string
    *     Returns the URL path.
    */
-  public getHttpRequestUrlPath(request: DrashHttpRequest): string {
+  public getHttpRequestUrlPath(request: Drash.Http.Request): string {
     let path = request.url;
 
     if (path == "/") {
@@ -72,7 +71,7 @@ class HttpService {
    *     Returns the URL query string (e.g., key1=value1&key2=value2) without
    *     the leading "?" character.
    */
-  public getHttpRequestUrlQueryString(request: DrashHttpRequest): string {
+  public getHttpRequestUrlQueryString(request: Drash.Http.Request): string {
     let queryString = null;
 
     if (request.url.indexOf("?") == -1) {
@@ -97,7 +96,7 @@ class HttpService {
    * @return any
    *     Returns the URL query string in key-value pair format.
    */
-  public getHttpRequestUrlQueryParams(request: DrashHttpRequest): any {
+  public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any {
     let queryParams = {};
 
     try {
@@ -159,5 +158,3 @@ class HttpService {
     return mimeType;
   }
 }
-
-export default new HttpService();

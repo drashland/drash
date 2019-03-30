@@ -1421,7 +1421,7 @@
             "Hydrate the request with data that is useful for the `Drash.Http.Server`\nclass."
           ],
           "example_code": [],
-          "signature": "public hydrateHttpRequest(request: DrashHttpRequest, options?: any)",
+          "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)",
           "name": "hydrateHttpRequest",
           "params": [
             {
@@ -1450,7 +1450,7 @@
             "Get the specified HTTP request's URL path."
           ],
           "example_code": [],
-          "signature": "public getHttpRequestUrlPath(request: DrashHttpRequest): string",
+          "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string",
           "name": "getHttpRequestUrlPath",
           "params": [
             {
@@ -1480,7 +1480,7 @@
             "Get the specified HTTP request's URL query string."
           ],
           "example_code": [],
-          "signature": "public getHttpRequestUrlQueryString(request: DrashHttpRequest): string",
+          "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string",
           "name": "getHttpRequestUrlQueryString",
           "params": [
             {
@@ -1510,7 +1510,7 @@
             "Get the HTTP request's URL query params by parsing the URL query string."
           ],
           "example_code": [],
-          "signature": "public getHttpRequestUrlQueryParams(request: DrashHttpRequest): any",
+          "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any",
           "name": "getHttpRequestUrlQueryParams",
           "params": [
             {
