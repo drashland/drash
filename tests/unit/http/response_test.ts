@@ -22,10 +22,7 @@ members.test(function Response_generateResponse_json_default() {
 members.test(function Response_generateResponse_html() {
   response.headers.set("Content-Type", "text/html");
   responseFormatted = response.generateResponse();
-  members.assert.equal(
-    responseFormatted,
-    `This is my body`
-  );
+  members.assert.equal(responseFormatted, `This is my body`);
 });
 
 members.test(function Response_generateResponse_xml() {

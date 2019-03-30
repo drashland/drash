@@ -74,7 +74,9 @@ function Drash(): any {
      *     The app.
      */
     addMember(name: string, app: any) {
-      this.core_logger.debug(`Add member "${name}" to Drash.Members namespace.`);
+      this.core_logger.debug(
+        `Add member "${name}" to Drash.Members namespace.`
+      );
       this.Members[name] = app;
     },
 
@@ -120,7 +122,11 @@ function Drash(): any {
 
   if (Deno.env().DRASH_CORE_LOGGER_ENABLED === "true") {
     Drash.core_logger.debug("Drash.core_logger is enabled.");
-    Drash.core_logger.debug(`Drash.core_logger.level is set to: ${Deno.env().DRASH_CORE_LOGGER_LEVEL}.`);
+    Drash.core_logger.debug(
+      `Drash.core_logger.level is set to: ${
+        Deno.env().DRASH_CORE_LOGGER_LEVEL
+      }.`
+    );
   }
 
   return Drash;
