@@ -39,16 +39,12 @@ div
                             li This is the file that will be passed to the <code>deno</code> command in the terminal.
                         code-block(:data="example_code.server_logging_to_the_terminal.app")
                     li Run your app.
-                      div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-shell deno /path/to/your/project/app.ts --allow-net
+                        code-block(:data="example_code.server_logging_to_the_terminal.run")
                     li Make the following <code>GET</code> request:
                         code-block(:data="example_code.server_logging_to_the_terminal.get_request")
                     li Check the terminal you used to start <code>app.ts</code>. The <code>INFO | Howdy! I'm handling your GET request.</code> log message from the <code>HomeResource</code> class was written to the terminal.
                         ul
-                            li The other log messages are written from the <code><a href="https://github.com/crookse/deno-drash/blob/master/src/http/server.ts" target="_BLANK">Drash.Http.Server</a></code> class.
+                            li The other log messages are written from the <code>Drash.Http.Server</code> class.
                         code-block(:data="example_code.server_logging_to_the_terminal.terminal")
                 p.text--help This is the end of this tutorial.
         hr
@@ -76,16 +72,12 @@ div
                             li This is the file that will be passed to the <code>deno</code> command in the terminal.
                         code-block(:data="example_code.server_logging_to_files.app")
                     li Run your app.
-                      div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-shell deno /path/to/your/project/app.ts --allow-net --allow-write
+                        code-block(:data="example_code.server_logging_to_files.run")
                     li Make the following <code>GET</code> request:
                         code-block(:data="example_code.server_logging_to_files.get_request")
                     li Check <code>/path/to/your/project/server.log</code> to see the below log messages. The <code>INFO | Howdy! I'm handling your GET request.</code> log message from the <code>HomeResource</code> class was written to the file.
                         ul
-                            li The other log messages are written from the <code><a href="https://github.com/crookse/deno-drash/blob/master/src/http/server.ts" target="_BLANK">Drash.Http.Server</a></code> class.
+                            li The other log messages are written from the <code>Drash.Http.Server</code> class.
                         code-block(:data="example_code.server_logging_to_files.server")
                 p.text--help This is the end of this tutorial.
 </template>

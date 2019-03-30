@@ -28,19 +28,9 @@ div
                             li This is the file that will be passed to the <code>deno</code> command in the terminal.
                         code-block(:data="example_code.app")
                     li Run your app.
-                        div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-shell deno /path/to/your/project/app.ts --allow-net --allow-write
+                        code-block(:data="example_code.run")
                         p When you start your app, you should see the following in the terminal:
-                        div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-text
-                                    | [Drash] HTTP resource "HomeResource" added.
-                                    | [Drash] Deno server started at localhost:8000.
+                        code-block(:data="example_code.output")
                     li Make a <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> request at <code>localhost:8000</code>.
                         ul 
                             li I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.

@@ -1,6 +1,7 @@
 const webpack = require("webpack");
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const latestRelease = "v0.6.2";
 
 function getConf(envVars) {
   let conf = {
@@ -11,7 +12,7 @@ function getConf(envVars) {
     deno_version: envVars.deno_version.replace("deno: ", "Deno v")
       .replace("\nv8: ", ", V8 v")
       .replace("\ntypescript: ", ", and TypeScript v"),
-    latest_release: "v0.6.0",
+    latest_release: latestRelease,
     module_name: "Drash",
     module_namespace: "Drash",
     webpack_mode: envVars.environment

@@ -30,11 +30,12 @@ div
                 ol
                     li Perform the initial setup of your project.
                         ul
-                            li Serving static files requires you to set the following environment variable: <code>DRASH_SERVER_DIRECTORY</code>
+                            li Serving static files requires you to set the following environment variable: <code>DRASH_SERVER_DIRECTORY</code>. You can add it from the terminal or you can add it using <code>Deno.env().DRASH_SERVER_DIRECTORY = "/path/to/your/project";</code> in your <code>app.ts</code> file.
                             li The <code>DRASH_SERVER_DIRECTORY</code> environment variable is the directory that contains your <code>app.ts</code> file. In this tutorial, it's <code>/path/to/your/project</code>.
                             li Do NOT add a trailing slash to the <code>DRASH_SERVER_DIRECTORY</code> environment variable. Doing so will cause Drash to parse the path as <code>/path/to/your/project//your-static-path/some-file.extension</code>.
+                            li The logic that handles static paths will prepend the value of <code>Deno.env().DRASH_SERVER_DIRECTORY</code> to your static paths.
                         code-block(:data="example_code.serving_static_paths.folder_structure_setup")
-                        li Create your HTTP resource class file and have it serve an HTML document (as a string) with your <code>style.css</code> file that's located in your <code>public</code> directory.
+                    li Create your HTTP resource class file and have it serve an HTML document (as a string) with your <code>style.css</code> file that's located in your <code>public</code> directory.
                         code-block(:data="example_code.serving_static_paths.home_resource")
                     li Create your app file.
                         ul
@@ -46,11 +47,7 @@ div
                     li Run your app.
                         ul
                             li <code>--allow-read</code> is required so Deno can read the contents of your <code>style.css</code> file and serve its contents to the client.
-                        div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-shell deno /path/to/your/project/app.ts --allow-net --allow-read
+                        code-block(:data="example_code.serving_static_paths.run")
                 p.text--help This is the end of this tutorial.
 </template>
 

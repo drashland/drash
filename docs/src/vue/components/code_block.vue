@@ -14,11 +14,15 @@
     }
     @media screen and (max-width: 950px) {
         .code-block-default {
-            margin-left: -1.25rem;
-            margin-right: -1.25rem;
+            margin-left: -2rem;
+            margin-right: -2rem;
             pre {
                 border-radius: 0;
             }
+        }
+        li .code-block-default {
+            margin-left: -4.75rem;
+            margin-right: -2rem;
         }
     }
 </style>

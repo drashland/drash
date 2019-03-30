@@ -30,31 +30,7 @@ div
             div.col
                 heading-h2#importing(heading="Importing")
                 p There are multiple ways to import Drash (and its different versions) into your project. See below:
-                ul
-                    li Importing Drash master branch through the Deno Registry
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from " https://deno.land/x/drash/mod.ts";
-                    li Importing Drash latest release through the Deno Registry
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from " https://deno.land/x/drash@{{ $conf.latest_release }}/mod.ts";
-                    li Importing Drash master branch from GitHub
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/master/mod.ts"
-                    li Importing Drash latest release from GitHub
-                        div.b-code-example
-                            pre.header
-                                code.header File: /path/to/your/project/app.ts
-                            pre.body
-                                code.language-typescript import Drash from "https://raw.githubusercontent.com/crookse/deno-drash/{{ $conf.latest_release }}/mod.ts"
+                code-block(:data="example_code.importing.app")
         hr
         div.row
             div.col

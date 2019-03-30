@@ -31,20 +31,11 @@ div
                         ul
                             li This is the file that will be passed to the <code>deno</code> command in the terminal.
                             li This file will call the <code>greet()</code> method from the global member <code>MyThing</code>, which should output <code>Hello from MyThing!</code>.
-                        code-block(:data="example_code.app" line_highlight="5")
+                        code-block(:data="example_code.app" line_highlight="6")
                     li Run your app.
-                        div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-shell deno /path/to/your/project/app.ts
+                        code-block(:data="example_code.run")
                         p When you start your app, you should see the following in the terminal:
-                        div.b-code-example
-                            pre.header
-                                code.header Terminal
-                            pre.body
-                                code.language-text
-                                    | Hello from MyThing!
+                        code-block(:data="example_code.output")
                 p.text--help This is the end of this tutorial.
 </template>
 
