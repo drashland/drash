@@ -439,7 +439,7 @@
       "name": "Request",
       "annotation": "@class Request",
       "description": [
-        "This is a wrapper class for `ServerRequest`. It just adds more properties to\nthe request object--allowing Drash to work with a more flexible request\nobject."
+        "This is a wrapper class for `ServerRequest` (from\nhttps://deno.land/x/http/server.ts). It just adds more properties to the\nrequest object--allowing Drash to work with a more flexible request object."
       ],
       "example_code": [],
       "properties": [

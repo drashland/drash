@@ -4,9 +4,9 @@ import { ServerRequest } from "https://deno.land/x/http/server.ts";
 
 /**
  * @class Request
- * This is a wrapper class for `ServerRequest`. It just adds more properties to
- * the request object--allowing Drash to work with a more flexible request
- * object.
+ * This is a wrapper class for `ServerRequest` (from
+ * https://deno.land/x/http/server.ts). It just adds more properties to the
+ * request object--allowing Drash to work with a more flexible request object.
  */
 export default class Request extends ServerRequest {
 
