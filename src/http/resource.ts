@@ -1,8 +1,6 @@
 // namespace Drash.Http
 
-import DrashHttpRequest from "./request.ts";
-import DrashHttpResponse from "./response.ts";
-import DrashHttpServer from "./server.ts";
+import Drash from "../../mod.ts";
 
 /**
  * @class Resource
@@ -19,21 +17,21 @@ export default class Resource {
    *
    * @property Drash.Http.Request request
    */
-  protected request: DrashHttpRequest;
+  protected request: Drash.Http.Request;
 
   /**
    * The response object.
    *
    * @property Drash.Http.Response response
    */
-  protected response: DrashHttpResponse;
+  protected response: Drash.Http.Response;
 
   /**
    * The server object.
    *
    * @property Drash.Http.Server server
    */
-  protected server: DrashHttpServer;
+  protected server: Drash.Http.Server;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
@@ -47,7 +45,7 @@ export default class Resource {
    * @param Drash.Http.Server server
    *     The server object.
    */
-  constructor(request: DrashHttpRequest, response: DrashHttpResponse, server: DrashHttpServer) {
+  constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server) {
     this.request = request;
     this.response = response;
     this.server = server;

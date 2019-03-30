@@ -480,7 +480,7 @@
             "The request object."
           ],
           "example_code": [],
-          "signature": "protected request: DrashHttpRequest",
+          "signature": "protected request: Drash.Http.Request",
           "annotation": "@property Drash.Http.Request request",
           "data_type": "Drash.Http.Request",
           "name": "request"
@@ -491,7 +491,7 @@
             "The response object."
           ],
           "example_code": [],
-          "signature": "protected response: DrashHttpResponse",
+          "signature": "protected response: Drash.Http.Response",
           "annotation": "@property Drash.Http.Response response",
           "data_type": "Drash.Http.Response",
           "name": "response"
@@ -502,7 +502,7 @@
             "The server object."
           ],
           "example_code": [],
-          "signature": "protected server: DrashHttpServer",
+          "signature": "protected server: Drash.Http.Server",
           "annotation": "@property Drash.Http.Server server",
           "data_type": "Drash.Http.Server",
           "name": "server"
@@ -515,8 +515,8 @@
             "Construct an object of this class."
           ],
           "example_code": [],
-          "signature": "constructor(request: DrashHttpRequest, response: DrashHttpResponse, server: DrashHttpServer)",
-          "name": "DrashHttpRequest,",
+          "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
+          "name": "Drash.Http.Request,",
           "params": [
             {
               "annotation": "@param Drash.Http.Request request",
