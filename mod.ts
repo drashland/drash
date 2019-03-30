@@ -70,7 +70,7 @@ namespace Drash {
    *
    * @property Drash.Members Members
    */
-  export const Members = {};
+  export const Members: any = {};
 
   /**
    * A property to hold the core logger. This logger is for debugging purposes.
