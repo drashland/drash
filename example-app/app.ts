@@ -3,7 +3,7 @@ import Response from "./response.ts";
 import HomeResource from "./resources/home_resource.ts";
 import UsersResource from "./resources/users_resource.ts";
 
-// Drash.Http.Response = Response;
+Drash.Http.Response = Response;
 
 let server = new Drash.Http.Server({
   address: "localhost:1337",

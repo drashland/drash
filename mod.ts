@@ -53,9 +53,9 @@ namespace Drash {
   }
 
   export namespace Http {
-    export type Request = request; export const Request = request;
+    export type Request = request; export let Request = request;
     export type Resource = resource; export const Resource = resource;
-    export type Response = response; export const Response = response;
+    export type Response = response; export let Response = response;
     export type Server = server; export const Server = server;
   }
 
