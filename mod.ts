@@ -23,8 +23,11 @@ import http_service from "./src/services/http_service.ts";
 import * as util from "./src/util.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
-// DRASH ///////////////////////////////////////////////////////////////////////
+// FILE MARKER: NAMESPACE - DRASH //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+//
+// Usage: import Drash from "/path/to/drash/mod.ts";
+//
 
 namespace Drash {
 
@@ -66,7 +69,9 @@ namespace Drash {
   export const Util = util;
 
   /**
-   * A property to hold all members added via `Drash.addMember()`.
+   * A property to hold all members added via `Drash.addMember()`. This property
+   * allows users to access members via `Drash.Members.SomeMember` and acts like
+   * a namespace for members that are external to Drash.
    *
    * @property Drash.Members Members
    */
