@@ -1,25 +1,26 @@
 #!/bin/bash
 
 (
-  for pid in $(ps aux | grep 'docs.ts' | grep 'allow' | awk '{print $2}'); do
-    echo "[watchmedo] Killing $pid"
-    kill -9 $pid
-  done
-
   export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
   export DRASH_CORE_LOGGER_ENABLED="true"
   export DRASH_CORE_LOGGER_LEVEL="error"
 
+  for pid in $(ps aux | grep 'docs.ts' | grep 'allow' | awk '{print $2}'); do
+    echo "[watchmedo] Killing PID $pid ($DRASH_SERVER_DIRECTORY/docs.ts)..."
+    kill -9 $pid
+    echo "[watchmedo] PID $pid killed."
+  done
+
   if [[ $1 == "restart" ]]; then
-    echo -e "[watchmedo] Restarting docs.ts app..."
+    echo -e "[watchmedo] Restarting $DRASH_SERVER_DIRECTORY/docs.ts app..."
   else
-    echo -e "[watchmedo] Starting docs.ts app..."
+    echo -e "[watchmedo] Starting $DRASH_SERVER_DIRECTORY/docs.ts app..."
   fi
 
   deno $DRASH_DIR_ROOT/docs/docs.ts --allow-net --allow-env --allow-read --allow-write &
 
-  echo -e "[watchmedo] docs.ts app started.\n"
+  echo -e "[watchmedo] $DRASH_SERVER_DIRECTORY/docs.ts app started.\n"
   echo -e "[watchmedo] !!! IMPORTANT !!!"
   echo -e "[watchmedo] [ctrl] + [c] will NOT kill the docs.ts app. Run the following to kill the app:"
   echo -e "    \`npm run dev-kill\`\n"
