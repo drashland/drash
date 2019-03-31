@@ -102,10 +102,6 @@ div.page.page--reference
                                 ul
                                     li
                                         code.c-code-data-type {{ property.data_type }}
-                            //- EXAMPLE CODE
-                            div.tag-row(v-show="property.example_code.length > 0")
-                                strong.tag-row__heading Example Code
-                                code-block-for-reference(v-for="example_code, index in property.example_code" :key="index" :data="example_code")
                     div.card(v-show="!hasProperties(data.class.properties)")
                         div.card-body
                             div.tag-row
@@ -142,10 +138,6 @@ div.page.page--reference
                                         code.c-code-data-type {{ ret.data_type }}
                                         ul(v-show="ret.description.length > 0")
                                             li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
-                            //- EXAMPLE CODE
-                            div.tag-row(v-show="method.example_code.length > 0")
-                                strong.tag-row__heading Example Code
-                                code-block-for-reference(v-for="example_code, index in method.example_code" :key="index" :data="example_code")
                     div.card(v-else)
                         div.card-body
                             div.tag-row

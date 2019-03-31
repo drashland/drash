@@ -1,4 +1,3 @@
-// namespace Drash.Compilers
 //
 // TODO(crookse)
 //     [ ] Check for multiline method signatures. Example:
@@ -19,16 +18,10 @@
 import Drash from "../../mod.ts";
 
 /**
+ * @member Drash.Compilers
  * @class DocBlocksToJson
- * This compiler reads doc blocks and converts them to parsable JSON.
  *
- * @examplecode [
- *   {
- *     "title": "Example Call",
- *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
- *     "language": "typescript"
- *   }
- * ]
+ * This compiler reads doc blocks and converts them to parsable JSON.
  */
 export default class DocBlocksToJson {
 
@@ -61,24 +54,6 @@ export default class DocBlocksToJson {
    *
    * @return any
    *     Returns the JSON array.
-   *
-   * @examplecode [
-   *   {
-   *     "title": "Example Call",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
-   *     "language": "typescript"
-   *   },
-   *   {
-   *     "title": "file.ts",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
-   *     "language": "typescript"
-   *   },
-   *   {
-   *     "title": "output.json",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
-   *     "language": "json"
-   *   }
-   * ]
    */
   public compile(files: string[]): any {
     this.decoder = new TextDecoder();
@@ -125,7 +100,6 @@ export default class DocBlocksToJson {
         name: className,
         annotation: classDocBlockResults.annotation,
         description: classDocBlockResults.description,
-        example_code: classDocBlockResults.example_code,
         properties: this.getClassProperties(propertyDocBlocks),
         methods: this.getClassMethods(methodDocBlocks),
       };
@@ -145,24 +119,6 @@ export default class DocBlocksToJson {
    *
    * @return any[]
    *     Returns an array of data related to the specified annotation.
-   *
-   * @examplecode [
-   *   {
-   *     "title": "Example Call",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
-   *     "language": "typescript"
-   *   },
-   *   {
-   *     "title": "doc_block.txt",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
-   *     "language": "text"
-   *   },
-   *   {
-   *     "title": "output.json",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
-   *     "language": "json"
-   *   }
-   * ]
    */
   public getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[] {
     //
@@ -256,7 +212,6 @@ export default class DocBlocksToJson {
     let classDocBlock = {
       annotation: null,
       description: [],
-      example_code: []
     };
 
     if (!docBlock || docBlock.trim() == "") {
@@ -269,7 +224,6 @@ export default class DocBlocksToJson {
 
     classDocBlock.annotation = annotation;
     classDocBlock.description = this.getDocBlockDescription(description);
-    classDocBlock.example_code = this.getDocBlockExampleCode(description);
 
     return classDocBlock;
   }
@@ -315,7 +269,7 @@ export default class DocBlocksToJson {
    *     The doc block in question.
    *
    * @return any
-   *     Returns an access modifier, description, example code, and signature.
+   *     Returns an access modifier, description, and signature.
    */
   protected getClassCommonData(docBlock: string): any {
     let docBlockLinesAsArray = docBlock.split("\n") ;
@@ -327,7 +281,6 @@ export default class DocBlocksToJson {
     return {
       access_modifier: accessModifier,
       description: this.getDocBlockDescription(docBlock),
-      example_code: this.getDocBlockExampleCode(docBlock),
       signature: signature
     };
   }
@@ -376,7 +329,7 @@ export default class DocBlocksToJson {
     let textBlock = "";
     let endOfDescription = false;
 
-    let reAnnotationTag = new RegExp(/@(param|examplecode|return|throws|property)/, "g");
+    let reAnnotationTag = new RegExp(/@(param|return|throws|property)/, "g");
 
     docBlocksByLine.forEach((line) => {
       if (endOfDescription) {
@@ -398,58 +351,6 @@ export default class DocBlocksToJson {
     });
 
     return this.getParagraphs(textBlock);
-  }
-
-  /**
-   * Get the example code of the specified doc block.
-   *
-   * @param string docblock
-   *     The doc block in question.
-   *
-   * @return any[]
-   *     Returns an array of the example code.
-   */
-  protected getDocBlockExampleCode(docBlock: string): any[] {
-    let reExampleCode = new RegExp(/\* @examplecode.+\[((\n +?\\* +).+)*(?:(\n +\\*\n +\\* + .*)+)?\* ]/, "g");
-    let match = docBlock.match(reExampleCode);
-    let exampleCode = [];
-
-    if (!match) {
-      return exampleCode;
-    }
-
-    let jsonString = match[0]
-      .replace(/\*/g, "")
-      .replace("@examplecode ", "")
-      .trim();
-
-    try {
-      Drash.core_logger.debug(`Parsing @examplecode block for ${this.current_file}.`);
-      exampleCode = JSON.parse(jsonString);
-      Drash.core_logger.debug(`Succesfully parsed.`);
-    } catch (error) {
-      Drash.core_logger.error(`Error occurred while parsing @examplecode block for ${this.current_file}:`);
-      Drash.core_logger.error(error.message);
-      return exampleCode;
-    }
-
-    let fullFilepath = "";
-
-    exampleCode.forEach((fileData, index) => {
-      try {
-        let decoder = new TextDecoder();
-        fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
-        Drash.core_logger.debug(`Getting file contents from ${fullFilepath}.`);
-        let fileContentsRaw = Deno.readFileSync(fullFilepath);
-        // Add the `code` property to the beginning
-        exampleCode[index].code = decoder.decode(fileContentsRaw);
-      } catch (error) {
-        Drash.core_logger.error(`Error occurred while getting file contents from ${fullFilepath}:`);
-        Drash.core_logger.error(error.message);
-      }
-    });
-
-    return exampleCode;
   }
 
   /**

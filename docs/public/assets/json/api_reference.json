@@ -1,20 +1,18 @@
 {
-  "Drash.Compilers": {
+  "into": {
     "DocBlocksToJson": {
-      "fully_qualified_name": "Drash.Compilers.DocBlocksToJson",
+      "fully_qualified_name": "into.DocBlocksToJson",
       "name": "DocBlocksToJson",
       "annotation": "@class DocBlocksToJson",
       "description": [
         "This compiler reads doc blocks and converts them to parsable JSON."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
           "description": [
             "A property to hold the final result of the compilation."
           ],
-          "example_code": [],
           "signature": "protected parsed: any = {}",
           "annotation": "@property any parsed",
           "data_type": "any",
@@ -25,7 +23,6 @@
           "description": [
             "A property to hold the name of the current file being parsed. This property\nonly exists for debugging purposes. This class has logging to make it\neasier for Drash developers and users to find errors during compilation."
           ],
-          "example_code": [],
           "signature": "protected current_file: string = \"\"",
           "annotation": "@property string current_file",
           "data_type": "string",
@@ -37,26 +34,6 @@
           "access_modifier": "public",
           "description": [
             "Compile a JSON array containing classes, properties, and methods from the\nspecified files by parsing the doc blocks of each file."
-          ],
-          "example_code": [
-            {
-              "title": "Example Call",
-              "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
-              "language": "typescript",
-              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\nconst compiler = new Drash.Compilers.DocBlocksToJson();\nconst result = compiler.compile([\"file.ts\"]); // See file.ts example code below\n\nconst encoder = new TextEncoder();\nconst data = encoder.encode(JSON.stringify(result, null, 2));\nDeno.writeFileSync(\"output.json\", data); // See output.json example code below\n"
-            },
-            {
-              "title": "file.ts",
-              "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
-              "language": "typescript",
-              "code": "// namespace Drash.Services\n\n/**\n * @class ClassOne\n * Class one does class one things.\n */\nexport default class ClassOne {\n  /**\n   * Class one property one.\n   *\n   * This is a second paragraph.\n   *\n   * This is a third paragraph.\n   * There is also a sentence below this third paragraph.\n   *\n   * This is a fourth paragraph.\n   *\n   * @property string property_one\n   *\n   * @examplecode [\n   *   {\n   *     \"title\": \"app.ts\",\n   *     \"filepath\": \"/class_one_p_property_one.ts\",\n   *     \"language\": \"typescript\",\n   *     \"line_highlight\": \"8,10\"\n   *   },\n   *   {\n   *     \"title\": \"app.ts\",\n   *     \"filepath\": \"/class_one_p_property_two.ts\",\n   *     \"language\": \"typescript\",\n   *     \"line_highlight\": \"11\"\n   *   }\n   * ]\n   */\n  public property_one: string = \"\";\n\n  /**\n   * Class one method one.\n   *\n   * This is a second paragraph.\n   *\n   * This is a third paragraph.\n   * There is also a sentence below this third paragraph.\n   *\n   * This is a fourth paragraph.\n   *\n   * @param any myObject\n   *     My object.\n   * @param string myString\n   *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n   *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n   *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n   *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n   *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n   *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n   *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n   *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n   *     tortor et sem semper imperdiet in ut libero.\n   *\n   *     This is a second paragraph.\n   *\n   *     This is a third paragraph.\n   *\n   * @return any|undefined\n   *     Returns any when something cool happens.\n   *\n   *     Returns undefined when uhhhhhhhhhh k.\n   *\n   * @return string\n   *     Returns a string when the other two don't get got returRrRrRrned.\n   *\n   * @throws SomeException\n   *     Thrown when something happens.\n   *\n   *     Thrown when something else happens too.\n   * @throws SomeOtherException\n   *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n   *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n   *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n   *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n   *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n   *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n   *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n   *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n   *     tortor et sem semper imperdiet in ut libero.\n   *\n   *     This is a second paragraph.\n   */\n  public classOneMethodOne(myObject: any, myString: string) {}\n}\n"
-            },
-            {
-              "title": "output.json",
-              "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
-              "language": "json",
-              "code": "{\n  \"Drash.Services\": {\n    \"ClassOne\": {\n      \"properties\": [\n        {\n          \"access_modifier\": \"public\",\n          \"annotation\": \"@property string property_one\",\n          \"data_type\": \"string\",\n          \"description\": [\n            \"Class one property one.\",\n            \"This is a second paragraph.\",\n            \"This is a third paragraph. There is also a sentence below this third paragraph.\",\n            \"This is a fourth paragraph.\"\n          ],\n          \"example_code\": [\n            {\n              \"title\": \"app.ts\",\n              \"filepath\": \"/class_one_p_property_one.ts\",\n              \"language\": \"typescript\",\n              \"line_highlight\": \"8,10\",\n              \"code\": \"import Drash from \\\"https://deno.land/x/drash/mod.ts\\\";\\n\\n// This is just an example file for testing... nothing else to see here.\\n\"\n            },\n            {\n              \"title\": \"app.ts\",\n              \"filepath\": \"/class_one_p_property_two.ts\",\n              \"language\": \"typescript\",\n              \"line_highlight\": \"11\",\n              \"code\": \"// comment\\n\"\n            }\n          ],\n          \"name\": \"property_one\",\n          \"signature\": \"public property_one: string = \\\"\\\"\"\n        }\n      ],\n      \"methods\": [\n        {\n          \"access_modifier\": \"public\",\n          \"description\": [\n            \"Class one method one.\",\n            \"This is a second paragraph.\",\n            \"This is a third paragraph. There is also a sentence below this third paragraph.\",\n            \"This is a fourth paragraph.\"\n          ],\n          \"example_code\": [],\n          \"name\": \"classOneMethodOne\",\n          \"params\": [\n            {\n              \"annotation\": \"@param any myObject\",\n              \"data_type\": \"any\",\n              \"description\": [\n                \"My object.\"\n              ],\n              \"name\": \"myObject\"\n            },\n            {\n              \"annotation\": \"@param string myString\",\n              \"data_type\": \"string\",\n              \"description\": [\n                \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n                \"This is a second paragraph.\",\n                \"This is a third paragraph.\"\n              ],\n              \"name\": \"myString\"\n            }\n          ],\n          \"returns\": [\n            {\n              \"annotation\": \"@return any|undefined\",\n              \"data_type\": \"any|undefined\",\n              \"description\": [\n                \"Returns any when something cool happens.\",\n                \"Returns undefined when uhhhhhhhhhh k.\"\n              ],\n              \"name\": null\n            },\n            {\n              \"annotation\": \"@return string\",\n              \"data_type\": \"string\",\n              \"description\": [\n                \"Returns a string when the other two don't get got returRrRrRrned.\"\n              ],\n              \"name\": null\n            }\n          ],\n          \"signature\": \"public classOneMethodOne(myObject: any, myString: string)\",\n          \"throws\": [\n            {\n              \"annotation\": \"@throws SomeException\",\n              \"data_type\": \"SomeException\",\n              \"description\": [\n                \"Thrown when something happens.\",\n                \"Thrown when something else happens too.\"\n              ],\n              \"name\": null\n            },\n            {\n              \"annotation\": \"@throws SomeOtherException\",\n              \"data_type\": \"SomeOtherException\",\n              \"description\": [\n                \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n                \"This is a second paragraph.\"\n              ],\n              \"name\": null\n            }\n          ]\n        }\n      ]\n    }\n  }\n}\n"
-            }
           ],
           "signature": "public compile(files: string[]): any",
           "name": "compile",
@@ -86,26 +63,6 @@
           "access_modifier": "public",
           "description": [
             "Get the specified `@annotationname` definitions from the specified doc\nblock."
-          ],
-          "example_code": [
-            {
-              "title": "Example Call",
-              "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
-              "language": "typescript",
-              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\nconst decoder = new TextDecoder();\nconst fileContentsRaw = Deno.readFileSync(\"doc_block.txt\");  // See doc_block.txt example code below\nconst docBlock = decoder.decode(fileContentsRaw);\n\nconst compiler = new Drash.Compilers.DocBlocksToJson();\nconst results = {\n  params: compiler.getDocBlockAnnotationBlocks(\"@param\", docBlock);\n  returns: compiler.getDocBlockAnnotationBlocks(\"@returns\", docBlock);\n  throws: compiler.getDocBlockAnnotationBlocks(\"@throws\", docBlock);\n};\n\nconst encoder = new TextEncoder();\nconst data = encoder.encode(JSON.stringify(results, null, 2));\nDeno.writeFileSync(\"output.json\", data); // See output.json example code below\n"
-            },
-            {
-              "title": "doc_block.txt",
-              "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
-              "language": "text",
-              "code": "/**\n * Class one method one.\n *\n * This is a second paragraph.\n *\n * This is a third paragraph.\n * There is also a sentence below this third paragraph.\n *\n * This is a fourth paragraph.\n *\n * @param any myObject\n *     My object.\n * @param string myString\n *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n *     tortor et sem semper imperdiet in ut libero.\n *\n *     This is a second paragraph.\n *\n *     This is a third paragraph.\n *\n * @return any|undefined\n *     Returns any when something cool happens.\n *\n *     Returns undefined when uhhhhhhhhhh k.\n *\n * @return string\n *     Returns a string when the other two don't get got returRrRrRrned.\n *\n * @throws SomeException\n *     Thrown when something happens.\n *\n *     Thrown when something else happens too.\n * @throws SomeOtherException\n *     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\n *     malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\n *     placerat quis vitae lectus. Class aptent taciti sociosqu ad litora\n *     torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\n *     sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\n *     eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\n *     sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\n *     scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\n *     tortor et sem semper imperdiet in ut libero.\n *\n *     This is a second paragraph.\n */\n"
-            },
-            {
-              "title": "output.json",
-              "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
-              "language": "json",
-              "code": "{\n  \"params\": [\n    {\n      \"annotation\": \"@param any myObject\",\n      \"data_type\": \"any\",\n      \"description\": [\n        \"My object.\"\n      ],\n      \"name\": \"myObject\"\n    },\n    {\n      \"annotation\": \"@param string myString\",\n      \"data_type\": \"string\",\n      \"description\": [\n        \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n        \"This is a second paragraph.\",\n        \"This is a third paragraph.\"\n      ],\n      \"name\": \"myString\"\n    }\n  ],\n  \"returns\": [\n    {\n      \"annotation\": \"@return any|undefined\",\n      \"data_type\": \"any|undefined\",\n      \"description\": [\n        \"Returns any when something cool happens.\",\n        \"Returns undefined when uhhhhhhhhhh k.\"\n      ],\n      \"name\": null\n    },\n    {\n      \"annotation\": \"@return string\",\n      \"data_type\": \"string\",\n      \"description\": [\n        \"Returns a string when the other two don't get got returRrRrRrned.\"\n      ],\n      \"name\": null\n    }\n  ],\n  \"throws\": [\n    {\n      \"annotation\": \"@throws SomeException\",\n      \"data_type\": \"SomeException\",\n      \"description\": [\n        \"Thrown when something happens.\",\n        \"Thrown when something else happens too.\"\n      ],\n      \"name\": null\n    },\n    {\n      \"annotation\": \"@throws SomeOtherException\",\n      \"data_type\": \"SomeOtherException\",\n      \"description\": [\n        \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus malesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat placerat quis vitae lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean vulputate sed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus eu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut, sagittis velit. Cras lobortis augue sed eleifend blandit. Aenean scelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id tortor et sem semper imperdiet in ut libero.\",\n        \"This is a second paragraph.\"\n      ],\n      \"name\": null\n    }\n  ]\n}\n"
-            }
           ],
           "signature": "public getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[]",
           "name": "getDocBlockAnnotationBlocks",
@@ -144,7 +101,6 @@
           "description": [
             "Parse the specified array of method doc blocks and return an array of\nmethod-related data."
           ],
-          "example_code": [],
           "signature": "protected getClassMethods(docBlocks: string[]): any[]",
           "name": "getClassMethods",
           "params": [
@@ -174,7 +130,6 @@
           "description": [
             "Parse the specified class doc block."
           ],
-          "example_code": [],
           "signature": "protected getClassDocBlock(docBlock: string): any",
           "name": "getClassDocBlock",
           "params": [
@@ -204,7 +159,6 @@
           "description": [
             "Parse the specified array of property doc blocks and return an array of\nproperty-related data."
           ],
-          "example_code": [],
           "signature": "protected getClassProperties(docBlocks: string[]): any[]",
           "name": "getClassProperties",
           "params": [
@@ -234,7 +188,6 @@
           "description": [
             "Get the common doc block data between a class' property doc blocks and\nmethod doc blocks."
           ],
-          "example_code": [],
           "signature": "protected getClassCommonData(docBlock: string): any",
           "name": "getClassCommonData",
           "params": [
@@ -252,7 +205,7 @@
               "annotation": "@return any",
               "data_type": "any",
               "description": [
-                "Returns an access modifier, description, example code, and signature."
+                "Returns an access modifier, description, and signature."
               ],
               "name": null
             }
@@ -264,7 +217,6 @@
           "description": [
             "Get the `@annotationname` line."
           ],
-          "example_code": [],
           "signature": "protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any",
           "name": "getDocBlockAnnotationLine",
           "params": [
@@ -302,7 +254,6 @@
           "description": [
             "Get the description of the specified doc block."
           ],
-          "example_code": [],
           "signature": "protected getDocBlockDescription(docBlock: string): string[]",
           "name": "getDocBlockDescription",
           "params": [
@@ -330,39 +281,8 @@
         {
           "access_modifier": "protected",
           "description": [
-            "Get the example code of the specified doc block."
-          ],
-          "example_code": [],
-          "signature": "protected getDocBlockExampleCode(docBlock: string): any[]",
-          "name": "getDocBlockExampleCode",
-          "params": [
-            {
-              "annotation": "@param string docblock",
-              "data_type": "string",
-              "description": [
-                "The doc block in question."
-              ],
-              "name": "docblock"
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of the example code."
-              ],
-              "name": null
-            }
-          ],
-          "throws": []
-        },
-        {
-          "access_modifier": "protected",
-          "description": [
             "Get paragraphs from a text block."
           ],
-          "example_code": [],
           "signature": "protected getParagraphs(textBlock: string): string[]",
           "name": "getParagraphs",
           "params": [
@@ -398,7 +318,6 @@
       "description": [
         "This class helps you throw HTTP errors in a semantic way."
       ],
-      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -406,7 +325,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(code: number, message?: string)",
           "name": "number,",
           "params": [
@@ -441,14 +359,12 @@
       "description": [
         "This is a wrapper class for `ServerRequest` (from\nhttps://deno.land/x/http/server.ts). It just adds more properties to the\nrequest object--allowing Drash to work with a more flexible request object."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "public",
           "description": [
             "A property to access the original `ServerRequest` object."
           ],
-          "example_code": [],
           "signature": "public original_request_object: ServerRequest",
           "annotation": "@property ServerRequest original_request_object",
           "data_type": "ServerRequest",
@@ -459,7 +375,6 @@
           "description": [
             "A property to hold the path params of the request. For example, if a\nrequest with the URI `/users/1234` is sent by a client and the request is\nmatched to a resource class with a path of `/users/:id`, then\n`this.path_params.id == 1234`."
           ],
-          "example_code": [],
           "signature": "public path_params: any = {}",
           "annotation": "@property any path_params",
           "data_type": "any",
@@ -470,7 +385,6 @@
           "description": [
             "A property to hold the path of the request's URL. For example, if a request\nwith the URL `localhost:8000/users/1234` is sent by a client, then the path\nto this request is `/users/1234`."
           ],
-          "example_code": [],
           "signature": "public url_path: string",
           "annotation": "@property string url_path",
           "data_type": "string",
@@ -481,7 +395,6 @@
           "description": [
             "A property to hold the query params of the request's URL in key-value pair\nformat. For example, if a request with the URL\n`localhost:8000?response_content_type=text/html` is sent by a client, then\n`this.url_query_params == {response_content_type: \"text/html\"}`."
           ],
-          "example_code": [],
           "signature": "public url_query_params: any = {}",
           "annotation": "@property any url_query_params",
           "data_type": "any",
@@ -492,7 +405,6 @@
           "description": [
             "A property to hold the query string of the request's URL. For example, if a\nrequest with the URL `localhost:8000?response_content_type=text/html` is\nsent by a client, then `this.url_query_string ==\n\"response_content_type=text/html\"`. Note that the leading\n`?` is removed."
           ],
-          "example_code": [],
           "signature": "public url_query_string: string = null",
           "annotation": "@property string url_query_string",
           "data_type": "string",
@@ -505,7 +417,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(request: ServerRequest)",
           "name": "ServerRequest)",
           "params": [
@@ -528,14 +439,12 @@
       "description": [
         "This is the base resource class for all resources. All resource classes must\nbe derived from this class."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
           "description": [
             "The request object."
           ],
-          "example_code": [],
           "signature": "protected request: Drash.Http.Request",
           "annotation": "@property Drash.Http.Request request",
           "data_type": "Drash.Http.Request",
@@ -546,7 +455,6 @@
           "description": [
             "The response object."
           ],
-          "example_code": [],
           "signature": "protected response: Drash.Http.Response",
           "annotation": "@property Drash.Http.Response response",
           "data_type": "Drash.Http.Response",
@@ -557,7 +465,6 @@
           "description": [
             "The server object."
           ],
-          "example_code": [],
           "signature": "protected server: Drash.Http.Server",
           "annotation": "@property Drash.Http.Server server",
           "data_type": "Drash.Http.Server",
@@ -570,7 +477,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
           "name": "Drash.Http.Request,",
           "params": [
@@ -611,21 +517,11 @@
       "description": [
         "Response handles sending a response to the client making the request."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "public",
           "description": [
             "The body of this response."
-          ],
-          "example_code": [
-            {
-              "title": "app.ts",
-              "filepath": "/api_reference/http/response/p_body.ts",
-              "language": "typescript",
-              "line_highlight": "6",
-              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public GET() {\n    this.response.body = \"Ok... you got me.\";\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n"
-            }
           ],
           "signature": "public body: any = {}",
           "annotation": "@property any body",
@@ -637,7 +533,6 @@
           "description": [
             "The body of this response as a string."
           ],
-          "example_code": [],
           "signature": "public body_generated: string = \"\"",
           "annotation": "@property string body_generated",
           "data_type": "string",
@@ -648,7 +543,6 @@
           "description": [
             "This response's headers."
           ],
-          "example_code": [],
           "signature": "public headers: Headers",
           "annotation": "@property Headers headers",
           "data_type": "Headers",
@@ -659,7 +553,6 @@
           "description": [
             "The request object."
           ],
-          "example_code": [],
           "signature": "public request: Drash.Http.Request",
           "annotation": "@property Drash.Http.Request request",
           "data_type": "Drash.Http.Request",
@@ -670,7 +563,6 @@
           "description": [
             "This response's status code (e.g., 200 for OK). _Drash.Http.Response_\nobjects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)."
           ],
-          "example_code": [],
           "signature": "public status_code: number = Status.OK",
           "annotation": "@property number status_code",
           "data_type": "number",
@@ -683,7 +575,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(request: Drash.Http.Request)",
           "name": "Drash.Http.Request)",
           "params": [
@@ -702,7 +593,6 @@
           "description": [
             "Generate a response."
           ],
-          "example_code": [],
           "signature": "public generateResponse(): string",
           "name": "generateResponse",
           "params": [],
@@ -720,15 +610,6 @@
           "access_modifier": "public",
           "description": [
             "Get the status message based on the status code."
-          ],
-          "example_code": [
-            {
-              "title": "app.ts",
-              "filepath": "/api_reference/http/response/m_getStatusMessage.ts",
-              "language": "typescript",
-              "line_highlight": "8",
-              "code": "import Drash from \" https://deno.land/x/drash/mod.ts\";\nimport { Status } from \"https://deno.land/x/http/http_status.ts\";\n\nclass HomeResource extends Drash.Http.Resource {\n  static paths = [\"/\"];\n  public PUT() {\n    this.response.status_code = Status.NoContent;\n    console.log(this.response.getStatusMessage()); // Outputs => \"No Content\"\n    return this.response;\n  }\n}\n\nlet server = new Drash.Http.Server({\n  address: \"localhost:8000\",\n  response_output: \"application/json\",\n  resources: [HomeResource],\n  logger: new Drash.Loggers.ConsoleLogger({\n    enabled: true,\n    level: \"debug\"\n  })\n});\n\nserver.run();\n"
-            }
           ],
           "signature": "public getStatusMessage(): string",
           "name": "getStatusMessage",
@@ -750,7 +631,6 @@
           "description": [
             "Get the full status message based on the status code. This is just the\nstatus code and the status message together (e.g., `200 (OK)`, `401\n(Unauthorized)`, etc.)."
           ],
-          "example_code": [],
           "signature": "public getStatusMessageFull(): string",
           "name": "getStatusMessageFull",
           "params": [],
@@ -769,7 +649,6 @@
           "description": [
             "Send the response to the client making the request."
           ],
-          "example_code": [],
           "signature": "public send(): any",
           "name": "send",
           "params": [],
@@ -790,7 +669,6 @@
           "description": [
             "Send the response of a \"static asset\" to the client making the request."
           ],
-          "example_code": [],
           "signature": "public sendStatic(): any",
           "name": "sendStatic",
           "params": [],
@@ -809,7 +687,6 @@
           "description": [
             "Generate an HTML response. The `this.body` property should be the entire\nHTML document."
           ],
-          "example_code": [],
           "signature": "protected generateHtmlResponse(): string",
           "name": "generateHtmlResponse",
           "params": [],
@@ -832,14 +709,12 @@
       "description": [
         "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
           "description": [
             "This server's list of static paths. HTTP requests to a static path are\nusually intended to retrieve some type of concrete resource (e.g., a CSS\nfile or a JS file). If an HTTP request is matched to a static path and the\nresource the HTTP request is trying to get is found, then\n`Drash.Http.Response` will use its `sendStatic()` method to send the static\nasset back to the client."
           ],
-          "example_code": [],
           "signature": "protected static_paths: string[] = []",
           "annotation": "@property string[] static_paths",
           "data_type": "string[]",
@@ -852,7 +727,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(configs: any)",
           "name": "any)",
           "params": [
@@ -877,7 +751,6 @@
           "description": [
             "Handle an HTTP request from the Deno server."
           ],
-          "example_code": [],
           "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
           "name": "handleHttpRequest",
           "params": [
@@ -907,7 +780,6 @@
           "description": [
             "Handle cases when an error is thrown when handling an HTTP request."
           ],
-          "example_code": [],
           "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
           "name": "handleHttpRequestError",
           "params": [
@@ -945,7 +817,6 @@
           "description": [
             "Handle HTTP requests for the favicon. This method only exists to\nshort-circuit favicon requests--preventing the requests from clogging the\nlogs."
           ],
-          "example_code": [],
           "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
           "name": "handleHttpRequestForFavicon",
           "params": [
@@ -964,7 +835,6 @@
           "description": [
             "Run the Deno server at the address specified in the configs. This method\ntakes each HTTP request and creates a new and more workable request object\nand passes it to _Drash.Http.Server.handleHttpRequest()_."
           ],
-          "example_code": [],
           "signature": "public async run(): Promise<void>",
           "name": "async",
           "params": [],
@@ -986,7 +856,6 @@
             "Add an HTTP resource to the server which can be retrieved at specific URIs.",
             "Drash defines an HTTP resource according to the [MDN web\ndocs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
           ],
-          "example_code": [],
           "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void",
           "name": "addHttpResource",
           "params": [
@@ -1016,7 +885,6 @@
           "description": [
             "Add a static path for serving static assets like CSS files, JS files, PDF\nfiles, etc."
           ],
-          "example_code": [],
           "signature": "protected addStaticPath(path: string): void",
           "name": "addStaticPath",
           "params": [
@@ -1044,7 +912,6 @@
           "description": [
             "Get the resource class."
           ],
-          "example_code": [],
           "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined",
           "name": "getResourceClass",
           "params": [
@@ -1075,7 +942,6 @@
           "description": [
             "Is the request for a static path asset?"
           ],
-          "example_code": [],
           "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean",
           "name": "requestIsForStaticPathAsset",
           "params": [
@@ -1109,20 +975,11 @@
       "description": [
         "This logger is the base logger class for all logger classes."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
           "description": [
             "This logger's configs."
-          ],
-          "example_code": [
-            {
-              "title": "Logger Configs",
-              "filepath": "/api_reference/loggers/logger_p_configs.ts",
-              "language": "typescript",
-              "code": "{\n  //\n  // enabled: boolean\n  //\n  //     OPTIONS/VALUE\n  //         true, false\n  //\n  //     DEFAULT VALUE\n  //         false\n  //\n  //     DESCRIPTION\n  //         Is the logger enabled?\n  //\n  enabled: true,\n\n  //\n  // level: string\n  //\n  //     OPTIONS/VALUE\n  //         all, trace, debug, info, warn, error, fatal, off\n  //\n  //     DEFAULT VALUE\n  //         debug\n  //\n  //     DESCRIPTION\n  //         Control the number of messages logged by the logger.\n  //\n  level: \"debug\",\n\n  //\n  // tag_string: string\n  //\n  //    OPTIONS/VALUE\n  //         This only takes a string with tags formatted as {tag}. Example:\n  //\n  //             {this_tag} | {that_tag} | {another_tag}\n  //             {this_tag} * {that_tag} * {another_tag}\n  //             [{this_tag}] [{that_tag}] [{another_tag}]\n  //\n  //     DEFAULT VALUE\n  //         None.\n  //\n  //     DESCRIPTION\n  //         This tag string will be parsed by the logger object and tags will\n  //         be replaced based on the `tag_string_fns` config.\n  //\n  tag_string: \"\",\n\n  //\n  // tag_string_fns: any\n  //\n  //     OPTIONS/VALUE\n  //         This takes an object of key-value pairs where the key is the name\n  //         of a tag defined in the `tag_string` config.\n  //\n  //     DEFAULT VALUE\n  //         None.\n  //\n  //     DESCRIPTION\n  //         This object is used to replace tags in the `tag_string` config by\n  //         matching keys to tags and replacing tags with the values of the\n  //         keys. For example, if the `tag_string` and `tag_string_fns` configs\n  //         were ...\n  //\n  //             {\n  //               enabled: true,\n  //               level: \"debug\",\n  //               tag_string: \"[ - {datetime} - ] {your_tag} === {level} ===\"\n  //               tag_string_fns: {\n  //                 datetime: function datetime() {\n  //                   let dateTime = new Date();\n  //                   dateTime.setUTCHours(dateTime.getUTCHours() - 5);\n  //                   return dateTime.toISOString().replace(\"T\", \" \");\n  //                 },\n  //                 your_tag: \"This-Is-Your-Tag\"\n  //               }\n  //             }\n  //\n  //         ... then the tags string would output something like ...\n  //\n  //             [ - 2018-08-26 00:10:02.590Z - ] This-Is-Your-Tag === DEBUG === {log message would be appended here}\n  //\n  //         The {level} tag is reserved and cannot be defined. It is replaced\n  //         with the level of the current log message being written. For\n  //         example, if `MyLogger.info(\"some message\")` is called, then the\n  //         {level} tag will be replaced with INFO.\n  //\n  tag_string_fns: {},\n}\n"
-            }
           ],
           "signature": "protected configs: any",
           "annotation": "@property any configs",
@@ -1134,7 +991,6 @@
           "description": [
             "The level of the log message currently being written."
           ],
-          "example_code": [],
           "signature": "protected current_log_message_level_name: string",
           "annotation": "@property string current_log_message_level_name",
           "data_type": "string",
@@ -1145,7 +1001,6 @@
           "description": [
             "See `Drash.Dictionaries.LogLevels`."
           ],
-          "example_code": [],
           "signature": "protected log_levels: any = LogLevels",
           "annotation": "@property any current_log_message_level_name",
           "data_type": "any",
@@ -1158,7 +1013,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(configs: any)",
           "name": "any)",
           "params": [
@@ -1179,7 +1033,6 @@
           "description": [
             "Output a DEBUG level log message."
           ],
-          "example_code": [],
           "signature": "public debug(message)",
           "name": "debug",
           "params": [
@@ -1200,7 +1053,6 @@
           "description": [
             "Output an ERROR level log message."
           ],
-          "example_code": [],
           "signature": "public error(message)",
           "name": "error",
           "params": [
@@ -1221,7 +1073,6 @@
           "description": [
             "Output a FATAL level log message."
           ],
-          "example_code": [],
           "signature": "public fatal(message)",
           "name": "fatal",
           "params": [
@@ -1242,7 +1093,6 @@
           "description": [
             "Output an INFO level log message."
           ],
-          "example_code": [],
           "signature": "public info(message)",
           "name": "info",
           "params": [
@@ -1263,7 +1113,6 @@
           "description": [
             "Output a TRACE level log message."
           ],
-          "example_code": [],
           "signature": "public trace(message)",
           "name": "trace",
           "params": [
@@ -1284,7 +1133,6 @@
           "description": [
             "Output a WARN level log message."
           ],
-          "example_code": [],
           "signature": "public warn(message)",
           "name": "warn",
           "params": [
@@ -1305,7 +1153,6 @@
           "description": [
             "Get the parsed version of the raw tag string."
           ],
-          "example_code": [],
           "signature": "protected getTagStringParsed(): string",
           "name": "getTagStringParsed",
           "params": [],
@@ -1324,7 +1171,6 @@
           "description": [
             "Send the message to the write method (which should be in the child class).\nAlso, do some prechecks before sending to see if the log message should be\nwritten."
           ],
-          "example_code": [],
           "signature": "protected sendToWriteMethod(logMethodLevelDefinition, message)",
           "name": "sendToWriteMethod",
           "params": [
@@ -1364,7 +1210,6 @@
       "description": [
         "This logger allows you to log messages to the console."
       ],
-      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -1372,7 +1217,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(configs)",
           "name": null,
           "params": [
@@ -1393,7 +1237,6 @@
           "description": [
             "Write a log message to the console."
           ],
-          "example_code": [],
           "signature": "public write(logMethodLevelDefinition, message): string",
           "name": "write",
           "params": [],
@@ -1409,14 +1252,12 @@
       "description": [
         "This logger allows you to log messages to a file."
       ],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "protected",
           "description": [
             "The file this logger will write log messages to."
           ],
-          "example_code": [],
           "signature": "protected file: string",
           "annotation": "@property string file",
           "data_type": "string",
@@ -1429,7 +1270,6 @@
           "description": [
             "Construct an object of this class."
           ],
-          "example_code": [],
           "signature": "constructor(configs)",
           "name": null,
           "params": [
@@ -1450,7 +1290,6 @@
           "description": [
             "Write a log message to `this.file`."
           ],
-          "example_code": [],
           "signature": "public write(logMethodLevelDefinition, message): string",
           "name": "write",
           "params": [],
@@ -1468,7 +1307,6 @@
       "description": [
         "This class helps perform HTTP-related processes."
       ],
-      "example_code": [],
       "properties": [],
       "methods": [
         {
@@ -1476,7 +1314,6 @@
           "description": [
             "Hydrate the request with data that is useful for the `Drash.Http.Server`\nclass."
           ],
-          "example_code": [],
           "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)",
           "name": "hydrateHttpRequest",
           "params": [
@@ -1505,7 +1342,6 @@
           "description": [
             "Get the specified HTTP request's URL path."
           ],
-          "example_code": [],
           "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string",
           "name": "getHttpRequestUrlPath",
           "params": [
@@ -1535,7 +1371,6 @@
           "description": [
             "Get the specified HTTP request's URL query string."
           ],
-          "example_code": [],
           "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string",
           "name": "getHttpRequestUrlQueryString",
           "params": [
@@ -1565,7 +1400,6 @@
           "description": [
             "Get the HTTP request's URL query params by parsing the URL query string."
           ],
-          "example_code": [],
           "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any",
           "name": "getHttpRequestUrlQueryParams",
           "params": [
@@ -1595,7 +1429,6 @@
           "description": [
             "Get a MIME type for a file based on its extension."
           ],
-          "example_code": [],
           "signature": "public getMimeType(file: string, fileIsUrl: boolean = false): string",
           "name": "getMimeType",
           "params": [
