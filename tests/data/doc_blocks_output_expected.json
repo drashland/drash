@@ -5,7 +5,6 @@
       "name": "ClassOne",
       "annotation": "@class ClassOne",
       "description": ["Class one does class one things."],
-      "example_code": [],
       "properties": [
         {
           "access_modifier": "public",
@@ -16,22 +15,6 @@
             "This is a second paragraph.",
             "This is a third paragraph.\nThere is also a sentence below this third paragraph.",
             "This is a fourth paragraph."
-          ],
-          "example_code": [
-            {
-              "title": "app.ts",
-              "filepath": "/class_one_p_property_one.ts",
-              "language": "typescript",
-              "line_highlight": "8,10",
-              "code": "import Drash from \"https://deno.land/x/drash/mod.ts\";\n\n// This is just an example file for testing... nothing else to see here.\n"
-            },
-            {
-              "title": "app.ts",
-              "filepath": "/class_one_p_property_two.ts",
-              "language": "typescript",
-              "line_highlight": "11",
-              "code": "// comment\n"
-            }
           ],
           "name": "property_one",
           "signature": "public property_one: string = \"\""
@@ -46,7 +29,6 @@
             "This is a third paragraph.\nThere is also a sentence below this third paragraph.",
             "This is a fourth paragraph."
           ],
-          "example_code": [],
           "name": "classOneMethodOne",
           "params": [
             {
@@ -60,7 +42,7 @@
               "data_type": "string",
               "description": [
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam finibus\nmalesuada leo, vitae vehicula tellus. Aliquam a est in nisi placerat\nplacerat quis vitae lectus. Class aptent taciti sociosqu ad litora\ntorquent per conubia nostra, per inceptos himenaeos. Aenean vulputate\nsed leo eu faucibus. Suspendisse mauris diam, congue finibus finibus\neu, bibendum sit amet justo. Fusce eu enim mollis, viverra tortor ut,\nsagittis velit. Cras lobortis augue sed eleifend blandit. Aenean\nscelerisque viverra facilisis. Morbi sit amet pulvinar diam. Sed id\ntortor et sem semper imperdiet in ut libero.",
-                "This is a second paragraph.",
+                "This is a second paragraph.\nThis is another line belonging to the second paragraph.",
                 "This is a third paragraph."
               ],
               "name": "myString"

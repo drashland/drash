@@ -1,36 +1,21 @@
 // namespace Drash.Services
 
 /**
+ * @memberof Drash.Services
  * @class ClassOne
  * Class one does class one things.
  */
 export default class ClassOne {
   /**
-   * Class one property one.
-   *
-   * This is a second paragraph.
-   *
-   * This is a third paragraph.
-   * There is also a sentence below this third paragraph.
-   *
-   * This is a fourth paragraph.
-   *
    * @property string property_one
+   *     Class one property one.
    *
-   * @examplecode [
-   *   {
-   *     "title": "app.ts",
-   *     "filepath": "/class_one_p_property_one.ts",
-   *     "language": "typescript",
-   *     "line_highlight": "8,10"
-   *   },
-   *   {
-   *     "title": "app.ts",
-   *     "filepath": "/class_one_p_property_two.ts",
-   *     "language": "typescript",
-   *     "line_highlight": "11"
-   *   }
-   * ]
+   *     This is a second paragraph.
+   *
+   *     This is a third paragraph.
+   *     There is also a sentence below this third paragraph.
+   *
+   *     This is a fourth paragraph.
    */
   public property_one: string = "";
 
@@ -58,6 +43,7 @@ export default class ClassOne {
    *     tortor et sem semper imperdiet in ut libero.
    *
    *     This is a second paragraph.
+   *     This is another line belonging to the second paragraph.
    *
    *     This is a third paragraph.
    *

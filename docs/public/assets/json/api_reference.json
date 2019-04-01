@@ -9,24 +9,24 @@
       ],
       "properties": [
         {
-          "access_modifier": "protected",
-          "description": [
-            "A property to hold the final result of the compilation."
-          ],
-          "signature": "protected parsed: any = {}",
           "annotation": "@property any parsed",
           "data_type": "any",
-          "name": "parsed"
+          "description": [
+            "A property to hold the final result of `this.compile()`."
+          ],
+          "name": "parsed",
+          "access_modifier": "protected",
+          "signature": "protected parsed: any = {}"
         },
         {
-          "access_modifier": "protected",
-          "description": [
-            "A property to hold the name of the current file being parsed. This property\nonly exists for debugging purposes. This class has logging to make it\neasier for Drash developers and users to find errors during compilation."
-          ],
-          "signature": "protected current_file: string = \"\"",
           "annotation": "@property string current_file",
           "data_type": "string",
-          "name": "current_file"
+          "description": [
+            "A property to hold the name of the current file being parsed. This\nproperty only exists for debugging purposes. This class has logging to\nmake it easier for Drash developers and users to find errors during\ncompilation."
+          ],
+          "name": "current_file",
+          "access_modifier": "protected",
+          "signature": "protected current_file: string = \"\""
         }
       ],
       "methods": [
@@ -99,35 +99,6 @@
         {
           "access_modifier": "protected",
           "description": [
-            "Parse the specified array of method doc blocks and return an array of\nmethod-related data."
-          ],
-          "signature": "protected getClassMethods(docBlocks: string[]): any[]",
-          "name": "getClassMethods",
-          "params": [
-            {
-              "annotation": "@param string[] docBlocks",
-              "data_type": "string[]",
-              "description": [
-                "The array of doc blocks to parse."
-              ],
-              "name": "docBlocks"
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of method-related data."
-              ],
-              "name": null
-            }
-          ],
-          "throws": []
-        },
-        {
-          "access_modifier": "protected",
-          "description": [
             "Parse the specified class doc block."
           ],
           "signature": "protected getClassDocBlock(docBlock: string): any",
@@ -148,6 +119,35 @@
               "data_type": "any[]",
               "description": [
                 "Returns an array of property-related data."
+              ],
+              "name": null
+            }
+          ],
+          "throws": []
+        },
+        {
+          "access_modifier": "protected",
+          "description": [
+            "Parse the specified array of method doc blocks and return an array of\nmethod-related data."
+          ],
+          "signature": "protected getClassMethods(docBlocks: string[]): any[]",
+          "name": "getClassMethods",
+          "params": [
+            {
+              "annotation": "@param string[] docBlocks",
+              "data_type": "string[]",
+              "description": [
+                "The array of doc blocks to parse."
+              ],
+              "name": "docBlocks"
+            }
+          ],
+          "returns": [
+            {
+              "annotation": "@return any[]",
+              "data_type": "any[]",
+              "description": [
+                "Returns an array of method-related data."
               ],
               "name": null
             }
@@ -252,21 +252,32 @@
         {
           "access_modifier": "protected",
           "description": [
-            "Get the description of the specified doc block."
+            "Get the description of the specified doc block. The description is the"
           ],
-          "signature": "protected getDocBlockDescription(docBlock: string): string[]",
+          "signature": "protected getDocBlockDescription(textBlock: string): string[]",
           "name": "getDocBlockDescription",
           "params": [
             {
-              "annotation": "@param string docblock",
+              "annotation": "@param`,",
+              "description": [],
+              "name": null
+            },
+            {
+              "annotation": "@param string textBlock",
               "data_type": "string",
               "description": [
-                "The doc block in question."
+                "The text block in question."
               ],
-              "name": "docblock"
+              "name": "textBlock"
             }
           ],
           "returns": [
+            {
+              "annotation": "@return`, `@throws`.",
+              "data_type": "`@throws`.",
+              "description": [],
+              "name": null
+            },
             {
               "annotation": "@return string[]",
               "data_type": "string[]",
@@ -276,7 +287,13 @@
               "name": null
             }
           ],
-          "throws": []
+          "throws": [
+            {
+              "annotation": "@throws`.",
+              "description": [],
+              "name": null
+            }
+          ]
         },
         {
           "access_modifier": "protected",

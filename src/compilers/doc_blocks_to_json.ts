@@ -18,28 +18,28 @@
 import Drash from "../../mod.ts";
 
 /**
- * @member Drash.Compilers
+ * @memberof Drash.Compilers
  * @class DocBlocksToJson
  *
  * This compiler reads doc blocks and converts them to parsable JSON.
  */
 export default class DocBlocksToJson {
 
+protected record: number = 0;
   protected decoder: TextDecoder;
 
   /**
-   * A property to hold the final result of the compilation.
-   *
    * @property any parsed
+   *     A property to hold the final result of `this.compile()`.
    */
   protected parsed: any = {};
 
   /**
-   * A property to hold the name of the current file being parsed. This property
-   * only exists for debugging purposes. This class has logging to make it
-   * easier for Drash developers and users to find errors during compilation.
-   *
    * @property string current_file
+   *     A property to hold the name of the current file being parsed. This
+   *     property only exists for debugging purposes. This class has logging to
+   *     make it easier for Drash developers and users to find errors during
+   *     compilation.
    */
   protected current_file: string = "";
 
@@ -62,18 +62,29 @@ export default class DocBlocksToJson {
       this.current_file = file;
       let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
-      let contentsByLine = fileContents.toString().split("\n");
 
-      // No namespace given? GTFO.
-      let reNamespace = new RegExp(/\/\/ namespace .+/, "g");
+      // Look for a namespace using the value of the `@memberof` annotation. If
+      // a namespace isn't found, then the file being parsed will be placed as a
+      // top-level class in the JSON array.
+      let reNamespace = new RegExp(/\* @memberof.+/, "g"); // doc-blocks-to-json ignore
       if (!reNamespace.test(fileContents)) {
         return;
       }
 
-      // Create the namespace
-      // Take the `// namespace Some.Namespace` and transform it into
-      // `Some.Namespace`
-      let currentNamespace = fileContents.match(reNamespace)[0].split(" ").pop();
+      // Create the namespace by taking the `@memberof Some.Namespace` and
+      // transforming it into `Some.Namespace`
+      let reNamespaceResults = fileContents.match(reNamespace);
+      let reNamespaceIgnore = new RegExp(/doc-blocks-to-json ignore/);
+      let currentNamespace = null;
+      reNamespaceResults.forEach(fileLine => {
+        if (currentNamespace) {
+          return;
+        }
+        if (reNamespaceIgnore.test(fileLine)) {
+          return;
+        }
+        currentNamespace = fileLine.trim().replace(/\* @memberof/, "").trim(); // doc-blocks-to-json-ignore
+      });
 
       // Create the namespace in the `parsed` property so we can start storing
       // the namespace's members in it
@@ -89,9 +100,9 @@ export default class DocBlocksToJson {
         .substring("@class".length)
         .trim();
 
+      let classDocBlock = fileContents.match(/@class.+((\n .*)*)?\*\//);
       let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
       let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
-      let classDocBlock = fileContents.match(/@class.+((\n .*)*)?\*\//);
 
       let classDocBlockResults = this.getClassDocBlock(classDocBlock[0] ? classDocBlock[0] : "");
 
@@ -124,11 +135,11 @@ export default class DocBlocksToJson {
     //
     // The original regex (without doubling the backslashes) is:
     //
-    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
+    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*?\n? +\* + .*)+)?/, "g");
     //
     // @annotation is the targeted annotation block (e.g., @param).
     //
-    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?", "g");
+    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
     let matches = docBlock.match(re);
     let annotationBlocks = [];
 
@@ -140,7 +151,7 @@ export default class DocBlocksToJson {
         blockInLines.shift();
         let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
         let textBlock = blockInLines.join("\n");
-        let description = this.getParagraphs(textBlock);
+        let description = this.getDocBlockDescription(textBlock);
 
         return {
           annotation: annotationLine.line,
@@ -155,6 +166,35 @@ export default class DocBlocksToJson {
   }
 
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
+
+  /**
+   * Parse the specified class doc block.
+   *
+   * @param string[] docBlocks
+   *     The array of doc blocks to parse.
+   *
+   * @return any[]
+   *     Returns an array of property-related data.
+   */
+  protected getClassDocBlock(docBlock: string): any {
+    let classDocBlock = {
+      annotation: null,
+      description: [],
+    };
+
+    if (!docBlock || docBlock.trim() == "") {
+      return classDocBlock;
+    }
+
+    let docBlockInLines = docBlock.split("\n");
+    let annotation = docBlockInLines.shift();
+    let description = docBlockInLines.join("\n");
+
+    classDocBlock.annotation = annotation;
+    classDocBlock.description = this.getDocBlockDescription(description);
+
+    return classDocBlock;
+  }
 
   /**
    * Parse the specified array of method doc blocks and return an array of
@@ -200,35 +240,6 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Parse the specified class doc block.
-   *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
-   *
-   * @return any[]
-   *     Returns an array of property-related data.
-   */
-  protected getClassDocBlock(docBlock: string): any {
-    let classDocBlock = {
-      annotation: null,
-      description: [],
-    };
-
-    if (!docBlock || docBlock.trim() == "") {
-      return classDocBlock;
-    }
-
-    let docBlockInLines = docBlock.split("\n");
-    let annotation = docBlockInLines.shift();
-    let description = docBlockInLines.join("\n");
-
-    classDocBlock.annotation = annotation;
-    classDocBlock.description = this.getDocBlockDescription(description);
-
-    return classDocBlock;
-  }
-
-  /**
    * Parse the specified array of property doc blocks and return an array of
    * property-related data.
    *
@@ -246,16 +257,15 @@ export default class DocBlocksToJson {
     }
 
     docBlocks.forEach((docBlock) => {
-      let commonData = this.getClassCommonData(docBlock);
-      commonData.signature = commonData.signature.replace(";", "");
-      // TODO(crookse) Is there a bug here because @property is hard-coded?
-      let annotation = this.getDocBlockAnnotationLine("@property", docBlock);
+      let docBlockLinesAsArray = docBlock.split("\n");
+      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1]
+        .trim()
+        .replace(";", "");
 
-      properties.push(Object.assign(commonData, {
-        annotation: annotation.line,
-        data_type: annotation.data_type,
-        name: annotation.name,
-      }));
+      let annotationBlock = this.getDocBlockAnnotationBlocks("@property", docBlock)[0];
+      annotationBlock.access_modifier = signature.split(" ")[0];
+      annotationBlock.signature = signature;
+      properties.push(annotationBlock);
     });
 
     return properties;
@@ -272,8 +282,13 @@ export default class DocBlocksToJson {
    *     Returns an access modifier, description, and signature.
    */
   protected getClassCommonData(docBlock: string): any {
-    let docBlockLinesAsArray = docBlock.split("\n") ;
+    let docBlockLinesAsArray = docBlock.split("\n");
+
+    // The signature is the last line of the doc block
     let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim()
+
+    // The constructor's modifier is always public even though the `construct()`
+    // line isn't written as `public construct()`
     let accessModifier = /constructor/.test(signature)
       ? "public"
       : signature.split(" ")[0];
@@ -316,22 +331,24 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the description of the specified doc block.
+   * Get the description of the specified doc block. The description is the
+   * start of the doc block down to one of the annotation tags: `@param`,
+   * `@return`, `@throws`.
    *
-   * @param string docblock
-   *     The doc block in question.
+   * @param string textBlock
+   *     The text block in question.
    *
    * @return string[]
    *     Returns an array of descriptions.
    */
-  protected getDocBlockDescription(docBlock: string): string[] {
-    let docBlocksByLine = docBlock.split("\n");
-    let textBlock = "";
+  protected getDocBlockDescription(textBlock: string): string[] {
+    let textBlockByLine = textBlock.split("\n");
+    let result = "";
     let endOfDescription = false;
 
-    let reAnnotationTag = new RegExp(/@(param|return|throws|property)/, "g");
+    let reAnnotationTag = new RegExp(/@(param|return|throws)/, "g");
 
-    docBlocksByLine.forEach((line) => {
+    textBlockByLine.forEach((line) => {
       if (endOfDescription) {
         return;
       }
@@ -341,16 +358,17 @@ export default class DocBlocksToJson {
       }
 
       // If we hit an annotation tag, then that means the we've reached the end
-      // of the description
+      // of the description. Also, if we've hit the */ line, then that means
+      // we've hit the end of the doc block and no more parsing is needed.
       if (reAnnotationTag.test(line) || line.trim() == "*/") {
         endOfDescription = true;
         return;
       }
 
-      textBlock += `${line}\n`;
+      result += `${line}\n`;
     });
 
-    return this.getParagraphs(textBlock);
+    return this.getParagraphs(result);
   }
 
   /**
@@ -379,16 +397,10 @@ export default class DocBlocksToJson {
       .join("\n")
       .split("---para-break---")
       .map((val) => {
-        val = val.trim();
-        // Remove dashes
-        // TODO(crookse) This isn't working correctly and idk if I really care
-        // to support it. Might delete.
-        if (val.charAt(0) == "-") {
-          val.replace("-", "").trim();
-        }
-        return val;
+        return val.trim();
       });
 
+    // Filter out lines that don't contain anything
     textBlockInLines = textBlockInLines.filter((val) => {
       return val.trim() != "";
     });
