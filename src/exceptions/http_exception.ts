@@ -1,6 +1,5 @@
-// namespace Drash.Exceptions
-
 /**
+ * @memberof Drash.Exceptions
  * @class HttpException
  * This class helps you throw HTTP errors in a semantic way.
  */

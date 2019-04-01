@@ -1,8 +1,7 @@
-// namespace Drash.Http
-
 import Drash from "../../mod.ts";
 
 /**
+ * @memberof Drash.Http
  * @class Resource
  * This is the base resource class for all resources. All resource classes must
  * be derived from this class.

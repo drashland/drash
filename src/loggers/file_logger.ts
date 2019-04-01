@@ -1,8 +1,7 @@
-// namespace Drash.Loggers
-
 import Logger from "./logger.ts";
 
 /**
+ * @memberof Drash.Loggers
  * @class FileLogger
  * This logger allows you to log messages to a file.
  */

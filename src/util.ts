@@ -5,6 +5,8 @@ interface ColorizeOptions {
 }
 
 /**
+ * @memberof Drash.Util
+ *
  * A util function that helps colorize text in the console.
  *
  * @param string message
@@ -75,6 +77,8 @@ export function colorize(message: string, options: ColorizeOptions): string {
 };
 
 /**
+ * @memberof Drash.Util
+ *
  * @class ObjectParser
  * A util class to help parse objects.
  */

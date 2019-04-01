@@ -1,9 +1,8 @@
-// namespace Drash.Loggers
-
 import Drash from "../../mod.ts";
 import LogLevels from "../dictionaries/log_levels.ts";
 
 /**
+ * @memberof Drash.Loggers
  * @class Logger
  * This logger is the base logger class for all logger classes.
  */

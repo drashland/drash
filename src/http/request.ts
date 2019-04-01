@@ -1,8 +1,7 @@
-// namespace Drash.Http
-
 import { ServerRequest } from "https://deno.land/x/http/server.ts";
 
 /**
+ * @memberof Drash.Http
  * @class Request
  * This is a wrapper class for `ServerRequest` (from
  * https://deno.land/x/http/server.ts). It just adds more properties to the

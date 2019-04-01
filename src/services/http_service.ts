@@ -1,8 +1,7 @@
-// namespace Drash.Services
-
 import Drash from "../../mod.ts";
 
 /**
+ * @memberof Drash.Services
  * @class HttpService
  * This class helps perform HTTP-related processes.
  */

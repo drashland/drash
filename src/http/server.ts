@@ -1,9 +1,8 @@
-// namespace Drash.Http
-
 import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
 
 /**
+ * @memberof Drash.Http
  * @class Server
  * Server handles the entire request-resource-response lifecycle. It is in
  * charge of handling HTTP requests to resources, static paths, sending

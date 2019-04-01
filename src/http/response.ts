@@ -1,9 +1,8 @@
-// namespace Drash.Http
-
 import Drash from "../../mod.ts";
 import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
 /**
+ * @memberof Drash.Http
  * @class Response
  * Response handles sending a response to the client making the request.
  */
