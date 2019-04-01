@@ -25,7 +25,6 @@ import Drash from "../../mod.ts";
  */
 export default class DocBlocksToJson {
 
-protected record: number = 0;
   protected decoder: TextDecoder;
 
   /**
