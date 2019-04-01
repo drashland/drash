@@ -29,13 +29,9 @@ export default abstract class Logger {
    */
   protected current_log_message_level_name: string;
 
-  /**
-   * See `Drash.Dictionaries.LogLevels`.
-   *
-   * @property any current_log_message_level_name
-   */
-  protected log_levels: any = LogLevels;
-
+  ///**
+  // * @doc-blocks-to-json ignore-doc-block
+  // */
   protected test: boolean = false;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
@@ -55,10 +51,10 @@ export default abstract class Logger {
       configs.enabled = false;
     }
 
-    if (!this.log_levels.hasOwnProperty(configs.level)) {
+    configs.level = configs.level.toLowerCase();
+    if (!LogLevels.get(configs.level)) {
       configs.level = "debug";
     }
-    configs.level_definition = this.log_levels[configs.level];
 
     if (!configs.tag_string) {
       configs.tag_string = "";
@@ -87,7 +83,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public debug(message) {
-    return this.sendToWriteMethod(this.log_levels.debug, message);
+    return this.sendToWriteMethod(LogLevels.get("debug"), message);
   }
 
   /**
@@ -97,7 +93,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public error(message) {
-    return this.sendToWriteMethod(this.log_levels.error, message);
+    return this.sendToWriteMethod(LogLevels.get("error"), message);
   }
 
   /**
@@ -107,7 +103,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public fatal(message) {
-    return this.sendToWriteMethod(this.log_levels.fatal, message);
+    return this.sendToWriteMethod(LogLevels.get("fatal"), message);
   }
 
   /**
@@ -117,7 +113,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public info(message) {
-    return this.sendToWriteMethod(this.log_levels.info, message);
+    return this.sendToWriteMethod(LogLevels.get("info"), message);
   }
 
   /**
@@ -127,7 +123,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public trace(message) {
-    return this.sendToWriteMethod(this.log_levels.trace, message);
+    return this.sendToWriteMethod(LogLevels.get("trace"), message);
   }
 
   /**
@@ -137,7 +133,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public warn(message) {
-    return this.sendToWriteMethod(this.log_levels.warn, message);
+    return this.sendToWriteMethod(LogLevels.get("warn"), message);
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
@@ -191,7 +187,7 @@ export default abstract class Logger {
     }
 
     // Log level specified in the configs doesn't exist? Womp womp...
-    if (!this.log_levels[this.configs.level]) {
+    if (!LogLevels.get(this.configs.level)) {
       return;
     }
 
@@ -201,11 +197,11 @@ export default abstract class Logger {
     // wants to output FATAL log messages (has a rank of 400), then any log
     // message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE)
     // will NOT be processed.
-    if (logMethodLevelDefinition.rank > this.configs.level_definition.rank) {
+    if (logMethodLevelDefinition.rank > LogLevels.get(this.configs.level).rank) {
       return;
     }
 
-    this.current_log_message_level_name = logMethodLevelDefinition.name;
+    this.current_log_message_level_name = logMethodLevelDefinition.name.toUpperCase();
 
     return this.write(
       logMethodLevelDefinition,
