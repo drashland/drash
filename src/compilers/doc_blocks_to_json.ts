@@ -35,7 +35,7 @@ export default class DocBlocksToJson {
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
-  protected re_class = new RegExp(/@class.+/, "g");
+  protected re_class = new RegExp(/@class +\w+/, "g");
   protected re_function = new RegExp(/@(function|func|method).+/, "g");
 
   /**
@@ -90,6 +90,9 @@ export default class DocBlocksToJson {
 
       let currentNamespace = this.getAndCreateNamespace(fileContents);
       let memberName = this.getMemberName(fileContents);
+      if (!memberName) {
+        Drash.core_logger.error(`Member name came back as undefined for ${file}.`);
+      }
 
       let classDocBlock = fileContents.match(this.re_for_class_doc_block);
       let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
@@ -408,7 +411,9 @@ export default class DocBlocksToJson {
     methodDocBlocks.forEach(docBlock => {
       let currentNamespace = this.getAndCreateNamespace(docBlock);
       let memberName = this.getMemberName(docBlock);
-      this.parsed[currentNamespace][memberName] = this.getDocBlockDataForMethod(docBlock);
+      let data = this.getDocBlockDataForMethod(docBlock);
+      data.fully_qualified_name = currentNamespace + "." + memberName,
+      this.parsed[currentNamespace][memberName] = data;
     });
   }
 
@@ -467,21 +472,26 @@ export default class DocBlocksToJson {
    * @return string
    */
   protected getMemberName(text: string): string {
-    if (this.re_class.test(text)) {
-      let memberName = text
-        .match(/@class +\w+/)[0]
-        .replace(/@class +/, "")
-        .trim();
-      return memberName;
+    let matches;
+
+    matches = text.match(/@class.+/g);
+    if (matches && matches.length > 0) {
+    Drash.core_logger.debug(`Using @class annotation ${this.current_file}.`);
+      let memberName = text.match(/@class.+/g);
+      return memberName[0].replace(/@class +?/, "").trim();
     }
 
-    if (this.re_function.test(text)) {
+    matches = text.match(/@function.+/g);
+    if (matches && matches.length > 0) {
+    Drash.core_logger.debug(`Using @function|func|method annotation for ${this.current_file}.`);
       let memberName = text
         .match(/@(function|func|method) +\w+/)[0]
         .replace(/@(function|func|method) +/, "")
         .trim();
       return memberName;
     }
+
+    Drash.core_logger.error(`Member name could not be found for ${this.current_file}.`)
   }
 
   protected getDocBlockDataForMethod(text: string): any {

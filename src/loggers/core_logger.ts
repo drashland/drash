@@ -33,6 +33,10 @@ export default class CoreLogger extends Logger {
       color: "yellow"
     };
 
+    if (this.current_log_message_level_name.toLowerCase() == "error") {
+      colorizeOpts.color = "red";
+    }
+
     console.log(colorize(message, colorizeOpts));
   }
 }

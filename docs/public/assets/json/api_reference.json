@@ -382,8 +382,9 @@
         }
     },
     "Drash.Exceptions": {
-        "undefined": {
-            "fully_qualified_name": "Drash.Exceptions.undefined",
+        "HttpException": {
+            "fully_qualified_name": "Drash.Exceptions.HttpException",
+            "name": "HttpException",
             "annotation": "@class HttpException",
             "description": [
                 "This class helps you throw HTTP errors in a semantic way."
@@ -486,11 +487,242 @@
                 }
             ]
         },
-        "undefined": {
-            "fully_qualified_name": "Drash.Http.undefined",
+        "Resource": {
+            "fully_qualified_name": "Drash.Http.Resource",
+            "name": "Resource",
+            "annotation": "@class Resource",
+            "description": [
+                "This is the base resource class for all resources. All resource classes must\nbe derived from this class."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property Drash.Http.Request request",
+                    "data_type": "Drash.Http.Request",
+                    "name": "request",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected request: Drash.Http.Request"
+                },
+                {
+                    "annotation": "@property Drash.Http.Response response",
+                    "data_type": "Drash.Http.Response",
+                    "name": "response",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected response: Drash.Http.Response"
+                },
+                {
+                    "annotation": "@property Drash.Http.Server server",
+                    "data_type": "Drash.Http.Server",
+                    "name": "server",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected server: Drash.Http.Server"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Server server",
+                            "data_type": "Drash.Http.Server",
+                            "name": "server",
+                            "description": [
+                                "The server object."
+                            ]
+                        },
+                        {
+                            "annotation": "@param Drash.Http.Server server",
+                            "data_type": "Drash.Http.Server",
+                            "name": "server",
+                            "description": [
+                                "The server object."
+                            ]
+                        },
+                        {
+                            "annotation": "@param Drash.Http.Server server",
+                            "data_type": "Drash.Http.Server",
+                            "name": "server",
+                            "description": [
+                                "The server object."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)"
+                }
+            ]
+        },
+        "Response": {
+            "fully_qualified_name": "Drash.Http.Response",
+            "name": "Response",
+            "annotation": "@class Response",
+            "description": [
+                "Response handles sending a response to the client making the request."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property any body",
+                    "data_type": "any",
+                    "name": "body",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public body: any = {}"
+                },
+                {
+                    "annotation": "@property string body_generated",
+                    "data_type": "string",
+                    "name": "body_generated",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public body_generated: string = \"\""
+                },
+                {
+                    "annotation": "@property Headers headers",
+                    "data_type": "Headers",
+                    "name": "headers",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public headers: Headers"
+                },
+                {
+                    "annotation": "@property Drash.Http.Request request",
+                    "data_type": "Drash.Http.Request",
+                    "name": "request",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public request: Drash.Http.Request"
+                },
+                {
+                    "annotation": "@property number status_code",
+                    "data_type": "number",
+                    "name": "status_code",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public status_code: number = Status.OK"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": []
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(request: Drash.Http.Request)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "generateResponse",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public generateResponse(): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getStatusMessage",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": [
+                                "Returns the status message associated with `this.status_code`. For\nexample, if the response's `status_code` is `200`, then this method\nwill return \"OK\" as the status message."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getStatusMessage(): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getStatusMessageFull",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getStatusMessageFull(): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "send",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "Returns the output which is passed to `Drash.Http.Request.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public send(): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "sendStatic",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public sendStatic(): any"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "generateHtmlResponse",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected generateHtmlResponse(): string"
+                }
+            ]
+        },
+        "Server": {
+            "fully_qualified_name": "Drash.Http.Server",
+            "name": "Server",
             "annotation": "@class Server",
             "description": [
-                "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
+                "@description\nServer handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
             ],
             "properties": [
                 {
@@ -718,167 +950,6 @@
                     "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean"
                 }
             ]
-        },
-        "Response": {
-            "fully_qualified_name": "Drash.Http.Response",
-            "name": "Response",
-            "annotation": "@class Response",
-            "description": [
-                "Response handles sending a response to the client making the request."
-            ],
-            "properties": [
-                {
-                    "annotation": "@property any body",
-                    "data_type": "any",
-                    "name": "body",
-                    "description": [],
-                    "access_modifier": "public",
-                    "signature": "public body: any = {}"
-                },
-                {
-                    "annotation": "@property string body_generated",
-                    "data_type": "string",
-                    "name": "body_generated",
-                    "description": [],
-                    "access_modifier": "public",
-                    "signature": "public body_generated: string = \"\""
-                },
-                {
-                    "annotation": "@property Headers headers",
-                    "data_type": "Headers",
-                    "name": "headers",
-                    "description": [],
-                    "access_modifier": "public",
-                    "signature": "public headers: Headers"
-                },
-                {
-                    "annotation": "@property Drash.Http.Request request",
-                    "data_type": "Drash.Http.Request",
-                    "name": "request",
-                    "description": [],
-                    "access_modifier": "public",
-                    "signature": "public request: Drash.Http.Request"
-                },
-                {
-                    "annotation": "@property number status_code",
-                    "data_type": "number",
-                    "name": "status_code",
-                    "description": [],
-                    "access_modifier": "public",
-                    "signature": "public status_code: number = Status.OK"
-                }
-            ],
-            "methods": [
-                {
-                    "access_modifier": "public",
-                    "name": "constructor",
-                    "params": [
-                        {
-                            "annotation": "@param Drash.Http.Request request",
-                            "data_type": "Drash.Http.Request",
-                            "name": "request",
-                            "description": []
-                        }
-                    ],
-                    "returns": [],
-                    "throws": [],
-                    "signature": "constructor(request: Drash.Http.Request)"
-                },
-                {
-                    "access_modifier": "public",
-                    "name": "generateResponse",
-                    "params": [],
-                    "returns": [
-                        {
-                            "annotation": "@return string",
-                            "data_type": "string",
-                            "name": null,
-                            "description": []
-                        }
-                    ],
-                    "throws": [],
-                    "signature": "public generateResponse(): string"
-                },
-                {
-                    "access_modifier": "public",
-                    "name": "getStatusMessage",
-                    "params": [],
-                    "returns": [
-                        {
-                            "annotation": "@return string",
-                            "data_type": "string",
-                            "name": null,
-                            "description": [
-                                "Returns the status message associated with `this.status_code`. For\nexample, if the response's `status_code` is `200`, then this method\nwill return \"OK\" as the status message."
-                            ]
-                        }
-                    ],
-                    "throws": [],
-                    "signature": "public getStatusMessage(): string"
-                },
-                {
-                    "access_modifier": "public",
-                    "name": "getStatusMessageFull",
-                    "params": [],
-                    "returns": [
-                        {
-                            "annotation": "@return string",
-                            "data_type": "string",
-                            "name": null,
-                            "description": []
-                        }
-                    ],
-                    "throws": [],
-                    "signature": "public getStatusMessageFull(): string"
-                },
-                {
-                    "access_modifier": "public",
-                    "name": "send",
-                    "params": [],
-                    "returns": [
-                        {
-                            "annotation": "@return any",
-                            "data_type": "any",
-                            "name": null,
-                            "description": [
-                                "Returns the output which is passed to `Drash.Http.Request.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
-                            ]
-                        }
-                    ],
-                    "throws": [],
-                    "signature": "public send(): any"
-                },
-                {
-                    "access_modifier": "public",
-                    "name": "sendStatic",
-                    "params": [],
-                    "returns": [
-                        {
-                            "annotation": "@return any",
-                            "data_type": "any",
-                            "name": null,
-                            "description": []
-                        }
-                    ],
-                    "throws": [],
-                    "signature": "public sendStatic(): any"
-                },
-                {
-                    "access_modifier": "protected",
-                    "name": "generateHtmlResponse",
-                    "params": [],
-                    "returns": [
-                        {
-                            "annotation": "@return string",
-                            "data_type": "string",
-                            "name": null,
-                            "description": []
-                        }
-                    ],
-                    "throws": [],
-                    "signature": "protected generateHtmlResponse(): string"
-                }
-            ]
         }
     },
     "Drash.Loggers": {
@@ -1076,8 +1147,9 @@
                 }
             ]
         },
-        "undefined": {
-            "fully_qualified_name": "Drash.Loggers.undefined",
+        "ConsoleLogger": {
+            "fully_qualified_name": "Drash.Loggers.ConsoleLogger",
+            "name": "ConsoleLogger",
             "annotation": "@class ConsoleLogger",
             "description": [
                 "This logger allows you to log messages to the console."
@@ -1158,8 +1230,9 @@
         }
     },
     "Drash.Services": {
-        "undefined": {
-            "fully_qualified_name": "Drash.Services.undefined",
+        "HttpService": {
+            "fully_qualified_name": "Drash.Services.HttpService",
+            "name": "HttpService",
             "annotation": "@class HttpService",
             "description": [
                 "This class helps perform HTTP-related processes."
@@ -1383,7 +1456,8 @@
                 }
             ],
             "throws": [],
-            "signature": "export function colorize(message: string, options: ColorizeOptions): string"
+            "signature": "export function colorize(message: string, options: ColorizeOptions): string",
+            "fully_qualified_name": "Drash.Util.colorize"
         }
     }
 }

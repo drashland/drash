@@ -92,7 +92,7 @@ div.page.page--reference
                                 code.c-code-signature.language-typescript {{ property.signature }}
                             hr(style="margin: 1rem 0")
                             //- DESCRIPTIONS
-                            div.tag-row(v-show="property.description.length > 0")
+                            div.tag-row(v-show="property.description && property.description.length > 0")
                                 strong.tag-row__heading Description
                                 ul
                                     li(v-for="description in property.description" :inner-html.prop="description | markdown-it")
@@ -112,31 +112,31 @@ div.page.page--reference
                 //- CLASS METHODS
                 h2.type-heading.--methods Methods
                 div.methods
-                    div.card.--method(v-for="method in data.class.methods" v-if="data.class.methods.length > 0")
+                    div.card.--method(v-for="method in data.class.methods" v-if="data.class.methods && data.class.methods.length > 0")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ method.signature }}
                             hr(style="margin: 1rem 0")
                             //- DESCRIPTIONS
-                            div.tag-row(v-show="method.description.length > 0")
+                            div.tag-row(v-show="method.description && method.description.length > 0")
                                 strong.tag-row__heading Description
                                 ul
                                     li(v-for="description in method.description" :inner-html.prop="description | markdown-it")
-                            div.tag-row(v-show="method.params.length > 0")
+                            div.tag-row(v-show="method.params && method.params.length > 0")
                                 strong.tag-row__heading Params
                                 ul
                                     li(v-for="param in method.params")
                                         code.c-code-parameter {{ param.name }}
                                         span : 
                                         code.c-code-data-type {{ param.data_type }}
-                                        ul(v-show="param.description.length > 0")
+                                        ul(v-show="param.description && param.description.length > 0")
                                             li(v-for="description in param.description" :inner-html.prop="description | markdown-it")
-                            div.tag-row(v-show="method.returns.length > 0")
+                            div.tag-row(v-show="method.returns && method.returns.length > 0")
                                 strong.tag-row__heading Returns
                                 ul
                                     li(v-for="ret in method.returns")
                                         code.c-code-data-type {{ ret.data_type }}
-                                        ul(v-show="ret.description.length > 0")
+                                        ul(v-show="ret.description && ret.description.length > 0")
                                             li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
                     div.card(v-else)
                         div.card-body

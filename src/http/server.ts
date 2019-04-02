@@ -4,10 +4,12 @@ import Drash from "../../mod.ts";
 /**
  * @memberof Drash.Http
  * @class Server
- * Server handles the entire request-resource-response lifecycle. It is in
- * charge of handling HTTP requests to resources, static paths, sending
- * appropriate responses, and handling any errors that bubble up within the
- * request-resource-response lifecycle.
+ *
+ * @description
+ *     Server handles the entire request-resource-response lifecycle. It is in
+ *     charge of handling HTTP requests to resources, static paths, sending
+ *     appropriate responses, and handling any errors that bubble up within the
+ *     request-resource-response lifecycle.
  */
 export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
