@@ -35,7 +35,7 @@ function compileApiReferencePageData() {
   console.log("[docs.ts] Compiling API Reference page data using doc blocks...");
   let compiler = new Drash.Compilers.DocBlocksToJson();
   let compiled = compiler.compile(DrashNamespaceMembers);
-  let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 2));
+  let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 4));
   const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
   Deno.writeFileSync(apiReferenceOutputFile, apiReferenceData);
   console.log(`[docs.ts] Done. API Reference page data was written to:\n    ${apiReferenceOutputFile}.`);

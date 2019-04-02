@@ -1,1322 +1,1389 @@
 {
-  "exists. If not, then document as top-level item.": {
-    "DocBlocksToJson": {
-      "fully_qualified_name": "exists. If not, then document as top-level item..DocBlocksToJson",
-      "name": "DocBlocksToJson",
-      "annotation": "@class DocBlocksToJson",
-      "description": [
-        "This compiler reads doc blocks and converts them to parsable JSON."
-      ],
-      "properties": [
-        {
-          "annotation": "@property any parsed",
-          "data_type": "any",
-          "name": "parsed",
-          "description": [
-            "A property to hold the final result of `this.compile()`."
-          ],
-          "access_modifier": "protected",
-          "signature": "protected parsed: any = {}"
-        },
-        {
-          "annotation": "@property string current_file",
-          "data_type": "string",
-          "name": "current_file",
-          "description": [
-            "A property to hold the name of the current file being parsed. This\nproperty only exists for debugging purposes. This class has logging to\nmake it easier for Drash developers and users to find errors during\ncompilation."
-          ],
-          "access_modifier": "protected",
-          "signature": "protected current_file: string = \"\""
+    "Drash.Compilers": {
+        "DocBlocksToJson": {
+            "fully_qualified_name": "Drash.Compilers.DocBlocksToJson",
+            "name": "DocBlocksToJson",
+            "annotation": "@class DocBlocksToJson",
+            "description": [
+                "This compiler reads doc blocks and converts them to parsable JSON."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property any parsed",
+                    "data_type": "any",
+                    "name": "parsed",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected parsed: any = {}"
+                },
+                {
+                    "annotation": "@property string current_file",
+                    "data_type": "string",
+                    "name": "current_file",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected current_file: string = \"\""
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "compile",
+                    "description": [
+                        "Compile a JSON array containing classes, properties, and methods from\nthe specified files.",
+                        "All files passed to this method will have their doc blocks parsed for\nmember data.",
+                        "Any member that doesn't include the `@memberof` annotation will be\nplaced as a top-level item."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string[] files",
+                            "data_type": "string[]",
+                            "name": "files",
+                            "description": [
+                                "The array of files containing doc blocks to parse."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "Returns the JSON array."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public compile(files: string[]): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getDocBlockSection",
+                    "description": [
+                        "Get the specified `@annotationname` definitions from the specified doc\nblock."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string docBlock",
+                            "data_type": "string",
+                            "name": "docBlock",
+                            "description": [
+                                "The docBlock to get the `@annotationname` definitions from."
+                            ]
+                        },
+                        {
+                            "annotation": "@param string docBlock",
+                            "data_type": "string",
+                            "name": "docBlock",
+                            "description": [
+                                "The docBlock to get the `@annotationname` definitions from."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any[]",
+                            "data_type": "any[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of data related to the specified annotation."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getDocBlockSection(annotation: string, docBlock: string): any[]"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getClassDocBlock",
+                    "description": [
+                        "Parse the specified class doc block."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string[] docBlocks",
+                            "data_type": "string[]",
+                            "name": "docBlocks",
+                            "description": [
+                                "The array of doc blocks to parse."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any[]",
+                            "data_type": "any[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of property-related data."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getClassDocBlock(docBlock: string): any"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getClassMethods",
+                    "description": [
+                        "Parse the specified array of method doc blocks and return an array of\nmethod-related data."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string[] docBlocks",
+                            "data_type": "string[]",
+                            "name": "docBlocks",
+                            "description": [
+                                "The array of doc blocks to parse."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any[]",
+                            "data_type": "any[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of method-related data."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getClassMethods(docBlocks: string[]): any[]"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getClassProperties",
+                    "description": [
+                        "Parse the specified array of property doc blocks and return an array of\nproperty-related data."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string[] docBlocks",
+                            "data_type": "string[]",
+                            "name": "docBlocks",
+                            "description": [
+                                "The array of doc blocks to parse."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any[]",
+                            "data_type": "any[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of property-related data."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getClassProperties(docBlocks: string[]): any[]"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getAccessModifier",
+                    "params": [],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "protected getAccessModifier(memberType: string, text: string): string"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getDocBlockAnnotationLine",
+                    "description": [
+                        "Get the `@annotationname` line."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string docBlock",
+                            "data_type": "string",
+                            "name": "docBlock",
+                            "description": [
+                                "The doc block to get the `@annotationname` definitions from."
+                            ]
+                        },
+                        {
+                            "annotation": "@param string docBlock",
+                            "data_type": "string",
+                            "name": "docBlock",
+                            "description": [
+                                "The doc block to get the `@annotationname` definitions from."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "Returns an object containing the annotation lines data."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getDocBlockDescription",
+                    "description": [
+                        "Get the description of the specified doc block. The description is the"
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string textBlock",
+                            "data_type": "string",
+                            "name": "textBlock",
+                            "description": [
+                                "The text block in question."
+                            ]
+                        },
+                        {
+                            "annotation": "@param string textBlock",
+                            "data_type": "string",
+                            "name": "textBlock",
+                            "description": [
+                                "The text block in question."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string[]",
+                            "data_type": "string[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of descriptions."
+                            ]
+                        },
+                        {
+                            "annotation": "@return string[]",
+                            "data_type": "string[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of descriptions."
+                            ]
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "annotation": "@throws`.",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "signature": "protected getDocBlockDescription(textBlock: string): string[]"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getParagraphs",
+                    "description": [
+                        "Get paragraphs from a text block."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string textBlock",
+                            "data_type": "string",
+                            "name": "textBlock",
+                            "description": [
+                                "The text block containing the paragraph(s)."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string[]",
+                            "data_type": "string[]",
+                            "name": null,
+                            "description": [
+                                "Returns an array of strings. Each element in the array is a separate\nparagraph."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getParagraphs(textBlock: string): string[]"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "parseMembersOnly",
+                    "description": [
+                        "Parse a file that has the `doc-blocks-to-json members-only` comment."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string fileContents",
+                            "data_type": "string",
+                            "name": "fileContents",
+                            "description": []
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "protected parseMembersOnly(fileContents)"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getAndCreateNamespace",
+                    "description": [
+                        "Get the value of the `@memberof` annotation and use it to create a key\nin `this.parsed`."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string text",
+                            "data_type": "string",
+                            "name": "text",
+                            "description": [
+                                "The text in question."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getAndCreateNamespace(text: string): string"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getMemberName",
+                    "description": [
+                        "Get the value of the `@class` annotation."
+                    ],
+                    "params": [
+                        {
+                            "annotation": "@param string text",
+                            "data_type": "string",
+                            "name": "text",
+                            "description": [
+                                "The text in question."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getMemberName(text: string): string"
+                }
+            ]
         }
-      ],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string[] files",
-              "data_type": "string[]",
-              "name": "files",
-              "description": [
-                "The array of files containing doc blocks to parse."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "Returns the JSON array."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public compile(files: string[]): any {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string docBlock",
-              "data_type": "string",
-              "name": "docBlock",
-              "description": [
-                "The docBlock to get the `@annotationname` definitions from."
-              ]
-            },
-            {
-              "annotation": "@param string docBlock",
-              "data_type": "string",
-              "name": "docBlock",
-              "description": [
-                "The docBlock to get the `@annotationname` definitions from."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of data related to the specified annotation."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public getDocBlockSection(annotation: string, docBlock: string): any[] {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string[] docBlocks",
-              "data_type": "string[]",
-              "name": "docBlocks",
-              "description": [
-                "The array of doc blocks to parse."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of property-related data."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected getClassDocBlock(docBlock: string): any {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string[] docBlocks",
-              "data_type": "string[]",
-              "name": "docBlocks",
-              "description": [
-                "The array of doc blocks to parse."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of method-related data."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected getClassMethods(docBlocks: string[]): any[] {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string[] docBlocks",
-              "data_type": "string[]",
-              "name": "docBlocks",
-              "description": [
-                "The array of doc blocks to parse."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any[]",
-              "data_type": "any[]",
-              "description": [
-                "Returns an array of property-related data."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected getClassProperties(docBlocks: string[]): any[] {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [],
-          "returns": [],
-          "throws": [],
-          "signature": "protected getAccessModifier(memberType: string, text: string): string {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string docBlock",
-              "data_type": "string",
-              "name": "docBlock",
-              "description": [
-                "The doc block to get the `@annotationname` definitions from."
-              ]
-            },
-            {
-              "annotation": "@param string docBlock",
-              "data_type": "string",
-              "name": "docBlock",
-              "description": [
-                "The doc block to get the `@annotationname` definitions from."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "Returns an object containing the annotation lines data."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string textBlock",
-              "description": [
-                "The text block in question."
-              ],
-              "data_type": "string",
-              "name": "textBlock"
-            },
-            {
-              "annotation": "@param string textBlock",
-              "description": [
-                "The text block in question."
-              ],
-              "data_type": "string",
-              "name": "textBlock"
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string[]",
-              "data_type": "string[]",
-              "description": [
-                "Returns an array of descriptions."
-              ]
-            },
-            {
-              "annotation": "@return string[]",
-              "data_type": "string[]",
-              "description": [
-                "Returns an array of descriptions."
-              ]
-            }
-          ],
-          "throws": [
-            {
-              "annotation": "@throws`.",
-              "description": []
-            }
-          ],
-          "signature": "protected getDocBlockDescription(textBlock: string): string[] {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string textBlock",
-              "data_type": "string",
-              "name": "textBlock",
-              "description": [
-                "The text block containing the paragraph(s)."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string[]",
-              "data_type": "string[]",
-              "description": [
-                "Returns an array of strings. Each element in the array is a separate\nparagraph."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected getParagraphs(textBlock: string): string[] {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string fileContents",
-              "data_type": "string",
-              "name": "fileContents",
-              "description": []
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "protected parseMembersOnly(fileContents) {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string text",
-              "data_type": "string",
-              "name": "text",
-              "description": [
-                "The text in question."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "protected getAndCreateNamespace(text: string): string {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string text",
-              "data_type": "string",
-              "name": "text",
-              "description": [
-                "The text in question."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "protected getMemberName(text: string): string {"
-        }
-      ]
-    }
-  },
-  "Drash.Exceptions": {
-    "undefined": {
-      "fully_qualified_name": "Drash.Exceptions.undefined",
-      "annotation": "@class HttpException",
-      "description": [
-        "This class helps you throw HTTP errors in a semantic way."
-      ],
-      "properties": [],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The error message."
-              ]
-            },
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The error message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(code: number, message?: string) {"
-        }
-      ]
-    }
-  },
-  "Drash.Http": {
-    "Request": {
-      "fully_qualified_name": "Drash.Http.Request",
-      "name": "Request",
-      "annotation": "@class Request",
-      "description": [
-        "This is a wrapper class for `ServerRequest` (from\nhttps://deno.land/x/http/server.ts). It just adds more properties to the\nrequest object--allowing Drash to work with a more flexible request object."
-      ],
-      "properties": [
-        {
-          "annotation": "@property ServerRequest original_request_object",
-          "data_type": "ServerRequest",
-          "name": "original_request_object",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public original_request_object: ServerRequest"
-        },
-        {
-          "annotation": "@property any path_params",
-          "data_type": "any",
-          "name": "path_params",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public path_params: any = {}"
-        },
-        {
-          "annotation": "@property string url_path",
-          "data_type": "string",
-          "name": "url_path",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public url_path: string"
-        },
-        {
-          "annotation": "@property any url_query_params",
-          "data_type": "any",
-          "name": "url_query_params",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public url_query_params: any = {}"
-        },
-        {
-          "annotation": "@property string url_query_string",
-          "data_type": "string",
-          "name": "url_query_string",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public url_query_string: string = null"
-        }
-      ],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param ServerRequest request",
-              "data_type": "ServerRequest",
-              "name": "request",
-              "description": []
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(request: ServerRequest) {"
-        }
-      ]
     },
-    "undefined": {
-      "fully_qualified_name": "Drash.Http.undefined",
-      "annotation": "@class Server",
-      "description": [
-        "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
-      ],
-      "properties": [
-        {
-          "annotation": "@property string[] static_paths",
-          "data_type": "string[]",
-          "name": "static_paths",
-          "description": [],
-          "access_modifier": "protected",
-          "signature": "protected static_paths: string[] = []"
+    "Drash.Exceptions": {
+        "undefined": {
+            "fully_qualified_name": "Drash.Exceptions.undefined",
+            "annotation": "@class HttpException",
+            "description": [
+                "This class helps you throw HTTP errors in a semantic way."
+            ],
+            "properties": [],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The error message."
+                            ]
+                        },
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The error message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(code: number, message?: string)"
+                }
+            ]
         }
-      ],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param any configs",
-              "data_type": "any",
-              "name": "configs",
-              "description": [
-                "address: string",
-                "logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger",
-                "response_output: string (a proper MIME type)",
-                "resources: Drash.Http.Resource[]",
-                "static_paths: string[]"
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(configs: any) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": [
-                "The request object."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "See _Drash.Http.Response.send()_."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public handleHttpRequest(request: Drash.Http.Request): any {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param any error",
-              "data_type": "any",
-              "name": "error",
-              "description": [
-                "The error object."
-              ]
-            },
-            {
-              "annotation": "@param any error",
-              "data_type": "any",
-              "name": "error",
-              "description": [
-                "The error object."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "See _Drash.Http.Response.send()_."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": []
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return Promise<void>",
-              "data_type": "Promise<void>",
-              "description": [
-                "This method just listens for requests at the address you provide in the\nconfigs."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public async run(): Promise<void> {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Resource resourceClass",
-              "data_type": "Drash.Http.Resource",
-              "name": "resourceClass",
-              "description": [
-                "A child object of the `Drash.Http.Resource` class."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return void",
-              "data_type": "void",
-              "description": [
-                "This method just adds `resourceClass` to `this.resources` so it can be\nused (if matched) during an HTTP request."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string path",
-              "data_type": "string",
-              "name": "path",
-              "description": []
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return void",
-              "data_type": "void",
-              "description": [
-                "This method just adds `path` to `this.static_paths` so it can be used (if\nmatched) during an HTTP request."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected addStaticPath(path: string): void {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": [
-                "The request object."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return Drash.Http.Resource|undefined",
-              "data_type": "Drash.Http.Resource|undefined",
-              "description": [
-                "Returns a `Drash.Http.Resource` object if the URL path of the request\ncan be matched to a `Drash.Http.Resource` object's paths.",
-                "Returns `undefined` if a `Drash.Http.Resource` object can't be matched."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": []
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return boolean",
-              "data_type": "boolean",
-              "description": [
-                "Returns true if the request is for an asset in a static path."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean {"
-        }
-      ]
     },
-    "Response": {
-      "fully_qualified_name": "Drash.Http.Response",
-      "name": "Response",
-      "annotation": "@class Response",
-      "description": [
-        "Response handles sending a response to the client making the request."
-      ],
-      "properties": [
-        {
-          "annotation": "@property any body",
-          "data_type": "any",
-          "name": "body",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public body: any = {}"
+    "Drash.Http": {
+        "Request": {
+            "fully_qualified_name": "Drash.Http.Request",
+            "name": "Request",
+            "annotation": "@class Request",
+            "description": [
+                "This is a wrapper class for `ServerRequest` (from\nhttps://deno.land/x/http/server.ts). It just adds more properties to the\nrequest object--allowing Drash to work with a more flexible request object."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property ServerRequest original_request_object",
+                    "data_type": "ServerRequest",
+                    "name": "original_request_object",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public original_request_object: ServerRequest"
+                },
+                {
+                    "annotation": "@property any path_params",
+                    "data_type": "any",
+                    "name": "path_params",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public path_params: any = {}"
+                },
+                {
+                    "annotation": "@property string url_path",
+                    "data_type": "string",
+                    "name": "url_path",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public url_path: string"
+                },
+                {
+                    "annotation": "@property any url_query_params",
+                    "data_type": "any",
+                    "name": "url_query_params",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public url_query_params: any = {}"
+                },
+                {
+                    "annotation": "@property string url_query_string",
+                    "data_type": "string",
+                    "name": "url_query_string",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public url_query_string: string = null"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param ServerRequest request",
+                            "data_type": "ServerRequest",
+                            "name": "request",
+                            "description": []
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(request: ServerRequest)"
+                }
+            ]
         },
-        {
-          "annotation": "@property string body_generated",
-          "data_type": "string",
-          "name": "body_generated",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public body_generated: string = \"\""
+        "undefined": {
+            "fully_qualified_name": "Drash.Http.undefined",
+            "annotation": "@class Server",
+            "description": [
+                "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property string[] static_paths",
+                    "data_type": "string[]",
+                    "name": "static_paths",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected static_paths: string[] = []"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param any configs",
+                            "data_type": "any",
+                            "name": "configs",
+                            "description": [
+                                "address: string",
+                                "logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger",
+                                "response_output: string (a proper MIME type)",
+                                "resources: Drash.Http.Resource[]",
+                                "static_paths: string[]"
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(configs: any)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "handleHttpRequest",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "See _Drash.Http.Response.send()_."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public handleHttpRequest(request: Drash.Http.Request): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "handleHttpRequestError",
+                    "params": [
+                        {
+                            "annotation": "@param any error",
+                            "data_type": "any",
+                            "name": "error",
+                            "description": [
+                                "The error object."
+                            ]
+                        },
+                        {
+                            "annotation": "@param any error",
+                            "data_type": "any",
+                            "name": "error",
+                            "description": [
+                                "The error object."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "See _Drash.Http.Response.send()_."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "handleHttpRequestForFavicon",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": []
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "async run",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return Promise<void>",
+                            "data_type": "Promise<void>",
+                            "name": null,
+                            "description": [
+                                "This method just listens for requests at the address you provide in the\nconfigs."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public async run(): Promise<void>"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "addHttpResource",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Resource resourceClass",
+                            "data_type": "Drash.Http.Resource",
+                            "name": "resourceClass",
+                            "description": [
+                                "A child object of the `Drash.Http.Resource` class."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return void",
+                            "data_type": "void",
+                            "name": null,
+                            "description": [
+                                "This method just adds `resourceClass` to `this.resources` so it can be\nused (if matched) during an HTTP request."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "addStaticPath",
+                    "params": [
+                        {
+                            "annotation": "@param string path",
+                            "data_type": "string",
+                            "name": "path",
+                            "description": []
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return void",
+                            "data_type": "void",
+                            "name": null,
+                            "description": [
+                                "This method just adds `path` to `this.static_paths` so it can be used (if\nmatched) during an HTTP request."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected addStaticPath(path: string): void"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getResourceClass",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return Drash.Http.Resource|undefined",
+                            "data_type": "Drash.Http.Resource|undefined",
+                            "name": null,
+                            "description": [
+                                "Returns a `Drash.Http.Resource` object if the URL path of the request\ncan be matched to a `Drash.Http.Resource` object's paths.",
+                                "Returns `undefined` if a `Drash.Http.Resource` object can't be matched."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "requestIsForStaticPathAsset",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": []
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return boolean",
+                            "data_type": "boolean",
+                            "name": null,
+                            "description": [
+                                "Returns true if the request is for an asset in a static path."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean"
+                }
+            ]
         },
-        {
-          "annotation": "@property Headers headers",
-          "data_type": "Headers",
-          "name": "headers",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public headers: Headers"
-        },
-        {
-          "annotation": "@property Drash.Http.Request request",
-          "data_type": "Drash.Http.Request",
-          "name": "request",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public request: Drash.Http.Request"
-        },
-        {
-          "annotation": "@property number status_code",
-          "data_type": "number",
-          "name": "status_code",
-          "description": [],
-          "access_modifier": "public",
-          "signature": "public status_code: number = Status.OK"
+        "Response": {
+            "fully_qualified_name": "Drash.Http.Response",
+            "name": "Response",
+            "annotation": "@class Response",
+            "description": [
+                "Response handles sending a response to the client making the request."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property any body",
+                    "data_type": "any",
+                    "name": "body",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public body: any = {}"
+                },
+                {
+                    "annotation": "@property string body_generated",
+                    "data_type": "string",
+                    "name": "body_generated",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public body_generated: string = \"\""
+                },
+                {
+                    "annotation": "@property Headers headers",
+                    "data_type": "Headers",
+                    "name": "headers",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public headers: Headers"
+                },
+                {
+                    "annotation": "@property Drash.Http.Request request",
+                    "data_type": "Drash.Http.Request",
+                    "name": "request",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public request: Drash.Http.Request"
+                },
+                {
+                    "annotation": "@property number status_code",
+                    "data_type": "number",
+                    "name": "status_code",
+                    "description": [],
+                    "access_modifier": "public",
+                    "signature": "public status_code: number = Status.OK"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": []
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(request: Drash.Http.Request)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "generateResponse",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public generateResponse(): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getStatusMessage",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": [
+                                "Returns the status message associated with `this.status_code`. For\nexample, if the response's `status_code` is `200`, then this method\nwill return \"OK\" as the status message."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getStatusMessage(): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getStatusMessageFull",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getStatusMessageFull(): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "send",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "Returns the output which is passed to `Drash.Http.Request.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public send(): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "sendStatic",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public sendStatic(): any"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "generateHtmlResponse",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected generateHtmlResponse(): string"
+                }
+            ]
         }
-      ],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": []
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(request: Drash.Http.Request) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "public generateResponse(): string {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": [
-                "Returns the status message associated with `this.status_code`. For\nexample, if the response's `status_code` is `200`, then this method\nwill return \"OK\" as the status message."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public getStatusMessage(): string {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "public getStatusMessageFull(): string {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "Returns the output which is passed to `Drash.Http.Request.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public send(): any {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "public sendStatic(): any {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "protected generateHtmlResponse(): string {"
-        }
-      ]
-    }
-  },
-  "Drash.Loggers": {
-    "Logger": {
-      "fully_qualified_name": "Drash.Loggers.Logger",
-      "name": "Logger",
-      "annotation": "@class Logger",
-      "description": [
-        "This logger is the base logger class for all logger classes."
-      ],
-      "properties": [
-        {
-          "annotation": "@property any configs",
-          "data_type": "any",
-          "name": "configs",
-          "description": [],
-          "access_modifier": "protected",
-          "signature": "protected configs: any"
-        },
-        {
-          "annotation": "@property string current_log_message_level_name",
-          "data_type": "string",
-          "name": "current_log_message_level_name",
-          "description": [],
-          "access_modifier": "protected",
-          "signature": "protected current_log_message_level_name: string"
-        }
-      ],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param any configs",
-              "data_type": "any",
-              "name": "configs",
-              "description": [
-                "See [Drash.Loggers.Logger.configs](/#/api-reference/loggers/logger#configs)."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(configs: any) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public debug(message) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public error(message) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public fatal(message) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public info(message) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public trace(message) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public warn(message) {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "protected getTagStringParsed(): string {"
-        },
-        {
-          "access_modifier": "protected",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            },
-            {
-              "annotation": "@param string message",
-              "data_type": "string",
-              "name": "message",
-              "description": [
-                "The log message."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return void",
-              "data_type": "void",
-              "description": []
-            }
-          ],
-          "throws": [],
-          "signature": "protected sendToWriteMethod(logMethodLevelDefinition, message) {"
-        }
-      ]
     },
-    "undefined": {
-      "fully_qualified_name": "Drash.Loggers.undefined",
-      "annotation": "@class ConsoleLogger",
-      "description": [
-        "This logger allows you to log messages to the console."
-      ],
-      "properties": [],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param any configs",
-              "data_type": "any",
-              "name": "configs",
-              "description": [
-                "See Drash.Loggers.Logger.configs"
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(configs) {"
+    "Drash.Loggers": {
+        "Logger": {
+            "fully_qualified_name": "Drash.Loggers.Logger",
+            "name": "Logger",
+            "annotation": "@class Logger",
+            "description": [
+                "This logger is the base logger class for all logger classes."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property any configs",
+                    "data_type": "any",
+                    "name": "configs",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected configs: any"
+                },
+                {
+                    "annotation": "@property string current_log_message_level_name",
+                    "data_type": "string",
+                    "name": "current_log_message_level_name",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected current_log_message_level_name: string"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param any configs",
+                            "data_type": "any",
+                            "name": "configs",
+                            "description": [
+                                "See [Drash.Loggers.Logger.configs](/#/api-reference/loggers/logger#configs)."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(configs: any)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "debug",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public debug(message)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "error",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public error(message)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "fatal",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public fatal(message)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "info",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public info(message)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "trace",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public trace(message)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "warn",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public warn(message)"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "getTagStringParsed",
+                    "params": [],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected getTagStringParsed(): string"
+                },
+                {
+                    "access_modifier": "protected",
+                    "name": "sendToWriteMethod",
+                    "params": [
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        },
+                        {
+                            "annotation": "@param string message",
+                            "data_type": "string",
+                            "name": "message",
+                            "description": [
+                                "The log message."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return void",
+                            "data_type": "void",
+                            "name": null,
+                            "description": []
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "protected sendToWriteMethod(logMethodLevelDefinition, message)"
+                }
+            ]
         },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [],
-          "throws": [],
-          "signature": "public write(logMethodLevelDefinition, message): string {"
+        "undefined": {
+            "fully_qualified_name": "Drash.Loggers.undefined",
+            "annotation": "@class ConsoleLogger",
+            "description": [
+                "This logger allows you to log messages to the console."
+            ],
+            "properties": [],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param any configs",
+                            "data_type": "any",
+                            "name": "configs",
+                            "description": [
+                                "See Drash.Loggers.Logger.configs"
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(configs)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "write",
+                    "params": [],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public write(logMethodLevelDefinition, message): string"
+                }
+            ]
+        },
+        "FileLogger": {
+            "fully_qualified_name": "Drash.Loggers.FileLogger",
+            "name": "FileLogger",
+            "annotation": "@class FileLogger",
+            "description": [
+                "This logger allows you to log messages to a file."
+            ],
+            "properties": [
+                {
+                    "annotation": "@property string file",
+                    "data_type": "string",
+                    "name": "file",
+                    "description": [],
+                    "access_modifier": "protected",
+                    "signature": "protected file: string"
+                }
+            ],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "params": [
+                        {
+                            "annotation": "@param any configs",
+                            "data_type": "any",
+                            "name": "configs",
+                            "description": [
+                                "See Drash.Loggers.Logger.configs"
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "constructor(configs)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "write",
+                    "params": [],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public write(logMethodLevelDefinition, message): string"
+                }
+            ]
         }
-      ]
     },
-    "FileLogger": {
-      "fully_qualified_name": "Drash.Loggers.FileLogger",
-      "name": "FileLogger",
-      "annotation": "@class FileLogger",
-      "description": [
-        "This logger allows you to log messages to a file."
-      ],
-      "properties": [
-        {
-          "annotation": "@property string file",
-          "data_type": "string",
-          "name": "file",
-          "description": [],
-          "access_modifier": "protected",
-          "signature": "protected file: string"
+    "Drash.Services": {
+        "undefined": {
+            "fully_qualified_name": "Drash.Services.undefined",
+            "annotation": "@class HttpService",
+            "description": [
+                "This class helps perform HTTP-related processes."
+            ],
+            "properties": [],
+            "methods": [
+                {
+                    "access_modifier": "public",
+                    "name": "hydrateHttpRequest",
+                    "params": [
+                        {
+                            "annotation": "@param any options",
+                            "data_type": "any",
+                            "name": "options",
+                            "description": [
+                                "A list of options."
+                            ]
+                        },
+                        {
+                            "annotation": "@param any options",
+                            "data_type": "any",
+                            "name": "options",
+                            "description": [
+                                "A list of options."
+                            ]
+                        }
+                    ],
+                    "returns": [],
+                    "throws": [],
+                    "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getHttpRequestUrlPath",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": [
+                                "Returns the URL path."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getHttpRequestUrlQueryString",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": [
+                                "Returns the URL query string (e.g., key1=value1&key2=value2) without\nthe leading \"?\" character."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getHttpRequestUrlQueryParams",
+                    "params": [
+                        {
+                            "annotation": "@param Drash.Http.Request request",
+                            "data_type": "Drash.Http.Request",
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "Returns the URL query string in key-value pair format."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any"
+                },
+                {
+                    "access_modifier": "public",
+                    "name": "getMimeType",
+                    "params": [
+                        {
+                            "annotation": "@param boolean fileIsUrl",
+                            "data_type": "boolean",
+                            "name": "fileIsUrl",
+                            "description": [
+                                "Is the filename a URL/path to a file? Defaults to false."
+                            ]
+                        },
+                        {
+                            "annotation": "@param boolean fileIsUrl",
+                            "data_type": "boolean",
+                            "name": "fileIsUrl",
+                            "description": [
+                                "Is the filename a URL/path to a file? Defaults to false."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return string",
+                            "data_type": "string",
+                            "name": null,
+                            "description": [
+                                "Returns the name of the MIME type based on the extension of the\nfilename."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "public getMimeType(file: string, fileIsUrl: boolean = false): string"
+                }
+            ]
         }
-      ],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param any configs",
-              "data_type": "any",
-              "name": "configs",
-              "description": [
-                "See Drash.Loggers.Logger.configs"
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "constructor(configs) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [],
-          "returns": [],
-          "throws": [],
-          "signature": "public write(logMethodLevelDefinition, message): string {"
-        }
-      ]
-    }
-  },
-  "Drash.Services": {
-    "undefined": {
-      "fully_qualified_name": "Drash.Services.undefined",
-      "annotation": "@class HttpService",
-      "description": [
-        "This class helps perform HTTP-related processes."
-      ],
-      "properties": [],
-      "methods": [
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param any options",
-              "data_type": "any",
-              "name": "options",
-              "description": [
-                "A list of options."
-              ]
-            },
-            {
-              "annotation": "@param any options",
-              "data_type": "any",
-              "name": "options",
-              "description": [
-                "A list of options."
-              ]
-            }
-          ],
-          "returns": [],
-          "throws": [],
-          "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any) {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": [
-                "The request object."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": [
-                "Returns the URL path."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": [
-                "The request object."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": [
-                "Returns the URL query string (e.g., key1=value1&key2=value2) without\nthe leading \"?\" character."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param Drash.Http.Request request",
-              "data_type": "Drash.Http.Request",
-              "name": "request",
-              "description": [
-                "The request object."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "Returns the URL query string in key-value pair format."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any {"
-        },
-        {
-          "access_modifier": "public",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param boolean fileIsUrl",
-              "data_type": "boolean",
-              "name": "fileIsUrl",
-              "description": [
-                "Is the filename a URL/path to a file? Defaults to false."
-              ]
-            },
-            {
-              "annotation": "@param boolean fileIsUrl",
-              "data_type": "boolean",
-              "name": "fileIsUrl",
-              "description": [
-                "Is the filename a URL/path to a file? Defaults to false."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return string",
-              "data_type": "string",
-              "description": [
-                "Returns the name of the MIME type based on the extension of the\nfilename."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "public getMimeType(file: string, fileIsUrl: boolean = false): string {"
-        }
-      ]
-    }
-  },
-  "Drash.Util": {
-    "ObjectParser": {
-      "fully_qualified_name": "Drash.Util.ObjectParser",
-      "name": "ObjectParser",
-      "annotation": "@class ObjectParser",
-      "description": [
-        "A util class to help parse objects."
-      ],
-      "properties": [],
-      "methods": [
-        {
-          "access_modifier": "static",
-          "description": [],
-          "params": [
-            {
-              "annotation": "@param ...string properties",
-              "data_type": "...string",
-              "name": "properties",
-              "description": [
-                "The rest of the arguments as strings to use as property names when\nfinding the nested property's value. The last argument that the \"rest\nparameter\" finds is the nested property you are targeting."
-              ]
-            },
-            {
-              "annotation": "@param ...string properties",
-              "data_type": "...string",
-              "name": "properties",
-              "description": [
-                "The rest of the arguments as strings to use as property names when\nfinding the nested property's value. The last argument that the \"rest\nparameter\" finds is the nested property you are targeting."
-              ]
-            }
-          ],
-          "returns": [
-            {
-              "annotation": "@return any",
-              "data_type": "any",
-              "description": [
-                "Returns the value of the targeted property."
-              ]
-            }
-          ],
-          "throws": [],
-          "signature": "static getNestedPropertyValue(inputObject: any, ...properties) {"
-        }
-      ]
     },
-    "colorize": {
-      "access_modifier": "export",
-      "description": [],
-      "params": [
-        {
-          "annotation": "@param ColorizeOptions options",
-          "data_type": "ColorizeOptions",
-          "name": "options",
-          "description": []
+    "Drash.Util": {
+        "ObjectParser": {
+            "fully_qualified_name": "Drash.Util.ObjectParser",
+            "name": "ObjectParser",
+            "annotation": "@class ObjectParser",
+            "description": [
+                "A util class to help parse objects."
+            ],
+            "properties": [],
+            "methods": [
+                {
+                    "access_modifier": "static",
+                    "name": "static getNestedPropertyValue",
+                    "params": [
+                        {
+                            "annotation": "@param ...string properties",
+                            "data_type": "...string",
+                            "name": "properties",
+                            "description": [
+                                "The rest of the arguments as strings to use as property names when\nfinding the nested property's value. The last argument that the \"rest\nparameter\" finds is the nested property you are targeting."
+                            ]
+                        },
+                        {
+                            "annotation": "@param ...string properties",
+                            "data_type": "...string",
+                            "name": "properties",
+                            "description": [
+                                "The rest of the arguments as strings to use as property names when\nfinding the nested property's value. The last argument that the \"rest\nparameter\" finds is the nested property you are targeting."
+                            ]
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "annotation": "@return any",
+                            "data_type": "any",
+                            "name": null,
+                            "description": [
+                                "Returns the value of the targeted property."
+                            ]
+                        }
+                    ],
+                    "throws": [],
+                    "signature": "static getNestedPropertyValue(inputObject: any, ...properties)"
+                }
+            ]
         },
-        {
-          "annotation": "@param ColorizeOptions options",
-          "data_type": "ColorizeOptions",
-          "name": "options",
-          "description": []
+        "colorize": {
+            "access_modifier": "export",
+            "name": "export function colorize",
+            "description": [
+                "A util function that helps colorize text in the console."
+            ],
+            "params": [
+                {
+                    "annotation": "@param ColorizeOptions options",
+                    "data_type": "ColorizeOptions",
+                    "name": "options",
+                    "description": []
+                },
+                {
+                    "annotation": "@param ColorizeOptions options",
+                    "data_type": "ColorizeOptions",
+                    "name": "options",
+                    "description": []
+                }
+            ],
+            "returns": [
+                {
+                    "annotation": "@return string",
+                    "data_type": "string",
+                    "name": null,
+                    "description": [
+                        "Returns the colorized message."
+                    ]
+                }
+            ],
+            "throws": [],
+            "signature": "export function colorize(message: string, options: ColorizeOptions): string"
         }
-      ],
-      "returns": [
-        {
-          "annotation": "@return string",
-          "data_type": "string",
-          "description": [
-            "Returns the colorized message."
-          ]
-        }
-      ],
-      "throws": [],
-      "signature": "export function colorize(message: string, options: ColorizeOptions): string {"
     }
-  }
 }

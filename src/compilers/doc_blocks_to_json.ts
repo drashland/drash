@@ -34,30 +34,41 @@ export default class DocBlocksToJson {
   protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
-  protected re_namespace = new RegExp(/@memberof.+/, "g"); // doc-blocks-to-json ignore-line
+  protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   protected re_class = new RegExp(/@class.+/, "g");
   protected re_function = new RegExp(/@(function|func|method).+/, "g");
 
   /**
-   * @property any parsed
+   * @description
    *     A property to hold the final result of `this.compile()`.
+   *
+   * @property any parsed
    */
   protected parsed: any = {};
 
   /**
-   * @property string current_file
+   * @description
    *     A property to hold the name of the current file being parsed. This
    *     property only exists for debugging purposes. This class has logging to
    *     make it easier for Drash developers and users to find errors during
    *     compilation.
+   *
+   * @property string current_file
    */
   protected current_file: string = "";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
   /**
-   * Compile a JSON array containing classes, properties, and methods from the
-   * specified files by parsing the doc blocks of each file.
+   * @description
+   *     Compile a JSON array containing classes, properties, and methods from
+   *     the specified files.
+   *
+   *     All files passed to this method will have their doc blocks parsed for
+   *     member data.
+   *
+   *     Any member that doesn't include the `@memberof` annotation will be
+   *     placed as a top-level item.
    *
    * @param string[] files
    *     The array of files containing doc blocks to parse.
@@ -116,38 +127,45 @@ export default class DocBlocksToJson {
     //
     // The original regex (without doubling the backslashes) is:
     //
-    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*?\n? +\* + .*)+)?/, "g");
+    //     new RegExp(/@annotation\n?.+((\n +\* +)[^@].+)*(?:(\n +\*?\n? +\* + .*)+)?/, "g");
     //
     // @annotation is the targeted annotation block (e.g., @param).
+    // The \n after @annotation ensures we can parse @description\n or any other
+    // annotation that doesn't have trailing characters.
     //
-    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
+    let re = new RegExp(annotation + "\n?.+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
     let matches = docBlock.match(re);
     let annotationBlocks = [];
     let ret: any = {};
 
     if (matches) {
       annotationBlocks = matches.map((block) => {
+        
         // Clean up each line and return an overall clean description
         let blockInLines = block.split("\n");
         // Remove the annotation line and get it using the method
         blockInLines.shift();
-        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
         let textBlock = blockInLines.join("\n");
         let description = this.getDocBlockDescription(textBlock);
 
-        if (annotationLine.line) {
-          ret.annotation = annotationLine.line;
+
+        if (annotation == "@description") {
+          return description;
         }
-        if (annotationLine.data_type) {
-          ret.data_type = annotationLine.data_type;
-        }
-        if (annotationLine.name) {
-          ret.name = annotationLine.name;
-        }
+
+        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
+
+        ret.annotation = annotationLine.line;
+        ret.data_type = annotationLine.data_type;
+        ret.name = annotationLine.name;
         ret.description = description;
 
         return ret;
       });
+    }
+
+    if (annotation == "@description") {
+      return annotationBlocks[0];
     }
 
     return annotationBlocks;
@@ -156,7 +174,8 @@ export default class DocBlocksToJson {
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
 
   /**
-   * Parse the specified class doc block.
+   * @description
+   *     Parse the specified class doc block.
    *
    * @param string[] docBlocks
    *     The array of doc blocks to parse.
@@ -185,8 +204,9 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Parse the specified array of method doc blocks and return an array of
-   * method-related data.
+   * @description
+   *     Parse the specified array of method doc blocks and return an array of
+   *     method-related data.
    *
    * @param string[] docBlocks
    *     The array of doc blocks to parse.
@@ -209,8 +229,9 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Parse the specified array of property doc blocks and return an array of
-   * property-related data.
+   * @description
+   *     Parse the specified array of property doc blocks and return an array of
+   *     property-related data.
    *
    * @param string[] docBlocks
    *     The array of doc blocks to parse.
@@ -243,7 +264,7 @@ export default class DocBlocksToJson {
   /**
    */
   protected getAccessModifier(memberType: string, text: string): string {
-    let signature = this.getSignatureForMethod(text);
+    let signature = this.getSignatureOfMethod(text);
 
     if (memberType == "method") {
       // The constructor's modifier is always public even though the `construct()`
@@ -256,14 +277,15 @@ export default class DocBlocksToJson {
     }
   }
 
-  protected getSignatureForMethod(text: string): string {
+  protected getSignatureOfMethod(text: string): string {
     // The signature is the last line of the doc block
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{?/, "");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
   }
 
   /**
-   * Get the `@annotationname` line.
+   * @description
+   *     Get the `@annotationname` line.
    *
    * @param string annotation
    *     The annotation to get from the doc block.
@@ -293,9 +315,10 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the description of the specified doc block. The description is the
-   * start of the doc block down to one of the annotation tags: `@param`,
-   * `@return`, `@throws`.
+   * @description
+   *     Get the description of the specified doc block. The description is the
+   *     start of the doc block down to one of the annotation tags: `@param`,
+   *     `@return`, `@throws`.
    *
    * @param string textBlock
    *     The text block in question.
@@ -308,6 +331,7 @@ export default class DocBlocksToJson {
     let result = "";
     let endOfDescription = false;
 
+    // This is used to determine where the end of the description is
     let reAnnotationTag = new RegExp(/@(param|return|throws)/, "g");
 
     textBlockByLine.forEach((line) => {
@@ -334,7 +358,8 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get paragraphs from a text block.
+   * @description
+   *     Get paragraphs from a text block.
    *
    * @param string textBlock
    *     The text block containing the paragraph(s).
@@ -371,7 +396,8 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Parse a file that has the `doc-blocks-to-json members-only` comment.
+   * @description
+   *     Parse a file that has the `doc-blocks-to-json members-only` comment.
    *
    * @param string fileContents
    */
@@ -387,8 +413,9 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the value of the `@memberof` annotation and use it to create a key in
-   * `this.parsed`.
+   * @description
+   *     Get the value of the `@memberof` annotation and use it to create a key
+   *     in `this.parsed`.
    *
    * @param string text
    *     The text in question.
@@ -431,7 +458,8 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the value of the `@class` annotation.
+   * @description
+   *     Get the value of the `@class` annotation.
    *
    * @param string text
    *     The text in question.
@@ -459,11 +487,19 @@ export default class DocBlocksToJson {
   protected getDocBlockDataForMethod(text: string): any {
     return {
       access_modifier: this.getAccessModifier("method", text),
+      name: this.getNameOfMethod(text),
       description: this.getDocBlockSection("@description", text),
       params: this.getDocBlockSection("@param", text),
       returns: this.getDocBlockSection("@return", text),
       throws: this.getDocBlockSection("@throws", text),
-      signature: this.getSignatureForMethod(text)
+      signature: this.getSignatureOfMethod(text)
     };
+  }
+
+  protected getNameOfMethod(text: string): string {
+    let signature = this.getSignatureOfMethod(text);
+    return signature
+      .replace(/(public|private|protected) +/, "")
+      .replace(/\(.+/, "");
   }
 }
