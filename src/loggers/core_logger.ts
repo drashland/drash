@@ -1,5 +1,5 @@
 import Logger from "./logger.ts";
-import {colorize} from "../util.ts";
+import {colorize} from "../util/members.ts";
 
 /**
  * @class CoreLogger

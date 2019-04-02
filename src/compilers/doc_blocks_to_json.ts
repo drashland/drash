@@ -13,6 +13,8 @@
 //         list.
 //     [ ] Check for abstract access modifier.
 //     [ ] Support @inheritdoc
+//     [ ] Return a status report of the files that were and weren't parsed
+//     [ ] Check if a @memberof exists. If not, then document as top-level item.
 //
 
 import Drash from "../../mod.ts";
@@ -25,7 +27,16 @@ import Drash from "../../mod.ts";
  */
 export default class DocBlocksToJson {
 
-  protected decoder: TextDecoder;
+  protected decoder: TextDecoder = new TextDecoder();
+
+  protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
+  protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
+  protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
+  protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
+  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_namespace = new RegExp(/@memberof.+/, "g"); // doc-blocks-to-json ignore-line
+  protected re_class = new RegExp(/@class.+/, "g");
+  protected re_function = new RegExp(/@(function|func|method).+/, "g");
 
   /**
    * @property any parsed
@@ -55,59 +66,29 @@ export default class DocBlocksToJson {
    *     Returns the JSON array.
    */
   public compile(files: string[]): any {
-    this.decoder = new TextDecoder();
-
     files.forEach((file) => {
       this.current_file = file;
       let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
 
-      // Look for a namespace using the value of the `@memberof` annotation. If
-      // a namespace isn't found, then the file being parsed will be placed as a
-      // top-level class in the JSON array.
-      let reNamespace = new RegExp(/\* @memberof.+/, "g"); // doc-blocks-to-json ignore
-      if (!reNamespace.test(fileContents)) {
+      // If a file has `@doc-blocks-to-json members-only`...
+      if (this.re_members_only.test(fileContents)) {
+        this.parseMembersOnly(fileContents);
         return;
       }
 
-      // Create the namespace by taking the `@memberof Some.Namespace` and
-      // transforming it into `Some.Namespace`
-      let reNamespaceResults = fileContents.match(reNamespace);
-      let reNamespaceIgnore = new RegExp(/doc-blocks-to-json ignore/);
-      let currentNamespace = null;
-      reNamespaceResults.forEach(fileLine => {
-        if (currentNamespace) {
-          return;
-        }
-        if (reNamespaceIgnore.test(fileLine)) {
-          return;
-        }
-        currentNamespace = fileLine.trim().replace(/\* @memberof/, "").trim(); // doc-blocks-to-json-ignore
-      });
+      let currentNamespace = this.getAndCreateNamespace(fileContents);
+      let memberName = this.getMemberName(fileContents);
 
-      // Create the namespace in the `parsed` property so we can start storing
-      // the namespace's members in it
-      if (!this.parsed.hasOwnProperty(currentNamespace)) {
-        this.parsed[currentNamespace] = {};
-      }
-
-      // Get the class name of the current file being parsed. There should only
-      // be one `@class` tag in the file. If there are more than one `@class`
-      // tag, then the first one will be chosen. The others won't matter. Sorry.
-      let className = fileContents
-        .match(/@class \w+/)[0]
-        .substring("@class".length)
-        .trim();
-
-      let classDocBlock = fileContents.match(/@class.+((\n .*)*)?\*\//);
-      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
-      let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
+      let classDocBlock = fileContents.match(this.re_for_class_doc_block);
+      let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+      let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
 
       let classDocBlockResults = this.getClassDocBlock(classDocBlock[0] ? classDocBlock[0] : "");
 
-      this.parsed[currentNamespace][className] = {
-        fully_qualified_name: currentNamespace + "." + className,
-        name: className,
+      this.parsed[currentNamespace][memberName] = {
+        fully_qualified_name: currentNamespace + "." + memberName,
+        name: memberName,
         annotation: classDocBlockResults.annotation,
         description: classDocBlockResults.description,
         properties: this.getClassProperties(propertyDocBlocks),
@@ -119,8 +100,9 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the specified `@annotationname` definitions from the specified doc
-   * block.
+   * @description
+   *     Get the specified `@annotationname` definitions from the specified doc
+   *     block.
    *
    * @param string annotation
    *     The annotation to get in the following format: `@annotationname`.
@@ -130,7 +112,7 @@ export default class DocBlocksToJson {
    * @return any[]
    *     Returns an array of data related to the specified annotation.
    */
-  public getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[] {
+  public getDocBlockSection(annotation: string, docBlock: string): any[] {
     //
     // The original regex (without doubling the backslashes) is:
     //
@@ -141,6 +123,7 @@ export default class DocBlocksToJson {
     let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
     let matches = docBlock.match(re);
     let annotationBlocks = [];
+    let ret: any = {};
 
     if (matches) {
       annotationBlocks = matches.map((block) => {
@@ -152,12 +135,18 @@ export default class DocBlocksToJson {
         let textBlock = blockInLines.join("\n");
         let description = this.getDocBlockDescription(textBlock);
 
-        return {
-          annotation: annotationLine.line,
-          data_type: annotationLine.data_type,
-          description: description,
-          name: annotationLine.name
-        };
+        if (annotationLine.line) {
+          ret.annotation = annotationLine.line;
+        }
+        if (annotationLine.data_type) {
+          ret.data_type = annotationLine.data_type;
+        }
+        if (annotationLine.name) {
+          ret.name = annotationLine.name;
+        }
+        ret.description = description;
+
+        return ret;
       });
     }
 
@@ -213,26 +202,7 @@ export default class DocBlocksToJson {
     }
 
     docBlocks.forEach((docBlock) => {
-      let commonData = this.getClassCommonData(docBlock);
-      commonData.signature = commonData.signature.replace(/ ?{/g, "");
-      // TODO(crookse) This could use some work
-      let name = commonData.signature.split(" ");
-      if (name[1]) {
-        name = name[1].split("(")[0];
-      } else {
-        name = null;
-      }
-      name = commonData.access_modifier == "constructor"
-        ? "constructor"
-        : name;
-
-      methods.push(Object.assign(commonData, {
-        access_modifier: commonData.access_modifier,
-        name: name,
-        params: this.getDocBlockAnnotationBlocks("@param", docBlock),
-        returns: this.getDocBlockAnnotationBlocks("@return", docBlock),
-        throws: this.getDocBlockAnnotationBlocks("@throws", docBlock),
-      }));
+      methods.push(this.getDocBlockDataForMethod(docBlock));
     });
 
     return methods;
@@ -261,7 +231,7 @@ export default class DocBlocksToJson {
         .trim()
         .replace(";", "");
 
-      let annotationBlock = this.getDocBlockAnnotationBlocks("@property", docBlock)[0];
+      let annotationBlock = this.getDocBlockSection("@property", docBlock)[0];
       annotationBlock.access_modifier = signature.split(" ")[0];
       annotationBlock.signature = signature;
       properties.push(annotationBlock);
@@ -271,32 +241,25 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the common doc block data between a class' property doc blocks and
-   * method doc blocks.
-   *
-   * @param string docBlock
-   *     The doc block in question.
-   *
-   * @return any
-   *     Returns an access modifier, description, and signature.
    */
-  protected getClassCommonData(docBlock: string): any {
-    let docBlockLinesAsArray = docBlock.split("\n");
+  protected getAccessModifier(memberType: string, text: string): string {
+    let signature = this.getSignatureForMethod(text);
 
+    if (memberType == "method") {
+      // The constructor's modifier is always public even though the `construct()`
+      // line isn't written as `public construct()`
+      let accessModifier = /constructor/.test(signature)
+        ? "public"
+        : signature.split(" ")[0];
+
+      return accessModifier;
+    }
+  }
+
+  protected getSignatureForMethod(text: string): string {
     // The signature is the last line of the doc block
-    let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim()
-
-    // The constructor's modifier is always public even though the `construct()`
-    // line isn't written as `public construct()`
-    let accessModifier = /constructor/.test(signature)
-      ? "public"
-      : signature.split(" ")[0];
-
-    return {
-      access_modifier: accessModifier,
-      description: this.getDocBlockDescription(docBlock),
-      signature: signature
-    };
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{?/, "");
   }
 
   /**
@@ -405,5 +368,102 @@ export default class DocBlocksToJson {
     });
 
     return textBlockInLines;
+  }
+
+  /**
+   * Parse a file that has the `doc-blocks-to-json members-only` comment.
+   *
+   * @param string fileContents
+   */
+  protected parseMembersOnly(fileContents) {
+    Drash.core_logger.debug(`Parsing @doc-blocks-to-json members-only for ${this.current_file}.`);
+    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+
+    methodDocBlocks.forEach(docBlock => {
+      let currentNamespace = this.getAndCreateNamespace(docBlock);
+      let memberName = this.getMemberName(docBlock);
+      this.parsed[currentNamespace][memberName] = this.getDocBlockDataForMethod(docBlock);
+    });
+  }
+
+  /**
+   * Get the value of the `@memberof` annotation and use it to create a key in
+   * `this.parsed`.
+   *
+   * @param string text
+   *     The text in question.
+   *
+   * @return string
+   */
+  protected getAndCreateNamespace(text: string): string {
+    // Look for a namespace using the value of the `@memberof` annotation. If
+    // a namespace isn't found, then the file being parsed will be placed as a
+    // top-level item in the JSON array.
+    if (!this.re_namespace.test(text)) {
+      return;
+    }
+
+    // Create the namespace by taking the `@memberof Some.Namespace` and
+    // transforming it into `Some.Namespace`
+    let reNamespaceResults = text.match(this.re_namespace);
+    let currentNamespace = null;
+    reNamespaceResults.forEach(fileLine => {
+      if (currentNamespace) {
+        return;
+      }
+      if (this.re_ignore_line.test(fileLine)) {
+        return;
+      }
+      currentNamespace = fileLine
+        .trim()
+        // TODO(crookse) parse this better... shouldn't have to ignore the line
+        .replace(/\*? ?@memberof +/, "") // doc-blocks-to-json-ignore-line
+        .trim();
+    });
+
+    // Create the namespace in the `parsed` property so we can start storing
+    // the namespace's members in it
+    if (!this.parsed.hasOwnProperty(currentNamespace)) {
+      this.parsed[currentNamespace] = {};
+    }
+
+    return currentNamespace;
+  }
+
+  /**
+   * Get the value of the `@class` annotation.
+   *
+   * @param string text
+   *     The text in question.
+   *
+   * @return string
+   */
+  protected getMemberName(text: string): string {
+    if (this.re_class.test(text)) {
+      let memberName = text
+        .match(/@class +\w+/)[0]
+        .replace(/@class +/, "")
+        .trim();
+      return memberName;
+    }
+
+    if (this.re_function.test(text)) {
+      let memberName = text
+        .match(/@(function|func|method) +\w+/)[0]
+        .replace(/@(function|func|method) +/, "")
+        .trim();
+      return memberName;
+    }
+  }
+
+  protected getDocBlockDataForMethod(text: string): any {
+    return {
+      access_modifier: this.getAccessModifier("method", text),
+      description: this.getDocBlockSection("@description", text),
+      params: this.getDocBlockSection("@param", text),
+      returns: this.getDocBlockSection("@return", text),
+      throws: this.getDocBlockSection("@throws", text),
+      signature: this.getSignatureForMethod(text)
+    };
   }
 }

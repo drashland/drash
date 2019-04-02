@@ -20,7 +20,8 @@ import file_logger from "./src/loggers/file_logger.ts";
 // Services
 import http_service from "./src/services/http_service.ts";
 // Util
-import * as util from "./src/util.ts";
+import util_object_parser from "./src/util/object_parser.ts";
+import * as util_members from "./src/util/members.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER: NAMESPACE - DRASH //////////////////////////////////////////////
@@ -66,7 +67,9 @@ namespace Drash {
     export type HttpService = http_service; export const HttpService = new http_service();
   }
 
-  export const Util = util;
+  export namespace Util {
+    export type ObjectParser = util_object_parser; export const ObjectParser = new util_object_parser;
+  }
 
   /**
    * A property to hold all members added via `Drash.addMember()`. This property
