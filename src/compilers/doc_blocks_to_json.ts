@@ -27,26 +27,6 @@ import Drash from "../../mod.ts";
  */
 export default class DocBlocksToJson {
 
-  protected decoder: TextDecoder = new TextDecoder();
-
-  protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
-  protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
-  protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
-  protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
-  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
-  protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
-  protected re_class = new RegExp(/@class +\w+/, "g");
-  protected re_function = new RegExp(/@(function|func|method).+/, "g");
-  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
-
-  /**
-   * @description
-   *     A property to hold the final result of `this.compile()`.
-   *
-   * @property any parsed
-   */
-  protected parsed: any = {};
-
   /**
    * @description
    *     A property to hold the name of the current file being parsed. This
@@ -57,6 +37,32 @@ export default class DocBlocksToJson {
    * @property string current_file
    */
   protected current_file: string = "";
+
+  /**
+   * @description
+   *     The decoder used to decode files.
+   *
+   * @property TextDecoder decoder
+   */
+  protected decoder: TextDecoder = new TextDecoder();
+
+  /**
+   * @description
+   *     A property to hold the final result of `this.compile()`.
+   *
+   * @property any parsed
+   */
+  protected parsed: any = {};
+
+  protected re_class = new RegExp(/@class +\w+/, "g");
+  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
+  protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
+  protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
+  protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
+  protected re_function = new RegExp(/@(function|func|method).+/, "g");
+  protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
+  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
@@ -223,32 +229,47 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     Get the signature of the method in question.
+   *     Get the value of the `@memberof` annotation and use it to create a key
+   *     in `this.parsed`.
    *
    * @param string text
-   *     The text containing the method's data.
+   *     The text in question.
    *
    * @return string
    */
-  protected getSignatureOfMethod(text: string): string {
-    // The signature is the last line of the doc block
-    let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
-  }
+  protected getAndCreateNamespace(text: string): string {
+    // Look for a namespace using the value of the `@memberof` annotation. If
+    // a namespace isn't found, then the file being parsed will be placed as a
+    // top-level item in the JSON array.
+    if (!this.re_namespace.test(text)) {
+      return;
+    }
 
-  /**
-   * @description
-   *     Get the signature of the property in question.
-   *
-   * @param string text
-   *     The text containing the property's data.
-   *
-   * @return string
-   */
-  protected getSignatureOfProperty(text: string): string {
-    // The signature is the last line of the doc block
-    let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(";", "");
+    // Create the namespace by taking the `@memberof Some.Namespace` and
+    // transforming it into `Some.Namespace`
+    let reNamespaceResults = text.match(this.re_namespace);
+    let currentNamespace = null;
+    reNamespaceResults.forEach(fileLine => {
+      if (currentNamespace) {
+        return;
+      }
+      if (this.re_ignore_line.test(fileLine)) {
+        return;
+      }
+      currentNamespace = fileLine
+        .trim()
+        // TODO(crookse) parse this better... shouldn't have to ignore the line
+        .replace(/\*? ?@memberof +/, "") // doc-blocks-to-json-ignore-line
+        .trim();
+    });
+
+    // Create the namespace in the `parsed` property so we can start storing
+    // the namespace's members in it
+    if (!this.parsed.hasOwnProperty(currentNamespace)) {
+      this.parsed[currentNamespace] = {};
+    }
+
+    return currentNamespace;
   }
 
   /**
@@ -363,103 +384,41 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     Parse a file that has the `doc-blocks-to-json members-only` comment.
-   *
-   * @param string fileContents
-   */
-  protected parseMembersOnlyFile(fileContents) {
-    Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
-    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
-
-    methodDocBlocks.forEach(docBlock => {
-      let currentNamespace = this.getAndCreateNamespace(docBlock);
-      let memberName = this.getMemberName(docBlock);
-      let data = this.getDocBlockDataForMethod(docBlock);
-      data.fully_qualified_name = currentNamespace + "." + memberName,
-      this.parsed[currentNamespace][memberName] = data;
-    });
-  }
-
-  /**
-   * @description
-   *     Parse a file (assuming it's a class file). `this.compile()` defaults to
-   *     using this method.
-   *
-   * @param string fileContents
-   */
-  protected parseClassFile(fileContents) {
-    Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
-    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
-    let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
-
-    let currentNamespace = this.getAndCreateNamespace(fileContents);
-    let className = this.getMemberName(fileContents);
-    let fullyQualifiedName = currentNamespace + "." + className;
-
-    this.parsed[currentNamespace][className] = {
-      methods: {},
-      properties: {}
-    };
-
-    // methodDocBlocks.forEach(docBlock => {
-    //   let methodName = this.getMemberName(docBlock, "method");
-    //   let data = this.getDocBlockDataForMethod(docBlock);
-    //   data.fully_qualified_name = fullyQualifiedName + "." + methodName;
-    //   this.parsed[currentNamespace][className].methods[methodName] = data;
-    // });
-
-    propertyDocBlocks.forEach(docBlock => {
-      let propertyName = this.getMemberName(docBlock, "property");
-      let data = this.getDocBlockDataForProperty(docBlock);
-      data.name = propertyName;
-      data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
-      this.parsed[currentNamespace][className].properties[propertyName] = data;
-    });
-  }
-
-  /**
-   * @description
-   *     Get the value of the `@memberof` annotation and use it to create a key
-   *     in `this.parsed`.
+   *     Get the doc block data for the method in question.
    *
    * @param string text
-   *     The text in question.
+   *     The text containing the method's data.
    *
-   * @return string
+   * @return any
    */
-  protected getAndCreateNamespace(text: string): string {
-    // Look for a namespace using the value of the `@memberof` annotation. If
-    // a namespace isn't found, then the file being parsed will be placed as a
-    // top-level item in the JSON array.
-    if (!this.re_namespace.test(text)) {
-      return;
-    }
+  protected getDocBlockDataForMethod(text: string): any {
+    return {
+      access_modifier: this.getAccessModifier("method", text),
+      name: this.getNameOfMethod(text),
+      description: this.getSection("@description", text),
+      params: this.getSection("@param", text),
+      returns: this.getSection("@return", text),
+      throws: this.getSection("@throws", text),
+      signature: this.getSignatureOfMethod(text)
+    };
+  }
 
-    // Create the namespace by taking the `@memberof Some.Namespace` and
-    // transforming it into `Some.Namespace`
-    let reNamespaceResults = text.match(this.re_namespace);
-    let currentNamespace = null;
-    reNamespaceResults.forEach(fileLine => {
-      if (currentNamespace) {
-        return;
-      }
-      if (this.re_ignore_line.test(fileLine)) {
-        return;
-      }
-      currentNamespace = fileLine
-        .trim()
-        // TODO(crookse) parse this better... shouldn't have to ignore the line
-        .replace(/\*? ?@memberof +/, "") // doc-blocks-to-json-ignore-line
-        .trim();
-    });
-
-    // Create the namespace in the `parsed` property so we can start storing
-    // the namespace's members in it
-    if (!this.parsed.hasOwnProperty(currentNamespace)) {
-      this.parsed[currentNamespace] = {};
-    }
-
-    return currentNamespace;
+  /**
+   * @description
+   *     Get the doc block data for the property in question.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForProperty(text: string): any {
+    return {
+      access_modifier: this.getAccessModifier("property", text),
+      description: this.getSection("@description", text),
+      annotation: this.getAnnotation("@property", text),
+      signature: this.getSignatureOfProperty(text),
+    };
   }
 
   /**
@@ -524,45 +483,6 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     Get the doc block data for the method in question.
-   *
-   * @param string text
-   *     The text containing the method's data.
-   *
-   * @return any
-   */
-  protected getDocBlockDataForMethod(text: string): any {
-    return {
-      access_modifier: this.getAccessModifier("method", text),
-      name: this.getNameOfMethod(text),
-      description: this.getSection("@description", text),
-      params: this.getSection("@param", text),
-      returns: this.getSection("@return", text),
-      throws: this.getSection("@throws", text),
-      signature: this.getSignatureOfMethod(text)
-    };
-  }
-
-  /**
-   * @description
-   *     Get the doc block data for the property in question.
-   *
-   * @param string text
-   *     The text containing the property's data.
-   *
-   * @return any
-   */
-  protected getDocBlockDataForProperty(text: string): any {
-    return {
-      access_modifier: this.getAccessModifier("property", text),
-      description: this.getSection("@description", text),
-      annotation: this.getAnnotation("@property", text)
-      signature: this.getSignatureOfProperty(text),
-    };
-  }
-
-  /**
-   * @description
    *     Get the name of the method.
    *
    * @param string text
@@ -591,5 +511,91 @@ export default class DocBlocksToJson {
     return signature
       .replace(/(public|private|protected) +/, "")
       .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the method in question.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfMethod(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the property in question.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfProperty(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(";", "");
+  }
+
+  /**
+   * @description
+   *     Parse a file that has the `doc-blocks-to-json members-only` comment.
+   *
+   * @param string fileContents
+   */
+  protected parseMembersOnlyFile(fileContents) {
+    Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
+    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+
+    methodDocBlocks.forEach(docBlock => {
+      let currentNamespace = this.getAndCreateNamespace(docBlock);
+      let memberName = this.getMemberName(docBlock);
+      let data = this.getDocBlockDataForMethod(docBlock);
+      data.fully_qualified_name = currentNamespace + "." + memberName,
+      this.parsed[currentNamespace][memberName] = data;
+    });
+  }
+
+  /**
+   * @description
+   *     Parse a file (assuming it's a class file). `this.compile()` defaults to
+   *     using this method.
+   *
+   * @param string fileContents
+   */
+  protected parseClassFile(fileContents) {
+    Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
+    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+    let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
+
+    let currentNamespace = this.getAndCreateNamespace(fileContents);
+    let className = this.getMemberName(fileContents);
+    let fullyQualifiedName = currentNamespace + "." + className;
+
+    this.parsed[currentNamespace][className] = {
+      properties: {},
+      methods: {}
+    };
+
+    propertyDocBlocks.forEach(docBlock => {
+      let propertyName = this.getMemberName(docBlock, "property");
+      let data = this.getDocBlockDataForProperty(docBlock);
+      data.name = propertyName;
+      data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
+      this.parsed[currentNamespace][className].properties[propertyName] = data;
+    });
+
+    methodDocBlocks.forEach(docBlock => {
+      let methodName = this.getMemberName(docBlock, "method");
+      let data = this.getDocBlockDataForMethod(docBlock);
+      data.fully_qualified_name = fullyQualifiedName + "." + methodName;
+      this.parsed[currentNamespace][className].methods[methodName] = data;
+    });
   }
 }
