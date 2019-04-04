@@ -37,6 +37,7 @@ export default class DocBlocksToJson {
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   protected re_class = new RegExp(/@class +\w+/, "g");
   protected re_function = new RegExp(/@(function|func|method).+/, "g");
+  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
 
   /**
    * @description
@@ -82,32 +83,13 @@ export default class DocBlocksToJson {
       let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
 
-      // If a file has `@doc-blocks-to-json members-only`...
+      // If a file has `doc-blocks-to-json members-only`...
       if (this.re_members_only.test(fileContents)) {
-        this.parseMembersOnly(fileContents);
+        this.parseMembersOnlyFile(fileContents);
         return;
       }
 
-      let currentNamespace = this.getAndCreateNamespace(fileContents);
-      let memberName = this.getMemberName(fileContents);
-      if (!memberName) {
-        Drash.core_logger.error(`Member name came back as undefined for ${file}.`);
-      }
-
-      let classDocBlock = fileContents.match(this.re_for_class_doc_block);
-      let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
-      let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
-
-      let classDocBlockResults = this.getClassDocBlock(classDocBlock[0] ? classDocBlock[0] : "");
-
-      this.parsed[currentNamespace][memberName] = {
-        fully_qualified_name: currentNamespace + "." + memberName,
-        name: memberName,
-        annotation: classDocBlockResults.annotation,
-        description: classDocBlockResults.description,
-        properties: this.getClassProperties(propertyDocBlocks),
-        methods: this.getClassMethods(methodDocBlocks),
-      };
+      this.parseClassFile(fileContents);
     });
 
     return this.parsed;
@@ -123,10 +105,10 @@ export default class DocBlocksToJson {
    * @param string docBlock
    *     The docBlock to get the `@annotationname` definitions from.
    *
-   * @return any[]
+   * @return any
    *     Returns an array of data related to the specified annotation.
    */
-  public getDocBlockSection(annotation: string, docBlock: string): any[] {
+  public getSection(annotation: string, docBlock: string): any {
     //
     // The original regex (without doubling the backslashes) is:
     //
@@ -136,42 +118,83 @@ export default class DocBlocksToJson {
     // The \n after @annotation ensures we can parse @description\n or any other
     // annotation that doesn't have trailing characters.
     //
-    let re = new RegExp(annotation + "\n?.+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
+    let re = new RegExp("\\\* " + annotation + "\n?.+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
     let matches = docBlock.match(re);
-    let annotationBlocks = [];
     let ret: any = {};
 
-    if (matches) {
-      annotationBlocks = matches.map((block) => {
-        
-        // Clean up each line and return an overall clean description
-        let blockInLines = block.split("\n");
-        // Remove the annotation line and get it using the method
-        blockInLines.shift();
-        let textBlock = blockInLines.join("\n");
-        let description = this.getDocBlockDescription(textBlock);
-
-
-        if (annotation == "@description") {
-          return description;
-        }
-
-        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
-
-        ret.annotation = annotationLine.line;
-        ret.data_type = annotationLine.data_type;
-        ret.name = annotationLine.name;
-        ret.description = description;
-
-        return ret;
+    // Parsing @description?
+    if (matches && matches.length > 0 && annotation == "@description") {
+      let description = [];
+      matches.forEach(text => {
+        let textBlockByLine = text.split("\n");
+        textBlockByLine.shift();
+        description = this.getDescription(textBlockByLine.join("\n"));
       });
+      return description;
     }
 
-    if (annotation == "@description") {
-      return annotationBlocks[0];
+    // Parsing @return?
+    if (
+      matches
+      && matches.length > 0
+      && (annotation == "@returns" || annotation == "@return")
+    ) {
+      let annotationBlocks = [];
+      matches.forEach(text => {
+        let textBlockByLine = text.split("\n");
+        textBlockByLine.shift();
+        let description = this.getDescription(textBlockByLine.join("\n"));
+        let parsedAnnotation = this.getAnnotation(annotation, text);
+
+        annotationBlocks.push({
+          description: description,
+          annotation: parsedAnnotation
+        });
+      });
+      return annotationBlocks;
     }
 
-    return annotationBlocks;
+    // Parsing @throw?
+    if (
+      matches
+      && matches.length > 0
+      && (annotation == "@throws" || annotation == "@throw")
+    ) {
+      let annotationBlocks = [];
+      matches.forEach(text => {
+        let textBlockByLine = text.split("\n");
+        textBlockByLine.shift();
+        let description = this.getDescription(textBlockByLine.join("\n"));
+        let parsedAnnotation = this.getAnnotation(annotation, text);
+
+        annotationBlocks.push({
+          description: description,
+          annotation: parsedAnnotation
+        });
+      });
+      return annotationBlocks;
+    }
+
+    // Default parsing
+    if (matches && matches.length > 0) {
+      let annotationBlocks = {};
+      matches.forEach(text => {
+        let textBlockByLine = text.split("\n");
+        textBlockByLine.shift();
+        let name = this.getMemberName(text, annotation);
+        let description = this.getDescription(textBlockByLine.join("\n"));
+        let parsedAnnotation = this.getAnnotation(annotation, text);
+
+        annotationBlocks[name] = {
+          name: name,
+          description: description,
+          annotation: parsedAnnotation
+        };
+      });
+      return annotationBlocks;
+    }
+
+    return null;
   }
 
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
@@ -201,7 +224,7 @@ export default class DocBlocksToJson {
     let description = docBlockInLines.join("\n");
 
     classDocBlock.annotation = annotation;
-    classDocBlock.description = this.getDocBlockDescription(description);
+    classDocBlock.description = this.getDescription(description);
 
     return classDocBlock;
   }
@@ -255,7 +278,7 @@ export default class DocBlocksToJson {
         .trim()
         .replace(";", "");
 
-      let annotationBlock = this.getDocBlockSection("@property", docBlock)[0];
+      let annotationBlock = this.getSection("@property", docBlock)[0];
       annotationBlock.access_modifier = signature.split(" ")[0];
       annotationBlock.signature = signature;
       properties.push(annotationBlock);
@@ -298,7 +321,7 @@ export default class DocBlocksToJson {
    * @return any
    *     Returns an object containing the annotation lines data.
    */
-  protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any {
+  protected getAnnotation(annotation: string, docBlock: string): any {
     let re = new RegExp(annotation + ".+", "g");
     let match = docBlock.match(re);
     let line = {
@@ -329,27 +352,25 @@ export default class DocBlocksToJson {
    * @return string[]
    *     Returns an array of descriptions.
    */
-  protected getDocBlockDescription(textBlock: string): string[] {
+  protected getDescription(textBlock: string): string[] {
     let textBlockByLine = textBlock.split("\n");
     let result = "";
     let endOfDescription = false;
-
-    // This is used to determine where the end of the description is
-    let reAnnotationTag = new RegExp(/@(param|return|throws)/, "g");
 
     textBlockByLine.forEach((line) => {
       if (endOfDescription) {
         return;
       }
 
+      // Is this the beginning of a doc block?
       if (line.trim() == "/**") {
-        return;
+        line = line.trim().replace("/**", "");
       }
 
       // If we hit an annotation tag, then that means the we've reached the end
       // of the description. Also, if we've hit the */ line, then that means
       // we've hit the end of the doc block and no more parsing is needed.
-      if (reAnnotationTag.test(line) || line.trim() == "*/") {
+      if (this.re_description_stop_points.test(line) || line.trim() == "*/") {
         endOfDescription = true;
         return;
       }
@@ -404,8 +425,8 @@ export default class DocBlocksToJson {
    *
    * @param string fileContents
    */
-  protected parseMembersOnly(fileContents) {
-    Drash.core_logger.debug(`Parsing @doc-blocks-to-json members-only for ${this.current_file}.`);
+  protected parseMembersOnlyFile(fileContents) {
+    Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
     let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
 
     methodDocBlocks.forEach(docBlock => {
@@ -414,6 +435,34 @@ export default class DocBlocksToJson {
       let data = this.getDocBlockDataForMethod(docBlock);
       data.fully_qualified_name = currentNamespace + "." + memberName,
       this.parsed[currentNamespace][memberName] = data;
+    });
+  }
+
+  /**
+   * @description
+   *     Parse a file (assuming it's a class file). `this.compile()` defaults to
+   *     using this method.
+   *
+   * @param string fileContents
+   */
+  protected parseClassFile(fileContents) {
+    Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
+    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+
+    let currentNamespace = this.getAndCreateNamespace(fileContents);
+    let className = this.getMemberName(fileContents);
+    let fullyQualifiedName = currentNamespace + "." + className;
+
+    this.parsed[currentNamespace][className] = {
+      methods: {},
+      properties: {}
+    };
+
+    methodDocBlocks.forEach(docBlock => {
+      let methodName = this.getMemberName(docBlock, "method");
+      let data = this.getDocBlockDataForMethod(docBlock);
+      data.fully_qualified_name = fullyQualifiedName + "." + methodName;
+      this.parsed[currentNamespace][className].methods[methodName] = data;
     });
   }
 
@@ -471,37 +520,58 @@ export default class DocBlocksToJson {
    *
    * @return string
    */
-  protected getMemberName(text: string): string {
+  protected getMemberName(text: string, textType?: string): string {
     let matches;
 
+    // Is there a @class annotation?
     matches = text.match(/@class.+/g);
     if (matches && matches.length > 0) {
-    Drash.core_logger.debug(`Using @class annotation ${this.current_file}.`);
-      let memberName = text.match(/@class.+/g);
-      return memberName[0].replace(/@class +?/, "").trim();
-    }
-
-    matches = text.match(/@function.+/g);
-    if (matches && matches.length > 0) {
-    Drash.core_logger.debug(`Using @function|func|method annotation for ${this.current_file}.`);
+      Drash.core_logger.debug(`Using @class annotation ${this.current_file}.`);
       let memberName = text
-        .match(/@(function|func|method) +\w+/)[0]
-        .replace(/@(function|func|method) +/, "")
+        .match(/@class.+/g)[0]
+        .replace(/@class +?/, "")
         .trim();
       return memberName;
     }
 
+    // Is there a @function|func|method annotation?
+    matches = text.match(/@(function|func|method).+/g);
+    if (matches && matches.length > 0) {
+      Drash.core_logger.debug(`Using @function|func|method annotation for ${this.current_file}.`);
+      let memberName = text
+        .match(/@(function|func|method).+/g)[0]
+        .replace(/@(function|func|method) +?/, "")
+        .trim();
+      return memberName;
+    }
+
+    // No annotations? Default to this.
+    let textByLine = text.split("\n");
+    let line;
+    switch (textType) {
+      case "method":
+        line = textByLine[textByLine.length - 1];
+        return line.trim().replace(/(public|protected|private) /g, "").split("(")[0];
+      case "@param":
+        line = textByLine[0];
+        return line.trim().replace(/ ?\* /g, "").trim().split(" ")[2];
+      default:
+        break;
+    }
+
     Drash.core_logger.error(`Member name could not be found for ${this.current_file}.`)
+
+    return undefined;
   }
 
   protected getDocBlockDataForMethod(text: string): any {
     return {
       access_modifier: this.getAccessModifier("method", text),
       name: this.getNameOfMethod(text),
-      description: this.getDocBlockSection("@description", text),
-      params: this.getDocBlockSection("@param", text),
-      returns: this.getDocBlockSection("@return", text),
-      throws: this.getDocBlockSection("@throws", text),
+      description: this.getSection("@description", text),
+      params: this.getSection("@param", text),
+      returns: this.getSection("@return", text),
+      throws: this.getSection("@throws", text),
       signature: this.getSignatureOfMethod(text)
     };
   }

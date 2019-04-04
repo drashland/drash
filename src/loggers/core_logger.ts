@@ -29,13 +29,26 @@ export default class CoreLogger extends Logger {
       return message;
     }
 
-    let colorizeOpts = {
-      color: "yellow"
-    };
+    let color;
 
-    if (this.current_log_message_level_name.toLowerCase() == "error") {
-      colorizeOpts.color = "red";
+    switch (this.current_log_message_level_name.toLowerCase()) {
+      case "debug":
+        color = "green";
+        break;
+      case "error":
+        color = "red";
+        break;
+      case "warn":
+        color = "yellow";
+        break;
+      default:
+        color = "default";
+        break;
     }
+
+    let colorizeOpts = {
+      color: color
+    };
 
     console.log(colorize(message, colorizeOpts));
   }
