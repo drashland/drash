@@ -122,8 +122,16 @@ export default class DocBlocksToJson {
     let matches = docBlock.match(re);
     let ret: any = {};
 
+    if (!matches) {
+      return null;
+    }
+
+    if (matches.length <= 0) {
+      return null;
+    }
+
     // Parsing @description?
-    if (matches && matches.length > 0 && annotation == "@description") {
+    if (annotation == "@description") {
       let description = [];
       matches.forEach(text => {
         let textBlockByLine = text.split("\n");
@@ -134,11 +142,7 @@ export default class DocBlocksToJson {
     }
 
     // Parsing @return?
-    if (
-      matches
-      && matches.length > 0
-      && (annotation == "@returns" || annotation == "@return")
-    ) {
+    if (annotation == "@returns" || annotation == "@return") {
       let annotationBlocks = [];
       matches.forEach(text => {
         let textBlockByLine = text.split("\n");
@@ -155,11 +159,7 @@ export default class DocBlocksToJson {
     }
 
     // Parsing @throw?
-    if (
-      matches
-      && matches.length > 0
-      && (annotation == "@throws" || annotation == "@throw")
-    ) {
+    if (annotation == "@throws" || annotation == "@throw") {
       let annotationBlocks = [];
       matches.forEach(text => {
         let textBlockByLine = text.split("\n");
@@ -176,25 +176,22 @@ export default class DocBlocksToJson {
     }
 
     // Default parsing
-    if (matches && matches.length > 0) {
-      let annotationBlocks = {};
-      matches.forEach(text => {
-        let textBlockByLine = text.split("\n");
-        textBlockByLine.shift();
-        let name = this.getMemberName(text, annotation);
-        let description = this.getDescription(textBlockByLine.join("\n"));
-        let parsedAnnotation = this.getAnnotation(annotation, text);
+    let annotationBlocks = {};
+    matches.forEach(text => {
+      let textBlockByLine = text.split("\n");
+      textBlockByLine.shift();
+      let name = this.getMemberName(text, annotation);
+      let description = this.getDescription(textBlockByLine.join("\n"));
+      let parsedAnnotation = this.getAnnotation(annotation, text);
 
-        annotationBlocks[name] = {
-          name: name,
-          description: description,
-          annotation: parsedAnnotation
-        };
-      });
-      return annotationBlocks;
-    }
+      annotationBlocks[name] = {
+        name: name,
+        description: description,
+        annotation: parsedAnnotation
+      };
+    });
 
-    return null;
+    return annotationBlocks;
   }
 
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
