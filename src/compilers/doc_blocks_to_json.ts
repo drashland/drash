@@ -198,93 +198,12 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     Parse the specified class doc block.
+   *     Get the access modifier of the member in question.
    *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
+   * @param string memberType
+   * @param string text
    *
-   * @return any[]
-   *     Returns an array of property-related data.
-   */
-  protected getClassDocBlock(docBlock: string): any {
-    let classDocBlock = {
-      annotation: null,
-      description: [],
-    };
-
-    if (!docBlock || docBlock.trim() == "") {
-      return classDocBlock;
-    }
-
-    let docBlockInLines = docBlock.split("\n");
-    let annotation = docBlockInLines.shift();
-    let description = docBlockInLines.join("\n");
-
-    classDocBlock.annotation = annotation;
-    classDocBlock.description = this.getDescription(description);
-
-    return classDocBlock;
-  }
-
-  /**
-   * @description
-   *     Parse the specified array of method doc blocks and return an array of
-   *     method-related data.
-   *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
-   *
-   * @return any[]
-   *     Returns an array of method-related data.
-   */
-  protected getClassMethods(docBlocks: string[]): any[] {
-    let methods = [];
-
-    if (!docBlocks || docBlocks.length == 0) {
-      return methods;
-    }
-
-    docBlocks.forEach((docBlock) => {
-      methods.push(this.getDocBlockDataForMethod(docBlock));
-    });
-
-    return methods;
-  }
-
-  /**
-   * @description
-   *     Parse the specified array of property doc blocks and return an array of
-   *     property-related data.
-   *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
-   *
-   * @return any[]
-   *     Returns an array of property-related data.
-   */
-  protected getClassProperties(docBlocks: string[]): any[] {
-    let properties = [];
-
-    if (!docBlocks || docBlocks.length == 0) {
-      return properties;
-    }
-
-    docBlocks.forEach((docBlock) => {
-      let docBlockLinesAsArray = docBlock.split("\n");
-      let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1]
-        .trim()
-        .replace(";", "");
-
-      let annotationBlock = this.getSection("@property", docBlock)[0];
-      annotationBlock.access_modifier = signature.split(" ")[0];
-      annotationBlock.signature = signature;
-      properties.push(annotationBlock);
-    });
-
-    return properties;
-  }
-
-  /**
+   * @return text
    */
   protected getAccessModifier(memberType: string, text: string): string {
     let signature = this.getSignatureOfMethod(text);
@@ -298,12 +217,38 @@ export default class DocBlocksToJson {
 
       return accessModifier;
     }
+
+    return signature.split(" ")[0];
   }
 
+  /**
+   * @description
+   *     Get the signature of the method in question.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return string
+   */
   protected getSignatureOfMethod(text: string): string {
     // The signature is the last line of the doc block
     let textByLine = text.split("\n");
     return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the property in question.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfProperty(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(";", "");
   }
 
   /**
@@ -445,6 +390,7 @@ export default class DocBlocksToJson {
   protected parseClassFile(fileContents) {
     Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
     let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+    let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
 
     let currentNamespace = this.getAndCreateNamespace(fileContents);
     let className = this.getMemberName(fileContents);
@@ -455,11 +401,19 @@ export default class DocBlocksToJson {
       properties: {}
     };
 
-    methodDocBlocks.forEach(docBlock => {
-      let methodName = this.getMemberName(docBlock, "method");
-      let data = this.getDocBlockDataForMethod(docBlock);
-      data.fully_qualified_name = fullyQualifiedName + "." + methodName;
-      this.parsed[currentNamespace][className].methods[methodName] = data;
+    // methodDocBlocks.forEach(docBlock => {
+    //   let methodName = this.getMemberName(docBlock, "method");
+    //   let data = this.getDocBlockDataForMethod(docBlock);
+    //   data.fully_qualified_name = fullyQualifiedName + "." + methodName;
+    //   this.parsed[currentNamespace][className].methods[methodName] = data;
+    // });
+
+    propertyDocBlocks.forEach(docBlock => {
+      let propertyName = this.getMemberName(docBlock, "property");
+      let data = this.getDocBlockDataForProperty(docBlock);
+      data.name = propertyName;
+      data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
+      this.parsed[currentNamespace][className].properties[propertyName] = data;
     });
   }
 
@@ -546,12 +500,19 @@ export default class DocBlocksToJson {
     let textByLine = text.split("\n");
     let line;
     switch (textType) {
-      case "method":
-        line = textByLine[textByLine.length - 1];
-        return line.trim().replace(/(public|protected|private) /g, "").split("(")[0];
       case "@param":
         line = textByLine[0];
         return line.trim().replace(/ ?\* /g, "").trim().split(" ")[2];
+      case "method":
+        line = textByLine[textByLine.length - 1];
+        return line.trim().replace(/(public|protected|private) /g, "").split("(")[0];
+      case "property":
+        line = textByLine[textByLine.length - 1];
+        return line
+          .trim()
+          .replace(/(public|protected|private) /g, "")
+          .replace(":", "")
+          .split(" ")[0];
       default:
         break;
     }
@@ -561,6 +522,15 @@ export default class DocBlocksToJson {
     return undefined;
   }
 
+  /**
+   * @description
+   *     Get the doc block data for the method in question.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return any
+   */
   protected getDocBlockDataForMethod(text: string): any {
     return {
       access_modifier: this.getAccessModifier("method", text),
@@ -573,8 +543,51 @@ export default class DocBlocksToJson {
     };
   }
 
+  /**
+   * @description
+   *     Get the doc block data for the property in question.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForProperty(text: string): any {
+    return {
+      access_modifier: this.getAccessModifier("property", text),
+      description: this.getSection("@description", text),
+      annotation: this.getAnnotation("@property", text)
+      signature: this.getSignatureOfProperty(text),
+    };
+  }
+
+  /**
+   * @description
+   *     Get the name of the method.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return string
+   */
   protected getNameOfMethod(text: string): string {
     let signature = this.getSignatureOfMethod(text);
+    return signature
+      .replace(/(public|private|protected) +/, "")
+      .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the name of the property.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return string
+   */
+  protected getNameOfProperty(text: string): string {
+    let signature = this.getSignatureOfProperty(text);
     return signature
       .replace(/(public|private|protected) +/, "")
       .replace(/\(.+/, "");
