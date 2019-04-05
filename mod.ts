@@ -68,7 +68,8 @@ namespace Drash {
   }
 
   export namespace Util {
-    export type ObjectParser = util_object_parser; export const ObjectParser = new util_object_parser;
+    export type ObjectParser = util_object_parser; export const ObjectParser = util_object_parser;
+    export const Exports = util_members;
   }
 
   /**

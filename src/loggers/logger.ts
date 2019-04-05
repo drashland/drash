@@ -51,7 +51,9 @@ export default abstract class Logger {
       configs.enabled = false;
     }
 
-    configs.level = configs.level.toLowerCase();
+    configs.level = configs.level
+      ? configs.level.toLowerCase()
+      : "debug";
     if (!LogLevels.get(configs.level)) {
       configs.level = "debug";
     }
