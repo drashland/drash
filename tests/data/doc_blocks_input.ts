@@ -3,7 +3,8 @@
 /**
  * @memberof Drash.Services
  * @class ClassOne
- * Class one does class one things.
+ * @description
+ *     Class one does class one things.
  */
 export default class ClassOne {
   /**
