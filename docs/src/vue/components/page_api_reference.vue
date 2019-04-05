@@ -86,7 +86,7 @@ div.page.page--reference
                 //- CLASS PROPERTIES
                 h2.type-heading.--properties Properties
                 div.properites
-                    div.card.--property(v-for="(property, name) in data.class.properties" v-show="hasProperties(data.class.properties)")
+                    div.card.--property(v-for="(property, name) in data.class.properties" v-show="!empty(data.class.properties)")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ property.signature }}
@@ -102,7 +102,7 @@ div.page.page--reference
                                 ul
                                     li
                                         code.c-code-data-type {{ property.data_type }}
-                    div.card(v-show="!hasProperties(data.class.properties)")
+                    div.card(v-show="empty(data.class.properties)")
                         div.card-body
                             div.tag-row
                                 p This class doesn't have any properties.
@@ -112,7 +112,7 @@ div.page.page--reference
                 //- CLASS METHODS
                 h2.type-heading.--methods Methods
                 div.methods
-                    div.card.--method(v-for="(method, name) in data.class.methods" v-if="hasMethods(data.class.methods)")
+                    div.card.--method(v-for="(method, methodName) in data.class.methods" v-show="!empty(data.class.methods)")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ method.signature }}
@@ -122,13 +122,13 @@ div.page.page--reference
                                 strong.tag-row__heading Description
                                 ul
                                     li(v-for="description in method.description" :inner-html.prop="description | markdown-it")
-                            div.tag-row(v-show="method.params && method.params.length > 0")
+                            div.tag-row(v-show="!empty(method.params)")
                                 strong.tag-row__heading Params
                                 ul
-                                    li(v-for="param in method.params")
+                                    li(v-for="(param, paramname) in method.params")
                                         code.c-code-parameter {{ param.name }}
                                         span : 
-                                        code.c-code-data-type {{ param.data_type }}
+                                        code.c-code-data-type {{ param.annotation.data_type }}
                                         ul(v-show="param.description && param.description.length > 0")
                                             li(v-for="description in param.description" :inner-html.prop="description | markdown-it")
                             div.tag-row(v-show="method.returns && method.returns.length > 0")
@@ -138,7 +138,14 @@ div.page.page--reference
                                         code.c-code-data-type {{ ret.annotation.data_type }}
                                         ul(v-show="ret.description && ret.description.length > 0")
                                             li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
-                    div.card(v-else)
+                            div.tag-row(v-show="method.throws && method.throws.length > 0")
+                                strong.tag-row__heading Throws
+                                ul
+                                    li(v-for="ret in method.throws")
+                                        code.c-code-data-type {{ ret.annotation.data_type }}
+                                        ul(v-show="ret.description && ret.description.length > 0")
+                                            li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
+                    div.card(v-show="empty(data.class.methods)")
                         div.card-body
                             div.tag-row
                                 p This class doesn't have any methods.
@@ -170,11 +177,8 @@ export default {
         //             this.raw_code_data = response.data;
         //         });
         // },
-        hasProperties(properties) {
-            return properties && Object.keys(properties).length > 0;
-        },
-        hasMethods(methods) {
-            return methods && Object.keys(methods).length > 0;
+        empty(inputObj) {
+            return !inputObj || Object.keys(inputObj).length <= 0;
         }
     }
 }

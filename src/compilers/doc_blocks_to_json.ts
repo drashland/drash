@@ -42,7 +42,7 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     The decoder used to decode files.
+   *     The decoder used to decode the files passed to `this.compile()`.
    *
    * @property TextDecoder decoder
    */
@@ -664,6 +664,7 @@ export default class DocBlocksToJson {
    *     The text containing the `export` keyword if the member is exported.
    *
    * @return boolean
+   *     Returns true if the member is exported and false if not.
    */
   protected isMemberExported(memberType: string, text: string): boolean {
     let reMemberName = new RegExp(memberType);

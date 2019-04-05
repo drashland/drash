@@ -23,7 +23,7 @@
                 "decoder": {
                     "access_modifier": "protected",
                     "description": [
-                        "The decoder used to decode files."
+                        "The decoder used to decode the files passed to `this.compile()`."
                     ],
                     "annotation": {
                         "line": "@property TextDecoder decoder",
@@ -785,7 +785,9 @@
                     },
                     "returns": [
                         {
-                            "description": [],
+                            "description": [
+                                "Returns true if the member is exported and false if not."
+                            ],
                             "annotation": {
                                 "line": "@return boolean",
                                 "data_type": "boolean",
