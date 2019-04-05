@@ -775,19 +775,23 @@ export default class DocBlocksToJson {
       store = this.parsed[currentNamespace][className];
     }
 
-    propertyDocBlocks.forEach(docBlock => {
-      let propertyName = this.getMemberName(docBlock, "property");
-      let data = this.getDocBlockDataForProperty(docBlock);
-      data.name = propertyName;
-      data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
-      store.properties[propertyName] = data;
-    });
+    if (propertyDocBlocks && propertyDocBlocks.length > 0) {
+      propertyDocBlocks.forEach(docBlock => {
+        let propertyName = this.getMemberName(docBlock, "property");
+        let data = this.getDocBlockDataForProperty(docBlock);
+        data.name = propertyName;
+        data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
+        store.properties[propertyName] = data;
+      });
+    }
 
-    methodDocBlocks.forEach(docBlock => {
-      let methodName = this.getMemberName(docBlock, "method");
-      let data = this.getDocBlockDataForMethod(docBlock);
-      data.fully_qualified_name = fullyQualifiedName + "." + methodName;
-      store.methods[methodName] = data;
-    });
+    if (methodDocBlocks && methodDocBlocks.length > 0) {
+      methodDocBlocks.forEach(docBlock => {
+        let methodName = this.getMemberName(docBlock, "method");
+        let data = this.getDocBlockDataForMethod(docBlock);
+        data.fully_qualified_name = fullyQualifiedName + "." + methodName;
+        store.methods[methodName] = data;
+      });
+    }
   }
 }
