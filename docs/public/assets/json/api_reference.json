@@ -1,6 +1,10 @@
 {
     "Drash.Compilers": {
         "DocBlocksToJson": {
+            "fully_qualified_name": "Drash.Compilers.DocBlocksToJson",
+            "description": [
+                "This compiler reads doc blocks and converts them to parsable JSON."
+            ],
             "properties": {
                 "current_file": {
                     "access_modifier": "protected",
@@ -852,6 +856,8 @@
     },
     "Drash.Exceptions": {
         "HttpException": {
+            "fully_qualified_name": "Drash.Exceptions.HttpException",
+            "description": null,
             "properties": {},
             "methods": {
                 "constructor": {
@@ -892,6 +898,8 @@
     },
     "Drash.Http": {
         "Request": {
+            "fully_qualified_name": "Drash.Http.Request",
+            "description": null,
             "properties": {
                 "original_request_object": {
                     "access_modifier": "public",
@@ -978,6 +986,8 @@
             }
         },
         "Resource": {
+            "fully_qualified_name": "Drash.Http.Resource",
+            "description": null,
             "properties": {
                 "request": {
                     "access_modifier": "protected",
@@ -1064,6 +1074,8 @@
             }
         },
         "Response": {
+            "fully_qualified_name": "Drash.Http.Response",
+            "description": null,
             "properties": {
                 "body": {
                     "access_modifier": "public",
@@ -1268,6 +1280,10 @@
             }
         },
         "Server": {
+            "fully_qualified_name": "Drash.Http.Server",
+            "description": [
+                "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
+            ],
             "properties": {
                 "static_paths": {
                     "access_modifier": "protected",
@@ -1561,6 +1577,8 @@
     },
     "Drash.Loggers": {
         "Logger": {
+            "fully_qualified_name": "Drash.Loggers.Logger",
+            "description": null,
             "properties": {
                 "configs": {
                     "access_modifier": "protected",
@@ -1806,6 +1824,8 @@
             }
         },
         "ConsoleLogger": {
+            "fully_qualified_name": "Drash.Loggers.ConsoleLogger",
+            "description": null,
             "properties": {},
             "methods": {
                 "constructor": {
@@ -1843,6 +1863,8 @@
             }
         },
         "FileLogger": {
+            "fully_qualified_name": "Drash.Loggers.FileLogger",
+            "description": null,
             "properties": {
                 "file": {
                     "access_modifier": "protected",
@@ -1895,6 +1917,8 @@
     },
     "Drash.Services": {
         "HttpService": {
+            "fully_qualified_name": "Drash.Services.HttpService",
+            "description": null,
             "properties": {},
             "methods": {
                 "hydrateHttpRequest": {
@@ -2078,6 +2102,8 @@
     },
     "Drash.Util": {
         "ObjectParser": {
+            "fully_qualified_name": "Drash.Util.ObjectParser",
+            "description": null,
             "properties": {},
             "methods": {
                 "static getNestedPropertyValue": {

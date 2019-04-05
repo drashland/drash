@@ -86,7 +86,7 @@ div.page.page--reference
                 //- CLASS PROPERTIES
                 h2.type-heading.--properties Properties
                 div.properites
-                    div.card.--property(v-for="property in data.class.properties" v-show="hasProperties(data.class.properties)")
+                    div.card.--property(v-for="(property, name) in data.class.properties" v-show="hasProperties(data.class.properties)")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ property.signature }}
@@ -112,7 +112,7 @@ div.page.page--reference
                 //- CLASS METHODS
                 h2.type-heading.--methods Methods
                 div.methods
-                    div.card.--method(v-for="method in data.class.methods" v-if="data.class.methods && data.class.methods.length > 0")
+                    div.card.--method(v-for="(method, name) in data.class.methods" v-if="hasMethods(data.class.methods)")
                         div.card-body
                             div.card-title
                                 code.c-code-signature.language-typescript {{ method.signature }}
@@ -135,7 +135,7 @@ div.page.page--reference
                                 strong.tag-row__heading Returns
                                 ul
                                     li(v-for="ret in method.returns")
-                                        code.c-code-data-type {{ ret.data_type }}
+                                        code.c-code-data-type {{ ret.annotation.data_type }}
                                         ul(v-show="ret.description && ret.description.length > 0")
                                             li(v-for="description in ret.description" :inner-html.prop="description | markdown-it")
                     div.card(v-else)
@@ -171,7 +171,10 @@ export default {
         //         });
         // },
         hasProperties(properties) {
-            return properties && properties.length > 0;
+            return properties && Object.keys(properties).length > 0;
+        },
+        hasMethods(methods) {
+            return methods && Object.keys(methods).length > 0;
         }
     }
 }

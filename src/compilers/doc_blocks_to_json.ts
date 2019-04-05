@@ -24,7 +24,8 @@ import Drash from "../../mod.ts";
  * @memberof Drash.Compilers
  * @class DocBlocksToJson
  *
- * This compiler reads doc blocks and converts them to parsable JSON.
+ * @description
+ *     This compiler reads doc blocks and converts them to parsable JSON.
  */
 export default class DocBlocksToJson {
 
@@ -751,6 +752,7 @@ export default class DocBlocksToJson {
    */
   protected parseClassFile(fileContents) {
     Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
+    let classDocBlock = fileContents.match(this.re_for_class_doc_block);
     let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
     let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
 
@@ -759,21 +761,24 @@ export default class DocBlocksToJson {
     let fullyQualifiedName;
     let store;
 
+    let map: any = {
+      fully_qualified_name: currentNamespace + "." + className,
+      description: null,
+      properties: {},
+      methods: {}
+    };
+
     if (!currentNamespace) {
-      this.parsed[className] = {
-        properties: {},
-        methods: {}
-      };
+      this.parsed[className] = map;
       fullyQualifiedName = className;
       store = this.parsed[className];
     } else {
-      this.parsed[currentNamespace][className] = {
-        properties: {},
-        methods: {}
-      };
+      this.parsed[currentNamespace][className] = map;
       fullyQualifiedName = currentNamespace + "." + className;
       store = this.parsed[currentNamespace][className];
     }
+
+    store.description = this.getSection("@description", classDocBlock[0]);
 
     if (propertyDocBlocks && propertyDocBlocks.length > 0) {
       propertyDocBlocks.forEach(docBlock => {
