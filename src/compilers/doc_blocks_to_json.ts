@@ -15,6 +15,7 @@
 //     [ ] Support @inheritdoc
 //     [ ] Return a status report of the files that were and weren't parsed
 //     [ ] Check if a @memberof exists. If not, then document as top-level item.
+//     [ ] Check exported members only properties
 //
 
 import Drash from "../../mod.ts";
@@ -54,15 +55,20 @@ export default class DocBlocksToJson {
    */
   protected parsed: any = {};
 
+  protected parsing_members_only_file = false;
+
   protected re_class = new RegExp(/@class +\w+/, "g");
   protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
+  protected re_export = new RegExp(/export.+/, "g");
   protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
   protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
   protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
+  protected re_for_interface_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*interface.+/, "g");
   protected re_function = new RegExp(/@(function|func|method).+/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
+  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
@@ -91,10 +97,12 @@ export default class DocBlocksToJson {
 
       // If a file has `doc-blocks-to-json members-only`...
       if (this.re_members_only.test(fileContents)) {
+        this.parsing_members_only_file = true;
         this.parseMembersOnlyFile(fileContents);
         return;
       }
 
+      this.parsing_members_only_file = false;
       this.parseClassFile(fileContents);
     });
 
@@ -207,16 +215,19 @@ export default class DocBlocksToJson {
    *     Get the access modifier of the member in question.
    *
    * @param string memberType
+   *     The member's type.
    * @param string text
+   *     The text containing the member's access modifier.
    *
    * @return text
    */
   protected getAccessModifier(memberType: string, text: string): string {
     let signature = this.getSignatureOfMethod(text);
 
+    // Methods have constructors which are always public, so we want to make
+    // sure the `construct()` function's access modifier isn't "constructor"
+    // because the access modifier was omitted.
     if (memberType == "method") {
-      // The constructor's modifier is always public even though the `construct()`
-      // line isn't written as `public construct()`
       let accessModifier = /constructor/.test(signature)
         ? "public"
         : signature.split(" ")[0];
@@ -384,6 +395,24 @@ export default class DocBlocksToJson {
 
   /**
    * @description
+   *     Get the doc block data for the interface in question.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForInterface(text: string): any {
+    return {
+      exported: this.isMemberExported("interface", text),
+      name: this.getNameOfInterface(text),
+      description: this.getSection("@description", text),
+      signature: this.getSignatureOfInterface(text)
+    };
+  }
+
+  /**
+   * @description
    *     Get the doc block data for the method in question.
    *
    * @param string text
@@ -392,7 +421,7 @@ export default class DocBlocksToJson {
    * @return any
    */
   protected getDocBlockDataForMethod(text: string): any {
-    return {
+    let ret: any = {
       access_modifier: this.getAccessModifier("method", text),
       name: this.getNameOfMethod(text),
       description: this.getSection("@description", text),
@@ -401,6 +430,12 @@ export default class DocBlocksToJson {
       throws: this.getSection("@throws", text),
       signature: this.getSignatureOfMethod(text)
     };
+
+    if (this.parsing_members_only_file) {
+      ret.exported = this.isMemberExported("function", text);
+    }
+
+    return ret;
   }
 
   /**
@@ -413,12 +448,14 @@ export default class DocBlocksToJson {
    * @return any
    */
   protected getDocBlockDataForProperty(text: string): any {
-    return {
+    let ret: any = {
       access_modifier: this.getAccessModifier("property", text),
       description: this.getSection("@description", text),
       annotation: this.getAnnotation("@property", text),
       signature: this.getSignatureOfProperty(text),
     };
+
+    return ret;
   }
 
   /**
@@ -433,24 +470,12 @@ export default class DocBlocksToJson {
   protected getMemberName(text: string, textType?: string): string {
     let matches;
 
-    // Is there a @class annotation?
-    matches = text.match(/@class.+/g);
+    matches = text.match(new RegExp(this.re__member_names + ".+", "g"));
     if (matches && matches.length > 0) {
-      Drash.core_logger.debug(`Using @class annotation ${this.current_file}.`);
+      Drash.core_logger.debug(`Using @annotation for ${this.current_file}.`);
       let memberName = text
-        .match(/@class.+/g)[0]
-        .replace(/@class +?/, "")
-        .trim();
-      return memberName;
-    }
-
-    // Is there a @function|func|method annotation?
-    matches = text.match(/@(function|func|method).+/g);
-    if (matches && matches.length > 0) {
-      Drash.core_logger.debug(`Using @function|func|method annotation for ${this.current_file}.`);
-      let memberName = text
-        .match(/@(function|func|method).+/g)[0]
-        .replace(/@(function|func|method) +?/, "")
+        .match(new RegExp(this.re__member_names + ".+", "g"))[0]
+        .replace(new RegExp(this.re__member_names + " +?", "g"), "")
         .trim();
       return memberName;
     }
@@ -483,6 +508,21 @@ export default class DocBlocksToJson {
 
   /**
    * @description
+   *     Get the name of the interface.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return string
+   */
+  protected getNameOfInterface(text: string): string {
+    let signature = this.getSignatureOfInterface(text);
+    return signature
+      .replace(/export +? ?interface +?/, "");
+  }
+
+  /**
+   * @description
    *     Get the name of the method.
    *
    * @param string text
@@ -492,6 +532,11 @@ export default class DocBlocksToJson {
    */
   protected getNameOfMethod(text: string): string {
     let signature = this.getSignatureOfMethod(text);
+    if (this.parsing_members_only_file) {
+    signature = signature
+      .replace(/export +?/, "")
+      .replace(/function +?/, "");
+    }
     return signature
       .replace(/(public|private|protected) +/, "")
       .replace(/\(.+/, "");
@@ -511,6 +556,21 @@ export default class DocBlocksToJson {
     return signature
       .replace(/(public|private|protected) +/, "")
       .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the interface in question.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfInterface(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
   }
 
   /**
@@ -544,6 +604,32 @@ export default class DocBlocksToJson {
   }
 
   /**
+   * Is the member exported?
+   *
+   * @param string memberType
+   *     The member's type.
+   * @param string text
+   *     The text containing the `export` keyword if the member is exported.
+   *
+   * @return boolean
+   */
+  protected isMemberExported(memberType: string, text: string): boolean {
+    let reMemberName = new RegExp(memberType);
+    if (this.re_export.test(text)) {
+      let exportLine = text.match(this.re_export);
+      if (exportLine && exportLine.length > 0) {
+        if (reMemberName.test(exportLine[0])) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // FILE MARKER: PROTECTED - PARSERS //////////////////////////////////////////
+
+  /**
    * @description
    *     Parse a file that has the `doc-blocks-to-json members-only` comment.
    *
@@ -552,13 +638,32 @@ export default class DocBlocksToJson {
   protected parseMembersOnlyFile(fileContents) {
     Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
     let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
+    let interfaceDocBlocks = fileContents.match(this.re_for_interface_doc_blocks);
 
     methodDocBlocks.forEach(docBlock => {
       let currentNamespace = this.getAndCreateNamespace(docBlock);
       let memberName = this.getMemberName(docBlock);
       let data = this.getDocBlockDataForMethod(docBlock);
-      data.fully_qualified_name = currentNamespace + "." + memberName,
-      this.parsed[currentNamespace][memberName] = data;
+      if (!currentNamespace) {
+        data.fully_qualified_name = memberName;
+        this.parsed[memberName] = data;
+      } else {
+        data.fully_qualified_name = currentNamespace + "." + memberName;
+        this.parsed[currentNamespace][memberName] = data;
+      }
+    });
+
+    interfaceDocBlocks.forEach(docBlock => {
+      let currentNamespace = this.getAndCreateNamespace(docBlock);
+      let memberName = this.getMemberName(docBlock);
+      let data = this.getDocBlockDataForInterface(docBlock);
+      if (!currentNamespace) {
+        data.fully_qualified_name = memberName;
+        this.parsed[memberName] = data;
+      } else {
+        data.fully_qualified_name = currentNamespace + "." + memberName;
+        this.parsed[currentNamespace][memberName] = data;
+      }
     });
   }
 
@@ -576,26 +681,38 @@ export default class DocBlocksToJson {
 
     let currentNamespace = this.getAndCreateNamespace(fileContents);
     let className = this.getMemberName(fileContents);
-    let fullyQualifiedName = currentNamespace + "." + className;
+    let fullyQualifiedName;
+    let store;
 
-    this.parsed[currentNamespace][className] = {
-      properties: {},
-      methods: {}
-    };
+    if (!currentNamespace) {
+      this.parsed[className] = {
+        properties: {},
+        methods: {}
+      };
+      fullyQualifiedName = className;
+      store = this.parsed[className];
+    } else {
+      this.parsed[currentNamespace][className] = {
+        properties: {},
+        methods: {}
+      };
+      fullyQualifiedName = currentNamespace + "." + className;
+      store = this.parsed[currentNamespace][className];
+    }
 
     propertyDocBlocks.forEach(docBlock => {
       let propertyName = this.getMemberName(docBlock, "property");
       let data = this.getDocBlockDataForProperty(docBlock);
       data.name = propertyName;
       data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
-      this.parsed[currentNamespace][className].properties[propertyName] = data;
+      store.properties[propertyName] = data;
     });
 
     methodDocBlocks.forEach(docBlock => {
       let methodName = this.getMemberName(docBlock, "method");
       let data = this.getDocBlockDataForMethod(docBlock);
       data.fully_qualified_name = fullyQualifiedName + "." + methodName;
-      this.parsed[currentNamespace][className].methods[methodName] = data;
+      store.methods[methodName] = data;
     });
   }
 }

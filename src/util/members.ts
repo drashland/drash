@@ -1,6 +1,13 @@
 /// @doc-blocks-to-json members-only
 
-interface ColorizeOptions {
+/**
+ * @memberof Drash.Util
+ * @interface ColorizeOptions
+ *
+ * @description
+ *     A util function that helps colorize text in the console.
+ */
+export interface ColorizeOptions {
   color?: string,
   background?: string,
   style?: string
