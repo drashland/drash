@@ -61,6 +61,7 @@ export default class DocBlocksToJson {
   protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
   protected re_export = new RegExp(/export.+/, "g");
   protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
+  protected re_for_enum_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*enum.+/, "g");
   protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
   protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
   protected re_for_interface_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*interface.+/, "g");
@@ -395,6 +396,26 @@ export default class DocBlocksToJson {
 
   /**
    * @description
+   *     Get the doc block data for the enum in question.
+   *
+   * @param string text
+   *     The text containing the enum's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForEnum(text: string): any {
+    let ret: any = {
+      exported: this.isMemberExported("enum", text),
+      name: this.getNameOfEnum(text),
+      description: this.getSection("@description", text),
+      signature: this.getSignatureOfEnum(text)
+    };
+
+    return ret;
+  }
+
+  /**
+   * @description
    *     Get the doc block data for the interface in question.
    *
    * @param string text
@@ -508,6 +529,21 @@ export default class DocBlocksToJson {
 
   /**
    * @description
+   *     Get the name of the enum.
+   *
+   * @param string text
+   *     The text containing the enum's data.
+   *
+   * @return string
+   */
+  protected getNameOfEnum(text: string): string {
+    let signature = this.getSignatureOfEnum(text);
+    return signature
+      .replace(/export +? ?enum +?/, "");
+  }
+
+  /**
+   * @description
    *     Get the name of the interface.
    *
    * @param string text
@@ -556,6 +592,21 @@ export default class DocBlocksToJson {
     return signature
       .replace(/(public|private|protected) +/, "")
       .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the enum in question.
+   *
+   * @param string text
+   *     The text containing the enum's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfEnum(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
   }
 
   /**
@@ -639,32 +690,56 @@ export default class DocBlocksToJson {
     Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
     let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
     let interfaceDocBlocks = fileContents.match(this.re_for_interface_doc_blocks);
+    let enumDocBlocks = fileContents.match(this.re_for_enum_doc_blocks);
 
-    methodDocBlocks.forEach(docBlock => {
-      let currentNamespace = this.getAndCreateNamespace(docBlock);
-      let memberName = this.getMemberName(docBlock);
-      let data = this.getDocBlockDataForMethod(docBlock);
-      if (!currentNamespace) {
-        data.fully_qualified_name = memberName;
-        this.parsed[memberName] = data;
-      } else {
-        data.fully_qualified_name = currentNamespace + "." + memberName;
-        this.parsed[currentNamespace][memberName] = data;
-      }
-    });
+    if (methodDocBlocks && methodDocBlocks.length > 0) {
+      methodDocBlocks.forEach(docBlock => {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let memberName = this.getMemberName(docBlock);
+        let data = this.getDocBlockDataForMethod(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = memberName;
+          this.parsed[memberName] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + memberName;
+          this.parsed[currentNamespace][memberName] = data;
+        }
+      });
+    }
 
-    interfaceDocBlocks.forEach(docBlock => {
-      let currentNamespace = this.getAndCreateNamespace(docBlock);
-      let memberName = this.getMemberName(docBlock);
-      let data = this.getDocBlockDataForInterface(docBlock);
-      if (!currentNamespace) {
-        data.fully_qualified_name = memberName;
-        this.parsed[memberName] = data;
-      } else {
-        data.fully_qualified_name = currentNamespace + "." + memberName;
-        this.parsed[currentNamespace][memberName] = data;
-      }
-    });
+    if (interfaceDocBlocks && interfaceDocBlocks.length > 0) {
+      interfaceDocBlocks.forEach(docBlock => {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let memberName = this.getMemberName(docBlock);
+        let data = this.getDocBlockDataForInterface(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = memberName;
+          this.parsed[memberName] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + memberName;
+          this.parsed[currentNamespace][memberName] = data;
+        }
+      });
+    }
+
+    if (enumDocBlocks && enumDocBlocks.length > 0) {
+      enumDocBlocks.forEach(docBlock => {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let memberName = this.getMemberName(docBlock);
+        let data = this.getDocBlockDataForEnum(docBlock);
+        let enums = fileContents.match(/enum.+(\s +\w.*)*\s}/, "g");
+        if (enums && enums.length > 0) {
+          data.full_signature = enums[0];
+        }
+        if (!currentNamespace) {
+          data.fully_qualified_name = memberName;
+          this.parsed[memberName] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + memberName;
+          this.parsed[currentNamespace][memberName] = data;
+        }
+      });
+    }
   }
 
   /**

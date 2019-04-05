@@ -1,56 +1,12 @@
 {
-    "Drash.Util": {
-        "colorize": {
-            "access_modifier": "export",
-            "name": "colorize",
-            "description": [
-                "A util function that helps colorize text in the console."
-            ],
-            "params": {
-                "message": {
-                    "name": "message",
-                    "description": [],
-                    "annotation": {
-                        "line": "@param string message",
-                        "data_type": "string",
-                        "name": "message"
-                    }
-                },
-                "options": {
-                    "name": "options",
-                    "description": [],
-                    "annotation": {
-                        "line": "@param ColorizeOptions options",
-                        "data_type": "ColorizeOptions",
-                        "name": "options"
-                    }
-                }
-            },
-            "returns": [
-                {
-                    "description": [
-                        "Returns the colorized message."
-                    ],
-                    "annotation": {
-                        "line": "@return string",
-                        "data_type": "string",
-                        "name": null
-                    }
-                }
-            ],
-            "throws": null,
-            "signature": "export function colorize(message: string, options: ColorizeOptions): string",
-            "exported": true,
-            "fully_qualified_name": "Drash.Util.colorize"
-        },
-        "ColorizeOptions": {
-            "exported": true,
-            "name": "ColorizeOptions",
-            "description": [
-                "A util function that helps colorize text in the console."
-            ],
-            "signature": "export interface ColorizeOptions",
-            "fully_qualified_name": "Drash.Util.ColorizeOptions"
-        }
+    "LogLevel": {
+        "exported": true,
+        "name": "LogLevel",
+        "description": [
+            "The log levels which are organized by rank in ascending order."
+        ],
+        "signature": "export enum LogLevel",
+        "full_signature": "enum LogLevel {\n  Off,\n  Fatal,\n  Error,\n  Warn,\n  Info,\n  Debug,\n  Trace,\n  All\n}",
+        "fully_qualified_name": "LogLevel"
     }
 }

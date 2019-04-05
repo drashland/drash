@@ -1,8 +1,16 @@
+/// @doc-blocks-to-json members-only
+
 interface LogLevelStructure {
   name: string;
   rank: number;
 }
 
+/**
+ * @description
+ *     The log levels which are organized by rank in ascending order.
+ *
+ * @enum LogLevel
+ */
 export enum LogLevel {
   Off,
   Fatal,
