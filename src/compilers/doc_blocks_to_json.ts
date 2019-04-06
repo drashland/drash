@@ -69,8 +69,11 @@ export default class DocBlocksToJson {
   protected re_function = new RegExp(/@(function|func|method).+/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
-  protected re_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
+  protected re_is_class = new RegExp(/\* @class/);
+  protected re_is_property = new RegExp(/@property/);
+  protected re_is_method = new RegExp(/.+(public|protected|private) +\w+\(.+\).+:?{/);
   protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
@@ -246,22 +249,22 @@ export default class DocBlocksToJson {
    *     Get the value of the `@memberof` annotation and use it to create a key
    *     in `this.parsed`.
    *
-   * @param string text
-   *     The text in question.
+   * @param string docBlock
+   *     The doc block in question.
    *
    * @return string
    */
-  protected getAndCreateNamespace(text: string): string {
+  protected getAndCreateNamespace(docBlock: string): string {
     // Look for a namespace using the value of the `@memberof` annotation. If
     // a namespace isn't found, then the file being parsed will be placed as a
     // top-level item in the JSON array.
-    if (!this.re_namespace.test(text)) {
+    if (!this.re_namespace.test(docBlock)) {
       return;
     }
 
     // Create the namespace by taking the `@memberof Some.Namespace` and
     // transforming it into `Some.Namespace`
-    let reNamespaceResults = text.match(this.re_namespace);
+    let reNamespaceResults = docBlock.match(this.re_namespace);
     let currentNamespace = null;
     reNamespaceResults.forEach(fileLine => {
       if (currentNamespace) {
@@ -638,7 +641,7 @@ export default class DocBlocksToJson {
   protected getSignatureOfMethod(text: string): string {
     // The signature is the last line of the doc block
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "").replace("}", "");
   }
 
   /**
@@ -754,51 +757,49 @@ export default class DocBlocksToJson {
    */
   protected parseClassFile(fileContents) {
     Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
-    let classDocBlock = fileContents.match(this.re_for_class_doc_block);
-    let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
-    let propertyDocBlocks = fileContents.match(this.re_for_property_doc_blocks);
 
-    let currentNamespace = this.getAndCreateNamespace(fileContents);
-    let className = this.getMemberName(fileContents);
-    let fullyQualifiedName;
-    let store;
+    let docBlocks = fileContents.match(this.re_for_all_members);
 
-    let map: any = {
-      fully_qualified_name: currentNamespace + "." + className,
+    let classMap: any = {
+      fully_qualified_name: null,
+      namespace: null,
+      name: null,
       description: null,
       properties: {},
       methods: {}
     };
 
-    if (!currentNamespace) {
-      this.parsed[className] = map;
-      fullyQualifiedName = className;
-      store = this.parsed[className];
-    } else {
-      this.parsed[currentNamespace][className] = map;
-      fullyQualifiedName = currentNamespace + "." + className;
-      store = this.parsed[currentNamespace][className];
-    }
+    docBlocks.forEach(docBlock => {
+      if (this.re_is_class.test(docBlock)) {
+        classMap.namespace = this.getAndCreateNamespace(docBlock);
+        classMap.name = this.getMemberName(docBlock);
+        classMap.description = this.getSection("@description", docBlock);
+        classMap.fully_qualified_name = classMap.namespace
+          ? `${classMap.namespace}.${classMap.name}`
+          : classMap.name;
+        return;
+      }
 
-    store.description = this.getSection("@description", classDocBlock[0]);
-
-    if (propertyDocBlocks && propertyDocBlocks.length > 0) {
-      propertyDocBlocks.forEach(docBlock => {
+      if (this.re_is_property.test(docBlock)) {
         let propertyName = this.getMemberName(docBlock, "property");
         let data = this.getDocBlockDataForProperty(docBlock);
         data.name = propertyName;
-        data.fully_qualified_name = fullyQualifiedName + "." + propertyName;
-        store.properties[propertyName] = data;
-      });
-    }
+        data.fully_qualified_name = classMap.fully_qualified_name + "." + propertyName;
+        classMap.properties[propertyName] = data;
+      }
 
-    if (methodDocBlocks && methodDocBlocks.length > 0) {
-      methodDocBlocks.forEach(docBlock => {
+      if (this.re_is_method.test(docBlock)) {
         let methodName = this.getMemberName(docBlock, "method");
         let data = this.getDocBlockDataForMethod(docBlock);
-        data.fully_qualified_name = fullyQualifiedName + "." + methodName;
-        store.methods[methodName] = data;
-      });
+        data.fully_qualified_name = classMap.fully_qualified_name + "." + methodName;
+        classMap.methods[methodName] = data;
+      }
+    });
+
+    if (!classMap.namespace) {
+      this.parsed[classMap.name] = classMap;
+    } else {
+      this.parsed[classMap.namespace][classMap.name] = classMap;
     }
   }
 }
