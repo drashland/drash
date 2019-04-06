@@ -12,33 +12,66 @@ import Drash from "../../mod.ts";
  *     request-resource-response lifecycle.
  */
 export default class Server {
+
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
-
-  protected configs: any;
-  protected deno_server;
-  protected logger;
-  protected resources: any = {};
-
-  /**
-   * This server's list of static paths. HTTP requests to a static path are
-   * usually intended to retrieve some type of concrete resource (e.g., a CSS
-   * file or a JS file). If an HTTP request is matched to a static path and the
-   * resource the HTTP request is trying to get is found, then
-   * `Drash.Http.Response` will use its `sendStatic()` method to send the static
-   * asset back to the client.
-   *
-   * @property string[] static_paths
-   */
-  protected static_paths: string[] = [];
   protected trackers = {
     requested_favicon: false
   };
 
+  /**
+   * @description
+   *     A property to hold this server's configs.
+   *
+   * @property any configs
+   */
+  protected configs: any;
+
+  /**
+   * @description
+   *     A property to hold the Deno server. This property is set in
+   *     `this.run()` like so: ` this.deno_server =
+   *     serve(this.configs.address);`. `serve()` is imported from
+   *     [https://deno.land/x/http/server.ts](https://deno.land/x/http/server.ts).
+   *
+   * @property any deno_server
+   */
+  protected deno_server: any;
+
+  /**
+   * @description
+   *     A property to hold this server's logger.
+   *
+   * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
+   */
+  protected logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger;
+
+  /**
+   * @description
+   *     A property to hold the resources passed in from the configs.
+   *
+   * @property any[] resources
+   */
+  protected resources: any[] = [];
+
+  /**
+   * @description
+   *     This server's list of static paths. HTTP requests to a static path are
+   *     usually intended to retrieve some type of concrete resource (e.g., a
+   *     CSS file or a JS file). If an HTTP request is matched to a static path
+   *     and the resource the HTTP request is trying to get is found, then
+   *     `Drash.Http.Response` will use its `sendStatic()` method to send the
+   *     static asset back to the client.
+   *
+   * @property string[] static_paths
+   */
+  protected static_paths: string[] = [];
+
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
-   * Construct an object of this class.
+   * @description
+   *     Construct an object of this class.
    *
    * @param any configs
    *     address: string
@@ -87,13 +120,14 @@ export default class Server {
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
-   * Handle an HTTP request from the Deno server.
+   * @description
+   *     Handle an HTTP request from the Deno server.
    *
    * @param Drash.Http.Request request
    *     The request object.
    *
    * @return any
-   *    See _Drash.Http.Response.send()_.
+   *    See `Drash.Http.Response.send()`.
    */
   public handleHttpRequest(request: Drash.Http.Request): any {
     let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
@@ -182,7 +216,8 @@ export default class Server {
   }
 
   /**
-   * Handle cases when an error is thrown when handling an HTTP request.
+   * @description
+   *     Handle cases when an error is thrown when handling an HTTP request.
    *
    * @param Drash.Http.Request request
    *     The request object.
@@ -190,7 +225,7 @@ export default class Server {
    *     The error object.
    *
    * @return any
-   *     See _Drash.Http.Response.send()_.
+   *     See `Drash.Http.Response.send()`.
    */
   public handleHttpRequestError(request: Drash.Http.Request, error: any): any {
     this.logger.debug(
@@ -245,11 +280,16 @@ export default class Server {
   }
 
   /**
-   * Handle HTTP requests for the favicon. This method only exists to
-   * short-circuit favicon requests--preventing the requests from clogging the
-   * logs.
+   * @description
+   *     Handle HTTP requests for the favicon. This method only exists to
+   *     short-circuit favicon requests--preventing the requests from clogging
+   *     the logs.
    *
    * @param Drash.Http.Request request
+   *
+   * @return any
+   *     Returns the response as stringified JSON. This is only used for unit
+   *     testing purposes.
    */
   public handleHttpRequestForFavicon(request: Drash.Http.Request): any {
     let headers = new Headers();
@@ -270,9 +310,11 @@ export default class Server {
   }
 
   /**
-   * Run the Deno server at the address specified in the configs. This method
-   * takes each HTTP request and creates a new and more workable request object
-   * and passes it to _Drash.Http.Server.handleHttpRequest()_.
+   * @description
+   *     Run the Deno server at the address specified in the configs. This
+   *     method takes each HTTP request and creates a new and more workable
+   *     request object and passes it to
+   *     `Drash.Http.Server.handleHttpRequest()`.
    *
    * @return Promise<void>
    *     This method just listens for requests at the address you provide in the
@@ -290,10 +332,12 @@ export default class Server {
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   /**
-   * Add an HTTP resource to the server which can be retrieved at specific URIs.
+   * @description
+   *     Add an HTTP resource to the server which can be retrieved at specific
+   *     URIs.
    *
-   * Drash defines an HTTP resource according to the [MDN web
-   * docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
+   *     Drash defines an HTTP resource according to the MDN Web docs
+   *     [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
    *
    * @param Drash.Http.Resource resourceClass
    *     A child object of the `Drash.Http.Resource` class.
@@ -354,8 +398,9 @@ export default class Server {
   }
 
   /**
-   * Add a static path for serving static assets like CSS files, JS files, PDF
-   * files, etc.
+   * @description
+   *     Add a static path for serving static assets like CSS files, JS files,
+   *     PDF files, etc.
    *
    * @param string path
    *
@@ -368,7 +413,8 @@ export default class Server {
   }
 
   /**
-   * Get the resource class.
+   * @description
+   *     Get the resource class.
    *
    * @param Drash.Http.Request request
    *     The request object.
@@ -439,7 +485,8 @@ export default class Server {
   }
 
   /**
-   * Is the request for a static path asset?
+   * @description
+   *     Is the request for a static path asset?
    *
    * @param Drash.Http.Request request
    *

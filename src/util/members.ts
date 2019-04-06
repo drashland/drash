@@ -1,7 +1,7 @@
 /// @doc-blocks-to-json members-only
 
 /**
- * @memberof Drash.Util
+ * @memberof Drash.Util.Exports
  * @interface ColorizeOptions
  *
  * @description
@@ -14,7 +14,7 @@ export interface ColorizeOptions {
 }
 
 /**
- * @memberof Drash.Util
+ * @memberof Drash.Util.Exports
  * @function colorize
  *
  * @description

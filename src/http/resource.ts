@@ -3,30 +3,53 @@ import Drash from "../../mod.ts";
 /**
  * @memberof Drash.Http
  * @class Resource
- * This is the base resource class for all resources. All resource classes must
- * be derived from this class.
+ *
+ * @description
+ *     This is the base resource class for all resources. All resource classes
+ *     must be derived from this class.
  */
 export default class Resource {
 
-  public paths;
-  public name;
+  /**
+   * @description
+   *     A property to hold the paths to access this resource.
+   *
+   *     All derived resource classes MUST define this property as `static`
+   *     (e.g., `static paths = ["path"];`)
+   *
+   * @property string[] paths
+   */
+  public paths: string[];
 
   /**
-   * The request object.
+   * @description
+   *     A property to hold the name of this resource. This property is used by
+   *     `Drash.Http.Server` to help it store resources in its `resources`
+   *     property by name.
+   *
+   * @property string name
+   */
+  public name: string;
+
+  /**
+   * @description
+   *     The request object.
    *
    * @property Drash.Http.Request request
    */
   protected request: Drash.Http.Request;
 
   /**
-   * The response object.
+   * @description
+   *     The response object.
    *
    * @property Drash.Http.Response response
    */
   protected response: Drash.Http.Response;
 
   /**
-   * The server object.
+   * @description
+   *     The server object.
    *
    * @property Drash.Http.Server server
    */
@@ -35,7 +58,8 @@ export default class Resource {
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
-   * Construct an object of this class.
+   * @description
+   *     Construct an object of this class.
    *
    * @param Drash.Http.Request request
    *     The request object.

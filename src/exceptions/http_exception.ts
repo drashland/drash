@@ -1,21 +1,33 @@
 /**
  * @memberof Drash.Exceptions
  * @class HttpException
- * This class helps you throw HTTP errors in a semantic way.
+ *
+ * @description
+ *     This class gives you a way to throw HTTP errors semantically.
+ *
+ *     This class extends `Error`.
  */
 export default class HttpException extends Error {
+
+  /**
+   * @description
+   *     A property to hold the HTTP response code associated with this
+   *     exception.
+   *
+   * @property number code
+   */
   public code: number;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
-   * Construct an object of this class.
+   * @description
+   *     Construct an object of this class.
    *
    * @param number code
-   *     The code to associate this error with. This should be a valid HTTP
-   *     status code.
+   *     The HTTP response code associated with this exception.
    * @param string message
-   *     The error message.
+   *     (optional) The exception message.
    */
   constructor(code: number, message?: string) {
     super(message);

@@ -11,6 +11,8 @@ import CodeBlockForReference from "/components/code_block_for_reference.vue";
 import HeadingH2 from "/components/heading_h2.vue";
 import VueAppRoot from "/components/vue_app_root.vue";
 import Page_ApiReference from "/components/page_api_reference.vue";
+import Page_ApiReference_Dictionary from "/components/page_api_reference_dictionary.vue";
+import Page_ApiReference_MembersOnly from "/components/page_api_reference_members_only.vue";
 
 // Vendor
 import MarkdownIt from "markdown-it";
@@ -22,6 +24,8 @@ Vue.component("code-block", CodeBlock);
 Vue.component("code-block-for-reference", CodeBlockForReference);
 Vue.component("heading-h2", HeadingH2);
 Vue.component("page-api-reference", Page_ApiReference);
+Vue.component("page-api-reference-dictionary", Page_ApiReference_Dictionary);
+Vue.component("page-api-reference-members-only", Page_ApiReference_MembersOnly);
 Vue.filter('markdown-it', function(value) {
   return window.markdownIt.render(value);
 });

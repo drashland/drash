@@ -19,16 +19,16 @@ div.c-sidebar
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/introduction#what-is-drash'") What is Drash?
-                a(:href="$conf.base_url + '/#/introduction#features'") Features
-                a(:href="$conf.base_url + '/#/introduction#importing'") Importing
                 a(:href="$conf.base_url + '/#/introduction#quickstart'") Quickstart
+                a(:href="$conf.base_url + '/#/introduction#importing'") Importing
+                a(:href="$conf.base_url + '/#/introduction#features'") Features
             a.heading-link Tutorials
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
-                a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") [x] Creating An Application: API
-                a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") [x] Creating An Application: HTML
+                //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") Creating An Application: API
+                //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
                 a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
@@ -37,8 +37,10 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/api-reference/compilers'") Compilers
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/compilers/doc-blocks-to-json'") DocBlocksToJson
-                a(:href="$conf.base_url + '/#/api-reference/dictionaries'") [x] Dictionaries
-                a(:href="$conf.base_url + '/#/api-reference/exceptions'") [x] Exceptions
+                //- a(:href="$conf.base_url + '/#/api-reference/dictionaries'") Dictionaries
+                a(:href="$conf.base_url + '/#/api-reference/exceptions'") Exceptions
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/api-reference/exceptions/http-exception'") HttpException
                 a(:href="$conf.base_url + '/#/api-reference/http'") Http
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/http/request'") Request
@@ -53,8 +55,10 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/api-reference/services'") Services
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/services/http-service'") HttpService
-                a(:href="$conf.base_url + '/#/api-reference/util'") [x] Util
-                a(:href="$conf.base_url + '/#/api-reference/vendor'") [x] Vendor
+                a(:href="$conf.base_url + '/#/api-reference/util'") Util
+                div.l-submenu-1
+                    //- a(:href="$conf.base_url + '/#/api-reference/util/exports'") Exports
+                    a(:href="$conf.base_url + '/#/api-reference/util/object-parser'") ObjectParser
     div.c-sidebar__footer
         div.row
             div.col.text-align--center

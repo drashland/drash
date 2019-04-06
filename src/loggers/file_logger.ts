@@ -3,22 +3,26 @@ import Logger from "./logger.ts";
 /**
  * @memberof Drash.Loggers
  * @class FileLogger
- * This logger allows you to log messages to a file.
+ *
+ * @description
+ *     This logger allows you to log messages to a file.
  */
 export default class FileLogger extends Logger {
 
   /**
-   * The file this logger will write log messages to.
+   * @description
+   *     The file this logger will write log messages to.
    *
    * @property string file
    */
   protected file: string;
 
   /**
-   * Construct an object of this class.
+   * @description
+   *     Construct an object of this class.
    *
    * @param any configs
-   *     See Drash.Loggers.Logger.configs
+   *     See `Drash.Loggers.Logger.configs`.
    *
    */
   constructor(configs) {
@@ -27,7 +31,17 @@ export default class FileLogger extends Logger {
   }
 
   /**
-   * Write a log message to `this.file`.
+   * @description
+   *     Write a log message to `this.file`.
+   *
+   *     This method is not intended to be called directly. It is already used
+   *     in the base class (`Logger`) and automatically called.
+   *
+   * @param any logMethodLevelDefinition
+   * @param string message
+   *
+   * @return string
+   *     Returns the log message which is used for unit testing purposes.
    */
   public write(logMethodLevelDefinition, message): string {
     const encoder = new TextEncoder();

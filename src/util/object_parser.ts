@@ -2,14 +2,17 @@
  * @memberof Drash.Util
  *
  * @class ObjectParser
- * A util class to help parse objects.
+ *
+ * @description
+ *     A util class to help parse objects.
  */
 export default class ObjectParser {
   /**
-   * Get the value of a deeply nested property
+   * @description
+   *     Get the value of a deeply nested property.
    *
-   * @param any object
-   *     The object to use.
+   * @param any inputObject
+   *     The object containing the deeply nested property.
    * @param ...string properties
    *     The rest of the arguments as strings to use as property names when
    *     finding the nested property's value. The last argument that the "rest
@@ -18,7 +21,7 @@ export default class ObjectParser {
    * @return any
    *     Returns the value of the targeted property.
    */
-  static getNestedPropertyValue(inputObject: any, ...properties) {
+  public getNestedPropertyValue(inputObject: any, ...properties) {
     // We start off with a null value. This could change if the targeted
     // property exists and has a value other than null.
     let nestedProperty = undefined;

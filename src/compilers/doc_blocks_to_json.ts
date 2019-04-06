@@ -29,6 +29,30 @@ import Drash from "../../mod.ts";
  */
 export default class DocBlocksToJson {
 
+  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
+  protected re_export = new RegExp(/export.+/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
+  protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
+  protected re_is_class = new RegExp(/\* @class/);
+  protected re_is_enum = new RegExp(/@enum +\w+/);
+  protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
+  protected re_is_interface = new RegExp(/@interface +\w+/);
+  protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
+  protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
+  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((.+)?\).+(:? +)?{/);
+  protected re_is_constructor = new RegExp(/.+constructor\(.+\) ?{?/);
+  protected re_is_property = new RegExp(/@property/);
+  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
+  // protected re_class = new RegExp(/@class +\w+/, "g");
+  // protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
+  // protected re_for_enum_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*enum.+/, "g");
+  // protected re_for_interface_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*interface.+/, "g");
+  // protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
+  // protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
+  // protected re_function = new RegExp(/@(function|func|method).+/, "g");
+  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
+
   /**
    * @description
    *     A property to hold the name of the current file being parsed. This
@@ -56,28 +80,13 @@ export default class DocBlocksToJson {
    */
   protected parsed: any = {};
 
+  /**
+   * Is the compiler currently parsing a file with the `@doc-blocks-to-json
+   * members-only` annotation?
+   *
+   * @property boolean parsing_members_only_file
+   */
   protected parsing_members_only_file = false;
-
-  protected re_class = new RegExp(/@class +\w+/, "g");
-  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
-  protected re_export = new RegExp(/export.+/, "g");
-  protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
-  protected re_for_enum_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*enum.+/, "g");
-  protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
-  protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
-  protected re_for_interface_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*interface.+/, "g");
-  protected re_function = new RegExp(/@(function|func|method).+/, "g");
-  protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
-  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
-  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
-  protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
-  protected re_is_class = new RegExp(/\* @class/);
-  protected re_is_enum = new RegExp(/@enum +\w+/);
-  protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
-  protected re_is_interface = new RegExp(/@interface +\w+/);
-  protected re_is_method = new RegExp(/.+(public|protected|private) +\w+\(.+\).+:?{/);
-  protected re_is_property = new RegExp(/@property/);
-  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
@@ -164,25 +173,14 @@ export default class DocBlocksToJson {
       return description;
     }
 
-    // Parsing @return?
-    if (annotation == "@returns" || annotation == "@return") {
-      let annotationBlocks = [];
-      matches.forEach(text => {
-        let textBlockByLine = text.split("\n");
-        textBlockByLine.shift();
-        let description = this.getDescription(textBlockByLine.join("\n"));
-        let parsedAnnotation = this.getAnnotation(annotation, text);
-
-        annotationBlocks.push({
-          description: description,
-          annotation: parsedAnnotation
-        });
-      });
-      return annotationBlocks;
-    }
-
-    // Parsing @throw?
-    if (annotation == "@throws" || annotation == "@throw") {
+    // Parsing the following?
+    let arrayedAnnotations = [
+      "@returns",
+      "@return",
+      "@throws",
+      "@throw"
+    ];
+    if (arrayedAnnotations.indexOf(annotation) != -1) {
       let annotationBlocks = [];
       matches.forEach(text => {
         let textBlockByLine = text.split("\n");
@@ -333,12 +331,12 @@ export default class DocBlocksToJson {
       result += `${line}\n`;
     });
 
-    return this.getParagraphs(result);
+    return this.getDescriptionInParagraphs(result);
   }
 
   /**
    * @description
-   *     Get paragraphs from a text block.
+   *     Get paragraphs from the description text blocks.
    *
    * @param string textBlock
    *     The text block containing the paragraph(s).
@@ -347,7 +345,7 @@ export default class DocBlocksToJson {
    *     Returns an array of strings. Each element in the array is a separate
    *     paragraph.
    */
-  protected getParagraphs(textBlock: string): string[] {
+  protected getDescriptionInParagraphs(textBlock: string): string[] {
     let textBlockInLines = textBlock.split("\n");
 
     textBlockInLines = textBlockInLines.map((line) => {
@@ -376,6 +374,24 @@ export default class DocBlocksToJson {
 
   /**
    * @description
+   *     Get the doc block data for the interface in question.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForConst(text: string): any {
+    return {
+      exported: this.isMemberExported("const", text),
+      name: this.getNameOfConst(text),
+      description: this.getSection("@description", text),
+      // signature: this.getSignatureOfInterface(text)
+    };
+  }
+
+  /**
+   * @description
    *     Get the doc block data for the enum in question.
    *
    * @param string text
@@ -388,7 +404,6 @@ export default class DocBlocksToJson {
       exported: this.isMemberExported("enum", text),
       name: this.getNameOfEnum(text),
       description: this.getSection("@description", text),
-      signature: this.getSignatureOfEnum(text)
     };
 
     return ret;
@@ -464,10 +479,6 @@ export default class DocBlocksToJson {
       signature: signature
     };
 
-    if (this.parsing_members_only_file) {
-      ret.exported = this.isMemberExported("function", text);
-    }
-
     return ret;
   }
 
@@ -505,9 +516,8 @@ export default class DocBlocksToJson {
    * @return string
    */
   protected getMemberName(text: string, textType?: string): string {
-    let matches;
+    let matches = text.match(new RegExp(this.re__member_names + ".+", "g"));
 
-    matches = text.match(new RegExp(this.re__member_names + ".+", "g"));
     if (matches && matches.length > 0) {
       Drash.core_logger.debug(`Using @annotation for ${this.current_file}.`);
       let memberName = text
@@ -545,6 +555,24 @@ export default class DocBlocksToJson {
 
   /**
    * @description
+   *     Get the name of the const.
+   *
+   * @param string text
+   *     The text containing the const's data.
+   *
+   * @return string
+   */
+  protected getNameOfConst(text: string): string {
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim()
+      .replace("export", "")
+      .replace("const", "")
+      .trim()
+      .split(" ")[0];
+  }
+
+  /**
+   * @description
    *     Get the name of the enum.
    *
    * @param string text
@@ -553,8 +581,10 @@ export default class DocBlocksToJson {
    * @return string
    */
   protected getNameOfEnum(text: string): string {
-    let signature = this.getSignatureOfEnum(text);
-    return signature
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1]
+      .trim()
+      .replace(/ ?{/, "")
       .replace(/export +? ?enum +?/, "");
   }
 
@@ -620,21 +650,6 @@ export default class DocBlocksToJson {
     return signature
       .replace(/(public|private|protected) +/, "")
       .replace(/\(.+/, "");
-  }
-
-  /**
-   * @description
-   *     Get the signature of the enum in question.
-   *
-   * @param string text
-   *     The text containing the enum's data.
-   *
-   * @return string
-   */
-  protected getSignatureOfEnum(text: string): string {
-    // The signature is the last line of the doc block
-    let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
   }
 
   /**
@@ -737,6 +752,11 @@ export default class DocBlocksToJson {
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     docBlocks.forEach(docBlock => {
+
+      if (this.re_is_ignored_block.test(docBlock)) {
+        return;
+      }
+
       if (this.re_is_function.test(docBlock)) {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
@@ -778,60 +798,20 @@ export default class DocBlocksToJson {
         }
         return;
       }
+
+      if (this.re_is_const.test(docBlock)) {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let data = this.getDocBlockDataForConst(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = data.name;
+          this.parsed[data.name] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + data.name;
+          this.parsed[currentNamespace][data.name] = data;
+        }
+        return;
+      }
     });
-
-    // let methodDocBlocks = fileContents.match(this.re_for_method_doc_blocks);
-    // let interfaceDocBlocks = fileContents.match(this.re_for_interface_doc_blocks);
-    // let enumDocBlocks = fileContents.match(this.re_for_enum_doc_blocks);
-
-    // if (methodDocBlocks && methodDocBlocks.length > 0) {
-    //   methodDocBlocks.forEach(docBlock => {
-    //     let currentNamespace = this.getAndCreateNamespace(docBlock);
-    //     let memberName = this.getMemberName(docBlock);
-    //     let data = this.getDocBlockDataForMethod(docBlock);
-    //     if (!currentNamespace) {
-    //       data.fully_qualified_name = memberName;
-    //       this.parsed[memberName] = data;
-    //     } else {
-    //       data.fully_qualified_name = currentNamespace + "." + memberName;
-    //       this.parsed[currentNamespace][memberName] = data;
-    //     }
-    //   });
-    // }
-
-    // if (interfaceDocBlocks && interfaceDocBlocks.length > 0) {
-    //   interfaceDocBlocks.forEach(docBlock => {
-    //     let currentNamespace = this.getAndCreateNamespace(docBlock);
-    //     let memberName = this.getMemberName(docBlock);
-    //     let data = this.getDocBlockDataForInterface(docBlock);
-    //     if (!currentNamespace) {
-    //       data.fully_qualified_name = memberName;
-    //       this.parsed[memberName] = data;
-    //     } else {
-    //       data.fully_qualified_name = currentNamespace + "." + memberName;
-    //       this.parsed[currentNamespace][memberName] = data;
-    //     }
-    //   });
-    // }
-
-    // if (enumDocBlocks && enumDocBlocks.length > 0) {
-    //   enumDocBlocks.forEach(docBlock => {
-    //     let currentNamespace = this.getAndCreateNamespace(docBlock);
-    //     let memberName = this.getMemberName(docBlock);
-    //     let data = this.getDocBlockDataForEnum(docBlock);
-    //     let enums = fileContents.match(/enum.+(\s +\w.*)*\s}/, "g");
-    //     if (enums && enums.length > 0) {
-    //       data.full_signature = enums[0];
-    //     }
-    //     if (!currentNamespace) {
-    //       data.fully_qualified_name = memberName;
-    //       this.parsed[memberName] = data;
-    //     } else {
-    //       data.fully_qualified_name = currentNamespace + "." + memberName;
-    //       this.parsed[currentNamespace][memberName] = data;
-    //     }
-    //   });
-    // }
   }
 
   /**
@@ -872,6 +852,13 @@ export default class DocBlocksToJson {
         data.name = propertyName;
         data.fully_qualified_name = classMap.fully_qualified_name + "." + propertyName;
         classMap.properties[propertyName] = data;
+      }
+
+      if (this.re_is_constructor.test(docBlock)) {
+        let methodName = this.getMemberName(docBlock, "method");
+        let data = this.getDocBlockDataForMethod(docBlock);
+        data.fully_qualified_name = classMap.fully_qualified_name + "." + methodName;
+        classMap.methods[methodName] = data;
       }
 
       if (this.re_is_method.test(docBlock)) {

@@ -6,6 +6,9 @@ interface LogLevelStructure {
 }
 
 /**
+ * @doc-blocks-to-json ignore-doc-block
+ * @memberof Drash.Dictionaries
+ *
  * @description
  *     The log levels which are organized by rank in ascending order.
  *
@@ -24,6 +27,10 @@ export enum LogLevel {
 
 /**
  * @memberof Drash.Dictionaries
+ *
+ * @description
+ *     A dictionary of log levels used in the logger classes to properly
+ *     display, rank, and prioritize log messages.
  */
 export const LogLevels = new Map<string, LogLevelStructure>([
   ["off",   {name: "Off",   rank: LogLevel.Off}],

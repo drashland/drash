@@ -3,7 +3,7 @@ import env_var from "./src/core/env_var.ts";
 // Compilers
 import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
 // Dictionaries
-import log_levels from "./src/dictionaries/log_levels.ts";
+import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
@@ -41,8 +41,11 @@ namespace Drash {
   }
 
   export namespace Dictionaries {
-    export const LogLevels = log_levels;
+    export const LogLevels = log_levels.LogLevels;
     export const MimeDb = mime_db;
+    // export namespace Enums {
+    //   export const LogLevel = log_levels.LogLevel;
+    // }
   }
 
   export namespace Exceptions {
