@@ -29,7 +29,7 @@ function compileApiReferencePageData() {
     // `/src/loggers/file_logger.ts`,
     // `/src/services/http_service.ts`,
     // `/src/util/object_parser.ts`,
-    // `/src/util/members.ts`
+    `/src/util/members.ts`
   ].map(value => {
     return DRASH_DIR_ROOT + value;
   });

@@ -135,50 +135,6 @@
                     "signature": "public getSection(annotation: string, docBlock: string): any",
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSection"
                 },
-                "getAccessModifier": {
-                    "access_modifier": "protected",
-                    "name": "getAccessModifier",
-                    "description": [
-                        "Get the access modifier of the member in question."
-                    ],
-                    "params": {
-                        "memberType": {
-                            "name": "memberType",
-                            "description": [
-                                "The member's type."
-                            ],
-                            "annotation": {
-                                "line": "@param string memberType",
-                                "data_type": "string",
-                                "name": "memberType"
-                            }
-                        },
-                        "text": {
-                            "name": "text",
-                            "description": [
-                                "The text containing the member's access modifier."
-                            ],
-                            "annotation": {
-                                "line": "@param string text",
-                                "data_type": "string",
-                                "name": "text"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return text",
-                                "data_type": "text",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected getAccessModifier(memberType: string, text: string): string",
-                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getAccessModifier"
-                },
                 "getAndCreateNamespace": {
                     "access_modifier": "protected",
                     "name": "getAndCreateNamespace",
@@ -361,6 +317,39 @@
                     "signature": "protected getDocBlockDataForEnum(text: string): any",
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForEnum"
                 },
+                "getDocBlockDataForFunction": {
+                    "access_modifier": "protected",
+                    "name": "getDocBlockDataForFunction",
+                    "description": [
+                        "Get the doc block data for the function in question."
+                    ],
+                    "params": {
+                        "text": {
+                            "name": "text",
+                            "description": [
+                                "The text containing the functions's data."
+                            ],
+                            "annotation": {
+                                "line": "@param string text",
+                                "data_type": "string",
+                                "name": "text"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected getDocBlockDataForFunction(text: string): any",
+                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForFunction"
+                },
                 "getDocBlockDataForInterface": {
                     "access_modifier": "protected",
                     "name": "getDocBlockDataForInterface",
@@ -526,6 +515,39 @@
                     "signature": "protected getNameOfEnum(text: string): string",
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfEnum"
                 },
+                "getNameOfFunction": {
+                    "access_modifier": "protected",
+                    "name": "getNameOfFunction",
+                    "description": [
+                        "Get the name of the function."
+                    ],
+                    "params": {
+                        "text": {
+                            "name": "text",
+                            "description": [
+                                "The text containing the function's data."
+                            ],
+                            "annotation": {
+                                "line": "@param string text",
+                                "data_type": "string",
+                                "name": "text"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected getNameOfFunction(text: string): string",
+                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfFunction"
+                },
                 "getNameOfInterface": {
                     "access_modifier": "protected",
                     "name": "getNameOfInterface",
@@ -657,6 +679,39 @@
                     "throws": null,
                     "signature": "protected getSignatureOfEnum(text: string): string",
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSignatureOfEnum"
+                },
+                "getSignatureOfFunction": {
+                    "access_modifier": "protected",
+                    "name": "getSignatureOfFunction",
+                    "description": [
+                        "Get the signature of the function in question."
+                    ],
+                    "params": {
+                        "text": {
+                            "name": "text",
+                            "description": [
+                                "The text containing the function's data."
+                            ],
+                            "annotation": {
+                                "line": "@param string text",
+                                "data_type": "string",
+                                "name": "text"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected getSignatureOfFunction(text: string): string",
+                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSignatureOfFunction"
                 },
                 "getSignatureOfInterface": {
                     "access_modifier": "protected",
@@ -846,6 +901,59 @@
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.parseClassFile"
                 }
             }
+        }
+    },
+    "Drash.Util": {
+        "ColorizeOptions": {
+            "exported": true,
+            "name": "ColorizeOptions",
+            "description": [
+                "A util function that helps colorize text in the console."
+            ],
+            "signature": "export interface ColorizeOptions",
+            "fully_qualified_name": "Drash.Util.ColorizeOptions"
+        },
+        "colorize": {
+            "exported": true,
+            "name": "colorize",
+            "description": [
+                "A util function that helps colorize text in the console."
+            ],
+            "params": {
+                "message": {
+                    "name": "message",
+                    "description": [],
+                    "annotation": {
+                        "line": "@param string message",
+                        "data_type": "string",
+                        "name": "message"
+                    }
+                },
+                "options": {
+                    "name": "options",
+                    "description": [],
+                    "annotation": {
+                        "line": "@param ColorizeOptions options",
+                        "data_type": "ColorizeOptions",
+                        "name": "options"
+                    }
+                }
+            },
+            "returns": [
+                {
+                    "description": [
+                        "Returns the colorized message."
+                    ],
+                    "annotation": {
+                        "line": "@return string",
+                        "data_type": "string",
+                        "name": null
+                    }
+                }
+            ],
+            "throws": null,
+            "signature": "export function colorize(message: string, options: ColorizeOptions): string",
+            "fully_qualified_name": "Drash.Util.colorize"
         }
     }
 }
