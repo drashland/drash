@@ -72,8 +72,11 @@ export default class DocBlocksToJson {
   protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   protected re_is_class = new RegExp(/\* @class/);
-  protected re_is_property = new RegExp(/@property/);
+  protected re_is_enum = new RegExp(/@enum +\w+/);
+  protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
+  protected re_is_interface = new RegExp(/@interface +\w+/);
   protected re_is_method = new RegExp(/.+(public|protected|private) +\w+\(.+\).+:?{/);
+  protected re_is_property = new RegExp(/@property/);
   protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
@@ -734,7 +737,7 @@ export default class DocBlocksToJson {
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     docBlocks.forEach(docBlock => {
-      if (/@(function|func|method) +\w+/.test(docBlock)) {
+      if (this.re_is_function.test(docBlock)) {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForFunction(docBlock);
@@ -748,7 +751,7 @@ export default class DocBlocksToJson {
         return;
       }
 
-      if (/@enum +\w+/.test(docBlock)) {
+      if (this.re_is_enum.test(docBlock)) {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForEnum(docBlock);
@@ -762,7 +765,7 @@ export default class DocBlocksToJson {
         return;
       }
 
-      if (/@interface +\w+/.test(docBlock)) {
+      if (this.re_is_interface.test(docBlock)) {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForInterface(docBlock);
