@@ -69,6 +69,7 @@ export default class DocBlocksToJson {
   protected re_function = new RegExp(/@(function|func|method).+/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
