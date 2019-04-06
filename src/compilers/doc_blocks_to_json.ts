@@ -688,7 +688,8 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     Parse a file that has the `doc-blocks-to-json members-only` comment.
+   *     Parse a file that has the `@doc-blocks-to-json members-only`
+   *     annotation.
    *
    * @param string fileContents
    */

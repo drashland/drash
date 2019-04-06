@@ -805,7 +805,7 @@
                     "access_modifier": "protected",
                     "name": "parseMembersOnlyFile",
                     "description": [
-                        "Parse a file that has the `doc-blocks-to-json members-only` comment."
+                        "Parse a file that has the `@doc-blocks-to-json members-only`\nannotation."
                     ],
                     "params": {
                         "fileContents": {
