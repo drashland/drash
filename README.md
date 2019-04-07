@@ -1,5 +1,17 @@
 ![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest) ![Travis (.org) branch](https://img.shields.io/travis/crookse/deno-drash.svg)
 
+# Drash
+
+Drash is a microframework for [Deno](https://deno.land) based on [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation).
+
+Drash is designed to help you build your project(s) quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA (like the [Drash Docs](https://crookse.github.io/deno-drash/#/)), or even a static HTML site. You can even just use it as a logging tool for your other project. How you use Drash is up to you, so that it can be everything you need and nothing you don't.
+
+Although this module is working, it is still very much under development and subject to breaking changes (from both Deno and Drash source code). For the most part, Drash stays up to date with breaking changes from Deno, but not all breaking changes are fixed immediately. [Reporting of bugs](https://github.com/crookse/deno-drash/issues/new/choose) and [feature requests](https://github.com/crookse/deno-drash/issues/new/choose) are greatly appreciated.
+
+[View Documentation](https://crookse.github.io/deno-drash/#/) (still a work in progress)
+
+## Install
+
 ```typescript
 // Import Drash master
 import Drash from "https://deno.land/x/drash/mod.ts";
@@ -8,42 +20,17 @@ import Drash from "https://deno.land/x/drash/mod.ts";
 import Drash from "https://deno.land/x/drash@{latest|version}/mod.ts";
 ```
 
-# Drash
+## An Example HTML Application
 
-[View Documentation](https://crookse.github.io/deno-drash/#/) (still a work in progress)
-
-Drash is a modular web framework for [Deno](https://deno.land) based on [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation).
-
-Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using HTTP resources and content negotiation. Clients can make requests to any resource you create and can request any representation your resources allow (e.g., `application/json` format of the resource located at the `/user/1234` URI).
-
-Although this module is working, it is still very much under development. [Reporting of bugs](https://github.com/crookse/deno-drash/issues) is greatly appreciated.
-
-## Contributing
-
-Contributions are appreciated. Fork and send a pull request :)
-
-## Quickstart
-
-#### Step 1 of 4: Create your `/path/to/your/project/app.ts` file.
+**Create `/path/to/your/project/app.ts` ...**
 
 ```typescript
-Deno.env().DRASH_SERVER_DIRECTORY = "/path/to/your/project"; // no trailing slash
-
 import Drash from "https://deno.land/x/drash/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
-    this.response.body = `<!DOCTYPE html>
-<html>
-  <head>
-    <title>My App</title>
-    <link rel="stylesheet" type="text/css" href="/public/style.css">
-  </head>
-  <body>
-    <p>GET request received!</p>
-  </body>
-</html>`;
+    this.response.body = "Hello World!";
     return this.response;
   }
 }
@@ -51,35 +38,19 @@ class HomeResource extends Drash.Http.Resource {
 let server = new Drash.Http.Server({
   address: "localhost:8000",
   response_output: "text/html",
-  resources: [HomeResource],
-  static_paths: ["/public"] // The logic that handles static paths will prepend the value of Deno.env().DRASH_SERVER_DIRECTORY to "/public"
+  resources: [HomeResource]
 });
 
 server.run();
 ```
 
-#### Step 2 of 4: Create your `/path/to/your/project/public/style.css` file
-
-```css
-body {
-    font-family: Arial;
-    color: #4bb543;
-}
-```
-
-#### Step 3 of 4: Run your `/path/to/your/project/app.ts` file.
+**... and run `/path/to/your/project/app.ts`**
 
 ```shell
 $ deno /path/to/your/project/app.ts --allow-net --allow-env --allow-read
+
+Deno server started at localhost:8000. Press CTRL+C to quit.
 ```
-
-* `--allow-net` is needed to run the server.
-* `--allow-env` is needed to set `Deno.env().DRASH_SERVER_DIRECTORY`.
-* `--allow-read` is needed to read the `/path/to/your/project/public/style.css` file.
-
-#### Step 4 of 4: Check out your app in the browser.
-
-Navigate to `localhost:8000`.
 
 ## Features
 
