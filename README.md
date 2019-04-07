@@ -4,7 +4,7 @@
 
 Drash is a microframework for [Deno](https://deno.land) based on [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation).
 
-Drash is designed to help you build your project(s) quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA (like the [Drash Docs](https://crookse.github.io/deno-drash/#/)), or even a static HTML site. You can even just use it as a logging tool for your other project. How you use Drash is up to you, so that it can be everything you need and nothing you don't.
+Drash is designed to help you build your project(s) quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA (like the [documentation pages](https://crookse.github.io/deno-drash/#/)), or even a static HTML site. You can even just use it as a logging tool for your other project. How you use Drash is up to you, so that it can be everything you need and nothing you don't.
 
 Although this module is working, it is still very much under development and subject to breaking changes (from both Deno and Drash source code). For the most part, Drash stays up to date with breaking changes from Deno, but not all breaking changes are fixed immediately. [Reporting of bugs](https://github.com/crookse/deno-drash/issues/new/choose) and [feature requests](https://github.com/crookse/deno-drash/issues/new/choose) are greatly appreciated.
 
@@ -47,7 +47,7 @@ server.run();
 **... and run `/path/to/your/project/app.ts`**
 
 ```shell
-$ deno /path/to/your/project/app.ts --allow-net --allow-env --allow-read
+$ deno /path/to/your/project/app.ts --allow-net --allow-env
 
 Deno server started at localhost:8000. Press CTRL+C to quit.
 ```
