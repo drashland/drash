@@ -2,39 +2,45 @@ import members from "../../members.ts";
 
 let expected = {
   all: {
-    rank: 1000,
-    name: "ALL"
+    rank: 7,
+    name: "All"
   },
   trace: {
-    rank: 900,
-    name: "TRACE"
+    rank: 6,
+    name: "Trace"
   },
   debug: {
-    rank: 800,
-    name: "DEBUG"
+    rank: 5,
+    name: "Debug"
   },
   info: {
-    rank: 700,
-    name: "INFO"
+    rank: 4,
+    name: "Info"
   },
   warn: {
-    rank: 600,
-    name: "WARN"
+    rank: 3,
+    name: "Warn"
   },
   error: {
-    rank: 500,
-    name: "ERROR"
+    rank: 2,
+    name: "Error"
   },
   fatal: {
-    rank: 400,
-    name: "FATAL"
+    rank: 1,
+    name: "Fatal"
   },
   off: {
     rank: 0,
-    name: "OFF"
-  }
+    name: "Off"
+  },
 };
 
+let actual: any = {}
+
+for (let logLevel in expected) {
+  actual[logLevel] = members.Drash.Dictionaries.LogLevels.get(logLevel);
+}
+
 members.test(function LogLevels() {
-  members.assert.equal(members.Drash.Dictionaries.LogLevels, expected);
+  members.assert.equal(actual, expected);
 });

@@ -1,4 +1,3 @@
-// namespace Drash.Compilers
 //
 // TODO(crookse)
 //     [ ] Check for multiline method signatures. Example:
@@ -14,186 +13,204 @@
 //         list.
 //     [ ] Check for abstract access modifier.
 //     [ ] Support @inheritdoc
+//     [ ] Return a status report of the files that were and weren't parsed
+//     [ ] Check if a @memberof exists. If not, then document as top-level item.
+//     [ ] Check exported members only properties
 //
 
 import Drash from "../../mod.ts";
 
 /**
+ * @memberof Drash.Compilers
  * @class DocBlocksToJson
- * This compiler reads doc blocks and converts them to parsable JSON.
  *
- * @examplecode [
- *   {
- *     "title": "Example Call",
- *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
- *     "language": "typescript"
- *   }
- * ]
+ * @description
+ *     This compiler reads doc blocks and converts them to parsable JSON.
  */
 export default class DocBlocksToJson {
 
-  protected decoder: TextDecoder;
+  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
+  protected re_export = new RegExp(/export.+/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
+  protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
+  protected re_is_class = new RegExp(/\* @class/);
+  protected re_is_enum = new RegExp(/@enum +\w+/);
+  protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
+  protected re_is_interface = new RegExp(/@interface +\w+/);
+  protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
+  protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
+  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((.+)?\).+(:? +)?{/);
+  protected re_is_constructor = new RegExp(/.+constructor\(.+\) ?{?/);
+  protected re_is_property = new RegExp(/@property/);
+  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
+  // protected re_class = new RegExp(/@class +\w+/, "g");
+  // protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
+  // protected re_for_enum_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*enum.+/, "g");
+  // protected re_for_interface_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*interface.+/, "g");
+  // protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
+  // protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
+  // protected re_function = new RegExp(/@(function|func|method).+/, "g");
+  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
   /**
-   * A property to hold the final result of the compilation.
+   * @description
+   *     A property to hold the name of the current file being parsed. This
+   *     property only exists for debugging purposes. This class has logging to
+   *     make it easier for Drash developers and users to find errors during
+   *     compilation.
+   *
+   * @property string current_file
+   */
+  protected current_file: string = "";
+
+  /**
+   * @description
+   *     The decoder used to decode the files passed to `this.compile()`.
+   *
+   * @property TextDecoder decoder
+   */
+  protected decoder: TextDecoder = new TextDecoder();
+
+  /**
+   * @description
+   *     A property to hold the final result of `this.compile()`.
    *
    * @property any parsed
    */
   protected parsed: any = {};
 
   /**
-   * A property to hold the name of the current file being parsed. This property
-   * only exists for debugging purposes. This class has logging to make it
-   * easier for Drash developers and users to find errors during compilation.
+   * Is the compiler currently parsing a file with the `@doc-blocks-to-json
+   * members-only` annotation?
    *
-   * @property string current_file
+   * @property boolean parsing_members_only_file
    */
-  protected current_file: string = "";
+  protected parsing_members_only_file = false;
 
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
 
   /**
-   * Compile a JSON array containing classes, properties, and methods from the
-   * specified files by parsing the doc blocks of each file.
+   * @description
+   *     Compile a JSON array containing classes, properties, and methods from
+   *     the specified files.
+   *
+   *     All files passed to this method will have their doc blocks parsed for
+   *     member data.
+   *
+   *     Any member that doesn't include the `@memberof` annotation will be
+   *     placed as a top-level item.
    *
    * @param string[] files
    *     The array of files containing doc blocks to parse.
    *
    * @return any
    *     Returns the JSON array.
-   *
-   * @examplecode [
-   *   {
-   *     "title": "Example Call",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_call.ts",
-   *     "language": "typescript"
-   *   },
-   *   {
-   *     "title": "file.ts",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_input.ts",
-   *     "language": "typescript"
-   *   },
-   *   {
-   *     "title": "output.json",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_compile_example_output.json",
-   *     "language": "json"
-   *   }
-   * ]
    */
   public compile(files: string[]): any {
-    this.decoder = new TextDecoder();
-
     files.forEach((file) => {
       this.current_file = file;
       let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
-      let contentsByLine = fileContents.toString().split("\n");
 
-      // No namespace given? GTFO.
-      let reNamespace = new RegExp(/\/\/ namespace .+/, "g");
-      if (!reNamespace.test(fileContents)) {
+      // If a file has `doc-blocks-to-json members-only`...
+      if (this.re_members_only.test(fileContents)) {
+        this.parsing_members_only_file = true;
+        this.parseMembersOnlyFile(fileContents);
         return;
       }
 
-      // Create the namespace
-      // Take the `// namespace Some.Namespace` and transform it into
-      // `Some.Namespace`
-      let currentNamespace = fileContents.match(reNamespace)[0].split(" ").pop();
-
-      // Create the namespace in the `parsed` property so we can start storing
-      // the namespace's members in it
-      if (!this.parsed.hasOwnProperty(currentNamespace)) {
-        this.parsed[currentNamespace] = {};
-      }
-
-      // Get the class name of the current file being parsed. There should only
-      // be one `@class` tag in the file. If there are more than one `@class`
-      // tag, then the first one will be chosen. The others won't matter. Sorry.
-      let className = fileContents
-        .match(/@class \w+/)[0]
-        .substring("@class".length)
-        .trim();
-
-      let methodDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*\).*{/g);
-      let propertyDocBlocks = fileContents.match(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/g);
-      let classDocBlock = fileContents.match(/@class.+((\n .*)*)?\*\//);
-
-      let classDocBlockResults = this.getClassDocBlock(classDocBlock[0] ? classDocBlock[0] : "");
-
-      this.parsed[currentNamespace][className] = {
-        fully_qualified_name: currentNamespace + "." + className,
-        name: className,
-        annotation: classDocBlockResults.annotation,
-        description: classDocBlockResults.description,
-        example_code: classDocBlockResults.example_code,
-        properties: this.getClassProperties(propertyDocBlocks),
-        methods: this.getClassMethods(methodDocBlocks),
-      };
+      this.parsing_members_only_file = false;
+      this.parseClassFile(fileContents);
     });
 
     return this.parsed;
   }
 
   /**
-   * Get the specified `@annotationname` definitions from the specified doc
-   * block.
+   * @description
+   *     Get the specified `@annotationname` definitions from the specified doc
+   *     block.
    *
    * @param string annotation
    *     The annotation to get in the following format: `@annotationname`.
    * @param string docBlock
    *     The docBlock to get the `@annotationname` definitions from.
    *
-   * @return any[]
+   * @return any
    *     Returns an array of data related to the specified annotation.
-   *
-   * @examplecode [
-   *   {
-   *     "title": "Example Call",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_example_call.ts",
-   *     "language": "typescript"
-   *   },
-   *   {
-   *     "title": "doc_block.txt",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_doc_block.txt",
-   *     "language": "text"
-   *   },
-   *   {
-   *     "title": "output.json",
-   *     "filepath": "/api_reference/compilers/doc_blocks_to_json_m_getDocBlockAnnotationBlocks_output.json",
-   *     "language": "json"
-   *   }
-   * ]
    */
-  public getDocBlockAnnotationBlocks(annotation: string, docBlock: string): any[] {
+  public getSection(annotation: string, docBlock: string): any {
     //
     // The original regex (without doubling the backslashes) is:
     //
-    //     new RegExp(/@annotation.+((\n +\* +)[^@].+)*(?:(\n +\*\n +\* + .*)+)?/, "g");
+    //     new RegExp(/@annotation\n?.+((\n +\* +)[^@].+)*(?:(\n +\*?\n? +\* + .*)+)?/, "g");
     //
     // @annotation is the targeted annotation block (e.g., @param).
+    // The \n after @annotation ensures we can parse @description\n or any other
+    // annotation that doesn't have trailing characters.
     //
-    let re = new RegExp(annotation + ".+((\n +\\* +)[^@].+)*(?:(\n +\\*\n +\\* + .*)+)?", "g");
+    let re = new RegExp("\\\* " + annotation + "\n?.+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
     let matches = docBlock.match(re);
-    let annotationBlocks = [];
+    let ret: any = {};
 
-    if (matches) {
-      annotationBlocks = matches.map((block) => {
-        // Clean up each line and return an overall clean description
-        let blockInLines = block.split("\n");
-        // Remove the annotation line and get it using the method
-        blockInLines.shift();
-        let annotationLine = this.getDocBlockAnnotationLine(annotation, block);
-        let textBlock = blockInLines.join("\n");
-        let description = this.getParagraphs(textBlock);
-
-        return {
-          annotation: annotationLine.line,
-          data_type: annotationLine.data_type,
-          description: description,
-          name: annotationLine.name
-        };
-      });
+    if (!matches) {
+      return null;
     }
+
+    if (matches.length <= 0) {
+      return null;
+    }
+
+    // Parsing @description?
+    if (annotation == "@description") {
+      let description = [];
+      matches.forEach(text => {
+        let textBlockByLine = text.split("\n");
+        textBlockByLine.shift();
+        description = this.getDescription(textBlockByLine.join("\n"));
+      });
+      return description;
+    }
+
+    // Parsing the following?
+    let arrayedAnnotations = [
+      "@returns",
+      "@return",
+      "@throws",
+      "@throw"
+    ];
+    if (arrayedAnnotations.indexOf(annotation) != -1) {
+      let annotationBlocks = [];
+      matches.forEach(text => {
+        let textBlockByLine = text.split("\n");
+        textBlockByLine.shift();
+        let description = this.getDescription(textBlockByLine.join("\n"));
+        let parsedAnnotation = this.getAnnotation(annotation, text);
+
+        annotationBlocks.push({
+          description: description,
+          annotation: parsedAnnotation
+        });
+      });
+      return annotationBlocks;
+    }
+
+    // Default parsing
+    let annotationBlocks = {};
+    matches.forEach(text => {
+      let textBlockByLine = text.split("\n");
+      textBlockByLine.shift();
+      let name = this.getMemberName(text, annotation);
+      let description = this.getDescription(textBlockByLine.join("\n"));
+      let parsedAnnotation = this.getAnnotation(annotation, text);
+
+      annotationBlocks[name] = {
+        name: name,
+        description: description,
+        annotation: parsedAnnotation
+      };
+    });
 
     return annotationBlocks;
   }
@@ -201,139 +218,53 @@ export default class DocBlocksToJson {
   // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
 
   /**
-   * Parse the specified array of method doc blocks and return an array of
-   * method-related data.
-   *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
-   *
-   * @return any[]
-   *     Returns an array of method-related data.
-   */
-  protected getClassMethods(docBlocks: string[]): any[] {
-    let methods = [];
-
-    if (!docBlocks || docBlocks.length == 0) {
-      return methods;
-    }
-
-    docBlocks.forEach((docBlock) => {
-      let commonData = this.getClassCommonData(docBlock);
-      commonData.signature = commonData.signature.replace(/ ?{/g, "");
-      // TODO(crookse) This could use some work
-      let name = commonData.signature.split(" ");
-      if (name[1]) {
-        name = name[1].split("(")[0];
-      } else {
-        name = null;
-      }
-      name = commonData.access_modifier == "constructor"
-        ? "constructor"
-        : name;
-
-      methods.push(Object.assign(commonData, {
-        access_modifier: commonData.access_modifier,
-        name: name,
-        params: this.getDocBlockAnnotationBlocks("@param", docBlock),
-        returns: this.getDocBlockAnnotationBlocks("@return", docBlock),
-        throws: this.getDocBlockAnnotationBlocks("@throws", docBlock),
-      }));
-    });
-
-    return methods;
-  }
-
-  /**
-   * Parse the specified class doc block.
-   *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
-   *
-   * @return any[]
-   *     Returns an array of property-related data.
-   */
-  protected getClassDocBlock(docBlock: string): any {
-    let classDocBlock = {
-      annotation: null,
-      description: [],
-      example_code: []
-    };
-
-    if (!docBlock || docBlock.trim() == "") {
-      return classDocBlock;
-    }
-
-    let docBlockInLines = docBlock.split("\n");
-    let annotation = docBlockInLines.shift();
-    let description = docBlockInLines.join("\n");
-
-    classDocBlock.annotation = annotation;
-    classDocBlock.description = this.getDocBlockDescription(description);
-    classDocBlock.example_code = this.getDocBlockExampleCode(description);
-
-    return classDocBlock;
-  }
-
-  /**
-   * Parse the specified array of property doc blocks and return an array of
-   * property-related data.
-   *
-   * @param string[] docBlocks
-   *     The array of doc blocks to parse.
-   *
-   * @return any[]
-   *     Returns an array of property-related data.
-   */
-  protected getClassProperties(docBlocks: string[]): any[] {
-    let properties = [];
-
-    if (!docBlocks || docBlocks.length == 0) {
-      return properties;
-    }
-
-    docBlocks.forEach((docBlock) => {
-      let commonData = this.getClassCommonData(docBlock);
-      commonData.signature = commonData.signature.replace(";", "");
-      // TODO(crookse) Is there a bug here because @property is hard-coded?
-      let annotation = this.getDocBlockAnnotationLine("@property", docBlock);
-
-      properties.push(Object.assign(commonData, {
-        annotation: annotation.line,
-        data_type: annotation.data_type,
-        name: annotation.name,
-      }));
-    });
-
-    return properties;
-  }
-
-  /**
-   * Get the common doc block data between a class' property doc blocks and
-   * method doc blocks.
+   * @description
+   *     Get the value of the `@memberof` annotation and use it to create a key
+   *     in `this.parsed`.
    *
    * @param string docBlock
    *     The doc block in question.
    *
-   * @return any
-   *     Returns an access modifier, description, example code, and signature.
+   * @return string
    */
-  protected getClassCommonData(docBlock: string): any {
-    let docBlockLinesAsArray = docBlock.split("\n") ;
-    let signature = docBlockLinesAsArray[docBlockLinesAsArray.length - 1].trim()
-    let accessModifier = /constructor/.test(signature)
-      ? "public"
-      : signature.split(" ")[0];
+  protected getAndCreateNamespace(docBlock: string): string {
+    // Look for a namespace using the value of the `@memberof` annotation. If
+    // a namespace isn't found, then the file being parsed will be placed as a
+    // top-level item in the JSON array.
+    if (!this.re_namespace.test(docBlock)) {
+      return;
+    }
 
-    return {
-      access_modifier: accessModifier,
-      description: this.getDocBlockDescription(docBlock),
-      example_code: this.getDocBlockExampleCode(docBlock),
-      signature: signature
-    };
+    // Create the namespace by taking the `@memberof Some.Namespace` and
+    // transforming it into `Some.Namespace`
+    let reNamespaceResults = docBlock.match(this.re_namespace);
+    let currentNamespace = null;
+    reNamespaceResults.forEach(fileLine => {
+      if (currentNamespace) {
+        return;
+      }
+      if (this.re_ignore_line.test(fileLine)) {
+        return;
+      }
+      currentNamespace = fileLine
+        .trim()
+        // TODO(crookse) parse this better... shouldn't have to ignore the line
+        .replace(/\*? ?@memberof +/, "") // doc-blocks-to-json-ignore-line
+        .trim();
+    });
+
+    // Create the namespace in the `parsed` property so we can start storing
+    // the namespace's members in it
+    if (!this.parsed.hasOwnProperty(currentNamespace)) {
+      this.parsed[currentNamespace] = {};
+    }
+
+    return currentNamespace;
   }
 
   /**
-   * Get the `@annotationname` line.
+   * @description
+   *     Get the `@annotationname` line.
    *
    * @param string annotation
    *     The annotation to get from the doc block.
@@ -343,7 +274,7 @@ export default class DocBlocksToJson {
    * @return any
    *     Returns an object containing the annotation lines data.
    */
-  protected getDocBlockAnnotationLine(annotation: string, docBlock: string): any {
+  protected getAnnotation(annotation: string, docBlock: string): any {
     let re = new RegExp(annotation + ".+", "g");
     let match = docBlock.match(re);
     let line = {
@@ -363,97 +294,49 @@ export default class DocBlocksToJson {
   }
 
   /**
-   * Get the description of the specified doc block.
+   * @description
+   *     Get the description of the specified doc block. The description is the
+   *     start of the doc block down to one of the annotation tags: `@param`,
+   *     `@return`, `@throws`.
    *
-   * @param string docblock
-   *     The doc block in question.
+   * @param string textBlock
+   *     The text block in question.
    *
    * @return string[]
    *     Returns an array of descriptions.
    */
-  protected getDocBlockDescription(docBlock: string): string[] {
-    let docBlocksByLine = docBlock.split("\n");
-    let textBlock = "";
+  protected getDescription(textBlock: string): string[] {
+    let textBlockByLine = textBlock.split("\n");
+    let result = "";
     let endOfDescription = false;
 
-    let reAnnotationTag = new RegExp(/@(param|examplecode|return|throws|property)/, "g");
-
-    docBlocksByLine.forEach((line) => {
+    textBlockByLine.forEach((line) => {
       if (endOfDescription) {
         return;
       }
 
+      // Is this the beginning of a doc block?
       if (line.trim() == "/**") {
-        return;
+        line = line.trim().replace("/**", "");
       }
 
       // If we hit an annotation tag, then that means the we've reached the end
-      // of the description
-      if (reAnnotationTag.test(line) || line.trim() == "*/") {
+      // of the description. Also, if we've hit the */ line, then that means
+      // we've hit the end of the doc block and no more parsing is needed.
+      if (this.re_description_stop_points.test(line) || line.trim() == "*/") {
         endOfDescription = true;
         return;
       }
 
-      textBlock += `${line}\n`;
+      result += `${line}\n`;
     });
 
-    return this.getParagraphs(textBlock);
+    return this.getDescriptionInParagraphs(result);
   }
 
   /**
-   * Get the example code of the specified doc block.
-   *
-   * @param string docblock
-   *     The doc block in question.
-   *
-   * @return any[]
-   *     Returns an array of the example code.
-   */
-  protected getDocBlockExampleCode(docBlock: string): any[] {
-    let reExampleCode = new RegExp(/\* @examplecode.+\[((\n +?\\* +).+)*(?:(\n +\\*\n +\\* + .*)+)?\* ]/, "g");
-    let match = docBlock.match(reExampleCode);
-    let exampleCode = [];
-
-    if (!match) {
-      return exampleCode;
-    }
-
-    let jsonString = match[0]
-      .replace(/\*/g, "")
-      .replace("@examplecode ", "")
-      .trim();
-
-    try {
-      Drash.core_logger.debug(`Parsing @examplecode block for ${this.current_file}.`);
-      exampleCode = JSON.parse(jsonString);
-      Drash.core_logger.debug(`Succesfully parsed.`);
-    } catch (error) {
-      Drash.core_logger.error(`Error occurred while parsing @examplecode block for ${this.current_file}:`);
-      Drash.core_logger.error(error.message);
-      return exampleCode;
-    }
-
-    let fullFilepath = "";
-
-    exampleCode.forEach((fileData, index) => {
-      try {
-        let decoder = new TextDecoder();
-        fullFilepath = Deno.env().DRASH_DIR_EXAMPLE_CODE + fileData.filepath;
-        Drash.core_logger.debug(`Getting file contents from ${fullFilepath}.`);
-        let fileContentsRaw = Deno.readFileSync(fullFilepath);
-        // Add the `code` property to the beginning
-        exampleCode[index].code = decoder.decode(fileContentsRaw);
-      } catch (error) {
-        Drash.core_logger.error(`Error occurred while getting file contents from ${fullFilepath}:`);
-        Drash.core_logger.error(error.message);
-      }
-    });
-
-    return exampleCode;
-  }
-
-  /**
-   * Get paragraphs from a text block.
+   * @description
+   *     Get paragraphs from the description text blocks.
    *
    * @param string textBlock
    *     The text block containing the paragraph(s).
@@ -462,7 +345,7 @@ export default class DocBlocksToJson {
    *     Returns an array of strings. Each element in the array is a separate
    *     paragraph.
    */
-  protected getParagraphs(textBlock: string): string[] {
+  protected getDescriptionInParagraphs(textBlock: string): string[] {
     let textBlockInLines = textBlock.split("\n");
 
     textBlockInLines = textBlockInLines.map((line) => {
@@ -478,20 +361,518 @@ export default class DocBlocksToJson {
       .join("\n")
       .split("---para-break---")
       .map((val) => {
-        val = val.trim();
-        // Remove dashes
-        // TODO(crookse) This isn't working correctly and idk if I really care
-        // to support it. Might delete.
-        if (val.charAt(0) == "-") {
-          val.replace("-", "").trim();
-        }
-        return val;
+        return val.trim();
       });
 
+    // Filter out lines that don't contain anything
     textBlockInLines = textBlockInLines.filter((val) => {
       return val.trim() != "";
     });
 
     return textBlockInLines;
+  }
+
+  /**
+   * @description
+   *     Get the doc block data for the interface in question.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForConst(text: string): any {
+    return {
+      exported: this.isMemberExported("const", text),
+      name: this.getNameOfConst(text),
+      description: this.getSection("@description", text),
+      // signature: this.getSignatureOfInterface(text)
+    };
+  }
+
+  /**
+   * @description
+   *     Get the doc block data for the enum in question.
+   *
+   * @param string text
+   *     The text containing the enum's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForEnum(text: string): any {
+    let ret: any = {
+      exported: this.isMemberExported("enum", text),
+      name: this.getNameOfEnum(text),
+      description: this.getSection("@description", text),
+    };
+
+    return ret;
+  }
+
+  /**
+   * @description
+   *     Get the doc block data for the function in question.
+   *
+   * @param string text
+   *     The text containing the functions's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForFunction(text: string): any {
+    let ret: any = {
+      exported: this.isMemberExported("function", text),
+      name: this.getNameOfFunction(text),
+      description: this.getSection("@description", text),
+      params: this.getSection("@param", text),
+      returns: this.getSection("@return", text),
+      throws: this.getSection("@throws", text),
+      signature: this.getSignatureOfMethod(text)
+    };
+
+    return ret;
+  }
+
+  /**
+   * @description
+   *     Get the doc block data for the interface in question.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForInterface(text: string): any {
+    return {
+      exported: this.isMemberExported("interface", text),
+      name: this.getNameOfInterface(text),
+      description: this.getSection("@description", text),
+      signature: this.getSignatureOfInterface(text)
+    };
+  }
+
+  /**
+   * @description
+   *     Get the doc block data for the method in question.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForMethod(text: string): any {
+    let signature = this.getSignatureOfMethod(text);
+
+    // Methods have constructors which are always public, so we want to make
+    // sure the `construct()` function's access modifier isn't "constructor"
+    // because the access modifier was omitted.
+    let accessModifier = /constructor/.test(signature)
+      ? "public"
+      : signature.split(" ")[0];
+
+    let ret: any = {
+      access_modifier: accessModifier,
+      name: this.getNameOfMethod(text),
+      description: this.getSection("@description", text),
+      params: this.getSection("@param", text),
+      returns: this.getSection("@return", text),
+      throws: this.getSection("@throws", text),
+      signature: signature
+    };
+
+    return ret;
+  }
+
+  /**
+   * @description
+   *     Get the doc block data for the property in question.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return any
+   */
+  protected getDocBlockDataForProperty(text: string): any {
+    let signature = this.getSignatureOfProperty(text);
+
+    let accessModifier = signature.split(" ")[0];
+
+    let ret: any = {
+      access_modifier: accessModifier,
+      description: this.getSection("@description", text),
+      annotation: this.getAnnotation("@property", text),
+      signature: signature,
+    };
+
+    return ret;
+  }
+
+  /**
+   * @description
+   *     Get the value of the `@class` annotation.
+   *
+   * @param string text
+   *     The text in question.
+   *
+   * @return string
+   */
+  protected getMemberName(text: string, textType?: string): string {
+    let matches = text.match(new RegExp(this.re__member_names + ".+", "g"));
+
+    if (matches && matches.length > 0) {
+      Drash.core_logger.debug(`Using @annotation for ${this.current_file}.`);
+      let memberName = text
+        .match(new RegExp(this.re__member_names + ".+", "g"))[0]
+        .replace(new RegExp(this.re__member_names + " +?", "g"), "")
+        .trim();
+      return memberName;
+    }
+
+    // No annotations? Default to this.
+    let textByLine = text.split("\n");
+    let line;
+    switch (textType) {
+      case "@param":
+        line = textByLine[0];
+        return line.trim().replace(/ ?\* /g, "").trim().split(" ")[2];
+      case "method":
+        line = textByLine[textByLine.length - 1];
+        return line.trim().replace(/(public|protected|private) /g, "").split("(")[0];
+      case "property":
+        line = textByLine[textByLine.length - 1];
+        return line
+          .trim()
+          .replace(/(public|protected|private) /g, "")
+          .replace(":", "")
+          .split(" ")[0];
+      default:
+        break;
+    }
+
+    Drash.core_logger.error(`Member name could not be found for ${this.current_file}.`)
+
+    return undefined;
+  }
+
+  /**
+   * @description
+   *     Get the name of the const.
+   *
+   * @param string text
+   *     The text containing the const's data.
+   *
+   * @return string
+   */
+  protected getNameOfConst(text: string): string {
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim()
+      .replace("export", "")
+      .replace("const", "")
+      .trim()
+      .split(" ")[0];
+  }
+
+  /**
+   * @description
+   *     Get the name of the enum.
+   *
+   * @param string text
+   *     The text containing the enum's data.
+   *
+   * @return string
+   */
+  protected getNameOfEnum(text: string): string {
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1]
+      .trim()
+      .replace(/ ?{/, "")
+      .replace(/export +? ?enum +?/, "");
+  }
+
+  /**
+   * @description
+   *     Get the name of the function.
+   *
+   * @param string text
+   *     The text containing the function's data.
+   *
+   * @return string
+   */
+  protected getNameOfFunction(text: string): string {
+    let signature = this.getSignatureOfMethod(text);
+    return signature
+      .replace(/export +?/, "")
+      .replace(/function +?/, "")
+      .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the name of the interface.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return string
+   */
+  protected getNameOfInterface(text: string): string {
+    let signature = this.getSignatureOfInterface(text);
+    return signature
+      .replace(/export +? ?interface +?/, "");
+  }
+
+  /**
+   * @description
+   *     Get the name of the method.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return string
+   */
+  protected getNameOfMethod(text: string): string {
+    let signature = this.getSignatureOfMethod(text);
+    return signature
+      .replace(/(public|private|protected) +/, "")
+      .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the name of the property.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return string
+   */
+  protected getNameOfProperty(text: string): string {
+    let signature = this.getSignatureOfProperty(text);
+    return signature
+      .replace(/(public|private|protected) +/, "")
+      .replace(/\(.+/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the function in question.
+   *
+   * @param string text
+   *     The text containing the function's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfFunction(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "").replace("}", "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the interface in question.
+   *
+   * @param string text
+   *     The text containing the interface's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfInterface(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the method in question.
+   *
+   * @param string text
+   *     The text containing the method's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfMethod(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "").replace("}", "");
+  }
+
+  /**
+   * @description
+   *     Get the signature of the property in question.
+   *
+   * @param string text
+   *     The text containing the property's data.
+   *
+   * @return string
+   */
+  protected getSignatureOfProperty(text: string): string {
+    // The signature is the last line of the doc block
+    let textByLine = text.split("\n");
+    return textByLine[textByLine.length - 1].trim().replace(";", "");
+  }
+
+  /**
+   * Is the member exported?
+   *
+   * @param string memberType
+   *     The member's type.
+   * @param string text
+   *     The text containing the `export` keyword if the member is exported.
+   *
+   * @return boolean
+   *     Returns true if the member is exported and false if not.
+   */
+  protected isMemberExported(memberType: string, text: string): boolean {
+    let reMemberName = new RegExp(memberType);
+    if (this.re_export.test(text)) {
+      let exportLine = text.match(this.re_export);
+      if (exportLine && exportLine.length > 0) {
+        if (reMemberName.test(exportLine[0])) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // FILE MARKER: PROTECTED - PARSERS //////////////////////////////////////////
+
+  /**
+   * @description
+   *     Parse a file that has the `@doc-blocks-to-json members-only`
+   *     annotation.
+   *
+   * @param string fileContents
+   */
+  protected parseMembersOnlyFile(fileContents) {
+    Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
+
+    let docBlocks = fileContents.match(this.re_for_all_members);
+
+    docBlocks.forEach(docBlock => {
+
+      if (this.re_is_ignored_block.test(docBlock)) {
+        return;
+      }
+
+      if (this.re_is_function.test(docBlock)) {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let memberName = this.getMemberName(docBlock);
+        let data = this.getDocBlockDataForFunction(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = memberName;
+          this.parsed[memberName] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + memberName;
+          this.parsed[currentNamespace][memberName] = data;
+        }
+        return;
+      }
+
+      if (this.re_is_enum.test(docBlock)) {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let memberName = this.getMemberName(docBlock);
+        let data = this.getDocBlockDataForEnum(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = memberName;
+          this.parsed[memberName] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + memberName;
+          this.parsed[currentNamespace][memberName] = data;
+        }
+        return;
+      }
+
+      if (this.re_is_interface.test(docBlock)) {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let memberName = this.getMemberName(docBlock);
+        let data = this.getDocBlockDataForInterface(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = memberName;
+          this.parsed[memberName] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + memberName;
+          this.parsed[currentNamespace][memberName] = data;
+        }
+        return;
+      }
+
+      if (this.re_is_const.test(docBlock)) {
+        let currentNamespace = this.getAndCreateNamespace(docBlock);
+        let data = this.getDocBlockDataForConst(docBlock);
+        if (!currentNamespace) {
+          data.fully_qualified_name = data.name;
+          this.parsed[data.name] = data;
+        } else {
+          data.fully_qualified_name = currentNamespace + "." + data.name;
+          this.parsed[currentNamespace][data.name] = data;
+        }
+        return;
+      }
+    });
+  }
+
+  /**
+   * @description
+   *     Parse a file (assuming it's a class file). `this.compile()` defaults to
+   *     using this method.
+   *
+   * @param string fileContents
+   */
+  protected parseClassFile(fileContents) {
+    Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
+
+    let docBlocks = fileContents.match(this.re_for_all_members);
+
+    let classMap: any = {
+      fully_qualified_name: null,
+      namespace: null,
+      name: null,
+      description: null,
+      properties: {},
+      methods: {}
+    };
+
+    docBlocks.forEach(docBlock => {
+      if (this.re_is_class.test(docBlock)) {
+        classMap.namespace = this.getAndCreateNamespace(docBlock);
+        classMap.name = this.getMemberName(docBlock);
+        classMap.description = this.getSection("@description", docBlock);
+        classMap.fully_qualified_name = classMap.namespace
+          ? `${classMap.namespace}.${classMap.name}`
+          : classMap.name;
+        return;
+      }
+
+      if (this.re_is_property.test(docBlock)) {
+        let propertyName = this.getMemberName(docBlock, "property");
+        let data = this.getDocBlockDataForProperty(docBlock);
+        data.name = propertyName;
+        data.fully_qualified_name = classMap.fully_qualified_name + "." + propertyName;
+        classMap.properties[propertyName] = data;
+      }
+
+      if (this.re_is_constructor.test(docBlock)) {
+        let methodName = this.getMemberName(docBlock, "method");
+        let data = this.getDocBlockDataForMethod(docBlock);
+        data.fully_qualified_name = classMap.fully_qualified_name + "." + methodName;
+        classMap.methods[methodName] = data;
+      }
+
+      if (this.re_is_method.test(docBlock)) {
+        let methodName = this.getMemberName(docBlock, "method");
+        let data = this.getDocBlockDataForMethod(docBlock);
+        data.fully_qualified_name = classMap.fully_qualified_name + "." + methodName;
+        classMap.methods[methodName] = data;
+      }
+    });
+
+    if (!classMap.namespace) {
+      this.parsed[classMap.name] = classMap;
+    } else {
+      this.parsed[classMap.namespace][classMap.name] = classMap;
+    }
   }
 }

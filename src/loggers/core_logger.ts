@@ -1,5 +1,5 @@
 import Logger from "./logger.ts";
-import {colorize} from "../util.ts";
+import {colorize} from "../util/members.ts";
 
 /**
  * @class CoreLogger
@@ -29,8 +29,25 @@ export default class CoreLogger extends Logger {
       return message;
     }
 
+    let color;
+
+    switch (this.current_log_message_level_name.toLowerCase()) {
+      case "debug":
+        color = "green";
+        break;
+      case "error":
+        color = "red";
+        break;
+      case "warn":
+        color = "yellow";
+        break;
+      default:
+        color = "default";
+        break;
+    }
+
     let colorizeOpts = {
-      color: "yellow"
+      color: color
     };
 
     console.log(colorize(message, colorizeOpts));

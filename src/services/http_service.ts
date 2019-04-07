@@ -1,15 +1,17 @@
-// namespace Drash.Services
-
 import Drash from "../../mod.ts";
 
 /**
+ * @memberof Drash.Services
  * @class HttpService
- * This class helps perform HTTP-related processes.
+ *
+ * @description
+ *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
   /**
-   * Hydrate the request with data that is useful for the `Drash.Http.Server`
-   * class.
+   * @description
+   *     Hydrate the request with data that is useful for the
+   *     `Drash.Http.Server` class.
    *
    * @param Drash.Http.Request request
    *     The request object.
@@ -33,7 +35,8 @@ export default class HttpService {
   }
 
   /**
-   * Get the specified HTTP request's URL path.
+   * @description
+   *     Get the specified HTTP request's URL path.
    *
    * @param Drash.Http.Request request
    *     The request object.
@@ -62,7 +65,8 @@ export default class HttpService {
   }
 
   /**
-   * Get the specified HTTP request's URL query string.
+   * @description
+   *     Get the specified HTTP request's URL query string.
    *
    * @param Drash.Http.Request request
    *     The request object.
@@ -88,7 +92,8 @@ export default class HttpService {
   }
 
   /**
-   * Get the HTTP request's URL query params by parsing the URL query string.
+   * @description
+   *     Get the HTTP request's URL query params by parsing the URL query string.
    *
    * @param Drash.Http.Request request
    *     The request object.
@@ -122,32 +127,37 @@ export default class HttpService {
   }
 
   /**
-   * Get a MIME type for a file based on its extension.
+   * @description
+   *     Get a MIME type for a file based on its extension.
    *
-   * @param string filename
-   *     The filename in question.
+   * @param string filePath
+   *     The file path in question.
    * @param boolean fileIsUrl
-   *     Is the filename a URL/path to a file? Defaults to false.
+   *     (optional) Is the file path  a URL to a file? Defaults to false.
+   *
+   *     If the file path is a URL, then this method will make sure the URL
+   *     query string is not included while doing a lookup of the file's
+   *     extension.
    *
    * @return string
    *     Returns the name of the MIME type based on the extension of the
-   *     filename.
+   *     file path .
    */
-  public getMimeType(file: string, fileIsUrl: boolean = false): string {
+  public getMimeType(filePath: string, fileIsUrl: boolean = false): string {
     let mimeType = null;
 
     if (fileIsUrl) {
-      file = file.split("?")[0];
+      filePath = filePath.split("?")[0];
     }
 
-    let fileParts = file.split(".");
-    file = fileParts.pop();
+    let fileParts = filePath.split(".");
+    filePath = fileParts.pop();
 
     for (let key in Drash.Dictionaries.MimeDb) {
       if (!mimeType) {
         if (Drash.Dictionaries.MimeDb[key].extensions) {
           for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
-            if (file == Drash.Dictionaries.MimeDb[key].extensions[index]) {
+            if (filePath == Drash.Dictionaries.MimeDb[key].extensions[index]) {
               mimeType = key;
             }
           }

@@ -9,8 +9,24 @@ div
         div.row
             div.col
                 heading-h2#what-is-drash(heading="What is Drash?")
-                p Drash is a modular web framework for <a href="https://deno.land" target="_BLANK">Deno</a> based on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web" target="_BLANK">HTTP resources</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation" target="_BLANK">content negotiation</a>.
-                p Drash helps you quickly build web apps, APIs, services, and whatever else you'd want to build using HTTP resources and content negotiation. Clients make requests to the resources you create and can request any representation your resources allow (e.g., requesting the <code>application/json</code> format of the resource located at the <code>/user/1234</code> URI).
+                p Drash is a microframework for <a href="https://deno.land" target="_BLANK">Deno</a> based on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web" target="_BLANK">HTTP resources</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation" target="_BLANK">content negotiation</a>.
+                p Drash is designed to help you build your project(s) quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA (like these documentation pages), or even a static HTML site. You can even just use it as a logging tool for your other project. How you use Drash is up to you, so that it can be everything you need and nothing you don't.
+        hr
+        div.row
+            div.col
+                heading-h2#quickstart(heading="Quickstart")
+                p Write your <code>app.ts</code> file...
+                p
+                    code-block(:data="example_code.quickstart.app")
+                p ... and run your <code>app.ts</code> file.
+                p
+                    code-block(:data="example_code.quickstart.execute")
+        hr
+        div.row
+            div.col
+                heading-h2#importing(heading="Importing")
+                p There are multiple ways to import Drash (and its different versions) into your project. See below:
+                code-block(:data="example_code.importing.app")
         hr
         div.row
             div.col
@@ -25,36 +41,6 @@ div
                 p Resources can access the request's URL query params via <code>this.request.url_query_params.some_param</code>.
                 h3 Semantic Method Names
                 p If you want your resource class to allow <code>GET</code> requests, then give it a <code>GET()</code> method. If you want your resource class to allow <code>POST</code> requests, then give it a <code>POST()</code> method. If you don't want your resource class to allow <code>DELETE</code> requests, then don't give your resource class a <code>DELETE()</code> method. Pretty simple ideology and very semantic.
-        hr
-        div.row
-            div.col
-                heading-h2#importing(heading="Importing")
-                p There are multiple ways to import Drash (and its different versions) into your project. See below:
-                code-block(:data="example_code.importing.app")
-        hr
-        div.row
-            div.col
-                heading-h2#quickstart(heading="Quickstart")
-                h3 Before you get started
-                ul
-                    li This quickstart guide sets you up with a VERY basic application that can handle the following content types:
-                        ul
-                            li <code>application/json</code>
-                            li <code>text/html</code>
-                            li <code>application/xml</code>
-                            li <code>text/xml</code>
-                    li The <code>quickstart.ts</code> code below gives you one resource class (<code>HomeResource</code>) that handles <code>GET</code> and <code>POST</code> requests at the <code>/</code> URI.
-                h3 Steps
-                ol
-                    li Create your app file.
-                        code-block(:data="example_code.quickstart.app")
-                    li Run your app.
-                        code-block(:data="example_code.quickstart.execute")
-                    li Make the following <code>GET</code> and <code>POST</code> requests:
-                        p.text--help I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.
-                        ul
-                            li <code>localhost:8000</code>
-                p.text--help This is the end of the quickstart tutorial.
         hr
         div.row
             div.col

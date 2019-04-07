@@ -18,6 +18,7 @@ runServer();
 function compileApiReferencePageData() {
   let DrashNamespaceMembers = [
     `/src/compilers/doc_blocks_to_json.ts`,
+    `/src/dictionaries/log_levels.ts`,
     `/src/exceptions/http_exception.ts`,
     `/src/http/request.ts`,
     `/src/http/resource.ts`,
@@ -26,14 +27,16 @@ function compileApiReferencePageData() {
     `/src/loggers/logger.ts`,
     `/src/loggers/console_logger.ts`,
     `/src/loggers/file_logger.ts`,
-    `/src/services/http_service.ts`
+    `/src/services/http_service.ts`,
+    `/src/util/object_parser.ts`,
+    `/src/util/members.ts`
   ].map(value => {
     return DRASH_DIR_ROOT + value;
   });
   console.log("[docs.ts] Compiling API Reference page data using doc blocks...");
   let compiler = new Drash.Compilers.DocBlocksToJson();
   let compiled = compiler.compile(DrashNamespaceMembers);
-  let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 2));
+  let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 4));
   const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
   Deno.writeFileSync(apiReferenceOutputFile, apiReferenceData);
   console.log(`[docs.ts] Done. API Reference page data was written to:\n    ${apiReferenceOutputFile}.`);

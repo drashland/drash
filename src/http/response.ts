@@ -1,54 +1,54 @@
-// namespace Drash.Http
-
 import Drash from "../../mod.ts";
 import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
 
 /**
+ * @memberof Drash.Http
  * @class Response
- * Response handles sending a response to the client making the request.
+ *
+ * @description
+ *     Response handles sending a response to the client making the request.
  */
 export default class Response {
 
   /**
-   * The body of this response.
+   * @description
+   *     A property to hold the body of this response.
    *
    * @property any body
-   *
-   * @examplecode [
-   *   {
-   *     "title": "app.ts",
-   *     "filepath": "/api_reference/http/response/p_body.ts",
-   *     "language": "typescript",
-   *     "line_highlight": "6"
-   *   }
-   * ]
    */
   public body: any = {};
 
   /**
-   * The body of this response as a string.
+   * @description
+   *     A property to hold the body of this response as a string. This is
+   *     implemented to help unit testing efforts.
    *
    * @property string body_generated
    */
   public body_generated: string = "";
 
   /**
-   * This response's headers.
+   * @description
+   *     A property to hold this response's headers.
    *
    * @property Headers headers
    */
   public headers: Headers;
 
   /**
-   * The request object.
+   * @description
+   *     The request object.
    *
    * @property Drash.Http.Request request
    */
   public request: Drash.Http.Request;
 
   /**
-   * This response's status code (e.g., 200 for OK). _Drash.Http.Response_
-   * objects use _Status_ and _STATUS_TEXT_ from [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts).
+   * @description
+   *     A property to hold this response's status code (e.g., 200 for OK).
+   *     This class uses `Status` and `STATUS_TEXT` from
+   *     [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)
+   *     for response codes.
    *
    * @property number status_code
    */
@@ -57,7 +57,8 @@ export default class Response {
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
-   * Construct an object of this class.
+   * @description
+   *     Construct an object of this class.
    *
    * @param Drash.Http.Request request
    */
@@ -70,7 +71,8 @@ export default class Response {
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
-   * Generate a response.
+   * @description
+   *     Generate a response.
    *
    * @return string
    */
@@ -95,21 +97,13 @@ export default class Response {
   }
 
   /**
-   * Get the status message based on the status code.
+   * @description
+   *     Get the status message based on the status code.
    *
    * @return string
    *     Returns the status message associated with `this.status_code`. For
    *     example, if the response's `status_code` is `200`, then this method
    *     will return "OK" as the status message.
-   *
-   * @examplecode [
-   *   {
-   *     "title": "app.ts",
-   *     "filepath": "/api_reference/http/response/m_getStatusMessage.ts",
-   *     "language": "typescript",
-   *     "line_highlight": "8"
-   *   }
-   * ]
    */
   public getStatusMessage(): string {
     let message = STATUS_TEXT.get(this.status_code);
@@ -117,9 +111,10 @@ export default class Response {
   }
 
   /**
-   * Get the full status message based on the status code. This is just the
-   * status code and the status message together (e.g., `200 (OK)`, `401
-   * (Unauthorized)`, etc.).
+   * @description
+   *     Get the full status message based on the status code. This is just the
+   *     status code and the status message together (e.g., `200 (OK)`, `401
+   *     (Unauthorized)`, etc.).
    *
    * @return string
    */
@@ -129,7 +124,8 @@ export default class Response {
   }
 
   /**
-   * Send the response to the client making the request.
+   * @description
+   *     Send the response to the client making the request.
    *
    * @return any
    *     Returns the output which is passed to `Drash.Http.Request.respond()`.
@@ -151,13 +147,26 @@ export default class Response {
   }
 
   /**
-   * Send the response of a "static asset" to the client making the request.
+   * @description
+   *     Send the response of a static asset (e.g., a CSS file, JS file, PDF
+   *     file, etc.) to the client making the request.
+   *
+   *     This method is reliant on the `DRASH_SERVER_DIRECTORY` environment
+   *     variable. The `DRASH_SERVER_DIRECTORY` environment variable MUST point
+   *     to the parent directory of the directory (or list of directories)
+   *     containing static assets. For example, if my project is located at
+   *     `/path/to/my/project` and my CSS files are located at
+   *     `/path/to/my/project/public/assets`, then `DRASH_SERVER_DIRECTORY`
+   *     should be `/path/to/my/project/public`.
    *
    * @return any
    */
   public sendStatic(): any {
     const file = this.request.url_path;
-    const fullFilepath = `${Deno.env().DRASH_SERVER_DIRECTORY}${file}`;
+    // Remove trailing slash
+    let staticPathParent = Deno.env().DRASH_SERVER_DIRECTORY;
+    staticPathParent = staticPathParent.replace(/(\/$)/, "");
+    const fullFilepath = `${staticPathParent}${file}`;
 
     let output = {
       status: this.status_code,
@@ -173,8 +182,9 @@ export default class Response {
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   /**
-   * Generate an HTML response. The `this.body` property should be the entire
-   * HTML document.
+   * @description
+   *     Generate an HTML response. The `this.body` property should be the
+   *     entire HTML document.
    *
    * @return string
    */
@@ -182,6 +192,12 @@ export default class Response {
     return this.body;
   }
 
+  /**
+   * @description
+   *     Generate a JSON response.
+   *
+   * @return string
+   */
   protected generateJsonResponse(): string {
     return JSON.stringify({
       status_code: this.status_code,
@@ -194,6 +210,12 @@ export default class Response {
     });
   }
 
+  /**
+   * @description
+   *     Generate an XML response.
+   *
+   * @return string
+   */
   protected generateXmlResponse(): string {
     return `<response>
   <statuscode>${this.status_code}</statuscode>
@@ -202,6 +224,12 @@ export default class Response {
 </response>`;
   }
 
+  /**
+   * @description
+   *     Get this response's `Content-Type` header.
+   *
+   * @return string
+   */
   protected getHeaderContentType(): string {
     let contentType = this.request.headers.get("Response-Content-Type-Default");
 

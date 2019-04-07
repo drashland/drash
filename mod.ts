@@ -3,7 +3,7 @@ import env_var from "./src/core/env_var.ts";
 // Compilers
 import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
 // Dictionaries
-import log_levels from "./src/dictionaries/log_levels.ts";
+import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
@@ -20,11 +20,15 @@ import file_logger from "./src/loggers/file_logger.ts";
 // Services
 import http_service from "./src/services/http_service.ts";
 // Util
-import * as util from "./src/util.ts";
+import util_object_parser from "./src/util/object_parser.ts";
+import * as util_members from "./src/util/members.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
-// DRASH ///////////////////////////////////////////////////////////////////////
+// FILE MARKER: NAMESPACE - DRASH //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+//
+// Usage: import Drash from "/path/to/drash/mod.ts";
+//
 
 namespace Drash {
 
@@ -37,8 +41,11 @@ namespace Drash {
   }
 
   export namespace Dictionaries {
-    export const LogLevels = log_levels;
+    export const LogLevels = log_levels.LogLevels;
     export const MimeDb = mime_db;
+    // export namespace Enums {
+    //   export const LogLevel = log_levels.LogLevel;
+    // }
   }
 
   export namespace Exceptions {
@@ -63,10 +70,15 @@ namespace Drash {
     export type HttpService = http_service; export const HttpService = new http_service();
   }
 
-  export const Util = util;
+  export namespace Util {
+    export type ObjectParser = util_object_parser; export const ObjectParser = util_object_parser;
+    export const Exports = util_members;
+  }
 
   /**
-   * A property to hold all members added via `Drash.addMember()`.
+   * A property to hold all members added via `Drash.addMember()`. This property
+   * allows users to access members via `Drash.Members.SomeMember` and acts like
+   * a namespace for members that are external to Drash.
    *
    * @property Drash.Members Members
    */
