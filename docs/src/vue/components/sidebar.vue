@@ -28,6 +28,7 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
                 a(:href="$conf.base_url + '/#/tutorials/creating-an-application-hello-world-part-1'") Creating An Application: Hello World (Part 1)
+                a(:href="$conf.base_url + '/#/tutorials/creating-an-application-hello-world-part-2'") Creating An Application: Hello World (Part 2)
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") Creating An Application: API
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
                 a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
