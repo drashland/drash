@@ -8,8 +8,11 @@ import VueRouter from "vue-router";
 // Vue - Components
 import CodeBlock from "/components/code_block.vue";
 import CodeBlockForReference from "/components/code_block_for_reference.vue";
+import ListItem_DownloadSource_Code from "/components/list_item_download_source_code.vue";
 import HeadingH2 from "/components/heading_h2.vue";
 import VueAppRoot from "/components/vue_app_root.vue";
+import PageHeader from "/components/page_header.vue";
+import EndOfTutorial from "/components/end_of_tutorial.vue";
 import Page_ApiReference from "/components/page_api_reference.vue";
 import Page_ApiReference_Dictionary from "/components/page_api_reference_dictionary.vue";
 import Page_ApiReference_MembersOnly from "/components/page_api_reference_members_only.vue";
@@ -23,9 +26,12 @@ Vue.use(VueRouter);
 Vue.component("code-block", CodeBlock);
 Vue.component("code-block-for-reference", CodeBlockForReference);
 Vue.component("heading-h2", HeadingH2);
+Vue.component("end-of-tutorial", EndOfTutorial);
+Vue.component("page-header", PageHeader);
 Vue.component("page-api-reference", Page_ApiReference);
 Vue.component("page-api-reference-dictionary", Page_ApiReference_Dictionary);
 Vue.component("page-api-reference-members-only", Page_ApiReference_MembersOnly);
+Vue.component("li-download-source-code", ListItem_DownloadSource_Code);
 Vue.filter('markdown-it', function(value) {
   return window.markdownIt.render(value);
 });
