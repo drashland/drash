@@ -25,6 +25,7 @@ import * as adding_content_types_vue from "/var/www/deno-drash/docs/src/vue/comp
 import * as serving_static_paths_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/serving_static_paths.vue";
 import * as handling_content_negotiation_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/handling_content_negotiation.vue";
 import * as logging_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/logging.vue";
+import * as creating_an_application_hello_world_part_1_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_an_application_hello_world_part_1.vue";
 import * as introduction_vue from "/var/www/deno-drash/docs/src/vue/components/pages/introduction.vue";
 
 export default [
@@ -55,5 +56,6 @@ export default [
   serving_static_paths_vue,
   handling_content_negotiation_vue,
   logging_vue,
+  creating_an_application_hello_world_part_1_vue,
   introduction_vue,
 ];

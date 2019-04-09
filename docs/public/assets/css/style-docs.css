@@ -12,7 +12,8 @@ body {
   font-family: 'Roboto', Arial, Helvetica, sans-serif;
   min-width: 320px;
   background: #f4f4f4;
-  color: #333333; }
+  color: #333333;
+  word-break: break-word; }
 
 code {
   border-radius: 0.18125rem; }
