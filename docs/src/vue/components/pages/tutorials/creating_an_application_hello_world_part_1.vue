@@ -6,10 +6,10 @@ div
             hr
             h2 Table Of Contents
             ul
-                li <a :href="'/#' + $route.path + '#before-you-get-started'">Before You Get Started</a>
-                li <a :href="'/#' + $route.path + '#folder-structure-end-state'">Folder Structure End State</a>
-                li <a :href="'/#' + $route.path + '#steps'">Steps</a>
-                li <a :href="'/#' + $route.path + '#what-is-the-code-doing'">What Is The Code Doing?</a>
+                li <a :href="$conf.base_url + '/#' + $route.path + '#before-you-get-started'">Before You Get Started</a>
+                li <a :href="$conf.base_url + '/#' + $route.path + '#folder-structure-end-state'">Folder Structure End State</a>
+                li <a :href="$conf.base_url + '/#' + $route.path + '#steps'">Steps</a>
+                li <a :href="$conf.base_url + '/#' + $route.path + '#what-is-the-code-doing'">What Is The Code Doing?</a>
     div.row
         div.col
             hr
