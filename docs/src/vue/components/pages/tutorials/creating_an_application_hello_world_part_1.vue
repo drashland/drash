@@ -16,6 +16,12 @@ div
             h2#before-you-get-started Before You Get Started
             ul
                 li-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+                li This tutorial is part of a 4-part series that build off one another:
+                    ol
+                        li Build a server that handles <code>GET</code> requests at the <code>/</code> URI.
+                        li Build the server's front end using a template engine (EJS).
+                        li Allow the server to handle <code>POST</code> requests at the <code>/</code> URI and send a <code>POST</code> request from the front end.
+                        li Add logging.
                 li This code assumes you have Deno installed. If you do not, then head over to <a href="https://deno.land/" target="_BLANK">https://deno.land/</a> to install Deno.
     div.row
         div.col
