@@ -1,7 +1,7 @@
 const webpack = require("webpack");
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
-const latestRelease = "v0.7.3";
+const latestRelease = "v0.7.4";
 
 function getConf(envVars) {
   let conf = {
