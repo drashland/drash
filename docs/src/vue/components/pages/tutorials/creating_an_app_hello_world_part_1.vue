@@ -35,10 +35,10 @@ page-creating-an-app-hello-world(:data="data")
 
 <script>
 export const resource = {
-    paths: ["/tutorials/creating-an-application-hello-world-part-2"],
+    paths: ["/tutorials/creating-an-app-hello-world-part-1"],
     meta: {
-        title: "Creating An Application: Hello World (Part 2)",
-        source_code_uri: "/creating_an_application_hello_world_part_2"
+        title: "Creating An App: Hello World (Part 1 of 4)",
+        source_code_uri: "/creating_an_app_hello_world_part_1"
     }
 }
 
@@ -46,7 +46,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.creating_an_application_hello_world_part_2
+                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_1
             }
         };
     },
