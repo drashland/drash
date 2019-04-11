@@ -98,6 +98,49 @@ export default class Response {
 
   /**
    * @description
+   *     Generate an HTML response. The `this.body` property should be the
+   *     entire HTML document.
+   *
+   * @return string
+   */
+  public generateHtmlResponse(): string {
+    return this.body;
+  }
+
+  /**
+   * @description
+   *     Generate a JSON response.
+   *
+   * @return string
+   */
+  public generateJsonResponse(): string {
+    return JSON.stringify({
+      status_code: this.status_code,
+      status_message: this.getStatusMessage(),
+      request: {
+        url: this.request.url,
+        method: this.request.method.toUpperCase()
+      },
+      body: this.body
+    });
+  }
+
+  /**
+   * @description
+   *     Generate an XML response.
+   *
+   * @return string
+   */
+  public generateXmlResponse(): string {
+    return `<response>
+  <statuscode>${this.status_code}</statuscode>
+  <statusmessage>${this.getStatusMessage()}</statusmessage>
+  <body>${this.body}</body>
+</response>`;
+  }
+
+  /**
+   * @description
    *     Get the status message based on the status code.
    *
    * @return string
@@ -180,49 +223,6 @@ export default class Response {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
-
-  /**
-   * @description
-   *     Generate an HTML response. The `this.body` property should be the
-   *     entire HTML document.
-   *
-   * @return string
-   */
-  protected generateHtmlResponse(): string {
-    return this.body;
-  }
-
-  /**
-   * @description
-   *     Generate a JSON response.
-   *
-   * @return string
-   */
-  protected generateJsonResponse(): string {
-    return JSON.stringify({
-      status_code: this.status_code,
-      status_message: this.getStatusMessage(),
-      request: {
-        url: this.request.url,
-        method: this.request.method.toUpperCase()
-      },
-      body: this.body
-    });
-  }
-
-  /**
-   * @description
-   *     Generate an XML response.
-   *
-   * @return string
-   */
-  protected generateXmlResponse(): string {
-    return `<response>
-  <statuscode>${this.status_code}</statuscode>
-  <statusmessage>${this.getStatusMessage()}</statusmessage>
-  <body>${this.body}</body>
-</response>`;
-  }
 
   /**
    * @description
