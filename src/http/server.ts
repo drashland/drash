@@ -234,6 +234,8 @@ export default class Server {
     this.logger.trace("Stack trace below:");
     this.logger.trace(error.stack);
 
+    this.logger.trace("Generating generic error response object.");
+
     let response = new Drash.Http.Response(request);
 
     switch (error.code) {
@@ -494,6 +496,9 @@ export default class Server {
    *     Returns true if the request is for an asset in a static path.
    */
   protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean {
+    if (this.static_paths.length <= 0) {
+      return false;
+    }
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
     let requestUrl = `/${request.url.split("/")[1]}`;
