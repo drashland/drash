@@ -1380,6 +1380,69 @@
                     "signature": "public generateResponse(): string",
                     "fully_qualified_name": "Drash.Http.Response.generateResponse"
                 },
+                "generateHtmlResponse": {
+                    "access_modifier": "public",
+                    "name": "generateHtmlResponse",
+                    "description": [
+                        "Generate an HTML response. The `this.body` property should be the\nentire HTML document."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public generateHtmlResponse(): string",
+                    "fully_qualified_name": "Drash.Http.Response.generateHtmlResponse"
+                },
+                "generateJsonResponse": {
+                    "access_modifier": "public",
+                    "name": "generateJsonResponse",
+                    "description": [
+                        "Generate a JSON response."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public generateJsonResponse(): string",
+                    "fully_qualified_name": "Drash.Http.Response.generateJsonResponse"
+                },
+                "generateXmlResponse": {
+                    "access_modifier": "public",
+                    "name": "generateXmlResponse",
+                    "description": [
+                        "Generate an XML response."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public generateXmlResponse(): string",
+                    "fully_qualified_name": "Drash.Http.Response.generateXmlResponse"
+                },
                 "getStatusMessage": {
                     "access_modifier": "public",
                     "name": "getStatusMessage",
@@ -1468,69 +1531,6 @@
                     "throws": null,
                     "signature": "public sendStatic(): any",
                     "fully_qualified_name": "Drash.Http.Response.sendStatic"
-                },
-                "generateHtmlResponse": {
-                    "access_modifier": "protected",
-                    "name": "generateHtmlResponse",
-                    "description": [
-                        "Generate an HTML response. The `this.body` property should be the\nentire HTML document."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected generateHtmlResponse(): string",
-                    "fully_qualified_name": "Drash.Http.Response.generateHtmlResponse"
-                },
-                "generateJsonResponse": {
-                    "access_modifier": "protected",
-                    "name": "generateJsonResponse",
-                    "description": [
-                        "Generate a JSON response."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected generateJsonResponse(): string",
-                    "fully_qualified_name": "Drash.Http.Response.generateJsonResponse"
-                },
-                "generateXmlResponse": {
-                    "access_modifier": "protected",
-                    "name": "generateXmlResponse",
-                    "description": [
-                        "Generate an XML response."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected generateXmlResponse(): string",
-                    "fully_qualified_name": "Drash.Http.Response.generateXmlResponse"
                 },
                 "getHeaderContentType": {
                     "access_modifier": "protected",
