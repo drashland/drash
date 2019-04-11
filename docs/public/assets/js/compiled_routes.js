@@ -20,8 +20,10 @@ import * as http_service_vue from "/var/www/deno-drash/docs/src/vue/components/p
 import * as exceptions_vue from "/var/www/deno-drash/docs/src/vue/components/pages/api-reference/exceptions.vue";
 import * as error_404_vue from "/var/www/deno-drash/docs/src/vue/components/pages/error_404.vue";
 import * as creating_a_server_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_a_server.vue";
+import * as creating_an_app_hello_world_part_3_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_an_app_hello_world_part_3.vue";
 import * as creating_an_app_hello_world_part_2_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_an_app_hello_world_part_2.vue";
 import * as creating_an_app_hello_world_part_1_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_an_app_hello_world_part_1.vue";
+import * as creating_an_app_hello_world_part_4_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/creating_an_app_hello_world_part_4.vue";
 import * as adding_global_members_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/adding_global_members.vue";
 import * as adding_content_types_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/adding_content_types.vue";
 import * as serving_static_paths_vue from "/var/www/deno-drash/docs/src/vue/components/pages/tutorials/serving_static_paths.vue";
@@ -52,8 +54,10 @@ export default [
   exceptions_vue,
   error_404_vue,
   creating_a_server_vue,
+  creating_an_app_hello_world_part_3_vue,
   creating_an_app_hello_world_part_2_vue,
   creating_an_app_hello_world_part_1_vue,
+  creating_an_app_hello_world_part_4_vue,
   adding_global_members_vue,
   adding_content_types_vue,
   serving_static_paths_vue,
