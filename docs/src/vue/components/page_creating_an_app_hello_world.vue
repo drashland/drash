@@ -17,7 +17,7 @@ div
             h2#before-you-get-started Before You Get Started
             ul
                 li This tutorial assumes you have Deno installed. If you do not, then head over to <a href="https://deno.land/" target="_BLANK">https://deno.land/</a> to install Deno.
-                li This tutorial is part of a 4-part tutorial. Throughout this series you will be taught the following:
+                li This tutorial is part of a 4-part tutorial. Each tutorial builds off of the previous. Throughout this series you will be taught the following:
                     ol
                         li Build a server that handles <code>GET</code> requests at the <code>/</code> URI.
                         li Build the server's front end using a template engine (<a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a>).
