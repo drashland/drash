@@ -2,35 +2,31 @@
 page-creating-an-app-hello-world(:data="data")
     template(v-slot:steps)
         ol
-            li Create your app file.
-                code-block(:data="data.example_code.app")
+            li Create your <code>index.ejs</code> file. This file has a template variable named <code><%= body %></code> which will be replaced with the value of <code>this.response.body</code>.
+                code-block(:data="data.example_code.index" language="html")
+            li Override the <code>Drash.Http.Response</code> class so that it uses the <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> template engine for <code>text/html</code> responses and can render the <code>index.ejs</code> file. The highlighted code is what's being added to <code>app.ts</code>. Also, make sure <code>index.ejs</code> is being referenced correctly in the <code>renderFile()</code> function.
+                code-block(:data="data.example_code.app" line_highlight="2-17")
             li Run your app.
                 code-block(:data="data.example_code.run")
                 p When you start your app, you should see the following in the terminal:
                 code-block(:data="data.example_code.output")
     template(v-slot:what-is-the-code-doing)
-        h3 <code>/path/to/your/project/app.ts</code>
+        h3 <code>index.ejs</code>
         ol
-            li Drash is imported so that all subsequent lines in the file have access to the <code>Drash</code> namespace.
-            li A resource class named <code>HomeResource</code> is created.
-                ul
-                    li <code>HomeResource</code> contains a <code>GET()</code> method. This method will handle all <code>GET</code> requests to <code>HomeResource</code>. When a client makes a <code>GET</code> request to <code>HomeResource</code>, the response the client will receive is "Hello World!" as written in the <code>response</code> object's <code>body</code> property. All resources have access to the <code>response</code> object via <code>this.response</code>.
-                    li The path (a.k.a. URI) that <code>HomeResource</code> opens up to clients is <code>/</code> (in the <code>static paths</code> property). This means clients can only access <code>HomeResource</code> through the <code>/</code> URI.
-                    li All resource classes MUST extend <code>Drash.Http.Resource</code>. You can create your own base resource class, but your base resource class has to extend <code>Drash.Http.Resource</code> before it can be extended further.
-            li The Drash server is created.
-                ul
-                    li The address for the server is set to <code>localhost:8000</code>. This means the full address to <code>HomeResource</code> is <code>localhost:8000/</code>.
-                    li The default response output is set to <code>text/html</code>. This means all responses from the server will default to the <code>text/html</code> MIME type. By default, Drash servers can handle the following types: <code>text/html</code>, <code>application/json</code>, <code>application/xml</code>, and <code>text/xml</code>. If you want your Drash server to handle more content types, then read the following tutorial: <a href="/#/tutorials/adding-content-types">Adding Content Types</a>.
-                    li The Drash server is given one resource: <code>HomeResource</code>.
-            li The Drash server's <code>run()</code> method is invoked so that when <code>app.ts</code> is passed to the <code>deno</code> command in the terminal, the Drash server is started.
+            li This code imports <a href="https://tailwindcss.com/" target="_BLANK">Tailwinds CSS</a> and uses its <a href="https://tailwindcss.com/docs/examples/cards" target="_BLANK">card</a> element to create a nice little UI for this tutorial.
+            li The card element contains a template variable (<code><%= body %></code>) which will take the value of <code>this.response.body</code> from <code>HomeResource</code>.
+        h3 <code>app.ts</code>
+        ol
+            li The <code>renderFile</code> function from <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> is imported so that the <code>Response</code> class can use it to render <code>index.ejs</code>.
+            li A response class extends <code>Drash.Http.Response</code> so that its <code>send()</code> method can be overridden to allow <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> rendering.
+            li <code>Drash.Http.Response</code> is replaced with <code>Response</code> so that <code>Drash.Http.Server</code> uses the <code>Response</code> class that contains the <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> template engine logic.
+            li The rest of the code works as it did in Part 1 of 4.
         h3 <code>deno</code> (in the terminal)
         ol
-            li Deno runs <code>/path/to/your/project/app.ts</code> and:
+            li Deno runs <code>app.ts</code> as it did in Part 1 of 4 with one change:
                 ol
-                    li Allows network access via <code>--allow-net</code> flag.
-                    li Allows environment access via <code>--allow-env</code> flag.
-                p The <code>--allow-net</code> flag is added so that the server will work.
-                p The <code>--allow-env</code> flag is added because <code>Drash.Http.Response</code> objects require environment access if they're setup to serve static paths. Serving static paths isn't setup in this tutorial, but the <code>Drash.Http.Response</code> class compiles with the code that requires access to the environment. This means the <code>--allow-env</code> flag is always required.
+                    li Read access is allowed via <code>--allow-read</code> flag.
+                p The <code>--allow-read</code> flag is added because <code>Response</code> needs to read the contents of <code>index.ejs</code>.
 </template>
 
 <script>

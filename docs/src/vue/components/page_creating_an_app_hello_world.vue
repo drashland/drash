@@ -19,7 +19,7 @@ div
                 li This tutorial is part of a 4-part tutorial. Throughout this series you will be taught the following:
                     ol
                         li Build a server that handles <code>GET</code> requests at the <code>/</code> URI.
-                        li Build the server's front end using a template engine (EJS).
+                        li Build the server's front end using a template engine (<a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a>).
                         li Allow the server to handle <code>POST</code> requests at the <code>/</code> URI and send a <code>POST</code> request from the front end.
                         li Add logging.
                 li-download-source-code(:source_code_uri="$route.meta.source_code_uri")

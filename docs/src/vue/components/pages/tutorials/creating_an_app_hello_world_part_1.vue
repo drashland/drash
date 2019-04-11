@@ -9,7 +9,7 @@ page-creating-an-app-hello-world(:data="data")
                 p When you start your app, you should see the following in the terminal:
                 code-block(:data="data.example_code.output")
     template(v-slot:what-is-the-code-doing)
-        h3 <code>/path/to/your/project/app.ts</code>
+        h3 <code>app.ts</code>
         ol
             li Drash is imported so that all subsequent lines in the file have access to the <code>Drash</code> namespace.
             li A resource class named <code>HomeResource</code> is created.
@@ -25,7 +25,7 @@ page-creating-an-app-hello-world(:data="data")
             li The Drash server's <code>run()</code> method is invoked so that when <code>app.ts</code> is passed to the <code>deno</code> command in the terminal, the Drash server is started.
         h3 <code>deno</code> (in the terminal)
         ol
-            li Deno runs <code>/path/to/your/project/app.ts</code> and:
+            li Deno runs <code>app.ts</code> and:
                 ol
                     li Allows network access via <code>--allow-net</code> flag.
                     li Allows environment access via <code>--allow-env</code> flag.

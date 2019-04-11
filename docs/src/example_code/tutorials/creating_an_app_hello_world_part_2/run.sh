@@ -1,1 +1,1 @@
-deno /path/to/your/project/app.ts --allow-net --allow-env
+deno app.ts --allow-net --allow-env --allow-read
