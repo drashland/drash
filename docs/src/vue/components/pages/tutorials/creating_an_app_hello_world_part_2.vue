@@ -27,6 +27,9 @@ page-creating-an-app-hello-world(:data="data")
                 ol
                     li Read access is allowed via <code>--allow-read</code> flag.
                 p The <code>--allow-read</code> flag is added because <code>Response</code> needs to read the contents of <code>index.ejs</code>.
+    template(v-slot:screenshot)
+        a(href="/public/assets/img/creating_an_app_hello_world_part_2.png")
+            img(src="/public/assets/img/creating_an_app_hello_world_part_2.png")
 </template>
 
 <script>

@@ -10,6 +10,7 @@ div
                 li <a :href="$conf.base_url + '/#' + $route.path + '#folder-structure-end-state'">Folder Structure End State</a>
                 li <a :href="$conf.base_url + '/#' + $route.path + '#steps'">Steps</a>
                 li <a :href="$conf.base_url + '/#' + $route.path + '#what-is-the-code-doing'">What Is The Code Doing?</a>
+                li <a :href="$conf.base_url + '/#' + $route.path + '#screenshot'">Screenshot</a>
     div.row
         div.col
             hr
@@ -40,6 +41,12 @@ div
             hr
             h2#what-is-the-code-doing What Is The Code Doing?
             slot(name="what-is-the-code-doing")
+    div.row
+        div.col
+            hr
+            h2#screenshot Screenshot
+            p Your app should look like the following when you've completed this tutorial:
+            slot(name="screenshot")
     end-of-tutorial
 </template>
 
