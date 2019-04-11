@@ -31,6 +31,7 @@
     "dev-kill": "console/dev.kill",
     "dev-webpack": "console/webpack.dev",
     "dev-webpack-watch": "console/webpack.dev --watch",
+    "delete-ds-store": "find . -name '.DS_Store' -type f -delete",
     "install-watchdog": "console/pip.install.watchdog",
     "prettier": "../console/prettier",
     "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css",

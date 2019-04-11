@@ -1,3 +1,9 @@
+<style lang="scss">
+    .line-highlight:after {
+        display: none;
+    }
+</style>
+
 <style lang="scss" scoped>
     pre {
         margin-bottom: 0;
@@ -41,6 +47,7 @@ export default {
         'data',
         'title',
         'line_highlight',
+        'language',
     ],
     beforeMount() {
         if (this.title) {
@@ -48,6 +55,9 @@ export default {
         }
         if (this.line_highlight) {
             this.data.line_highlight = this.line_highlight;
+        }
+        if (this.language) {
+            this.data.language = this.language;
         }
     },
     mounted() {
