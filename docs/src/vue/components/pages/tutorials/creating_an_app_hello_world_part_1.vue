@@ -32,8 +32,8 @@ page-creating-an-app-hello-world(:data="data")
                 p The <code>--allow-net</code> flag is added so that the server will work.
                 p The <code>--allow-env</code> flag is added because <code>Drash.Http.Response</code> objects require environment access if they're setup to serve static paths. Serving static paths isn't setup in this tutorial, but the <code>Drash.Http.Response</code> class compiles with the code that requires access to the environment. This means the <code>--allow-env</code> flag is always required.
     template(v-slot:screenshot)
-        a(href="/public/assets/img/creating_an_app_hello_world_part_1.png")
-            img(src="/public/assets/img/creating_an_app_hello_world_part_1.png")
+        a(:href="$conf.base_url + '/public/assets/img/creating_an_app_hello_world_part_1.png'")
+            img(:src="$conf.base_url + '/public/assets/img/creating_an_app_hello_world_part_1.png'")
 </template>
 
 <script>
