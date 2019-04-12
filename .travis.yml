@@ -8,4 +8,4 @@ install:
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
-  - deno $DRASH_DIR_ROOT/tests/test.ts --allow-all --no-prompt
+  - deno --A --no-prompt $DRASH_DIR_ROOT/tests/test.ts
