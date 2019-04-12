@@ -17,6 +17,14 @@ class HomeResource extends Drash.Http.Resource {
     this.response.body = "Hello World!";
     return this.response;
   }
+  public POST() {
+    this.response.body = "POST request received!";
+    let name = this.request.url_query_params.name;
+    if (name) {
+      this.response.body += ` Thanks for the request, ${name}!`;
+    }
+    return this.response;
+  }
 }
 
 let server = new Drash.Http.Server({

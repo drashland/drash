@@ -1,1 +1,1 @@
-Deno server started at localhost:8000.
+Deno server started at localhost:1337.

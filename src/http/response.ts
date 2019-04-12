@@ -170,14 +170,14 @@ export default class Response {
    * @description
    *     Send the response to the client making the request.
    *
-   * @return Promise<any>
+   * @return any
    *     Returns the output which is passed to `Drash.Http.Request.respond()`.
    *     The output is only returned for unit testing purposes. It is not
    *     intended to be used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
-  public async send(): Promise<any> {
-    let body = await this.generateResponse();
+  public send(): any {
+    let body = this.generateResponse();
     let output = {
       status: this.status_code,
       headers: this.headers,

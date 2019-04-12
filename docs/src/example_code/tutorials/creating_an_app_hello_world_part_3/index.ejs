@@ -15,6 +15,18 @@
 					<div class="mb-4">
 						<p class="text-grey-darker text-base"><%= body %></p>
 					</div>
+					<div class="mb-4">
+						<p class="mb-2"><strong>POST Response: </strong></p>
+						<p id="post_message" class="text-grey-darker text-base">...</p>
+					</div>
+					<hr class="border-b border-gray">
+					<div class="mb-4">
+						<label class="block text-grey-darker text-sm font-bold mb-2" for="name">Name</label>
+						<input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Name">
+					</div>
+					<div class="mb-4 text-right">
+						<button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded-full" style="outline: none" onclick="post()">POST</button>
+					</div>
 					<hr class="border-b border-gray">
 				</div>
 				<div class="px-6 py-4">
@@ -24,5 +36,18 @@
 				</div>
 			</div>
 		</div>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script>
+			let post = function() {
+				let name = document.getElementById("name").value;
+				axios.post("/?response_content_type=application/json&name=" + name)
+					.then(function (response) {
+						document.getElementById("post_message").innerHTML = response.data.body;
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			};
+		</script>
 	</body>
 </html>
