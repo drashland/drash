@@ -1,4 +1,4 @@
-import Drash from "../../../../../mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
 
 class Response extends Drash.Http.Response {
@@ -22,12 +22,7 @@ class HomeResource extends Drash.Http.Resource {
 let server = new Drash.Http.Server({
   address: "localhost:1337",
   response_output: "text/html",
-  resources: [HomeResource],
-  logger: new Drash.Loggers.ConsoleLogger({
-    enabled: true,
-    level: "all",
-    tag_string: "{level} |"
-  })
+  resources: [HomeResource]
 });
 
 server.run();

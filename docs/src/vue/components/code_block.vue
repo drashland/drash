@@ -59,7 +59,7 @@ export default {
         if (this.language) {
             this.data.language = this.language;
         }
-        this.data.contents = this.data.contents.replace("<\/\/script>", "<\/script>");
+        this.data.contents = this.data.contents.replace(/<\/\/script>/g, "<\/script>");
     },
     mounted() {
         Prism.highlightAll();
