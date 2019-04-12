@@ -2,10 +2,10 @@
 page-creating-an-app-hello-world(:data="data")
     template(v-slot:steps)
         ol
-            li Create your <code>index.ejs</code> file. This file has a template variable named <code><%= body %></code> which will be replaced with the value of <code>this.response.body</code>.
-                code-block(:data="data.example_code.index" language="html")
+            li Create your <code>index.ejs</code> file. This file has a template variable named <code><%= body %></code> which will be replaced with the value of <code>this.response.body</code>. The <code><%= body %></code> variable is highlighted.
+                code-block(:data="data.example_code.index" language="html" line_highlight="16")
             li Override the <code>Drash.Http.Response</code> class so that it uses the <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> template engine for <code>text/html</code> responses and can render the <code>index.ejs</code> file. The highlighted code is what's being added to <code>app.ts</code>. Also, make sure <code>index.ejs</code> is being referenced correctly in the <code>renderFile()</code> function.
-                code-block(:data="data.example_code.app" line_highlight="2-17")
+                code-block(:data="data.example_code.app" line_highlight="2-12")
             li Run your app.
                 code-block(:data="data.example_code.run")
                 p When you start your app, you should see the following in the terminal:

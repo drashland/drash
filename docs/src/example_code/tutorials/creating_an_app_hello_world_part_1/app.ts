@@ -9,7 +9,7 @@ class HomeResource extends Drash.Http.Resource {
 }
 
 let server = new Drash.Http.Server({
-  address: "localhost:8000",
+  address: "localhost:1337",
   response_output: "text/html",
   resources: [HomeResource]
 });

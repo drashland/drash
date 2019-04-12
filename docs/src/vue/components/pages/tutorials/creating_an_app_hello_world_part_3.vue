@@ -1,31 +1,33 @@
 <template lang="pug">
-div
-    page-header(:route="$route")
-    div.row
-        div.col
-            p This page will be available on April 11, 2019 or sooner.
-//- page-creating-an-app-hello-world(:data="data")
+page-creating-an-app-hello-world(:data="data")
     template(v-slot:steps)
-    //- template(v-slot:what-is-the-code-doing)
+        ol
+            li Add the code to send a <code>POST</code> request to the <code>/</code> URI. We'll use <a href="https://github.com/axios/axios" target="_BLANK">axios</a> for this functionality. The highlighted code is what's being added to <code>index.ejs</code>.
+                code-block(:data="data.example_code.index" language="html" line_highlight="18-29,39-51")
+            li Add the <code>POST</code> method to <code>HomeResource</code>. The highlighted code is what's being added to <code>app.ts</code>.
+                code-block(:data="data.example_code.app" line_highlight="20-27")
+            li Run your app.
+                code-block(:data="data.example_code.run")
+                p When you start your app, you should see the following in the terminal:
+                code-block(:data="data.example_code.output")
+            li Type your name in the Name input field and click the POST button.
+    template(v-slot:what-is-the-code-doing)
         h3 <code>index.ejs</code>
         ol
-            li This code imports <a href="https://tailwindcss.com/" target="_BLANK">Tailwinds CSS</a> and uses its <a href="https://tailwindcss.com/docs/examples/cards" target="_BLANK">card</a> element to create a nice little UI for this tutorial.
-            li The card element contains a template variable (<code><%= body %></code>) which will take the value of <code>this.response.body</code> from <code>HomeResource</code>.
+            li An input field and a POST button is added to the UI. When a name is typed into the input field and the POST button is clicked, the server will respond with some data and it will be displayed under the "POST response" label.
+            li <a href="https://github.com/axios/axios" target="_BLANK">axios</a> is being used to make the <code>POST</code> request to the server at the <code>/</code> URI.
+            li The <code>response_content_type</code> URL query param is added to make sure the response received back from the server is <code>application/json</code>.
+            li The <code>name</code> URL query param is added to make the server's response a bit more dynamic. The server will check for this param and use it in the response. This param is the value of the input field.
         h3 <code>app.ts</code>
         ol
-            li The <code>renderFile</code> function from <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> is imported so that the <code>Response</code> class can use it to render <code>index.ejs</code>.
-            li A response class extends <code>Drash.Http.Response</code> so that its <code>send()</code> method can be overridden to allow <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> rendering.
-            li <code>Drash.Http.Response</code> is replaced with <code>Response</code> so that <code>Drash.Http.Server</code> uses the <code>Response</code> class that contains the <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> template engine logic.
-            li The rest of the code works as it did in Part 1 of 4.
+            li The <code>POST</code> method is added to <code>HomeResource</code> so that <code>POST</code> requests can be handled at the <code>/</code> URI.
+            li The default response is "POST request received!" as a string. If the request includes a <code>name</code> URL query param, then it will be added to the response.
         h3 <code>deno</code> (in the terminal)
         ol
-            li Deno runs <code>app.ts</code> as it did in Part 1 of 4 with one change:
-                ol
-                    li Read access is allowed via <code>--allow-read</code> flag.
-                p The <code>--allow-read</code> flag is added because <code>Response</code> needs to read the contents of <code>index.ejs</code>.
-    //- template(v-slot:screenshot)
-        a(href="/public/assets/img/creating_an_app_hello_world_part_3.png")
-            img(src="/public/assets/img/creating_an_app_hello_world_part_3.png")
+            li Deno runs <code>app.ts</code> as it did in the previous tutorial.
+    template(v-slot:screenshot)
+        a(:href="$conf.base_url + '/public/assets/img/creating_an_app_hello_world_part_3.png'")
+            img(:src="$conf.base_url + '/public/assets/img/creating_an_app_hello_world_part_3.png'")
 </template>
 
 <script>
@@ -41,7 +43,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_2
+                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_3
             }
         };
     },
