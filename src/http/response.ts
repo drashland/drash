@@ -170,7 +170,7 @@ export default class Response {
    * @description
    *     Send the response to the client making the request.
    *
-   * @return any
+   * @return Promise<any>
    *     Returns the output which is passed to `Drash.Http.Request.respond()`.
    *     The output is only returned for unit testing purposes. It is not
    *     intended to be used elsewhere as this call is the last call in the
