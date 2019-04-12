@@ -8,4 +8,4 @@ install:
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
-  - console/test --allow-env
+  - console/test
