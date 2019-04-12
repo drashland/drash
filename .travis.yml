@@ -1,8 +1,7 @@
 language: python
 
 env:
-  - DRASH_DIR_ROOT="/home/travis/build/crookse/deno-drash"
-  - DRASH_CORE_LOGGER_ENABLED=false
+  - DRASH_DIR_ROOT="/home/travis/build/crookse/deno-drash" DRASH_CORE_LOGGER_ENABLED=false
 
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh
