@@ -1370,14 +1370,14 @@
                         {
                             "description": [],
                             "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
+                                "line": "@return any",
+                                "data_type": "any",
                                 "name": null
                             }
                         }
                     ],
                     "throws": null,
-                    "signature": "public generateResponse(): string",
+                    "signature": "public generateResponse(): any",
                     "fully_qualified_name": "Drash.Http.Response.generateResponse"
                 },
                 "generateHtmlResponse": {
@@ -1391,14 +1391,14 @@
                         {
                             "description": [],
                             "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
+                                "line": "@return any",
+                                "data_type": "any",
                                 "name": null
                             }
                         }
                     ],
                     "throws": null,
-                    "signature": "public generateHtmlResponse(): string",
+                    "signature": "public generateHtmlResponse(): any",
                     "fully_qualified_name": "Drash.Http.Response.generateHtmlResponse"
                 },
                 "generateJsonResponse": {
@@ -1419,7 +1419,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public generateJsonResponse(): string",
+                    "signature": "public generateJsonResponse(): any",
                     "fully_qualified_name": "Drash.Http.Response.generateJsonResponse"
                 },
                 "generateXmlResponse": {
@@ -1433,14 +1433,14 @@
                         {
                             "description": [],
                             "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
+                                "line": "@return any",
+                                "data_type": "any",
                                 "name": null
                             }
                         }
                     ],
                     "throws": null,
-                    "signature": "public generateXmlResponse(): string",
+                    "signature": "public generateXmlResponse(): any",
                     "fully_qualified_name": "Drash.Http.Response.generateXmlResponse"
                 },
                 "getStatusMessage": {

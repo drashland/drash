@@ -74,9 +74,9 @@ export default class Response {
    * @description
    *     Generate a response.
    *
-   * @return string
+   * @return any
    */
-  public generateResponse(): string {
+  public generateResponse(): any {
     switch (this.headers.get("Content-Type")) {
       case "application/json":
         this.body_generated = this.generateJsonResponse();
@@ -101,9 +101,9 @@ export default class Response {
    *     Generate an HTML response. The `this.body` property should be the
    *     entire HTML document.
    *
-   * @return string
+   * @return any
    */
-  public generateHtmlResponse(): string {
+  public generateHtmlResponse(): any {
     return this.body;
   }
 
@@ -113,7 +113,7 @@ export default class Response {
    *
    * @return string
    */
-  public generateJsonResponse(): string {
+  public generateJsonResponse(): any {
     return JSON.stringify({
       status_code: this.status_code,
       status_message: this.getStatusMessage(),
@@ -129,9 +129,9 @@ export default class Response {
    * @description
    *     Generate an XML response.
    *
-   * @return string
+   * @return any
    */
-  public generateXmlResponse(): string {
+  public generateXmlResponse(): any {
     return `<response>
   <statuscode>${this.status_code}</statuscode>
   <statusmessage>${this.getStatusMessage()}</statusmessage>
