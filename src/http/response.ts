@@ -176,8 +176,8 @@ export default class Response {
    *     intended to be used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
-  public send(): any {
-    let body = this.generateResponse();
+  public async send(): Promise<any> {
+    let body = await this.generateResponse();
     let output = {
       status: this.status_code,
       headers: this.headers,
