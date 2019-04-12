@@ -104,6 +104,7 @@ function getExampleCode() {
       if (file.isFile()) {
         let fileContentsRaw = Deno.readFileSync(file.path);
         let fileContents = Decoder.decode(fileContentsRaw);
+        fileContents = fileContents.replace("</script>", "<//script>");
         let filename;
         try {
           filename = file.name.split(".")[0];
