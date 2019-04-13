@@ -4,6 +4,9 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const latestRelease = "v0.7.7";
 
 function getConf(envVars) {
+  let denoVersionMin = "0.3.2";
+  let denoVersionMax = "0.3.6";
+
   let conf = {
     base_url: !envVars.base_url
       ? ""
@@ -15,6 +18,9 @@ function getConf(envVars) {
     latest_release: latestRelease,
     module_name: "Drash",
     module_namespace: "Drash",
+    shields: {
+      requires_deno: `https://img.shields.io/badge/requires%20deno-%3E=${deno_min}%20%3C=${deno_max}-brightgreen.svg`
+    },
     webpack_mode: envVars.environment
   };
 
