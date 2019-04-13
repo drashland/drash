@@ -1,4 +1,4 @@
-import { ServerRequest } from "https://deno.land/x/http/server.ts";
+import { ServerRequest } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.4/http/server.ts";
 
 /**
  * @memberof Drash.Http
