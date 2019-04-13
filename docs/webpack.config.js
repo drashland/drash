@@ -4,6 +4,14 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const latestRelease = "v0.7.7";
 
 function getConf(envVars) {
+  let denoVersionMin = "0.3.6";
+  let denoVersionMax = "0.3.6";
+
+  let denoVersionRequirement = `v${denoVersionMax}`;
+  if (denoVersionMin != denoVersionMax) {
+    denoVersionRequirement = `>=${denoVersionMin} <=${denoVersionMax}`;
+  }
+
   let conf = {
     base_url: !envVars.base_url
       ? ""
@@ -12,9 +20,15 @@ function getConf(envVars) {
     deno_version: envVars.deno_version.replace("deno: ", "Deno v")
       .replace("\nv8: ", ", V8 v")
       .replace("\ntypescript: ", ", and TypeScript v"),
+    deno_version_requirement: denoVersionRequirement,
     latest_release: latestRelease,
     module_name: "Drash",
     module_namespace: "Drash",
+    shields: {
+      requires_deno: denoVersionMin == denoVersionMax
+        ? `https://img.shields.io/badge/requires%20deno-v${denoVersionMax}-brightgreen.svg`
+        : `https://img.shields.io/badge/requires%20deno-%3E=${denoVersionMin}%20%3C=${denoVersionMax}-brightgreen.svg`
+    },
     webpack_mode: envVars.environment
   };
 

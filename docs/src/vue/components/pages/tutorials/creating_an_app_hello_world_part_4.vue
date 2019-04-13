@@ -1,31 +1,25 @@
 <template lang="pug">
-div
-    page-header(:route="$route")
-    div.row
-        div.col
-            p This page will be available on April 12, 2019 or sooner.
-//- page-creating-an-app-hello-world(:data="data")
+page-creating-an-app-hello-world(:data="data")
     template(v-slot:steps)
-    //- template(v-slot:what-is-the-code-doing)
-        h3 <code>index.ejs</code>
         ol
-            li This code imports <a href="https://tailwindcss.com/" target="_BLANK">Tailwinds CSS</a> and uses its <a href="https://tailwindcss.com/docs/examples/cards" target="_BLANK">card</a> element to create a nice little UI for this tutorial.
-            li The card element contains a template variable (<code><%= body %></code>) which will take the value of <code>this.response.body</code> from <code>HomeResource</code>.
+            li Enable logging by setting the server's <code>logger</code> config. The highlighted code is what's added to <code>app.ts</code>.
+                code-block(:data="data.example_code.app" line_highlight="34-43")
+            li Run your app.
+                code-block(:data="data.example_code.run")
+                p When you start your app, the logs should look like the following in the terminal:
+                code-block(:data="data.example_code.output_get")
+            li When you make a POST request (by clicking the POST button in the UI), the logs should look like the following (the highlighted messages are appended):
+                code-block(:data="data.example_code.output_post", line_highlight="8-10")
+    template(v-slot:what-is-the-code-doing)
         h3 <code>app.ts</code>
         ol
-            li The <code>renderFile</code> function from <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> is imported so that the <code>Response</code> class can use it to render <code>index.ejs</code>.
-            li A response class extends <code>Drash.Http.Response</code> so that its <code>send()</code> method can be overridden to allow <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> rendering.
-            li <code>Drash.Http.Response</code> is replaced with <code>Response</code> so that <code>Drash.Http.Server</code> uses the <code>Response</code> class that contains the <a href="https://github.com/syumai/dejs" target="_BLANK">dejs</a> template engine logic.
-            li The rest of the code works as it did in Part 1 of 4.
+            li The server's <code>logger</code> config is used to add a <code>Drash.Loggers.ConsoleLogger</code> object.
+            li The logger is set to be enabled (this option exists so that message output can be turned off during unit tests) when the server runs; and the logger's log message level is <code>debug</code>. This means all log messages with a rank equal to or less than the rank of the <code>debug</code> level will be displayed. See the following for the log message dictionary: <a href="https://github.com/crookse/deno-drash/blob/master/src/dictionaries/log_levels.ts" target="_BLANK">https://github.com/crookse/deno-drash/blob/master/src/dictionaries/log_levels.ts</a>.
+            li The logger's <code>tag_string</code> config is used to define a tag string that is prepended to the log message. All tags must be surrounded by the left <code>{</code> and the right <code>}</code>.
+            li Each tag is mapped to a member in the logger's <code>tag_string_fns</code> config. For example, the <code>{datetime}</code> tag will get its data using the <code>datetime()</code> function. The <code>{level}</code> tag is a reserved tag and will always output the level of the current log message being written to the log. If a tag is defined in the <code>tag_string</code> config and can't be mapped to a member in the <code>tag_string_fns</code> config, then the tag will show as its written.
         h3 <code>deno</code> (in the terminal)
         ol
-            li Deno runs <code>app.ts</code> as it did in Part 1 of 4 with one change:
-                ol
-                    li Read access is allowed via <code>--allow-read</code> flag.
-                p The <code>--allow-read</code> flag is added because <code>Response</code> needs to read the contents of <code>index.ejs</code>.
-    //- template(v-slot:screenshot)
-        a(href="/public/assets/img/creating_an_app_hello_world_part_3.png")
-            img(src="/public/assets/img/creating_an_app_hello_world_part_3.png")
+            li Deno runs <code>app.ts</code> as it did in the previous tutorial.
 </template>
 
 <script>
@@ -41,7 +35,8 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_2
+                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_4,
+                hide_snapshot: true
             }
         };
     },

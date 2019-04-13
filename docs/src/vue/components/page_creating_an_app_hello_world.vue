@@ -10,13 +10,13 @@ div
                 li <a :href="$conf.base_url + '/#' + $route.path + '#folder-structure-end-state'">Folder Structure End State</a>
                 li <a :href="$conf.base_url + '/#' + $route.path + '#steps'">Steps</a>
                 li <a :href="$conf.base_url + '/#' + $route.path + '#what-is-the-code-doing'">What Is The Code Doing?</a>
-                li <a :href="$conf.base_url + '/#' + $route.path + '#screenshot'">Screenshot</a>
+                li(v-show="data.hide_snapshot !== true") <a :href="$conf.base_url + '/#' + $route.path + '#screenshot'">Screenshot</a>
     div.row
         div.col
             hr
             h2#before-you-get-started Before You Get Started
             ul
-                li This tutorial assumes you have Deno installed. If you do not, then head over to <a href="https://deno.land/" target="_BLANK">https://deno.land/</a> to install Deno.
+                li This tutorial assumes you have Deno {{ $conf.deno_version_requirement }} installed. If you do not, then head over to <a href="https://github.com/denoland/deno_install" target="_BLANK">https://github.com/denoland/deno_install</a> to install Deno {{ $conf.deno_version_requirement }}.
                 li This tutorial is part of a 4-part tutorial. Each tutorial builds off of the previous. Throughout this series you will be taught the following:
                     ol
                         li Build a server that handles <code>GET</code> requests at the <code>/</code> URI.
@@ -41,7 +41,7 @@ div
             hr
             h2#what-is-the-code-doing What Is The Code Doing?
             slot(name="what-is-the-code-doing")
-    div.row
+    div.row(v-show="data.hide_snapshot !== true")
         div.col
             hr
             h2#screenshot Screenshot

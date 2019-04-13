@@ -3,17 +3,20 @@ div.c-sidebar
     div(v-if="$conf.webpack_mode != 'production'")
         p.l-environment-text
             span.text ENV: {{ $conf.webpack_mode }}
-    div.c-sidebar__header
+    div.c-sidebar__header(style="padding: 3rem 0;")
         div.row.align-items-center.text-align--center
             div.col
-                h1.module-name(style="margin-top: 2rem;")
+                h1.module-name
                     a(:href="$conf.base_url + '/#/'") Drash
-                p
+                div.margin-bottom--1rem
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
-                        img(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="90" height="20")
+                        img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
                     | &nbsp;
                     a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
-                        img(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="90" height="20")
+                        img.margin-bottom--0(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="auto" height="20")
+                div
+                    a(href="https://github.com/denoland/deno_install" target="_BLANK")
+                        img.margin-bottom--0(alt="Deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction

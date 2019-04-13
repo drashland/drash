@@ -1,0 +1,7 @@
+Deno server started at localhost:1337.
+
+2019-04-13 01:57:56.693Z | INFO |  Request received: GET /
+2019-04-13 01:57:56.693Z | DEBUG |  Calling HomeResource.GET() method.
+2019-04-13 01:57:56.693Z | INFO |  Sending response. Content-Type: text/html. Status: 200 (OK).
+2019-04-13 01:57:56.765Z | DEBUG |  /favicon.ico requested.
+2019-04-13 01:57:56.765Z | DEBUG |  All future log messages for /favicon.ico will be muted.
