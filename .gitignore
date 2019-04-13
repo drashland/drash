@@ -4,6 +4,8 @@
 .env
 bundle.js
 package-lock.json
+compiled_*.json
+compiled_*.js
 
 # directories
 .sass-cache
