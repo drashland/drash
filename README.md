@@ -15,12 +15,14 @@ Although this module is working, it is still subject to breaking changes from De
 ## Install
 
 ```typescript
+// Import Drash latest release
+import Drash from "https://deno.land/x/drash@v0.7.8/mod.ts";
+
 // Import Drash master
 import Drash from "https://deno.land/x/drash/mod.ts";
-
-// Import Drash latest release or specific version
-import Drash from "https://deno.land/x/drash@{latest|version}/mod.ts";
 ```
+
+_It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."_
 
 ## An Example HTML Application
 
