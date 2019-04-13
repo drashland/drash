@@ -4,7 +4,9 @@
       "fully_qualified_name": "Drash.Services.ClassOne",
       "namespace": "Drash.Services",
       "name": "ClassOne",
-      "description": ["Class one does class one things."],
+      "description": [
+        "Class one does class one things."
+      ],
       "properties": {
         "property_one": {
           "access_modifier": "public",
@@ -27,7 +29,9 @@
           "params": {
             "myObject": {
               "name": "myObject",
-              "description": ["My object."],
+              "description": [
+                "My object."
+              ],
               "annotation": {
                 "line": "@param any myObject",
                 "data_type": "any",
