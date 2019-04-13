@@ -6,9 +6,9 @@ page-creating-an-app-hello-world(:data="data")
                 code-block(:data="data.example_code.app" line_highlight="34-43")
             li Run your app.
                 code-block(:data="data.example_code.run")
-                p When you start your app, you should see the following log messages in the terminal:
+                p When you start your app, the logs should look like the following in the terminal:
                 code-block(:data="data.example_code.output_get")
-            li When you make a POST request (by clicking the POST button), the logs should look like the following (the highlighted messages are appended):
+            li When you make a POST request (by clicking the POST button in the UI), the logs should look like the following (the highlighted messages are appended):
                 code-block(:data="data.example_code.output_post", line_highlight="8-10")
     template(v-slot:what-is-the-code-doing)
         h3 <code>app.ts</code>
@@ -35,7 +35,8 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_4
+                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_4,
+                hide_snapshot: true
             }
         };
     },
