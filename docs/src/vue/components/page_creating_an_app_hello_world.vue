@@ -61,6 +61,5 @@ let component = {
 
 Vue.component("page-creating-an-app-hello-world", component);
 
-
 export default component;
 </script>

@@ -1,16 +1,15 @@
 import Drash from "https://deno.land/x/drash/mod.ts";
 
 /**
- * Export the `Response` class that will be used in place of `Drash.Http.Response`
+ * Override `Drash.Http.Response` and export this class so it can be used to
+ * replace `Drash.Http.Response` from `app.ts`.
  */
 export default class Response extends Drash.Http.Response {
-  /**
-   * Send a response to the client.
-   */
   public send(): any {
     let body;
 
     switch (this.headers.get("Content-Type")) {
+
       // Handle HTML
       case "text/html":
         body = `<!DOCTYPE html><head><link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet"></head><body class="m-10"><h1>Hello</h1><p>Status: ${
@@ -47,10 +46,12 @@ export default class Response extends Drash.Http.Response {
         break;
     }
 
-    this.request.respond({
+    let output = {
       status: this.status_code,
       headers: this.headers,
       body: new TextEncoder().encode(body)
-    });
+    };
+
+    this.request.respond(output);
   }
 }
