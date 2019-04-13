@@ -3,9 +3,7 @@
     "ClassOne": {
       "name": "ClassOne",
       "namespace": "Drash.Services",
-      "description": [
-        "Class one does class one things."
-      ],
+      "description": ["Class one does class one things."],
       "fully_qualified_name": "Drash.Services.ClassOne",
       "properties": {
         "property_one": {
@@ -29,9 +27,7 @@
           "params": {
             "myObject": {
               "name": "myObject",
-              "description": [
-                "My object."
-              ],
+              "description": ["My object."],
               "annotation": {
                 "line": "@param any myObject",
                 "data_type": "any",

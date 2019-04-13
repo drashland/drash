@@ -32,10 +32,10 @@ let expected = {
   off: {
     rank: 0,
     name: "Off"
-  },
+  }
 };
 
-let actual: any = {}
+let actual: any = {};
 
 for (let logLevel in expected) {
   actual[logLevel] = members.Drash.Dictionaries.LogLevels.get(logLevel);

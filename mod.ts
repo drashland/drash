@@ -31,13 +31,14 @@ import * as util_members from "./src/util/members.ts";
 //
 
 namespace Drash {
-
   export namespace Core {
-    export type EnvVar = env_var; export const EnvVar = env_var;
+    export type EnvVar = env_var;
+    export const EnvVar = env_var;
   }
 
   export namespace Compilers {
-    export type DocBlocksToJson = doc_blocks_to_json; export const DocBlocksToJson = doc_blocks_to_json;
+    export type DocBlocksToJson = doc_blocks_to_json;
+    export const DocBlocksToJson = doc_blocks_to_json;
   }
 
   export namespace Dictionaries {
@@ -49,29 +50,40 @@ namespace Drash {
   }
 
   export namespace Exceptions {
-    export type HttpException = http_exception; export const HttpException = http_exception;
+    export type HttpException = http_exception;
+    export const HttpException = http_exception;
   }
 
   export namespace Loggers {
-    export type ConsoleLogger = console_logger; export const ConsoleLogger = console_logger;
-    export type CoreLogger = class_core_logger; export const CoreLogger = class_core_logger;
-    export type FileLogger = file_logger; export const FileLogger = file_logger;
-    export type Logger = base_logger; export const Logger = base_logger;
+    export type ConsoleLogger = console_logger;
+    export const ConsoleLogger = console_logger;
+    export type CoreLogger = class_core_logger;
+    export const CoreLogger = class_core_logger;
+    export type FileLogger = file_logger;
+    export const FileLogger = file_logger;
+    export type Logger = base_logger;
+    export const Logger = base_logger;
   }
 
   export namespace Http {
-    export type Request = request; export let Request = request;
-    export type Resource = resource; export const Resource = resource;
-    export type Response = response; export let Response = response;
-    export type Server = server; export const Server = server;
+    export type Request = request;
+    export let Request = request;
+    export type Resource = resource;
+    export const Resource = resource;
+    export type Response = response;
+    export let Response = response;
+    export type Server = server;
+    export const Server = server;
   }
 
   export namespace Services {
-    export type HttpService = http_service; export const HttpService = new http_service();
+    export type HttpService = http_service;
+    export const HttpService = new http_service();
   }
 
   export namespace Util {
-    export type ObjectParser = util_object_parser; export const ObjectParser = util_object_parser;
+    export type ObjectParser = util_object_parser;
+    export const ObjectParser = util_object_parser;
     export const Exports = util_members;
   }
 
@@ -103,7 +115,6 @@ namespace Drash {
     tag_string: "{level} |"
   });
 
-
   /**
    * Add an app to the Members namespace. After adding an app, you can use the
    * app via `Drash.Members.YourApp.doSomething()`.
@@ -113,12 +124,10 @@ namespace Drash {
    * @param any app
    *     The app.
    */
-   export function addMember(name: string, app: any) {
-     this.core_logger.debug(
-       `Add member "${name}" to Drash.Members namespace.`
-     );
-     this.Members[name] = app;
-   }
+  export function addMember(name: string, app: any) {
+    this.core_logger.debug(`Add member "${name}" to Drash.Members namespace.`);
+    this.Members[name] = app;
+  }
 
   /**
    * Set an environment variable in `Deno.env()`.
@@ -132,14 +141,14 @@ namespace Drash {
    *     `.toArray().value` to turn it into a parsable JSON array before
    *     retrieving the actual value.
    */
-   export function getEnvVar(variableName: string): Drash.Core.EnvVar {
-     let exists = Deno.env().hasOwnProperty(variableName);
-     let value;
+  export function getEnvVar(variableName: string): Drash.Core.EnvVar {
+    let exists = Deno.env().hasOwnProperty(variableName);
+    let value;
 
-     value = exists ? Deno.env()[variableName] : undefined;
+    value = exists ? Deno.env()[variableName] : undefined;
 
-     return new Drash.Core.EnvVar(variableName, value);
-   }
+    return new Drash.Core.EnvVar(variableName, value);
+  }
 
   /**
    * Set an environment variable in `Deno.env()`.
@@ -151,11 +160,11 @@ namespace Drash {
    *     The value of the variable. `Deno.env()` only accepts strings. See
    *     https://deno.land/typedoc/index.html#env for more info.
    */
-   export function setEnvVar(variableName: string, value: string) {
-     if (!Deno.env()[variableName]) {
-       Deno.env()[variableName] = value;
-     }
-   }
+  export function setEnvVar(variableName: string, value: string) {
+    if (!Deno.env()[variableName]) {
+      Deno.env()[variableName] = value;
+    }
+  }
 }
 
 export default Drash;
