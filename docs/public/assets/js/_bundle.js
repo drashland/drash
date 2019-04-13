@@ -17,6 +17,9 @@ import Page_ApiReference from "/components/page_api_reference.vue";
 import Page_ApiReference_Dictionary from "/components/page_api_reference_dictionary.vue";
 import Page_ApiReference_MembersOnly from "/components/page_api_reference_members_only.vue";
 import Page_CreatingAnApp_HelloWorld from "/components/page_creating_an_app_hello_world.vue";
+import Page_Tutorial_Default from "/components/page_tutorial_default.vue";
+import A_TableOfContents from "/components/a_toc.vue";
+import UL_TableOfContents from "/components/ul_toc.vue";
 
 // Vendor
 import MarkdownIt from "markdown-it";
