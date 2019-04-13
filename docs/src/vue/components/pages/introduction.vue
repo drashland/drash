@@ -25,8 +25,9 @@ div
         div.row
             div.col
                 heading-h2#importing(heading="Importing")
-                p There are multiple ways to import Drash (and its different versions) into your project. See below:
-                code-block(:data="example_code.importing.app")
+                p
+                    code-block(:data="example_code.importing.app")
+                p It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."
         hr
         div.row
             div.col
