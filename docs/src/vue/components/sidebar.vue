@@ -8,7 +8,7 @@ div.c-sidebar
             div.col
                 h1.module-name
                     a(:href="$conf.base_url + '/#/'") Drash
-                div.margin-bottom--1rem
+                div
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
                         img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
                     | &nbsp;
@@ -16,7 +16,10 @@ div.c-sidebar
                         img.margin-bottom--0(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="auto" height="20")
                 div
                     a(href="https://github.com/denoland/deno_install" target="_BLANK")
-                        img.margin-bottom--0(alt="Deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
+                        img.margin-bottom--0(alt="deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
+                div
+                    a(href="https://github.com/denoland/deno_std" target="_BLANK")
+                        img.margin-bottom--0(alt="deno_std compatibility" :src="$conf.shields.deno_std" width="auto" height="20")
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
