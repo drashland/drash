@@ -16,10 +16,7 @@
 
   echo "Performing build using build.ts..."
 
-  deno $DRASH_DIR_ROOT/docs/console/build.ts \
-    --allow-env \
-    --allow-read \
-    --allow-write
+  deno -A --no-prompt $DRASH_DIR_ROOT/docs/console/build.ts
 
   echo "Done."
 
