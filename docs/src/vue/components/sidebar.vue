@@ -11,7 +11,7 @@ div.c-sidebar
                 div
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
                         img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
-                    | &nbsp;
+                div
                     a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
                         img.margin-bottom--0(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="auto" height="20")
                 div
