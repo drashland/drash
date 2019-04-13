@@ -3,9 +3,10 @@
 .DS_Store
 .env
 bundle.js
-package-lock.json
-compiled_*.json
 compiled_*.js
+compiled_*.json
+doc_blocks_output_actual.json
+package-lock.json
 
 # directories
 .sass-cache
