@@ -168,8 +168,8 @@ export default class Request extends ServerRequest {
         }
 
         // All HTTP requests default to application/x-www-form-urlencoded, so
-        // try to parse the body as a URL query params string if the
-        // `JSON.parse()` call above didn't work.
+        // try to parse the body as a URL query params string if the above logic
+        // didn't work.
         if (!parsed) {
           try {
             if (rawString.indexOf("?") !== -1) {
