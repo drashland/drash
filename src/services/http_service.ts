@@ -155,13 +155,16 @@ export default class HttpService {
   }
 
   /**
-   * Parse a URL query string in it's raw form.
+   * @description
+   *     Parse a URL query string in it's raw form.
    *
-   * If the request body's content type is application/json, then 
-   * `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
+   *     If the request body's content type is application/json, then
+   *     `{"username":"root","password":"alpine"}` becomes
+   *     `{ username: "root", password: "alpine" }`.
    *
-   * If the request body's content type is application/x-www-form-urlencoded,
-   * then `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
+   *     If the request body's content type is
+   *     application/x-www-form-urlencoded, then `username=root&password=alpine`
+   *     becomes `{ username: "root", password: "alpine" }`.
    *
    * @param string queryParamsString
    *     The query params string (e.g., hello=world&ok=then&git=hub)

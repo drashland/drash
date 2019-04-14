@@ -1032,6 +1032,34 @@
                 "This class extends `ServerRequest`."
             ],
             "properties": {
+                "body_parsed": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to access the request's body in key-value pair format."
+                    ],
+                    "annotation": {
+                        "line": "@property any body_parsed",
+                        "data_type": "any",
+                        "name": "body_parsed"
+                    },
+                    "signature": "public body_parsed: any = {}",
+                    "name": "body_parsed",
+                    "fully_qualified_name": "Drash.Http.Request.body_parsed"
+                },
+                "body_raw_string": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to access the request's body as raw string without any\nfurther parsing."
+                    ],
+                    "annotation": {
+                        "line": "@property any body_raw_string",
+                        "data_type": "any",
+                        "name": "body_raw_string"
+                    },
+                    "signature": "public body_raw_string: string",
+                    "name": "body_raw_string",
+                    "fully_qualified_name": "Drash.Http.Request.body_raw_string"
+                },
                 "original_request_object": {
                     "access_modifier": "public",
                     "description": [
@@ -1125,6 +1153,32 @@
                     "throws": null,
                     "signature": "constructor(request: ServerRequest)",
                     "fully_qualified_name": "Drash.Http.Request.constructor"
+                },
+                "parseBody": {
+                    "access_modifier": "public",
+                    "name": "parseBody",
+                    "description": [
+                        "Parse the body of the request so that it can be used as an associative\narray.",
+                        "If the request body's content type is `application/json`, then\n`{\"username\":\"root\",\"password\":\"alpine\"}` becomes `{ username: \"root\", password: \"alpine\" }`.",
+                        "If the request body's content type is\n`application/x-www-form-urlencoded`, then\n`username=root&password=alpine` becomes `{ username: \"root\", password: \"alpine\" }`.",
+                        "If the body can't be parsed, then this method will set\n`this.body_parsed` to `false` to denote that the request body was not\nparsed."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [
+                                "This method does resolves `this.body_parsed`, but only for testing\npurposes. This method can be called without assigning it's resolved\ndata to a variable. For example, you can call `await\nrequest.parseBody();` and access `request.body_parsed` immediately\nafter. Before this method resolves `this.body_parsed`, it assigns the\nparsed request body to `this.body_parsed`."
+                            ],
+                            "annotation": {
+                                "line": "@return Promise<any>",
+                                "data_type": "Promise<any>",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public parseBody(): Promise<any>",
+                    "fully_qualified_name": "Drash.Http.Request.parseBody"
                 }
             }
         },
@@ -1663,9 +1717,9 @@
                     "signature": "constructor(configs: any)",
                     "fully_qualified_name": "Drash.Http.Server.constructor"
                 },
-                "handleHttpRequest": {
+                "async handleHttpRequest": {
                     "access_modifier": "public",
-                    "name": "handleHttpRequest",
+                    "name": "async handleHttpRequest",
                     "description": [
                         "Handle an HTTP request from the Deno server."
                     ],
@@ -1695,8 +1749,8 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
-                    "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
+                    "signature": "public async handleHttpRequest(request: Drash.Http.Request): Promise<any>",
+                    "fully_qualified_name": "Drash.Http.Server.async handleHttpRequest"
                 },
                 "handleHttpRequestError": {
                     "access_modifier": "public",
@@ -2585,6 +2639,32 @@
                     "throws": null,
                     "signature": "public getMimeType(filePath: string, fileIsUrl: boolean = false): string",
                     "fully_qualified_name": "Drash.Services.HttpService.getMimeType"
+                },
+                "parseQueryParamsString": {
+                    "access_modifier": "public",
+                    "name": "parseQueryParamsString",
+                    "description": [
+                        "Parse a URL query string in it's raw form.",
+                        "If the request body's content type is application/json, then\n`{\"username\":\"root\",\"password\":\"alpine\"}` becomes\n`{ username: \"root\", password: \"alpine\" }`.",
+                        "If the request body's content type is\napplication/x-www-form-urlencoded, then `username=root&password=alpine`\nbecomes `{ username: \"root\", password: \"alpine\" }`."
+                    ],
+                    "params": {
+                        "queryParamsString": {
+                            "name": "queryParamsString",
+                            "description": [
+                                "The query params string (e.g., hello=world&ok=then&git=hub)"
+                            ],
+                            "annotation": {
+                                "line": "@param string queryParamsString",
+                                "data_type": "string",
+                                "name": "queryParamsString"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "public parseQueryParamsString(queryParamsString: string): any",
+                    "fully_qualified_name": "Drash.Services.HttpService.parseQueryParamsString"
                 }
             }
         }
