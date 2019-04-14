@@ -142,7 +142,12 @@ export default class Request extends ServerRequest {
         let rawString = decoder.decode(raw);
         this.body_raw_string = rawString;
 
-        // Decide how to parse the string below... (potential fuck ups here)
+        // Decide how to parse the string below. All HTTP requests will default
+        // to application/x-www-form-urlencoded IF the Content-Type header is
+        // not set in the request.
+        //
+        // ... there's going to be potential fuck ups here btw ...
+
         Drash.core_logger.debug(`HTTP request Content-Type: ${this.headers.get("Content-Type")}`);
 
         // Is this an application/json body?
