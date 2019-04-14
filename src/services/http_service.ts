@@ -106,21 +106,7 @@ export default class HttpService {
 
     try {
       let queryParamsString = request.url.split("?")[1];
-
-      if (!queryParamsString) {
-        return queryParams;
-      }
-
-      if (queryParamsString.indexOf("#") != -1) {
-        queryParamsString = queryParamsString.split("#")[0];
-      }
-
-      let queryParamsExploded = queryParamsString.split("&");
-
-      queryParamsExploded.forEach(kvpString => {
-        let kvpStringSplit = kvpString.split("=");
-        queryParams[kvpStringSplit[0]] = kvpStringSplit[1];
-      });
+      queryParams = this.parseQueryParamsString(queryParamsString);
     } catch (error) {}
 
     return queryParams;
@@ -166,5 +152,36 @@ export default class HttpService {
     }
 
     return mimeType;
+  }
+
+  /**
+   * Parse a URL query string in it's raw form.
+   *
+   * If the request body's content type is application/json, then 
+   * `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
+   *
+   * If the request body's content type is application/x-www-form-urlencoded,
+   * then `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
+   *
+   *
+  public parseQueryParamsString(queryParamsString: string): any {
+    let queryParams = {};
+
+    if (!queryParamsString) {
+      return queryParams;
+    }
+
+    if (queryParamsString.indexOf("#") != -1) {
+      queryParamsString = queryParamsString.split("#")[0];
+    }
+
+    let queryParamsExploded = queryParamsString.split("&");
+
+    queryParamsExploded.forEach(kvpString => {
+      let kvpStringSplit = kvpString.split("=");
+      queryParams[kvpStringSplit[0]] = kvpStringSplit[1];
+    });
+
+    return queryParams;
   }
 }
