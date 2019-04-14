@@ -2,5 +2,5 @@
 
 (
   export DRASH_CORE_LOGGER_ENABLED=false
-  deno $DRASH_DIR_ROOT/tests/test.ts --allow-read --allow-write --allow-env --no-prompt
+  deno -A --no-prompt $DRASH_DIR_ROOT/tests/test.ts
 )
