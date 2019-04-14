@@ -64,15 +64,15 @@ Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Ba
 
 **Content Negotiation**
 
-Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle. See [Adding More Content Types](https://crookse.github.io/deno-drash/#/tutorials/adding-content-types) for further information.
+Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through content negotiation. Out of the box, Drash's `Drash.Http.Response` class can generate the following representations for resources: `application/json`, `text/html`, `application/xml`, and `text/xml`. Getting the `Drash.Http.Response` class to handle more representations is easy. Read the [Adding Content Types](https://crookse.github.io/deno-drash/#/tutorials/adding-content-types) tutorial for more information.
 
 **Request Path Params (e.g., `/users/:id`)**
 
-If you want to build your RESTful/ish API, then go ahead and use your path params. Resources can access their URI's path params via `this.request.path_params.some_param`.
+Resources can access their URI's path params via `this.request.path_params.some_param`--allowing you to build RESTful/ish APIs.
 
 **Request URL Query Params (e.g., `/users?id=1234`)**
 
-Can't have path params and not have request URL query params. Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
+Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
 
 **Semantic Method Names**
 
