@@ -143,6 +143,7 @@ export default class Request extends ServerRequest {
         this.body_raw_string = rawString;
 
         // Decide how to parse the string below... (potential fuck ups here)
+        Drash.core_logger.debug(`HTTP request Content-Type: ${this.headers.get("Content-Type")}`);
 
         // Is this an application/json body?
         if (this.headers.get("Content-Type") == "application/json") {
