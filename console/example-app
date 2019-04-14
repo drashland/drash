@@ -1,5 +1,0 @@
-#!/bin/bash
-
-(
-  deno example-app/app.ts --allow-all
-)

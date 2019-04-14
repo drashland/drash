@@ -7,12 +7,12 @@ Drash.Http.Response = Response;
 
 let server = new Drash.Http.Server({
   address: "localhost:1337",
-  response_output: "application/json",
+  response_output: "text/html",
   resources: [HomeResource, UsersResource],
-  logger: new Drash.Loggers.FileLogger({
+  logger: new Drash.Loggers.ConsoleLogger({
     enabled: true,
-    level: "info",
-    file: "./tmp/log.log"
+    level: "all",
+    tag_string: "{level} |"
   })
 });
 

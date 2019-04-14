@@ -129,7 +129,7 @@ export default class Server {
    * @return any
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request: Drash.Http.Request): any {
+  public async handleHttpRequest(request: Drash.Http.Request): Promise<any> {
     let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
     let response;
 
@@ -170,6 +170,8 @@ export default class Server {
     }
 
     // @ts-ignore
+    // (crookse)
+    //
     // We ignore this because `resourceClass` could be `undefined` and that
     // doens't have a construct signature. If this isn't ignored, then the
     // following error will occur:
@@ -185,6 +187,7 @@ export default class Server {
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
+      await request.parseBody();
       response = resource[request.method.toUpperCase()]();
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
@@ -327,7 +330,11 @@ export default class Server {
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);
-      this.handleHttpRequest(drashRequest);
+      try {
+        this.handleHttpRequest(drashRequest);
+      } catch (error) {
+        this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(500));
+      }
     }
   }
 
