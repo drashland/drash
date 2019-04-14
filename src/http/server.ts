@@ -129,7 +129,7 @@ export default class Server {
    * @return any
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request: Drash.Http.Request): any {
+  public async handleHttpRequest(request: Drash.Http.Request): Promise<any> {
     let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
     let response;
 
@@ -185,6 +185,7 @@ export default class Server {
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
+      await request.parseBody();
       response = resource[request.method.toUpperCase()]();
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
