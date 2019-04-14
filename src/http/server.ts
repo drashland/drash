@@ -170,6 +170,8 @@ export default class Server {
     }
 
     // @ts-ignore
+    // (crookse)
+    //
     // We ignore this because `resourceClass` could be `undefined` and that
     // doens't have a construct signature. If this isn't ignored, then the
     // following error will occur:
