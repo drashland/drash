@@ -160,8 +160,17 @@ export default class Request extends ServerRequest {
           return resolve(parsed);
         }
 
-        // Is this an application/x-www-form-url-encoded body?
-        if (this.headers.get("Content-Type") == "application/x-www-form-urlencoded") {
+        // Does this look like an application/json body?
+        try {
+          parsed = JSON.parse(rawString);
+        } catch (error) {
+          parsed = false;
+        }
+
+        // All HTTP requests default to application/x-www-form-urlencoded, so
+        // try to parse the body as a URL query params string if the
+        // `JSON.parse()` call above didn't work.
+        if (!parsed) {
           try {
             if (rawString.indexOf("?") !== -1) {
               rawString = rawString.split("?")[1];
