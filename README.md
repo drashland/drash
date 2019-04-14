@@ -77,6 +77,10 @@ Resources can access their URI's path params via `this.request.path_params.some_
 
 Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
 
+**Request Body (for `application/json` and `application/x-www-form-urlencoded` content types)**
+
+Resources can access the request's body via `this.request.body_parsed.some_param`.
+
 **Semantic Method Names**
 
 If you want your resource class to allow `GET` requests, then give it a `GET()` method. If you want your resource class to allow `POST` requests, then give it a `POST()` method. If you don't want your resource class to allow `DELETE` requests, then don't give your resource class a `DELETE()` method. Pretty simple ideology and very semantic.
