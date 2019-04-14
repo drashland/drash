@@ -24,8 +24,7 @@
 
   git add index.html
   git add public/assets/js/bundle.min.js
-  date=date
-  git commit -m "npm run build ($date)"
+  git commit -m "npm run build ($(date))"
 
   echo "Done."
 
