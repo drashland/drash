@@ -19,7 +19,7 @@ Although this module is working, it is still subject to breaking changes from De
 
 ```typescript
 // Import Drash latest release
-import Drash from "https://deno.land/x/drash@v0.8.0/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.7.9/mod.ts";
 
 // Import Drash master
 import Drash from "https://deno.land/x/drash/mod.ts";
@@ -32,7 +32,7 @@ _It is recommended that you import the latest release or a specific release to p
 **Create `/path/to/your/project/app.ts` ...**
 
 ```typescript
-import Drash from "https://deno.land/x/drash@v0.8.0/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.7.9/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -79,7 +79,7 @@ Resources can access the request's URL query params via `this.request.url_query_
 
 **Request Body (e.g., `{"id":"1234"}`)**
 
-Resources can access the request's body via `this.request.body_parsed.some_param`. Supported content types are `application/json` and `application/x-www-form-urlencoded`.
+_in progress_
 
 **Semantic Method Names**
 

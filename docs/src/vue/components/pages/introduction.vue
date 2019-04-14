@@ -41,7 +41,8 @@ div
                 h3 Request URL Query Params (e.g., <code>/users?id=1234</code>)
                 p Resources can access the request's URL query params via <code>this.request.url_query_params.some_param</code>.
                 h3 Request Body (e.g., <code>{"id":"1234"}</code>)
-                p Resources can access the request's body via <code>this.request.body_parsed.some_param</code>. Supported content types are <code>application/json</code> and <code>application/x-www-form-urlencoded</code>.
+                p * In progress
+                //-p Resources can access the request's body via <code>this.request.body_parsed.some_param</code>. Supported content types are <code>application/json</code> and <code>application/x-www-form-urlencoded</code>.
                 h3 Semantic Method Names
                 p If you want your resource class to allow <code>GET</code> requests, then give it a <code>GET()</code> method. If you want your resource class to allow <code>POST</code> requests, then give it a <code>POST()</code> method. If you don't want your resource class to allow <code>DELETE</code> requests, then don't give your resource class a <code>DELETE()</code> method. Pretty simple ideology and very semantic.
         hr
