@@ -157,6 +157,7 @@ export default class Request extends ServerRequest {
           } catch (error) {
             parsed = false;
           }
+          return resolve(parsed);
         }
 
         // Is this an application/x-www-form-url-encoded body?
