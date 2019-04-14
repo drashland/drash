@@ -77,9 +77,9 @@ Resources can access their URI's path params via `this.request.path_params.some_
 
 Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
 
-**Request Body (for `application/json` and `application/x-www-form-urlencoded` content types)**
+**Request Body (e.g., `{"id":"1234"}`)**
 
-Resources can access the request's body via `this.request.body_parsed.some_param`.
+Resources can access the request's body via `this.request.body_parsed.some_param`. Supported content types are `application/json` and `application/x-www-form-urlencoded`.
 
 **Semantic Method Names**
 
