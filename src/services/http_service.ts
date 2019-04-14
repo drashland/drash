@@ -163,7 +163,9 @@ export default class HttpService {
    * If the request body's content type is application/x-www-form-urlencoded,
    * then `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
    *
-   *
+   * @param string queryParamsString
+   *     The query params string (e.g., hello=world&ok=then&git=hub)
+   */
   public parseQueryParamsString(queryParamsString: string): any {
     let queryParams = {};
 
