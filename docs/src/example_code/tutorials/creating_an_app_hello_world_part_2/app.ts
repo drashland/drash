@@ -1,4 +1,4 @@
-import Drash from "../../../../../mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
 
 class Response extends Drash.Http.Response {
