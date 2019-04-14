@@ -1,4 +1,6 @@
+import Drash from "../../mod.ts";
 import { ServerRequest } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.4/http/server.ts";
+const decoder = new TextDecoder();
 
 /**
  * @memberof Drash.Http
@@ -13,6 +15,22 @@ import { ServerRequest } from "https://raw.githubusercontent.com/denoland/deno_s
  *     This class extends `ServerRequest`.
  */
 export default class Request extends ServerRequest {
+  /**
+   * @description
+   *     A property to access the request's body in key-value pair format.
+   *
+   * @property any body_parsed
+   */
+  public body_parsed: any = {};
+
+  /**
+   * @description
+   *     A property to access the request's body as raw string without any
+   *     further parsing.
+   *
+   * @property any body_raw_string
+   */
+  public body_raw_string: string;
 
   /**
    * @description
@@ -85,5 +103,74 @@ export default class Request extends ServerRequest {
     this.method = request.method;
     this.original_request_object = request;
   }
-}
 
+  // FILE MARKER: METHOD - PUBLIC //////////////////////////////////////////////
+
+  /**
+   * TODO(crookse) figure out the MIME type of the request body and parse it:
+   *     [x] if application/json, then JSON.parse()
+   *     [x] if application/x-www-form-urlencoded, then do what?
+   *     [ ] if something else, then do what?
+   *
+   * @description
+   *     Parse the body of the request so that it can be used as an associative
+   *     array.
+   *
+   *     If the request body's content type is `application/json`, then
+   *     `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
+   *
+   *     If the request body's content type is
+   *     `application/x-www-form-urlencoded`, then
+   *     `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
+   *
+   *     If the body can't be parsed, then this method will set
+   *     `this.body_parsed` to `false` to denote that the request body was not
+   *     parsed.
+   *
+   * @return Promise<any>
+   *     This method does resolves `this.body_parsed`, but only for testing
+   *     purposes. This method can be called without assigning it's resolved
+   *     data to a variable. For example, you can call `await
+   *     request.parseBody();` and access `request.body_parsed` immediately
+   *     after. Before this method resolves `this.body_parsed`, it assigns the
+   *     parsed request body to `this.body_parsed`.
+   */
+  public parseBody(): Promise<any> {
+    return new Promise(resolve => {
+      this.body().then((raw) => {
+        let parsed: any;
+        let rawString = decoder.decode(raw);
+        this.body_raw_string = rawString;
+
+        // Decide how to parse the string below... (potential fuck ups here)
+
+        // Is this an application/json body?
+        if (
+          this.headers.get("Content-Type") == "application/json"
+        ) {
+          try {
+            parsed = JSON.parse(rawString);
+          } catch (error) {
+            parsed = false;
+          }
+        }
+
+        // Is this an application/x-www-form-url-encoded body?
+        if (this.headers.get("Content-Type") == "application/x-www-form-urlencoded") {
+          try {
+            if (rawString.indexOf("?") !== -1) {
+              rawString = rawString.split("?")[1];
+            }
+            parsed = Drash.Services.HttpService.parseQueryParamsString(rawString);
+          } catch (error) {
+            parsed = false;
+          }
+        }
+
+        this.body_parsed = parsed;
+
+        resolve(this.body_parsed);
+      });
+    });
+  }
+}
