@@ -24,7 +24,7 @@ import Drash from "https://deno.land/x/drash/mod.ts";
 
 _It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."_
 
-## An Example HTML Application
+## Quickstart
 
 **Create `/path/to/your/project/app.ts` ...**
 
