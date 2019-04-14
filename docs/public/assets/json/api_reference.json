@@ -1487,9 +1487,9 @@
                     "signature": "public getStatusMessageFull(): string",
                     "fully_qualified_name": "Drash.Http.Response.getStatusMessageFull"
                 },
-                "send": {
+                "async send": {
                     "access_modifier": "public",
-                    "name": "send",
+                    "name": "async send",
                     "description": [
                         "Send the response to the client making the request."
                     ],
@@ -1500,15 +1500,15 @@
                                 "Returns the output which is passed to `Drash.Http.Request.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
                             ],
                             "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
+                                "line": "@return Promise<any>",
+                                "data_type": "Promise<any>",
                                 "name": null
                             }
                         }
                     ],
                     "throws": null,
-                    "signature": "public send(): any",
-                    "fully_qualified_name": "Drash.Http.Response.send"
+                    "signature": "public async send(): Promise<any>",
+                    "fully_qualified_name": "Drash.Http.Response.async send"
                 },
                 "sendStatic": {
                     "access_modifier": "public",
