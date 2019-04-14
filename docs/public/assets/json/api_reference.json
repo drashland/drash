@@ -1717,9 +1717,9 @@
                     "signature": "constructor(configs: any)",
                     "fully_qualified_name": "Drash.Http.Server.constructor"
                 },
-                "async handleHttpRequest": {
+                "handleHttpRequest": {
                     "access_modifier": "public",
-                    "name": "async handleHttpRequest",
+                    "name": "handleHttpRequest",
                     "description": [
                         "Handle an HTTP request from the Deno server."
                     ],
@@ -1749,8 +1749,8 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public async handleHttpRequest(request: Drash.Http.Request): Promise<any>",
-                    "fully_qualified_name": "Drash.Http.Server.async handleHttpRequest"
+                    "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
+                    "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
                 },
                 "handleHttpRequestError": {
                     "access_modifier": "public",

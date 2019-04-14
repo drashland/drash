@@ -1,4 +1,7 @@
-![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest) ![Travis (.org) branch](https://img.shields.io/travis/crookse/deno-drash.svg) ![deno version](https://img.shields.io/badge/requires%20deno-v0.3.7-brightgreen.svg) ![deno_std version](https://img.shields.io/badge/uses%20deno__std-v0.3.4-brightgreen.svg)
+[![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest)](https://github.com/crookse/deno-drash/releases)
+[![Travis (.org) branch](https://img.shields.io/travis/crookse/deno-drash.svg)](https://travis-ci.org/crookse/deno-drash)
+[![deno version](https://img.shields.io/badge/requires%20deno-v0.3.7-brightgreen.svg)](https://github.com/denoland/deno_install)
+[![deno_std version](https://img.shields.io/badge/uses%20deno__std-v0.3.4-brightgreen.svg)](https://github.com/denoland/deno_std)
 
 # Drash
 
@@ -24,12 +27,12 @@ import Drash from "https://deno.land/x/drash/mod.ts";
 
 _It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."_
 
-## An Example HTML Application
+## Quickstart
 
 **Create `/path/to/your/project/app.ts` ...**
 
 ```typescript
-import Drash from "https://deno.land/x/drash/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.7.9/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -64,15 +67,19 @@ Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Ba
 
 **Content Negotiation**
 
-Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). Drash ships with `application/json`, `text/html`, `application/xml`, and `text/xml` handling just to meet the needs of standard APIs and web apps. However, you can add more content types for your Drash server to handle. See [Adding More Content Types](https://crookse.github.io/deno-drash/#/tutorials/adding-content-types) for further information.
+Drash is based on resources and you can't have true resources unless clients can request different representations of those resources through content negotiation. Out of the box, Drash's `Drash.Http.Response` class can generate the following representations for resources: `application/json`, `text/html`, `application/xml`, and `text/xml`. Getting the `Drash.Http.Response` class to handle more representations is easy. Read the [Adding Content Types](https://crookse.github.io/deno-drash/#/tutorials/adding-content-types) tutorial for more information.
 
 **Request Path Params (e.g., `/users/:id`)**
 
-If you want to build your RESTful/ish API, then go ahead and use your path params. Resources can access their URI's path params via `this.request.path_params.some_param`.
+Resources can access their URI's path params via `this.request.path_params.some_param`--allowing you to build RESTful/ish APIs.
 
 **Request URL Query Params (e.g., `/users?id=1234`)**
 
-Can't have path params and not have request URL query params. Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
+Resources can access the request's URL query params via `this.request.url_query_params.some_param`.
+
+**Request Body (e.g., `{"id":"1234"}`)**
+
+_in progress_
 
 **Semantic Method Names**
 
