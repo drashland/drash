@@ -145,9 +145,7 @@ export default class Request extends ServerRequest {
         // Decide how to parse the string below... (potential fuck ups here)
 
         // Is this an application/json body?
-        if (
-          this.headers.get("Content-Type") == "application/json"
-        ) {
+        if (this.headers.get("Content-Type") == "application/json") {
           try {
             parsed = JSON.parse(rawString);
           } catch (error) {
