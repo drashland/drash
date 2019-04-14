@@ -327,7 +327,11 @@ export default class Server {
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);
-      this.handleHttpRequest(drashRequest);
+      try {
+        this.handleHttpRequest(drashRequest);
+      } catch (error) {
+        this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(500));
+      }
     }
   }
 
