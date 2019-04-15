@@ -187,7 +187,6 @@ export default class Server {
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
-      // await request.parseBody();
       response = resource[request.method.toUpperCase()]();
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
@@ -330,6 +329,7 @@ export default class Server {
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);
+      await drashRequest.parseBody();
       try {
         this.handleHttpRequest(drashRequest);
       } catch (error) {
