@@ -20,6 +20,9 @@ class UserResource extends members.Drash.Http.Resource {
   }
 }
 
+// TODO(crookse)
+//     [ ] test request.body_parsed
+//     [ ] test favicon.ico request
 members.test(async function Server_handleHttpRequest() {
   let request;
   let response;
