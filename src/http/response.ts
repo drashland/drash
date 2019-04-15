@@ -177,6 +177,7 @@ export default class Response {
    *     request-resource-response lifecycle.
    */
   public async send(): Promise<any> {
+    Drash.core_logger.debug("Awaiting response.generateResponse().");
     let body = await this.generateResponse();
     let output = {
       status: this.status_code,
@@ -184,8 +185,10 @@ export default class Response {
       body: new TextEncoder().encode(body)
     };
 
+    Drash.core_logger.debug("Sending response to request.respond().");
     this.request.respond(output);
 
+    Drash.core_logger.debug("Returning output for unit testing purposes.");
     return output;
   }
 
