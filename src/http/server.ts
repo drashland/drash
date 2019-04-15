@@ -446,10 +446,7 @@ export default class Server {
 
       let resource = this.resources[className];
 
-      resource.paths.forEach(function getResourceClass_forEachPaths(
-        pathObj,
-        index
-      ) {
+      resource.paths.forEach((pathObj, index) => {
         if (!matchedResourceClass) {
           let thisPathMatchesRequestPathname = null;
           if (pathObj.og_path === "/" && request.url_path === "/") {
@@ -473,11 +470,7 @@ export default class Server {
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();
-            pathObj.params.forEach(
-              function closure_getResourceClass_forEach_params_forEach(
-                paramName,
-                index
-              ) {
+            pathObj.params.forEach((paramName, index) => {
                 pathParamsInKvpForm[paramName] = requestPathnameParams[index];
               }
             );
