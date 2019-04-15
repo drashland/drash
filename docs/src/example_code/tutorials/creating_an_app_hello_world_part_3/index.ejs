@@ -39,8 +39,11 @@
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script>
 			let post = function() {
-				let name = document.getElementById("name").value;
-				axios.post("/?response_content_type=application/json&name=" + name)
+				let postBody = {
+					response_content_type: "application/json",
+					name: document.getElementById("name").value
+				};
+				axios.post("/", postBody)
 					.then(function (response) {
 						document.getElementById("post_message").innerHTML = response.data.body;
 					})
