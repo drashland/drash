@@ -127,15 +127,15 @@ export default class Request extends ServerRequest {
    *     `this.body_parsed` to `false` to denote that the request body was not
    *     parsed.
    *
-   * @return Promise<any>
-   *     This method does resolves `this.body_parsed`, but only for testing
-   *     purposes. This method can be called without assigning it's resolved
-   *     data to a variable. For example, you can call `await
-   *     request.parseBody();` and access `request.body_parsed` immediately
-   *     after. Before this method resolves `this.body_parsed`, it assigns the
-   *     parsed request body to `this.body_parsed`.
+   * @return any
+   *     This method resolves `this.body_parsed`, but only for testing purposes.
+   *     This method can be called without assigning its resolved data to a
+   *     variable. For example, you can call `await request.parseBody();` and
+   *     access `request.body_parsed` immediately after. Before this method
+   *     resolves `this.body_parsed`, it assigns the parsed request body to
+   *     `this.body_parsed`.
    */
-  public parseBody(): Promise<any> {
+  public parseBody(): any {
     return new Promise(resolve => {
       this.body().then((raw) => {
         let parsed: any;
@@ -157,14 +157,18 @@ export default class Request extends ServerRequest {
           } catch (error) {
             parsed = false;
           }
-          return resolve(parsed);
+          this.body_parsed = parsed;
+          resolve(this.body_parsed);
+          return;
         }
 
         // Does this look like an application/json body?
-        try {
-          parsed = JSON.parse(rawString);
-        } catch (error) {
-          parsed = false;
+        if (!parsed) {
+          try {
+            parsed = JSON.parse(rawString);
+          } catch (error) {
+            parsed = false;
+          }
         }
 
         // All HTTP requests default to application/x-www-form-urlencoded, so
@@ -182,7 +186,6 @@ export default class Request extends ServerRequest {
         }
 
         this.body_parsed = parsed;
-
         resolve(this.body_parsed);
       });
     });
