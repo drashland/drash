@@ -36,7 +36,8 @@ page-creating-an-app-hello-world(:data="data")
 export const resource = {
     paths: ["/tutorials/creating-an-app-hello-world-part-2"],
     meta: {
-        title: "Creating An App: Hello World (Part 2 of 4)",
+        title: "Creating An App: Hello World Part 2 of 4: Building The Front End",
+        tutorial_title: "Part 2 of 4: Building The Front End",
         source_code_uri: "/creating_an_app_hello_world_part_2"
     }
 }

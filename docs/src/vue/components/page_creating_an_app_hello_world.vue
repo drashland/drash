@@ -1,6 +1,9 @@
 <template lang="pug">
 div
-    page-header(:route="$route")
+    page-header Creating An App: Hello World
+    div.row
+        div.col
+            h2 {{ $route.meta.tutorial_title }}
     div.row
         div.col
             hr
