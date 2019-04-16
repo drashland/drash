@@ -29,7 +29,7 @@ _It is recommended that you import the latest release or a specific release to p
 
 ## Quickstart
 
-**Create `/path/to/your/project/app.ts` ...**
+**Create `app.ts` ...**
 
 ```typescript
 import Drash from "https://deno.land/x/drash@v0.8.0/mod.ts";
@@ -51,7 +51,7 @@ let server = new Drash.Http.Server({
 server.run();
 ```
 
-**... and run `/path/to/your/project/app.ts`**
+**... and run `app.ts`**
 
 ```shell
 $ deno --allow-net --allow-env app.ts
