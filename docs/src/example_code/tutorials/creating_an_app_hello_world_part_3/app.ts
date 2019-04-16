@@ -19,7 +19,7 @@ class HomeResource extends Drash.Http.Resource {
   }
   public POST() {
     this.response.body = "POST request received!";
-    let name = this.request.url_query_params.name;
+    let name = this.request.body_parsed.name;
     if (name) {
       this.response.body += ` Thanks for the request, ${name}!`;
     }
