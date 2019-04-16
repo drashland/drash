@@ -4,7 +4,7 @@ import env_var from "./src/core/env_var.ts";
 import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
-import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json";
+import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db.json";
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
 // Http

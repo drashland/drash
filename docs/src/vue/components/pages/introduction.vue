@@ -25,8 +25,9 @@ div
         div.row
             div.col
                 heading-h2#importing(heading="Importing")
-                p There are multiple ways to import Drash (and its different versions) into your project. See below:
-                code-block(:data="example_code.importing.app")
+                p
+                    code-block(:data="example_code.importing.app")
+                p It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."
         hr
         div.row
             div.col
@@ -39,13 +40,15 @@ div
                 p Resources can access their URI's path params via <code>this.request.path_params.some_param</code>--allowing you to build RESTful/ish APIs.
                 h3 Request URL Query Params (e.g., <code>/users?id=1234</code>)
                 p Resources can access the request's URL query params via <code>this.request.url_query_params.some_param</code>.
+                h3 Request Body (e.g., <code>{"id":"1234"}</code>)
+                p Resources can access the request's body via <code>this.request.body_parsed.some_param</code>. Supported content types are <code>application/json</code> and <code>application/x-www-form-urlencoded</code>.
                 h3 Semantic Method Names
                 p If you want your resource class to allow <code>GET</code> requests, then give it a <code>GET()</code> method. If you want your resource class to allow <code>POST</code> requests, then give it a <code>POST()</code> method. If you don't want your resource class to allow <code>DELETE</code> requests, then don't give your resource class a <code>DELETE()</code> method. Pretty simple ideology and very semantic.
         hr
         div.row
             div.col
-                heading-h2#something_missing(heading="Something Missing?")
-                p If you find that something is missing in these pages (or if you find that something needs more clarification), then please file an issue at <a href="https://github.com/crookse/deno-drash/issues" target="_BLANK">https://github.com/crookse/deno-drash/issues</a>. We would love to hear from you!
+                heading-h2#file-an-issue(heading="File An Issue")
+                p File an issue (bugs, feature requests, or more documentation needed) at <a href="https://github.com/crookse/deno-drash/issues" target="_BLANK">https://github.com/crookse/deno-drash/issues</a>. We would love to hear from you!
 </template>
 
 <script>

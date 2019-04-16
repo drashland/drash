@@ -1,0 +1,8 @@
+#!/bin/bash
+
+(
+  if [ -f console/env_vars ]; then
+    source console/env_vars
+  fi
+  deno -A --no-prompt example_app/app.ts
+)

@@ -1,6 +1,9 @@
 <template lang="pug">
 div
-    page-header(:route="$route")
+    page-header Creating An App: Hello World
+    div.row
+        div.col
+            h2 {{ $route.meta.tutorial_title }}
     div.row
         div.col
             hr
@@ -17,6 +20,7 @@ div
             h2#before-you-get-started Before You Get Started
             ul
                 li This tutorial assumes you have Deno {{ $conf.deno_version_requirement }} installed. If you do not, then head over to <a href="https://github.com/denoland/deno_install" target="_BLANK">https://github.com/denoland/deno_install</a> to install Deno {{ $conf.deno_version_requirement }}.
+                li This tutorial assumes you have the latest version of Drash installed.
                 li This tutorial is part of a 4-part tutorial. Each tutorial builds off of the previous. Throughout this series you will be taught the following:
                     ol
                         li Build a server that handles <code>GET</code> requests at the <code>/</code> URI.

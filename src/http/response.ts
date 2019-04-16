@@ -170,22 +170,25 @@ export default class Response {
    * @description
    *     Send the response to the client making the request.
    *
-   * @return any
+   * @return Promise<any>
    *     Returns the output which is passed to `Drash.Http.Request.respond()`.
    *     The output is only returned for unit testing purposes. It is not
    *     intended to be used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
-  public send(): any {
-    let body = this.generateResponse();
+  public async send(): Promise<any> {
+    Drash.core_logger.debug("Awaiting response.generateResponse().");
+    let body = await this.generateResponse();
     let output = {
       status: this.status_code,
       headers: this.headers,
       body: new TextEncoder().encode(body)
     };
 
+    Drash.core_logger.debug("Sending response to request.respond().");
     this.request.respond(output);
 
+    Drash.core_logger.debug("Returning output for unit testing purposes.");
     return output;
   }
 
@@ -226,7 +229,25 @@ export default class Response {
 
   /**
    * @description
-   *     Get this response's `Content-Type` header.
+   *     Get this response's `Content-Type` header. There are three ways to set
+   *     the response's `Content-Type` header from a request: (1) the request's
+   *     headers by setting `Response-Content-Type: "type"`, (2) the request's
+   *     URL query params by setting `?response_content_type=type`, and the
+   *     request's body by setting `{response_content_type: "type"}`.
+   *
+   *     Setting the content type using the request's body takes precedence over
+   *     all other settings.
+   *
+   *     Setting the content type using the request's URL query params takes
+   *     precedence over the header setting and the default setting.
+   *
+   *     Setting the content type using the request's header setting takes
+   *     precedence over the default setting.
+   *
+   *     If no content type is specified by the request's body, URL query
+   *     params, or header, then the default content type will be used. The
+   *     default content type is the content type defined in the
+   *     `Drash.Http.Server` object's `response_output` config.
    *
    * @return string
    */
@@ -245,7 +266,11 @@ export default class Response {
       ? this.request.url_query_params.response_content_type
       : contentType;
 
-    // TODO(crookse) Check request body
+      // Check the request's body to see if
+      // {response_content_type: {content-type}} has been specified
+    contentType = this.request.body_parsed.response_content_type
+      ? this.request.body_parsed.response_content_type
+      : contentType;
 
     return contentType;
   }

@@ -6,7 +6,7 @@
   export DRASH_CORE_LOGGER_ENABLED="true"
   export DRASH_CORE_LOGGER_LEVEL="debug"
 
-  for pid in $(ps aux | grep 'docs.ts' | grep 'deno /' | awk '{print $2}'); do
+  for pid in $(ps aux | grep 'docs.ts' | grep 'deno' | awk '{print $2}'); do
     echo "[watchmedo] Killing $pid"
     kill -9 $pid
     echo "[watchmedo] PID $pid killed."
@@ -18,7 +18,7 @@
     echo -e "[watchmedo] Starting $DRASH_SERVER_DIRECTORY/docs.ts app..."
   fi
 
-  deno $DRASH_DIR_ROOT/docs/docs.ts -A &
+  deno -A --no-prompt $DRASH_DIR_ROOT/docs/docs.ts &
 
   echo -e "[watchmedo] $DRASH_SERVER_DIRECTORY/docs.ts app started.\n"
   echo -e "[watchmedo] !!! IMPORTANT !!!"

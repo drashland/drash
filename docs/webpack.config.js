@@ -1,11 +1,14 @@
 const webpack = require("webpack");
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
-const latestRelease = "v0.7.7";
+
+// Versions
+const latestRelease = "v0.8.0";
+const denoVersionMin = "0.3.7";
+const denoVersionMax = "0.3.7";
+const denoStdVersion = "0.3.4";
 
 function getConf(envVars) {
-  let denoVersionMin = "0.3.6";
-  let denoVersionMax = "0.3.6";
 
   let denoVersionRequirement = `v${denoVersionMax}`;
   if (denoVersionMin != denoVersionMax) {
@@ -27,7 +30,8 @@ function getConf(envVars) {
     shields: {
       requires_deno: denoVersionMin == denoVersionMax
         ? `https://img.shields.io/badge/requires%20deno-v${denoVersionMax}-brightgreen.svg`
-        : `https://img.shields.io/badge/requires%20deno-%3E=${denoVersionMin}%20%3C=${denoVersionMax}-brightgreen.svg`
+        : `https://img.shields.io/badge/requires%20deno-%3E=${denoVersionMin}%20%3C=${denoVersionMax}-brightgreen.svg`,
+      deno_std: `https://img.shields.io/badge/uses%20deno__std-v${denoStdVersion}-brightgreen.svg`
     },
     webpack_mode: envVars.environment
   };

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+(
+  export DRASH_CORE_LOGGER_ENABLED=false
+  deno -A --no-prompt $DRASH_DIR_ROOT/tests/test.ts
+)

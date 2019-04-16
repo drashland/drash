@@ -11,8 +11,8 @@ page-tutorial-default(:data="data" :hide_screenshot="true")
                     li <code>text/html</code>
                     li <code>application/xml</code>
                     li <code>text/xml</code>
-            li If you want your Drash server to send responses in more formats, then you will need to override and replace <code>Drash.Http.Response</code>.
-            list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+            li If you want your Drash server to send responses in more formats (to cater to clients that want to request formats other than the above), then you will need to override and replace <code>Drash.Http.Response</code>.
+            li-download-source-code(:source_code_uri="$route.meta.source_code_uri")
     template(#steps)
         ol
             li Create your app file.

@@ -32,8 +32,7 @@ div
                         p When you start your app, you should see the following in the terminal:
                         code-block(:data="example_code.output")
                     li Make a <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> request at <code>localhost:8000</code>.
-                        ul 
-                            li I recommend using <a href="https://www.getpostman.com/" target="_BLANK">Postman</a> to make these requests. It's fast and versatile for web development.
+                        ul
                             li You should see a "{HTTP METHOD} request received!" string as the response for each request.
                             li You can change the response message for each request by editing <code>HomeResource</code> and the assignments to <code>this.response.body</code> in the HTTP methods.
                 p.text--help This is the end of this tutorial.

@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/x/http/server.ts";
 import Drash from "../../mod.ts";
+import { serve } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.4/http/server.ts";
 
 /**
  * @memberof Drash.Http
@@ -170,6 +170,8 @@ export default class Server {
     }
 
     // @ts-ignore
+    // (crookse)
+    //
     // We ignore this because `resourceClass` could be `undefined` and that
     // doens't have a construct signature. If this isn't ignored, then the
     // following error will occur:
@@ -327,7 +329,12 @@ export default class Server {
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);
-      this.handleHttpRequest(drashRequest);
+      await drashRequest.parseBody();
+      try {
+        this.handleHttpRequest(drashRequest);
+      } catch (error) {
+        this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(500));
+      }
     }
   }
 
@@ -439,10 +446,7 @@ export default class Server {
 
       let resource = this.resources[className];
 
-      resource.paths.forEach(function getResourceClass_forEachPaths(
-        pathObj,
-        index
-      ) {
+      resource.paths.forEach((pathObj, index) => {
         if (!matchedResourceClass) {
           let thisPathMatchesRequestPathname = null;
           if (pathObj.og_path === "/" && request.url_path === "/") {
@@ -466,11 +470,7 @@ export default class Server {
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();
-            pathObj.params.forEach(
-              function closure_getResourceClass_forEach_params_forEach(
-                paramName,
-                index
-              ) {
+            pathObj.params.forEach((paramName, index) => {
                 pathParamsInKvpForm[paramName] = requestPathnameParams[index];
               }
             );

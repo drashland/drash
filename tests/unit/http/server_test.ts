@@ -20,7 +20,10 @@ class UserResource extends members.Drash.Http.Resource {
   }
 }
 
-members.test(function Server_handleHttpRequest() {
+// TODO(crookse)
+//     [ ] test request.body_parsed
+//     [ ] test favicon.ico request
+members.test(async function Server_handleHttpRequest() {
   let request;
   let response;
   let server = new members.Drash.Http.Server({
@@ -28,21 +31,22 @@ members.test(function Server_handleHttpRequest() {
   });
 
   request = members.mockRequest();
-  response = server.handleHttpRequest(request);
+  response = await server.handleHttpRequest(request);
+
   members.assert.equal(
     members.decoder.decode(response.body),
     `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
   );
 
-  // request = members.mockRequest("/", "POST");
-  // response = server.handleHttpRequest(request);
-  // members.assert.equal(
-  //   response,
-  //   `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"POST"},"body":"got this"}`
-  // );
+  request = members.mockRequest("/", "POST");
+  response = await server.handleHttpRequest(request);
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"POST"},"body":"got this"}`
+  );
 });
 
-members.test(function Server_handleHttpRequestError() {
+members.test(async function Server_handleHttpRequestError() {
   let request;
   let response;
   let server = new members.Drash.Http.Server({
@@ -50,14 +54,14 @@ members.test(function Server_handleHttpRequestError() {
   });
 
   request = members.mockRequest();
-  response = server.handleHttpRequest(request);
+  response = await server.handleHttpRequest(request);
   members.assert.equal(
     members.decoder.decode(response.body),
     `{"status_code":404,"status_message":"Not Found","request":{"url":"/","method":"GET"},"body":"The requested URL '/' was not found on this server."}`
   );
 
   request = members.mockRequest("/user/1", "POST");
-  response = server.handleHttpRequest(request);
+  response = await server.handleHttpRequest(request);
   members.assert.equal(
     members.decoder.decode(response.body),
     `{"status_code":405,"status_message":"Method Not Allowed","request":{"url":"/user/1","method":"POST"},"body":"URI '/user/1' does not allow POST requests."}`
