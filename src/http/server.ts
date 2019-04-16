@@ -187,7 +187,6 @@ export default class Server {
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
-      // await request.parseBody();
       response = resource[request.method.toUpperCase()]();
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
@@ -330,6 +329,7 @@ export default class Server {
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       let drashRequest = new Drash.Http.Request(request);
+      await drashRequest.parseBody();
       try {
         this.handleHttpRequest(drashRequest);
       } catch (error) {
@@ -446,10 +446,7 @@ export default class Server {
 
       let resource = this.resources[className];
 
-      resource.paths.forEach(function getResourceClass_forEachPaths(
-        pathObj,
-        index
-      ) {
+      resource.paths.forEach((pathObj, index) => {
         if (!matchedResourceClass) {
           let thisPathMatchesRequestPathname = null;
           if (pathObj.og_path === "/" && request.url_path === "/") {
@@ -473,11 +470,7 @@ export default class Server {
           let pathParamsInKvpForm = {};
           try {
             requestPathnameParams.shift();
-            pathObj.params.forEach(
-              function closure_getResourceClass_forEach_params_forEach(
-                paramName,
-                index
-              ) {
+            pathObj.params.forEach((paramName, index) => {
                 pathParamsInKvpForm[paramName] = requestPathnameParams[index];
               }
             );

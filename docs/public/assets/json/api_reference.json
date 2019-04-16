@@ -1167,17 +1167,17 @@
                     "returns": [
                         {
                             "description": [
-                                "This method does resolves `this.body_parsed`, but only for testing\npurposes. This method can be called without assigning it's resolved\ndata to a variable. For example, you can call `await\nrequest.parseBody();` and access `request.body_parsed` immediately\nafter. Before this method resolves `this.body_parsed`, it assigns the\nparsed request body to `this.body_parsed`."
+                                "This method resolves `this.body_parsed`, but only for testing purposes.\nThis method can be called without assigning its resolved data to a\nvariable. For example, you can call `await request.parseBody();` and\naccess `request.body_parsed` immediately after. Before this method\nresolves `this.body_parsed`, it assigns the parsed request body to\n`this.body_parsed`."
                             ],
                             "annotation": {
-                                "line": "@return Promise<any>",
-                                "data_type": "Promise<any>",
+                                "line": "@return any",
+                                "data_type": "any",
                                 "name": null
                             }
                         }
                     ],
                     "throws": null,
-                    "signature": "public parseBody(): Promise<any>",
+                    "signature": "public parseBody(): any",
                     "fully_qualified_name": "Drash.Http.Request.parseBody"
                 }
             }
@@ -1590,7 +1590,11 @@
                     "access_modifier": "protected",
                     "name": "getHeaderContentType",
                     "description": [
-                        "Get this response's `Content-Type` header."
+                        "Get this response's `Content-Type` header. There are three ways to set\nthe response's `Content-Type` header from a request: (1) the request's\nheaders by setting `Response-Content-Type: \"type\"`, (2) the request's\nURL query params by setting `?response_content_type=type`, and the\nrequest's body by setting `{response_content_type: \"type\"}`.",
+                        "Setting the content type using the request's body takes precedence over\nall other settings.",
+                        "Setting the content type using the request's URL query params takes\nprecedence over the header setting and the default setting.",
+                        "Setting the content type using the request's header setting takes\nprecedence over the default setting.",
+                        "If no content type is specified by the request's body, URL query\nparams, or header, then the default content type will be used. The\ndefault content type is the content type defined in the\n`Drash.Http.Server` object's `response_output` config."
                     ],
                     "params": null,
                     "returns": [

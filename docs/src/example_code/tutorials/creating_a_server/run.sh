@@ -1,1 +1,1 @@
-deno /path/to/your/project/app.ts --allow-net --allow-write
+deno --allow-net --allow-write app.ts

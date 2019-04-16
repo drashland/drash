@@ -1,1 +1,1 @@
-deno /path/to/your/project/app.ts
+deno --allow-env app.ts
