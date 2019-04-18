@@ -17,31 +17,36 @@ page-tutorial-default(:data="data" :hide_screenshot="true")
                 p
                     code let server = new Drash.Http.Server({ response_output: "text/html" });
                 p If a default response output wasn't specified, then the Drash server will use <code>application/json</code>.
-            li You can download the source code for this tutorial here.
+            list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
     template(#steps)
         ol
-            li Perform the initial setup of your project.
-                code-block(:data="example_code.folder_structure_setup")
             li Create your HTTP resource class file.
-                ul
-                    li This file will handle <code>GET</code> requests to the <code>/users/:id</code> URI.
-                    li This file is setup to simulate user authentication via the <code>?auth_token=shield</code> URL query param.
-                    li If a <code>GET localhost:1337/users/:id?response_content_type=text/html</code> request is made, then this resource will show the user's alias and a "Please log in to view this profile." message.
-                    li If a <code>GET localhost:1337/users/:id?response_content_type=text/html&auth_token=shield</code> request is made, then this resource will show the user's alias and the rest of the user's details.
-                    li If a <code>GET localhost:1337/users/:id?response_content_type=application/json</code> request is made, then this resource will show the user's alias.
-                    li If a <code>GET localhost:1337/users/:id?response_content_type=application/json&auth_token=shield</code> request is made, then this resource will show the user's alias and the rest of the user's details.
-                    li If any of the <code>GET</code> requests above are made and the user ID doesn't exist, then this resource will send a 404 Not Found response. This example only has three users.
-                code-block(:data="example_code.users_resource")
+                code-block(:data="data.example_code.users_resource")
             li Create your <code>Response</code> class so your Drash server can handle HTML with Tailwind CSS and JSON with some RESTish fields.
-                code-block(:data="example_code.response")
+                code-block(:data="data.example_code.response")
             li Create your app file.
                 ul
                     li This is the file that will be passed to the <code>deno</code> command in the terminal.
-                code-block(:data="example_code.app")
+                code-block(:data="data.example_code.app")
             li Run your app.
-                code-block(:data="example_code.run")
+                code-block(:data="data.example_code.run")
             li Make the following <code>GET</code> requests:
-                code-block(:data="example_code.curl")
+                code-block(:data="data.example_code.curl")
+    template(#what-is-the-code-doing)
+        h3
+            code app.ts
+        ol
+            li Something something something dark side.
+        h3
+            code users_resource.ts
+        ul
+            li This file will handle <code>GET</code> requests to the <code>/users/:id</code> URI.
+            li This file is setup to simulate user authentication via the <code>?auth_token=shield</code> URL query param.
+            li If a <code>GET localhost:1337/users/:id?response_content_type=text/html</code> request is made, then this resource will show the user's alias and a "Please log in to view this profile." message.
+            li If a <code>GET localhost:1337/users/:id?response_content_type=text/html&auth_token=shield</code> request is made, then this resource will show the user's alias and the rest of the user's details.
+            li If a <code>GET localhost:1337/users/:id?response_content_type=application/json</code> request is made, then this resource will show the user's alias.
+            li If a <code>GET localhost:1337/users/:id?response_content_type=application/json&auth_token=shield</code> request is made, then this resource will show the user's alias and the rest of the user's details.
+            li If any of the <code>GET</code> requests above are made and the user ID doesn't exist, then this resource will send a 404 Not Found response. This example only has three users.
 </template>
 
 <script>
