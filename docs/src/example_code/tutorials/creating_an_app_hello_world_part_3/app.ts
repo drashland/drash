@@ -3,7 +3,9 @@ import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
 
 class Response extends Drash.Http.Response {
   public async generateHtmlResponse(): Promise<any> {
-    let rawOutput = await renderFile(Deno.cwd() + "/index.ejs", {body: this.body});
+    let rawOutput = await renderFile(Deno.cwd() + "/index.ejs", {
+      body: this.body
+    });
     let html = rawOutput.toString();
     return html;
   }

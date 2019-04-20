@@ -26,7 +26,7 @@ let server = new Drash.Http.Server({
       datetime() {
         return new Date().toISOString().replace("T", " ");
       }
-    },
+    }
   })
 });
 
