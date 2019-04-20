@@ -21,6 +21,14 @@ export default class Server {
 
   /**
    * @description
+   *     A property to hold this server's logger.
+   *
+   * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
+   */
+  public logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger;
+
+  /**
+   * @description
    *     A property to hold this server's configs.
    *
    * @property any configs
@@ -37,14 +45,6 @@ export default class Server {
    * @property any deno_server
    */
   protected deno_server: any;
-
-  /**
-   * @description
-   *     A property to hold this server's logger.
-   *
-   * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
-   */
-  protected logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger;
 
   /**
    * @description
