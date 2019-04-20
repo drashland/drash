@@ -142,7 +142,8 @@ export default {
                         "Before You Get Started",
                         "Folder Structure End State",
                         "Steps",
-                        "What Is The Code Doing?"
+                        "What Is The Code Doing?",
+                        "Screenshot"
                     ]
                 }
             }
