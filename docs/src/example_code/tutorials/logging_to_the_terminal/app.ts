@@ -20,7 +20,13 @@ let server = new Drash.Http.Server({
   resources: [HomeResource],
   logger: new Drash.Loggers.ConsoleLogger({
     enabled: true,
-    level: "all"
+    level: "all",
+    tag_string: "{datetime} | {level} | ",
+    tag_string_fns: {
+      datetime() {
+        return new Date().toISOString().replace("T", " ");
+      }
+    },
   })
 });
 

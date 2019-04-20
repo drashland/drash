@@ -1621,20 +1621,6 @@
                 "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
             ],
             "properties": {
-                "logger": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to hold this server's logger."
-                    ],
-                    "annotation": {
-                        "line": "@property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger",
-                        "data_type": "Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
-                        "name": "logger"
-                    },
-                    "signature": "public logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
-                    "name": "logger",
-                    "fully_qualified_name": "Drash.Http.Server.logger"
-                },
                 "configs": {
                     "access_modifier": "protected",
                     "description": [
@@ -1662,6 +1648,20 @@
                     "signature": "protected deno_server: any",
                     "name": "deno_server",
                     "fully_qualified_name": "Drash.Http.Server.deno_server"
+                },
+                "logger": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold this server's logger."
+                    ],
+                    "annotation": {
+                        "line": "@property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger",
+                        "data_type": "Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
+                        "name": "logger"
+                    },
+                    "signature": "protected logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
+                    "name": "logger",
+                    "fully_qualified_name": "Drash.Http.Server.logger"
                 },
                 "resources": {
                     "access_modifier": "protected",

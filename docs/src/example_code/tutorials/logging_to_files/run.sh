@@ -1,1 +1,1 @@
-deno --allow-net --allow-write app.ts
+deno --allow-net --allow-env --allow-write app.ts
