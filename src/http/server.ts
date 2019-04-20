@@ -98,7 +98,7 @@ export default class Server {
     }
 
     if (!configs.response_output) {
-      configs.response_output = "application/json"
+      configs.response_output = "application/json";
     }
 
     this.configs = configs;
@@ -170,7 +170,11 @@ export default class Server {
     // TS2351: Cannot use 'new' with an expression whose type lacks a call or
     // construct signature.
     //
-    let resource = new resourceClass(request, new Drash.Http.Response(request), this);
+    let resource = new resourceClass(
+      request,
+      new Drash.Http.Response(request),
+      this
+    );
     let response;
 
     try {

@@ -137,7 +137,7 @@ export default class Request extends ServerRequest {
    */
   public parseBody(): any {
     return new Promise(resolve => {
-      this.body().then((raw) => {
+      this.body().then(raw => {
         let parsed: any;
         let rawString = decoder.decode(raw);
         this.body_raw_string = rawString;

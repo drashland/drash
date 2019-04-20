@@ -8,9 +8,9 @@
  *     A util function that helps colorize text in the console.
  */
 export interface ColorizeOptions {
-  color?: string,
-  background?: string,
-  style?: string
+  color?: string;
+  background?: string;
+  style?: string;
 }
 
 /**
@@ -67,22 +67,23 @@ export function colorize(message: string, options: ColorizeOptions): string {
   };
 
   // Add the color
-  if (options['color'] && colors[options['color']]) {
-    message = colors[options['color']] + message;
+  if (options["color"] && colors[options["color"]]) {
+    message = colors[options["color"]] + message;
   }
 
   // Add the background
-  if (options['background'] && backgrounds[options['background']]) {
-    message = backgrounds[options['background']] + message;
+  if (options["background"] && backgrounds[options["background"]]) {
+    message = backgrounds[options["background"]] + message;
   }
 
   // Add the attribute
-  if (options['style'] && attributes[options['style']]) {
-    message = attributes[options['style']] + message;
+  if (options["style"] && attributes[options["style"]]) {
+    message = attributes[options["style"]] + message;
   }
 
   // Make sure to reset text color, background, and attributes.
-  message = message + colors['default'] + backgrounds['default'] + attributes['reset'];
+  message =
+    message + colors["default"] + backgrounds["default"] + attributes["reset"];
 
   return message;
-};
+}

@@ -108,7 +108,7 @@ export default class DocBlocksToJson {
    *     Returns the JSON array.
    */
   public compile(files: string[]): any {
-    files.forEach((file) => {
+    files.forEach(file => {
       this.current_file = file;
       let fileContentsRaw = Deno.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
@@ -310,7 +310,7 @@ export default class DocBlocksToJson {
     let result = "";
     let endOfDescription = false;
 
-    textBlockByLine.forEach((line) => {
+    textBlockByLine.forEach(line => {
       if (endOfDescription) {
         return;
       }
@@ -348,9 +348,9 @@ export default class DocBlocksToJson {
   protected getDescriptionInParagraphs(textBlock: string): string[] {
     let textBlockInLines = textBlock.split("\n");
 
-    textBlockInLines = textBlockInLines.map((line) => {
+    textBlockInLines = textBlockInLines.map(line => {
       if (line.trim() === "*") {
-        return "---para-break---"
+        return "---para-break---";
       }
       // A new paragraph is preceded by a "*" and it won't be replaced. We
       // can use this fact to separate paragraphs.
@@ -360,12 +360,12 @@ export default class DocBlocksToJson {
     textBlockInLines = textBlockInLines
       .join("\n")
       .split("---para-break---")
-      .map((val) => {
+      .map(val => {
         return val.trim();
       });
 
     // Filter out lines that don't contain anything
-    textBlockInLines = textBlockInLines.filter((val) => {
+    textBlockInLines = textBlockInLines.filter(val => {
       return val.trim() != "";
     });
 
@@ -385,7 +385,7 @@ export default class DocBlocksToJson {
     return {
       exported: this.isMemberExported("const", text),
       name: this.getNameOfConst(text),
-      description: this.getSection("@description", text),
+      description: this.getSection("@description", text)
       // signature: this.getSignatureOfInterface(text)
     };
   }
@@ -403,7 +403,7 @@ export default class DocBlocksToJson {
     let ret: any = {
       exported: this.isMemberExported("enum", text),
       name: this.getNameOfEnum(text),
-      description: this.getSection("@description", text),
+      description: this.getSection("@description", text)
     };
 
     return ret;
@@ -500,7 +500,7 @@ export default class DocBlocksToJson {
       access_modifier: accessModifier,
       description: this.getSection("@description", text),
       annotation: this.getAnnotation("@property", text),
-      signature: signature,
+      signature: signature
     };
 
     return ret;
