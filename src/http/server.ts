@@ -130,21 +130,12 @@ export default class Server {
    *    See `Drash.Http.Response.send()`.
    */
   public handleHttpRequest(request: Drash.Http.Request): any {
-    let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
-    let response;
-
-    if (getStaticPathAsset) {
-      try {
-        response = new Drash.Http.Response(request);
-        return response.sendStatic();
-      } catch (error) {
-        return this.handleHttpRequestError(
-          request,
-          new Drash.Exceptions.HttpException(404)
-        );
-      }
+    // Handle a request to a static path
+    if (this.requestTargetsStaticPath(request)) {
+      return this.handleHttpRequestForStaticPathAsset(request);
     }
 
+    // Handle a request to the favicon
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }
@@ -172,14 +163,15 @@ export default class Server {
     // @ts-ignore
     // (crookse)
     //
-    // We ignore this because `resourceClass` could be `undefined` and that
-    // doens't have a construct signature. If this isn't ignored, then the
-    // following error will occur:
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    // it with the following error:
     //
     // TS2351: Cannot use 'new' with an expression whose type lacks a call or
     // construct signature.
     //
     let resource = new resourceClass(request, new Drash.Http.Response(request), this);
+    let response;
 
     try {
       if (typeof resource.hook_beforeRequest === "function") {
@@ -188,11 +180,7 @@ export default class Server {
         );
         resource.hook_beforeRequest();
       }
-      this.logger.debug(
-        `Calling ${
-          resource.constructor.name
-        }.${request.method.toUpperCase()}() method.`
-      );
+      this.logger.debug("Calling " + resource.constructor.name + "." + request.method.toUpperCase() + "() method.");
       response = resource[request.method.toUpperCase()]();
       if (typeof resource.hook_beforeRequest === "function") {
         this.logger.debug(
@@ -324,6 +312,25 @@ export default class Server {
     request.respond(response);
     return JSON.stringify(response);
   }
+  /**
+   * @description
+   *     Handle HTTP requests for static path assets.
+   *
+   * @param Drash.Http.Request request
+   *
+   * @return any
+   *     Returns the response as stringified JSON. This is only used for unit
+   *     testing purposes.
+   */
+  public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any {
+    try {
+      let response = new Drash.Http.Response(request);
+      return response.sendStatic();
+    } catch (error) {
+      let error404 = new Drash.Exceptions.HttpException(404);
+      return this.handleHttpRequestError(request, error404);
+    }
+  }
 
   /**
    * @description
@@ -340,8 +347,11 @@ export default class Server {
     console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
+
+      // Build a new and more workable request object.
       let drashRequest = new Drash.Http.Request(request);
       await drashRequest.parseBody();
+
       try {
         this.handleHttpRequest(drashRequest);
       } catch (error) {
@@ -500,14 +510,14 @@ export default class Server {
 
   /**
    * @description
-   *     Is the request for a static path asset?
+   *     Is the request targeting a static path?
    *
    * @param Drash.Http.Request request
    *
    * @return boolean
-   *     Returns true if the request is for an asset in a static path.
+   *     Returns true if the request targets a static path.
    */
-  protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean {
+  protected requestTargetsStaticPath(request: Drash.Http.Request): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }

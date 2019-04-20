@@ -1835,6 +1835,39 @@
                     "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForFavicon"
                 },
+                "handleHttpRequestForStaticPathAsset": {
+                    "access_modifier": "public",
+                    "name": "handleHttpRequestForStaticPathAsset",
+                    "description": [
+                        "Handle HTTP requests for static path assets."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param Drash.Http.Request request",
+                                "data_type": "Drash.Http.Request",
+                                "name": "request"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [
+                                "Returns the response as stringified JSON. This is only used for unit\ntesting purposes."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any",
+                    "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForStaticPathAsset"
+                },
                 "async run": {
                     "access_modifier": "public",
                     "name": "async run",
@@ -1963,11 +1996,11 @@
                     "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined",
                     "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },
-                "requestIsForStaticPathAsset": {
+                "requestTargetsStaticPath": {
                     "access_modifier": "protected",
-                    "name": "requestIsForStaticPathAsset",
+                    "name": "requestTargetsStaticPath",
                     "description": [
-                        "Is the request for a static path asset?"
+                        "Is the request targeting a static path?"
                     ],
                     "params": {
                         "request": {
@@ -1983,7 +2016,7 @@
                     "returns": [
                         {
                             "description": [
-                                "Returns true if the request is for an asset in a static path."
+                                "Returns true if the request targets a static path."
                             ],
                             "annotation": {
                                 "line": "@return boolean",
@@ -1993,8 +2026,8 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean",
-                    "fully_qualified_name": "Drash.Http.Server.requestIsForStaticPathAsset"
+                    "signature": "protected requestTargetsStaticPath(request: Drash.Http.Request): boolean",
+                    "fully_qualified_name": "Drash.Http.Server.requestTargetsStaticPath"
                 }
             }
         }
