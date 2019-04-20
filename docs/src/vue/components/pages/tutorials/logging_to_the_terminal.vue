@@ -56,7 +56,7 @@ export const resource = {
     meta: {
         title: "Logging: Logging To The Terminal",
         tutorial_title: "Logging To The Terminal",
-        source_code_uri: "/logging/logging_to_the_terminal"
+        source_code_uri: "/logging_to_the_terminal"
     }
 }
 

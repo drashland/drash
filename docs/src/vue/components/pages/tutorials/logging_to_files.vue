@@ -59,7 +59,7 @@ export const resource = {
     meta: {
         title: "Logging: Logging To Files",
         tutorial_title: "Logging To Files",
-        source_code_uri: "/logging/logging_to_files"
+        source_code_uri: "/logging_to_files"
     }
 }
 
