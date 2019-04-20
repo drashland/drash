@@ -26,7 +26,13 @@ div
             div.col
                 heading-h2#importing(heading="Importing")
                 p
-                    code-block(:data="example_code.importing.app")
+                    code-block-slotted(language="typescript" :header="false")
+                        template(v-slot:code)
+                            | // Import Drash latest release
+                            | import Drash from "https://deno.land/x/drash@{{ $conf.latest_release }}/mod.ts";
+                            | 
+                            | // Import Drash master
+                            | import Drash from "https://deno.land/x/drash/mod.ts";
                 p It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."
         hr
         div.row
