@@ -3,16 +3,15 @@ page-tutorial-default(:data="data" :hide_screenshot="true")
     template(#table-of-contents)
         ul-toc(:data="data.toc")
     template(#before-you-get-started)
-        ul
-            li Drash servers use the <code>Drash.Http.Response</code> class to send properly formatted responses to clients.
-            li Out of the box, Drash can send responses in the following formats:
-                ul
-                    li <code>application/json</code>
-                    li <code>text/html</code>
-                    li <code>application/xml</code>
-                    li <code>text/xml</code>
-            li If you want your Drash server to send responses in more formats (to cater to clients that want to request formats other than the above), then you will need to override and replace <code>Drash.Http.Response</code>.
-            list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+        li Drash servers use the <code>Drash.Http.Response</code> class to send properly formatted responses to clients.
+        li Out of the box, Drash can send responses in the following formats:
+            ul
+                li <code>application/json</code>
+                li <code>text/html</code>
+                li <code>application/xml</code>
+                li <code>text/xml</code>
+        li If you want your Drash server to send responses in more formats (to cater to clients that want to request formats other than the above), then you will need to override and replace <code>Drash.Http.Response</code>.
+        list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
     template(#steps)
         ol
             li Create your app file.

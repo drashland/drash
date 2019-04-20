@@ -13,7 +13,7 @@ div.c-sidebar
                         img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
                 div
                     a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
-                        img.margin-bottom--0(alt="Travis CI Build" src="https://travis-ci.org/crookse/deno-drash.svg" width="auto" height="20")
+                        img.margin-bottom--0(alt="Travis CI Build Master" src="https://img.shields.io/travis/crookse/deno-drash/v0.8.1.svg?label=master" width="auto" height="20")
                 div
                     a(href="https://github.com/denoland/deno_install" target="_BLANK")
                         img.margin-bottom--0(alt="deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
@@ -31,15 +31,19 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/introduction#file-an-issue'") File An Issue
             a.heading-link Tutorials
             div.c-sidebar__menu-body
-                a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
-                a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
-                a(:href="$conf.base_url + '/#/tutorials/content-negotiation'") Content Negotiation
+                a Resources
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/tutorials/creating-a-resource'") Creating A Resource
+                    a(:href="$conf.base_url + '/#/tutorials/resource-lifecycle-hooks'") Lifecycle Hooks
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
+                a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
+                a(:href="$conf.base_url + '/#/tutorials/content-negotiation'") Content Negotiation
+                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
                 a Logging
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/logging-to-files'") Logging To Files
                     a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
-                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
+                    a(:href="$conf.base_url + '/#/tutorials/logging-to-files'") Logging To Files
+                a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
             a.heading-link Tutorials (Creating An App)
             div.c-sidebar__menu-body
                 a Hello World

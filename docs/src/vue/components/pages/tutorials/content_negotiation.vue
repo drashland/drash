@@ -3,27 +3,26 @@ page-tutorial-default(:data="data")
     template(#table-of-contents)
         ul-toc(:data="data.toc")
     template(#before-you-get-started)
-        ul
-            li A Drash server can handle sending responses of different content types, but it is up to the resource classes to handle how their different representations are formatted.
-            li Requesting different representations of a resource requires the client to explicitly ask what content type&mdash;using a correct <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types" target="_BLANK">MIME type</a> name&mdash;it wants to receive:
-                ul
-                    li via HTTP request headers: 
-                        code { "Response-Content-Type": "application/json" }
-                    li via URL query params: 
-                        code ?response_content_type=application/json
-                    li via HTTP request body: 
-                        code { response_content_type: "application/json" }
-            li If the client doesn't explicitly ask what content type it wants to receive, then the Drash server will use the default response output that was specified when it was created. For example, if a Drash server is created as follows...
-                code-block-slotted(:header="false" language="typescript" line_highlight="3")
-                    template(#code)
-                        | let server = new Drash.Http.Server({
-                        |   address: "localhost:1337",
-                        |   response_output: "text/html",
-                        |   resources: [HomeResource]
-                        | });
-                p ...then it will use <code>text/html</code> as the default response output.
-            li If a default response output isn't specified, then the Drash server will use <code>application/json</code>.
-            list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+        li A Drash server can handle sending responses of different content types, but it is up to the resource classes to handle how their different representations are formatted.
+        li Requesting different representations of a resource requires the client to explicitly ask what content type&mdash;using a correct <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types" target="_BLANK">MIME type</a> name&mdash;it wants to receive:
+            ul
+                li via HTTP request headers: 
+                    code { "Response-Content-Type": "application/json" }
+                li via URL query params: 
+                    code ?response_content_type=application/json
+                li via HTTP request body: 
+                    code { response_content_type: "application/json" }
+        li If the client doesn't explicitly ask what content type it wants to receive, then the Drash server will use the default response output that was specified when it was created. For example, if a Drash server is created as follows...
+            code-block-slotted(:header="false" language="typescript" line_highlight="3")
+                template(#code)
+                    | let server = new Drash.Http.Server({
+                    |   address: "localhost:1337",
+                    |   response_output: "text/html",
+                    |   resources: [HomeResource]
+                    | });
+            p ...then it will use <code>text/html</code> as the default response output.
+        li If a default response output isn't specified, then the Drash server will use <code>application/json</code>.
+        list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
     template(#steps)
         ol
             li Create your app file.

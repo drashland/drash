@@ -182,12 +182,24 @@ export default class Server {
     let resource = new resourceClass(request, new Drash.Http.Response(request), this);
 
     try {
+      if (typeof resource.hook_beforeRequest === "function") {
+        this.logger.debug(
+          `Calling ${resource.constructor.name}.hook_beforeRequest().`
+        );
+        resource.hook_beforeRequest();
+      }
       this.logger.debug(
         `Calling ${
           resource.constructor.name
         }.${request.method.toUpperCase()}() method.`
       );
       response = resource[request.method.toUpperCase()]();
+      if (typeof resource.hook_beforeRequest === "function") {
+        this.logger.debug(
+          `Calling ${resource.constructor.name}.hook_afterRequest().`
+        );
+        resource.hook_afterRequest();
+      }
       this.logger.info(
         `Sending response. Content-Type: ${response.headers.get(
           "Content-Type"
