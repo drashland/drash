@@ -36,7 +36,7 @@ page-tutorial-default(:data="data" :hide_screenshot="true")
         h3 <code>app.ts</code>
         ol
             li Drash is imported so that all subsequent lines in the file have access to the <code>Drash</code> namespace.
-            li Your new <code>Response</code> class is imported and replaces <code>Drash.Http.Response</code>. Drash server's instantiate the <code>Drash.Http.Response</code> class to generate response objects, so replacing <code>Drash.Http.Response</code> with your new <code>Response</code> class will make your Drash server use your new <code>Response</code> class.
+            li Your new <code>Response</code> class is imported and replaces <code>Drash.Http.Response</code>. Drash servers instantiate the <code>Drash.Http.Response</code> class to generate response objects, so replacing <code>Drash.Http.Response</code> with your new <code>Response</code> class will make your Drash server use your new <code>Response</code> class.
             li A resource class named <code>HomeResource</code> is created.
                 ul
                     li <code>HomeResource</code> contains a <code>GET()</code> method. This method will handle all <code>GET</code> requests to <code>HomeResource</code>. When a client makes a <code>GET</code> request to <code>HomeResource</code>, the response the client will receive is "Hello World!" as written in the <code>response</code> object's <code>body</code> property. All resources have access to the <code>response</code> object via <code>this.response</code>.

@@ -33,8 +33,16 @@ div.c-sidebar
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
+                a(:href="$conf.base_url + '/#/tutorials/content-negotiation'") Content Negotiation
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
-                a Creating An App: Hello World
+                a Logging
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/tutorials/logging-logging-to-files'") Logging To Files
+                    a(:href="$conf.base_url + '/#/tutorials/logging-logging-to-the-terminal'") Logging To The Terminal
+                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
+            a.heading-link Tutorials (Creating An App)
+            div.c-sidebar__menu-body
+                a Hello World
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-1'") Part 1 of 4: Handling GET requests
                     a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Part 2 of 4: Building the front end
@@ -42,9 +50,6 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Part 4 of 4: Logging
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") Creating An Application: API
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
-                a(:href="$conf.base_url + '/#/tutorials/handling-content-negotiation'") Handling Content Negotiation
-                a(:href="$conf.base_url + '/#/tutorials/logging'") Logging
-                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
             a.heading-link(:href="$conf.base_url + '/#/api-reference#top'") API Reference
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/api-reference/compilers'") Compilers

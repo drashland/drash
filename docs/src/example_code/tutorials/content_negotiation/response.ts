@@ -39,10 +39,12 @@ export default class Response extends Drash.Http.Response {
         break;
     }
 
-    this.request.respond({
+    let output = {
       status: this.status_code,
       headers: this.headers,
       body: new TextEncoder().encode(body)
-    });
+    };
+
+    this.request.respond(output);
   }
 }
