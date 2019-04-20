@@ -1,5 +1,5 @@
 import Logger from "./logger.ts";
-import {colorize} from "../util/members.ts";
+import { colorize } from "../util/members.ts";
 
 /**
  * @class CoreLogger
@@ -7,7 +7,6 @@ import {colorize} from "../util/members.ts";
  * codebase.
  */
 export default class CoreLogger extends Logger {
-
   protected enabled: boolean = false;
   protected test: boolean = false;
 

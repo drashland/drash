@@ -8,7 +8,6 @@ import Logger from "./logger.ts";
  *     This logger allows you to log messages to a file.
  */
 export default class FileLogger extends Logger {
-
   /**
    * @description
    *     The file this logger will write log messages to.

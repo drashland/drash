@@ -2,7 +2,6 @@
  * A class that helps mutate environment variables from strings.
  */
 export default class EnvVar {
-
   /**
    * The value of the env var.
    *

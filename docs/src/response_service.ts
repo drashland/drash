@@ -13,9 +13,10 @@ export async function compile(inputFile, outputFile): Promise<any> {
 
 export function getAppData() {
   const buildTimestamp = new Date().getTime();
-  const env = Deno.env().DRASH_DOCS_BASE_URL == "/deno-drash"
-    ? "production"
-    : "development";
+  const env =
+    Deno.env().DRASH_DOCS_BASE_URL == "/deno-drash"
+      ? "production"
+      : "development";
   let bundleVersion = "";
   if (env == "production") {
     bundleVersion = ".min";
@@ -30,14 +31,12 @@ export function getAppData() {
         "/public/assets/vendor/bootstrap-4.1.3-dist/js/bootstrap.min.js",
         `/public/assets/js/bundle${bundleVersion}.js?version=${buildTimestamp}`
       ],
-      external: [
-        "https://unpkg.com/axios/dist/axios.min.js",
-      ]
+      external: ["https://unpkg.com/axios/dist/axios.min.js"]
     },
     conf: {
       base_url: Deno.env().DRASH_DOCS_BASE_URL
         ? Deno.env().DRASH_DOCS_BASE_URL
-        : "",
+        : ""
     },
 
     // The below is transferred to vue_app_root.vue
@@ -63,14 +62,15 @@ export async function getAppDataInHtml(inputFile) {
 function getPageDataApiReference() {
   let contents = "";
   try {
-    contents = Decoder.decode(Deno.readFileSync(`./public/assets/json/api_reference.json`));
+    contents = Decoder.decode(
+      Deno.readFileSync(`./public/assets/json/api_reference.json`)
+    );
   } catch (error) {
     Drash.core_logger.error(error);
   }
 
   return JSON.parse(contents);
 }
-
 
 function getExampleCode() {
   let languages = {
@@ -81,10 +81,7 @@ function getExampleCode() {
   };
 
   let exampleCode: any = {};
-  let ignore = [
-    "api_reference",
-    ".DS_Store"
-  ];
+  let ignore = ["api_reference", ".DS_Store"];
 
   function iterateDirectoryFiles(store, directory) {
     let files = Deno.readDirSync(directory);
@@ -92,8 +89,7 @@ function getExampleCode() {
     try {
       let fileNamespaceSplit = directory.split("/");
       fileNamespace = fileNamespaceSplit[fileNamespaceSplit.length - 1];
-    } catch (error) {
-    }
+    } catch (error) {}
     if (!store[fileNamespace]) {
       store[fileNamespace] = {};
     }
@@ -127,13 +123,11 @@ function getExampleCode() {
   }
 
   function getTitle(file, fileExtension) {
-    let title = (fileExtension == "sh")
-      ? "Terminal"
-      : `/path/to/your/project/${file.name}`;
+    let title =
+      fileExtension == "sh" ? "Terminal" : `/path/to/your/project/${file.name}`;
 
-    title = (file.name == "folder_structure.txt")
-      ? "Project Folder Structure"
-      : title;
+    title =
+      file.name == "folder_structure.txt" ? "Project Folder Structure" : title;
 
     return title;
   }
