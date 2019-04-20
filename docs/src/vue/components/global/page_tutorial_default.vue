@@ -31,7 +31,7 @@ div
     div.row(v-if="!hide_screenshot")
         div.col
             hr
-            h2#screenshot Screenshot
+            h2#screenshot Screenshot(s)
             slot(name="screenshot")
     end-of-tutorial
 </template>

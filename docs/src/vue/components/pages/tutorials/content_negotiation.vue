@@ -1,5 +1,5 @@
 <template lang="pug">
-page-tutorial-default(:data="data" :hide_screenshot="true")
+page-tutorial-default(:data="data")
     template(#table-of-contents)
         ul-toc(:data="data.toc")
     template(#before-you-get-started)
@@ -92,6 +92,35 @@ page-tutorial-default(:data="data" :hide_screenshot="true")
                     li Allows environment access via <code>--allow-env</code> flag.
                 p The <code>--allow-net</code> flag is added so that the server will work.
                 p The <code>--allow-env</code> flag is added because <code>Drash.Http.Response</code> objects require environment access if they're setup to serve static paths. Serving static paths isn't setup in this tutorial, but the <code>Drash.Http.Response</code> class compiles with the code that requires access to the environment. This means the <code>--allow-env</code> flag is always required.
+    template(v-slot:screenshot)
+        h3 application/json response without authentication
+        ul
+            li
+                code localhost:1337/users/1
+            li
+                code localhost:1337/users/1?response_content_type=application/json
+        a(:href="$conf.base_url + '/public/assets/img/content_negotiation_application_json.png'")
+            img(:src="$conf.base_url + '/public/assets/img/content_negotiation_application_json.png'")
+        h3 application/json response with authentication
+        ul
+            li
+                code localhost:1337/users/1?auth_token=shield
+            li
+                code localhost:1337/users/1?response_content_type=application/json&auth_token=shield
+        a(:href="$conf.base_url + '/public/assets/img/content_negotiation_application_json_auth_token.png'")
+            img(:src="$conf.base_url + '/public/assets/img/content_negotiation_application_json_auth_token.png'")
+        h3 text/html response without authentication
+        ul
+            li
+                code localhost:1337/users/1?response_content_type=text/html
+        a(:href="$conf.base_url + '/public/assets/img/content_negotiation_text_html.png'")
+            img(:src="$conf.base_url + '/public/assets/img/content_negotiation_text_html.png'")
+        h3 text/html response with authentication
+        ul
+            li
+                code localhost:1337/users/1?response_content_type=text/html&auth_token=shield
+        a(:href="$conf.base_url + '/public/assets/img/content_negotiation_text_html_auth_token.png'")
+            img(:src="$conf.base_url + '/public/assets/img/content_negotiation_text_html_auth_token.png'")
 </template>
 
 <script>
