@@ -37,8 +37,8 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
                 a Logging
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/logging-logging-to-files'") Logging To Files
-                    a(:href="$conf.base_url + '/#/tutorials/logging-logging-to-the-terminal'") Logging To The Terminal
+                    a(:href="$conf.base_url + '/#/tutorials/logging-to-files'") Logging To Files
+                    a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
                 a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
             a.heading-link Tutorials (Creating An App)
             div.c-sidebar__menu-body
