@@ -108,13 +108,6 @@ export default {
         }
     },
     methods: {
-        // getRawCode() {
-        //     axios.get('https://raw.githubusercontent.com/crookse/deno-drash/master' + this.link)
-        //         .then(response => {
-        //             console.log(response);
-        //             this.raw_code_data = response.data;
-        //         });
-        // },
         empty(inputObj) {
             return !inputObj || Object.keys(inputObj).length <= 0;
         }
