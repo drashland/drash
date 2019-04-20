@@ -10,6 +10,7 @@ Drash.Http.Response = AppResponse;
 import AppResource from "./src/app_resource.ts";
 
 compileApiReferencePageData();
+compileVueGlobalComponents();
 compileVueRouterRoutes();
 runServer();
 
@@ -39,7 +40,34 @@ function compileApiReferencePageData() {
   let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 4));
   const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
   Deno.writeFileSync(apiReferenceOutputFile, apiReferenceData);
-  console.log(`[docs.ts] Done. API Reference page data was written to:\n    ${apiReferenceOutputFile}.`);
+  console.log(`    Done. API Reference page data was written to:\n    ${apiReferenceOutputFile}.`);
+}
+
+function compileVueGlobalComponents() {
+  console.log("[docs.ts] Compiling Vue global components...");
+  let vueRouterComponentPaths = [];
+  let vueRouterComponents = Deno.readDirSync(`${DRASH_DIR_ROOT}/docs/src/vue/components/global`);
+  function iterateDirectoryFiles(store, files) {
+    files.forEach(file => {
+      if (file.isFile()) {
+        store.push({
+          name: file.name.replace(".", "_"), // change name from filename.vue to filename_vue
+          path: file.path
+        });
+      } else {
+        iterateDirectoryFiles(store, Deno.readDirSync(file.path));
+      }
+    });
+  }
+  iterateDirectoryFiles(vueRouterComponentPaths, vueRouterComponents);
+  let importString = `import Vue from "vue";\n\n`;
+  vueRouterComponentPaths.forEach(pathObj => {
+    let componentName = pathObj.name.replace("_vue", "").replace(/_/g, "-");
+    importString += `import ${pathObj.name} from "${pathObj.path}";\nVue.component("${componentName}", ${pathObj.name});\n\n`;
+  });
+  let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
+  Deno.writeFileSync(outputFile, Encoder.encode(importString));
+  console.log(`    Done. Vue global components were written to:\n    ${outputFile}.`);
 }
 
 function compileVueRouterRoutes() {
@@ -50,7 +78,7 @@ function compileVueRouterRoutes() {
     files.forEach(file => {
       if (file.isFile()) {
         store.push({
-          name: file.name.replace(".", "_"),
+          name: file.name.replace(".", "_"), // change name from filename.vue to filename_vue
           path: file.path
         });
       } else {
@@ -70,7 +98,7 @@ function compileVueRouterRoutes() {
   importString += "];";
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
-  console.log(`[docs.ts] Done. vue-router routes were written to:\n    ${outputFile}.`);
+  console.log(`    Done. vue-router routes were written to:\n    ${outputFile}.`);
 }
 
 function runServer() {
