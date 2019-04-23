@@ -42,19 +42,12 @@ export default class DocBlocksToJson {
   protected re_is_enum = new RegExp(/@enum +\w+/);
   protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
   protected re_is_interface = new RegExp(/@interface +\w+/);
-  protected re_is_ignored_block = new RegExp(
-    /\* @doc-blocks-to-json ignore-doc-block/,
-    "g"
-  );
+  protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
   protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
-  protected re_is_method = new RegExp(
-    /.+(static|public|protected|private)( async)? \w+\((.+)?\).+(:? +)?{/
-  );
+  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+(:? +)?{/);
   protected re_is_constructor = new RegExp(/.+constructor\(.+\) ?{?/);
   protected re_is_property = new RegExp(/@property/);
-  protected re_members_only = new RegExp(
-    /\/\/\/ +@doc-blocks-to-json members-only/
-  );
+  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   // protected re_class = new RegExp(/@class +\w+/, "g");
   // protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
@@ -63,8 +56,7 @@ export default class DocBlocksToJson {
   // protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
   // protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
   // protected re_function = new RegExp(/@(function|func|method).+/, "g");
-  protected re__member_names =
-    "@(class|enum|function|func|interface|method|module)";
+  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
 
   /**
    * @description
