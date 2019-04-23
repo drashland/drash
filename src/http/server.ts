@@ -186,7 +186,7 @@ export default class Server {
       }
       this.logger.debug("Calling " + resource.constructor.name + "." + request.method.toUpperCase() + "() method.");
       response = resource[request.method.toUpperCase()]();
-      if (typeof resource.hook_beforeRequest === "function") {
+      if (typeof resource.hook_afterRequest === "function") {
         this.logger.debug(
           `Calling ${resource.constructor.name}.hook_afterRequest().`
         );
