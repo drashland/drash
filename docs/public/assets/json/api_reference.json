@@ -1262,54 +1262,7 @@
                     "fully_qualified_name": "Drash.Http.Resource.server"
                 }
             },
-            "methods": {
-                "constructor": {
-                    "access_modifier": "public",
-                    "name": "constructor",
-                    "description": [
-                        "Construct an object of this class."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [
-                                "The request object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
-                                "name": "request"
-                            }
-                        },
-                        "response": {
-                            "name": "response",
-                            "description": [
-                                "The response object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Response response",
-                                "data_type": "Drash.Http.Response",
-                                "name": "response"
-                            }
-                        },
-                        "server": {
-                            "name": "server",
-                            "description": [
-                                "The server object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Server server",
-                                "data_type": "Drash.Http.Server",
-                                "name": "server"
-                            }
-                        }
-                    },
-                    "returns": null,
-                    "throws": null,
-                    "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
-                    "fully_qualified_name": "Drash.Http.Resource.constructor"
-                }
-            }
+            "methods": {}
         },
         "Response": {
             "fully_qualified_name": "Drash.Http.Response",
@@ -1541,6 +1494,27 @@
                     "signature": "public getStatusMessageFull(): string",
                     "fully_qualified_name": "Drash.Http.Response.getStatusMessageFull"
                 },
+                "outputDetails": {
+                    "access_modifier": "public",
+                    "name": "outputDetails",
+                    "description": [
+                        "Get the full output details (for debugging purposes)."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public outputDetails(): string",
+                    "fully_qualified_name": "Drash.Http.Response.outputDetails"
+                },
                 "async send": {
                     "access_modifier": "public",
                     "name": "async send",
@@ -1631,7 +1605,7 @@
                         "data_type": "Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
                         "name": "logger"
                     },
-                    "signature": "public logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
+                    "signature": "public logger: Drash.Loggers.ConsoleLogger | Drash.Loggers.FileLogger",
                     "name": "logger",
                     "fully_qualified_name": "Drash.Http.Server.logger"
                 },
@@ -1959,42 +1933,6 @@
                     "throws": null,
                     "signature": "protected addStaticPath(path: string): void",
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
-                },
-                "getResourceClass": {
-                    "access_modifier": "protected",
-                    "name": "getResourceClass",
-                    "description": [
-                        "Get the resource class."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [
-                                "The request object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
-                                "name": "request"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [
-                                "Returns a `Drash.Http.Resource` object if the URL path of the request\ncan be matched to a `Drash.Http.Resource` object's paths.",
-                                "Returns `undefined` if a `Drash.Http.Resource` object can't be matched."
-                            ],
-                            "annotation": {
-                                "line": "@return Drash.Http.Resource|undefined",
-                                "data_type": "Drash.Http.Resource|undefined",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined",
-                    "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },
                 "requestTargetsStaticPath": {
                     "access_modifier": "protected",

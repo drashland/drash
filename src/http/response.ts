@@ -167,6 +167,18 @@ export default class Response {
 
   /**
    * @description
+   *     Get the full output details (for debugging purposes).
+   *
+   * @return string
+   */
+  public outputDetails(): string {
+    return `Content-Type: ${this.headers.get(
+      "Content-Type"
+    )}. Status: ${this.getStatusMessageFull()}.`;
+  }
+
+  /**
+   * @description
    *     Send the response to the client making the request.
    *
    * @return Promise<any>

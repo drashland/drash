@@ -148,7 +148,9 @@ export default class Request extends ServerRequest {
         //
         // ... there's going to be potential fuck ups here btw ...
 
-        Drash.core_logger.debug(`HTTP request Content-Type: ${this.headers.get("Content-Type")}`);
+        Drash.core_logger.debug(
+          `HTTP request Content-Type: ${this.headers.get("Content-Type")}`
+        );
 
         // Is this an application/json body?
         if (this.headers.get("Content-Type") == "application/json") {
@@ -179,7 +181,9 @@ export default class Request extends ServerRequest {
             if (rawString.indexOf("?") !== -1) {
               rawString = rawString.split("?")[1];
             }
-            parsed = Drash.Services.HttpService.parseQueryParamsString(rawString);
+            parsed = Drash.Services.HttpService.parseQueryParamsString(
+              rawString
+            );
           } catch (error) {
             parsed = false;
           }

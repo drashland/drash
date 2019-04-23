@@ -12,7 +12,6 @@ import { serve } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.
  *     request-resource-response lifecycle.
  */
 export default class Server {
-
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
   protected trackers = {
@@ -25,7 +24,7 @@ export default class Server {
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
    */
-  public logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger;
+  public logger: Drash.Loggers.ConsoleLogger | Drash.Loggers.FileLogger;
 
   /**
    * @description
@@ -175,28 +174,30 @@ export default class Server {
       new Drash.Http.Response(request),
       this
     );
+    this.logger.debug(
+      "Using " +
+        resource.constructor.name +
+        " resource class to handle the request."
+    );
+
     let response;
 
     try {
+      // Perform hook before the request is made
       if (typeof resource.hook_beforeRequest === "function") {
-        this.logger.debug(
-          `Calling ${resource.constructor.name}.hook_beforeRequest().`
-        );
+        this.logger.debug("Calling hook_beforeRequest().");
         resource.hook_beforeRequest();
       }
-      this.logger.debug("Calling " + resource.constructor.name + "." + request.method.toUpperCase() + "() method.");
+      // Perform the request
+      this.logger.debug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
+      // Perform hook after the request is made
       if (typeof resource.hook_afterRequest === "function") {
-        this.logger.debug(
-          `Calling ${resource.constructor.name}.hook_afterRequest().`
-        );
+        this.logger.debug("Calling hook_afterRequest().");
         resource.hook_afterRequest();
       }
-      this.logger.info(
-        `Sending response. Content-Type: ${response.headers.get(
-          "Content-Type"
-        )}. Status: ${response.getStatusMessageFull()}.`
-      );
+      this.logger.info("Sending response. " + response.status_code + ".");
+      this.logger.debug("Response: " + response.outputDetails());
       return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely
@@ -351,7 +352,6 @@ export default class Server {
     console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
-
       // Build a new and more workable request object.
       let drashRequest = new Drash.Http.Request(request);
       await drashRequest.parseBody();
@@ -359,7 +359,10 @@ export default class Server {
       try {
         this.handleHttpRequest(drashRequest);
       } catch (error) {
-        this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(500));
+        this.handleHttpRequestError(
+          request,
+          new Drash.Exceptions.HttpException(500)
+        );
       }
     }
   }
@@ -460,7 +463,9 @@ export default class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined {
+  protected getResourceClass(
+    request: Drash.Http.Request
+  ): Drash.Http.Resource | undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -497,9 +502,8 @@ export default class Server {
           try {
             requestPathnameParams.shift();
             pathObj.params.forEach((paramName, index) => {
-                pathParamsInKvpForm[paramName] = requestPathnameParams[index];
-              }
-            );
+              pathParamsInKvpForm[paramName] = requestPathnameParams[index];
+            });
           } catch (error) {}
           request.path_params = pathParamsInKvpForm;
 

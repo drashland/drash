@@ -28,21 +28,33 @@ import Drash from "../../mod.ts";
  *     This compiler reads doc blocks and converts them to parsable JSON.
  */
 export default class DocBlocksToJson {
-
-  protected re_description_stop_points = new RegExp(/@(param|return|throws)/, "g");
+  protected re_description_stop_points = new RegExp(
+    /@(param|return|throws)/,
+    "g"
+  );
   protected re_export = new RegExp(/export.+/, "g");
-  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
+  protected re_for_all_members = new RegExp(
+    /\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/,
+    "g"
+  );
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
   protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
   protected re_is_interface = new RegExp(/@interface +\w+/);
-  protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
+  protected re_is_ignored_block = new RegExp(
+    /\* @doc-blocks-to-json ignore-doc-block/,
+    "g"
+  );
   protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
-  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((.+)?\).+(:? +)?{/);
+  protected re_is_method = new RegExp(
+    /.+(static|public|protected|private)( async)? \w+\((.+)?\).+(:? +)?{/
+  );
   protected re_is_constructor = new RegExp(/.+constructor\(.+\) ?{?/);
   protected re_is_property = new RegExp(/@property/);
-  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_members_only = new RegExp(
+    /\/\/\/ +@doc-blocks-to-json members-only/
+  );
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   // protected re_class = new RegExp(/@class +\w+/, "g");
   // protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
@@ -51,7 +63,8 @@ export default class DocBlocksToJson {
   // protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
   // protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
   // protected re_function = new RegExp(/@(function|func|method).+/, "g");
-  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
+  protected re__member_names =
+    "@(class|enum|function|func|interface|method|module)";
 
   /**
    * @description
@@ -150,7 +163,12 @@ export default class DocBlocksToJson {
     // The \n after @annotation ensures we can parse @description\n or any other
     // annotation that doesn't have trailing characters.
     //
-    let re = new RegExp("\\\* " + annotation + "\n?.+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?", "g");
+    let re = new RegExp(
+      "\\* " +
+        annotation +
+        "\n?.+((\n +\\* +)[^@].+)*(?:(\n +\\*?\n? +\\* + .*)+)?",
+      "g"
+    );
     let matches = docBlock.match(re);
     let ret: any = {};
 
@@ -174,12 +192,7 @@ export default class DocBlocksToJson {
     }
 
     // Parsing the following?
-    let arrayedAnnotations = [
-      "@returns",
-      "@return",
-      "@throws",
-      "@throw"
-    ];
+    let arrayedAnnotations = ["@returns", "@return", "@throws", "@throw"];
     if (arrayedAnnotations.indexOf(annotation) != -1) {
       let annotationBlocks = [];
       matches.forEach(text => {
@@ -533,10 +546,17 @@ export default class DocBlocksToJson {
     switch (textType) {
       case "@param":
         line = textByLine[0];
-        return line.trim().replace(/ ?\* /g, "").trim().split(" ")[2];
+        return line
+          .trim()
+          .replace(/ ?\* /g, "")
+          .trim()
+          .split(" ")[2];
       case "method":
         line = textByLine[textByLine.length - 1];
-        return line.trim().replace(/(public|protected|private) /g, "").split("(")[0];
+        return line
+          .trim()
+          .replace(/(public|protected|private) /g, "")
+          .split("(")[0];
       case "property":
         line = textByLine[textByLine.length - 1];
         return line
@@ -548,7 +568,9 @@ export default class DocBlocksToJson {
         break;
     }
 
-    Drash.core_logger.error(`Member name could not be found for ${this.current_file}.`)
+    Drash.core_logger.error(
+      `Member name could not be found for ${this.current_file}.`
+    );
 
     return undefined;
   }
@@ -564,7 +586,8 @@ export default class DocBlocksToJson {
    */
   protected getNameOfConst(text: string): string {
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim()
+    return textByLine[textByLine.length - 1]
+      .trim()
       .replace("export", "")
       .replace("const", "")
       .trim()
@@ -616,8 +639,7 @@ export default class DocBlocksToJson {
    */
   protected getNameOfInterface(text: string): string {
     let signature = this.getSignatureOfInterface(text);
-    return signature
-      .replace(/export +? ?interface +?/, "");
+    return signature.replace(/export +? ?interface +?/, "");
   }
 
   /**
@@ -664,7 +686,10 @@ export default class DocBlocksToJson {
   protected getSignatureOfFunction(text: string): string {
     // The signature is the last line of the doc block
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "").replace("}", "");
+    return textByLine[textByLine.length - 1]
+      .trim()
+      .replace(/ ?{/, "")
+      .replace("}", "");
   }
 
   /**
@@ -694,7 +719,10 @@ export default class DocBlocksToJson {
   protected getSignatureOfMethod(text: string): string {
     // The signature is the last line of the doc block
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "").replace("}", "");
+    return textByLine[textByLine.length - 1]
+      .trim()
+      .replace(/ ?{/, "")
+      .replace("}", "");
   }
 
   /**
@@ -752,7 +780,6 @@ export default class DocBlocksToJson {
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     docBlocks.forEach(docBlock => {
-
       if (this.re_is_ignored_block.test(docBlock)) {
         return;
       }
@@ -850,21 +877,24 @@ export default class DocBlocksToJson {
         let propertyName = this.getMemberName(docBlock, "property");
         let data = this.getDocBlockDataForProperty(docBlock);
         data.name = propertyName;
-        data.fully_qualified_name = classMap.fully_qualified_name + "." + propertyName;
+        data.fully_qualified_name =
+          classMap.fully_qualified_name + "." + propertyName;
         classMap.properties[propertyName] = data;
       }
 
       if (this.re_is_constructor.test(docBlock)) {
         let methodName = this.getMemberName(docBlock, "method");
         let data = this.getDocBlockDataForMethod(docBlock);
-        data.fully_qualified_name = classMap.fully_qualified_name + "." + methodName;
+        data.fully_qualified_name =
+          classMap.fully_qualified_name + "." + methodName;
         classMap.methods[methodName] = data;
       }
 
       if (this.re_is_method.test(docBlock)) {
         let methodName = this.getMemberName(docBlock, "method");
         let data = this.getDocBlockDataForMethod(docBlock);
-        data.fully_qualified_name = classMap.fully_qualified_name + "." + methodName;
+        data.fully_qualified_name =
+          classMap.fully_qualified_name + "." + methodName;
         classMap.methods[methodName] = data;
       }
     });
