@@ -1934,6 +1934,35 @@
                     "signature": "protected addStaticPath(path: string): void",
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
                 },
+                "errorResponse": {
+                    "access_modifier": "protected",
+                    "name": "errorResponse",
+                    "description": null,
+                    "params": {
+                        "code": {
+                            "name": "code",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param number code",
+                                "data_type": "number",
+                                "name": "code"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return Drash.Exceptions.HttpException",
+                                "data_type": "Drash.Exceptions.HttpException",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected errorResponse(code: number): Drash.Exceptions.HttpException",
+                    "fully_qualified_name": "Drash.Http.Server.errorResponse"
+                },
                 "requestTargetsStaticPath": {
                     "access_modifier": "protected",
                     "name": "requestTargetsStaticPath",
