@@ -474,12 +474,13 @@ export default class DocBlocksToJson {
 
     let ret: any = {
       access_modifier: accessModifier,
-      name: '',
+      name: '', // TODO(crookse) do something about this.. is it needed?
       description: this.getSection("@description", text),
       params: this.getSection("@param", text),
       returns: this.getSection("@return", text),
       throws: this.getSection("@throws", text),
-      signature: signature
+      signature: signature,
+      is_async: /async/.test(signature)
     };
 
     return ret;
@@ -549,6 +550,7 @@ export default class DocBlocksToJson {
         return line
           .trim()
           .replace(/(public|protected|private) /g, "")
+          .replace(/async /g, "")
           .split("(")[0];
       case "property":
         line = textByLine[textByLine.length - 1];
@@ -871,6 +873,7 @@ export default class DocBlocksToJson {
 
     docBlocks.forEach(docBlock => {
       if (this.re_is_class.test(docBlock)) {
+        console.log(docBlock);
         classMap.namespace = this.getAndCreateNamespace(docBlock);
         classMap.name = this.getMemberName(docBlock);
         classMap.description = this.getSection("@description", docBlock);
@@ -892,18 +895,19 @@ export default class DocBlocksToJson {
       if (this.re_is_constructor.test(docBlock)) {
         let methodName = this.getMemberName(docBlock, "method");
         let data = this.getDocBlockDataForMethod(docBlock);
+        // TODO(crookse) remove part where constructor is checked... we know
+        // it's a constructor, so just assign that here.
+        data.name = 'constructor';
         data.fully_qualified_name =
-          classMap.fully_qualified_name + "." + methodName;
+          classMap.fully_qualified_name + "()";
         classMap.methods[methodName] = data;
       }
 
       if (this.re_is_method.test(docBlock)) {
         let methodName = this.getMemberName(docBlock, "method");
-        console.log(methodName);
         let data = this.getDocBlockDataForMethod(docBlock);
+        // TODO(crookse) find a way to clean this data.name assignment up
         data.name = methodName;
-        console.log(data.name);
-        console.log();
         data.fully_qualified_name =
           classMap.fully_qualified_name + "." + methodName;
         classMap.methods[methodName] = data;

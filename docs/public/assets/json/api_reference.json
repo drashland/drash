@@ -82,7 +82,7 @@
             "methods": {
                 "constructor": {
                     "access_modifier": "public",
-                    "name": "",
+                    "name": "constructor",
                     "description": [
                         "Construct an object of this class."
                     ],
@@ -106,11 +106,12 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(configs: any)",
-                    "fully_qualified_name": "Drash.Http.Server.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server()"
                 },
                 "handleHttpRequest": {
                     "access_modifier": "public",
-                    "name": "",
+                    "name": "handleHttpRequest",
                     "description": [
                         "Handle an HTTP request from the Deno server."
                     ],
@@ -141,11 +142,12 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
                 },
                 "handleHttpRequestError": {
                     "access_modifier": "public",
-                    "name": "",
+                    "name": "handleHttpRequestError",
                     "description": [
                         "Handle cases when an error is thrown when handling an HTTP request."
                     ],
@@ -187,11 +189,12 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestError"
                 },
                 "handleHttpRequestForFavicon": {
                     "access_modifier": "public",
-                    "name": "",
+                    "name": "handleHttpRequestForFavicon",
                     "description": [
                         "Handle HTTP requests for the favicon. This method only exists to\nshort-circuit favicon requests--preventing the requests from clogging\nthe logs."
                     ],
@@ -220,11 +223,12 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForFavicon"
                 },
                 "handleHttpRequestForStaticPathAsset": {
                     "access_modifier": "public",
-                    "name": "",
+                    "name": "handleHttpRequestForStaticPathAsset",
                     "description": [
                         "Handle HTTP requests for static path assets."
                     ],
@@ -253,11 +257,12 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForStaticPathAsset"
                 },
-                "async run": {
+                "run": {
                     "access_modifier": "public",
-                    "name": "",
+                    "name": "run",
                     "description": [
                         "Run the Deno server at the address specified in the configs. This\nmethod takes each HTTP request and creates a new and more workable\nrequest object and passes it to\n`Drash.Http.Server.handleHttpRequest()`."
                     ],
@@ -276,11 +281,12 @@
                     ],
                     "throws": null,
                     "signature": "public async run(): Promise<void>",
-                    "fully_qualified_name": "Drash.Http.Server.async run"
+                    "is_async": true,
+                    "fully_qualified_name": "Drash.Http.Server.run"
                 },
                 "addHttpResource": {
                     "access_modifier": "protected",
-                    "name": "",
+                    "name": "addHttpResource",
                     "description": [
                         "Add an HTTP resource to the server which can be retrieved at specific\nURIs.",
                         "Drash defines an HTTP resource according to the MDN Web docs\n[here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web)."
@@ -312,11 +318,12 @@
                     ],
                     "throws": null,
                     "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addHttpResource"
                 },
                 "addStaticPath": {
                     "access_modifier": "protected",
-                    "name": "",
+                    "name": "addStaticPath",
                     "description": [
                         "Add a static path for serving static assets like CSS files, JS files,\nPDF files, etc."
                     ],
@@ -345,11 +352,12 @@
                     ],
                     "throws": null,
                     "signature": "protected addStaticPath(path: string): void",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
                 },
                 "errorResponse": {
                     "access_modifier": "protected",
-                    "name": "",
+                    "name": "errorResponse",
                     "description": null,
                     "params": {
                         "code": {
@@ -374,11 +382,12 @@
                     ],
                     "throws": null,
                     "signature": "protected errorResponse(code: number): Drash.Exceptions.HttpException",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.errorResponse"
                 },
                 "getResourceClass": {
                     "access_modifier": "):",
-                    "name": "",
+                    "name": "getResourceClass",
                     "description": [
                         "Get the resource class."
                     ],
@@ -410,11 +419,12 @@
                     ],
                     "throws": null,
                     "signature": "): Drash.Http.Resource | undefined",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },
                 "requestTargetsStaticPath": {
                     "access_modifier": "protected",
-                    "name": "",
+                    "name": "requestTargetsStaticPath",
                     "description": [
                         "Is the request targeting a static path?"
                     ],
@@ -443,6 +453,7 @@
                     ],
                     "throws": null,
                     "signature": "protected requestTargetsStaticPath(request: Drash.Http.Request): boolean",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.requestTargetsStaticPath"
                 }
             }
