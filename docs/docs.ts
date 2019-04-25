@@ -18,19 +18,19 @@ runServer();
 
 function compileApiReferencePageData() {
   let DrashNamespaceMembers = [
-    `/src/compilers/doc_blocks_to_json.ts`,
-    `/src/dictionaries/log_levels.ts`,
-    `/src/exceptions/http_exception.ts`,
-    `/src/http/request.ts`,
-    `/src/http/resource.ts`,
-    `/src/http/response.ts`,
+    // `/src/compilers/doc_blocks_to_json.ts`,
+    // `/src/dictionaries/log_levels.ts`,
+    // `/src/exceptions/http_exception.ts`,
+    // `/src/http/request.ts`,
+    // `/src/http/resource.ts`,
+    // `/src/http/response.ts`,
     `/src/http/server.ts`,
-    `/src/loggers/logger.ts`,
-    `/src/loggers/console_logger.ts`,
-    `/src/loggers/file_logger.ts`,
-    `/src/services/http_service.ts`,
-    `/src/util/object_parser.ts`,
-    `/src/util/members.ts`
+    // `/src/loggers/logger.ts`,
+    // `/src/loggers/console_logger.ts`,
+    // `/src/loggers/file_logger.ts`,
+    // `/src/services/http_service.ts`,
+    // `/src/util/object_parser.ts`,
+    // `/src/util/members.ts`
   ].map(value => {
     return DRASH_DIR_ROOT + value;
   });

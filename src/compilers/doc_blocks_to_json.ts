@@ -33,10 +33,8 @@ export default class DocBlocksToJson {
     "g"
   );
   protected re_export = new RegExp(/export.+/, "g");
-  protected re_for_all_members = new RegExp(
-    /\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/,
-    "g"
-  );
+  // protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+?\(((\n.+)?(\n +\))?.+)?/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
@@ -476,7 +474,7 @@ export default class DocBlocksToJson {
 
     let ret: any = {
       access_modifier: accessModifier,
-      name: this.getNameOfMethod(text),
+      name: '',
       description: this.getSection("@description", text),
       params: this.getSection("@param", text),
       returns: this.getSection("@return", text),
@@ -544,7 +542,10 @@ export default class DocBlocksToJson {
           .trim()
           .split(" ")[2];
       case "method":
-        line = textByLine[textByLine.length - 1];
+        // TODO:
+        //     [ ] if the line is ): Drash.Http.Resource | undefined {, then
+        //     parse backwards another line and retest if the line is good
+        line = this.getMemberNameMethod(textByLine);
         return line
           .trim()
           .replace(/(public|protected|private) /g, "")
@@ -565,6 +566,20 @@ export default class DocBlocksToJson {
     );
 
     return undefined;
+  }
+
+  protected getMemberNameMethod(textByLine, index = -1, line = '') {
+    if (index == -1) {
+      index = textByLine.length - 1;
+    }
+    line = textByLine[index] + line;
+    if (/\(/.test(line)) {
+      return line;
+    }
+
+    index = index - 1;
+
+    return this.getMemberNameMethod(textByLine, index, line);
   }
 
   /**
@@ -884,10 +899,15 @@ export default class DocBlocksToJson {
 
       if (this.re_is_method.test(docBlock)) {
         let methodName = this.getMemberName(docBlock, "method");
+        console.log(methodName);
         let data = this.getDocBlockDataForMethod(docBlock);
+        data.name = methodName;
+        console.log(data.name);
+        console.log();
         data.fully_qualified_name =
           classMap.fully_qualified_name + "." + methodName;
         classMap.methods[methodName] = data;
+        console.log(data.fully_qualified_name);
       }
     });
 

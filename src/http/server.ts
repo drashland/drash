@@ -153,10 +153,7 @@ export default class Server {
 
     // No resource? Send a 404 (Not Found) response.
     if (!resourceClass) {
-      return this.handleHttpRequestError(
-        request,
-        new Drash.Exceptions.HttpException(404)
-      );
+      return this.handleHttpRequestError(request, this.errorResponse(404));
     }
 
     // @ts-ignore
@@ -206,15 +203,9 @@ export default class Server {
       // (Method Not Allowed) response.
       if (resource && !error.code) {
         if (!response) {
-          return this.handleHttpRequestError(
-            request,
-            new Drash.Exceptions.HttpException(405)
-          );
+          return this.handleHttpRequestError(request, this.errorResponse(405));
         }
-        return this.handleHttpRequestError(
-          request,
-          new Drash.Exceptions.HttpException(500)
-        );
+        return this.handleHttpRequestError(request, this.errorResponse(500));
       }
 
       // All other errors go here
@@ -332,8 +323,7 @@ export default class Server {
       let response = new Drash.Http.Response(request);
       return response.sendStatic();
     } catch (error) {
-      let error404 = new Drash.Exceptions.HttpException(404);
-      return this.handleHttpRequestError(request, error404);
+      return this.handleHttpRequestError(request, this.errorResponse(404));
     }
   }
 
@@ -359,10 +349,7 @@ export default class Server {
       try {
         this.handleHttpRequest(drashRequest);
       } catch (error) {
-        this.handleHttpRequestError(
-          request,
-          new Drash.Exceptions.HttpException(500)
-        );
+        this.handleHttpRequestError(request, this.errorResponse(500));
       }
     }
   }
@@ -448,6 +435,17 @@ export default class Server {
    */
   protected addStaticPath(path: string): void {
     this.static_paths.push(path);
+  }
+
+  /**
+   * Get an error response exception object.
+   *
+   * @param number code
+   *
+   * @return Drash.Exceptions.HttpException
+   */
+  protected errorResponse(code: number): Drash.Exceptions.HttpException {
+    return new Drash.Exceptions.HttpException(code);
   }
 
   /**
