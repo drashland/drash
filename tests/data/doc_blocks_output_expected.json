@@ -96,7 +96,19 @@
             }
           ],
           "signature": "public classOneMethodOne(myObject: any, myString: string)",
-          "fully_qualified_name": "Drash.Services.ClassOne.classOneMethodOne"
+          "fully_qualified_name": "Drash.Services.ClassOne.classOneMethodOne",
+          "is_async": false
+        },
+        "multiLineSig": {
+          "access_modifier": "public",
+          "description": null,
+          "fully_qualified_name": "Drash.Services.ClassOne.multiLineSig",
+          "is_async": false,
+          "name": "multiLineSig",
+          "params": null,
+          "returns": null,
+          "signature": "public multiLineSig(paramUno: any, paramDos: number, paramTres: stringparamFour: booleanparamFive: anyparamSix: numberparamSeven: string): any",
+          "throws": null
         }
       }
     }
