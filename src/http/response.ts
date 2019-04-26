@@ -9,7 +9,6 @@ import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
  *     Response handles sending a response to the client making the request.
  */
 export default class Response {
-
   /**
    * @description
    *     A property to hold the body of this response.
@@ -168,6 +167,18 @@ export default class Response {
 
   /**
    * @description
+   *     Get the full output details (for debugging purposes).
+   *
+   * @return string
+   */
+  public outputDetails(): string {
+    return `Content-Type: ${this.headers.get(
+      "Content-Type"
+    )}. Status: ${this.getStatusMessageFull()}.`;
+  }
+
+  /**
+   * @description
    *     Send the response to the client making the request.
    *
    * @return Promise<any>
@@ -266,8 +277,8 @@ export default class Response {
       ? this.request.url_query_params.response_content_type
       : contentType;
 
-      // Check the request's body to see if
-      // {response_content_type: {content-type}} has been specified
+    // Check the request's body to see if
+    // {response_content_type: {content-type}} has been specified
     contentType = this.request.body_parsed.response_content_type
       ? this.request.body_parsed.response_content_type
       : contentType;

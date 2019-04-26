@@ -9,7 +9,6 @@ import Drash from "../../mod.ts";
  *     must be derived from this class.
  */
 export default class Resource {
-
   /**
    * @description
    *     A property to hold the paths to access this resource.
@@ -68,7 +67,11 @@ export default class Resource {
    * @param Drash.Http.Server server
    *     The server object.
    */
-  constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server) {
+  constructor(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+    server: Drash.Http.Server
+  ) {
     this.request = request;
     this.response = response;
     this.server = server;

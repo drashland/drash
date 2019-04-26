@@ -8,7 +8,6 @@
  *     This class extends `Error`.
  */
 export default class HttpException extends Error {
-
   /**
    * @description
    *     A property to hold the HTTP response code associated with this

@@ -7,7 +7,7 @@
   export DRASH_CORE_LOGGER_LEVEL="debug"
 
   for pid in $(ps aux | grep 'docs.ts' | grep 'deno' | awk '{print $2}'); do
-    echo "[watchmedo] Killing $pid"
+    echo "[watchmedo] Killing deno docs.ts $pid"
     kill -9 $pid
     echo "[watchmedo] PID $pid killed."
   done

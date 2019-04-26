@@ -12,7 +12,6 @@ import { serve } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.
  *     request-resource-response lifecycle.
  */
 export default class Server {
-
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
   protected trackers = {
@@ -25,7 +24,7 @@ export default class Server {
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
    */
-  public logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger;
+  public logger: Drash.Loggers.ConsoleLogger | Drash.Loggers.FileLogger;
 
   /**
    * @description
@@ -98,7 +97,7 @@ export default class Server {
     }
 
     if (!configs.response_output) {
-      configs.response_output = "application/json"
+      configs.response_output = "application/json";
     }
 
     this.configs = configs;
@@ -130,21 +129,12 @@ export default class Server {
    *    See `Drash.Http.Response.send()`.
    */
   public handleHttpRequest(request: Drash.Http.Request): any {
-    let getStaticPathAsset = this.requestIsForStaticPathAsset(request);
-    let response;
-
-    if (getStaticPathAsset) {
-      try {
-        response = new Drash.Http.Response(request);
-        return response.sendStatic();
-      } catch (error) {
-        return this.handleHttpRequestError(
-          request,
-          new Drash.Exceptions.HttpException(404)
-        );
-      }
+    // Handle a request to a static path
+    if (this.requestTargetsStaticPath(request)) {
+      return this.handleHttpRequestForStaticPathAsset(request);
     }
 
+    // Handle a request to the favicon
     if (request.url == "/favicon.ico") {
       return this.handleHttpRequestForFavicon(request);
     }
@@ -163,36 +153,48 @@ export default class Server {
 
     // No resource? Send a 404 (Not Found) response.
     if (!resourceClass) {
-      return this.handleHttpRequestError(
-        request,
-        new Drash.Exceptions.HttpException(404)
-      );
+      return this.handleHttpRequestError(request, this.errorResponse(404));
     }
 
     // @ts-ignore
     // (crookse)
     //
-    // We ignore this because `resourceClass` could be `undefined` and that
-    // doens't have a construct signature. If this isn't ignored, then the
-    // following error will occur:
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    // it with the following error:
     //
     // TS2351: Cannot use 'new' with an expression whose type lacks a call or
     // construct signature.
     //
-    let resource = new resourceClass(request, new Drash.Http.Response(request), this);
+    let resource = new resourceClass(
+      request,
+      new Drash.Http.Response(request),
+      this
+    );
+    this.logger.debug(
+      "Using " +
+        resource.constructor.name +
+        " resource class to handle the request."
+    );
+
+    let response;
 
     try {
-      this.logger.debug(
-        `Calling ${
-          resource.constructor.name
-        }.${request.method.toUpperCase()}() method.`
-      );
+      // Perform hook before the request is made
+      if (typeof resource.hook_beforeRequest === "function") {
+        this.logger.debug("Calling hook_beforeRequest().");
+        resource.hook_beforeRequest();
+      }
+      // Perform the request
+      this.logger.debug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
-      this.logger.info(
-        `Sending response. Content-Type: ${response.headers.get(
-          "Content-Type"
-        )}. Status: ${response.getStatusMessageFull()}.`
-      );
+      // Perform hook after the request is made
+      if (typeof resource.hook_afterRequest === "function") {
+        this.logger.debug("Calling hook_afterRequest().");
+        resource.hook_afterRequest();
+      }
+      this.logger.info("Sending response. " + response.status_code + ".");
+      this.logger.debug("Response: " + response.outputDetails());
       return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely
@@ -201,15 +203,9 @@ export default class Server {
       // (Method Not Allowed) response.
       if (resource && !error.code) {
         if (!response) {
-          return this.handleHttpRequestError(
-            request,
-            new Drash.Exceptions.HttpException(405)
-          );
+          return this.handleHttpRequestError(request, this.errorResponse(405));
         }
-        return this.handleHttpRequestError(
-          request,
-          new Drash.Exceptions.HttpException(500)
-        );
+        return this.handleHttpRequestError(request, this.errorResponse(500));
       }
 
       // All other errors go here
@@ -312,6 +308,24 @@ export default class Server {
     request.respond(response);
     return JSON.stringify(response);
   }
+  /**
+   * @description
+   *     Handle HTTP requests for static path assets.
+   *
+   * @param Drash.Http.Request request
+   *
+   * @return any
+   *     Returns the response as stringified JSON. This is only used for unit
+   *     testing purposes.
+   */
+  public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any {
+    try {
+      let response = new Drash.Http.Response(request);
+      return response.sendStatic();
+    } catch (error) {
+      return this.handleHttpRequestError(request, this.errorResponse(404));
+    }
+  }
 
   /**
    * @description
@@ -328,12 +342,14 @@ export default class Server {
     console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
+      // Build a new and more workable request object.
       let drashRequest = new Drash.Http.Request(request);
       await drashRequest.parseBody();
+
       try {
         this.handleHttpRequest(drashRequest);
       } catch (error) {
-        this.handleHttpRequestError(request, new Drash.Exceptions.HttpException(500));
+        this.handleHttpRequestError(request, this.errorResponse(500));
       }
     }
   }
@@ -422,6 +438,17 @@ export default class Server {
   }
 
   /**
+   * Get an error response exception object.
+   *
+   * @param number code
+   *
+   * @return Drash.Exceptions.HttpException
+   */
+  protected errorResponse(code: number): Drash.Exceptions.HttpException {
+    return new Drash.Exceptions.HttpException(code);
+  }
+
+  /**
    * @description
    *     Get the resource class.
    *
@@ -434,7 +461,9 @@ export default class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined {
+  protected getResourceClass(
+    request: Drash.Http.Request
+  ): Drash.Http.Resource | undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -471,9 +500,8 @@ export default class Server {
           try {
             requestPathnameParams.shift();
             pathObj.params.forEach((paramName, index) => {
-                pathParamsInKvpForm[paramName] = requestPathnameParams[index];
-              }
-            );
+              pathParamsInKvpForm[paramName] = requestPathnameParams[index];
+            });
           } catch (error) {}
           request.path_params = pathParamsInKvpForm;
 
@@ -488,14 +516,14 @@ export default class Server {
 
   /**
    * @description
-   *     Is the request for a static path asset?
+   *     Is the request targeting a static path?
    *
    * @param Drash.Http.Request request
    *
    * @return boolean
-   *     Returns true if the request is for an asset in a static path.
+   *     Returns true if the request targets a static path.
    */
-  protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean {
+  protected requestTargetsStaticPath(request: Drash.Http.Request): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }

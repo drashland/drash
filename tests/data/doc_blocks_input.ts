@@ -74,4 +74,17 @@ export default class ClassOne {
    *     This is a second paragraph.
    */
   public classOneMethodOne(myObject: any, myString: string) {}
+
+  /**
+   * Test that a multline signature is parsed correctly.
+   */
+  public multiLineSig(
+    paramUno: any,
+    paramDos: number,
+    paramTres: string
+    paramFour: boolean
+    paramFive: any
+    paramSix: number
+    paramSeven: string
+  ): any {}
 }

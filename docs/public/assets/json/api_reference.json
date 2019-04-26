@@ -99,6 +99,7 @@
                     ],
                     "throws": null,
                     "signature": "public compile(files: string[]): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.compile"
                 },
                 "getSection": {
@@ -145,6 +146,7 @@
                     ],
                     "throws": null,
                     "signature": "public getSection(annotation: string, docBlock: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSection"
                 },
                 "getAndCreateNamespace": {
@@ -178,6 +180,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getAndCreateNamespace(docBlock: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getAndCreateNamespace"
                 },
                 "getAnnotation": {
@@ -224,6 +227,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getAnnotation(annotation: string, docBlock: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getAnnotation"
                 },
                 "getDescription": {
@@ -259,6 +263,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getDescription(textBlock: string): string[]",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDescription"
                 },
                 "getDescriptionInParagraphs": {
@@ -294,6 +299,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getDescriptionInParagraphs(textBlock: string): string[]",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDescriptionInParagraphs"
                 },
                 "getDocBlockDataForConst": {
@@ -327,6 +333,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getDocBlockDataForConst(text: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForConst"
                 },
                 "getDocBlockDataForEnum": {
@@ -359,7 +366,8 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getDocBlockDataForEnum(text: string): any",
+                    "signature": "protected getDocBlockDataForEnum(text: string): anylet ret: any = {",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForEnum"
                 },
                 "getDocBlockDataForFunction": {
@@ -392,7 +400,8 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getDocBlockDataForFunction(text: string): any",
+                    "signature": "protected getDocBlockDataForFunction(text: string): anylet ret: any = {",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForFunction"
                 },
                 "getDocBlockDataForInterface": {
@@ -426,6 +435,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getDocBlockDataForInterface(text: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForInterface"
                 },
                 "getDocBlockDataForMethod": {
@@ -459,6 +469,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getDocBlockDataForMethod(text: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForMethod"
                 },
                 "getDocBlockDataForProperty": {
@@ -492,11 +503,12 @@
                     ],
                     "throws": null,
                     "signature": "protected getDocBlockDataForProperty(text: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForProperty"
                 },
                 "@class` annotation.": {
                     "access_modifier": "protected",
-                    "name": "getMemberName",
+                    "name": "@class` annotation.",
                     "description": [
                         "Get the value of the `@class` annotation."
                     ],
@@ -525,6 +537,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getMemberName(text: string, textType?: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.@class` annotation."
                 },
                 "getNameOfConst": {
@@ -558,6 +571,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getNameOfConst(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfConst"
                 },
                 "getNameOfEnum": {
@@ -591,6 +605,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getNameOfEnum(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfEnum"
                 },
                 "getNameOfFunction": {
@@ -624,6 +639,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getNameOfFunction(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfFunction"
                 },
                 "getNameOfInterface": {
@@ -657,6 +673,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getNameOfInterface(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfInterface"
                 },
                 "getNameOfMethod": {
@@ -690,6 +707,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getNameOfMethod(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfMethod"
                 },
                 "getNameOfProperty": {
@@ -723,6 +741,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getNameOfProperty(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfProperty"
                 },
                 "getSignatureOfFunction": {
@@ -756,6 +775,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getSignatureOfFunction(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSignatureOfFunction"
                 },
                 "getSignatureOfInterface": {
@@ -789,6 +809,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getSignatureOfInterface(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSignatureOfInterface"
                 },
                 "getSignatureOfMethod": {
@@ -822,6 +843,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getSignatureOfMethod(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSignatureOfMethod"
                 },
                 "getSignatureOfProperty": {
@@ -855,6 +877,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getSignatureOfProperty(text: string): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getSignatureOfProperty"
                 },
                 "isMemberExported": {
@@ -899,33 +922,12 @@
                     ],
                     "throws": null,
                     "signature": "protected isMemberExported(memberType: string, text: string): boolean",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.isMemberExported"
                 },
-                "parseMembersOnlyFile": {
-                    "access_modifier": "protected",
-                    "name": "parseMembersOnlyFile",
-                    "description": [
-                        "Parse a file that has the `@doc-blocks-to-json members-only`\nannotation."
-                    ],
-                    "params": {
-                        "fileContents": {
-                            "name": "fileContents",
-                            "description": [],
-                            "annotation": {
-                                "line": "@param string fileContents",
-                                "data_type": "string",
-                                "name": "fileContents"
-                            }
-                        }
-                    },
-                    "returns": null,
-                    "throws": null,
-                    "signature": "protected parseMembersOnlyFile(fileContents)",
-                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.parseMembersOnlyFile"
-                },
-                "parseClassFile": {
-                    "access_modifier": "protected",
-                    "name": "parseClassFile",
+                "Drash.core_logger.debug": {
+                    "access_modifier": "Drash.core_logger.debug(`Parsing",
+                    "name": "Drash.core_logger.debug",
                     "description": [
                         "Parse a file (assuming it's a class file). `this.compile()` defaults to\nusing this method."
                     ],
@@ -942,8 +944,9 @@
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "protected parseClassFile(fileContents)",
-                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.parseClassFile"
+                    "signature": "Drash.core_logger.debug(`Parsing class file: $",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.Drash.core_logger.debug"
                 }
             }
         }
@@ -1017,7 +1020,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(code: number, message?: string)",
-                    "fully_qualified_name": "Drash.Exceptions.HttpException.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Exceptions.HttpException()"
                 }
             }
         }
@@ -1152,7 +1156,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(request: ServerRequest)",
-                    "fully_qualified_name": "Drash.Http.Request.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Request()"
                 },
                 "parseBody": {
                     "access_modifier": "public",
@@ -1178,6 +1183,7 @@
                     ],
                     "throws": null,
                     "signature": "public parseBody(): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Request.parseBody"
                 }
             }
@@ -1262,54 +1268,7 @@
                     "fully_qualified_name": "Drash.Http.Resource.server"
                 }
             },
-            "methods": {
-                "constructor": {
-                    "access_modifier": "public",
-                    "name": "constructor",
-                    "description": [
-                        "Construct an object of this class."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [
-                                "The request object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
-                                "name": "request"
-                            }
-                        },
-                        "response": {
-                            "name": "response",
-                            "description": [
-                                "The response object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Response response",
-                                "data_type": "Drash.Http.Response",
-                                "name": "response"
-                            }
-                        },
-                        "server": {
-                            "name": "server",
-                            "description": [
-                                "The server object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Server server",
-                                "data_type": "Drash.Http.Server",
-                                "name": "server"
-                            }
-                        }
-                    },
-                    "returns": null,
-                    "throws": null,
-                    "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
-                    "fully_qualified_name": "Drash.Http.Resource.constructor"
-                }
-            }
+            "methods": {}
         },
         "Response": {
             "fully_qualified_name": "Drash.Http.Response",
@@ -1411,7 +1370,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(request: Drash.Http.Request)",
-                    "fully_qualified_name": "Drash.Http.Response.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Response()"
                 },
                 "generateResponse": {
                     "access_modifier": "public",
@@ -1432,6 +1392,7 @@
                     ],
                     "throws": null,
                     "signature": "public generateResponse(): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.generateResponse"
                 },
                 "generateHtmlResponse": {
@@ -1453,6 +1414,7 @@
                     ],
                     "throws": null,
                     "signature": "public generateHtmlResponse(): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.generateHtmlResponse"
                 },
                 "generateJsonResponse": {
@@ -1474,6 +1436,7 @@
                     ],
                     "throws": null,
                     "signature": "public generateJsonResponse(): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.generateJsonResponse"
                 },
                 "generateXmlResponse": {
@@ -1495,6 +1458,7 @@
                     ],
                     "throws": null,
                     "signature": "public generateXmlResponse(): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.generateXmlResponse"
                 },
                 "getStatusMessage": {
@@ -1518,6 +1482,7 @@
                     ],
                     "throws": null,
                     "signature": "public getStatusMessage(): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.getStatusMessage"
                 },
                 "getStatusMessageFull": {
@@ -1539,11 +1504,34 @@
                     ],
                     "throws": null,
                     "signature": "public getStatusMessageFull(): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.getStatusMessageFull"
                 },
-                "async send": {
+                "outputDetails": {
                     "access_modifier": "public",
-                    "name": "async send",
+                    "name": "outputDetails",
+                    "description": [
+                        "Get the full output details (for debugging purposes)."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public outputDetails(): stringreturn `Content-Type: ${",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Response.outputDetails"
+                },
+                "send": {
+                    "access_modifier": "public",
+                    "name": "send",
                     "description": [
                         "Send the response to the client making the request."
                     ],
@@ -1562,7 +1550,8 @@
                     ],
                     "throws": null,
                     "signature": "public async send(): Promise<any>",
-                    "fully_qualified_name": "Drash.Http.Response.async send"
+                    "is_async": true,
+                    "fully_qualified_name": "Drash.Http.Response.send"
                 },
                 "sendStatic": {
                     "access_modifier": "public",
@@ -1584,6 +1573,7 @@
                     ],
                     "throws": null,
                     "signature": "public sendStatic(): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.sendStatic"
                 },
                 "getHeaderContentType": {
@@ -1609,6 +1599,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getHeaderContentType(): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.getHeaderContentType"
                 }
             }
@@ -1621,6 +1612,20 @@
                 "Server handles the entire request-resource-response lifecycle. It is in\ncharge of handling HTTP requests to resources, static paths, sending\nappropriate responses, and handling any errors that bubble up within the\nrequest-resource-response lifecycle."
             ],
             "properties": {
+                "logger": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold this server's logger."
+                    ],
+                    "annotation": {
+                        "line": "@property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger",
+                        "data_type": "Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
+                        "name": "logger"
+                    },
+                    "signature": "public logger: Drash.Loggers.ConsoleLogger | Drash.Loggers.FileLogger",
+                    "name": "logger",
+                    "fully_qualified_name": "Drash.Http.Server.logger"
+                },
                 "configs": {
                     "access_modifier": "protected",
                     "description": [
@@ -1648,20 +1653,6 @@
                     "signature": "protected deno_server: any",
                     "name": "deno_server",
                     "fully_qualified_name": "Drash.Http.Server.deno_server"
-                },
-                "logger": {
-                    "access_modifier": "protected",
-                    "description": [
-                        "A property to hold this server's logger."
-                    ],
-                    "annotation": {
-                        "line": "@property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger",
-                        "data_type": "Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
-                        "name": "logger"
-                    },
-                    "signature": "protected logger: Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger",
-                    "name": "logger",
-                    "fully_qualified_name": "Drash.Http.Server.logger"
                 },
                 "resources": {
                     "access_modifier": "protected",
@@ -1719,7 +1710,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(configs: any)",
-                    "fully_qualified_name": "Drash.Http.Server.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server()"
                 },
                 "handleHttpRequest": {
                     "access_modifier": "public",
@@ -1754,6 +1746,7 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
                 },
                 "handleHttpRequestError": {
@@ -1800,6 +1793,7 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestError"
                 },
                 "handleHttpRequestForFavicon": {
@@ -1833,11 +1827,46 @@
                     ],
                     "throws": null,
                     "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForFavicon"
                 },
-                "async run": {
+                "handleHttpRequestForStaticPathAsset": {
                     "access_modifier": "public",
-                    "name": "async run",
+                    "name": "handleHttpRequestForStaticPathAsset",
+                    "description": [
+                        "Handle HTTP requests for static path assets."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param Drash.Http.Request request",
+                                "data_type": "Drash.Http.Request",
+                                "name": "request"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [
+                                "Returns the response as stringified JSON. This is only used for unit\ntesting purposes."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForStaticPathAsset"
+                },
+                "run": {
+                    "access_modifier": "public",
+                    "name": "run",
                     "description": [
                         "Run the Deno server at the address specified in the configs. This\nmethod takes each HTTP request and creates a new and more workable\nrequest object and passes it to\n`Drash.Http.Server.handleHttpRequest()`."
                     ],
@@ -1856,7 +1885,8 @@
                     ],
                     "throws": null,
                     "signature": "public async run(): Promise<void>",
-                    "fully_qualified_name": "Drash.Http.Server.async run"
+                    "is_async": true,
+                    "fully_qualified_name": "Drash.Http.Server.run"
                 },
                 "addHttpResource": {
                     "access_modifier": "protected",
@@ -1892,6 +1922,7 @@
                     ],
                     "throws": null,
                     "signature": "protected addHttpResource(resourceClass: Drash.Http.Resource): void",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addHttpResource"
                 },
                 "addStaticPath": {
@@ -1925,7 +1956,38 @@
                     ],
                     "throws": null,
                     "signature": "protected addStaticPath(path: string): void",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
+                },
+                "errorResponse": {
+                    "access_modifier": "protected",
+                    "name": "errorResponse",
+                    "description": null,
+                    "params": {
+                        "code": {
+                            "name": "code",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param number code",
+                                "data_type": "number",
+                                "name": "code"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return Drash.Exceptions.HttpException",
+                                "data_type": "Drash.Exceptions.HttpException",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected errorResponse(code: number): Drash.Exceptions.HttpException",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.errorResponse"
                 },
                 "getResourceClass": {
                     "access_modifier": "protected",
@@ -1960,14 +2022,15 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource|undefined",
+                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource | undefined",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },
-                "requestIsForStaticPathAsset": {
+                "requestTargetsStaticPath": {
                     "access_modifier": "protected",
-                    "name": "requestIsForStaticPathAsset",
+                    "name": "requestTargetsStaticPath",
                     "description": [
-                        "Is the request for a static path asset?"
+                        "Is the request targeting a static path?"
                     ],
                     "params": {
                         "request": {
@@ -1983,7 +2046,7 @@
                     "returns": [
                         {
                             "description": [
-                                "Returns true if the request is for an asset in a static path."
+                                "Returns true if the request targets a static path."
                             ],
                             "annotation": {
                                 "line": "@return boolean",
@@ -1993,8 +2056,9 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected requestIsForStaticPathAsset(request: Drash.Http.Request): boolean",
-                    "fully_qualified_name": "Drash.Http.Server.requestIsForStaticPathAsset"
+                    "signature": "protected requestTargetsStaticPath(request: Drash.Http.Request): boolean",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.requestTargetsStaticPath"
                 }
             }
         }
@@ -2060,7 +2124,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(configs: any)",
-                    "fully_qualified_name": "Drash.Loggers.Logger.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Loggers.Logger()"
                 },
                 "debug": {
                     "access_modifier": "public",
@@ -2084,6 +2149,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public debug(message)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.debug"
                 },
                 "error": {
@@ -2108,6 +2174,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public error(message)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.error"
                 },
                 "fatal": {
@@ -2132,6 +2199,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public fatal(message)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.fatal"
                 },
                 "info": {
@@ -2156,6 +2224,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public info(message)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.info"
                 },
                 "trace": {
@@ -2180,6 +2249,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public trace(message)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.trace"
                 },
                 "warn": {
@@ -2204,6 +2274,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public warn(message)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.warn"
                 },
                 "getTagStringParsed": {
@@ -2225,6 +2296,7 @@
                     ],
                     "throws": null,
                     "signature": "protected getTagStringParsed(): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.getTagStringParsed"
                 },
                 "sendToWriteMethod": {
@@ -2271,6 +2343,7 @@
                     ],
                     "throws": null,
                     "signature": "protected sendToWriteMethod(logMethodLevelDefinition, message): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.Logger.sendToWriteMethod"
                 }
             }
@@ -2306,7 +2379,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(configs)",
-                    "fully_qualified_name": "Drash.Loggers.ConsoleLogger.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Loggers.ConsoleLogger()"
                 },
                 "write": {
                     "access_modifier": "public",
@@ -2349,6 +2423,7 @@
                     ],
                     "throws": null,
                     "signature": "public write(logMethodLevelDefinition, message): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.ConsoleLogger.write"
                 }
             }
@@ -2399,7 +2474,8 @@
                     "returns": null,
                     "throws": null,
                     "signature": "constructor(configs)",
-                    "fully_qualified_name": "Drash.Loggers.FileLogger.constructor"
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Loggers.FileLogger()"
                 },
                 "write": {
                     "access_modifier": "public",
@@ -2442,6 +2518,7 @@
                     ],
                     "throws": null,
                     "signature": "public write(logMethodLevelDefinition, message): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Loggers.FileLogger.write"
                 }
             }
@@ -2490,6 +2567,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.hydrateHttpRequest"
                 },
                 "getHttpRequestUrlPath": {
@@ -2525,6 +2603,7 @@
                     ],
                     "throws": null,
                     "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlPath"
                 },
                 "getHttpRequestUrlQueryString": {
@@ -2560,6 +2639,7 @@
                     ],
                     "throws": null,
                     "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlQueryString"
                 },
                 "getHttpRequestUrlQueryParams": {
@@ -2595,6 +2675,7 @@
                     ],
                     "throws": null,
                     "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlQueryParams"
                 },
                 "getMimeType": {
@@ -2642,6 +2723,7 @@
                     ],
                     "throws": null,
                     "signature": "public getMimeType(filePath: string, fileIsUrl: boolean = false): string",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getMimeType"
                 },
                 "parseQueryParamsString": {
@@ -2668,6 +2750,7 @@
                     "returns": null,
                     "throws": null,
                     "signature": "public parseQueryParamsString(queryParamsString: string): any",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.parseQueryParamsString"
                 }
             }
@@ -2727,6 +2810,7 @@
                     ],
                     "throws": null,
                     "signature": "public getNestedPropertyValue(inputObject: any, ...properties)",
+                    "is_async": false,
                     "fully_qualified_name": "Drash.Util.ObjectParser.getNestedPropertyValue"
                 }
             }

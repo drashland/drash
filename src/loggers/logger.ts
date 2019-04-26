@@ -136,9 +136,7 @@ export default abstract class Logger {
       configs.enabled = false;
     }
 
-    configs.level = configs.level
-      ? configs.level.toLowerCase()
-      : "debug";
+    configs.level = configs.level ? configs.level.toLowerCase() : "debug";
     if (!LogLevels.get(configs.level)) {
       configs.level = "debug";
     }
@@ -297,7 +295,9 @@ export default abstract class Logger {
     // wants to output FATAL log messages (has a rank of 400), then any log
     // message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE)
     // will NOT be processed.
-    if (logMethodLevelDefinition.rank > LogLevels.get(this.configs.level).rank) {
+    if (
+      logMethodLevelDefinition.rank > LogLevels.get(this.configs.level).rank
+    ) {
       return;
     }
 
