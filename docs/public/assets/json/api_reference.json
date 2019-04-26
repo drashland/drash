@@ -386,7 +386,7 @@
                     "fully_qualified_name": "Drash.Http.Server.errorResponse"
                 },
                 "getResourceClass": {
-                    "access_modifier": "):",
+                    "access_modifier": "protected",
                     "name": "getResourceClass",
                     "description": [
                         "Get the resource class."
@@ -418,7 +418,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "): Drash.Http.Resource | undefined",
+                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource | undefined",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },

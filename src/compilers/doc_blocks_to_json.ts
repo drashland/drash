@@ -38,11 +38,11 @@ export default class DocBlocksToJson {
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
-  protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
+  protected re_is_function = new RegExp(/@(function|func|method) +\w+/); // TODO(crookse) multiline
   protected re_is_interface = new RegExp(/@interface +\w+/);
   protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
   protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
-  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+(:? +)?{/);
+  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+((\n? + .+:.+,?)+{)?/);
   protected re_is_constructor = new RegExp(/.+constructor\(.+\) ?{?/);
   protected re_is_property = new RegExp(/@property/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
@@ -543,9 +543,6 @@ export default class DocBlocksToJson {
           .trim()
           .split(" ")[2];
       case "method":
-        // TODO:
-        //     [ ] if the line is ): Drash.Http.Resource | undefined {, then
-        //     parse backwards another line and retest if the line is good
         line = this.getMemberNameMethod(textByLine);
         return line
           .trim()
@@ -574,8 +571,18 @@ export default class DocBlocksToJson {
     if (index == -1) {
       index = textByLine.length - 1;
     }
+
     line = textByLine[index] + line;
-    if (/\(/.test(line)) {
+    line = line.trim();
+
+    // Check for the opening parenthesis because that line will have the
+    // method's name
+    let paren = new RegExp(/\(/, "g");
+    if (paren.test(line)) {
+      // Add a space after each comma
+      line = line.replace(/,/g, ", ");
+      // Just one space though...
+      line = line.replace(/,  /g, ", ");
       return line;
     }
 
@@ -726,9 +733,10 @@ export default class DocBlocksToJson {
    * @return string
    */
   protected getSignatureOfMethod(text: string): string {
-    // The signature is the last line of the doc block
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1]
+    let line = this.getMemberNameMethod(textByLine);
+
+    return line
       .trim()
       .replace(/ ?{/, "")
       .replace("}", "");
@@ -873,7 +881,6 @@ export default class DocBlocksToJson {
 
     docBlocks.forEach(docBlock => {
       if (this.re_is_class.test(docBlock)) {
-        console.log(docBlock);
         classMap.namespace = this.getAndCreateNamespace(docBlock);
         classMap.name = this.getMemberName(docBlock);
         classMap.description = this.getSection("@description", docBlock);
@@ -911,7 +918,6 @@ export default class DocBlocksToJson {
         data.fully_qualified_name =
           classMap.fully_qualified_name + "." + methodName;
         classMap.methods[methodName] = data;
-        console.log(data.fully_qualified_name);
       }
     });
 
