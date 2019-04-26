@@ -1,7 +1,7 @@
 #!/bin/bash
 
 (
-  deno_version=$(deno --version)
+  deno_version=$(deno version)
   export DRASH_DOCS_BASE_URL=""
 
   webpack \
