@@ -1,5 +1,5 @@
 #!/bin/bash
 
 (
-  curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.3.8
+  curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.3.10
 )
