@@ -36,9 +36,9 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/tutorials/creating-a-resource'") Creating A Resource
                     a(:href="$conf.base_url + '/#/tutorials/resource-lifecycle-hooks'") Lifecycle Hooks
                 a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
+                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a(:href="$conf.base_url + '/#/tutorials/content-negotiation'") Content Negotiation
-                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
                 a Logging
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
