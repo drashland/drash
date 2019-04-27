@@ -15,8 +15,6 @@ Drash is designed to help you build your project(s) quickly with the ability to 
 
 ## Features
 
-## Features
-
 **HTTP Resources**
 
 Drash uses [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web). It doesn't use controllers and it doesn't use `app.get('/', someHandler())`-like syntax. You create a resource class, define its URIs, and give it HTTP methods (e.g., `GET()`, `POST()`, `PUT()`, `DELETE()`, etc.).
