@@ -1,7 +1,7 @@
 <template lang="pug">
 div.c-sidebar
     div(v-if="$conf.webpack_mode != 'production'")
-        p.l-environment-text
+        p.l-environment-text(style="position:fixed")
             span.text ENV: {{ $conf.webpack_mode }}
     div.c-sidebar__header(style="padding: 3rem 0;")
         div.row.align-items-center.text-align--center
