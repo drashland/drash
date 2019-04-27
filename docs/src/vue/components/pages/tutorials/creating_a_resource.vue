@@ -14,7 +14,7 @@ page-tutorial-default(
                 hr
                 h2#before-you-get-started Before You Get Started
                 ul
-                    li Drash servers use HTTP resource classes to handle requests and send responses.
+                    li Drash servers use HTTP resource classes to handle requests and send responses. They are the core piece to the request-response cycle.
                     li Drash servers take HTTP resource classes and register their paths as accessible URIs. Read <a :href="$conf.base_url + '/#/tutorials/creating-a-server'">Creating A Server</a> to see how a Drash server and an HTTP resource class are used in unison.
                     li Drash defines HTTP resources according to the MDN: <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web" target="_BLANK">https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web</a>
                     list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
