@@ -2,6 +2,7 @@
 
 (
   deno_version=$(deno version)
+  build_date=$(date)
   export DRASH_DOCS_BASE_URL="/deno-drash"
 
   echo "Performing production compilation of new webpack bundle.js"
@@ -10,6 +11,7 @@
     --env.environment="production" \
     --env.deno_version="$deno_version" \
     --env.base_url="$DRASH_DOCS_BASE_URL" \
+    --env.build_date="$build_date" \
     --hide-modules
 
   echo "Done."

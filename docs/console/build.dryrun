@@ -2,6 +2,7 @@
 
 (
   deno_version=$(deno version)
+  build_date=$(date)
   export DRASH_DOCS_BASE_URL="/deno-drash"
 
   echo "Performing production compilation of new webpack bundle.js"
