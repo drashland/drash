@@ -33,7 +33,7 @@ div
                             | 
                             | // Import Drash master
                             | import Drash from "https://deno.land/x/drash/mod.ts";
-                p It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames."
+                p It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames" as stated in deno_std.
         hr
         div.row
             div.col
