@@ -34,7 +34,7 @@ export default class DocBlocksToJson {
   );
   protected re_export = new RegExp(/export.+/, "g");
   // protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
-  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+((\n? + .+:.+,?)+{)?/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n( +)?(export|constructor|interface|public|protected|private) ?(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{)))))/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
@@ -43,7 +43,7 @@ export default class DocBlocksToJson {
   protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
   protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
   protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+((\n? + .+:.+,?)+{)?/);
-  protected re_is_constructor = new RegExp(/.+constructor\(.+\) ?{?/);
+  protected re_is_constructor = new RegExp(/.+constructor\((.+)?\)?/);
   protected re_is_property = new RegExp(/@property/);
   protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
@@ -833,6 +833,8 @@ export default class DocBlocksToJson {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForInterface(docBlock);
+        data.is_interface = true;
+        console.log(data);
         if (!currentNamespace) {
           data.fully_qualified_name = memberName;
           this.parsed[memberName] = data;
