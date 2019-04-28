@@ -1,21 +1,11 @@
 //
 // TODO(crookse)
-//     [ ] Check for multiline method signatures. Example:
-//         someMethod(
-//           arg1,
-//           arg2,
-//           arg3
-//         ) {
-//           // method body
-//         }
-//     [ ] Check if properties and methods have access modifier. If not, then
-//         those members should be placed at the bottom of their respective
-//         list.
 //     [ ] Check for abstract access modifier.
-//     [ ] Support @inheritdoc
-//     [ ] Return a status report of the files that were and weren't parsed
+//     [ ] Support @inheritdoc.
+//     [ ] Return a status report of the files that were and weren't parsed.
 //     [ ] Check if a @memberof exists. If not, then document as top-level item.
-//     [ ] Check exported members only properties
+//     [ ] Check exported members only properties.
+//     [ ] Prase multi-line interface signature.
 //
 
 import Drash from "../../mod.ts";
