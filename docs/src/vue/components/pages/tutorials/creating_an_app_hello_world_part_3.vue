@@ -3,9 +3,9 @@ page-creating-an-app-hello-world(:data="data")
     template(v-slot:steps)
         ol
             li Add the code to send a <code>POST</code> request to the <code>/</code> URI. We'll use <a href="https://github.com/axios/axios" target="_BLANK">axios</a> for this functionality. The highlighted code is what's being added to <code>index.ejs</code>.
-                code-block(:data="data.example_code.index" language="html" line_highlight="18-29,39-51")
+                code-block(:data="data.example_code.index" language="html" line_highlight="18-29,39-54")
             li Add the <code>POST</code> method to <code>HomeResource</code>. The highlighted code is what's being added to <code>app.ts</code>.
-                code-block(:data="data.example_code.app" line_highlight="20-27")
+                code-block(:data="data.example_code.app" line_highlight="22-29")
             li Run your app.
                 code-block(:data="data.example_code.run")
                 p When you start your app, you should see the following in the terminal:
