@@ -91,7 +91,7 @@ page-tutorial-default(
                 hr
                 h2#screenshot Screenshot
                 p Your app should look like the following when you've completed this tutorial:
-                a(href="/public/assets/img/serving_static_paths.png")
+                a(href="/deno-drash/public/assets/img/serving_static_paths.png")
                     img(:src="$conf.base_url + '/public/assets/img/serving_static_paths.png'")
 </template>
 
