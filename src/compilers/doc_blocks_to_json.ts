@@ -24,7 +24,7 @@ export default class DocBlocksToJson {
   );
   protected re_export = new RegExp(/export.+/, "g");
   // protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
-  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n( +)?(export|constructor|interface|public|protected|private) ?(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{)))))/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\?:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
@@ -824,7 +824,6 @@ export default class DocBlocksToJson {
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForInterface(docBlock);
         data.is_interface = true;
-        console.log(data);
         if (!currentNamespace) {
           data.fully_qualified_name = memberName;
           this.parsed[memberName] = data;
