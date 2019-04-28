@@ -366,7 +366,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getDocBlockDataForEnum(text: string): anylet ret: any = {",
+                    "signature": "protected getDocBlockDataForEnum(text: string): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForEnum"
                 },
@@ -400,7 +400,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getDocBlockDataForFunction(text: string): anylet ret: any = {",
+                    "signature": "protected getDocBlockDataForFunction(text: string): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getDocBlockDataForFunction"
                 },
@@ -642,74 +642,6 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfFunction"
                 },
-                "getNameOfInterface": {
-                    "access_modifier": "protected",
-                    "name": "getNameOfInterface",
-                    "description": [
-                        "Get the name of the interface."
-                    ],
-                    "params": {
-                        "text": {
-                            "name": "text",
-                            "description": [
-                                "The text containing the interface's data."
-                            ],
-                            "annotation": {
-                                "line": "@param string text",
-                                "data_type": "string",
-                                "name": "text"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected getNameOfInterface(text: string): string",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfInterface"
-                },
-                "getNameOfMethod": {
-                    "access_modifier": "protected",
-                    "name": "getNameOfMethod",
-                    "description": [
-                        "Get the name of the method."
-                    ],
-                    "params": {
-                        "text": {
-                            "name": "text",
-                            "description": [
-                                "The text containing the method's data."
-                            ],
-                            "annotation": {
-                                "line": "@param string text",
-                                "data_type": "string",
-                                "name": "text"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected getNameOfMethod(text: string): string",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.getNameOfMethod"
-                },
                 "getNameOfProperty": {
                     "access_modifier": "protected",
                     "name": "getNameOfProperty",
@@ -925,9 +857,32 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.isMemberExported"
                 },
-                "Drash.core_logger.debug": {
-                    "access_modifier": "Drash.core_logger.debug(`Parsing",
-                    "name": "Drash.core_logger.debug",
+                "parseMembersOnlyFile": {
+                    "access_modifier": "protected",
+                    "name": "parseMembersOnlyFile",
+                    "description": [
+                        "Parse a file that has the `@doc-blocks-to-json members-only`\nannotation."
+                    ],
+                    "params": {
+                        "fileContents": {
+                            "name": "fileContents",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param string fileContents",
+                                "data_type": "string",
+                                "name": "fileContents"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "protected parseMembersOnlyFile(fileContents)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.parseMembersOnlyFile"
+                },
+                "parseClassFile": {
+                    "access_modifier": "protected",
+                    "name": "parseClassFile",
                     "description": [
                         "Parse a file (assuming it's a class file). `this.compile()` defaults to\nusing this method."
                     ],
@@ -944,21 +899,11 @@
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "Drash.core_logger.debug(`Parsing class file: $",
+                    "signature": "protected parseClassFile(fileContents)",
                     "is_async": false,
-                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.Drash.core_logger.debug"
+                    "fully_qualified_name": "Drash.Compilers.DocBlocksToJson.parseClassFile"
                 }
             }
-        }
-    },
-    "Drash.Dictionaries": {
-        "LogLevels": {
-            "exported": true,
-            "name": "LogLevels",
-            "description": [
-                "A dictionary of log levels used in the logger classes to properly\ndisplay, rank, and prioritize log messages."
-            ],
-            "fully_qualified_name": "Drash.Dictionaries.LogLevels"
         }
     },
     "Drash.Exceptions": {
@@ -1268,7 +1213,55 @@
                     "fully_qualified_name": "Drash.Http.Resource.server"
                 }
             },
-            "methods": {}
+            "methods": {
+                "constructor": {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "description": [
+                        "Construct an object of this class."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Request request",
+                                "data_type": "Drash.Http.Request",
+                                "name": "request"
+                            }
+                        },
+                        "response": {
+                            "name": "response",
+                            "description": [
+                                "The response object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Response response",
+                                "data_type": "Drash.Http.Response",
+                                "name": "response"
+                            }
+                        },
+                        "server": {
+                            "name": "server",
+                            "description": [
+                                "The server object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Server server",
+                                "data_type": "Drash.Http.Server",
+                                "name": "server"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Resource()"
+                }
+            }
         },
         "Response": {
             "fully_qualified_name": "Drash.Http.Response",
@@ -1525,7 +1518,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public outputDetails(): stringreturn `Content-Type: ${",
+                    "signature": "public outputDetails(): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.outputDetails"
                 },
@@ -2821,9 +2814,10 @@
             "exported": true,
             "name": "ColorizeOptions",
             "description": [
-                "A util function that helps colorize text in the console."
+                "An interface to hold the `colorize()` function's options."
             ],
-            "signature": "export interface ColorizeOptions",
+            "signature": "export interface ColorizeOptions {\n  color?: string;\n  background?: string;\n  style?: string;\n}",
+            "is_interface": true,
             "fully_qualified_name": "Drash.Util.Exports.ColorizeOptions"
         },
         "colorize": {
@@ -2835,7 +2829,9 @@
             "params": {
                 "message": {
                     "name": "message",
-                    "description": [],
+                    "description": [
+                        "The text to colorize."
+                    ],
                     "annotation": {
                         "line": "@param string message",
                         "data_type": "string",
@@ -2844,7 +2840,9 @@
                 },
                 "options": {
                     "name": "options",
-                    "description": [],
+                    "description": [
+                        "See `Drash.Utils.Exports.ColorizeOptions` interface."
+                    ],
                     "annotation": {
                         "line": "@param ColorizeOptions options",
                         "data_type": "ColorizeOptions",
@@ -2866,6 +2864,7 @@
             ],
             "throws": null,
             "signature": "export function colorize(message: string, options: ColorizeOptions): string",
+            "is_function": true,
             "fully_qualified_name": "Drash.Util.Exports.colorize"
         }
     }

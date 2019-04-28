@@ -14,7 +14,7 @@ export default {
     data() {
         return {
             data: {
-                class: this.$store.page_data.api_reference["Drash.Util.Exports"],
+                namespace: this.$store.page_data.api_reference["Drash.Util.Exports"],
                 fully_qualified_name: "Drash.Util.Exports"
             }
         };

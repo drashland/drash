@@ -17,7 +17,7 @@ $g-font-family-code: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Cou
             background: #ff7700;
             padding: 0.5rem 1rem;
         }
-        &.--properties {
+        &.--exported {
             color: #efefef;
             background: #03a9f4;
             padding: 0.5rem 1rem;
@@ -29,8 +29,8 @@ $g-font-family-code: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Cou
         &.--method {
             border-left: 10px solid #ff7700;
         }
-        &.--property {
-            border-left: 10px solid #03a9f4;
+        &.--exported {
+            border-left: 10px solid #333333;
         }
     }
     .card-title {
@@ -68,23 +68,29 @@ div.page.page--reference
                 h1.c-heading.c-heading--style-2 API Reference
     div.c-page__body
         hr
-        div.row(v-for="member in data.class")
-            div.col
-                h2 {{ member.fully_qualified_name }}
-                p(v-for="description in  data.class.description" :inner-html.prop="description | markdown-it")
-        hr
         div.row
             div.col
-                //- CLASS PROPERTIES
-                h2.type-heading.--properties Dictionary Information
-                div.properites
-                    div.card.--property
+                h2 {{ data.fully_qualified_name }}
+                p
+                    a(:href="'https://github.com/crookse/deno-drash/tree/master' + link" target="_BLANK" v-if="link") View raw code
+                p Below is a list of members that don't belong to a class. They only belong to a namespace. They are considered "members only" and are exported for use via <code>{{ data.fully_qualified_name }}.{memberName}</code>.
+        hr
+        div.row(v-for="member in data.namespace")
+            div.col
+                h2 {{ member.fully_qualified_name }}
+                div.exported
+                    div.card.--exported
                         div.card-body
-                            //- DESCRIPTIONS
-                            div.tag-row(v-show="data.class.description && data.class.description.length > 0")
+                            div.card-title(v-if="member.is_interface")
+                                pre
+                                    code.c-code-signature.language-typescript(v-html="member.signature")
+                            div.card-title(v-else)
+                                code.c-code-signature.language-typescript {{ member.signature }}
+                            hr(style="margin: 1rem 0")
+                            div.tag-row(v-show="member.description && member.description.length > 0")
                                 strong.tag-row__heading Description
                                 ul
-                                    li(v-for="description in data.class.description" :inner-html.prop="description | markdown-it")
+                                    li(v-for="description in member.description" :inner-html.prop="description | markdown-it")
 </template>
 
 <script>
@@ -108,6 +114,10 @@ export default {
     methods: {
         empty(inputObj) {
             return !inputObj || Object.keys(inputObj).length <= 0;
+        },
+        replaceNewLines(string) {
+            string = string.replace(/\n/g, "<br>");
+            return string;
         }
     }
 }

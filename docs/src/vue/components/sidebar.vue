@@ -80,7 +80,7 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/api-reference/services/http-service'") HttpService
                 a(:href="$conf.base_url + '/#/api-reference/util'") Util
                 div.l-submenu-1
-                    //- a(:href="$conf.base_url + '/#/api-reference/util/exports'") Exports
+                    a(:href="$conf.base_url + '/#/api-reference/util/exports'") Exports
                     a(:href="$conf.base_url + '/#/api-reference/util/object-parser'") ObjectParser
     div.c-sidebar__footer
         div.row
