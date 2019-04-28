@@ -5,7 +5,7 @@
  * @interface ColorizeOptions
  *
  * @description
- *     A util function that helps colorize text in the console.
+ *     An interface to hold the `colorize()` function's options.
  */
 export interface ColorizeOptions {
   color?: string;
@@ -21,7 +21,9 @@ export interface ColorizeOptions {
  *     A util function that helps colorize text in the console.
  *
  * @param string message
+ *     The text to colorize.
  * @param ColorizeOptions options
+ *     See `Drash.Utils.Exports.ColorizeOptions` interface.
  *
  * @return string
  *     Returns the colorized message.

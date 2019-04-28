@@ -5,7 +5,7 @@
 //     [ ] Return a status report of the files that were and weren't parsed.
 //     [ ] Check if a @memberof exists. If not, then document as top-level item.
 //     [ ] Check exported members only properties.
-//     [ ] Prase multi-line interface signature.
+//     [ ] Prase multi-line members only signature (interface already done).
 //
 
 import Drash from "../../mod.ts";
@@ -24,7 +24,7 @@ export default class DocBlocksToJson {
   );
   protected re_export = new RegExp(/export.+/, "g");
   // protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
-  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\?:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/, "g");
+  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n(export)?( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\?:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/, "g");
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
@@ -437,7 +437,7 @@ export default class DocBlocksToJson {
   protected getDocBlockDataForInterface(text: string): any {
     return {
       exported: this.isMemberExported("interface", text),
-      name: this.getNameOfInterface(text),
+      name: this.getMemberName(text),
       description: this.getSection("@description", text),
       signature: this.getSignatureOfInterface(text)
     };
@@ -557,6 +557,30 @@ export default class DocBlocksToJson {
     return undefined;
   }
 
+  protected getMemberNameInterface(textByLine, index = -1, line = '') {
+    if (index == -1) {
+      index = textByLine.length - 1;
+    }
+
+    line = textByLine[index] + line;
+    line = line.trim();
+
+    // Check for the opening bracket because that line will have the
+    // interface's name
+    let paren = new RegExp(/\{/, "g");
+    if (paren.test(line)) {
+      // Add new lines so the signature looks like a pretty object
+      line = line.replace("{", "{\n  ");
+      line = line.replace(/;/g, ";\n  ");
+      line = line.replace("  }", "}");
+      return line;
+    }
+
+    index = index - 1;
+
+    return this.getMemberNameInterface(textByLine, index, line);
+  }
+
   protected getMemberNameMethod(textByLine, index = -1, line = '') {
     if (index == -1) {
       index = textByLine.length - 1;
@@ -636,36 +660,6 @@ export default class DocBlocksToJson {
 
   /**
    * @description
-   *     Get the name of the interface.
-   *
-   * @param string text
-   *     The text containing the interface's data.
-   *
-   * @return string
-   */
-  protected getNameOfInterface(text: string): string {
-    let signature = this.getSignatureOfInterface(text);
-    return signature.replace(/export +? ?interface +?/, "");
-  }
-
-  /**
-   * @description
-   *     Get the name of the method.
-   *
-   * @param string text
-   *     The text containing the method's data.
-   *
-   * @return string
-   */
-  protected getNameOfMethod(text: string): string {
-    let signature = this.getSignatureOfMethod(text);
-    return signature
-      .replace(/(public|private|protected) +/, "")
-      .replace(/\(.+/, "");
-  }
-
-  /**
-   * @description
    *     Get the name of the property.
    *
    * @param string text
@@ -708,9 +702,8 @@ export default class DocBlocksToJson {
    * @return string
    */
   protected getSignatureOfInterface(text: string): string {
-    // The signature is the last line of the doc block
     let textByLine = text.split("\n");
-    return textByLine[textByLine.length - 1].trim().replace(/ ?{/, "");
+    return this.getMemberNameInterface(textByLine);
   }
 
   /**
@@ -795,6 +788,7 @@ export default class DocBlocksToJson {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForFunction(docBlock);
+        data.is_function= true;
         if (!currentNamespace) {
           data.fully_qualified_name = memberName;
           this.parsed[memberName] = data;
@@ -809,6 +803,7 @@ export default class DocBlocksToJson {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForEnum(docBlock);
+        data.is_enum = true;
         if (!currentNamespace) {
           data.fully_qualified_name = memberName;
           this.parsed[memberName] = data;
@@ -837,6 +832,7 @@ export default class DocBlocksToJson {
       if (this.re_is_const.test(docBlock)) {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let data = this.getDocBlockDataForConst(docBlock);
+        data.is_const = true;
         if (!currentNamespace) {
           data.fully_qualified_name = data.name;
           this.parsed[data.name] = data;
