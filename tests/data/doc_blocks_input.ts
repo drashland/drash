@@ -1,5 +1,3 @@
-// namespace Drash.Services
-
 /**
  * @memberof Drash.Services
  * @class ClassOne
