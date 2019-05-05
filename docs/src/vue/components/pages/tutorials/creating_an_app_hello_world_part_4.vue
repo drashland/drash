@@ -3,7 +3,7 @@ page-creating-an-app-hello-world(:data="data")
     template(v-slot:steps)
         ol
             li Enable logging by setting the server's <code>logger</code> config. The highlighted code is what's added to <code>app.ts</code>.
-                code-block(:data="data.example_code.app" line_highlight="34-43")
+                code-block(:data="data.example_code.app" line_highlight="36-45")
             li Run your app.
                 code-block(:data="data.example_code.run")
                 p When you start your app, the logs should look like the following in the terminal:
