@@ -5,7 +5,7 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 // Versions
 const latestRelease = "v0.8.3";
 const denoVersionMin = "0.3.7";
-const denoVersionMax = "0.3.10";
+const denoVersionMax = "0.5.0";
 const denoStdVersion = "0.3.4";
 
 function getConf(envVars) {

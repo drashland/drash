@@ -4,5 +4,5 @@
   if [ -f console/env_vars ]; then
     source console/env_vars
   fi
-  deno -A --no-prompt example_app/app.ts
+  deno run --allow-net --allow-read --allow-write --allow-env example_app/app.ts
 )

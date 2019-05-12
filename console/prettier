@@ -1,5 +1,5 @@
 #!/bin/bash
 
 (
-  deno --allow-run --allow-write --allow-read https://deno.land/x/std/prettier/main.ts $@
+  deno run --allow-run --allow-write --allow-read https://deno.land/x/std/prettier/main.ts $@
 )
