@@ -97,7 +97,6 @@ export default class Request extends ServerRequest {
     this.r = request.r;
     this.w = request.w;
     this.proto = request.proto;
-    this.conn = request.conn;
     this.headers = request.headers;
     this.url = request.url;
     this.method = request.method;
