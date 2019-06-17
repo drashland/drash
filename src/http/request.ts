@@ -1,6 +1,5 @@
 import Drash from "../../mod.ts";
-import * as DenoStd from "../../deno_std.ts";
-const ServerRequest = DenoStd.ServeRequest;
+import { ServerRequest } from "../../deno_std.ts";
 const decoder = new TextDecoder();
 
 /**

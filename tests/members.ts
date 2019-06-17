@@ -1,5 +1,5 @@
 import Drash from "../mod.ts";
-import * as DenoStd from "../deno_std.ts";
+import { ServerRequest } from "../deno_std.ts";
 import { runTests, test } from "https://deno.land/x/std/testing/mod.ts";
 import * as asserts from "https://deno.land/x/std/testing/asserts.ts";
 const decoder = new TextDecoder("utf-8");
@@ -10,7 +10,7 @@ let mockRequest = function mockRequest(
   headers?: any,
   hydrate = true
 ): any {
-  let request = new DenoStd.ServerRequest();
+  let request = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
@@ -22,8 +22,6 @@ let mockRequest = function mockRequest(
   }
   return drashRequest;
 };
-
-const ServerRequest = DenoStd.ServerRequest;
 
 export default {
   Drash,
