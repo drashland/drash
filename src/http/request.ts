@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { ServerRequest } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.4/http/server.ts";
+import { ServerRequest } from "../../deno_std.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -97,7 +97,6 @@ export default class Request extends ServerRequest {
     this.r = request.r;
     this.w = request.w;
     this.proto = request.proto;
-    this.conn = request.conn;
     this.headers = request.headers;
     this.url = request.url;
     this.method = request.method;

@@ -1,7 +1,7 @@
 import Drash from "../mod.ts";
+import { ServerRequest } from "../deno_std.ts";
 import { runTests, test } from "https://deno.land/x/std/testing/mod.ts";
 import * as asserts from "https://deno.land/x/std/testing/asserts.ts";
-import { ServerRequest } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.4/http/server.ts";
 const decoder = new TextDecoder("utf-8");
 
 let mockRequest = function mockRequest(

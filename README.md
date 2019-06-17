@@ -1,7 +1,7 @@
 [![GitHub release](https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest)](https://github.com/crookse/deno-drash/releases)
 [![Travis (.org) branch](https://travis-ci.org/crookse/deno-drash.svg?branch=master)](https://travis-ci.org/crookse/deno-drash)
-[![deno version](https://img.shields.io/badge/requires%20deno-%3E=0.3.7%20%3C=0.5.0-brightgreen.svg)](https://github.com/denoland/deno_install)
-[![deno_std version](https://img.shields.io/badge/uses%20deno__std-v0.3.4-brightgreen.svg)](https://github.com/denoland/deno_std)
+[![deno version](https://img.shields.io/badge/requires%20deno-%3E=0.3.7%20%3C=0.9.0-brightgreen.svg)](https://github.com/denoland/deno_install)
+[![deno_std version](https://img.shields.io/badge/uses%20deno__std-v0.9.0-brightgreen.svg)](https://github.com/denoland/deno_std)
 
 # Drash
 

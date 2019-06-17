@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { serve } from "https://raw.githubusercontent.com/denoland/deno_std/v0.3.4/http/server.ts";
+import { serve } from "../../deno_std.ts";
 
 /**
  * @memberof Drash.Http
