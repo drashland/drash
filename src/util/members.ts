@@ -1,5 +1,7 @@
 /// @doc-blocks-to-json members-only
 
+import { walkSync } from "../../deno_std.ts";
+
 /**
  * @memberof Drash.Util.Exports
  * @interface ColorizeOptions

@@ -1,5 +1,4 @@
 import Drash from "./bootstrap.ts";
-import { walkSync } from "../deno_std.ts";
 
 const Decoder = new TextDecoder();
 const Encoder = new TextEncoder();
@@ -79,7 +78,7 @@ function compileApiReferencePageData() {
  */
 function compileVueRouterRoutes() {
   echo("Compiling vue-router routes...");
-  let files = getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
+  let files = Drash.Util.Exports.getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
   let importString = "";
   files.forEach(pathObj => {
     importString += `import * as ${pathObj.snake_cased} from "${pathObj.path}";\n`;
@@ -93,23 +92,6 @@ function compileVueRouterRoutes() {
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
   console.log(importString);
   echo(`    Done. vue-router routes were written to: ${outputFile}.`);
-}
-
-function getFileSystemStructure(dir) {
-  let files = [];
-  for (const fileInfo of walkSync(dir)) {
-    files.push(fileInfo.filename);
-  }
-  return files.map(filename => {
-    let path = filename;
-    let filenameSplit = filename.split("/");
-    filename = filenameSplit[filenameSplit.length - 1];
-    return {
-      path: path,
-      filename: filename,
-      snake_cased: filename.replace(".", "_")
-    };
-  });
 }
 
 // function iterateDirectoryFilesForVueGlobalComponents(store, files) {
