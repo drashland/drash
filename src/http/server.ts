@@ -172,9 +172,9 @@ export default class Server {
       this
     );
     this.logger.debug(
-      "Using " +
+      "Using `" +
         resource.constructor.name +
-        " resource class to handle the request."
+        "` resource class to handle the request."
     );
 
     let response;
@@ -194,8 +194,9 @@ export default class Server {
         resource.hook_afterRequest();
       }
       this.logger.info("Sending response. " + response.status_code + ".");
+      // FIXME (crookse) Something is left hanging in response.send()
+      response.send();
       this.logger.debug("Response: " + response.outputDetails());
-      return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely
       // due to the HTTP method not being defined in the resource class;
