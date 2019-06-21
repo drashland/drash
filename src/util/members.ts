@@ -103,7 +103,7 @@ export function colorize(message: string, options: ColorizeOptions): string {
  *       snake_cased: filename_ext
  *     }
  */
-export function getFileSystemStructure(string: dir): any {
+export function getFileSystemStructure(dir: string): any {
   let files = [];
 
   for (const fileInfo of walkSync(dir)) {
