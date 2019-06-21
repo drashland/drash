@@ -89,3 +89,32 @@ export function colorize(message: string, options: ColorizeOptions): string {
 
   return message;
 }
+
+/**
+ * Get the filesystem structure of the directory (recursively).
+ *
+ * @return string
+ *     Returns the following object:
+ *     {
+ *       filename: filename.ext,
+ *       path: /full/path/to/filename.ext,
+ *       snake_cased: filename_ext
+ *     }
+ */
+export function getFileSystemStructure(string: dir): any {
+  let files = [];
+
+  for (const fileInfo of walkSync(dir)) {
+    let filename = fileInfo.filename;
+    let path = filename;
+    let filenameSplit = filename.split("/");
+    filename = filenameSplit[filenameSplit.length - 1];
+    files.push({
+      path: path,
+      filename: filename,
+      snake_cased: filename.replace(".", "_")
+    });
+  }
+
+  return files;
+}
