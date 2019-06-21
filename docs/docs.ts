@@ -1,9 +1,23 @@
-import Drash from "./bootstrap.ts";
+import Drash from "../mod.ts";
+
+// Add a global console logger because server logging when needed is cool
+Drash.addMember(
+  "ConsoleLogger",
+  new Drash.Loggers.ConsoleLogger({
+    enabled: true,
+    level: "debug",
+    tag_string: "{date} | {level} |",
+    tag_string_fns: {
+      date: function() {
+        return new Date().toISOString().replace("T", " ");
+      }
+    }
+  })
+);
 
 const Decoder = new TextDecoder();
 const Encoder = new TextEncoder();
 const DRASH_DIR_ROOT = Drash.getEnvVar("DRASH_DIR_ROOT").value;
-
 
 import AppResponse from "./src/app_response.ts";
 Drash.Http.Response = AppResponse;
@@ -58,20 +72,20 @@ function compileApiReferencePageData() {
 /**
  * Compile Vue global components.
  */
-// function compileVueGlobalComponents() {
-//   echo("Compiling Vue global components...");
-//   let vueRouterComponentPaths = [];
-//   let vueRouterComponentsDir = `${DRASH_DIR_ROOT}/docs/src/vue/components/global`;
-//   iterateDirectoryFilesForVueGlobalComponents(vueRouterComponentPaths, Deno.readDirSync(vueRouterComponentsDir));
-//   let importString = `import Vue from "vue";\n\n`;
-//   vueRouterComponentPaths.forEach(pathObj => {
-//     let componentName = pathObj.name.replace("_vue", "").replace(/_/g, "-");
-//     importString += `import ${pathObj.name} from "${pathObj.path}";\nVue.component("${componentName}", ${pathObj.name});\n\n`;
-//   });
-//   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
-//   Deno.writeFileSync(outputFile, Encoder.encode(importString));
-//   echo(`    Done. Vue global components were written to: ${outputFile}.`);
-// }
+function compileVueGlobalComponents() {
+  echo("Compiling Vue global components...");
+  let files = Drash.Util.Exports.getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/global`);
+  let importString = `import Vue from "vue";\n\n`;
+  files.forEach(pathObj => {
+    let componentName = pathObj.filename
+      .replace(".vue", "") // take out the .vue extension
+      .replace(/_/g, "-"); // change all underscores to - so that the component name is `some-name` and not `some_name`
+    importString += `import ${pathObj.filename} from "${pathObj.path}";\nVue.component("${componentName}", ${pathObj.filename});\n\n`;
+  });
+  let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
+  Deno.writeFileSync(outputFile, Encoder.encode(importString));
+  echo(`    Done. Vue global components were written to: ${outputFile}.`);
+}
 
 /**
  * Compile vue-router routes.
@@ -90,23 +104,12 @@ function compileVueRouterRoutes() {
   importString += "];";
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
-  console.log(importString);
   echo(`    Done. vue-router routes were written to: ${outputFile}.`);
 }
 
-// function iterateDirectoryFilesForVueGlobalComponents(store, files) {
-//   files.forEach(file => {
-//     if (file.isFile()) {
-//       store.push({
-//         name: file.name.replace(".", "_"), // change name from filename.vue to filename_vue
-//         path: `${vueRouterComponentsDir}/${file.name}`
-//       });
-//     } else {
-//       iterateDirectoryFiles(store, Deno.readDirSync(`${vueRouterComponentsDir}/${file.name}`));
-//     }
-//   });
-// }
-
+/**
+ * Run the dev server.
+ */
 function runServer() {
   echo("Starting server...");
   let server = new Drash.Http.Server({
