@@ -14,13 +14,12 @@ let mockRequest = function mockRequest(
   request.url = url;
   request.method = method;
   request.headers = new Headers();
-  let drashRequest = new Drash.Http.Request(request);
   if (hydrate) {
-    drashRequest = Drash.Services.HttpService.hydrateHttpRequest(drashRequest, {
+    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
       headers: headers
     });
   }
-  return drashRequest;
+  return request;
 };
 
 export default {
