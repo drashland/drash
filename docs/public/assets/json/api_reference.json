@@ -1080,58 +1080,7 @@
                     "fully_qualified_name": "Drash.Http.Request.url_query_string"
                 }
             },
-            "methods": {
-                "constructor": {
-                    "access_modifier": "public",
-                    "name": "constructor",
-                    "description": [
-                        "Construct an object of this class."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [],
-                            "annotation": {
-                                "line": "@param ServerRequest request",
-                                "data_type": "ServerRequest",
-                                "name": "request"
-                            }
-                        }
-                    },
-                    "returns": null,
-                    "throws": null,
-                    "signature": "constructor(request: ServerRequest)",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Request()"
-                },
-                "parseBody": {
-                    "access_modifier": "public",
-                    "name": "parseBody",
-                    "description": [
-                        "Parse the body of the request so that it can be used as an associative\narray.",
-                        "If the request body's content type is `application/json`, then\n`{\"username\":\"root\",\"password\":\"alpine\"}` becomes `{ username: \"root\", password: \"alpine\" }`.",
-                        "If the request body's content type is\n`application/x-www-form-urlencoded`, then\n`username=root&password=alpine` becomes `{ username: \"root\", password: \"alpine\" }`.",
-                        "If the body can't be parsed, then this method will set\n`this.body_parsed` to `false` to denote that the request body was not\nparsed."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [
-                                "This method resolves `this.body_parsed`, but only for testing purposes.\nThis method can be called without assigning its resolved data to a\nvariable. For example, you can call `await request.parseBody();` and\naccess `request.body_parsed` immediately after. Before this method\nresolves `this.body_parsed`, it assigns the parsed request body to\n`this.body_parsed`."
-                            ],
-                            "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "public parseBody(): any",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Request.parseBody"
-                }
-            }
+            "methods": {}
         },
         "Resource": {
             "fully_qualified_name": "Drash.Http.Resource",
@@ -1719,8 +1668,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -1738,7 +1687,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
+                    "signature": "public handleHttpRequest(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
                 },
@@ -1755,8 +1704,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         },
@@ -1785,7 +1734,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
+                    "signature": "public handleHttpRequestError(request, error: any): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestError"
                 },
@@ -1800,8 +1749,8 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -1819,7 +1768,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
+                    "signature": "public handleHttpRequestForFavicon(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForFavicon"
                 },
@@ -1834,8 +1783,8 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -1853,7 +1802,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any",
+                    "signature": "public handleHttpRequestForStaticPathAsset(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForStaticPathAsset"
                 },
@@ -1995,8 +1944,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2015,7 +1964,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource | undefined",
+                    "signature": "protected getResourceClass(request): Drash.Http.Resource | undefined",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },
@@ -2030,8 +1979,8 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2049,7 +1998,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected requestTargetsStaticPath(request: Drash.Http.Request): boolean",
+                    "signature": "protected requestTargetsStaticPath(request): boolean",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.requestTargetsStaticPath"
                 }
@@ -2527,6 +2476,33 @@
             ],
             "properties": {},
             "methods": {
+                "getHttpRequestBodyParsed": {
+                    "access_modifier": "public",
+                    "name": "getHttpRequestBodyParsed",
+                    "description": [
+                        "Parse the body of the request so that it can be used as an associative\narray.",
+                        "If the request body's content type is `application/json`, then\n`{\"username\":\"root\",\"password\":\"alpine\"}` becomes `{ username: \"root\", password: \"alpine\" }`.",
+                        "If the request body's content type is\n`application/x-www-form-urlencoded`, then\n`username=root&password=alpine` becomes `{ username: \"root\", password: \"alpine\" }`.",
+                        "If the body can't be parsed, then this method will set\n`this.body_parsed` to `false` to denote that the request body was not\nparsed."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [
+                                "This method resolves `this.body_parsed`, but only for testing purposes.\nThis method can be called without assigning its resolved data to a\nvariable. For example, you can call `await request.parseBody();` and\naccess `request.body_parsed` immediately after. Before this method\nresolves `this.body_parsed`, it assigns the parsed request body to\n`this.body_parsed`."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public getHttpRequestBodyParsed(request): any",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestBodyParsed"
+                },
                 "hydrateHttpRequest": {
                     "access_modifier": "public",
                     "name": "hydrateHttpRequest",
@@ -2540,8 +2516,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         },
@@ -2559,7 +2535,7 @@
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)",
+                    "signature": "public hydrateHttpRequest(request, options?: any)",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.hydrateHttpRequest"
                 },
@@ -2576,8 +2552,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2595,7 +2571,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string",
+                    "signature": "public getHttpRequestUrlPath(request): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlPath"
                 },
@@ -2612,8 +2588,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2631,7 +2607,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string",
+                    "signature": "public getHttpRequestUrlQueryString(request): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlQueryString"
                 },
@@ -2648,8 +2624,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2667,7 +2643,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any",
+                    "signature": "public getHttpRequestUrlQueryParams(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlQueryParams"
                 },
