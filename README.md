@@ -1,7 +1,6 @@
 <p align="center">
   <img height="150" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash.png" alt="Drash logo">
 </p>
-<h1 align="center">Drash</h1>
 <p align="center">
   <a href="https://github.com/crookse/deno-drash/releases">
     <img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest">
@@ -16,8 +15,7 @@
     <img src="https://img.shields.io/badge/uses%20deno__std-v0.9.0-brightgreen.svg">
   </a>
 </p>
-
----
+<h1 align="center">Drash</h1>
 
 Drash is a microframework for [Deno](https://github.com/denoland/deno) based on [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation).
 
