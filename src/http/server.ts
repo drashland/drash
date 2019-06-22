@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { serve, ServerRequest } from "../../deno_std.ts";
+import { serve } from "../../deno_std.ts";
 
 /**
  * @memberof Drash.Http
@@ -128,7 +128,7 @@ export default class Server {
    * @return any
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request: ServerRequest): any {
+  public handleHttpRequest(request): any {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(request)) {
       return this.handleHttpRequestForStaticPathAsset(request);
@@ -226,7 +226,7 @@ export default class Server {
    * @return any
    *     See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequestError(request: ServerRequest, error: any): any {
+  public handleHttpRequestError(request, error: any): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -292,7 +292,7 @@ export default class Server {
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForFavicon(request: ServerRequest): any {
+  public handleHttpRequestForFavicon(request): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -319,7 +319,7 @@ export default class Server {
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForStaticPathAsset(request: ServerRequest): any {
+  public handleHttpRequestForStaticPathAsset(request): any {
     try {
       let response = new Drash.Http.Response(request);
       return response.sendStatic();
@@ -458,9 +458,7 @@ export default class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(
-    request: ServerRequest
-  ): Drash.Http.Resource | undefined {
+  protected getResourceClass(request): Drash.Http.Resource | undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -520,7 +518,7 @@ export default class Server {
    * @return boolean
    *     Returns true if the request targets a static path.
    */
-  protected requestTargetsStaticPath(request: ServerRequest): boolean {
+  protected requestTargetsStaticPath(request): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }

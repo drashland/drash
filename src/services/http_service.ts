@@ -1,5 +1,4 @@
 import Drash from "../../mod.ts";
-import { ServerRequest } from "../../deno_std.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -107,7 +106,7 @@ export default class HttpService {
    * @param any options
    *     A list of options.
    */
-  public hydrateHttpRequest(request: ServerRequest, options?: any) {
+  public hydrateHttpRequest(request, options?: any) {
     if (options) {
       if (options.headers) {
         for (let key in options.headers) {
@@ -134,7 +133,7 @@ export default class HttpService {
    * @return string
    *     Returns the URL path.
    */
-  public getHttpRequestUrlPath(request: ServerRequest): string {
+  public getHttpRequestUrlPath(request): string {
     let path = request.url;
 
     if (path == "/") {
@@ -165,7 +164,7 @@ export default class HttpService {
    *     Returns the URL query string (e.g., key1=value1&key2=value2) without
    *     the leading "?" character.
    */
-  public getHttpRequestUrlQueryString(request: ServerRequest): string {
+  public getHttpRequestUrlQueryString(request): string {
     let queryString = null;
 
     if (request.url.indexOf("?") == -1) {
@@ -191,7 +190,7 @@ export default class HttpService {
    * @return any
    *     Returns the URL query string in key-value pair format.
    */
-  public getHttpRequestUrlQueryParams(request: ServerRequest): any {
+  public getHttpRequestUrlQueryParams(request): any {
     let queryParams = {};
 
     try {
