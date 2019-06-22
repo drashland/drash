@@ -47,7 +47,6 @@ function compileApiReferencePageData() {
     `/src/compilers/doc_blocks_to_json.ts`,
     `/src/dictionaries/log_levels.ts`,
     `/src/exceptions/http_exception.ts`,
-    `/src/http/request.ts`,
     `/src/http/resource.ts`,
     `/src/http/response.ts`,
     `/src/http/server.ts`,

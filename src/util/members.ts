@@ -93,7 +93,11 @@ export function colorize(message: string, options: ColorizeOptions): string {
 }
 
 /**
- * Get the filesystem structure of the directory (recursively).
+ * @memberof Drash.Util.Exports
+ * @function getFileSystemStructure
+ *
+ * @description
+ *     Get the filesystem structure of the directory (recursively).
  *
  * @return string
  *     Returns the following object:

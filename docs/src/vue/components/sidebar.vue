@@ -66,7 +66,6 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/api-reference/exceptions/http-exception'") HttpException
                 a(:href="$conf.base_url + '/#/api-reference/http'") Http
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/api-reference/http/request'") Request
                     a(:href="$conf.base_url + '/#/api-reference/http/resource'") Resource
                     a(:href="$conf.base_url + '/#/api-reference/http/response'") Response
                     a(:href="$conf.base_url + '/#/api-reference/http/server'") Server
