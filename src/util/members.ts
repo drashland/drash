@@ -102,9 +102,12 @@ export function colorize(message: string, options: ColorizeOptions): string {
  * @return string
  *     Returns the following object:
  *     {
- *       filename: filename.ext,
- *       path: /full/path/to/filename.ext,
- *       snake_cased: filename_ext
+ *       basename: "filename",
+ *       extension: extension, // does not account for .min.extension or similar extensions
+ *       filename: filename.extension,
+ *       path: "/path/to/the/file/dir/filename.extension",
+ *       pathname: "/path/to/the/file/dir",
+ *       snake_cased: filename_extension
  *     }
  */
 export function getFileSystemStructure(dir: string): any {
@@ -122,16 +125,16 @@ export function getFileSystemStructure(dir: string): any {
     // trailing slash.
     let pathname = path.slice(0, -(filename.length + 1));
     files.push({
-      // /path/to/the/file/dir
-      pathname: pathname,
-      // /path/to/the/file/dir/filename.extension
-      path: path,
       // filename
       basename: filename.split(".")[0],
-      // filename.extension
-      filename: filename,
       // extension
       extension: filename.split(".")[1], // This doesn't account for .min. type files
+      // filename.extension
+      filename: filename,
+      // /path/to/the/file/dir/filename.extension
+      path: path,
+      // /path/to/the/file/dir
+      pathname: pathname,
       // filename_extension
       snake_cased: filename.replace(".", "_")
     });

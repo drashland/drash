@@ -2743,7 +2743,7 @@
             "returns": [
                 {
                     "description": [
-                        "Returns the following object:\n{\nfilename: filename.ext,\npath: /full/path/to/filename.ext,\nsnake_cased: filename_ext\n}"
+                        "Returns the following object:\n{\nbasename: \"filename\",\nextension: extension, // does not account for .min.extension or similar extensions\nfilename: filename.extension,\npath: \"/path/to/the/file/dir/filename.extension\",\npathname: \"/path/to/the/file/dir\",\nsnake_cased: filename_extension\n}"
                     ],
                     "annotation": {
                         "line": "@return string",
