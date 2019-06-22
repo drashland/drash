@@ -7,7 +7,9 @@ div.c-sidebar
         div.row.align-items-center.text-align--center
             div.col
                 h1.module-name
-                    a(:href="$conf.base_url + '/#/'") Drash
+                    a(:href="$conf.base_url + '/#/'")
+                        img(style="margin-bottom: 10px;" alt="Drash" :src="$conf.base_url + '/public/assets/img/logo_drash.png'" width="auto" height="80")
+                        p(style="font-size: 18px") Drash
                 div
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
                         img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
