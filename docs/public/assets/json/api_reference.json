@@ -972,167 +972,6 @@
         }
     },
     "Drash.Http": {
-        "Request": {
-            "fully_qualified_name": "Drash.Http.Request",
-            "namespace": "Drash.Http",
-            "name": "Request",
-            "description": [
-                "This is a wrapper class for `ServerRequest` (from\nhttps://deno.land/x/http/server.ts). It just adds more properties to the\nrequest object--allowing Drash to work with a more flexible request\nobject.",
-                "This class extends `ServerRequest`."
-            ],
-            "properties": {
-                "body_parsed": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to access the request's body in key-value pair format."
-                    ],
-                    "annotation": {
-                        "line": "@property any body_parsed",
-                        "data_type": "any",
-                        "name": "body_parsed"
-                    },
-                    "signature": "public body_parsed: any = {}",
-                    "name": "body_parsed",
-                    "fully_qualified_name": "Drash.Http.Request.body_parsed"
-                },
-                "body_raw_string": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to access the request's body as raw string without any\nfurther parsing."
-                    ],
-                    "annotation": {
-                        "line": "@property any body_raw_string",
-                        "data_type": "any",
-                        "name": "body_raw_string"
-                    },
-                    "signature": "public body_raw_string: string",
-                    "name": "body_raw_string",
-                    "fully_qualified_name": "Drash.Http.Request.body_raw_string"
-                },
-                "original_request_object": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to access the original `ServerRequest` object."
-                    ],
-                    "annotation": {
-                        "line": "@property ServerRequest original_request_object",
-                        "data_type": "ServerRequest",
-                        "name": "original_request_object"
-                    },
-                    "signature": "public original_request_object: ServerRequest",
-                    "name": "original_request_object",
-                    "fully_qualified_name": "Drash.Http.Request.original_request_object"
-                },
-                "path_params": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to hold the path params of the request. For example, if a\nrequest with the URI `/users/1234` is sent by a client and the request\nis matched to a resource class with a path of `/users/:id`, then\n`this.path_params.id == 1234`."
-                    ],
-                    "annotation": {
-                        "line": "@property any path_params",
-                        "data_type": "any",
-                        "name": "path_params"
-                    },
-                    "signature": "public path_params: any = {}",
-                    "name": "path_params",
-                    "fully_qualified_name": "Drash.Http.Request.path_params"
-                },
-                "url_path": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to hold the path of the request's URL. For example, if a\nrequest with the URL `localhost:8000/users/1234` is sent by a client,\nthen the path to this request is `/users/1234`."
-                    ],
-                    "annotation": {
-                        "line": "@property string url_path",
-                        "data_type": "string",
-                        "name": "url_path"
-                    },
-                    "signature": "public url_path: string",
-                    "name": "url_path",
-                    "fully_qualified_name": "Drash.Http.Request.url_path"
-                },
-                "url_query_params": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to hold the query params of the request's URL in key-value\npair format. For example, if a request with the URL\n`localhost:8000?response_content_type=text/html` is sent by a client,\nthen `this.url_query_params == {response_content_type: \"text/html\"}`."
-                    ],
-                    "annotation": {
-                        "line": "@property any url_query_params",
-                        "data_type": "any",
-                        "name": "url_query_params"
-                    },
-                    "signature": "public url_query_params: any = {}",
-                    "name": "url_query_params",
-                    "fully_qualified_name": "Drash.Http.Request.url_query_params"
-                },
-                "url_query_string": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to hold the query string of the request's URL. For example,\nif a request with the URL\n`localhost:8000?response_content_type=text/html` is sent by a client,\nthen `this.url_query_string == \"response_content_type=text/html\"`. Note\nthat the leading `?` is removed."
-                    ],
-                    "annotation": {
-                        "line": "@property string url_query_string",
-                        "data_type": "string",
-                        "name": "url_query_string"
-                    },
-                    "signature": "public url_query_string: string = null",
-                    "name": "url_query_string",
-                    "fully_qualified_name": "Drash.Http.Request.url_query_string"
-                }
-            },
-            "methods": {
-                "constructor": {
-                    "access_modifier": "public",
-                    "name": "constructor",
-                    "description": [
-                        "Construct an object of this class."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [],
-                            "annotation": {
-                                "line": "@param ServerRequest request",
-                                "data_type": "ServerRequest",
-                                "name": "request"
-                            }
-                        }
-                    },
-                    "returns": null,
-                    "throws": null,
-                    "signature": "constructor(request: ServerRequest)",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Request()"
-                },
-                "parseBody": {
-                    "access_modifier": "public",
-                    "name": "parseBody",
-                    "description": [
-                        "Parse the body of the request so that it can be used as an associative\narray.",
-                        "If the request body's content type is `application/json`, then\n`{\"username\":\"root\",\"password\":\"alpine\"}` becomes `{ username: \"root\", password: \"alpine\" }`.",
-                        "If the request body's content type is\n`application/x-www-form-urlencoded`, then\n`username=root&password=alpine` becomes `{ username: \"root\", password: \"alpine\" }`.",
-                        "If the body can't be parsed, then this method will set\n`this.body_parsed` to `false` to denote that the request body was not\nparsed."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [
-                                "This method resolves `this.body_parsed`, but only for testing purposes.\nThis method can be called without assigning its resolved data to a\nvariable. For example, you can call `await request.parseBody();` and\naccess `request.body_parsed` immediately after. Before this method\nresolves `this.body_parsed`, it assigns the parsed request body to\n`this.body_parsed`."
-                            ],
-                            "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "public parseBody(): any",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Request.parseBody"
-                }
-            }
-        },
         "Resource": {
             "fully_qualified_name": "Drash.Http.Resource",
             "namespace": "Drash.Http",
@@ -1330,7 +1169,7 @@
                 "status_code": {
                     "access_modifier": "public",
                     "description": [
-                        "A property to hold this response's status code (e.g., 200 for OK).\nThis class uses `Status` and `STATUS_TEXT` from\n[https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)\nfor response codes."
+                        "A property to hold this response's status code (e.g., 200 for OK).\nThis class uses `Status` and `STATUS_TEXT` from the Deno Standard\nModules' http_status module for response codes."
                     ],
                     "annotation": {
                         "line": "@property number status_code",
@@ -1719,8 +1558,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -1738,7 +1577,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequest(request: Drash.Http.Request): any",
+                    "signature": "public handleHttpRequest(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
                 },
@@ -1755,8 +1594,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         },
@@ -1785,7 +1624,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestError(request: Drash.Http.Request, error: any): any",
+                    "signature": "public handleHttpRequestError(request, error: any): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestError"
                 },
@@ -1800,8 +1639,8 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -1819,7 +1658,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request): any",
+                    "signature": "public handleHttpRequestForFavicon(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForFavicon"
                 },
@@ -1834,8 +1673,8 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -1853,7 +1692,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any",
+                    "signature": "public handleHttpRequestForStaticPathAsset(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestForStaticPathAsset"
                 },
@@ -1995,8 +1834,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2015,7 +1854,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected getResourceClass(request: Drash.Http.Request): Drash.Http.Resource | undefined",
+                    "signature": "protected getResourceClass(request): Drash.Http.Resource | undefined",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.getResourceClass"
                 },
@@ -2030,8 +1869,8 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2049,7 +1888,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected requestTargetsStaticPath(request: Drash.Http.Request): boolean",
+                    "signature": "protected requestTargetsStaticPath(request): boolean",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.requestTargetsStaticPath"
                 }
@@ -2527,6 +2366,33 @@
             ],
             "properties": {},
             "methods": {
+                "getHttpRequestBodyParsed": {
+                    "access_modifier": "public",
+                    "name": "getHttpRequestBodyParsed",
+                    "description": [
+                        "Parse the body of the request so that it can be used as an associative\narray.",
+                        "If the request body's content type is `application/json`, then\n`{\"username\":\"root\",\"password\":\"alpine\"}` becomes `{ username: \"root\", password: \"alpine\" }`.",
+                        "If the request body's content type is\n`application/x-www-form-urlencoded`, then\n`username=root&password=alpine` becomes `{ username: \"root\", password: \"alpine\" }`.",
+                        "If the body can't be parsed, then this method will set\n`this.body_parsed` to `false` to denote that the request body was not\nparsed."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [
+                                "This method resolves `this.body_parsed`, but only for testing purposes.\nThis method can be called without assigning its resolved data to a\nvariable. For example, you can call `await request.parseBody();` and\naccess `request.body_parsed` immediately after. Before this method\nresolves `this.body_parsed`, it assigns the parsed request body to\n`this.body_parsed`."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public getHttpRequestBodyParsed(request): any",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestBodyParsed"
+                },
                 "hydrateHttpRequest": {
                     "access_modifier": "public",
                     "name": "hydrateHttpRequest",
@@ -2540,8 +2406,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         },
@@ -2559,7 +2425,7 @@
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "public hydrateHttpRequest(request: Drash.Http.Request, options?: any)",
+                    "signature": "public hydrateHttpRequest(request, options?: any)",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.hydrateHttpRequest"
                 },
@@ -2576,8 +2442,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2595,7 +2461,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public getHttpRequestUrlPath(request: Drash.Http.Request): string",
+                    "signature": "public getHttpRequestUrlPath(request): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlPath"
                 },
@@ -2612,8 +2478,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2631,7 +2497,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public getHttpRequestUrlQueryString(request: Drash.Http.Request): string",
+                    "signature": "public getHttpRequestUrlQueryString(request): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlQueryString"
                 },
@@ -2648,8 +2514,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
@@ -2667,7 +2533,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any",
+                    "signature": "public getHttpRequestUrlQueryParams(request): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getHttpRequestUrlQueryParams"
                 },
@@ -2866,6 +2732,30 @@
             "signature": "export function colorize(message: string, options: ColorizeOptions): string",
             "is_function": true,
             "fully_qualified_name": "Drash.Util.Exports.colorize"
+        },
+        "getFileSystemStructure": {
+            "exported": true,
+            "name": "getFileSystemStructure",
+            "description": [
+                "Get the filesystem structure of the directory (recursively)."
+            ],
+            "params": null,
+            "returns": [
+                {
+                    "description": [
+                        "Returns the following object:\n{\nbasename: \"filename\",\nextension: extension, // does not account for .min.extension or similar extensions\nfilename: filename.extension,\npath: \"/path/to/the/file/dir/filename.extension\",\npathname: \"/path/to/the/file/dir\",\nsnake_cased: filename_extension\n}"
+                    ],
+                    "annotation": {
+                        "line": "@return string",
+                        "data_type": "string",
+                        "name": null
+                    }
+                }
+            ],
+            "throws": null,
+            "signature": "export function getFileSystemStructure(dir: string): any",
+            "is_function": true,
+            "fully_qualified_name": "Drash.Util.Exports.getFileSystemStructure"
         }
     }
 }

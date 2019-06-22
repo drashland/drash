@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { Status, STATUS_TEXT } from "https://deno.land/x/http/http_status.ts";
+import { STATUS_TEXT, Status } from "../../deno_std.ts";
 
 /**
  * @memberof Drash.Http
@@ -45,9 +45,8 @@ export default class Response {
   /**
    * @description
    *     A property to hold this response's status code (e.g., 200 for OK).
-   *     This class uses `Status` and `STATUS_TEXT` from
-   *     [https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)
-   *     for response codes.
+   *     This class uses `Status` and `STATUS_TEXT` from the Deno Standard
+   *     Modules' http_status module for response codes.
    *
    * @property number status_code
    */

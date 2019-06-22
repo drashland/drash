@@ -60,7 +60,7 @@ _It is recommended that you import the latest release or a specific release to p
 **Create `app.ts` ...**
 
 ```typescript
-import Drash from "https://deno.land/x/drash@v0.8./mod.ts";
+import Drash from "https://deno.land/x/drash@v0.8.5/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];

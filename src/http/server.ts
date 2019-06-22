@@ -122,13 +122,13 @@ export default class Server {
    * @description
    *     Handle an HTTP request from the Deno server.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return any
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request: Drash.Http.Request): any {
+  public handleHttpRequest(request): any {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(request)) {
       return this.handleHttpRequestForStaticPathAsset(request);
@@ -172,9 +172,9 @@ export default class Server {
       this
     );
     this.logger.debug(
-      "Using " +
+      "Using `" +
         resource.constructor.name +
-        " resource class to handle the request."
+        "` resource class to handle the request."
     );
 
     let response;
@@ -194,8 +194,9 @@ export default class Server {
         resource.hook_afterRequest();
       }
       this.logger.info("Sending response. " + response.status_code + ".");
+      // FIXME (crookse) Something is left hanging in response.send()
+      response.send();
       this.logger.debug("Response: " + response.outputDetails());
-      return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely
       // due to the HTTP method not being defined in the resource class;
@@ -217,7 +218,7 @@ export default class Server {
    * @description
    *     Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    * @param any error
    *     The error object.
@@ -225,7 +226,7 @@ export default class Server {
    * @return any
    *     See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequestError(request: Drash.Http.Request, error: any): any {
+  public handleHttpRequestError(request, error: any): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -285,13 +286,13 @@ export default class Server {
    *     short-circuit favicon requests--preventing the requests from clogging
    *     the logs.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForFavicon(request: Drash.Http.Request): any {
+  public handleHttpRequestForFavicon(request): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -312,13 +313,13 @@ export default class Server {
    * @description
    *     Handle HTTP requests for static path assets.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any {
+  public handleHttpRequestForStaticPathAsset(request): any {
     try {
       let response = new Drash.Http.Response(request);
       return response.sendStatic();
@@ -342,12 +343,8 @@ export default class Server {
     console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
-      // Build a new and more workable request object.
-      let drashRequest = new Drash.Http.Request(request);
-      await drashRequest.parseBody();
-
       try {
-        this.handleHttpRequest(drashRequest);
+        this.handleHttpRequest(request);
       } catch (error) {
         this.handleHttpRequestError(request, this.errorResponse(500));
       }
@@ -452,7 +449,7 @@ export default class Server {
    * @description
    *     Get the resource class.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
@@ -461,9 +458,7 @@ export default class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(
-    request: Drash.Http.Request
-  ): Drash.Http.Resource | undefined {
+  protected getResourceClass(request): Drash.Http.Resource | undefined {
     let matchedResourceClass = undefined;
 
     for (let className in this.resources) {
@@ -518,12 +513,12 @@ export default class Server {
    * @description
    *     Is the request targeting a static path?
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *
    * @return boolean
    *     Returns true if the request targets a static path.
    */
-  protected requestTargetsStaticPath(request: Drash.Http.Request): boolean {
+  protected requestTargetsStaticPath(request): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }

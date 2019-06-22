@@ -1,4 +1,4 @@
-import Drash from "../bootstrap.ts";
+import Drash from "../../mod.ts";
 import * as ResponseService from "./response_service.ts";
 
 export default class AppResponse extends Drash.Http.Response {
