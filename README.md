@@ -1,5 +1,7 @@
 <p align="center">
-  <img height="150" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash.png" alt="Drash logo">
+  <a href="https://crookse.github.io/deno-drash">
+    <img height="150" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash.png" alt="Drash logo">
+  </a>
 </p>
 <p align="center">
   <a href="https://github.com/crookse/deno-drash/releases">
