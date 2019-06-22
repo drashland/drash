@@ -1,4 +1,5 @@
 import Drash from "../../mod.ts";
+import { ServerRequest } from "../../deno_std.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -101,12 +102,12 @@ export default class HttpService {
    *     Hydrate the request with data that is useful for the
    *     `Drash.Http.Server` class.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    * @param any options
    *     A list of options.
    */
-  public hydrateHttpRequest(request: Drash.Http.Request, options?: any) {
+  public hydrateHttpRequest(request: ServerRequest, options?: any) {
     if (options) {
       if (options.headers) {
         for (let key in options.headers) {
@@ -127,13 +128,13 @@ export default class HttpService {
    * @description
    *     Get the specified HTTP request's URL path.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return string
    *     Returns the URL path.
    */
-  public getHttpRequestUrlPath(request: Drash.Http.Request): string {
+  public getHttpRequestUrlPath(request: ServerRequest): string {
     let path = request.url;
 
     if (path == "/") {
@@ -157,14 +158,14 @@ export default class HttpService {
    * @description
    *     Get the specified HTTP request's URL query string.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return string
    *     Returns the URL query string (e.g., key1=value1&key2=value2) without
    *     the leading "?" character.
    */
-  public getHttpRequestUrlQueryString(request: Drash.Http.Request): string {
+  public getHttpRequestUrlQueryString(request: ServerRequest): string {
     let queryString = null;
 
     if (request.url.indexOf("?") == -1) {
@@ -184,13 +185,13 @@ export default class HttpService {
    * @description
    *     Get the HTTP request's URL query params by parsing the URL query string.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return any
    *     Returns the URL query string in key-value pair format.
    */
-  public getHttpRequestUrlQueryParams(request: Drash.Http.Request): any {
+  public getHttpRequestUrlQueryParams(request: ServerRequest): any {
     let queryParams = {};
 
     try {

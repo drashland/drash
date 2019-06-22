@@ -83,7 +83,4 @@ export default class Request extends ServerRequest {
    * @property string url_query_string
    */
   public url_query_string: string = null;
-
-  // FILE MARKER: METHOD - PUBLIC //////////////////////////////////////////////
-
 }

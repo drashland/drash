@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { serve } from "../../deno_std.ts";
+import { serve, ServerRequest } from "../../deno_std.ts";
 
 /**
  * @memberof Drash.Http
@@ -122,13 +122,13 @@ export default class Server {
    * @description
    *     Handle an HTTP request from the Deno server.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return any
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request: Drash.Http.Request): any {
+  public handleHttpRequest(request: ServerRequest): any {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(request)) {
       return this.handleHttpRequestForStaticPathAsset(request);
@@ -218,7 +218,7 @@ export default class Server {
    * @description
    *     Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    * @param any error
    *     The error object.
@@ -226,7 +226,7 @@ export default class Server {
    * @return any
    *     See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequestError(request: Drash.Http.Request, error: any): any {
+  public handleHttpRequestError(request: ServerRequest, error: any): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -286,13 +286,13 @@ export default class Server {
    *     short-circuit favicon requests--preventing the requests from clogging
    *     the logs.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForFavicon(request: Drash.Http.Request): any {
+  public handleHttpRequestForFavicon(request: ServerRequest): any {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -313,13 +313,13 @@ export default class Server {
    * @description
    *     Handle HTTP requests for static path assets.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForStaticPathAsset(request: Drash.Http.Request): any {
+  public handleHttpRequestForStaticPathAsset(request: ServerRequest): any {
     try {
       let response = new Drash.Http.Response(request);
       return response.sendStatic();
@@ -449,7 +449,7 @@ export default class Server {
    * @description
    *     Get the resource class.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
@@ -459,7 +459,7 @@ export default class Server {
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
   protected getResourceClass(
-    request: Drash.Http.Request
+    request: ServerRequest
   ): Drash.Http.Resource | undefined {
     let matchedResourceClass = undefined;
 
@@ -515,12 +515,12 @@ export default class Server {
    * @description
    *     Is the request targeting a static path?
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    *
    * @return boolean
    *     Returns true if the request targets a static path.
    */
-  protected requestTargetsStaticPath(request: Drash.Http.Request): boolean {
+  protected requestTargetsStaticPath(request: ServerRequest): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }
