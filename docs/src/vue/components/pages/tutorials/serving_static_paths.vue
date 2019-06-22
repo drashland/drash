@@ -54,7 +54,7 @@ page-tutorial-default(
                     li Create your HTTP resource class file and have it serve an HTML document (as a string) with your <code>style.css</code> file that's located in your <code>/public</code> directory.
                         code-block(:data="data.example_code.home_resource")
                     li Create your <code>style.css</code> file.
-                        code-block(:data="data.example_code.public.style" title="/path/to/your/project/public/style.css")
+                        code-block(:data="data.example_code_public.style" title="/path/to/your/project/public/style.css")
                     li Run your app.
                         code-block(:data="data.example_code.run")
         div.row
@@ -108,7 +108,8 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.serving_static_paths,
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/serving_static_paths'],
+                example_code_public: this.$app_data.example_code['/docs/src/example_code/tutorials/serving_static_paths/public'],
                 toc: {
                     items: [
                         "Before You Get Started",

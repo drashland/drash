@@ -77,7 +77,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.adding_content_types,
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/adding_content_types'],
                 toc: {
                     items: [
                         "Before You Get Started",

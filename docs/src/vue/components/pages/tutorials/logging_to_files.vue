@@ -67,7 +67,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.logging_to_files
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/logging_to_files']
             }
         };
     },

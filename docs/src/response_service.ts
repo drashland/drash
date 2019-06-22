@@ -41,7 +41,7 @@ export function getAppData() {
 
     // The below is transferred to vue_app_root.vue
     app_data: JSON.stringify({
-      // example_code: getExampleCode().example_code,
+      example_code: getExampleCode(),
       store: {
         page_data: {
           api_reference: getPageDataApiReference()
@@ -80,31 +80,16 @@ function getExampleCode() {
     js: "javascript"
   };
 
-  let store = {};
+  let exampleCode = {};
 
   let ignore = ["api_reference", ".DS_Store"];
 
-  let files = Drash.Util.Exports.getFileSystemStructure("/src/example_code");
-
-  function getTitle(file, fileExtension) {
-    let title =
-      fileExtension == "sh" ? "Terminal" : `/path/to/your/project/${file.name}`;
-
-    title =
-      file.name == "folder_structure.txt" ? "Project Folder Structure" : title;
-
-    return title;
-  }
+  let files = Drash.Util.Exports.getFileSystemStructure(`${Deno.env().DRASH_DIR_ROOT}/docs/src/example_code`);
 
   files.forEach(file => {
-    let fileNamespace;
-    try {
-      let fileNamespaceSplit = file.path.split("/");
-      fileNamespace = fileNamespaceSplit[fileNamespaceSplit.length - 1];
-    } catch (error) {}
-
-    if (!store[fileNamespace]) {
-      store[fileNamespace] = {};
+    let pathname = file.pathname.replace(Deno.env().DRASH_DIR_ROOT, "");
+    if (!exampleCode[pathname]) {
+      exampleCode[pathname] = {};
     }
 
     if (ignore.indexOf(file.filename) != -1) {
@@ -114,20 +99,26 @@ function getExampleCode() {
     let fileContentsRaw = Deno.readFileSync(file.path);
     let fileContents = Decoder.decode(fileContentsRaw);
     fileContents = fileContents.replace(/<\/script>/g, "<//script>");
-    let filename;
 
-    let fileExtensionSplit = filename.split(".");
-    let fileExtension = fileExtensionSplit[fileExtensionSplit.length - 1];
-
-    store[fileNamespace][filename] = {
+    exampleCode[pathname][file.basename] = {
       contents: fileContents,
-      extension: fileExtension,
-      title: getTitle(file, fileExtension),
-      name: filename,
-      language: languages[fileExtension]
+      extension: file.extension,
+      filename: file.filename,
+      language: languages[file.extension],
+      title: getTitleOfFile(file, file.extension),
     };
   });
-  // We get example_code because that's the name of the first directory being
-  // passed to iterateDirectoryFiles()
-  return store;
+
+  return exampleCode;
+}
+
+
+function getTitleOfFile(file, fileExtension) {
+  let title =
+    fileExtension == "sh" ? "Terminal" : `/path/to/your/project/${file.filename}`;
+
+  title =
+    file.filename == "folder_structure.txt" ? "Project Folder Structure" : title;
+
+  return title;
 }

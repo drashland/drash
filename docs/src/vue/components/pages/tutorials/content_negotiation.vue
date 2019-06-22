@@ -135,7 +135,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.content_negotiation,
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/content_negotiation'],
                 toc: {
                     items: [
                         "Before You Get Started",

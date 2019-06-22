@@ -46,7 +46,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.creating_an_app_hello_world_part_2
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/creating_an_app_hello_world_part_2']
             }
         };
     },

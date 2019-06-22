@@ -111,9 +111,24 @@ export function getFileSystemStructure(dir: string): any {
     let path = filename;
     let filenameSplit = filename.split("/");
     filename = filenameSplit[filenameSplit.length - 1];
+    // FIXME(crookse)
+    // There's a better way to do this, but it's like 0800 right now and I
+    // haven't had a full cup of coffee yet. -___________-
+    // Also, we do a + 1 to the filename.length because we want to remove the
+    // trailing slash.
+    let pathname = path.slice(0, -(filename.length + 1));
     files.push({
+      // /path/to/the/file/dir
+      pathname: pathname,
+      // /path/to/the/file/dir/filename.extension
       path: path,
+      // filename
+      basename: filename.split(".")[0],
+      // filename.extension
       filename: filename,
+      // extension
+      extension: filename.split(".")[1], // This doesn't account for .min. type files
+      // filename_extension
       snake_cased: filename.replace(".", "_")
     });
   }

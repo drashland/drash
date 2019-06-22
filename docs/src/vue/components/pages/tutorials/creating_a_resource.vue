@@ -44,7 +44,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.creating_a_resource,
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/creating_a_resource'],
                 toc: {
                     items: [
                         "Before You Get Started",

@@ -52,7 +52,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code.tutorials.logging_using_log_from_deno_std,
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/logging_using_log_from_deno_std'],
                 toc: {
                     items: [
                         "Before You Get Started",
