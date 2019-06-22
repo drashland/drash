@@ -17,10 +17,10 @@ div
                 heading-h2#quickstart(heading="Quickstart")
                 p Write your <code>app.ts</code> file...
                 p
-                    code-block(:data="example_code.quickstart.app")
+                    code-block(:data="example_code.app")
                 p ... and run your <code>app.ts</code> file.
                 p
-                    code-block(:data="example_code.quickstart.execute")
+                    code-block(:data="example_code.execute")
         hr
         div.row
             div.col
@@ -68,7 +68,7 @@ export const resource = {
 export default {
     data() {
         return {
-            example_code: this.$app_data.example_code.getting_started
+            example_code: this.$app_data.example_code['/docs/src/example_code/getting_started/quickstart']
         };
     },
 }
