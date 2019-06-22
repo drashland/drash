@@ -343,12 +343,8 @@ export default class Server {
     console.log(`\nDeno server started at ${this.configs.address}.\n`);
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
-      // Build a new and more workable request object.
-      let drashRequest = new Drash.Http.Request(request);
-      await drashRequest.parseBody();
-
       try {
-        this.handleHttpRequest(drashRequest);
+        this.handleHttpRequest(request);
       } catch (error) {
         this.handleHttpRequestError(request, this.errorResponse(500));
       }

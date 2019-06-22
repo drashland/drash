@@ -1,4 +1,5 @@
 import Drash from "../../mod.ts";
+const decoder = new TextDecoder();
 
 /**
  * @memberof Drash.Services
@@ -8,6 +9,93 @@ import Drash from "../../mod.ts";
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
+  /**
+   * TODO(crookse) figure out the MIME type of the request body and parse it:
+   *     [x] if application/json, then JSON.parse()
+   *     [x] if application/x-www-form-urlencoded, then do what?
+   *     [ ] if something else, then do what?
+   *
+   * @description
+   *     Parse the body of the request so that it can be used as an associative
+   *     array.
+   *
+   *     If the request body's content type is `application/json`, then
+   *     `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
+   *
+   *     If the request body's content type is
+   *     `application/x-www-form-urlencoded`, then
+   *     `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
+   *
+   *     If the body can't be parsed, then this method will set
+   *     `this.body_parsed` to `false` to denote that the request body was not
+   *     parsed.
+   *
+   * @return any
+   *     This method resolves `this.body_parsed`, but only for testing purposes.
+   *     This method can be called without assigning its resolved data to a
+   *     variable. For example, you can call `await request.parseBody();` and
+   *     access `request.body_parsed` immediately after. Before this method
+   *     resolves `this.body_parsed`, it assigns the parsed request body to
+   *     `this.body_parsed`.
+   */
+  public getHttpRequestBodyParsed(request): any {
+    return new Promise(resolve => {
+      request.body().then(raw => {
+        let parsed: any;
+        let rawString = decoder.decode(raw);
+        request.body_raw_string = rawString;
+
+        // Decide how to parse the string below. All HTTP requests will default
+        // to application/x-www-form-urlencoded IF the Content-Type header is
+        // not set in the request.
+        //
+        // ... there's going to be potential fuck ups here btw ...
+
+        Drash.core_logger.debug(
+          `HTTP request Content-Type: ${request.headers.get("Content-Type")}`
+        );
+
+        // Is this an application/json body?
+        if (request.headers.get("Content-Type") == "application/json") {
+          try {
+            parsed = JSON.parse(rawString);
+          } catch (error) {
+            parsed = false;
+          }
+          request.body_parsed = parsed;
+          resolve(request.body_parsed);
+          return;
+        }
+
+        // Does this look like an application/json body?
+        if (!parsed) {
+          try {
+            parsed = JSON.parse(rawString);
+          } catch (error) {
+            parsed = false;
+          }
+        }
+
+        // All HTTP requests default to application/x-www-form-urlencoded, so
+        // try to parse the body as a URL query params string if the above logic
+        // didn't work.
+        if (!parsed) {
+          try {
+            if (rawString.indexOf("?") !== -1) {
+              rawString = rawString.split("?")[1];
+            }
+            parsed = this.parseQueryParamsString(rawString);
+          } catch (error) {
+            parsed = false;
+          }
+        }
+
+        request.body_parsed = parsed;
+        resolve(request.body_parsed);
+      });
+    });
+  }
+
   /**
    * @description
    *     Hydrate the request with data that is useful for the
@@ -30,6 +118,7 @@ export default class HttpService {
     request.url_query_params = this.getHttpRequestUrlQueryParams(request);
     request.url_query_string = this.getHttpRequestUrlQueryString(request);
     request.url_path = this.getHttpRequestUrlPath(request);
+    request.body_parsed = this.getHttpRequestBodyParsed(request);
 
     return request;
   }
