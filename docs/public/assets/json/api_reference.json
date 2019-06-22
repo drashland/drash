@@ -1169,7 +1169,7 @@
                 "status_code": {
                     "access_modifier": "public",
                     "description": [
-                        "A property to hold this response's status code (e.g., 200 for OK).\nThis class uses `Status` and `STATUS_TEXT` from\n[https://deno.land/x/http/http_status.ts](https://deno.land/x/http/http_status.ts)\nfor response codes."
+                        "A property to hold this response's status code (e.g., 200 for OK).\nThis class uses `Status` and `STATUS_TEXT` from the Deno Standard\nModules' http_status module for response codes."
                     ],
                     "annotation": {
                         "line": "@property number status_code",
