@@ -1,11 +1,20 @@
-<p align="center" style="margin-bottom="0">
-	<img height="200" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash.png" alt="Drash logo">
-</p>
 <p align="center">
-	<a href="https://github.com/crookse/deno-drash/releases"><img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest"></a>
-	<a href="https://travis-ci.org/crookse/deno-drash"><img src="https://travis-ci.org/crookse/deno-drash.svg?branch=master"></a>
-	<a href="https://github.com/denoland/deno_install"><img src="https://img.shields.io/badge/requires%20deno-%3E=0.3.7%20%3C=0.9.0-brightgreen.svg"></a>
-	<a href="https://github.com/denoland/deno_std"><img src="https://img.shields.io/badge/uses%20deno__std-v0.9.0-brightgreen.svg"></a>
+  <img height="150" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash.png" alt="Drash logo">
+</p>
+<h1 align="center">Drash</h1>
+<p align="center">
+  <a href="https://github.com/crookse/deno-drash/releases">
+    <img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest">
+  </a>
+  <a href="https://travis-ci.org/crookse/deno-drash">
+    <img src="https://travis-ci.org/crookse/deno-drash.svg?branch=master">
+  </a>
+  <a href="https://github.com/denoland/deno_install">
+    <img src="https://img.shields.io/badge/requires%20deno-%3E=0.3.7%20%3C=0.9.0-brightgreen.svg">
+  </a>
+  <a href="https://github.com/denoland/deno_std">
+    <img src="https://img.shields.io/badge/uses%20deno__std-v0.9.0-brightgreen.svg">
+  </a>
 </p>
 
 # Drash
