@@ -12,8 +12,6 @@ div.page.page--reference
                 p Below are the list of classes under this namespace:
                 ul
                     li
-                        a(:href="$conf.base_url + '/#/api-reference/http/request'") Drash.Http.Request
-                    li
                         a(:href="$conf.base_url + '/#/api-reference/http/resource'") Drash.Http.Resource
                     li
                         a(:href="$conf.base_url + '/#/api-reference/http/response'") Drash.Http.Response

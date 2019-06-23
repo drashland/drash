@@ -58,7 +58,7 @@ export default class Response {
    *
    * @param ServerRequest request
    */
-  constructor(request: ServerRequest) {
+  constructor(request) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", this.getHeaderContentType());
@@ -179,9 +179,9 @@ export default class Response {
    *     Send the response to the client making the request.
    *
    * @return Promise<any>
-   *     Returns the output which is passed to `ServerRequest.respond()`.
-   *     The output is only returned for unit testing purposes. It is not
-   *     intended to be used elsewhere as this call is the last call in the
+   *     Returns the output which is passed to `request.respond()`. The output
+   *     is only returned for unit testing purposes. It is not intended to be
+   *     used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
   public async send(): Promise<any> {

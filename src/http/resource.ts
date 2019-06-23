@@ -37,7 +37,7 @@ export default class Resource {
    *
    * @property ServerRequest request
    */
-  protected request: ServerRequest;
+  protected request;
 
   /**
    * @description
@@ -69,7 +69,7 @@ export default class Resource {
    *     The server object.
    */
   constructor(
-    request: ServerRequest,
+    request,
     response: Drash.Http.Response,
     server: Drash.Http.Server
   ) {

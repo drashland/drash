@@ -1009,7 +1009,7 @@
                     "name": "name",
                     "fully_qualified_name": "Drash.Http.Resource.name"
                 },
-                "request": {
+                "request;": {
                     "access_modifier": "protected",
                     "description": [
                         "The request object."
@@ -1019,9 +1019,9 @@
                         "data_type": "ServerRequest",
                         "name": "request"
                     },
-                    "signature": "protected request: ServerRequest",
-                    "name": "request",
-                    "fully_qualified_name": "Drash.Http.Resource.request"
+                    "signature": "protected request",
+                    "name": "request;",
+                    "fully_qualified_name": "Drash.Http.Resource.request;"
                 },
                 "response": {
                     "access_modifier": "protected",
@@ -1052,55 +1052,7 @@
                     "fully_qualified_name": "Drash.Http.Resource.server"
                 }
             },
-            "methods": {
-                "constructor": {
-                    "access_modifier": "public",
-                    "name": "constructor",
-                    "description": [
-                        "Construct an object of this class."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [
-                                "The request object."
-                            ],
-                            "annotation": {
-                                "line": "@param ServerRequest request",
-                                "data_type": "ServerRequest",
-                                "name": "request"
-                            }
-                        },
-                        "response": {
-                            "name": "response",
-                            "description": [
-                                "The response object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Response response",
-                                "data_type": "Drash.Http.Response",
-                                "name": "response"
-                            }
-                        },
-                        "server": {
-                            "name": "server",
-                            "description": [
-                                "The server object."
-                            ],
-                            "annotation": {
-                                "line": "@param Drash.Http.Server server",
-                                "data_type": "Drash.Http.Server",
-                                "name": "server"
-                            }
-                        }
-                    },
-                    "returns": null,
-                    "throws": null,
-                    "signature": "constructor(request: ServerRequest, response: Drash.Http.Response, server: Drash.Http.Server)",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Resource()"
-                }
-            }
+            "methods": {}
         },
         "Response": {
             "fully_qualified_name": "Drash.Http.Response",
@@ -1201,7 +1153,7 @@
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "constructor(request: ServerRequest)",
+                    "signature": "constructor(request)",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response()"
                 },
@@ -1371,7 +1323,7 @@
                     "returns": [
                         {
                             "description": [
-                                "Returns the output which is passed to `ServerRequest.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
+                                "Returns the output which is passed to `request.respond()`. The output\nis only returned for unit testing purposes. It is not intended to be\nused elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
                             ],
                             "annotation": {
                                 "line": "@return Promise<any>",
