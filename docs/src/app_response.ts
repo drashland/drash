@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import * as system from "../../system.ts"
+import { env } from "../../system.ts"
 import * as ResponseService from "./response_service.ts";
 
 export default class AppResponse extends Drash.Http.Response {
@@ -13,7 +13,7 @@ export default class AppResponse extends Drash.Http.Response {
       // Handle HTML
       case "text/html":
         let indexEjsFile = `${
-          system.env().DRASH_DIR_ROOT
+          env().DRASH_DIR_ROOT
         }/docs/src/templates/index.ejs`;
         Drash.Members.ConsoleLogger.debug("Rendering HTML response.");
         try {

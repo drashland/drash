@@ -1,5 +1,4 @@
 import members from "../../members.ts";
-import * as system from "../../../system.ts";
 
 let server = new members.Drash.Http.Server({});
 let request = members.mockRequest("/", "get", {

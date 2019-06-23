@@ -1,7 +1,6 @@
 import Drash from "../../mod.ts";
-import * as system from "../../system.ts"
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
-import { readFileSync, writeFileSync } from "../../system.ts";
+import { env, readFileSync, writeFileSync } from "../../system.ts";
 const Decoder = new TextDecoder();
 const Encoder = new TextEncoder();
 
@@ -15,12 +14,11 @@ export async function compile(inputFile, outputFile): Promise<any> {
 
 export function getAppData() {
   const buildTimestamp = new Date().getTime();
-  const env =
-    system.env().DRASH_DOCS_BASE_URL == "/deno-drash"
+  const environment = env().DRASH_DOCS_BASE_URL == "/deno-drash"
       ? "production"
       : "development";
   let bundleVersion = "";
-  if (env == "production") {
+  if (environment == "production") {
     bundleVersion = ".min";
   }
 
@@ -36,8 +34,8 @@ export function getAppData() {
       external: ["https://unpkg.com/axios/dist/axios.min.js"]
     },
     conf: {
-      base_url: system.env().DRASH_DOCS_BASE_URL
-        ? system.env().DRASH_DOCS_BASE_URL
+      base_url: env().DRASH_DOCS_BASE_URL
+        ? env().DRASH_DOCS_BASE_URL
         : ""
     },
 
@@ -86,10 +84,10 @@ function getExampleCode() {
 
   let ignore = ["api_reference", ".DS_Store"];
 
-  let files = Drash.Util.Exports.getFileSystemStructure(`${system.env().DRASH_DIR_ROOT}/docs/src/example_code`);
+  let files = Drash.Util.Exports.getFileSystemStructure(`${env().DRASH_DIR_ROOT}/docs/src/example_code`);
 
   files.forEach(file => {
-    let pathname = file.pathname.replace(system.env().DRASH_DIR_ROOT, "");
+    let pathname = file.pathname.replace(env().DRASH_DIR_ROOT, "");
     if (!exampleCode[pathname]) {
       exampleCode[pathname] = {};
     }

@@ -1,4 +1,4 @@
-import * as system from "./system.ts"
+import { env } from "./system.ts"
 
 // Core
 import env_var from "./src/core/env_var.ts";
@@ -109,8 +109,8 @@ namespace Drash {
    * @property Drash.Loggers.CoreLogger core_logger
    */
   export const core_logger = new Drash.Loggers.CoreLogger({
-    enabled: system.env().DRASH_CORE_LOGGER_ENABLED === "true",
-    level: system.env().DRASH_CORE_LOGGER_LEVEL,
+    enabled: env().DRASH_CORE_LOGGER_ENABLED === "true",
+    level: env().DRASH_CORE_LOGGER_LEVEL,
     tag_string: "{level} |"
   });
 
@@ -141,10 +141,10 @@ namespace Drash {
    *     retrieving the actual value.
    */
   export function getEnvVar(variableName: string): Drash.Core.EnvVar {
-    let exists = system.env().hasOwnProperty(variableName);
+    let exists = env().hasOwnProperty(variableName);
     let value;
 
-    value = exists ? system.env()[variableName] : undefined;
+    value = exists ? env()[variableName] : undefined;
 
     return new Drash.Core.EnvVar(variableName, value);
   }
@@ -159,8 +159,8 @@ namespace Drash {
    *     The value of the variable.
    */
   export function setEnvVar(variableName: string, value: string) {
-    if (!system.env()[variableName]) {
-      system.env()[variableName] = value;
+    if (!env()[variableName]) {
+      env()[variableName] = value;
     }
   }
 }
