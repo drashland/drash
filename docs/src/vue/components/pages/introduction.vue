@@ -4,6 +4,15 @@ div
         div.row
             div.col
                 h1.c-heading.c-heading--style-2 {{ $route.meta.title }}
+                p.shields
+                    a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
+                        img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
+                    a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
+                        img.margin-bottom--0(alt="Travis CI Build Master" src="https://travis-ci.org/crookse/deno-drash.svg?branch=master" width="auto" height="20")
+                    a(href="https://github.com/denoland/deno_install" target="_BLANK")
+                        img.margin-bottom--0(alt="deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
+                    a(href="https://github.com/denoland/deno_std" target="_BLANK")
+                        img.margin-bottom--0(alt="deno_std compatibility" :src="$conf.shields.deno_std" width="auto" height="20")
     div.c-page__body
         hr
         div.row

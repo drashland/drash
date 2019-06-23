@@ -1,27 +1,15 @@
 <template lang="pug">
 div.c-sidebar
     div(v-if="$conf.webpack_mode != 'production'")
-        p.l-environment-text(style="position:fixed")
-            span.text ENV: {{ $conf.webpack_mode }}
+        p.l-environment-text(style="position:fixed; right: 0")
+            span.text ENVIRONMENT: {{ $conf.webpack_mode }}
     div.c-sidebar__header(style="padding: 3rem 0;")
         div.row.align-items-center.text-align--center
             div.col
-                h1.module-name
+                h1.module-name.margin-bottom--0
                     a(:href="$conf.base_url + '/#/'")
                         img(style="margin-bottom: 10px;" alt="Drash" :src="$conf.base_url + '/public/assets/img/logo_drash.png'" width="auto" height="80")
-                        p(style="font-size: 18px") Drash
-                div
-                    a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
-                        img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
-                div
-                    a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
-                        img.margin-bottom--0(alt="Travis CI Build Master" src="https://travis-ci.org/crookse/deno-drash.svg?branch=master" width="auto" height="20")
-                div
-                    a(href="https://github.com/denoland/deno_install" target="_BLANK")
-                        img.margin-bottom--0(alt="deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
-                div
-                    a(href="https://github.com/denoland/deno_std" target="_BLANK")
-                        img.margin-bottom--0(alt="deno_std compatibility" :src="$conf.shields.deno_std" width="auto" height="20")
+                        p.margin-bottom--0(style="font-size: 18px") Drash
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
