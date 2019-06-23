@@ -3,6 +3,8 @@
     <img height="150" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash.png" alt="Drash logo">
   </a>
 </p>
+<h3 align="center">Drash</h2>
+<p align="center">A microframework for <a href="https://github.com/denoland/deno">Deno</a> based on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web">HTTP resources</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation">content negotiation</a>.</p>
 <p align="center">
   <a href="https://github.com/crookse/deno-drash/releases">
     <img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest">
@@ -17,9 +19,8 @@
     <img src="https://img.shields.io/badge/uses%20deno__std-v0.9.0-brightgreen.svg">
   </a>
 </p>
-<h1 align="center">Drash</h1>
 
-Drash is a microframework for [Deno](https://github.com/denoland/deno) based on [HTTP resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web) and [content negotiation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation).
+---
 
 Drash is designed to help you build your project(s) quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA (like the [documentation pages](https://crookse.github.io/deno-drash/#/)), or even a static HTML site. How you use Drash is up to you, so that it can be everything you need and nothing you don't.
 
