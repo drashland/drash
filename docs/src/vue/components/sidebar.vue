@@ -45,7 +45,7 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Part 4 of 4: Logging
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") Creating An Application: API
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
-            a.heading-link(:href="$conf.base_url + '/#/api-reference#top'") API Reference
+            a.heading-link API Reference
             div.c-sidebar__menu-body
                 //- a(:href="$conf.base_url + '/#/api-reference/dictionaries'") Dictionaries
                 a(:href="$conf.base_url + '/#/api-reference/exceptions'") Exceptions
