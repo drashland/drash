@@ -21,35 +21,6 @@
 
 ---
 
-Drash is designed to help you build your projects quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA, or even a static HTML site. How you use Drash is up to you, so that it can be everything you need and nothing you don't--like a DRASH tent.
-
-For full documentation, visit [https://drash.io](https://drash.io).
-
-## Features
-
-- [x] HTTP Resources
-- [x] Content Negotiation
-- [x] Static Paths
-- [x] Request Path Params (e.g., `/users/:id`)
-- [x] Request URL Query Params (e.g., `/users?id=1234`)
-- [x] Request Body (e.g., `{"id":"1234"}`)
-
-## Importing
-
-```typescript
-// Import Drash latest release
-import Drash from "https://deno.land/x/drash@v0.8.6/mod.ts";
-
-// Import Drash master
-import Drash from "https://deno.land/x/drash/mod.ts";
-```
-
-_It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including [deno_std](https://github.com/denoland/deno_std)) and is subject to Deno's "disruptive renames" as stated in deno_std._
-
-## Quickstart
-
-**Create `app.ts` ...**
-
 ```typescript
 import Drash from "https://deno.land/x/drash@v0.8.6/mod.ts";
 
@@ -70,12 +41,17 @@ let server = new Drash.Http.Server({
 server.run();
 ```
 
-**... and run `app.ts`**
-
-```shell
-$ deno --allow-net --allow-env app.ts
-
-Deno server started at localhost:8000. Press CTRL+C to quit.
-```
-
 For a more complicated application, try out the [Hello World](https://crookse.github.io/deno-drash/#/tutorials/creating-an-app-hello-world-part-1) tutorial series!
+
+## Documentation
+
+For full documentation, visit [https://drash.io](https://drash.io).
+
+## Features
+
+- [x] HTTP Resources
+- [x] Content Negotiation
+- [x] Static Paths
+- [x] Request Path Params (e.g., `/users/:id`)
+- [x] Request URL Query Params (e.g., `/users?id=1234`)
+- [x] Request Body (e.g., `{"id":"1234"}`)
