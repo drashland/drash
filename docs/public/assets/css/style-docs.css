@@ -747,7 +747,7 @@ a {
   .bpm-center .drash-logo {
     display: block !important;
     height: 80px;
-    margin: 0 auto 1.45rem auto;
+    margin: -3rem auto 1.45rem auto;
     width: auto;
   }
 
