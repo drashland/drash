@@ -1,5 +1,11 @@
 import Drash from "../../mod.ts";
-import { ServerRequest, Status, STATUS_TEXT, env }from "../../system.ts";
+import {
+  STATUS_TEXT,
+  ServerRequest,
+  Status,
+  env,
+  readFileSync,
+} from "../../system.ts";
 
 /**
  * @memberof Drash.Http
@@ -225,7 +231,7 @@ export default class Response {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: Deno.readFileSync(fullFilepath)
+      body: readFileSync(fullFilepath)
     };
 
     this.request.respond(output);

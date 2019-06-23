@@ -1,4 +1,5 @@
 import members from "../../members.ts";
+import { readFileSync, removeSync } from "../../../system.ts";
 
 const ANIMALS = {
   "#1235": "tiger"
@@ -24,7 +25,7 @@ members.test(function FileLogger() {
   });
   logger.info("This is cool!");
   const decoder = new TextDecoder();
-  let actual = decoder.decode(Deno.readFileSync(file));
+  let actual = decoder.decode(readFileSync(file));
   members.assert.equal(actual, expected);
-  Deno.removeSync(file, { recursive: false });
+  removeSync(file, { recursive: false });
 });

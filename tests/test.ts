@@ -1,9 +1,6 @@
 // // Random Classes
 import "./unit/env_var_test.ts";
 
-// Compilers
-import "./unit/compilers/doc_blocks_to_json.ts";
-
 // Dictionaries
 import "./unit/dictionaries/log_levels_test.ts";
 

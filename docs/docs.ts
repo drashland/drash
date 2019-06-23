@@ -1,4 +1,5 @@
 import Drash from "../mod.ts";
+import { writeFileSync } from "../system.ts"
 
 // Add a global console logger because server logging when needed is cool
 Drash.addMember(
@@ -64,7 +65,7 @@ function compileApiReferencePageData() {
   let compiled = compiler.compile(DrashNamespaceMembers);
   let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 4));
   const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
-  Deno.writeFileSync(apiReferenceOutputFile, apiReferenceData);
+  writeFileSync(apiReferenceOutputFile, apiReferenceData);
   echo(`    Done. API Reference page data was written to: ${apiReferenceOutputFile}.`);
 }
 
@@ -82,7 +83,7 @@ function compileVueGlobalComponents() {
     importString += `import ${pathObj.filename} from "${pathObj.path}";\nVue.component("${componentName}", ${pathObj.filename});\n\n`;
   });
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
-  Deno.writeFileSync(outputFile, Encoder.encode(importString));
+  writeFileSync(outputFile, Encoder.encode(importString));
   echo(`    Done. Vue global components were written to: ${outputFile}.`);
 }
 
@@ -102,7 +103,7 @@ function compileVueRouterRoutes() {
   });
   importString += "];";
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
-  Deno.writeFileSync(outputFile, Encoder.encode(importString));
+  writeFileSync(outputFile, Encoder.encode(importString));
   echo(`    Done. vue-router routes were written to: ${outputFile}.`);
 }
 

@@ -12,6 +12,7 @@ export {
   walkSync
 } from "https://deno.land/std@v0.9.0/fs/mod.ts";
 
-export function env() {
-  return Deno.env();
-}
+export const env = Deno.env;
+export const readFileSync = Deno.readFileSync;
+export const removeSync = Deno.removeSync;
+export const writeFileSync = Deno.writeFileSync;

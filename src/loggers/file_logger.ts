@@ -1,4 +1,5 @@
 import Logger from "./logger.ts";
+import { writeFileSync } from "../../system.ts";
 
 /**
  * @memberof Drash.Loggers
@@ -45,7 +46,7 @@ export default class FileLogger extends Logger {
   public write(logMethodLevelDefinition, message): string {
     const encoder = new TextEncoder();
     let encoded = encoder.encode(message + "\n");
-    Deno.writeFileSync(this.file, encoded, { append: true });
+    writeFileSync(this.file, encoded, { append: true });
     return message;
   }
 }
