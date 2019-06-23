@@ -3,4 +3,5 @@
 (
   deno run --allow-run --allow-write --allow-read https://deno.land/x/std/prettier/main.ts $DRASH_DIR_ROOT/src
   deno run --allow-run --allow-write --allow-read https://deno.land/x/std/prettier/main.ts $DRASH_DIR_ROOT/docs/src
+  deno run --allow-run --allow-write --allow-read https://deno.land/x/std/prettier/main.ts $DRASH_DIR_ROOT/tests
 )
