@@ -16,17 +16,26 @@
     // Style with that red.
     //
     .c-heading--style-2 {
-        background: $g_color_that_red;
-        color: #ffffff;
+        color: #333;
         display:  inline-block;
         font-size: 4rem;
-        font-style: italic;
-        margin-bottom: 4rem;
+        margin-bottom: 1rem;
         padding: 0;
         text-transform:  uppercase;
         @media screen and (max-width: 768px) {
             font-size: 2rem;
         }
+        // background: $g_color_that_red;
+        // color: #ffffff;
+        // display:  inline-block;
+        // font-size: 4rem;
+        // font-style: italic;
+        // margin-bottom: 4rem;
+        // padding: 0;
+        // text-transform:  uppercase;
+        // @media screen and (max-width: 768px) {
+        //     font-size: 2rem;
+        // }
     }
 
 
