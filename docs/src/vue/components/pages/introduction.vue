@@ -3,7 +3,7 @@ div
     div.c-page__header
         div.row
             div.col
-                h1.c-heading.c-heading--style-2 {{ $route.meta.title }}
+                h1.c-heading.c-heading--style-2 Drash
                 p.shields
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
                         img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")

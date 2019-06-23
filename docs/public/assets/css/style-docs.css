@@ -407,7 +407,6 @@ ol li ul {
   font-size: 4rem;
   margin-bottom: 1rem;
   padding: 0;
-  text-transform: uppercase;
 }
 @media screen and (max-width: 768px) {
   .c-heading--style-2 {
