@@ -2,7 +2,7 @@
 
 (
   # Copy the source code
-  cp -r $DRASH_DIR_ROOT/src $1
+  cp -r $DRASH_DIR_ROOT/src $1/src
 
   # Copy the system-specific entry point file
   cp $DRASH_DIR_ROOT/system.ts $1
