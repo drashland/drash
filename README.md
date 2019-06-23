@@ -45,7 +45,7 @@ For a more complicated application, try out the [Hello World](https://crookse.gi
 
 ## Documentation
 
-For full documentation, visit [drash.io](https://drash.io).
+For full documentation, visit [drash.io](http://drash.io).
 
 ## Features
 
