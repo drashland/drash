@@ -1,3 +1,5 @@
+// FILE MARKER: DENO STANDARD MODULES //////////////////////////////////////////
+
 export {
   serve,
   ServerRequest
@@ -11,6 +13,8 @@ export {
 export {
   walkSync
 } from "https://deno.land/std@v0.9.0/fs/mod.ts";
+
+// FILE MARKER: DENO LIB ///////////////////////////////////////////////////////
 
 export const env = Deno.env;
 export const readFileSync = Deno.readFileSync;
