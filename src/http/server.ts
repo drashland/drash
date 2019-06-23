@@ -36,14 +36,11 @@ export default class Server {
 
   /**
    * @description
-   *     A property to hold the Deno server. This property is set in
-   *     `this.run()` like so: ` this.deno_server =
-   *     serve(this.configs.address);`. `serve()` is imported from
-   *     [https://deno.land/x/http/server.ts](https://deno.land/x/http/server.ts).
+   *     A property to hold the server. This property is set in `this.run()`.
    *
-   * @property any deno_server
+   * @property any server
    */
-  protected deno_server: any;
+  protected server: any;
 
   /**
    * @description
@@ -120,7 +117,7 @@ export default class Server {
 
   /**
    * @description
-   *     Handle an HTTP request from the Deno server.
+   *     Handle an HTTP request from the server.
    *
    * @param ServerRequest request
    *     The request object.
@@ -330,19 +327,18 @@ export default class Server {
 
   /**
    * @description
-   *     Run the Deno server at the address specified in the configs. This
-   *     method takes each HTTP request and creates a new and more workable
-   *     request object and passes it to
-   *     `Drash.Http.Server.handleHttpRequest()`.
+   *     Run the server at the address specified in the configs. This method
+   *     takes each HTTP request and creates a new and more workable request
+   *     object and passes it to `Drash.Http.Server.handleHttpRequest()`.
    *
    * @return Promise<void>
    *     This method just listens for requests at the address you provide in the
    *     configs.
    */
   public async run(): Promise<void> {
-    console.log(`\nDeno server started at ${this.configs.address}.\n`);
-    this.deno_server = serve(this.configs.address);
-    for await (const request of this.deno_server) {
+    console.log(`\nDrash server started at ${this.configs.address}.\n`);
+    this.server = serve(this.configs.address);
+    for await (const request of this.server) {
       try {
         this.handleHttpRequest(request);
       } catch (error) {

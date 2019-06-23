@@ -1424,19 +1424,19 @@
                     "name": "configs",
                     "fully_qualified_name": "Drash.Http.Server.configs"
                 },
-                "deno_server": {
+                "server": {
                     "access_modifier": "protected",
                     "description": [
-                        "A property to hold the Deno server. This property is set in\n`this.run()` like so: ` this.deno_server =\nserve(this.configs.address);`. `serve()` is imported from\n[https://deno.land/x/http/server.ts](https://deno.land/x/http/server.ts)."
+                        "A property to hold the server. This property is set in `this.run()`."
                     ],
                     "annotation": {
-                        "line": "@property any deno_server",
+                        "line": "@property any server",
                         "data_type": "any",
-                        "name": "deno_server"
+                        "name": "server"
                     },
-                    "signature": "protected deno_server: any",
-                    "name": "deno_server",
-                    "fully_qualified_name": "Drash.Http.Server.deno_server"
+                    "signature": "protected server: any",
+                    "name": "server",
+                    "fully_qualified_name": "Drash.Http.Server.server"
                 },
                 "resources": {
                     "access_modifier": "protected",
@@ -1501,7 +1501,7 @@
                     "access_modifier": "public",
                     "name": "handleHttpRequest",
                     "description": [
-                        "Handle an HTTP request from the Deno server."
+                        "Handle an HTTP request from the server."
                     ],
                     "params": {
                         "request": {
@@ -1652,7 +1652,7 @@
                     "access_modifier": "public",
                     "name": "run",
                     "description": [
-                        "Run the Deno server at the address specified in the configs. This\nmethod takes each HTTP request and creates a new and more workable\nrequest object and passes it to\n`Drash.Http.Server.handleHttpRequest()`."
+                        "Run the server at the address specified in the configs. This method\ntakes each HTTP request and creates a new and more workable request\nobject and passes it to `Drash.Http.Server.handleHttpRequest()`."
                     ],
                     "params": null,
                     "returns": [
