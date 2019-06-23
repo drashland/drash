@@ -111,6 +111,9 @@ export default {
             }, 2000);
         }
     },
+    mounted() {
+        Prism.highlightAll();
+    },
     methods: {
         empty(inputObj) {
             return !inputObj || Object.keys(inputObj).length <= 0;

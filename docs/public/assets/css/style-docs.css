@@ -4,7 +4,7 @@ html,
 }
 
 body {
-  font-size: 1.0875rem;
+  font-size: 1.16rem;
 }
 
 address {
@@ -12,10 +12,11 @@ address {
 }
 
 body {
-  font-family: "Nunito", Arial, Helvetica, sans-serif;
-  min-width: 320px;
   background: #f4f4f4;
   color: #333333;
+  font-family: "Nunito", Arial, Helvetica, sans-serif;
+  line-height: 1.75;
+  min-width: 320px;
   word-break: break-word;
 }
 
@@ -47,7 +48,7 @@ h3 {
 }
 
 h4 {
-  font-size: 1.0875rem;
+  font-size: 1.16rem;
 }
 
 hr {
@@ -737,6 +738,19 @@ a {
 }
 
 @media screen and (max-width: 950px) {
+  .bpm-center {
+    text-align: center;
+  }
+  .bpm-center .c-heading--style-2 {
+    font-size: 2rem !important;
+  }
+  .bpm-center .drash-logo {
+    display: block !important;
+    height: 80px;
+    margin: -3rem auto 1.45rem auto;
+    width: auto;
+  }
+
   .c-btn-mobile {
     border: none;
     background: #000000;
