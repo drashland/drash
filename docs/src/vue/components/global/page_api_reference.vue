@@ -168,6 +168,7 @@ export default {
                 Prism.highlightAll();
             }, 2000);
         }
+    },
     mounted() {
         Prism.highlightAll();
     },
