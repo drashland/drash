@@ -22,6 +22,8 @@
 ---
 
 ```typescript
+// File: app.ts
+
 import Drash from "https://deno.land/x/drash@v0.8.6/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
@@ -33,12 +35,16 @@ class HomeResource extends Drash.Http.Resource {
 }
 
 let server = new Drash.Http.Server({
-  address: "localhost:8000",
+  address: "localhost:1337",
   response_output: "text/html",
   resources: [HomeResource]
 });
 
 server.run();
+```
+
+```
+$ deno --allow-net --allow-env app.ts
 ```
 
 For a more complicated application, try out the [Hello World](https://crookse.github.io/deno-drash/#/tutorials/creating-an-app-hello-world-part-1) tutorial series!
