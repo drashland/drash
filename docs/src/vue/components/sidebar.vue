@@ -3,13 +3,13 @@ div.c-sidebar
     div(v-if="$conf.webpack_mode != 'production'")
         p.l-environment-text(style="position:fixed; right: 0")
             span.text ENVIRONMENT: {{ $conf.webpack_mode }}
-    div.c-sidebar__header(style="padding: 3rem 0;")
+    div.c-sidebar__header(style="padding: 2rem 0;")
         div.row.align-items-center.text-align--center
             div.col
                 h1.module-name.margin-bottom--0
                     a(:href="$conf.base_url + '/#/'")
-                        img(style="margin-bottom: 10px;" alt="Drash" :src="$conf.base_url + '/public/assets/img/logo_drash.png'" width="auto" height="80")
-                        p.margin-bottom--0(style="font-size: 18px") Drash
+                        img.margin-bottom--0(alt="Drash" :src="$conf.base_url + '/public/assets/img/logo_drash.png'" width="auto" height="80")
+                        span.text-hide Drash
     div.c-sidebar__body
         div.c-sidebar__menu
             a.heading-link(:href="$conf.base_url + '/#/introduction#top'") Introduction
