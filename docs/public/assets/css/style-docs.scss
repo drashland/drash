@@ -123,6 +123,18 @@ $config-color-function-parameter: $g-color-ainc-orange;
 
 // TODO: Move this to its appropriate place
 @media screen and (max-width: 950px) {
+    .bpm-center {
+        text-align: center;
+        .c-heading--style-2 {
+            font-size: 2rem !important;
+        }
+        .drash-logo {
+            display: block !important;
+            height: 80px;
+            margin: 0 auto rem(2) auto;
+            width: auto;
+        }
+    }
     .c-btn-mobile {
         border: none;
         background: #000000;

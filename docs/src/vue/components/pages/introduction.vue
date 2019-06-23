@@ -2,7 +2,8 @@
 div
     div.c-page__header
         div.row
-            div.col
+            div.col.bpm-center
+                img.drash-logo(alt="Drash" :src="$conf.base_url + '/public/assets/img/logo_drash.png'" style="display: none;")
                 h1.c-heading.c-heading--style-2 Drash
                 p.shields
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")

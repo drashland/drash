@@ -738,6 +738,19 @@ a {
 }
 
 @media screen and (max-width: 950px) {
+  .bpm-center {
+    text-align: center;
+  }
+  .bpm-center .c-heading--style-2 {
+    font-size: 2rem !important;
+  }
+  .bpm-center .drash-logo {
+    display: block !important;
+    height: 80px;
+    margin: 0 auto 1.45rem auto;
+    width: auto;
+  }
+
   .c-btn-mobile {
     border: none;
     background: #000000;
