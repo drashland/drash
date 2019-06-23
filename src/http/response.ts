@@ -38,9 +38,9 @@ export default class Response {
    * @description
    *     The request object.
    *
-   * @property Drash.Http.Request request
+   * @property ServerRequest request
    */
-  public request: Drash.Http.Request;
+  public request;
 
   /**
    * @description
@@ -58,9 +58,9 @@ export default class Response {
    * @description
    *     Construct an object of this class.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    */
-  constructor(request: Drash.Http.Request) {
+  constructor(request) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", this.getHeaderContentType());
@@ -181,9 +181,9 @@ export default class Response {
    *     Send the response to the client making the request.
    *
    * @return Promise<any>
-   *     Returns the output which is passed to `Drash.Http.Request.respond()`.
-   *     The output is only returned for unit testing purposes. It is not
-   *     intended to be used elsewhere as this call is the last call in the
+   *     Returns the output which is passed to `request.respond()`. The output
+   *     is only returned for unit testing purposes. It is not intended to be
+   *     used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
   public async send(): Promise<any> {
