@@ -47,7 +47,6 @@ div.c-sidebar
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
             a.heading-link API Reference
             div.c-sidebar__menu-body
-                //- a(:href="$conf.base_url + '/#/api-reference/dictionaries'") Dictionaries
                 a(:href="$conf.base_url + '/#/api-reference/exceptions'") Exceptions
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/exceptions/http-exception'") HttpException
