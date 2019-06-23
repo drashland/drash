@@ -1,3 +1,5 @@
+import * as system from "./system.ts"
+
 // Core
 import env_var from "./src/core/env_var.ts";
 // Compilers
@@ -8,7 +10,6 @@ import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
 // Http
-import request from "./src/http/request.ts";
 import resource from "./src/http/resource.ts";
 import response from "./src/http/response.ts";
 import server from "./src/http/server.ts";
@@ -66,8 +67,6 @@ namespace Drash {
   }
 
   export namespace Http {
-    export type Request = request;
-    export let Request = request;
     export type Resource = resource;
     export const Resource = resource;
     export type Response = response;
@@ -110,8 +109,8 @@ namespace Drash {
    * @property Drash.Loggers.CoreLogger core_logger
    */
   export const core_logger = new Drash.Loggers.CoreLogger({
-    enabled: Deno.env().DRASH_CORE_LOGGER_ENABLED === "true",
-    level: Deno.env().DRASH_CORE_LOGGER_LEVEL,
+    enabled: system.env().DRASH_CORE_LOGGER_ENABLED === "true",
+    level: system.env().DRASH_CORE_LOGGER_LEVEL,
     tag_string: "{level} |"
   });
 
@@ -130,7 +129,7 @@ namespace Drash {
   }
 
   /**
-   * Set an environment variable in `Deno.env()`.
+   * Set an environment variable.
    *
    * @param string variableName
    *     The variable name.
@@ -142,27 +141,26 @@ namespace Drash {
    *     retrieving the actual value.
    */
   export function getEnvVar(variableName: string): Drash.Core.EnvVar {
-    let exists = Deno.env().hasOwnProperty(variableName);
+    let exists = system.env().hasOwnProperty(variableName);
     let value;
 
-    value = exists ? Deno.env()[variableName] : undefined;
+    value = exists ? system.env()[variableName] : undefined;
 
     return new Drash.Core.EnvVar(variableName, value);
   }
 
   /**
-   * Set an environment variable in `Deno.env()`.
+   * Set an environment variable.
    *
    * @param string variableName
    *     The variable name which can be accessed via
    *     `Drash.getEnvVar(variableName)`.
    * @param string value
-   *     The value of the variable. `Deno.env()` only accepts strings. See
-   *     https://deno.land/typedoc/index.html#env for more info.
+   *     The value of the variable.
    */
   export function setEnvVar(variableName: string, value: string) {
-    if (!Deno.env()[variableName]) {
-      Deno.env()[variableName] = value;
+    if (!system.env()[variableName]) {
+      system.env()[variableName] = value;
     }
   }
 }

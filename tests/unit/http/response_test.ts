@@ -1,5 +1,5 @@
 import members from "../../members.ts";
-import { STATUS_TEXT, Status } from "../../../deno_std.ts";
+import * as system from "../../../system.ts";
 
 let server = new members.Drash.Http.Server({});
 let request = members.mockRequest("/", "get", {

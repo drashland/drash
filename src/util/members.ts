@@ -1,6 +1,6 @@
 /// @doc-blocks-to-json members-only
 
-import { walkSync } from "../../deno_std.ts";
+import * as system from "../../system.ts";
 
 /**
  * @memberof Drash.Util.Exports
@@ -113,7 +113,7 @@ export function colorize(message: string, options: ColorizeOptions): string {
 export function getFileSystemStructure(dir: string): any {
   let files = [];
 
-  for (const fileInfo of walkSync(dir)) {
+  for (const fileInfo of system.walkSync(dir)) {
     let filename = fileInfo.filename;
     let path = filename;
     let filenameSplit = filename.split("/");

@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { STATUS_TEXT, Status } from "../../deno_std.ts";
+import { ServerRequest, Status, STATUS_TEXT, env }from "../../system.ts";
 
 /**
  * @memberof Drash.Http
@@ -38,15 +38,13 @@ export default class Response {
    * @description
    *     The request object.
    *
-   * @property Drash.Http.Request request
+   * @property ServerRequest request
    */
-  public request: Drash.Http.Request;
+  public request;
 
   /**
    * @description
    *     A property to hold this response's status code (e.g., 200 for OK).
-   *     This class uses `Status` and `STATUS_TEXT` from the Deno Standard
-   *     Modules' http_status module for response codes.
    *
    * @property number status_code
    */
@@ -58,9 +56,9 @@ export default class Response {
    * @description
    *     Construct an object of this class.
    *
-   * @param Drash.Http.Request request
+   * @param ServerRequest request
    */
-  constructor(request: Drash.Http.Request) {
+  constructor(request: ServerRequest) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", this.getHeaderContentType());
@@ -181,7 +179,7 @@ export default class Response {
    *     Send the response to the client making the request.
    *
    * @return Promise<any>
-   *     Returns the output which is passed to `Drash.Http.Request.respond()`.
+   *     Returns the output which is passed to `ServerRequest.respond()`.
    *     The output is only returned for unit testing purposes. It is not
    *     intended to be used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
@@ -220,7 +218,7 @@ export default class Response {
   public sendStatic(): any {
     const file = this.request.url_path;
     // Remove trailing slash
-    let staticPathParent = Deno.env().DRASH_SERVER_DIRECTORY;
+    let staticPathParent = env().DRASH_SERVER_DIRECTORY;
     staticPathParent = staticPathParent.replace(/(\/$)/, "");
     const fullFilepath = `${staticPathParent}${file}`;
 

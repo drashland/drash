@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { serve } from "../../deno_std.ts";
+import * as system from "../../system.ts";
 
 /**
  * @memberof Drash.Http
@@ -341,7 +341,7 @@ export default class Server {
    */
   public async run(): Promise<void> {
     console.log(`\nDeno server started at ${this.configs.address}.\n`);
-    this.deno_server = serve(this.configs.address);
+    this.deno_server = system.serve(this.configs.address);
     for await (const request of this.deno_server) {
       try {
         this.handleHttpRequest(request);

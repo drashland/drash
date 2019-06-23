@@ -1015,11 +1015,11 @@
                         "The request object."
                     ],
                     "annotation": {
-                        "line": "@property Drash.Http.Request request",
-                        "data_type": "Drash.Http.Request",
+                        "line": "@property ServerRequest request",
+                        "data_type": "ServerRequest",
                         "name": "request"
                     },
-                    "signature": "protected request: Drash.Http.Request",
+                    "signature": "protected request: ServerRequest",
                     "name": "request",
                     "fully_qualified_name": "Drash.Http.Resource.request"
                 },
@@ -1066,8 +1066,8 @@
                                 "The request object."
                             ],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         },
@@ -1096,7 +1096,7 @@
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "constructor(request: Drash.Http.Request, response: Drash.Http.Response, server: Drash.Http.Server)",
+                    "signature": "constructor(request: ServerRequest, response: Drash.Http.Response, server: Drash.Http.Server)",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Resource()"
                 }
@@ -1152,24 +1152,24 @@
                     "name": "headers",
                     "fully_qualified_name": "Drash.Http.Response.headers"
                 },
-                "request": {
+                "request;": {
                     "access_modifier": "public",
                     "description": [
                         "The request object."
                     ],
                     "annotation": {
-                        "line": "@property Drash.Http.Request request",
-                        "data_type": "Drash.Http.Request",
+                        "line": "@property ServerRequest request",
+                        "data_type": "ServerRequest",
                         "name": "request"
                     },
-                    "signature": "public request: Drash.Http.Request",
-                    "name": "request",
-                    "fully_qualified_name": "Drash.Http.Response.request"
+                    "signature": "public request",
+                    "name": "request;",
+                    "fully_qualified_name": "Drash.Http.Response.request;"
                 },
                 "status_code": {
                     "access_modifier": "public",
                     "description": [
-                        "A property to hold this response's status code (e.g., 200 for OK).\nThis class uses `Status` and `STATUS_TEXT` from the Deno Standard\nModules' http_status module for response codes."
+                        "A property to hold this response's status code (e.g., 200 for OK)."
                     ],
                     "annotation": {
                         "line": "@property number status_code",
@@ -1193,15 +1193,15 @@
                             "name": "request",
                             "description": [],
                             "annotation": {
-                                "line": "@param Drash.Http.Request request",
-                                "data_type": "Drash.Http.Request",
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
                                 "name": "request"
                             }
                         }
                     },
                     "returns": null,
                     "throws": null,
-                    "signature": "constructor(request: Drash.Http.Request)",
+                    "signature": "constructor(request: ServerRequest)",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response()"
                 },
@@ -1371,7 +1371,7 @@
                     "returns": [
                         {
                             "description": [
-                                "Returns the output which is passed to `Drash.Http.Request.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
+                                "Returns the output which is passed to `ServerRequest.respond()`.\nThe output is only returned for unit testing purposes. It is not\nintended to be used elsewhere as this call is the last call in the\nrequest-resource-response lifecycle."
                             ],
                             "annotation": {
                                 "line": "@return Promise<any>",
