@@ -1,5 +1,5 @@
 import Drash from "../mod.ts";
-import { writeFileSync } from "../system.ts"
+import { Decoder, Encoder, writeFileSync } from "../system.ts"
 
 // Add a global console logger because server logging when needed is cool
 Drash.addMember(
@@ -16,8 +16,8 @@ Drash.addMember(
   })
 );
 
-const Decoder = new TextDecoder();
-const Encoder = new TextEncoder();
+const decoder = new Decoder();
+const encoder = new Encoder();
 const DRASH_DIR_ROOT = Drash.getEnvVar("DRASH_DIR_ROOT").value;
 
 import AppResponse from "./src/app_response.ts";
@@ -63,7 +63,7 @@ function compileApiReferencePageData() {
   echo("Compiling API Reference page data using doc blocks...");
   let compiler = new Drash.Compilers.DocBlocksToJson();
   let compiled = compiler.compile(DrashNamespaceMembers);
-  let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 4));
+  let apiReferenceData = encoder.encode(JSON.stringify(compiled, null, 4));
   const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
   writeFileSync(apiReferenceOutputFile, apiReferenceData);
   echo(`    Done. API Reference page data was written to: ${apiReferenceOutputFile}.`);
@@ -83,7 +83,7 @@ function compileVueGlobalComponents() {
     importString += `import ${pathObj.filename} from "${pathObj.path}";\nVue.component("${componentName}", ${pathObj.filename});\n\n`;
   });
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
-  writeFileSync(outputFile, Encoder.encode(importString));
+  writeFileSync(outputFile, encoder.encode(importString));
   echo(`    Done. Vue global components were written to: ${outputFile}.`);
 }
 
@@ -103,7 +103,7 @@ function compileVueRouterRoutes() {
   });
   importString += "];";
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
-  writeFileSync(outputFile, Encoder.encode(importString));
+  writeFileSync(outputFile, encoder.encode(importString));
   echo(`    Done. vue-router routes were written to: ${outputFile}.`);
 }
 

@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { env } from "../../system.ts"
+import { Encoder, env } from "../../system.ts"
 import * as ResponseService from "./response_service.ts";
 
 export default class AppResponse extends Drash.Http.Response {
@@ -70,7 +70,7 @@ export default class AppResponse extends Drash.Http.Response {
     this.request.respond({
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body)
+      body: new Encoder().encode(body)
     });
   }
 }

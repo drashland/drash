@@ -1,14 +1,14 @@
 import Drash from "../../mod.ts";
 import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
-import { env, readFileSync, writeFileSync } from "../../system.ts";
-const Decoder = new TextDecoder();
-const Encoder = new TextEncoder();
+import { Decoder, Encoder, env, readFileSync, writeFileSync } from "../../system.ts";
+const decoder = new Decoder();
+const encoder = new Encoder();
 
 // FILE MARKER: FUNCTIONS - EXPORTED ///////////////////////////////////////////
 
 export async function compile(inputFile, outputFile): Promise<any> {
   let body = await getAppDataInHtml(inputFile);
-  let encoded = Encoder.encode(body);
+  let encoded = encoder.encode(body);
   writeFileSync(outputFile, encoded);
 }
 
@@ -62,7 +62,7 @@ export async function getAppDataInHtml(inputFile) {
 function getPageDataApiReference() {
   let contents = "";
   try {
-    contents = Decoder.decode(
+    contents = decoder.decode(
       readFileSync(`./public/assets/json/api_reference.json`)
     );
   } catch (error) {
@@ -97,7 +97,7 @@ function getExampleCode() {
     }
 
     let fileContentsRaw = readFileSync(file.path);
-    let fileContents = Decoder.decode(fileContentsRaw);
+    let fileContents = decoder.decode(fileContentsRaw);
     fileContents = fileContents.replace(/<\/script>/g, "<//script>");
 
     exampleCode[pathname][file.basename] = {

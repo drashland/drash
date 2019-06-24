@@ -1,17 +1,12 @@
 #!/bin/bash
 
 (
-  # Copy the source code
-  cp -r $DRASH_DIR_ROOT/src $1/src
-
-  # Copy the system-specific entry point file
+  mkdir -p $1/src
+  cp -r $DRASH_DIR_ROOT/src $1
+  cp $DRASH_DIR_ROOT/mod.ts $1
   cp $DRASH_DIR_ROOT/system.ts $1
-
   cp $DRASH_DIR_ROOT/.gitignore $1
-
   cp $DRASH_DIR_ROOT/LICENSE $1
-
   cp $DRASH_DIR_ROOT/README.md $1
-
   cp $DRASH_DIR_ROOT/REQUIREMENTS.md $1
 )

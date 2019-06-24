@@ -16,6 +16,8 @@ export {
 
 // FILE MARKER: DENO LIB ///////////////////////////////////////////////////////
 
+export const Decoder = TextDecoder;
+export const Encoder = TextEncoder;
 export const env = Deno.env;
 export const readFileSync = Deno.readFileSync;
 export const removeSync = Deno.removeSync;

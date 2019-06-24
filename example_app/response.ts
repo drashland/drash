@@ -1,4 +1,5 @@
 import Drash from "../mod.ts";
+import { Encoder } from "../system.ts";
 
 export default class Response extends Drash.Http.Response {
   public send(): any {
@@ -41,7 +42,7 @@ export default class Response extends Drash.Http.Response {
     this.request.respond({
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body)
+      body: new Encoder().encode(body)
     });
   }
 }
