@@ -10,11 +10,6 @@ const decoder = new TextDecoder();
  */
 export default class HttpService {
   /**
-   * TODO(crookse) figure out the MIME type of the request body and parse it:
-   *     [x] if application/json, then JSON.parse()
-   *     [x] if application/x-www-form-urlencoded, then do what?
-   *     [ ] if something else, then do what?
-   *
    * @description
    *     Parse the body of the request so that it can be used as an associative
    *     array.
@@ -29,6 +24,9 @@ export default class HttpService {
    *     If the body can't be parsed, then this method will set
    *     `this.body_parsed` to `false` to denote that the request body was not
    *     parsed.
+   *
+   * @param ServerRequest request
+   *     The request object.
    *
    * @return any
    *     This method resolves `this.body_parsed`, but only for testing purposes.

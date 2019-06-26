@@ -1589,7 +1589,9 @@
                     "params": {
                         "request": {
                             "name": "request",
-                            "description": [],
+                            "description": [
+                                "The request object."
+                            ],
                             "annotation": {
                                 "line": "@param ServerRequest request",
                                 "data_type": "ServerRequest",
@@ -1623,7 +1625,9 @@
                     "params": {
                         "request": {
                             "name": "request",
-                            "description": [],
+                            "description": [
+                                "The request object."
+                            ],
                             "annotation": {
                                 "line": "@param ServerRequest request",
                                 "data_type": "ServerRequest",
@@ -1819,7 +1823,9 @@
                     "params": {
                         "request": {
                             "name": "request",
-                            "description": [],
+                            "description": [
+                                "The request object."
+                            ],
                             "annotation": {
                                 "line": "@param ServerRequest request",
                                 "data_type": "ServerRequest",
@@ -2327,7 +2333,19 @@
                         "If the request body's content type is\n`application/x-www-form-urlencoded`, then\n`username=root&password=alpine` becomes `{ username: \"root\", password: \"alpine\" }`.",
                         "If the body can't be parsed, then this method will set\n`this.body_parsed` to `false` to denote that the request body was not\nparsed."
                     ],
-                    "params": null,
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
+                                "name": "request"
+                            }
+                        }
+                    },
                     "returns": [
                         {
                             "description": [

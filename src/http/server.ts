@@ -284,6 +284,7 @@ export default class Server {
    *     the logs.
    *
    * @param ServerRequest request
+   *     The request object.
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
@@ -311,6 +312,7 @@ export default class Server {
    *     Handle HTTP requests for static path assets.
    *
    * @param ServerRequest request
+   *     The request object.
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
@@ -318,6 +320,14 @@ export default class Server {
    */
   public handleHttpRequestForStaticPathAsset(request): any {
     try {
+      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+        headers: {
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+            request.url,
+            true
+          )
+        }
+      });
       let response = new Drash.Http.Response(request);
       return response.sendStatic();
     } catch (error) {
@@ -510,6 +520,7 @@ export default class Server {
    *     Is the request targeting a static path?
    *
    * @param ServerRequest request
+   *     The request object.
    *
    * @return boolean
    *     Returns true if the request targets a static path.
@@ -523,14 +534,6 @@ export default class Server {
     let requestUrl = `/${request.url.split("/")[1]}`;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-        headers: {
-          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
-            request.url,
-            true
-          )
-        }
-      });
       return true;
     }
 
