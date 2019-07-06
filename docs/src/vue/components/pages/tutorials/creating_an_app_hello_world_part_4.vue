@@ -22,7 +22,7 @@ page-creating-an-app-hello-world(:data="data")
             li Deno runs <code>app.ts</code> as it did in the previous tutorial.
         div.row
             div.col
-                a.btn.btn-success(href="/#/tutorials/creating-an-app-hello-world-part-3") Go to Part 3
+                a.btn.btn-success(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-3'") Go to Part 3
 </template>
 
 <script>

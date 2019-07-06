@@ -36,7 +36,7 @@ page-creating-an-app-hello-world(:data="data")
             img(:src="$conf.base_url + '/public/assets/img/creating_an_app_hello_world_part_1.png'")
         div.row
             div.col.text-right
-                a.btn.btn-success(href="/#/tutorials/creating-an-app-hello-world-part-2") Go to Part 2
+                a.btn.btn-success(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Go to Part 2
 </template>
 
 <script>

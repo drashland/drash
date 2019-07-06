@@ -30,9 +30,9 @@ page-creating-an-app-hello-world(:data="data")
             img(:src="$conf.base_url + '/public/assets/img/creating_an_app_hello_world_part_3.png'")
         div.row
             div.col
-                a.btn.btn-success(href="/#/tutorials/creating-an-app-hello-world-part-2") Go to Part 2
+                a.btn.btn-success(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Go to Part 2
             div.col.text-right
-                a.btn.btn-success(href="/#/tutorials/creating-an-app-hello-world-part-4") Go to Part 4
+                a.btn.btn-success(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Go to Part 4
 </template>
 
 <script>
