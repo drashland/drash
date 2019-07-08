@@ -1,24 +1,33 @@
-// FILE MARKER: DENO STANDARD MODULES //////////////////////////////////////////
-
-export {
+import {
   serve,
   ServerRequest
 } from "https://deno.land/std@v0.9.0/http/server.ts";
 
-export {
+import {
   STATUS_TEXT,
   Status
 } from "https://deno.land/std@v0.9.0/http/http_status.ts";
 
-export {
+import {
   walkSync
 } from "https://deno.land/std@v0.9.0/fs/mod.ts";
 
-// FILE MARKER: DENO LIB ///////////////////////////////////////////////////////
-
 export const Decoder = TextDecoder;
+
 export const Encoder = TextEncoder;
+
+export const Http = {
+  Request: ServerRequest,
+  Status: Status,
+  StatusText: STATUS_TEXT,
+  serve: serve,
+};
+
+export const IO = {
+  readFileSync: Deno.readFileSync,
+  removeSync: Deno.removeSync,
+  walkSync: walkSync,
+  writeFileSync: Deno.writeFileSync,
+};
+
 export const env = Deno.env;
-export const readFileSync = Deno.readFileSync;
-export const removeSync = Deno.removeSync;
-export const writeFileSync = Deno.writeFileSync;

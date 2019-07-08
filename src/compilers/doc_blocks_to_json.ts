@@ -9,7 +9,7 @@
 //
 
 import Drash from "../../mod.ts";
-import { readFileSync } from "../../system.ts";
+import { IO } from "../../system.ts";
 
 /**
  * @memberof Drash.Compilers
@@ -104,7 +104,7 @@ export default class DocBlocksToJson {
   public compile(files: string[]): any {
     files.forEach(file => {
       this.current_file = file;
-      let fileContentsRaw = readFileSync(file);
+      let fileContentsRaw = IO.readFileSync(file);
       let fileContents = this.decoder.decode(fileContentsRaw);
 
       // If a file has `doc-blocks-to-json members-only`...

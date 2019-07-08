@@ -1,5 +1,5 @@
 import Logger from "./logger.ts";
-import { writeFileSync } from "../../system.ts";
+import { IO } from "../../system.ts";
 
 /**
  * @memberof Drash.Loggers
@@ -46,7 +46,7 @@ export default class FileLogger extends Logger {
   public write(logMethodLevelDefinition, message): string {
     const encoder = new TextEncoder();
     let encoded = encoder.encode(message + "\n");
-    writeFileSync(this.file, encoded, { append: true });
+    IO.writeFileSync(this.file, encoded, { append: true });
     return message;
   }
 }

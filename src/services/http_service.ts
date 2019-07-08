@@ -25,7 +25,7 @@ export default class HttpService {
    *     `this.body_parsed` to `false` to denote that the request body was not
    *     parsed.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any
@@ -99,7 +99,7 @@ export default class HttpService {
    *     Hydrate the request with data that is useful for the
    *     `Drash.Http.Server` class.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    * @param any options
    *     A list of options.
@@ -125,7 +125,7 @@ export default class HttpService {
    * @description
    *     Get the specified HTTP request's URL path.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return string
@@ -155,7 +155,7 @@ export default class HttpService {
    * @description
    *     Get the specified HTTP request's URL query string.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return string
@@ -182,7 +182,7 @@ export default class HttpService {
    * @description
    *     Get the HTTP request's URL query params by parsing the URL query string.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any

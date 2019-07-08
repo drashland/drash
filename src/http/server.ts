@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { serve } from "../../system.ts";
+import { Http } from "../../system.ts";
 
 /**
  * @memberof Drash.Http
@@ -119,7 +119,7 @@ export default class Server {
    * @description
    *     Handle an HTTP request from the server.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any
@@ -215,7 +215,7 @@ export default class Server {
    * @description
    *     Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    * @param any error
    *     The error object.
@@ -283,7 +283,7 @@ export default class Server {
    *     short-circuit favicon requests--preventing the requests from clogging
    *     the logs.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any
@@ -311,7 +311,7 @@ export default class Server {
    * @description
    *     Handle HTTP requests for static path assets.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any
@@ -347,7 +347,7 @@ export default class Server {
    */
   public async run(): Promise<void> {
     console.log(`\nDrash server started at ${this.configs.address}.\n`);
-    this.server = serve(this.configs.address);
+    this.server = Http.serve(this.configs.address);
     for await (const request of this.server) {
       try {
         this.handleHttpRequest(request);
@@ -455,7 +455,7 @@ export default class Server {
    * @description
    *     Get the resource class.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
@@ -519,7 +519,7 @@ export default class Server {
    * @description
    *     Is the request targeting a static path?
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return boolean

@@ -1,5 +1,4 @@
 import Drash from "../../mod.ts";
-import { ServerRequest } from "../../system.ts";
 
 /**
  * @memberof Drash.Http
@@ -35,7 +34,7 @@ export default class Resource {
    * @description
    *     The request object.
    *
-   * @property ServerRequest request
+   * @property any request
    */
   protected request;
 
@@ -61,7 +60,7 @@ export default class Resource {
    * @description
    *     Construct an object of this class.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    * @param Drash.Http.Response response
    *     The response object.

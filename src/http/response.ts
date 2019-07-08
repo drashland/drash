@@ -1,10 +1,8 @@
 import Drash from "../../mod.ts";
 import {
-  STATUS_TEXT,
-  ServerRequest,
-  Status,
+  Http,
   env,
-  readFileSync,
+  IO,
 } from "../../system.ts";
 
 /**
@@ -44,7 +42,7 @@ export default class Response {
    * @description
    *     The request object.
    *
-   * @property ServerRequest request
+   * @property any request
    */
   public request;
 
@@ -54,7 +52,7 @@ export default class Response {
    *
    * @property number status_code
    */
-  public status_code: number = Status.OK;
+  public status_code: number = Http.Status.OK;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
@@ -62,7 +60,7 @@ export default class Response {
    * @description
    *     Construct an object of this class.
    *
-   * @param ServerRequest request
+   * @param any request
    */
   constructor(request) {
     this.request = request;
@@ -151,7 +149,7 @@ export default class Response {
    *     will return "OK" as the status message.
    */
   public getStatusMessage(): string {
-    let message = STATUS_TEXT.get(this.status_code);
+    let message = Http.StatusText.get(this.status_code);
     return message ? message : null;
   }
 
@@ -164,7 +162,7 @@ export default class Response {
    * @return string
    */
   public getStatusMessageFull(): string {
-    let message = STATUS_TEXT.get(this.status_code);
+    let message = Http.StatusText.get(this.status_code);
     return message ? `${this.status_code} (${message})` : null;
   }
 
@@ -231,7 +229,7 @@ export default class Response {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: readFileSync(fullFilepath)
+      body: IO.readFileSync(fullFilepath)
     };
 
     this.request.respond(output);
