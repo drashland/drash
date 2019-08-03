@@ -4,7 +4,7 @@ env:
   - DRASH_DIR_ROOT="/home/travis/build/crookse/deno-drash" DRASH_CORE_LOGGER_ENABLED=false
 
 install:
-  - curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.12.0
+  - curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.13.0
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
