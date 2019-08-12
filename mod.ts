@@ -1,3 +1,10 @@
+// Version bumps:
+// console/install.deno
+// docs/webpack.config.js
+// .travis.yml
+// README.md
+// REQUIREMENTS.md
+
 // Core
 import env_var from "./src/core/env_var.ts";
 // Compilers
