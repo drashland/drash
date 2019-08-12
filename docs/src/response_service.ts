@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { renderFile } from "https://deno.land/x/dejs/dejs.ts";
+import { renderFile } from "https://deno.land/x/dejs@0.3.0/dejs.ts";
 const Decoder = new TextDecoder();
 const Encoder = new TextEncoder();
 
