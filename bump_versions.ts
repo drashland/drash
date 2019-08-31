@@ -19,5 +19,4 @@ text = decoder.decode(webpackConfig);
 text = text.replace(/latestRelease.*([0-9]([0-9])?\.?)*;/g, `latestRelease = "${drash}";`);
 text = text.replace(/denoVersion.*([0-9]([0-9])?\.?)*;/g, `denoVersion = "${deno}";`);
 text = text.replace(/denoStdVersion.*([0-9]([0-9])?\.?)*;/g, `denoStdVersion = "${denoStd}";`);
-console.log(text);
-Deno.writeFileSync("./README.md", encoder.encode(text));
+Deno.writeFileSync("./docs/webpack.config.js", encoder.encode(text));
