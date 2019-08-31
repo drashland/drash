@@ -9,6 +9,7 @@ let text = "";
 // Bump the versions in the README.md file
 const readme = Deno.readFileSync("./README.md");
 text = decoder.decode(readme);
+text = text.replace(/drash@.*([0-9]([0-9])?\.?)*([0-9]([0-9])?\.?)/g, "drash@v" + drash);
 text = text.replace(/deno-v([0-9]([0-9])?\.?)*/g, "deno-v" + deno);
 text = text.replace(/deno__std-v([0-9]([0-9])?\.?)*/g, "deno__std-v" + denoStd);
 Deno.writeFileSync("./README.md", encoder.encode(text));
