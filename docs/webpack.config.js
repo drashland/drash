@@ -3,10 +3,10 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // Versions
-const latestRelease = "v0.16.0";
+const latestRelease = "v0.16.1";
 const denoVersionMin = "0.16.0";
 const denoVersionMax = "0.16.0";
-const denoStdVersion = "0.15.0";
+const denoStdVersion = "0.16.0";
 
 function getConf(envVars) {
 
