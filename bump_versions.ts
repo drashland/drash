@@ -1,4 +1,4 @@
-const drash = "0.16.1";
+const drash = "0.16.2";
 const deno = "0.16.0";
 const denoStd = "0.16.0";
 
