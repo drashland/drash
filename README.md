@@ -51,7 +51,7 @@ For a more complicated application, try out the [Hello World](https://crookse.gi
 
 ## Documentation
 
-For full documentation, visit [https://drash.io](https://drash.io).
+For full documentation, visit [https://drash.io](https://crookse.github.io/deno-drash/).
 
 ## Features
 
