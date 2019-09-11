@@ -3,17 +3,11 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // Versions
-const latestRelease = "v0.16.0";
-const denoVersionMin = "0.16.0";
-const denoVersionMax = "0.16.0";
-const denoStdVersion = "0.15.0";
+const latestRelease = "0.16.2";
+const denoVersion = "0.16.0";
+const denoStdVersion = "0.16.0";
 
 function getConf(envVars) {
-
-  let denoVersionRequirement = `v${denoVersionMax}`;
-  if (denoVersionMin != denoVersionMax) {
-    denoVersionRequirement = `>=${denoVersionMin} <=${denoVersionMax}`;
-  }
 
   let conf = {
     base_url: !envVars.base_url
@@ -23,15 +17,13 @@ function getConf(envVars) {
     deno_version: envVars.deno_version.replace("deno: ", "Deno v")
       .replace("\nv8: ", ", V8 v")
       .replace("\ntypescript: ", ", and TypeScript v"),
-    deno_version_requirement: denoVersionRequirement,
+    deno_version_requirement: `v${denoVersion}`,
     deno_std_version: denoStdVersion,
-    latest_release: latestRelease,
+    latest_release: `v${latestRelease}`,
     module_name: "Drash",
     module_namespace: "Drash",
     shields: {
-      requires_deno: denoVersionMin == denoVersionMax
-        ? `https://img.shields.io/badge/requires%20deno-v${denoVersionMax}-brightgreen.svg`
-        : `https://img.shields.io/badge/requires%20deno-%3E=${denoVersionMin}%20%3C=${denoVersionMax}-brightgreen.svg`,
+      requires_deno: `https://img.shields.io/badge/requires%20deno-v${denoVersion}-brightgreen.svg`,
       deno_std: `https://img.shields.io/badge/uses%20deno__std-v${denoStdVersion}-brightgreen.svg`
     },
     webpack_mode: envVars.environment
