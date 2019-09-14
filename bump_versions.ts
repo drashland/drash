@@ -1,5 +1,5 @@
-const drash = "0.17.0";
-const deno = "0.17.0";
+const drash = "0.18.0";
+const deno = "0.18.0";
 const denoStd = "0.17.0";
 
 const encoder = new TextEncoder();
