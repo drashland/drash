@@ -1,5 +1,13 @@
 # Drash Docs
 
+Drash Docs uses the following:
+
+* [dejs](https://github.com/syumai/dejs) for its template engine;
+* [npm](https://www.npmjs.com) to map console scripts to the `npm run` command;
+* [Vue](https://vuejs.org) for its front-end framework;
+* [webpack](https://webpack.js.org/) to enable bundling of Vue templates and enabling Vue single file components; and
+* [pug](https://pugjs.org/api/getting-started.html) for HTML markup in Vue single file components
+
 ## Setup
 
 Add environment variables.
@@ -41,6 +49,10 @@ Run `webpack` and have it watch for file changes.
 ```shell
 npm run dev-webpack-watch
 ```
+
+## Deployment Dry Runs
+
+Run `npm run build-dry-run` to see if the docs can be built using the currently used deno version, deno standard modules version, and dejs module version. If the command fails, then there is a compatibility issue between the deno version, deno standard modules version, and the dejs module version.
 
 ## Compile SASS to CSS
 
