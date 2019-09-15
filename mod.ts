@@ -7,25 +7,33 @@
 
 // Core
 import env_var from "./src/core/env_var.ts";
+
 // Compilers
+// TODO(crookse) use docable when docable has TypeScript types developed
 import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
+
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db.json";
+
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
+
 // Http
 import request from "./src/http/request.ts";
 import resource from "./src/http/resource.ts";
 import response from "./src/http/response.ts";
 import server from "./src/http/server.ts";
+
 // Loggers
 import base_logger from "./src/loggers/logger.ts";
 import console_logger from "./src/loggers/console_logger.ts";
 import class_core_logger from "./src/loggers/core_logger.ts";
 import file_logger from "./src/loggers/file_logger.ts";
+
 // Services
 import http_service from "./src/services/http_service.ts";
+
 // Util
 import util_object_parser from "./src/util/object_parser.ts";
 import * as util_members from "./src/util/members.ts";
