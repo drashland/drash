@@ -15,8 +15,8 @@ export default class ObjectParser {
    *     The object containing the deeply nested property.
    * @param ...string properties
    *     The rest of the arguments as strings to use as property names when
-   *     finding the nested property's value. The last argument that the "rest
-   *     parameter" finds is the nested property you are targeting.
+   *     finding the nested property's value. The last argument that the rest
+   *     parameter finds is the nested property you are targeting.
    *
    * @return any
    *     Returns the value of the targeted property.
@@ -36,7 +36,7 @@ export default class ObjectParser {
     // iterator finds itself deeper into the object it started with. For
     // example, if this method is called with
     //
-    //     (myObject, ['we', 'will', 'find', 'you')
+    //     (myObject, ['we', 'will', 'find', 'you'])
     //
     // then the iterator will do this:
     //
@@ -44,7 +44,7 @@ export default class ObjectParser {
     //   we: {                  <-- This is next in the array, so it becomes currentObject
     //     will: {              <-- This is next in the array, so it becomes currentObject
     //      a_key: {},
-    //      find: {             <-- This is next in the array, so it becomes thecurrentObject
+    //      find: {             <-- This is next in the array, so it becomes currentObject
     //        a_key: 'hello',
     //        you: {},          <-- This is next in the array AND is the last item in the array, so this gets returned as the nested property.
     //        b_key: true,
