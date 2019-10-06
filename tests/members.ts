@@ -1,7 +1,5 @@
 import Drash from "../mod.ts";
-import { ServerRequest } from "../deno_std.ts";
-import { runTests, test } from "https://deno.land/x/std/testing/mod.ts";
-import * as asserts from "https://deno.land/x/std/testing/asserts.ts";
+import { ServerRequest, assertEquals, runTests, test } from "../deno_std.ts";
 const decoder = new TextDecoder("utf-8");
 
 let mockRequest = function mockRequest(
@@ -26,7 +24,7 @@ export default {
   Drash,
   ServerRequest,
   assert: {
-    equal: asserts.assertEquals
+    equal: assertEquals
   },
   decoder,
   mockRequest,
