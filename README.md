@@ -55,9 +55,15 @@ For full documentation, visit [https://drash.io](https://crookse.github.io/deno-
 
 ## Features
 
-- [x] HTTP Resources
-- [x] Content Negotiation
-- [x] Static Paths
-- [x] Request Path Params (e.g., `/users/:id`)
-- [x] Request URL Query Params (e.g., `/users?id=1234`)
-- [x] Request Body (e.g., `{"id":"1234"}`)
+- HTTP Resources
+- Content Negotiation
+- Static Path Routing
+- Request Path Params Parsing
+    - `/users/:id`
+    - `/users/{id}`
+    - `/users/([0-9]+)`
+- Request URL Query Params Parsing
+    - `/products?name=beignet&action=purchase`
+- Request Body Parsing
+    - application/x-www-form-urlencoded (e.g, `username=root&password=alpine`)
+    - application/json (e.g., `{"username":"root","password":"alpine"}`)
