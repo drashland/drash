@@ -2598,7 +2598,7 @@
                         "properties": {
                             "name": "properties",
                             "description": [
-                                "The rest of the arguments as strings to use as property names when\nfinding the nested property's value. The last argument that the \"rest\nparameter\" finds is the nested property you are targeting."
+                                "The rest of the arguments as strings to use as property names when\nfinding the nested property's value. The last argument that the rest\nparameter finds is the nested property you are targeting."
                             ],
                             "annotation": {
                                 "line": "@param ...string properties",
