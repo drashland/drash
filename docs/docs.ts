@@ -79,7 +79,9 @@ function compileVueGlobalComponents() {
     let componentName = pathObj.filename
       .replace(".vue", "") // take out the .vue extension
       .replace(/_/g, "-"); // change all underscores to - so that the component name is `some-name` and not `some_name`
-    importString += `import ${pathObj.filename} from "${pathObj.path}";\nVue.component("${componentName}", ${pathObj.filename});\n\n`;
+    let componentNameSnakeCase = pathObj.filename
+      .replace(".vue", "");
+    importString += `import ${componentNameSnakeCase} from "${pathObj.path}";\nVue.component("${componentName}", ${componentNameSnakeCase});\n\n`;
   });
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
