@@ -24,7 +24,7 @@ Drash.Http.Response = AppResponse;
 import AppResource from "./src/app_resource.ts";
 
 compileApiReferencePageData();
-// compileVueGlobalComponents();
+compileVueGlobalComponents();
 compileVueRouterRoutes();
 runServer();
 
