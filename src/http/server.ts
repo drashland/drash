@@ -202,11 +202,12 @@ export default class Server {
       // due to the HTTP method not being defined in the resource class;
       // therefore, the method is not allowed. In this case, we send a 405
       // (Method Not Allowed) response.
-      if (resource && !error.code) {
+      if (resource) {
         if (!response) {
-          return this.handleHttpRequestError(request, this.errorResponse(405));
+          if (typeof resource[request.method] !== 'function') {
+            return this.handleHttpRequestError(request, this.errorResponse(405));
+          }
         }
-        return this.handleHttpRequestError(request, this.errorResponse(500));
       }
 
       // All other errors go here
@@ -259,13 +260,12 @@ export default class Server {
             }' does not allow ${request.method.toUpperCase()} requests.`;
         break;
       case 500:
+        break;
+      default:
+        error.code = 500;
         response.body = error.message
           ? error.message
           : `Something went terribly wrong.`;
-        break;
-      default:
-        error.code = 400;
-        response.body = error.message ? error.message : "Something went wrong.";
         break;
     }
 
