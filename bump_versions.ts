@@ -1,6 +1,6 @@
-const drash = "0.19.0";
-const deno = "0.19.0";
-const denoStd = "0.19.0";
+const drash = "0.20.0";
+const deno = "0.20.0";
+const denoStd = "0.20.0";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
