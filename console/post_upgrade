@@ -4,6 +4,6 @@
   git checkout master
   git pull
   git checkout upgrade-deno
-  git merge --no-ff --no-commit master
+  git merge --no-ff
   git checkout master
 )
