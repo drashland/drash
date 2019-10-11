@@ -5,6 +5,11 @@
 * Deno v0.20.0
 * Deno Standard Modules v0.20.0
 
+## v0.19.1
+
+* Deno v0.19.0
+* Deno Standard Modules v0.19.0
+
 ## v0.19.0
 
 * Deno v0.19.0
