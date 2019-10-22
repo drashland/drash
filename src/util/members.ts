@@ -136,7 +136,12 @@ export function getFileSystemStructure(dir: string): any {
       // /path/to/the/file/dir
       pathname: pathname,
       // filename_extension
-      snake_cased: filename.replace(".", "_")
+      snake_cased: filename.replace(".", "_"),
+      // Is this file a directory?
+      isDirectory: () => {
+        let extension = filename.split(".")[1]
+        return !extension;
+      }
     });
   }
 
