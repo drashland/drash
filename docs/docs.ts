@@ -74,14 +74,15 @@ function compileApiReferencePageData() {
 function compileVueGlobalComponents() {
   echo("Compiling Vue global components...");
   let files = Drash.Util.Exports.getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/global`);
-  let importString = `import Vue from "vue";\n\n`;
+  let importString = 'import Vue from \"vue\";\n\n';
   files.forEach(pathObj => {
-    let componentName = pathObj.filename
+    if (pathObj.isDirectory()) {
+      return;
+    }
+    let snakeCasedNoExtension = pathObj.filename
       .replace(".vue", "") // take out the .vue extension
       .replace(/_/g, "-"); // change all underscores to - so that the component name is `some-name` and not `some_name`
-    let componentNameSnakeCase = pathObj.filename
-      .replace(".vue", "");
-    importString += `import ${componentNameSnakeCase} from "${pathObj.path}";\nVue.component("${componentName}", ${componentNameSnakeCase});\n\n`;
+    importString += 'import ' + pathObj.snake_cased + ' from \"' + pathObj.path + '\";\nVue.component(\"' + snakeCasedNoExtension + '\", ' + pathObj.snake_cased + ');\n\n';
   });
   let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
@@ -96,10 +97,16 @@ function compileVueRouterRoutes() {
   let files = Drash.Util.Exports.getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
   let importString = "";
   files.forEach(pathObj => {
-    importString += `import * as ${pathObj.snake_cased} from "${pathObj.path}";\n`;
+    if (pathObj.isDirectory()) {
+      return;
+    }
+    importString += 'import * as ' + pathObj.snake_cased + ' from \"' + pathObj.path + '\";\n';
   });
   importString += "\nexport default [\n";
   files.forEach(pathObj => {
+    if (pathObj.isDirectory()) {
+      return;
+    }
     importString += `  ${pathObj.snake_cased},\n`;
   });
   importString += "];";
