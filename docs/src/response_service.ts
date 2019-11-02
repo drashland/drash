@@ -66,7 +66,6 @@ function getPageDataApiReference() {
       Deno.readFileSync(`./public/assets/json/api_reference.json`)
     );
   } catch (error) {
-    Drash.core_logger.error(error);
   }
 
   return JSON.parse(contents);

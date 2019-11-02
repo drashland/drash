@@ -1,6 +1,5 @@
 #!/bin/bash
 
 (
-  export DRASH_CORE_LOGGER_ENABLED=false
   deno run --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/tests/test.ts
 )
