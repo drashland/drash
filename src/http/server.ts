@@ -409,14 +409,11 @@ export default class Server {
         };
         resourceClass.paths[index] = pathObj;
       } catch (error) {
-        Drash.core_logger.error(error);
       }
     });
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
-
-    Drash.core_logger.debug(`HTTP resource "${resourceClass.name}" added.`);
   }
 
   /**

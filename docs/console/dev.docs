@@ -3,8 +3,6 @@
 (
   export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
-  export DRASH_CORE_LOGGER_ENABLED="true"
-  export DRASH_CORE_LOGGER_LEVEL="debug"
 
   for pid in $(ps aux | grep 'docs.ts' | grep 'deno' | awk '{print $2}'); do
     echo "[watchmedo] Killing deno docs.ts $pid"

@@ -1,4 +1,2 @@
 #!/bin/bash
 
-export DRASH_CORE_LOGGER_ENABLED="true"
-export DRASH_CORE_LOGGER_LEVEL="all"
