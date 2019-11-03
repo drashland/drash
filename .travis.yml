@@ -17,8 +17,9 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
+      - cd $DRASH_DIR_ROOT
       - console/bump_versions
-      - cd $DRASH_DIR_ROOT/docs
+      - cd docs
       - npm install
       - npm run docs-deploy
     on:
