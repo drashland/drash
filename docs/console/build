@@ -7,7 +7,7 @@
 
   echo "Performing production compilation of new webpack bundle.js"
 
-  webpack \
+  node_modules/.bin/webpack \
     --env.environment="production" \
     --env.deno_version="$deno_version" \
     --env.base_url="$DRASH_DOCS_BASE_URL" \

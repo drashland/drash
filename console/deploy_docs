@@ -5,5 +5,5 @@
   console/bump_versions
   cd docs
   npm install
-  npm run docs-deploy
+  console/build
 )
