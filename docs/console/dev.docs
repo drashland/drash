@@ -16,7 +16,7 @@
     echo -e "[watchmedo] Starting $DRASH_SERVER_DIRECTORY/docs.ts app..."
   fi
 
-  deno run --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts &
+  deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts &
 
   echo -e "[watchmedo] $DRASH_SERVER_DIRECTORY/docs.ts app started.\n"
   echo -e "[watchmedo] !!! IMPORTANT !!!"
