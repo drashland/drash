@@ -23,11 +23,16 @@ before_deploy:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: console/deploy
-    on:
-      tags: true
+  provider: script
+  skip_cleanup: true
+  script: console/deploy
+  on:
+    tags: true
+deploy:
+  provider: script
+  script: bash console/deploy
+  on:
+    tags: true
 
 after_deploy:
   - cd $DRASH_DIR_ROOT/docs
