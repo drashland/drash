@@ -1,8 +1,7 @@
 language: python
 
 env:
-  - DRASH_PROCESS="ci"
-    VER_DENO_LATEST="0.22.0"
+  - VER_DENO_LATEST="0.22.0"
     VER_DENO_STD_LATEST="0.20.0"
     VER_DRASH_LATEST="0.22.2"
 
@@ -20,13 +19,14 @@ before_deploy:
   - npm install
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
-  - deno --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/docs/docs.ts
+  - deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
 deploy:
   - provider: script
     skip_cleanup: true
     script: console/deploy
-    on
+    on:
       tags: true
 
 after_deploy:
@@ -34,5 +34,4 @@ after_deploy:
   - git add index.html
   - git add public/assets/js/bundle.min.js
   - git commit -m "npm run build ($(date))"
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:$BRANCH
