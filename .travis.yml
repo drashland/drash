@@ -2,9 +2,12 @@ language: python
 
 env:
   - DRASH_DIR_ROOT="/home/travis/build/crookse/deno-drash"
+  - VER_DENO_LATEST="0.22.0"
+  - VER_DENO_STD_LATEST="0.20.0"
+  - VER_DRASH_LATEST="0.22.2"
 
 install:
-  - curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.20.0
+  - curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.22.0
   - export PATH="$HOME/.deno/bin:$PATH"
 
 script:
@@ -13,6 +16,10 @@ script:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: cd $DRASH_DIR_ROOT/docs && npm run docs-deploy
+    script:
+      - console/bump_versions
+      - cd $DRASH_DIR_ROOT/docs
+      - npm install
+      - npm run docs-deploy
     on:
       tags: true
