@@ -26,7 +26,7 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: deno --allow-read --allow-write --allow-env build.ts
+    script: console/deploy
     on
       tags: true
 
