@@ -10,17 +10,20 @@ install:
   - export PATH="$HOME/.deno/bin:$PATH" #make sure deno is accessible
 
 script:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - console/tests
 
 before_deploy:
   - cd $DRASH_DIR_ROOT
   - console/bump_versions
+  - git add .
+  - git commit -m "bump versions"
+  - git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:$BRANCH
   - cd docs
   - npm install
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
   - deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
 deploy:
   provider: script
