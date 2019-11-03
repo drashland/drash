@@ -12,6 +12,13 @@ install:
 script:
   - console/tests
 
+before_deploy:
+  - cd $DRASH_DIR_ROOT
+  - console/bump_versions
+  - cd docs
+  - npm install
+  - console/dev.docs
+
 deploy:
   - provider: script
     skip_cleanup: true
