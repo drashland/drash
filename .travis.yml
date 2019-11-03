@@ -21,7 +21,6 @@ before_deploy:
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
   - deno --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/docs/docs.ts
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
 deploy:
   - provider: script
@@ -35,4 +34,5 @@ after_deploy:
   - git add index.html
   - git add public/assets/js/bundle.min.js
   - git commit -m "npm run build ($(date))"
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:$BRANCH
