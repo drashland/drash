@@ -20,8 +20,6 @@ before_deploy:
   - cd $DRASH_DIR_ROOT
   - console/bump_versions
   - git add .
-  - git commit -m "bump versions"
-  - git push https://$GIT_USER:$GIT_PASS@github.com/crookse/deno-drash.git HEAD:master
   - cd docs
   - npm install
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
@@ -31,18 +29,12 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: console/deploy
-  on:
-    tags: true
-deploy:
-  provider: script
   script: bash console/deploy
   on:
     tags: true
 
 after_deploy:
   - cd $DRASH_DIR_ROOT/docs
-  - git add index.html
-  - git add public/assets/js/bundle.min.js
-  - git commit -m "npm run build ($(date))"
-  - git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:master
+  - git add .
+  - git commit -m "bump versions; npm run build ($(date))"
+  - git push https://$GIT_USER:$GIT_PASS@github.com/crookse/deno-drash.git HEAD:master
