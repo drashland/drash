@@ -1,11 +1,12 @@
 import Drash from "../../mod.ts";
 import * as ResponseService from "../src/response_service.ts";
 
-const drashDirRoot = Deno.env().DRASH_DIR_ROOT;
+const Decoder = new TextDecoder();
+const Encoder = new TextEncoder();
 
 ResponseService.compile(
-  `${drashDirRoot}/docs/src/templates/index.ejs`,
-  `${drashDirRoot}/docs/index.html`
+  `${Deno.env().DRASH_DIR_ROOT}/docs/src/templates/index.ejs`,
+  `${Deno.env().DRASH_DIR_ROOT}/docs/index.html`
 );
 
 compileApiReferencePageData();
@@ -30,13 +31,13 @@ function compileApiReferencePageData() {
     `/src/util/object_parser.ts`,
     `/src/util/members.ts`
   ].map(value => {
-    return DRASH_DIR_ROOT + value;
+    return Deno.env().DRASH_DIR_ROOT + value;
   });
   echo("Compiling API Reference page data using doc blocks...");
   let compiler = new Drash.Compilers.DocBlocksToJson();
   let compiled = compiler.compile(DrashNamespaceMembers);
   let apiReferenceData = Encoder.encode(JSON.stringify(compiled, null, 4));
-  const apiReferenceOutputFile = `${DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
+  const apiReferenceOutputFile = `${Deno.env().DRASH_DIR_ROOT}/docs/public/assets/json/api_reference.json`;
   Deno.writeFileSync(apiReferenceOutputFile, apiReferenceData);
   echo(`    Done. API Reference page data was written to: ${apiReferenceOutputFile}.`);
 }
@@ -46,7 +47,7 @@ function compileApiReferencePageData() {
  */
 function compileVueGlobalComponents() {
   echo("Compiling Vue global components...");
-  let files = Drash.Util.Exports.getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/global`);
+  let files = Drash.Util.Exports.getFileSystemStructure(`${Deno.env().DRASH_DIR_ROOT}/docs/src/vue/components/global`);
   let importString = 'import Vue from \"vue\";\n\n';
   files.forEach(pathObj => {
     if (pathObj.isDirectory()) {
@@ -57,7 +58,7 @@ function compileVueGlobalComponents() {
       .replace(/_/g, "-"); // change all underscores to - so that the component name is `some-name` and not `some_name`
     importString += 'import ' + pathObj.snake_cased + ' from \"' + pathObj.path + '\";\nVue.component(\"' + snakeCasedNoExtension + '\", ' + pathObj.snake_cased + ');\n\n';
   });
-  let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
+  let outputFile = `${Deno.env().DRASH_DIR_ROOT}/docs/public/assets/js/compiled_vue_global_components.js`;
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
   echo(`    Done. Vue global components were written to: ${outputFile}.`);
 }
@@ -67,7 +68,7 @@ function compileVueGlobalComponents() {
  */
 function compileVueRouterRoutes() {
   echo("Compiling vue-router routes...");
-  let files = Drash.Util.Exports.getFileSystemStructure(`${DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
+  let files = Drash.Util.Exports.getFileSystemStructure(`${Deno.env().DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
   let importString = "";
   files.forEach(pathObj => {
     if (pathObj.isDirectory()) {
@@ -83,7 +84,7 @@ function compileVueRouterRoutes() {
     importString += `  ${pathObj.snake_cased},\n`;
   });
   importString += "];";
-  let outputFile = `${DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
+  let outputFile = `${Deno.env().DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
   Deno.writeFileSync(outputFile, Encoder.encode(importString));
   echo(`    Done. vue-router routes were written to: ${outputFile}.`);
 }
