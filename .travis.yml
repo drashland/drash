@@ -18,7 +18,7 @@ before_deploy:
   - console/bump_versions
   - git add .
   - git commit -m "bump versions"
-  - git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:$BRANCH
+  - git push https://$GIT_USER:$GIT_PASS@github.com/crookse/deno-drash.git HEAD:$BRANCH
   - cd docs
   - npm install
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
