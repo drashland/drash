@@ -9,3 +9,10 @@ install:
 
 script:
   - console/tests
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: cd $DRASH_DIR_ROOT/docs && npm run docs-deploy
+    on:
+      tags: true
