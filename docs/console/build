@@ -33,7 +33,7 @@
 
   echo "Performing git push..."
 
-  git push
+  git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:master
 
   echo "Done."
 )
