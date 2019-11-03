@@ -14,6 +14,15 @@ compileVueGlobalComponents();
 compileVueRouterRoutes();
 
 /**
+ * Log a message to the console.
+ *
+ * @param string message
+ */
+function echo(message) {
+  console.log(`[docs.ts] ${message}`);
+}
+
+/**
  * Compile the API Reference page's data.
  */
 function compileApiReferencePageData() {
