@@ -1,0 +1,9 @@
+#!/bin/bash
+
+(
+  cd $DRASH_DIR_ROOT
+  console/bump_versions
+  cd docs
+  npm install
+  npm run docs-deploy
+)
