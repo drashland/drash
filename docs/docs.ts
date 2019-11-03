@@ -119,6 +119,9 @@ function compileVueRouterRoutes() {
  * Run the dev server.
  */
 function runServer() {
+  if (Deno.env().DRASH_PROCESS == "ci") {
+    return;
+  }
   echo("Starting server...");
   let server = new Drash.Http.Server({
     address: "localhost:8000",

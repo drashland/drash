@@ -5,6 +5,7 @@ env:
     VER_DENO_LATEST="0.22.0"
     VER_DENO_STD_LATEST="0.20.0"
     VER_DRASH_LATEST="0.22.2"
+    DRASH_PROCESS="ci"
 
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.22.0
