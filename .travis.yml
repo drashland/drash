@@ -1,8 +1,7 @@
 language: python
 
 env:
-  - DRASH_PROCESS="ci"
-    VER_DENO_LATEST="0.22.0"
+  - VER_DENO_LATEST="0.22.0"
     VER_DENO_STD_LATEST="0.20.0"
     VER_DRASH_LATEST="0.22.2"
 
