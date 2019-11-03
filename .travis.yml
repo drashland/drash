@@ -1,7 +1,8 @@
 language: python
 
 env:
-  - VER_DENO_LATEST="0.22.0"
+  - DRASH_PROCESS="ci"
+    VER_DENO_LATEST="0.22.0"
     VER_DENO_STD_LATEST="0.20.0"
     VER_DRASH_LATEST="0.22.2"
 
@@ -35,4 +36,3 @@ after_deploy:
   - git add public/assets/js/bundle.min.js
   - git commit -m "npm run build ($(date))"
   - git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:$BRANCH
-
