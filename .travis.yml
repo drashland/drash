@@ -24,6 +24,7 @@ before_deploy:
   - npm install
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
+  - console/compile_webpack_bundles
   - console/compile_docs
   - cd $DRASH_DIR_ROOT
 
