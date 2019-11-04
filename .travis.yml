@@ -13,7 +13,7 @@ install:
   - export PATH="$HOME/.deno/bin:$PATH" #make sure deno is accessible
 
 script:
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  # - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - console/tests
 
 before_deploy:
@@ -26,20 +26,13 @@ before_deploy:
   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
   - deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts
   - cd $DRASH_DIR_ROOT
-  - export TRAVIS_TAG=$VER_DRASH_LATEST
 
 deploy:
-  # deploy documentation
-  - provider: script
-    skip_cleanup: true
-    script: console/deploy_docs
-    on:
-      tags: true
-  - provider: releases
-    api_key: $GIT_API_KEY
-    skip_cleanup: true
-    on:
-      tags: true
+  provider: script
+  skip_cleanup: true
+  script: console/deploy_docs
+  on:
+    tags: true
 
 after_deploy:
   - cd $DRASH_DIR_ROOT/docs
