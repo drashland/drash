@@ -3,9 +3,9 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // Versions
-const latestRelease = "0.22.3";
+const latestRelease = "undefined";
 const denoVersion = "0.22.0";
-const denoStdVersion = "0.20.0";
+const denoStdVersion = "undefined";
 
 function getConf(envVars) {
 
