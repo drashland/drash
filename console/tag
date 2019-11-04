@@ -1,5 +1,6 @@
 #!/bin/bash
 
+git pull
 git push origin --delete $1
 git tag --delete $1
 git tag $1
