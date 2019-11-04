@@ -3,17 +3,13 @@ language: python
 python:
   - "3.6"
 
-env:
-  - VER_DENO_LATEST="0.22.0"
-    VER_DENO_STD_LATEST="0.20.0"
-    VER_DRASH_LATEST="0.22.3"
-
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh -s v$VER_DENO_LATEST
   - export PATH="$HOME/.deno/bin:$PATH" #make sure deno is accessible
 
 script:
   # - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - console/set_env_vars
   - console/tests
 
 before_deploy:
@@ -24,7 +20,7 @@ before_deploy:
   - npm install
   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
-  - deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts
+  - console/compile_docs
   - cd $DRASH_DIR_ROOT
 
 deploy:

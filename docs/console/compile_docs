@@ -1,0 +1,4 @@
+#!/bin/bash
+
+$DRASH_DIR_ROOT/console/set_env_vars
+deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts
