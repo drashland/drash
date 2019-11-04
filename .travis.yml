@@ -3,13 +3,15 @@ language: python
 python:
   - "3.6"
 
+before_install:
+  - console/set_env_vars
+
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh -s v$VER_DENO_LATEST
   - export PATH="$HOME/.deno/bin:$PATH" #make sure deno is accessible
 
 script:
   # - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - console/set_env_vars
   - console/tests
 
 before_deploy:
