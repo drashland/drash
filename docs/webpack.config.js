@@ -3,7 +3,7 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // Versions
-const latestRelease = "0.22.1";
+const latestRelease = "0.22.3";
 const denoVersion = "0.22.0";
 const denoStdVersion = "0.20.0";
 

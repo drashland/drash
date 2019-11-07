@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/requires%20deno-v0.22.0-brightgreen.svg">
   </a>
   <a href="https://github.com/denoland/deno_std">
-    <img src="https://img.shields.io/badge/uses%20deno__std-v0.20.0-brightgreen.svg">
+    <img src="https://img.shields.io/badge/uses%20deno__std-v0.20.0undefined-brightgreen.svg">
   </a>
 </p>
 
@@ -24,7 +24,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@v0.22.1/mod.ts";
+import Drash from "https://deno.land/x/drash@vundefined/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
