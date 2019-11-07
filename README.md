@@ -12,10 +12,10 @@
     <img src="https://travis-ci.org/crookse/deno-drash.svg?branch=master">
   </a>
   <a href="https://github.com/denoland/deno">
-    <img src="https://img.shields.io/badge/requires%20deno-vv0.23.0-brightgreen.svg">
+    <img src="https://img.shields.io/badge/requires%20deno-v0.23.0v0.23.0-brightgreen.svg">
   </a>
   <a href="https://github.com/denoland/deno_std">
-    <img src="https://img.shields.io/badge/uses%20deno__std-vv0.23.0undefined-brightgreen.svg">
+    <img src="https://img.shields.io/badge/uses%20deno__std-v0.23.0v0.23.0undefined-brightgreen.svg">
   </a>
 </p>
 
