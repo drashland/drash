@@ -1,6 +1,10 @@
-const drash = Deno.env().VER_DRASH_LATEST;
-const deno = Deno.env().VER_DENO_LATEST;
-const denoStd = Deno.env().VER_DENO_STD_LATEST;
+// const drash = Deno.env().VER_DRASH_LATEST;
+// const deno = Deno.env().VER_DENO_LATEST;
+// const denoStd = Deno.env().VER_DENO_STD_LATEST;
+
+const drash = "v0.23.0";
+const deno = "v0.23.0";
+const denoStd = "v0.23.0";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
