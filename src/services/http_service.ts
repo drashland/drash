@@ -46,10 +46,6 @@ export default class HttpService {
         //
         // ... there's going to be potential fuck ups here btw ...
 
-        Drash.core_logger.debug(
-          `HTTP request Content-Type: ${request.headers.get("Content-Type")}`
-        );
-
         // Is this an application/json body?
         if (request.headers.get("Content-Type") == "application/json") {
           try {

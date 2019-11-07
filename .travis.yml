@@ -1,11 +1,42 @@
 language: python
 
+python:
+  - "3.6"
+
 env:
-  - DRASH_DIR_ROOT="/home/travis/build/crookse/deno-drash" DRASH_CORE_LOGGER_ENABLED=false
+  - VER_DENO_LATEST="0.23.0"
+    VER_DENO_STD_LATEST="0.20.0"
+    VER_DRASH_LATEST="0.23.0"
 
 install:
-  - curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.20.0
-  - export PATH="$HOME/.deno/bin:$PATH"
+  - curl -fsSL https://deno.land/x/install/install.sh | sh -s v$VER_DENO_LATEST
+  - export PATH="$HOME/.deno/bin:$PATH" #make sure deno is accessible
 
 script:
+  # - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - console/tests
+
+# before_deploy:
+#   - cd $DRASH_DIR_ROOT
+#   - console/bump_versions
+#   - git add .
+#   - cd docs
+#   - npm install
+#   - export DRASH_DIR_EXAMPLE_CODE="$DRASH_DIR_ROOT/docs/src/example_code"
+#   - export DRASH_SERVER_DIRECTORY="$DRASH_DIR_ROOT/docs"
+#   - console/compile_docs
+#   - console/compile_webpack_bundles
+#   - cd $DRASH_DIR_ROOT
+
+# deploy:
+#   provider: script
+#   skip_cleanup: true
+#   script: console/deploy_docs
+#   on:
+#     tags: true
+
+# after_deploy:
+#   - cd $DRASH_DIR_ROOT/docs
+#   - git add .
+#   - git commit -m "bump versions; npm run build ($(date))"
+#   - git push https://$GIT_USER:$GIT_PASS@github.com/crookse/deno-drash.git HEAD:master

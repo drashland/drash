@@ -513,7 +513,6 @@ export default class DocBlocksToJson {
     let matches = text.match(new RegExp(this.re__member_names + ".+", "g"));
 
     if (matches && matches.length > 0) {
-      Drash.core_logger.debug(`Using @annotation for ${this.current_file}.`);
       let memberName = text
         .match(new RegExp(this.re__member_names + ".+", "g"))[0]
         .replace(new RegExp(this.re__member_names + " +?", "g"), "")
@@ -549,10 +548,6 @@ export default class DocBlocksToJson {
       default:
         break;
     }
-
-    Drash.core_logger.error(
-      `Member name could not be found for ${this.current_file}.`
-    );
 
     return undefined;
   }
@@ -775,8 +770,6 @@ export default class DocBlocksToJson {
    * @param string fileContents
    */
   protected parseMembersOnlyFile(fileContents) {
-    Drash.core_logger.debug(`Parsing members-only file: ${this.current_file}.`);
-
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     docBlocks.forEach(docBlock => {
@@ -853,8 +846,6 @@ export default class DocBlocksToJson {
    * @param string fileContents
    */
   protected parseClassFile(fileContents) {
-    Drash.core_logger.debug(`Parsing class file: ${this.current_file}.`);
-
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     let classMap: any = {

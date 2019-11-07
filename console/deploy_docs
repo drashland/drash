@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $DRASH_DIR_ROOT/docs
+deno --allow-read --allow-write --allow-env console/build.ts

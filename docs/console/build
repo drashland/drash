@@ -7,7 +7,7 @@
 
   echo "Performing production compilation of new webpack bundle.js"
 
-  webpack \
+  node_modules/.bin/webpack \
     --env.environment="production" \
     --env.deno_version="$deno_version" \
     --env.base_url="$DRASH_DOCS_BASE_URL" \
@@ -18,7 +18,8 @@
 
   echo "Performing build using build.ts..."
 
-  deno run --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/docs/console/build.ts
+  deno --allow-all $DRASH_DIR_ROOT/docs/console/docs.ts
+  deno --allow-all $DRASH_DIR_ROOT/docs/console/build.ts
 
   echo "Done."
 
@@ -32,7 +33,7 @@
 
   echo "Performing git push..."
 
-  git push
+  git push https://$GIT_USER:$GIT_PASSWORD@github.com/crookse/deno-drash.git HEAD:master
 
   echo "Done."
 )

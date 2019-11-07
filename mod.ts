@@ -28,7 +28,6 @@ import server from "./src/http/server.ts";
 // Loggers
 import base_logger from "./src/loggers/logger.ts";
 import console_logger from "./src/loggers/console_logger.ts";
-import class_core_logger from "./src/loggers/core_logger.ts";
 import file_logger from "./src/loggers/file_logger.ts";
 
 // Services
@@ -72,8 +71,6 @@ namespace Drash {
   export namespace Loggers {
     export type ConsoleLogger = console_logger;
     export const ConsoleLogger = console_logger;
-    export type CoreLogger = class_core_logger;
-    export const CoreLogger = class_core_logger;
     export type FileLogger = file_logger;
     export const FileLogger = file_logger;
     export type Logger = base_logger;
@@ -112,25 +109,6 @@ namespace Drash {
   export const Members: any = {};
 
   /**
-   * A property to hold the core logger. This logger is for debugging purposes.
-   * It helps Drash developers debug issues within the Drash namespace. For
-   * example, the `DocBlocksToJson` compiler could run into issues while parsing
-   * doc blocks and writing the JSON to a file. In order to debug where issues
-   * occur, `Drash.core_logger` is called within that class.
-   *
-   * This logger can only be enabled using the `DRASH_CORE_LOGGER_ENABLED`
-   * environment variable. You can also set the logger's output level using the
-   * `DRASH_CORE_LOGGER_LEVEL` environment variable.
-   *
-   * @property Drash.Loggers.CoreLogger core_logger
-   */
-  export const core_logger = new Drash.Loggers.CoreLogger({
-    enabled: Deno.env().DRASH_CORE_LOGGER_ENABLED === "true",
-    level: Deno.env().DRASH_CORE_LOGGER_LEVEL,
-    tag_string: "{level} |"
-  });
-
-  /**
    * Add an app to the Members namespace. After adding an app, you can use the
    * app via `Drash.Members.YourApp.doSomething()`.
    *
@@ -140,7 +118,6 @@ namespace Drash {
    *     The app.
    */
   export function addMember(name: string, app: any) {
-    this.core_logger.debug(`Add member "${name}" to Drash.Members namespace.`);
     this.Members[name] = app;
   }
 
