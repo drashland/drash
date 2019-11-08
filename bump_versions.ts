@@ -2,7 +2,7 @@
 // const deno = Deno.env().VER_DENO_LATEST;
 // const denoStd = Deno.env().VER_DENO_STD_LATEST;
 
-const drash = "v0.23.0";
+const drash = "0.23.0";
 const deno = "0.23.0";
 const denoStd = "0.23.0";
 
@@ -17,6 +17,12 @@ text = text.replace(/drash@.*([0-9]([0-9])?\.?)*([0-9]([0-9])?\.?)/g, "drash@v" 
 text = text.replace(/deno-v([0-9]([0-9])?\.?)*/g, "deno-v" + deno);
 text = text.replace(/deno__std-v([0-9]([0-9])?\.?)*/g, "deno__std-v" + denoStd);
 Deno.writeFileSync("./README.md", encoder.encode(text));
+
+// Bump the versions in the deno_std.ts file
+const standard = Deno.readFileSync("./deno_std.ts");
+text = decoder.decode(standard);
+text = text.replace(/std@.*([0-9]([0-9])?\.?)*([0-9]([0-9])?\.?)/g, "std@v" + denoStd);
+Deno.writeFileSync("./deno_std.ts", encoder.encode(text));
 
 // Bump the versions in the docs/webpack.config.js file
 const webpackConfig = Deno.readFileSync("./docs/webpack.config.js");
