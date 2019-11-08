@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/requires%20deno-v0.23.0-brightgreen.svg">
   </a>
   <a href="https://github.com/denoland/deno_std">
-    <img src="https://img.shields.io/badge/uses%20deno__std-v0.24.0-brightgreen.svg">
+    <img src="https://img.shields.io/badge/uses%20deno__std-v0.23.0-brightgreen.svg">
   </a>
 </p>
 
