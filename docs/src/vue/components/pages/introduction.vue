@@ -8,19 +8,17 @@ div
                 p.shields
                     a(href="https://github.com/crookse/deno-drash/releases" target="_BLANK")
                         img.margin-bottom--0(alt="GitHub release" src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=brightgreen&label=latest" width="auto" height="20")
-                    a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
-                        img.margin-bottom--0(alt="Travis CI Build Master" src="https://travis-ci.org/crookse/deno-drash.svg?branch=master" width="auto" height="20")
                     a(href="https://github.com/denoland/deno_install" target="_BLANK")
                         img.margin-bottom--0(alt="deno compatibility" :src="$conf.shields.requires_deno" width="auto" height="20")
-                    a(href="https://github.com/denoland/deno_std" target="_BLANK")
-                        img.margin-bottom--0(alt="deno_std compatibility" :src="$conf.shields.deno_std" width="auto" height="20")
+                    a(href="https://travis-ci.org/crookse/deno-drash" target="_BLANK")
+                        img.margin-bottom--0(alt="Travis CI Build Master" src="https://img.shields.io/travis/crookse/deno-drash/master?label=master" width="auto" height="20")
     div.c-page__body
         hr
         div.row
             div.col
                 heading-h2#what-is-drash(heading="What is Drash?")
                 p Drash is a microframework for <a href="https://deno.land" target="_BLANK">Deno</a> focused on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web" target="_BLANK">resource</a> creation and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation" target="_BLANK">content negotiation</a>.
-                p Drash is designed to help you build your projects quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA, or even a static HTML site. How you use Drash is up to you, so that it can be everything you need and nothing you don't&mdash;like a DRASH tent.
+                p Drash is designed to help you build your projects quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA, or even a static HTML site (like these documentation pages). How you use Drash is up to you, so that it can be everything you need and nothing you don't&mdash;like a DRASH tent.
         hr
         div.row
             div.col
@@ -43,7 +41,7 @@ div
                             | 
                             | // Import Drash master
                             | import Drash from "https://deno.land/x/drash/mod.ts";
-                p It is recommended that you import the latest release or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code (including deno_std) and is subject to Deno's "disruptive renames" as stated in deno_std.
+                p It is recommended that you import the latest release of Drash or a specific release to prevent breaking changes. Drash's master branch tries to keep up with the latest Deno code and is subject to Deno's "disruptive renames" as stated in the Deno project.
         hr
         div.row
             div.col
