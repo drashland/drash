@@ -19,7 +19,7 @@ function getConf(envVars) {
       .replace("\ntypescript: ", ", and TypeScript v"),
     deno_version_requirement: `v${denoVersion}`,
     deno_std_version: denoStdVersion,
-    latest_release: `v${latestRelease}`,
+    latest_release: `${latestRelease}`,
     module_name: "Drash",
     module_namespace: "Drash",
     shields: {
