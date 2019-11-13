@@ -13,9 +13,9 @@ What: Explain ...
 
 Why: Explain ...
 
-## Acceptance Critera
+## Acceptance Criteria
 
-- Add acceptance critera as bullted list
+- Add acceptance criteria as bulleted list
 
 ## Example Pseudo Code (for implementation)
 
