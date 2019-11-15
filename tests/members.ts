@@ -17,8 +17,14 @@ let mockRequest = function mockRequest(
       headers: headers
     });
   }
+  request.respond = function respond(output: any) {
+    return output;
+  };
   return request;
 };
+
+class MockServer extends Drash.Http.Server {
+}
 
 export default {
   Drash,
@@ -28,6 +34,7 @@ export default {
   },
   decoder,
   mockRequest,
+  MockServer,
   runTests,
   test
 };

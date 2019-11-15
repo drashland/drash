@@ -166,11 +166,7 @@ export default class Server {
     // TS2351: Cannot use 'new' with an expression whose type lacks a call or
     // construct signature.
     //
-    let resource = new resourceClass(
-      request,
-      new Drash.Http.Response(request),
-      this
-    );
+    let resource = this.getResourceObject(resourceClass, request);
     this.logger.debug(
       "Using `" +
         resource.constructor.name +
@@ -194,9 +190,7 @@ export default class Server {
         resource.hook_afterRequest();
       }
       this.logger.info("Sending response. " + response.status_code + ".");
-      // FIXME (crookse) Something is left hanging in response.send()
-      response.send();
-      this.logger.debug("Response: " + response.outputDetails());
+      return response.send();
     } catch (error) {
       // If a resource was found, but an error occurred, then that's most likely
       // due to the HTTP method not being defined in the resource class;
@@ -328,6 +322,10 @@ export default class Server {
     }
   }
 
+  public getResourceObject(resource: any, request: any): any {
+    return new resource(request, new Drash.Http.Response(request), this);
+  }
+
   /**
    * @description
    *     Run the Deno server at the address specified in the configs. This
@@ -371,7 +369,12 @@ export default class Server {
   protected addHttpResource(resourceClass: Drash.Http.Resource): void {
     resourceClass.paths.forEach((path, index) => {
       let pathObj;
-      if (path == "*" || path.includes("*")) {
+      let pathIsWildCard = false;
+      try {
+        pathIsWildCard = (path == "*" || path.includes("*"));
+      } catch (error) {
+      }
+      if (pathIsWildCard) {
         pathObj = {
           og_path: path,
           regex_path:

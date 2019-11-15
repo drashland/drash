@@ -194,9 +194,7 @@ export default class Response {
       body: new TextEncoder().encode(body)
     };
 
-    this.request.respond(output);
-
-    return output;
+    return this.request.respond(output);
   }
 
   /**
