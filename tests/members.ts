@@ -2,7 +2,10 @@ import Drash from "../mod.ts";
 import { ServerRequest, assertEquals, runTests, test } from "../deno_std.ts";
 const decoder = new TextDecoder("utf-8");
 
-let mockRequest = function mockRequest(
+/**
+ * Get a mocked request object.
+ */
+function mockRequest(
   url = "/",
   method = "get",
   headers?: any,
@@ -33,6 +36,9 @@ let mockRequest = function mockRequest(
   return request;
 };
 
+/**
+ * Get a mocked server object.
+ */
 class MockServer extends Drash.Http.Server {
 }
 
