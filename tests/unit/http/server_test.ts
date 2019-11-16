@@ -135,26 +135,6 @@ class HomeResource extends members.Drash.Http.Resource {
   }
 }
 
-class UserIsAdmin extends members.Drash.Http.Middleware {
-  protected user_id = 999; // simulate DB data
-  public run(request: any) {
-    if (!request.getHeaderVar('user_id')) {
-      throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' not specified.");
-    }
-    if (request.getHeaderVar('user_id') != this.user_id) {
-      throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' unknown.");
-    }
-  }
-}
-
-class VerifyCsrfToken extends members.Drash.Http.Middleware {
-  public run(request: any) {
-    if (!request.getHeaderVar('csrf_token')) {
-      throw new members.Drash.Exceptions.HttpException(400);
-    }
-  }
-}
-
 class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   static middleware = ["UserIsAdmin"];
@@ -186,5 +166,25 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   public GET() {
     this.response.body = this.users[this.request.getPathVar('id')];
     return this.response;
+  }
+}
+
+class UserIsAdmin extends members.Drash.Http.Middleware {
+  protected user_id = 999; // simulate DB data
+  public run(request: any) {
+    if (!request.getHeaderVar('user_id')) {
+      throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' not specified.");
+    }
+    if (request.getHeaderVar('user_id') != this.user_id) {
+      throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' unknown.");
+    }
+  }
+}
+
+class VerifyCsrfToken extends members.Drash.Http.Middleware {
+  public run(request: any) {
+    if (!request.getHeaderVar('csrf_token')) {
+      throw new members.Drash.Exceptions.HttpException(400);
+    }
   }
 }
