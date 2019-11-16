@@ -12,10 +12,7 @@
     <img src="https://travis-ci.org/crookse/deno-drash.svg?branch=master">
   </a>
   <a href="https://github.com/denoland/deno">
-    <img src="https://img.shields.io/badge/requires%20deno-vv0.23.0-brightgreen.svg">
-  </a>
-  <a href="https://github.com/denoland/deno_std">
-    <img src="https://img.shields.io/badge/uses%20deno__std-vv0.23.0undefined-brightgreen.svg">
+    <img src="https://img.shields.io/badge/requires%20deno-v0.23.0-brightgreen.svg">
   </a>
 </p>
 
@@ -24,7 +21,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@vundefined/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.23.0/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -67,3 +64,7 @@ For full documentation, visit [https://drash.io](https://crookse.github.io/deno-
 - Request Body Parsing
     - application/x-www-form-urlencoded (e.g, `username=root&password=alpine`)
     - application/json (e.g., `{"username":"root","password":"alpine"}`)
+
+## Contributing
+
+Contributors are welcomed!

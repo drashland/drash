@@ -4,8 +4,8 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // Versions
 const latestRelease = "v0.23.0";
-const denoVersion = "v0.23.0";
-const denoStdVersion = "v0.23.0";
+const denoVersion = "0.23.0";
+const denoStdVersion = "0.23.0";
 
 function getConf(envVars) {
 
@@ -19,7 +19,7 @@ function getConf(envVars) {
       .replace("\ntypescript: ", ", and TypeScript v"),
     deno_version_requirement: `v${denoVersion}`,
     deno_std_version: denoStdVersion,
-    latest_release: `v${latestRelease}`,
+    latest_release: `${latestRelease}`,
     module_name: "Drash",
     module_namespace: "Drash",
     shields: {
