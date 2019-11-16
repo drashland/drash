@@ -28,7 +28,7 @@ members.test(async function Server_handleHttpRequest_POST() {
     });
 });
 
-members.test(async function Server_handleHttpRequest_middleware_fail_1() {
+members.test(async function Server_handleHttpRequest_middleware_failNoCsrfToken() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -43,11 +43,47 @@ members.test(async function Server_handleHttpRequest_middleware_fail_1() {
     ]
   });
 
-  let response = await server.handleHttpRequest(members.mockRequest("/users/1"));
+  let response = await server.handleHttpRequest(
+    members.mockRequest(
+      "/users/1",
+      "get"
+    )
+  );
 
   members.assert.equal(
     members.decoder.decode(response.body),
-    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/users/1","method":"GET"},"body":"'user_id' not specified."}`
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/users/1","method":"GET"},"body":"No CSRF token, dude."}`
+  );
+});
+
+members.test(async function Server_handleHttpRequest_middleware_failWrongCsrfToken() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        VerifyCsrfToken
+      ],
+      local: [
+        UserIsAdmin
+      ]
+    },
+    resources: [
+      ResourceWithMiddleware
+    ]
+  });
+
+  let response = await server.handleHttpRequest(
+    members.mockRequest(
+      "/users/1",
+      "get",
+      {
+        csrf_token: "hehe"
+      }
+    )
+  );
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/users/1","method":"GET"},"body":"Wrong CSRF token, dude."}`
   );
 });
 
@@ -66,7 +102,17 @@ members.test(async function Server_handleHttpRequest_middleware_not_admin() {
     ]
   });
 
-  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get", {user_id: 123}));
+  let response = await server.handleHttpRequest(
+    members.mockRequest(
+      "/users/1",
+      "get",
+      {
+        csrf_token: "all your base",
+        user_id: 123
+      }
+    )
+  );
+
   members.assert.equal(
     members.decoder.decode(response.body),
     `{"status_code":400,"status_message":"Bad Request","request":{"url":"/users/1","method":"GET"},"body":"'user_id' unknown."}`
@@ -88,7 +134,16 @@ members.test(async function Server_handleHttpRequest_middleware_pass() {
     ]
   });
   
-  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get", {user_id: 999}));
+  let response = await server.handleHttpRequest(
+    members.mockRequest(
+      "/users/1",
+      "get",
+      {
+        csrf_token: "all your base",
+        user_id: 999
+      }
+    )
+  );
 
   members.assert.equal(
     members.decoder.decode(response.body),
@@ -96,7 +151,7 @@ members.test(async function Server_handleHttpRequest_middleware_pass() {
   );
 });
 
-members.test(async function Server_handleHttpRequest_middlewareHooked_fail() {
+members.test(async function Server_handleHttpRequest_middlewareHooked_failNoHeader() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -112,16 +167,53 @@ members.test(async function Server_handleHttpRequest_middlewareHooked_fail() {
 
   members.assert.equal(
     members.decoder.decode(response.body),
-    `{"status_code":400,"status_message":"Bad request","request":{"url":"/","method":"GET"},"body":\"Missing header, guy.\"}`
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/","method":"GET"},"body":\"Missing header, guy.\"}`
+  );
+});
+
+members.test(async function Server_handleHttpRequest_middlewareHooked_failWrongHeader() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        BeforeResponse
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+
+  let response = await server.handleHttpRequest(members.mockRequest("/", "get", {send_response: "yes please"}));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/","method":"GET"},"body":"Ha... try again. Close though."}`
+  );
+});
+
+members.test(async function Server_handleHttpRequest_middlewareHooked_failWrongHeader() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        BeforeResponse
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+
+  let response = await server.handleHttpRequest(members.mockRequest("/", "get", {send_response: "yes do it"}));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
   );
 });
 
 members.test(async function Server_handleHttpRequest_middlewareNotFound() {
   let server = new members.MockServer({
     middleware: {
-      global: [
-        VerifyCsrfToken
-      ],
       local: [
         UserIsAdmin
       ]
@@ -131,7 +223,7 @@ members.test(async function Server_handleHttpRequest_middlewareNotFound() {
     ]
   });
   
-  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get", {user_id: 999}));
+  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get"));
 
   members.assert.equal(
     members.decoder.decode(response.body),
@@ -174,7 +266,6 @@ class ResourceWithMiddleware extends members.Drash.Http.Resource {
 
 class ResourceWithMiddlewareHooked extends members.Drash.Http.Resource {
   static paths = ["/"];
-  static middleware = ["BeforeResponse"];
   public GET() {
     this.response.body = "got";
     return this.response;
@@ -227,7 +318,10 @@ class UserIsAdmin extends members.Drash.Http.Middleware {
 class VerifyCsrfToken extends members.Drash.Http.Middleware {
   public run(request: any) {
     if (!request.getHeaderVar('csrf_token')) {
-      throw new members.Drash.Exceptions.HttpException(400);
+      throw new members.Drash.Exceptions.HttpException(400, "No CSRF token, dude.");
+    }
+    if (request.getHeaderVar('csrf_token') != "all your base") {
+      throw new members.Drash.Exceptions.HttpException(400, "Wrong CSRF token, dude.");
     }
   }
 }
