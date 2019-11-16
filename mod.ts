@@ -20,6 +20,7 @@ import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db
 import http_exception from "./src/exceptions/http_exception.ts";
 
 // Http
+import middleware from "./src/http/middleware.ts";
 import request from "./src/http/request.ts";
 import resource from "./src/http/resource.ts";
 import response from "./src/http/response.ts";
@@ -78,6 +79,8 @@ namespace Drash {
   }
 
   export namespace Http {
+    export type Middleware = middleware;
+    export let Middleware = middleware;
     export type Request = request;
     export let Request = request;
     export type Resource = resource;
