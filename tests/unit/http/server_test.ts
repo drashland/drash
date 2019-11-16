@@ -96,6 +96,26 @@ members.test(async function Server_handleHttpRequest_middleware_pass() {
   );
 });
 
+members.test(async function Server_handleHttpRequest_middlewareHooked_fail() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        BeforeResponse
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+
+  let response = await server.handleHttpRequest(members.mockRequest("/", "get"));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad request","request":{"url":"/","method":"GET"},"body":\"Missing header, guy.\"}`
+  );
+});
+
 members.test(async function Server_handleHttpRequest_middlewareNotFound() {
   let server = new members.MockServer({
     middleware: {
@@ -152,6 +172,15 @@ class ResourceWithMiddleware extends members.Drash.Http.Resource {
   }
 }
 
+class ResourceWithMiddlewareHooked extends members.Drash.Http.Resource {
+  static paths = ["/"];
+  static middleware = ["BeforeResponse"];
+  public GET() {
+    this.response.body = "got";
+    return this.response;
+  }
+}
+
 class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   static middleware = ["muahahaha"];
@@ -166,6 +195,20 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   public GET() {
     this.response.body = this.users[this.request.getPathVar('id')];
     return this.response;
+  }
+}
+
+class BeforeResponse extends members.Drash.Http.Middleware {
+  static locations = [
+    "before_response"
+  ];
+  public run(request: any) {
+    if (!request.getHeaderVar('send_response')) {
+      throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
+    }
+    if (request.getHeaderVar('send_response') != "yes do it") {
+      throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
+    }
   }
 }
 
