@@ -51,12 +51,27 @@ export default class Server {
 
   /**
    * @description
-   *     A property to hold middleware (for global use) passed in from the
-   *     configs.
+   *     A property to hold middleware to be run before requests.
    *
-   * @property any[] middleware_global
+   * @property any middleware_global_before_request
    */
-  protected middleware_global: any[] = [];
+  protected middleware_global_before_request: any[] = [];
+
+  /**
+   * @description
+   *     A property to hold middleware to be run before responses.
+   *
+   * @property any middleware_global_before_response
+   */
+  protected middleware_global_before_response: any[] = [];
+
+  /**
+   * @description
+   *     A property to hold middleware to be run after responses.
+   *
+   * @property any middleware_global_after_response
+   */
+  protected middleware_global_after_response: any[] = [];
 
   /**
    * @description
@@ -125,12 +140,16 @@ export default class Server {
     this.configs = configs;
 
     if (configs.middleware) {
-      configs.middleware.global.forEach(middlewareClass => {
-        this.addHttpMiddlewareGlobal(middlewareClass);
-      });
-      configs.middleware.local.forEach(middlewareClass => {
-        this.addHttpMiddlewareLocal(middlewareClass);
-      });
+      if (configs.middleware.hasOwnProperty("global")) {
+        configs.middleware.global.forEach(middlewareClass => {
+          this.addHttpMiddlewareGlobal(middlewareClass);
+        });
+      }
+      if (configs.middleware.hasOwnProperty("local")) {
+        configs.middleware.local.forEach(middlewareClass => {
+          this.addHttpMiddlewareLocal(middlewareClass);
+        });
+      }
     }
 
     if (configs.resources) {
@@ -207,8 +226,8 @@ export default class Server {
     let response;
 
     try {
-      // Perform global middleware
-      this.middleware_global.forEach(middlewareClass => {
+      // Perform "before_request" global middleware
+      this.middleware_global_before_request.forEach(middlewareClass => {
         let middleware = new middlewareClass();
         middleware.run(request);
       });
@@ -229,15 +248,24 @@ export default class Server {
       this.logger.debug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
 
-      // Perform hook after the request is made
-      if (typeof resource.hook_afterRequest === "function") {
-        this.logger.debug("Calling hook_afterRequest().");
-        resource.hook_afterRequest();
-      }
+      // Perform "before_response" global middleware
+      this.middleware_global_before_response.forEach(middlewareClass => {
+        let middleware = new middlewareClass();
+        middleware.run(request);
+      });
 
+      // Send the response
       this.logger.info("Sending response. " + response.status_code + ".");
-      return response.send();
+      let output = response.send();
+
+      // Perform "after_response" global middleware
+      this.middleware_global_after_response.forEach(middlewareClass => {
+        let middleware = new middlewareClass();
+        middleware.run(request);
+      });
+      return output;
     } catch (error) {
+      // console.log(error);
       return this.handleHttpRequestError(request, error, resource, response);
     }
   }
@@ -391,7 +419,13 @@ export default class Server {
   protected addHttpMiddlewareGlobal(
     middlewareClass: Drash.Http.Middleware
   ): void {
-    this.middleware_global[middlewareClass.name] = middlewareClass;
+    if (middlewareClass.locations && middlewareClass.locations.length > 0) {
+      middlewareClass.locations.forEach(location => {
+        this[`middleware_global_${location}`].push(middlewareClass);
+      });
+      return;
+    }
+    this.middleware_global_before_request.push(middlewareClass);
   }
 
   /**
