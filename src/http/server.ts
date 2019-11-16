@@ -212,11 +212,12 @@ export default class Server {
       // Perform local middleware defined in the resource
       if (resource.middleware) {
         resource.middleware.forEach(middlewareClass => {
-          this.logger.debug(`Middleware class "${middlewareClass}" does not exist.`);
-          if (this.middleware_local.hasOwnProperty(middlewareClass)) {
-            let middleware = new this.middleware_local[middlewareClass]();
-            middleware.run(request);
+          if (!this.middleware_local.hasOwnProperty(middlewareClass)) {
+            this.logger.debug(`Middleware class "${middlewareClass}" does not exist.`);
+            throw new Drash.Exceptions.HttpMiddlewareException(418);
           }
+          let middleware = new this.middleware_local[middlewareClass]();
+          middleware.run(request);
         });
       }
 
