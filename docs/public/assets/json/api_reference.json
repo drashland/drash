@@ -980,20 +980,20 @@
                 "This is the base resource class for all resources. All resource classes\nmust be derived from this class."
             ],
             "properties": {
-                "paths": {
+                "middleware": {
                     "access_modifier": "public",
                     "description": [
-                        "A property to hold the paths to access this resource.",
-                        "All derived resource classes MUST define this property as `static`\n(e.g., `static paths = [\"path\"];`)"
+                        "A property to hold the middleware this resource uses.",
+                        "All derived resource classes MUST define this property as `static`\n(e.g., `static middleware = [\"MiddlewareClass\"];`)"
                     ],
                     "annotation": {
-                        "line": "@property string[] paths",
+                        "line": "@property string[] middleware",
                         "data_type": "string[]",
-                        "name": "paths"
+                        "name": "middleware"
                     },
-                    "signature": "public paths: string[]",
-                    "name": "paths",
-                    "fully_qualified_name": "Drash.Http.Resource.paths"
+                    "signature": "public middleware: string[]",
+                    "name": "middleware",
+                    "fully_qualified_name": "Drash.Http.Resource.middleware"
                 },
                 "name": {
                     "access_modifier": "public",
@@ -1008,6 +1008,21 @@
                     "signature": "public name: string",
                     "name": "name",
                     "fully_qualified_name": "Drash.Http.Resource.name"
+                },
+                "paths": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold the paths to access this resource.",
+                        "All derived resource classes MUST define this property as `static`\n(e.g., `static paths = [\"path\"];`)"
+                    ],
+                    "annotation": {
+                        "line": "@property string[] paths",
+                        "data_type": "string[]",
+                        "name": "paths"
+                    },
+                    "signature": "public paths: string[]",
+                    "name": "paths",
+                    "fully_qualified_name": "Drash.Http.Resource.paths"
                 },
                 "request;": {
                     "access_modifier": "protected",
@@ -1438,6 +1453,34 @@
                     "name": "deno_server",
                     "fully_qualified_name": "Drash.Http.Server.deno_server"
                 },
+                "middleware_global": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold middleware (for global use) passed in from the\nconfigs."
+                    ],
+                    "annotation": {
+                        "line": "@property any[] middleware_global",
+                        "data_type": "any[]",
+                        "name": "middleware_global"
+                    },
+                    "signature": "protected middleware_global: any[] = []",
+                    "name": "middleware_global",
+                    "fully_qualified_name": "Drash.Http.Server.middleware_global"
+                },
+                "middleware_local": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold middleware (for local use) passed in from the\nconfigs."
+                    ],
+                    "annotation": {
+                        "line": "@property any middleware_local",
+                        "data_type": "any",
+                        "name": "middleware_local"
+                    },
+                    "signature": "protected middleware_local: any = {}",
+                    "name": "middleware_local",
+                    "fully_qualified_name": "Drash.Http.Server.middleware_local"
+                },
                 "resources": {
                     "access_modifier": "protected",
                     "description": [
@@ -1576,7 +1619,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestError(request, error: any): any",
+                    "signature": "public handleHttpRequestError(request: any, error: any, resource: Drash.Http.Resource = null, response: Drash.Http.Response = null): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestError"
                 },
@@ -1672,6 +1715,70 @@
                     "is_async": true,
                     "fully_qualified_name": "Drash.Http.Server.run"
                 },
+                "addHttpMiddlewareGlobal": {
+                    "access_modifier": "protected",
+                    "name": "addHttpMiddlewareGlobal",
+                    "description": [
+                        "Add middleware to the server."
+                    ],
+                    "params": {
+                        "middlewareClass": {
+                            "name": "middlewareClass",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param Drash.Http.Middleware middlewareClass",
+                                "data_type": "Drash.Http.Middleware",
+                                "name": "middlewareClass"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected addHttpMiddlewareGlobal(middlewareClass: Drash.Http.Middleware): void",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.addHttpMiddlewareGlobal"
+                },
+                "addHttpMiddlewareLocal": {
+                    "access_modifier": "protected",
+                    "name": "addHttpMiddlewareLocal",
+                    "description": [
+                        "Add middleware to the server."
+                    ],
+                    "params": {
+                        "middlewareClass": {
+                            "name": "middlewareClass",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param Drash.Http.Middleware middlewareClass",
+                                "data_type": "Drash.Http.Middleware",
+                                "name": "middlewareClass"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected addHttpMiddlewareLocal(middlewareClass: Drash.Http.Middleware): void",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.addHttpMiddlewareLocal"
+                },
                 "addHttpResource": {
                     "access_modifier": "protected",
                     "name": "addHttpResource",
@@ -1743,9 +1850,9 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
                 },
-                "errorResponse": {
+                "httpErrorResponse": {
                     "access_modifier": "protected",
-                    "name": "errorResponse",
+                    "name": "httpErrorResponse",
                     "description": null,
                     "params": {
                         "code": {
@@ -1769,9 +1876,9 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected errorResponse(code: number): Drash.Exceptions.HttpException",
+                    "signature": "protected httpErrorResponse(code: number): Drash.Exceptions.HttpException",
                     "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Server.errorResponse"
+                    "fully_qualified_name": "Drash.Http.Server.httpErrorResponse"
                 },
                 "getResourceClass": {
                     "access_modifier": "protected",
