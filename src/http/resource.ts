@@ -11,14 +11,14 @@ import Drash from "../../mod.ts";
 export default class Resource {
   /**
    * @description
-   *     A property to hold the paths to access this resource.
+   *     A property to hold the middleware this resource uses.
    *
    *     All derived resource classes MUST define this property as `static`
-   *     (e.g., `static paths = ["path"];`)
+   *     (e.g., `static middleware = ["MiddlewareClass"];`)
    *
-   * @property string[] paths
+   * @property string[] middleware
    */
-  public paths: string[];
+  public middleware: string[];
 
   /**
    * @description
@@ -29,6 +29,17 @@ export default class Resource {
    * @property string name
    */
   public name: string;
+
+  /**
+   * @description
+   *     A property to hold the paths to access this resource.
+   *
+   *     All derived resource classes MUST define this property as `static`
+   *     (e.g., `static paths = ["path"];`)
+   *
+   * @property string[] paths
+   */
+  public paths: string[];
 
   /**
    * @description
