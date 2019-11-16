@@ -47,6 +47,24 @@ export default class Server {
 
   /**
    * @description
+   *     A property to hold middleware (for global use) passed in from the
+   *     configs.
+   *
+   * @property any[] middleware_global
+   */
+  protected middleware_global: any[] = [];
+
+  /**
+   * @description
+   *     A property to hold middleware (for local use) passed in from the
+   *     configs.
+   *
+   * @property any middleware_local
+   */
+  protected middleware_local: any = {};
+
+  /**
+   * @description
    *     A property to hold the resources passed in from the configs.
    *
    * @property any[] resources
@@ -102,9 +120,18 @@ export default class Server {
 
     this.configs = configs;
 
+    if (configs.middleware) {
+      configs.middleware.global.forEach(middlewareClass => {
+        this.addHttpMiddlewareGlobal(middlewareClass);
+      });
+      configs.middleware.local.forEach(middlewareClass => {
+        this.addHttpMiddlewareLocal(middlewareClass);
+      });
+    }
+
     if (configs.resources) {
-      configs.resources.forEach(resource => {
-        this.addHttpResource(resource);
+      configs.resources.forEach(resourceClass => {
+        this.addHttpResource(resourceClass);
       });
       delete this.configs.resources;
     }
@@ -153,7 +180,7 @@ export default class Server {
 
     // No resource? Send a 404 (Not Found) response.
     if (!resourceClass) {
-      return this.handleHttpRequestError(request, this.errorResponse(404));
+      return this.handleHttpRequestError(request, this.httpErrorResponse(404));
     }
 
     // @ts-ignore
@@ -176,36 +203,37 @@ export default class Server {
     let response;
 
     try {
-      // Perform hook before the request is made
-      if (typeof resource.hook_beforeRequest === "function") {
-        this.logger.debug("Calling hook_beforeRequest().");
-        resource.hook_beforeRequest();
+      // Perform global middleware
+      this.middleware_global.forEach(middlewareClass => {
+        let middleware = new middlewareClass();
+        middleware.run(request);
+      });
+
+      // Perform local middleware defined in the resource
+      if (resource.middleware) {
+        resource.middleware.forEach(middlewareClass => {
+          this.logger.debug(`Middleware class "${middlewareClass}" does not exist.`);
+          if (this.middleware_local.hasOwnProperty(middlewareClass)) {
+            let middleware = new this.middleware_local[middlewareClass]();
+            middleware.run(request);
+          }
+        });
       }
+
       // Perform the request
       this.logger.debug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
+
       // Perform hook after the request is made
       if (typeof resource.hook_afterRequest === "function") {
         this.logger.debug("Calling hook_afterRequest().");
         resource.hook_afterRequest();
       }
+
       this.logger.info("Sending response. " + response.status_code + ".");
       return response.send();
     } catch (error) {
-      // If a resource was found, but an error occurred, then that's most likely
-      // due to the HTTP method not being defined in the resource class;
-      // therefore, the method is not allowed. In this case, we send a 405
-      // (Method Not Allowed) response.
-      if (resource) {
-        if (!response) {
-          if (typeof resource[request.method] !== 'function') {
-            return this.handleHttpRequestError(request, this.errorResponse(405));
-          }
-        }
-      }
-
-      // All other errors go here
-      return this.handleHttpRequestError(request, error);
+      return this.handleHttpRequestError(request, error, resource, response);
     }
   }
 
@@ -221,7 +249,12 @@ export default class Server {
    * @return any
    *     See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequestError(request, error: any): any {
+  public handleHttpRequestError(
+    request: any,
+    error: any,
+    resource: Drash.Http.Resource = null,
+    response: Drash.Http.Response = null
+  ): any {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
@@ -230,11 +263,27 @@ export default class Server {
 
     this.logger.trace("Generating generic error response object.");
 
-    let response = new Drash.Http.Response(request);
+    // If a resource was found, but an error occurred, then that's most likely
+    // due to the HTTP method not being defined in the resource class;
+    // therefore, the method is not allowed. In this case, we send a 405
+    // (Method Not Allowed) response.
+    if (resource) {
+      if (!response) {
+        if (typeof resource[request.method.toUpperCase()] !== 'function') {
+          error = new Drash.Exceptions.HttpException(405);
+        }
+      }
+    }
+
+    response = new Drash.Http.Response(request);
 
     switch (error.code) {
+      case 400:
+        response.body = error.message
+          ? error.message
+          : `Server cannot process the request due to something that is perceived to be a client error.`;
+          break;
       case 401:
-        error.code = 401;
         response.body = error.message
           ? error.message
           : `The requested URL '${request.url_path} requires authentication.`;
@@ -318,12 +367,17 @@ export default class Server {
       let response = new Drash.Http.Response(request);
       return response.sendStatic();
     } catch (error) {
-      return this.handleHttpRequestError(request, this.errorResponse(404));
+      return this.handleHttpRequestError(request, this.httpErrorResponse(404));
     }
   }
 
-  public getResourceObject(resource: any, request: any): any {
-    return new resource(request, new Drash.Http.Response(request), this);
+  public getResourceObject(resourceClass: any, request: any): any {
+    let resourceObj = new resourceClass(request, new Drash.Http.Response(request), this);
+    // We have to add the static properties back because they get blown away
+    // when the resource object is created
+    resourceObj.paths = resourceClass.paths;
+    resourceObj.middleware = resourceClass.middleware;
+    return resourceObj;
   }
 
   /**
@@ -344,12 +398,40 @@ export default class Server {
       try {
         this.handleHttpRequest(request);
       } catch (error) {
-        this.handleHttpRequestError(request, this.errorResponse(500));
+        this.handleHttpRequestError(request, this.httpErrorResponse(500));
       }
     }
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+
+  /**
+   * @description
+   *     Add middleware to the server.
+   *
+   * @param Drash.Http.Middleware middlewareClass
+   *
+   * @return void
+   */
+  protected addHttpMiddlewareGlobal(
+    middlewareClass: Drash.Http.Middleware
+  ): void {
+    this.middleware_global[middlewareClass.name] = middlewareClass;
+  }
+
+  /**
+   * @description
+   *     Add middleware to the server.
+   *
+   * @param Drash.Http.Middleware middlewareClass
+   *
+   * @return void
+   */
+  protected addHttpMiddlewareLocal(
+    middlewareClass: Drash.Http.Middleware
+  ): void {
+    this.middleware_local[middlewareClass.name] = middlewareClass;
+  }
 
   /**
    * @description
@@ -435,13 +517,13 @@ export default class Server {
   }
 
   /**
-   * Get an error response exception object.
+   * Get an HTTP error response exception object.
    *
    * @param number code
    *
    * @return Drash.Exceptions.HttpException
    */
-  protected errorResponse(code: number): Drash.Exceptions.HttpException {
+  protected httpErrorResponse(code: number): Drash.Exceptions.HttpException {
     return new Drash.Exceptions.HttpException(code);
   }
 
