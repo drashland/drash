@@ -9,6 +9,8 @@ import Drash from "../../mod.ts";
  */
 export default abstract class Middleware {
 
+  public locations: string[];
+
   /**
    * @description
    *     A property to hold the name of this middleware class. This property is
