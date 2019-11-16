@@ -92,7 +92,7 @@ members.test(async function Server_handleHttpRequest_middleware_pass() {
 
   members.assert.equal(
     members.decoder.decode(response.body),
-    `{"status_code":200,"status_message":"OK","request":{"url":"/users/1","method":"GET"},"body":{\"name":\"Thor\"}}`
+    `{"status_code":200,"status_message":"OK","request":{"url":"/users/1","method":"GET"},"body":{\"name\":\"Thor\"}}`
   );
 });
 
