@@ -96,6 +96,29 @@ members.test(async function Server_handleHttpRequest_middleware_pass() {
   );
 });
 
+members.test(async function Server_handleHttpRequest_middlewareNotFound() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        VerifyCsrfToken
+      ],
+      local: [
+        UserIsAdmin
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareNotFound
+    ]
+  });
+  
+  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get", {user_id: 999}));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":418,"status_message":"I'm a teapot","request":{"url":"/users/1","method":"GET"},"body":\"I'm a teapot\"}`
+  );
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,6 +158,23 @@ class VerifyCsrfToken extends members.Drash.Http.Middleware {
 class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   static middleware = ["UserIsAdmin"];
+  public users = {
+    1: {
+      name: "Thor"
+    },
+    2: {
+      name: "Hulk"
+    },
+  };
+  public GET() {
+    this.response.body = this.users[this.request.getPathVar('id')];
+    return this.response;
+  }
+}
+
+class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
+  static paths = ["/users/:id", "/users/:id/"];
+  static middleware = ["muahahaha"];
   public users = {
     1: {
       name: "Thor"

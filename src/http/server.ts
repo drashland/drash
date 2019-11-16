@@ -1,5 +1,9 @@
 import Drash from "../../mod.ts";
-import { serve } from "../../deno_std.ts";
+import {
+  STATUS_TEXT,
+  Status,
+  serve,
+} from "../../deno_std.ts";
 
 /**
  * @memberof Drash.Http
@@ -259,6 +263,7 @@ export default class Server {
     this.logger.debug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
+    this.logger.trace(error.message);
     this.logger.trace("Stack trace below:");
     this.logger.trace(error.stack);
 
@@ -277,43 +282,12 @@ export default class Server {
     }
 
     response = new Drash.Http.Response(request);
-
-    switch (error.code) {
-      case 400:
-        response.body = error.message
-          ? error.message
-          : `Server cannot process the request due to something that is perceived to be a client error.`;
-          break;
-      case 401:
-        response.body = error.message
-          ? error.message
-          : `The requested URL '${request.url_path} requires authentication.`;
-        break;
-      case 404:
-        response.body = error.message
-          ? error.message
-          : `The requested URL '${
-              request.url_path
-            }' was not found on this server.`;
-        break;
-      case 405:
-        response.body = error.message
-          ? error.message
-          : `URI '${
-              request.url_path
-            }' does not allow ${request.method.toUpperCase()} requests.`;
-        break;
-      case 500:
-        break;
-      default:
-        error.code = 500;
-        response.body = error.message
-          ? error.message
-          : `Something went terribly wrong.`;
-        break;
-    }
-
-    response.status_code = error.code;
+    response.status_code = error.code
+      ? error.code
+      : null;
+    response.body = error.message
+      ? error.message
+      : response.getStatusMessage();
 
     this.logger.info(
       `Sending response. Content-Type: ${response.headers.get(
