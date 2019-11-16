@@ -1453,19 +1453,47 @@
                     "name": "deno_server",
                     "fully_qualified_name": "Drash.Http.Server.deno_server"
                 },
-                "middleware_global": {
+                "middleware_global_before_request": {
                     "access_modifier": "protected",
                     "description": [
-                        "A property to hold middleware (for global use) passed in from the\nconfigs."
+                        "A property to hold middleware to be run before requests."
                     ],
                     "annotation": {
-                        "line": "@property any[] middleware_global",
-                        "data_type": "any[]",
-                        "name": "middleware_global"
+                        "line": "@property any middleware_global_before_request",
+                        "data_type": "any",
+                        "name": "middleware_global_before_request"
                     },
-                    "signature": "protected middleware_global: any[] = []",
-                    "name": "middleware_global",
-                    "fully_qualified_name": "Drash.Http.Server.middleware_global"
+                    "signature": "protected middleware_global_before_request: any[] = []",
+                    "name": "middleware_global_before_request",
+                    "fully_qualified_name": "Drash.Http.Server.middleware_global_before_request"
+                },
+                "middleware_global_before_response": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold middleware to be run before responses."
+                    ],
+                    "annotation": {
+                        "line": "@property any middleware_global_before_response",
+                        "data_type": "any",
+                        "name": "middleware_global_before_response"
+                    },
+                    "signature": "protected middleware_global_before_response: any[] = []",
+                    "name": "middleware_global_before_response",
+                    "fully_qualified_name": "Drash.Http.Server.middleware_global_before_response"
+                },
+                "middleware_global_after_response": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold middleware to be run after responses."
+                    ],
+                    "annotation": {
+                        "line": "@property any middleware_global_after_response",
+                        "data_type": "any",
+                        "name": "middleware_global_after_response"
+                    },
+                    "signature": "protected middleware_global_after_response: any[] = []",
+                    "name": "middleware_global_after_response",
+                    "fully_qualified_name": "Drash.Http.Server.middleware_global_after_response"
                 },
                 "middleware_local": {
                     "access_modifier": "protected",
