@@ -28,7 +28,7 @@ members.test(async function Server_handleHttpRequest_POST() {
     });
 });
 
-members.test(async function Server_handleHttpRequest_middleware() {
+members.test(async function Server_handleHttpRequest_middleware_fail_1() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -43,13 +43,57 @@ members.test(async function Server_handleHttpRequest_middleware() {
     ]
   });
 
-  server.handleHttpRequest(members.mockRequest("/users/1"))
-    .then((response) => {
-      members.assert.equal(
-        members.decoder.decode(response.body),
-        `{"status_code":401,"status_message":"Unauthorized","request":{"url":"/","method":"GET"},"body":null}`
-      );
-    });
+  let response = await server.handleHttpRequest(members.mockRequest("/users/1"));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/users/1","method":"GET"},"body":"'user_id' not specified."}`
+  );
+});
+
+members.test(async function Server_handleHttpRequest_middleware_not_admin() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        VerifyCsrfToken
+      ],
+      local: [
+        UserIsAdmin
+      ]
+    },
+    resources: [
+      ResourceWithMiddleware
+    ]
+  });
+
+  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get", {user_id: 123}));
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/users/1","method":"GET"},"body":"'user_id' unknown."}`
+  );
+});
+
+members.test(async function Server_handleHttpRequest_middleware_pass() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        VerifyCsrfToken
+      ],
+      local: [
+        UserIsAdmin
+      ]
+    },
+    resources: [
+      ResourceWithMiddleware
+    ]
+  });
+  
+  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get", {user_id: 999}));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":200,"status_message":"OK","request":{"url":"/users/1","method":"GET"},"body":{\"name":\"Thor\"}}`
+  );
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,10 +116,10 @@ class UserIsAdmin extends members.Drash.Http.Middleware {
   protected user_id = 999; // simulate DB data
   public run(request: any) {
     if (!request.getHeaderVar('user_id')) {
-      throw new members.Drash.Exceptions.HttpException(400);
+      throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' not specified.");
     }
     if (request.getHeaderVar('user_id') != this.user_id) {
-      throw new members.Drash.Exceptions.HttpException(400);
+      throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' unknown.");
     }
   }
 }
@@ -89,8 +133,8 @@ class VerifyCsrfToken extends members.Drash.Http.Middleware {
 }
 
 class ResourceWithMiddleware extends members.Drash.Http.Resource {
-  static paths = ["/user/:id", "/user/:id/"];
-  static middleware = ["Admin"];
+  static paths = ["/users/:id", "/users/:id/"];
+  static middleware = ["UserIsAdmin"];
   public users = {
     1: {
       name: "Thor"
@@ -100,7 +144,7 @@ class ResourceWithMiddleware extends members.Drash.Http.Resource {
     },
   };
   public GET() {
-    this.response.body = {};
+    this.response.body = this.users[this.request.getPathVar('id')];
     return this.response;
   }
 }
