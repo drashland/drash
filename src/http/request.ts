@@ -17,7 +17,8 @@ const decoder = new TextDecoder();
 export default class Request extends ServerRequest {
   /**
    * @description
-   *     A property to access the request's body in key-value pair format.
+   *     A property to access the request's body in key-value pair format. We
+   *     can't use `body` because the original request object uses `body()`.
    *
    * @property any body_parsed
    */
@@ -83,4 +84,54 @@ export default class Request extends ServerRequest {
    * @property string url_query_string
    */
   public url_query_string: string = null;
+
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get an http variable from the body.
+   *
+   * @param string httpVar
+   *
+   * @return any
+   */
+  public getBodyVar(httpVar: string): any {
+    return this.body_parsed[httpVar];
+  }
+
+  /**
+   * @description
+   *     Get an http variable from the headers.
+   *
+   * @param string httpVar
+   *
+   * @return any
+   */
+  public getHeaderVar(httpVar: string): any {
+    return this.headers.get(httpVar);
+  }
+
+  /**
+   * @description
+   *     Get an http variable from the URI path params.
+   *
+   * @param string httpVar
+   *
+   * @return any
+   */
+  public getPathVar(httpVar: string): any {
+    return this.path_params[httpVar];
+  }
+
+  /**
+   * @description
+   *     Get an http variable from the URL query params.
+   *
+   * @param string httpVar
+   *
+   * @return any
+   */
+  public getQueryVar(httpVar: string): any {
+    return this.url_query_params[httpVar];
+  }
 }
