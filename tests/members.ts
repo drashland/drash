@@ -17,9 +17,19 @@ let mockRequest = function mockRequest(
       headers: headers
     });
   }
+
+  //
+  // Stub `respond()` so we don't run into the following error:
+  //
+  //   TypeError: Cannot read property 'write' of undefined
+  //   at BufWriter.flush (bufio.ts:446:25)
+  //   at writeResponse (server.ts:97:16)
+  //   at async Request.respond (server.ts:197:5)
+  //
   request.respond = function respond(output: any) {
     return output;
   };
+
   return request;
 };
 
