@@ -30,8 +30,17 @@ members.test(async function Server_handleHttpRequest_POST() {
 
 members.test(async function Server_handleHttpRequest_middleware() {
   let server = new members.MockServer({
-    middleware: [VerifyCsrfToken],
-    resources: [ResourceWithMiddleware]
+    middleware: {
+      global: [
+        VerifyCsrfToken
+      ],
+      local: [
+        UserIsAdmin
+      ]
+    },
+    resources: [
+      ResourceWithMiddleware
+    ]
   });
 
   server.handleHttpRequest(members.mockRequest("/users/1"))
@@ -56,6 +65,18 @@ class HomeResource extends members.Drash.Http.Resource {
   public POST() {
     this.response.body = "got this";
     return this.response;
+  }
+}
+
+class UserIsAdmin extends members.Drash.Http.Middleware {
+  protected user_id = 999; // simulate DB data
+  public run(request: any) {
+    if (!request.getHeaderVar('user_id')) {
+      throw new members.Drash.Exceptions.HttpException(400);
+    }
+    if (request.getHeaderVar('user_id') != this.user_id) {
+      throw new members.Drash.Exceptions.HttpException(400);
+    }
   }
 }
 
