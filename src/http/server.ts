@@ -110,15 +110,15 @@ export default class Server {
    *     Construct an object of this class.
    *
    * @param any configs
-   *     address: string
+   *     `address`: `string`
    *
-   *     logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger
+   *     `logger`: `Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger`
    *
-   *     response_output: string (a proper MIME type)
+   *     `response_output`: `string` (a proper MIME type)
    *
-   *     resources: Drash.Http.Resource[]
+   *     `resources`: `Drash.Http.Resource[]`
    *
-   *     static_paths: string[]
+   *     `static_paths`: `string[]`
    */
   constructor(configs: any) {
     if (!configs.logger) {
