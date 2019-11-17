@@ -1,6 +1,15 @@
 import Drash from "https://deno.land/x/drash/mod.ts";
 
-// Bootstrap your application
-import "./bootstrap.ts";
+import HomeResource from "./home_resource.ts";
 
-console.log(`\n    ${Drash.Members.MyThing.greet()}\n`);
+let server = new Drash.Http.Server({
+  address: "localhost:8000",
+  response_output: "application/json", // Accepts text/html, text/xml, application/xml, or other MIME types you define
+  resources: [HomeResource],
+  logger: new Drash.Loggers.ConsoleLogger({
+    enabled: true,
+    level: "debug"
+  })
+});
+
+server.run();
