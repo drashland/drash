@@ -40,12 +40,15 @@ function echo(message) {
 
 /**
  * Compile the API Reference page's data.
+ *
+ * TODO(crookse) iterate through directories to find these files
  */
 function compileApiReferencePageData() {
   let DrashNamespaceMembers = [
     `/src/compilers/doc_blocks_to_json.ts`,
     `/src/dictionaries/log_levels.ts`,
     `/src/exceptions/http_exception.ts`,
+    `/src/exceptions/http_middleware_exception.ts`,
     `/src/http/middleware.ts`,
     `/src/http/resource.ts`,
     `/src/http/response.ts`,

@@ -54,24 +54,25 @@ div.c-sidebar
                 //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
             a.heading-link API Reference
             div.c-sidebar__menu-body
-                a(:href="$conf.base_url + '/#/api-reference/exceptions'") Exceptions
+                a Exceptions
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/exceptions/http-exception'") HttpException
-                a(:href="$conf.base_url + '/#/api-reference/http'") Http
+                    a(:href="$conf.base_url + '/#/api-reference/exceptions/http-middleware-exception'") HttpMiddlewareException
+                a Http
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/http/middleware'") Middleware
                     a(:href="$conf.base_url + '/#/api-reference/http/resource'") Resource
                     a(:href="$conf.base_url + '/#/api-reference/http/response'") Response
                     a(:href="$conf.base_url + '/#/api-reference/http/server'") Server
-                a(:href="$conf.base_url + '/#/api-reference/loggers'") Loggers
+                a Loggers
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/loggers/logger'") Logger
                     a(:href="$conf.base_url + '/#/api-reference/loggers/console-logger'") ConsoleLogger
                     a(:href="$conf.base_url + '/#/api-reference/loggers/file-logger'") FileLogger
-                a(:href="$conf.base_url + '/#/api-reference/services'") Services
+                a Services
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/services/http-service'") HttpService
-                a(:href="$conf.base_url + '/#/api-reference/util'") Util
+                a Util
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/util/exports'") Exports
                     a(:href="$conf.base_url + '/#/api-reference/util/object-parser'") ObjectParser

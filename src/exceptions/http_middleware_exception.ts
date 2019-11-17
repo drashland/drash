@@ -4,7 +4,9 @@
  *
  * @description
  *     This class gives you a way to throw HTTP errors semantically in the
- *     middleware classes.
+ *     middleware classes. The difference between this class and `HttpException`
+ *     comes when you want to check which exception was thrown via
+ *     `exception.constructor.name`.
  *
  *     This class extends `Error`.
  */

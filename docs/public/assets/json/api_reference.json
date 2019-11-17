@@ -969,6 +969,69 @@
                     "fully_qualified_name": "Drash.Exceptions.HttpException()"
                 }
             }
+        },
+        "HttpMiddlewareException": {
+            "fully_qualified_name": "Drash.Exceptions.HttpMiddlewareException",
+            "namespace": "Drash.Exceptions",
+            "name": "HttpMiddlewareException",
+            "description": [
+                "This class gives you a way to throw HTTP errors semantically in the\nmiddleware classes. The difference between this class and `HttpException`\ncomes when you want to check which exception was thrown via\n`exception.constructor.name`.",
+                "This class extends `Error`."
+            ],
+            "properties": {
+                "code": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold the HTTP response code associated with this\nexception."
+                    ],
+                    "annotation": {
+                        "line": "@property number code",
+                        "data_type": "number",
+                        "name": "code"
+                    },
+                    "signature": "public code: number",
+                    "name": "code",
+                    "fully_qualified_name": "Drash.Exceptions.HttpMiddlewareException.code"
+                }
+            },
+            "methods": {
+                "constructor": {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "description": [
+                        "Construct an object of this class."
+                    ],
+                    "params": {
+                        "code": {
+                            "name": "code",
+                            "description": [
+                                "The HTTP response code associated with this exception."
+                            ],
+                            "annotation": {
+                                "line": "@param number code",
+                                "data_type": "number",
+                                "name": "code"
+                            }
+                        },
+                        "message": {
+                            "name": "message",
+                            "description": [
+                                "(optional) The exception message."
+                            ],
+                            "annotation": {
+                                "line": "@param string message",
+                                "data_type": "string",
+                                "name": "message"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "constructor(code: number, message?: string)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Exceptions.HttpMiddlewareException()"
+                }
+            }
         }
     },
     "Drash.Http": {
