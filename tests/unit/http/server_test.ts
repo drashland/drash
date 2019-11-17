@@ -332,6 +332,79 @@ members.test(async function Server_handleHttpRequest_middleware_after_response_p
   members.assert.equal(request.hello, "changed_after_response");
 });
 
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_before_request_fail_missing_header() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        BeforeRequest
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+  let request = members.mockRequest("/", "get");
+  let response = await server.handleHttpRequest(request);
+
+  members.assert.equal(request.hello, undefined);
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/","method":"GET"},"body":"Missing header, guy."}`
+  );
+});
+
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_before_request_fail_wrong_header() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        BeforeRequest
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+  let request = members.mockRequest("/", "get", {before: "yes"});
+  let response = await server.handleHttpRequest(request);
+
+  members.assert.equal(request.hello, undefined);
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":400,"status_message":"Bad Request","request":{"url":"/","method":"GET"},"body":"Ha... try again. Close though."}`
+  );
+});
+
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_before_request_pass() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        BeforeRequest
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+  let request = members.mockRequest("/", "get", {before: "yesss"});
+  let response = await server.handleHttpRequest(request);
+
+  members.assert.equal(request.hello, "changed_before_request");
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
+  );
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -405,6 +478,22 @@ class AfterResponse extends members.Drash.Http.Middleware {
     }
 
     request.hello = "changed_after_response";
+  }
+}
+
+class BeforeRequest extends members.Drash.Http.Middleware {
+  static locations = [
+    "before_request"
+  ];
+  public run(request: any) {
+    if (!request.getHeaderVar('before')) {
+      throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
+    }
+    if (request.getHeaderVar('before') != "yesss") {
+      throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
+    }
+
+    request.hello = "changed_before_request";
   }
 }
 
