@@ -9,7 +9,13 @@ import Drash from "../../mod.ts";
  */
 export default abstract class Middleware {
 
-  public locations: string[];
+  /**
+   * @description
+   *     A property to hold the location that this middleware should process.
+   *
+   * @property string location
+   */
+  public location: string;
 
   /**
    * @description

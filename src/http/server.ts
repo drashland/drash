@@ -428,10 +428,8 @@ export default class Server {
   protected addHttpMiddlewareGlobal(
     middlewareClass: Drash.Http.Middleware
   ): void {
-    if (middlewareClass.locations && middlewareClass.locations.length > 0) {
-      middlewareClass.locations.forEach(location => {
-        this[`middleware_global_${location}`].push(middlewareClass);
-      });
+    if (middlewareClass.location) {
+      this[`middleware_global_${middlewareClass.location}`].push(middlewareClass);
       return;
     }
     this.middleware_global_before_request.push(middlewareClass);

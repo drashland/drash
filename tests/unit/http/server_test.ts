@@ -466,9 +466,7 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
 }
 
 class AfterResponse extends members.Drash.Http.Middleware {
-  static locations = [
-    "after_response"
-  ];
+  static location = "after_response";
   public run(request: any) {
     if (!request.getHeaderVar('process_stuff_after')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
@@ -482,9 +480,7 @@ class AfterResponse extends members.Drash.Http.Middleware {
 }
 
 class BeforeRequest extends members.Drash.Http.Middleware {
-  static locations = [
-    "before_request"
-  ];
+  static location = "before_request";
   public run(request: any) {
     if (!request.getHeaderVar('before')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
@@ -498,9 +494,7 @@ class BeforeRequest extends members.Drash.Http.Middleware {
 }
 
 class BeforeResponse extends members.Drash.Http.Middleware {
-  static locations = [
-    "before_response"
-  ];
+  static location = "before_response";
   public run(request: any) {
     if (!request.getHeaderVar('send_response')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
