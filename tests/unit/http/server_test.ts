@@ -278,7 +278,7 @@ members.test(async function Server_handleHttpRequest_middleware_after_response_f
     `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
   );
 
-  members.assert.equal(request.resource.paths[0].og_path, "/");
+  members.assert.equal(request.hello, undefined);
 });
 
 /**
@@ -296,7 +296,7 @@ members.test(async function Server_handleHttpRequest_middleware_after_response_f
     ]
   });
 
-  let request = members.mockRequest("/", "get", {process_stuff_after: "yes please"})
+  let request = members.mockRequest("/", "get", {process_stuff_after: "yes please"});
   let response = await server.handleHttpRequest(request);
 
   members.assert.equal(
@@ -304,7 +304,7 @@ members.test(async function Server_handleHttpRequest_middleware_after_response_f
     `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
   );
 
-  members.assert.equal(request.resource.paths[0].og_path, "/");
+  members.assert.equal(request.hello, undefined);
 });
 
 /**
@@ -321,7 +321,7 @@ members.test(async function Server_handleHttpRequest_middleware_after_response_p
       ResourceWithMiddlewareHooked
     ]
   });
-  let request = members.mockRequest("/", "get", {process_stuff_after: "yes do it"})
+  let request = members.mockRequest("/", "get", {process_stuff_after: "yes do it"});
   let response = await server.handleHttpRequest(request);
 
   members.assert.equal(
@@ -329,7 +329,9 @@ members.test(async function Server_handleHttpRequest_middleware_after_response_p
     `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
   );
 
-  members.assert.equal(request.resource.paths[0].og_path, "/changed");
+  members.assert.equal(request.hello, "changed_after_response");
+});
+
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -402,7 +404,7 @@ class AfterResponse extends members.Drash.Http.Middleware {
       throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
     }
 
-    request.resource.paths[0].og_path = "/changed";
+    request.hello = "changed_after_response";
   }
 }
 
