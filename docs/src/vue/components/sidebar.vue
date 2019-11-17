@@ -28,6 +28,14 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
             a.heading-link Tutorials
             div.c-sidebar__menu-body
+                a Creating Applications
+                div.l-submenu-1
+                    a Hello World (Web App)
+                    div.l-submenu-2
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-1'") Part 1 of 4: Handling GET requests
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Part 2 of 4: Building the front end
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-3'") Part 3 of 4: Handling POST requests
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Part 4 of 4: Logging
                 a Logging
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
@@ -42,16 +50,6 @@ div.c-sidebar
                 a Misc
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
-            a.heading-link Create Applications
-            div.c-sidebar__menu-body
-                a Hello World (Web App)
-                div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-1'") Part 1 of 4: Handling GET requests
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Part 2 of 4: Building the front end
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-3'") Part 3 of 4: Handling POST requests
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Part 4 of 4: Logging
-                //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") Creating An Application: API
-                //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
             a.heading-link API Reference
             div.c-sidebar__menu-body
                 a Exceptions
