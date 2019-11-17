@@ -28,7 +28,10 @@ members.test(async function Server_handleHttpRequest_POST() {
     });
 });
 
-members.test(async function Server_handleHttpRequest_middleware_failNoCsrfToken() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_global_local_fail_no_csrf_token() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -56,7 +59,10 @@ members.test(async function Server_handleHttpRequest_middleware_failNoCsrfToken(
   );
 });
 
-members.test(async function Server_handleHttpRequest_middleware_failWrongCsrfToken() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_global_local_wrong_csrf_token() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -87,7 +93,10 @@ members.test(async function Server_handleHttpRequest_middleware_failWrongCsrfTok
   );
 });
 
-members.test(async function Server_handleHttpRequest_middleware_not_admin() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_global_local_user_is_not_admin() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -119,7 +128,10 @@ members.test(async function Server_handleHttpRequest_middleware_not_admin() {
   );
 });
 
-members.test(async function Server_handleHttpRequest_middleware_pass() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_global_local_pass() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -151,7 +163,33 @@ members.test(async function Server_handleHttpRequest_middleware_pass() {
   );
 });
 
-members.test(async function Server_handleHttpRequest_middlewareHooked_failNoHeader() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_global_local_middleware_not_found() {
+  let server = new members.MockServer({
+    middleware: {
+      local: [
+        UserIsAdmin
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareNotFound
+    ]
+  });
+  
+  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get"));
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":418,"status_message":"I'm a teapot","request":{"url":"/users/1","method":"GET"},"body":\"I'm a teapot\"}`
+  );
+});
+
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_before_response_fail_missing_header() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -171,7 +209,10 @@ members.test(async function Server_handleHttpRequest_middlewareHooked_failNoHead
   );
 });
 
-members.test(async function Server_handleHttpRequest_middlewareHooked_failWrongHeader() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_before_response_fail_wrong_header() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -191,7 +232,10 @@ members.test(async function Server_handleHttpRequest_middlewareHooked_failWrongH
   );
 });
 
-members.test(async function Server_handleHttpRequest_middlewareHooked_failWrongHeader() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_before_response_pass() {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -211,24 +255,81 @@ members.test(async function Server_handleHttpRequest_middlewareHooked_failWrongH
   );
 });
 
-members.test(async function Server_handleHttpRequest_middlewareNotFound() {
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_after_response_fail_missing_header() {
   let server = new members.MockServer({
     middleware: {
-      local: [
-        UserIsAdmin
+      global: [
+        AfterResponse
       ]
     },
     resources: [
-      ResourceWithMiddlewareNotFound
+      ResourceWithMiddlewareHooked
     ]
   });
-  
-  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get"));
+
+  let request = members.mockRequest("/", "get");
+  let response = await server.handleHttpRequest(request);
 
   members.assert.equal(
     members.decoder.decode(response.body),
-    `{"status_code":418,"status_message":"I'm a teapot","request":{"url":"/users/1","method":"GET"},"body":\"I'm a teapot\"}`
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
   );
+
+  members.assert.equal(request.resource.paths[0].og_path, "/");
+});
+
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_after_response_fail_wrong_header() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        AfterResponse
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+
+  let request = members.mockRequest("/", "get", {process_stuff_after: "yes please"})
+  let response = await server.handleHttpRequest(request);
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
+  );
+
+  members.assert.equal(request.resource.paths[0].og_path, "/");
+});
+
+/**
+ * @covers Server.handleHttpRequest()
+ */
+members.test(async function Server_handleHttpRequest_middleware_after_response_pass() {
+  let server = new members.MockServer({
+    middleware: {
+      global: [
+        AfterResponse
+      ]
+    },
+    resources: [
+      ResourceWithMiddlewareHooked
+    ]
+  });
+  let request = members.mockRequest("/", "get", {process_stuff_after: "yes do it"})
+  let response = await server.handleHttpRequest(request);
+
+  members.assert.equal(
+    members.decoder.decode(response.body),
+    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
+  );
+
+  members.assert.equal(request.resource.paths[0].og_path, "/changed");
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,6 +387,22 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   public GET() {
     this.response.body = this.users[this.request.getPathVar('id')];
     return this.response;
+  }
+}
+
+class AfterResponse extends members.Drash.Http.Middleware {
+  static locations = [
+    "after_response"
+  ];
+  public run(request: any) {
+    if (!request.getHeaderVar('process_stuff_after')) {
+      throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
+    }
+    if (request.getHeaderVar('process_stuff_after') != "yes do it") {
+      throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
+    }
+
+    request.resource.paths[0].og_path = "/changed";
   }
 }
 

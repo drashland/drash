@@ -217,6 +217,7 @@ export default class Server {
     // construct signature.
     //
     let resource = this.getResourceObject(resourceClass, request);
+    request.resource = resource;
     this.logger.debug(
       "Using `" +
         resource.constructor.name +
@@ -224,6 +225,7 @@ export default class Server {
     );
 
     let response;
+    let output;
 
     try {
       // Perform "before_request" global middleware
@@ -256,18 +258,25 @@ export default class Server {
 
       // Send the response
       this.logger.info("Sending response. " + response.status_code + ".");
-      let output = response.send();
+      output = response.send();
 
-      // Perform "after_response" global middleware
-      this.middleware_global_after_response.forEach(middlewareClass => {
-        let middleware = new middlewareClass();
-        middleware.run(request);
-      });
-      return output;
     } catch (error) {
       // console.log(error);
       return this.handleHttpRequestError(request, error, resource, response);
     }
+
+    // Perform "after_response" global middleware
+    this.middleware_global_after_response.forEach(middlewareClass => {
+      try {
+        let middleware = new middlewareClass();
+        middleware.run(request);
+      } catch (error) {
+        // Do nothing... the response was already sent. We don't want to throw
+        // errors after the response has been sent. TODO(crookse) log maybe?
+      }
+    });
+
+    return output;
   }
 
   /**

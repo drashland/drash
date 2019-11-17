@@ -54,6 +54,14 @@ export default class Request extends ServerRequest {
 
   /**
    * @description
+   *     A property to hold the resource this request has been matched with.
+   *
+   * @property Drash.Http.Resource resource
+   */
+  public resource: Drash.Http.Resource;
+
+  /**
+   * @description
    *     A property to hold the path of the request's URL. For example, if a
    *     request with the URL `localhost:8000/users/1234` is sent by a client,
    *     then the path to this request is `/users/1234`.
