@@ -1,9 +1,10 @@
 // import Drash from "https://deno.land/x/drash/mod.ts";
 import Drash from "../../../../../mod.ts";
 
-class VerifyToken extends Drash.Http.Middleware {
+export default class VerifyTokenMiddleware extends Drash.Http.Middleware {
   public run(request: any) {
     let token = request.getHeaderVar('super_secret_token');
+    console.log("test");
 
     if (!token) {
       throw new Drash.Exceptions.HttpException(400, "Where is the token?");

@@ -2,12 +2,16 @@
 import Drash from "../../../../../mod.ts";
 
 import HomeResource from "./home_resource.ts";
-import VerifyToken from "./verify_token.ts";
+import VerifyTokenMiddleware from "./verify_token_middleware.ts";
 
 let server = new Drash.Http.Server({
   address: "localhost:1447",
   logger: new Drash.Loggers.ConsoleLogger({enabled: true, level: "debug"}),
-  middleware: [VerifyToken],
+  middleware: {
+    global: [
+      VerifyTokenMiddleware
+    ]
+  },
   resources: [HomeResource],
   response_output: "application/json",
 });

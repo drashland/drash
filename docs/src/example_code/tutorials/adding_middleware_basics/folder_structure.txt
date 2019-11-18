@@ -1,4 +1,4 @@
 ▾ /path/to/your/project/
 	app.ts
-	bootstrap.ts
-	my_thing.ts
+	home_resource.ts
+	verify_token_middleware.ts
