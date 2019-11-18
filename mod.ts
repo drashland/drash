@@ -22,7 +22,6 @@ import http_middleware_exception from "./src/exceptions/http_middleware_exceptio
 
 // Http
 import middleware from "./src/http/middleware.ts";
-import request from "./src/http/request.ts";
 import resource from "./src/http/resource.ts";
 import response from "./src/http/response.ts";
 import server from "./src/http/server.ts";
@@ -84,8 +83,6 @@ namespace Drash {
   export namespace Http {
     export type Middleware = middleware;
     export let Middleware = middleware;
-    export type Request = request;
-    export let Request = request;
     export type Resource = resource;
     export const Resource = resource;
     export type Response = response;

@@ -11,7 +11,7 @@ function mockRequest(
   headers?: any,
   hydrate = true
 ): any {
-  let request = new Drash.Http.Request();
+  let request = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
