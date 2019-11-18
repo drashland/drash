@@ -31,6 +31,12 @@ page-tutorial-default(
                 ol
                     li Perform the initial setup of your project.
                         code-block(:data="data.example_code.folder_structure_setup")
+                    li Create your resource file.
+                        code-block(:data="data.example_code.home_resource")
+                    li Create your middleware file.
+                        code-block(:data="data.example_code.verify_token_middleware")
+                    li Create your app file.
+                        code-block(:data="data.example_code.app")
 </template>
 
 <script>
