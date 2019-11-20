@@ -116,8 +116,10 @@ export default class Response {
       status_code: this.status_code,
       status_message: this.getStatusMessage(),
       request: {
+        method: this.request.method.toUpperCase(),
+        uri: this.request.url_path,
         url: this.request.url,
-        method: this.request.method.toUpperCase()
+        url_query_params: this.request.url_query_params,
       },
       body: this.body
     });
