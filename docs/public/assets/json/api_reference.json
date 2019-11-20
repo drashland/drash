@@ -2010,6 +2010,42 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.httpErrorResponse"
                 },
+                "getRequest": {
+                    "access_modifier": "protected",
+                    "name": "getRequest",
+                    "description": [
+                        "Get the request object with more properties and methods."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
+                                "name": "request"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [
+                                "Returns the `ServerRequest` object with more properties and methods."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected getRequest(request: any): any",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.getRequest"
+                },
                 "getResourceClass": {
                     "access_modifier": "protected",
                     "name": "getResourceClass",

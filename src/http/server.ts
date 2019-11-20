@@ -193,11 +193,7 @@ export default class Server {
       `Request received: ${request.method.toUpperCase()} ${request.url}`
     );
 
-    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-      headers: {
-        "Response-Content-Type-Default": this.configs.response_output
-      }
-    });
+    request = this.getRequest(request);
 
     let resourceClass = this.getResourceClass(request);
 
@@ -541,6 +537,27 @@ export default class Server {
    */
   protected httpErrorResponse(code: number): Drash.Exceptions.HttpException {
     return new Drash.Exceptions.HttpException(code);
+  }
+
+  /**
+   * @description
+   *     Get the request object with more properties and methods.
+   *
+   * @param ServerRequest request
+   *     The request object.
+   *
+   * @return any
+   *     Returns the `ServerRequest` object with more properties and methods.
+   */
+  protected getRequest(request: any): any {
+    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+      base_url: this.configs.address,
+      headers: {
+        "Response-Content-Type-Default": this.configs.response_output
+      },
+    });
+
+    return request;
   }
 
   /**

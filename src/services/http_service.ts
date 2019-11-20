@@ -110,6 +110,10 @@ export default class HttpService {
     request.url_query_params = this.getHttpRequestUrlQueryParams(request);
     request.url_query_string = this.getHttpRequestUrlQueryString(request);
     request.url_path = this.getHttpRequestUrlPath(request);
+    request.uri = this.getHttpRequestUrlPath(request);
+    request.url = options && options.base_url
+      ? options.base_url + request.url
+      : request.url;
     request.body_parsed = this.getHttpRequestBodyParsed(request);
     // Attach methods
     request.getBodyVar = function(httpVar: string): any {
