@@ -3,18 +3,14 @@ import Drash from "../../../../../mod.ts";
 
 export default class VerifyTokenMiddleware extends Drash.Http.Middleware {
   public run(request: any) {
-    let token = request.getHeaderVar('super_secret_token');
-    console.log("test");
+    let token = request.getQueryVar('super_secret_token');
 
     if (!token) {
-      throw new Drash.Exceptions.HttpException(400, "Where is the token?");
+      throw new Drash.Exceptions.HttpMiddlewareException(400, "Where is the token?");
     }
 
-    let tokenMatch = (token == "AllYourBaseAreBelongToUs");
-
-    if (!tokenMatch) {
-      throw new Drash.Exceptions.HttpException(403, "Mmm... bad token.");
+    if (token != "AllYourBaseAreBelongToUs") {
+      throw new Drash.Exceptions.HttpMiddlewareException(403, "Mmm... bad token.");
     }
   }
 }
-
