@@ -32,8 +32,10 @@ page-tutorial-default(
                     li Perform the initial setup of your project.
                         code-block(:data="data.example_code.folder_structure_setup")
                     li Create your resource file.
+                        p This reosurce will handle <code>GET</code> requests at the <code>/</code> URI.
                         code-block(:data="data.example_code.home_resource")
                     li Create your middleware file.
+                        p This middleware will check if <code>super_secret_token=AllYourBaseAreBelongToUs</code> was passed in the URL. If not, then a <code>4**</code> HTTP error will be thrown.
                         code-block(:data="data.example_code.verify_token_middleware")
                     li Create your app file.
                         code-block(:data="data.example_code.app")
