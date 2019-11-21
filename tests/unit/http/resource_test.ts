@@ -13,17 +13,24 @@ let server = new members.Drash.Http.Server({
 
 let request = members.mockRequest();
 let response = new members.Drash.Http.Response(request);
-
-// TODO(crookse) This needs to be fixed by passing in the constructor args. This is stupid. The test
-// is saying it expected 0 arguments, but got 3... there is supposed to be 3 arguments.
 let resource = new MyResource(request, response, server);
 
 response = resource.GET();
 let actual = response.generateResponse();
 
-members.test(function Resource() {
+members.test(members.testFn("resource.GET().generateResponse()", () => {
   members.assert.equal(
-    actual,
-    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"got"}`
+    JSON.parse(actual),
+    {
+      status_code: 200,
+      status_message: "OK",
+      body: "got",
+      request: {
+        method: "GET",
+        uri: "/",
+        url_query_params: {},
+        url: "/"
+      }
+    }
   );
-});
+}));

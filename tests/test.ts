@@ -13,6 +13,7 @@ import "./unit/dictionaries/log_levels_test.ts";
 import "./unit/exceptions/http_exception_test.ts";
 
 // Http
+import "./unit/http/middleware_test.ts";
 import "./unit/http/resource_test.ts";
 import "./unit/http/response_test.ts";
 import "./unit/http/server_test.ts";

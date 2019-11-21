@@ -115,13 +115,13 @@ export default class Response {
     return JSON.stringify({
       status_code: this.status_code,
       status_message: this.getStatusMessage(),
+      body: this.body,
       request: {
         method: this.request.method.toUpperCase(),
         uri: this.request.url_path,
-        url: this.request.url,
         url_query_params: this.request.url_query_params,
+        url: this.request.url,
       },
-      body: this.body
     });
   }
 
@@ -136,6 +136,12 @@ export default class Response {
   <statuscode>${this.status_code}</statuscode>
   <statusmessage>${this.getStatusMessage()}</statusmessage>
   <body>${this.body}</body>
+  <request>
+    <method>${this.request.method.toUpperCase()}</method>
+    <uri>${this.request.url_path}</uri>
+    <url_query_params>${JSON.stringify(this.request.url_query_params)}</url_query_params>
+    <url>${this.request.url}</url>
+  </request>
 </response>`;
   }
 

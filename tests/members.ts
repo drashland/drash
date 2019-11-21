@@ -42,15 +42,29 @@ function mockRequest(
 class MockServer extends Drash.Http.Server {
 }
 
+function responseJsonEquals(actual: any, expected: any) {
+  return assertEquals(
+    JSON.parse(decoder.decode(actual)),
+    expected
+  );
+}
+
+function testFn(name, test) {
+  Object.defineProperty(test, "name", { value: name });
+  return test;
+}
+
 export default {
   Drash,
   ServerRequest,
   assert: {
-    equal: assertEquals
+    equal: assertEquals,
+    responseJsonEquals: responseJsonEquals
   },
   decoder,
   mockRequest,
   MockServer,
   runTests,
-  test
+  test,
+  testFn,
 };
