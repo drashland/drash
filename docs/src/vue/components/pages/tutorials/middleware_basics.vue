@@ -32,21 +32,26 @@ page-tutorial-default(
                     li Perform the initial setup of your project.
                         code-block(:data="data.example_code.folder_structure_setup")
                     li Create your resource file.
-                        p This reosurce will handle <code>GET</code> requests at the <code>/</code> URI.
+                        p Your reosurce will handle <code>GET</code> requests at the <code>/</code> URI.
                         code-block(:data="data.example_code.home_resource")
                     li Create your middleware file.
-                        p This middleware will check if <code>super_secret_token=AllYourBaseAreBelongToUs</code> was passed in the URL. If not, then a <code>4**</code> HTTP error will be thrown.
+                        p Your middleware will check if <code>super_secret_token=AllYourBaseAreBelongToUs</code> was passed in the URL. If not, then a <code>4**</code> HTTP error will be thrown.
                         code-block(:data="data.example_code.verify_token_middleware")
                     li Create your app file.
+                        p Your app will load in Drash, your resource, your middleware, and start your server.
                         code-block(:data="data.example_code.app")
+                    li Run your app.
+                        code-block(:data="data.example_code.run")
+                        p When you start your app, you should see the following in the terminal:
+                        code-block-output-log(:data="data.example_code.output")
 </template>
 
 <script>
 export const resource = {
-    paths: ["/tutorials/adding-middleware"],
+    paths: ["/tutorials/middleware-basics"],
     meta: {
-        title: "Adding Middleware",
-        source_code_uri: "/adding_middleware_basics"
+        title: "Middleware Basics",
+        source_code_uri: "/middleware_basics"
     }
 }
 
@@ -56,7 +61,7 @@ export default {
             data: {
                 example_code: this
                     .$app_data
-                    .example_code['/docs/src/example_code/tutorials/adding_middleware_basics'],
+                    .example_code['/docs/src/example_code/tutorials/middleware_basics'],
                 toc: {
                     items: [
                         "Before You Get Started",

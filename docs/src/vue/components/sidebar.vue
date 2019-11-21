@@ -43,10 +43,10 @@ div.c-sidebar
                     router-link(href="/tutorials/logging-using-log-from-deno-std") Logging Using Log From deno_std
                 a Middleware
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/adding-middleware'") Basics
-                    a(:href="$conf.base_url + '/#/tutorials/adding-middleware-before-requests'") Before Requests
-                    a(:href="$conf.base_url + '/#/tutorials/adding-middleware-before-responses'") Before Responses
-                    a(:href="$conf.base_url + '/#/tutorials/adding-middleware-after-responses'") After Responses
+                    a(:href="$conf.base_url + '/#/tutorials/middleware-basics'") Basics
+                    a(:href="$conf.base_url + '/#/tutorials/middleware-before-requests'") Before Requests
+                    a(:href="$conf.base_url + '/#/tutorials/middleware-before-responses'") Before Responses
+                    a(:href="$conf.base_url + '/#/tutorials/middleware-after-responses'") After Responses
                 a Misc
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
