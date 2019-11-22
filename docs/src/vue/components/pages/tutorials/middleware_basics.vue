@@ -32,7 +32,7 @@ page-tutorial-default(
                     li Perform the initial setup of your project.
                         code-block(:data="data.example_code.folder_structure_setup")
                     li Create your resource file.
-                        p Your reosurce will handle <code>GET</code> requests at the <code>/</code> URI.
+                        p Your resource will handle <code>GET</code> requests at the <code>/</code> URI.
                         code-block(:data="data.example_code.home_resource")
                     li Create your middleware file.
                         p Your middleware will check if <code>super_secret_token=AllYourBaseAreBelongToUs</code> was passed in the URL. If not, then a <code>4**</code> HTTP error will be thrown.
@@ -44,6 +44,27 @@ page-tutorial-default(
                         code-block(:data="data.example_code.run")
                         p When you start your app, you should see the following in the terminal:
                         code-block-output-log(:data="data.example_code.output")
+        div.row
+            div.col
+                hr
+                h2#example-requests-and-responses Example Requests And Responses
+                p After you have finished the steps above, you can exercise your app's code by making requests like the ones below. Since this tutorial's app sets <code>application/json</code> as the <code>response_output</code>, the server responds to requests with JSON by default.
+                ul
+                    li
+                        request(method="get" url="localhost:1447")
+                        p This request is missing the <code>super_secret_token</code> query param and the server responds with:
+                        code-block-slotted(language="javascript" :header="false")
+                            template(v-slot:code) {{ data.example_code.localhost_1447.contents }}
+                    li
+                        request(method="get" url="localhost:1447?super_secret_token=IsThisIt")
+                        p This request has the wrong <code>super_secret_token</code> query param and the server responds with:
+                        code-block-slotted(language="javascript" :header="false")
+                            template(v-slot:code) {{ data.example_code.localhost_1447_is_this_it.contents }}
+                    li
+                        request(method="get" url="localhost:1447?super_secret_token=AllYourBaseAreBelongToUs")
+                        p This request has the correct <code>super_secret_token</code> query param and the server responds with:
+                        code-block-slotted(language="javascript" :header="false")
+                            template(v-slot:code) {{ data.example_code.localhost_1447_all_your_base_are_belong_to_us.contents }}
 </template>
 
 <script>
@@ -67,6 +88,7 @@ export default {
                         "Before You Get Started",
                         "Folder Structure End State",
                         "Steps",
+                        "Example Requests And Responses",
                     ]
                 }
             }
