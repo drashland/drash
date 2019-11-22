@@ -12,7 +12,9 @@ let server = new Drash.Http.Server({
       VerifyTokenMiddleware
     ]
   },
-  resources: [HomeResource],
+  resources: [
+    HomeResource
+  ],
   response_output: "application/json",
 });
 
