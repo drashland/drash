@@ -3,7 +3,7 @@ import members from "../../members.ts";
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_global_local_fail_no_csrf_token() {
+members.test("Middleware global/local: missing CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -44,7 +44,7 @@ members.test(async function Middleware_global_local_fail_no_csrf_token() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_global_local_wrong_csrf_token() {
+members.test("Middleware global/local: wrong CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -88,7 +88,7 @@ members.test(async function Middleware_global_local_wrong_csrf_token() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_global_local_user_is_not_admin() {
+members.test("Middleware global/local: user is not an admin", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -133,7 +133,7 @@ members.test(async function Middleware_global_local_user_is_not_admin() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_global_local_pass() {
+members.test("Middleware global/local: pass", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -180,7 +180,7 @@ members.test(async function Middleware_global_local_pass() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_global_local_middleware_not_found() {
+members.test("Middleware global/local: middleware not found", async () => {
   let server = new members.MockServer({
     middleware: {
       local: [
@@ -213,7 +213,7 @@ members.test(async function Middleware_global_local_middleware_not_found() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_before_response_fail_missing_header() {
+members.test("Middleware global before_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -246,7 +246,7 @@ members.test(async function Middleware_before_response_fail_missing_header() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_before_response_fail_wrong_header() {
+members.test("Middleware global before_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -279,7 +279,7 @@ members.test(async function Middleware_before_response_fail_wrong_header() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_before_response_pass() {
+members.test("Middleware global before_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -312,7 +312,7 @@ members.test(async function Middleware_before_response_pass() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_after_response_fail_missing_header() {
+members.test("Middleware global after_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -348,7 +348,7 @@ members.test(async function Middleware_after_response_fail_missing_header() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_after_response_fail_wrong_header() {
+members.test("Middleware global after_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -384,7 +384,7 @@ members.test(async function Middleware_after_response_fail_wrong_header() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_after_response_pass() {
+members.test("Middleware global after_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -419,7 +419,7 @@ members.test(async function Middleware_after_response_pass() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_before_request_fail_missing_header() {
+members.test("Middleware global before_request: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -454,7 +454,7 @@ members.test(async function Middleware_before_request_fail_missing_header() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_before_request_fail_wrong_header() {
+members.test("Middleware global before_request: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [
@@ -489,7 +489,7 @@ members.test(async function Middleware_before_request_fail_wrong_header() {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test(async function Middleware_before_request_pass() {
+members.test("Middleware global before_request: pass", async () => {
   let server = new members.MockServer({
     middleware: {
       global: [

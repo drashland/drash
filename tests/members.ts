@@ -49,9 +49,9 @@ function responseJsonEquals(actual: any, expected: any) {
   );
 }
 
-function testFn(name, test) {
-  Object.defineProperty(test, "name", { value: name });
-  return test;
+function runTest(name, testFn) {
+  Object.defineProperty(testFn, "name", { value: name });
+  return test(testFn);
 }
 
 export default {
@@ -65,6 +65,5 @@ export default {
   mockRequest,
   MockServer,
   runTests,
-  test,
-  testFn,
+  test: runTest,
 };

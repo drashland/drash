@@ -1,6 +1,6 @@
 import members from "../../members.ts";
 
-members.test(async function Server_handleHttpRequest_GET() {
+members.test("Server.handleHttpRequest(): GET", async () => {
   let server = new members.MockServer({
     resources: [HomeResource]
   });
@@ -23,7 +23,7 @@ members.test(async function Server_handleHttpRequest_GET() {
   );
 });
 
-members.test(async function Server_handleHttpRequest_POST() {
+members.test("Server.handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
     resources: [HomeResource]
   });

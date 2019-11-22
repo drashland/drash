@@ -18,7 +18,7 @@ let resource = new MyResource(request, response, server);
 response = resource.GET();
 let actual = response.generateResponse();
 
-members.test(members.testFn("resource.GET().generateResponse()", () => {
+members.test("resource.GET().generateResponse()", () => {
   members.assert.equal(
     JSON.parse(actual),
     {
@@ -33,4 +33,4 @@ members.test(members.testFn("resource.GET().generateResponse()", () => {
       }
     }
   );
-}));
+});

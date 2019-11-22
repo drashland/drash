@@ -41,6 +41,6 @@ for (let logLevel in expected) {
   actual[logLevel] = members.Drash.Dictionaries.LogLevels.get(logLevel);
 }
 
-members.test(function LogLevels() {
+members.test("Dictionaries.LogLevels", () => {
   members.assert.equal(actual, expected);
 });

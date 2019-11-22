@@ -1,24 +1,24 @@
 import members from "../../members.ts";
 
-members.test(function Services_HttpService_getHttpRequestUrlPath() {
+members.test("Services.HttpService.hydrateHttpRequest(): request.url_path", () => {
   let request = members.mockRequest("/this/is/the/path?these=are&query=params");
   let actual = request.url_path;
   members.assert.equal(actual, "/this/is/the/path");
 });
 
-members.test(function Services_HttpService_getHttpRequestUrlQueryString() {
+members.test("Services.HttpService.hydrateHttpRequest(): request.url_query_string", () => {
   let request = members.mockRequest("/this/is/the/path?these=are&query=params");
   let actual = request.url_query_string;
   members.assert.equal(actual, "these=are&query=params");
 });
 
-members.test(function Services_HttpService_getHttpRequestUrlQueryParams() {
+members.test("Services.HttpService.hydrateHttpRequest(): request.url_query_params", () => {
   let request = members.mockRequest("/this/is/the/path?these=are&query=params");
   let actual = request.url_query_params;
   members.assert.equal(actual, { these: "are", query: "params" });
 });
 
-members.test(function Services_HttpService_getMimeType_fileIsNotUrl() {
+members.test("Services.HttpService.getMimeType(): file is not a URL", () => {
   let actual;
 
   actual = members.Drash.Services.HttpService.getMimeType(
@@ -42,7 +42,7 @@ members.test(function Services_HttpService_getMimeType_fileIsNotUrl() {
   members.assert.equal(actual, "application/pdf");
 });
 
-members.test(function Services_HttpService_getMimeType_fileIsUrl() {
+members.test("Services.HttpService.getMimeType(): file is a URL", () => {
   let actual;
 
   actual = members.Drash.Services.HttpService.getMimeType(
@@ -66,7 +66,7 @@ members.test(function Services_HttpService_getMimeType_fileIsUrl() {
   members.assert.equal(actual, "application/pdf");
 });
 
-members.test(function Services_HttpService_parseQueryParamsString() {
+members.test("Services.HttpService.parseQueryParamsString()", () => {
   let actual;
 
   actual = members.Drash.Services.HttpService.parseQueryParamsString(

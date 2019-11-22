@@ -1,8 +1,5 @@
 Deno.env().DRASH_PROCESS = "test";
 
-// Random Classes
-import "./unit/env_var_test.ts";
-
 // Compilers
 import "./unit/compilers/doc_blocks_to_json.ts";
 

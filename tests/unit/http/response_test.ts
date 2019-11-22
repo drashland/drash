@@ -12,7 +12,7 @@ let response = new members.Drash.Http.Response(request);
 response.body = "This is my body";
 let responseFormatted;
 
-members.test(function Response_generateResponse_json_default() {
+members.test("Response.generateResponse()", () => {
   members.assert.equal(
     JSON.parse(response.generateResponse()),
     {
@@ -29,13 +29,13 @@ members.test(function Response_generateResponse_json_default() {
   );
 });
 
-members.test(function Response_generateResponse_html() {
+members.test("Response.generateResponse(): text/html", () => {
   response.headers.set("Content-Type", "text/html");
   responseFormatted = response.generateResponse();
   members.assert.equal(responseFormatted, `This is my body`);
 });
 
-members.test(function Response_generateResponse_xml() {
+members.test("Response.generateResponse(): text/xml", () => {
   response.headers.set("Content-Type", "text/xml");
   responseFormatted = response.generateResponse();
   members.assert.equal(
