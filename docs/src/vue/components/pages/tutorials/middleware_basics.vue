@@ -15,7 +15,7 @@ page-tutorial-default(
                 h2#before-you-get-started Before You Get Started
                 ul
                     li Drash defines middleware according to the MDN: <a href="https://developer.mozilla.org/en-US/docs/Glossary/Middleware" target="_BLANK">https://developer.mozilla.org/en-US/docs/Glossary/Middleware</a>.
-                    li Adding middleware to your application is useful when you want to filter requests to your resources. You can add middleware that all of your resources use, middleware that only a few resources use, and middleware that a single resource uses.
+                    li Adding middleware to your application is useful when you want to filter requests throughout the request-resource-response lifecycle.
                     list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
         div.row
             div.col
@@ -35,10 +35,10 @@ page-tutorial-default(
                         p Your resource will handle <code>GET</code> requests at the <code>/</code> URI.
                         code-block(:data="data.example_code.home_resource")
                     li Create your middleware file.
-                        p Your middleware will check if <code>super_secret_token=AllYourBaseAreBelongToUs</code> was passed in the URL. If not, then a <code>4**</code> HTTP error will be thrown.
+                        p Your middleware will check if <code>super_secret_token</code> was passed in the request's URL. If not, then a <code>400</code> error will be thrown. It will also check if the value of <code>super_secret_token</code> is <code>AllYourBaseAreBelongToUs</code>. If not, then a <code>403</code> error will be thrown.
                         code-block(:data="data.example_code.verify_token_middleware")
                     li Create your app file.
-                        p Your app will load in Drash, your resource, your middleware, and start your server.
+                        p Your app file will load in Drash, your resource, your middleware, set up your server, and start your server.
                         code-block(:data="data.example_code.app")
                     li Run your app.
                         code-block(:data="data.example_code.run")
