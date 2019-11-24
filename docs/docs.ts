@@ -101,6 +101,9 @@ function compileVueRouterRoutes() {
   let files = Drash.Util.Exports.getFileSystemStructure(`${Deno.env().DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
   let importString = "";
   let componentName = "";
+  let components = [];
+
+  // Write the `import` lines
   files.forEach(pathObj => {
     componentName = pathObj.snake_cased + '_' + uniqueId;
     if (pathObj.isDirectory()) {
@@ -108,13 +111,13 @@ function compileVueRouterRoutes() {
     }
     importString += 'import * as ' + componentName + ' from \"' + pathObj.path + '\";\n';
     uniqueId += 1;
+    components.push(componentName);
   });
+
+  // Write the `export` block
   importString += "\nexport default [\n";
-  files.forEach(pathObj => {
-    if (pathObj.isDirectory()) {
-      return;
-    }
-    importString += `  ${componentName},\n`;
+  components.forEach(component => {
+    importString += `  ${component},\n`;
   });
   importString += "];";
   let outputFile = `${Deno.env().DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
