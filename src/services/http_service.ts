@@ -116,16 +116,16 @@ export default class HttpService {
       : request.url;
     request.body_parsed = this.getHttpRequestBodyParsed(request);
     // Attach methods
-    request.getBodyVar = function(httpVar: string): any {
+    request.getBodyParam = function(httpVar: string): any {
       return request.body_parsed[httpVar];
     };
-    request.getHeaderVar = function(httpVar: string): any {
+    request.getHeaderParam = function(httpVar: string): any {
       return request.headers.get(httpVar);
     };
-    request.getPathVar = function(httpVar: string): any {
+    request.getPathParam = function(httpVar: string): any {
       return request.path_params[httpVar];
     };
-    request.getQueryVar = function(httpVar: string): any {
+    request.getQueryParam = function(httpVar: string): any {
       return request.url_query_params[httpVar];
     };
 

@@ -537,7 +537,7 @@ class ResourceWithMiddleware extends members.Drash.Http.Resource {
     },
   };
   public GET() {
-    this.response.body = this.users[this.request.getPathVar('id')];
+    this.response.body = this.users[this.request.getPathParam('id')];
     return this.response;
   }
 }
@@ -562,7 +562,7 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
     },
   };
   public GET() {
-    this.response.body = this.users[this.request.getPathVar('id')];
+    this.response.body = this.users[this.request.getPathParam('id')];
     return this.response;
   }
 }
@@ -570,10 +570,10 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
 class AfterResponse extends members.Drash.Http.Middleware {
   static location = "after_response";
   public run(request: any) {
-    if (!request.getHeaderVar('process_stuff_after')) {
+    if (!request.getHeaderParam('process_stuff_after')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
     }
-    if (request.getHeaderVar('process_stuff_after') != "yes do it") {
+    if (request.getHeaderParam('process_stuff_after') != "yes do it") {
       throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
     }
 
@@ -584,10 +584,10 @@ class AfterResponse extends members.Drash.Http.Middleware {
 class BeforeRequest extends members.Drash.Http.Middleware {
   static location = "before_request";
   public run(request: any) {
-    if (!request.getHeaderVar('before')) {
+    if (!request.getHeaderParam('before')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
     }
-    if (request.getHeaderVar('before') != "yesss") {
+    if (request.getHeaderParam('before') != "yesss") {
       throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
     }
 
@@ -598,10 +598,10 @@ class BeforeRequest extends members.Drash.Http.Middleware {
 class BeforeResponse extends members.Drash.Http.Middleware {
   static location = "before_response";
   public run(request: any) {
-    if (!request.getHeaderVar('send_response')) {
+    if (!request.getHeaderParam('send_response')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
     }
-    if (request.getHeaderVar('send_response') != "yes do it") {
+    if (request.getHeaderParam('send_response') != "yes do it") {
       throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
     }
   }
@@ -610,10 +610,10 @@ class BeforeResponse extends members.Drash.Http.Middleware {
 class UserIsAdmin extends members.Drash.Http.Middleware {
   protected user_id = 999; // simulate DB data
   public run(request: any) {
-    if (!request.getHeaderVar('user_id')) {
+    if (!request.getHeaderParam('user_id')) {
       throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' not specified.");
     }
-    if (request.getHeaderVar('user_id') != this.user_id) {
+    if (request.getHeaderParam('user_id') != this.user_id) {
       throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' unknown.");
     }
   }
@@ -621,10 +621,10 @@ class UserIsAdmin extends members.Drash.Http.Middleware {
 
 class VerifyCsrfToken extends members.Drash.Http.Middleware {
   public run(request: any) {
-    if (!request.getHeaderVar('csrf_token')) {
+    if (!request.getHeaderParam('csrf_token')) {
       throw new members.Drash.Exceptions.HttpException(400, "No CSRF token, dude.");
     }
-    if (request.getHeaderVar('csrf_token') != "all your base") {
+    if (request.getHeaderParam('csrf_token') != "all your base") {
       throw new members.Drash.Exceptions.HttpException(400, "Wrong CSRF token, dude.");
     }
   }
