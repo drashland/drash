@@ -97,20 +97,24 @@ function compileVueGlobalComponents() {
  */
 function compileVueRouterRoutes() {
   echo("Compiling vue-router routes...");
+  let uniqueId = 0;
   let files = Drash.Util.Exports.getFileSystemStructure(`${Deno.env().DRASH_DIR_ROOT}/docs/src/vue/components/pages`);
   let importString = "";
+  let componentName = "";
   files.forEach(pathObj => {
+    componentName = pathObj.snake_cased + '_' + uniqueId;
     if (pathObj.isDirectory()) {
       return;
     }
-    importString += 'import * as ' + pathObj.snake_cased + ' from \"' + pathObj.path + '\";\n';
+    importString += 'import * as ' + componentName + ' from \"' + pathObj.path + '\";\n';
+    uniqueId += 1;
   });
   importString += "\nexport default [\n";
   files.forEach(pathObj => {
     if (pathObj.isDirectory()) {
       return;
     }
-    importString += `  ${pathObj.snake_cased},\n`;
+    importString += `  ${componentName},\n`;
   });
   importString += "];";
   let outputFile = `${Deno.env().DRASH_DIR_ROOT}/docs/public/assets/js/compiled_routes.js`;
