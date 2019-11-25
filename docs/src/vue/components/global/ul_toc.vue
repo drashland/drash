@@ -17,6 +17,9 @@ let component = {
             if (/\?/.test(item)) {
                 item = item.replace(/\?/g, "");
             }
+            if (/\,/.test(item)) {
+                item = item.replace(/\,/g, "");
+            }
             return item.toLowerCase();
         }
     }

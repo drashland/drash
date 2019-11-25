@@ -14,8 +14,6 @@ page-tutorial-default(
                 hr
                 h2#before-you-get-started Before You Get Started
                 ul
-                    li Drash defines middleware according to the MDN: <a href="https://developer.mozilla.org/en-US/docs/Glossary/Middleware" target="_BLANK">https://developer.mozilla.org/en-US/docs/Glossary/Middleware</a>.
-                    li Adding middleware to your application is useful when you want to filter requests throughout the request-resource-response lifecycle.
                     list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
         div.row
             div.col
@@ -69,10 +67,12 @@ page-tutorial-default(
 
 <script>
 export const resource = {
-    paths: ["/tutorials/middleware-basics"],
+    paths: [
+        "/tutorials/middleware/adding-middleware"
+    ],
     meta: {
-        title: "Middleware Basics",
-        source_code_uri: "/middleware_basics"
+        title: "Adding Middleware",
+        source_code_uri: "/middleware/adding_middleware"
     }
 }
 
@@ -82,7 +82,7 @@ export default {
             data: {
                 example_code: this
                     .$app_data
-                    .example_code['/docs/src/example_code/tutorials/middleware_basics'],
+                    .example_code['/docs/src/example_code/tutorials/middleware/adding_middleware'],
                 toc: {
                     items: [
                         "Before You Get Started",
@@ -96,4 +96,3 @@ export default {
     },
 }
 </script>
-

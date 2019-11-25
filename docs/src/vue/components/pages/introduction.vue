@@ -68,6 +68,11 @@ div
         hr
         div.row
             div.col
+                heading-h2#about-these-docs(heading="About These Docs")
+                p Most of the pages on this site are written in a tutorial format. You are given an introduction to the page, example code, and an end state that you can work towards. These pages mostly assume you have no working knowledge of Drash and try to be as explicit in instructions as possible. If you find that something needs more clarification, please do not hesitate to file an issue.
+        hr
+        div.row
+            div.col
                 heading-h2#file-an-issue(heading="File An Issue")
                 p File an issue (bugs, feature requests, or more documentation needed) at <a href="https://github.com/crookse/deno-drash/issues" target="_BLANK">https://github.com/crookse/deno-drash/issues</a>. We would love to hear from you!
 </template>

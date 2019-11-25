@@ -53,34 +53,34 @@ export default class Server {
    * @description
    *     A property to hold middleware to be run before requests.
    *
-   * @property any middleware_global_before_request
+   * @property any middleware_server_before_request
    */
-  protected middleware_global_before_request: any[] = [];
+  protected middleware_server_before_request: any[] = [];
 
   /**
    * @description
    *     A property to hold middleware to be run before responses.
    *
-   * @property any middleware_global_before_response
+   * @property any middleware_server_before_response
    */
-  protected middleware_global_before_response: any[] = [];
+  protected middleware_server_before_response: any[] = [];
 
   /**
    * @description
    *     A property to hold middleware to be run after responses.
    *
-   * @property any middleware_global_after_response
+   * @property any middleware_server_after_response
    */
-  protected middleware_global_after_response: any[] = [];
+  protected middleware_server_after_response: any[] = [];
 
   /**
    * @description
-   *     A property to hold middleware (for local use) passed in from the
+   *     A property to hold middleware (for resource use) passed in from the
    *     configs.
    *
-   * @property any middleware_local
+   * @property any middleware_resource
    */
-  protected middleware_local: any = {};
+  protected middleware_resource: any = {};
 
   /**
    * @description
@@ -140,14 +140,14 @@ export default class Server {
     this.configs = configs;
 
     if (configs.middleware) {
-      if (configs.middleware.hasOwnProperty("global")) {
-        configs.middleware.global.forEach(middlewareClass => {
-          this.addHttpMiddlewareGlobal(middlewareClass);
+      if (configs.middleware.hasOwnProperty("server")) {
+        configs.middleware.server.forEach(middlewareClass => {
+          this.addHttpMiddlewareServer(middlewareClass);
         });
       }
-      if (configs.middleware.hasOwnProperty("local")) {
-        configs.middleware.local.forEach(middlewareClass => {
-          this.addHttpMiddlewareLocal(middlewareClass);
+      if (configs.middleware.hasOwnProperty("resource")) {
+        configs.middleware.resource.forEach(middlewareClass => {
+          this.addHttpMiddlewareResource(middlewareClass);
         });
       }
     }
@@ -224,20 +224,20 @@ export default class Server {
     let output;
 
     try {
-      // Perform "before_request" global middleware
-      this.middleware_global_before_request.forEach(middlewareClass => {
+      // Perform "before_request" server middleware
+      this.middleware_server_before_request.forEach(middlewareClass => {
         let middleware = new middlewareClass();
         middleware.run(request);
       });
 
-      // Perform local middleware defined in the resource
+      // Perform resource middleware defined in the resource
       if (resource.middleware) {
         resource.middleware.forEach(middlewareClass => {
-          if (!this.middleware_local.hasOwnProperty(middlewareClass)) {
+          if (!this.middleware_resource.hasOwnProperty(middlewareClass)) {
             this.logger.debug(`Middleware class "${middlewareClass}" does not exist.`);
             throw new Drash.Exceptions.HttpMiddlewareException(418);
           }
-          let middleware = new this.middleware_local[middlewareClass]();
+          let middleware = new this.middleware_resource[middlewareClass]();
           middleware.run(request);
         });
       }
@@ -246,8 +246,8 @@ export default class Server {
       this.logger.debug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
 
-      // Perform "before_response" global middleware
-      this.middleware_global_before_response.forEach(middlewareClass => {
+      // Perform "before_response" server middleware
+      this.middleware_server_before_response.forEach(middlewareClass => {
         let middleware = new middlewareClass();
         middleware.run(request);
       });
@@ -261,8 +261,8 @@ export default class Server {
       return this.handleHttpRequestError(request, error, resource, response);
     }
 
-    // Perform "after_response" global middleware
-    this.middleware_global_after_response.forEach(middlewareClass => {
+    // Perform "after_response" server middleware
+    this.middleware_server_after_response.forEach(middlewareClass => {
       try {
         let middleware = new middlewareClass();
         middleware.run(request);
@@ -421,14 +421,14 @@ export default class Server {
    *
    * @return void
    */
-  protected addHttpMiddlewareGlobal(
+  protected addHttpMiddlewareServer(
     middlewareClass: Drash.Http.Middleware
   ): void {
     if (middlewareClass.location) {
-      this[`middleware_global_${middlewareClass.location}`].push(middlewareClass);
+      this[`middleware_server_${middlewareClass.location}`].push(middlewareClass);
       return;
     }
-    this.middleware_global_before_request.push(middlewareClass);
+    this.middleware_server_before_request.push(middlewareClass);
   }
 
   /**
@@ -439,10 +439,10 @@ export default class Server {
    *
    * @return void
    */
-  protected addHttpMiddlewareLocal(
+  protected addHttpMiddlewareResource(
     middlewareClass: Drash.Http.Middleware
   ): void {
-    this.middleware_local[middlewareClass.name] = middlewareClass;
+    this.middleware_resource[middlewareClass.name] = middlewareClass;
   }
 
   /**

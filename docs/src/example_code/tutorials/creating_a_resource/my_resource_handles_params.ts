@@ -3,7 +3,7 @@ import Drash from "https://deno.land/x/drash/mod.ts";
 export default class MyResource extends Drash.Http.Resource {
   static paths = [
     "/",
-    "/path/with/:something_cool"
+    "/:something_cool"
   ];
 
   public GET() {

@@ -13,7 +13,7 @@ export default class Resource {
    * @description
    *     A property to hold the middleware this resource uses.
    *
-   *     All derived resource classes MUST define this property as `static`
+   *     All derived middleware classes MUST define this property as `static`
    *     (e.g., `static middleware = ["MiddlewareClass"];`)
    *
    * @property string[] middleware

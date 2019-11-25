@@ -1,0 +1,5 @@
+▾ /path/to/your/project/
+	app.ts
+	home_resource.ts
+	secret_resource.ts
+	verify_token_middleware.ts
