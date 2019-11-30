@@ -3,14 +3,13 @@ let server = new Drash.Http.Server({
   middleware: {
     server_level: {
       before_request: [
-        OneMiddleware,
-        TwoMiddleware
+        AuthMiddleware,
+        CacheMiddleware,
+      ],
+      after_request: [
+        SomeOtherMiddleware,
       ]
-    },
-    resource_level: [
-      RedMiddleware,
-      BlueMiddleware
-    ]
+    }
   },
   resources: [
     HomeResource

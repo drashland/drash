@@ -15,10 +15,13 @@ page-tutorial-default(
                 h2#before-you-get-started Before You Get Started
                 ul
                     li By default, Drash executes middleware before requests are executed. For example, if a <code>GET</code> request is made to the <code>/users</code> URI and that URI is handled by <code>UsersResource</code>, then the middleware will be executed before <code>UsersResource.GET()</code> is called. You can change this behavior by telling the middleware where you want it to be executed.
-                    li You can tell middleware to execute at the following locations:
+                    li You can tell middleware where to execute by setting their <code>location</code> property to one of the following:
                     ul
+                      li <code>before_request</code> (default)
                       li
-                        code before_request
+                        code before_resource
+                      li
+                        code after_resource
                       li
                         code before_response
                       li
