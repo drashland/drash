@@ -14,7 +14,15 @@ page-tutorial-default(
                 hr
                 h2#before-you-get-started Before You Get Started
                 ul
-                    li By default, Drash executes middleware before requests are executed. For example, if a <code>GET</code> request is made to the <code>/users</code> URI and that URI is handled by <code>UsersResource</code>, then the middleware will be executed before <code>UsersResource.GET()</code> is called. You can change this behavior by telling the middleware where you want it to be executed. Read <a href="/#/tutorials/middleware-locations">Middleware: Setting Locations</a> for more information.
+                    li By default, Drash executes middleware before requests are executed. For example, if a <code>GET</code> request is made to the <code>/users</code> URI and that URI is handled by <code>UsersResource</code>, then the middleware will be executed before <code>UsersResource.GET()</code> is called. You can change this behavior by telling the middleware where you want it to be executed.
+                    li You can tell middleware to execute at the following locations:
+                    ul
+                      li
+                        code before_request
+                      li
+                        code before_response
+                      li
+                        code after_response
                     list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
         div.row
             div.col
@@ -75,11 +83,11 @@ page-tutorial-default(
 <script>
 export const resource = {
     paths: [
-        "/tutorials/setting-locations"
+        "/tutorials/middleware/setting-locations"
     ],
     meta: {
         title: "Middleware: Setting Locations",
-        source_code_uri: "/setting-locations"
+        source_code_uri: "/setting_locations"
     }
 }
 
@@ -89,7 +97,7 @@ export default {
             data: {
                 example_code: this
                     .$app_data
-                    .example_code['/docs/src/example_code/tutorials/setting-locations'],
+                    .example_code['/docs/src/example_code/tutorials/middleware/setting_locations'],
                 toc: {
                     items: [
                         "Before You Get Started",
