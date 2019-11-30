@@ -6,9 +6,11 @@ import members from "../../members.ts";
 members.test("Middleware server/resource: missing CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        VerifyCsrfToken
-      ],
+      server_level: {
+        before_request: [
+          VerifyCsrfToken
+        ]
+      },
       resource_level: [
         UserIsAdmin
       ]
@@ -47,9 +49,11 @@ members.test("Middleware server/resource: missing CSRF token", async () => {
 members.test("Middleware server/resource: wrong CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        VerifyCsrfToken
-      ],
+      server_level: {
+        before_request: [
+          VerifyCsrfToken
+        ]
+      },
       resource_level: [
         UserIsAdmin
       ]
@@ -91,9 +95,11 @@ members.test("Middleware server/resource: wrong CSRF token", async () => {
 members.test("Middleware server/resource: user is not an admin", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        VerifyCsrfToken
-      ],
+      server_level: {
+        before_request: [
+          VerifyCsrfToken
+        ]
+      },
       resource_level: [
         UserIsAdmin
       ]
@@ -136,9 +142,11 @@ members.test("Middleware server/resource: user is not an admin", async () => {
 members.test("Middleware server/resource: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        VerifyCsrfToken
-      ],
+      server_level: {
+        before_request: [
+          VerifyCsrfToken
+        ],
+      },
       resource_level: [
         UserIsAdmin
       ]
@@ -216,9 +224,11 @@ members.test("Middleware server/resource: middleware not found", async () => {
 members.test("Middleware server before_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        BeforeResponse
-      ]
+      server_level: {
+        after_request: [
+          AfterRequest
+        ]
+      }
     },
     resources: [
       ResourceWithMiddlewareHooked
@@ -249,9 +259,11 @@ members.test("Middleware server before_response: missing header", async () => {
 members.test("Middleware server before_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        BeforeResponse
-      ]
+      server_level: {
+        after_request: [
+          AfterRequest
+        ]
+      }
     },
     resources: [
       ResourceWithMiddlewareHooked
@@ -282,9 +294,11 @@ members.test("Middleware server before_response: wrong header", async () => {
 members.test("Middleware server before_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        BeforeResponse
-      ]
+      server_level: {
+        after_request: [
+          AfterRequest
+        ]
+      }
     },
     resources: [
       ResourceWithMiddlewareHooked
@@ -312,119 +326,14 @@ members.test("Middleware server before_response: pass", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server after_response: missing header", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      server_level: [
-        AfterResponse
-      ]
-    },
-    resources: [
-      ResourceWithMiddlewareHooked
-    ]
-  });
-
-  let request = members.mockRequest("/", "get");
-  let response = await server.handleHttpRequest(request);
-
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "got",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
-
-  members.assert.equal(request.hello, undefined);
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("Middleware server after_response: wrong header", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      server_level: [
-        AfterResponse
-      ]
-    },
-    resources: [
-      ResourceWithMiddlewareHooked
-    ]
-  });
-
-  let request = members.mockRequest("/", "get", {process_stuff_after: "yes please"});
-  let response = await server.handleHttpRequest(request);
-
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "got",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
-
-  members.assert.equal(request.hello, undefined);
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("Middleware server after_response: pass", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      server_level: [
-        AfterResponse
-      ]
-    },
-    resources: [
-      ResourceWithMiddlewareHooked
-    ]
-  });
-  let request = members.mockRequest("/", "get", {process_stuff_after: "yes do it"});
-  let response = await server.handleHttpRequest(request);
-
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "got",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
-
-  members.assert.equal(request.hello, "changed_after_response");
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
 members.test("Middleware server before_request: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        BeforeRequest
-      ]
+      server_level: {
+        before_request: [
+          BeforeRequest
+        ]
+      }
     },
     resources: [
       ResourceWithMiddlewareHooked
@@ -457,9 +366,11 @@ members.test("Middleware server before_request: missing header", async () => {
 members.test("Middleware server before_request: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        BeforeRequest
-      ]
+      server_level: {
+        before_request: [
+          BeforeRequest
+        ]
+      }
     },
     resources: [
       ResourceWithMiddlewareHooked
@@ -492,9 +403,11 @@ members.test("Middleware server before_request: wrong header", async () => {
 members.test("Middleware server before_request: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: [
-        BeforeRequest
-      ]
+      server_level: {
+        before_request: [
+          BeforeRequest
+        ]
+      }
     },
     resources: [
       ResourceWithMiddlewareHooked
@@ -527,7 +440,11 @@ members.test("Middleware server before_request: pass", async () => {
 
 class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  static middleware = ["UserIsAdmin"];
+  static middleware = {
+    before_request: [
+      "UserIsAdmin"
+    ]
+  };
   public users = {
     1: {
       name: "Thor"
@@ -552,7 +469,11 @@ class ResourceWithMiddlewareHooked extends members.Drash.Http.Resource {
 
 class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  static middleware = ["muahahaha"];
+  static middleware = {
+    before_request: [
+      "muahahaha"
+    ]
+  };
   public users = {
     1: {
       name: "Thor"
@@ -567,41 +488,25 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   }
 }
 
-class AfterResponse extends members.Drash.Http.Middleware {
-  static location = "after_response";
-  public run(request: any) {
-    if (!request.getHeaderParam('process_stuff_after')) {
-      throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
-    }
-    if (request.getHeaderParam('process_stuff_after') != "yes do it") {
-      throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
-    }
-
-    request.hello = "changed_after_response";
-  }
-}
-
 class BeforeRequest extends members.Drash.Http.Middleware {
-  static location = "before_request";
-  public run(request: any) {
-    if (!request.getHeaderParam('before')) {
+  public run() {
+    if (!this.request.getHeaderParam('before')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
     }
-    if (request.getHeaderParam('before') != "yesss") {
+    if (this.request.getHeaderParam('before') != "yesss") {
       throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
     }
 
-    request.hello = "changed_before_request";
+    this.request.hello = "changed_before_request";
   }
 }
 
-class BeforeResponse extends members.Drash.Http.Middleware {
-  static location = "before_response";
-  public run(request: any) {
-    if (!request.getHeaderParam('send_response')) {
+class AfterRequest extends members.Drash.Http.Middleware {
+  public run() {
+    if (!this.request.getHeaderParam('send_response')) {
       throw new members.Drash.Exceptions.HttpException(400, "Missing header, guy.");
     }
-    if (request.getHeaderParam('send_response') != "yes do it") {
+    if (this.request.getHeaderParam('send_response') != "yes do it") {
       throw new members.Drash.Exceptions.HttpException(400, "Ha... try again. Close though.");
     }
   }
@@ -609,22 +514,22 @@ class BeforeResponse extends members.Drash.Http.Middleware {
 
 class UserIsAdmin extends members.Drash.Http.Middleware {
   protected user_id = 999; // simulate DB data
-  public run(request: any) {
-    if (!request.getHeaderParam('user_id')) {
+  public run() {
+    if (!this.request.getHeaderParam('user_id')) {
       throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' not specified.");
     }
-    if (request.getHeaderParam('user_id') != this.user_id) {
+    if (this.request.getHeaderParam('user_id') != this.user_id) {
       throw new members.Drash.Exceptions.HttpMiddlewareException(400, "'user_id' unknown.");
     }
   }
 }
 
 class VerifyCsrfToken extends members.Drash.Http.Middleware {
-  public run(request: any) {
-    if (!request.getHeaderParam('csrf_token')) {
+  public run() {
+    if (!this.request.getHeaderParam('csrf_token')) {
       throw new members.Drash.Exceptions.HttpException(400, "No CSRF token, dude.");
     }
-    if (request.getHeaderParam('csrf_token') != "all your base") {
+    if (this.request.getHeaderParam('csrf_token') != "all your base") {
       throw new members.Drash.Exceptions.HttpException(400, "Wrong CSRF token, dude.");
     }
   }

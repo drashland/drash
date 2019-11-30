@@ -51,36 +51,14 @@ export default class Server {
 
   /**
    * @description
-   *     A property to hold middleware to be run before requests.
+   *     A property to hold middleware.
    *
-   * @property any middleware_server_before_request
+   * @property any middleware
    */
-  protected middleware_server_before_request: any[] = [];
-
-  /**
-   * @description
-   *     A property to hold middleware to be run before responses.
-   *
-   * @property any middleware_server_before_response
-   */
-  protected middleware_server_before_response: any[] = [];
-
-  /**
-   * @description
-   *     A property to hold middleware to be run after responses.
-   *
-   * @property any middleware_server_after_response
-   */
-  protected middleware_server_after_response: any[] = [];
-
-  /**
-   * @description
-   *     A property to hold middleware (for resource use) passed in from the
-   *     configs.
-   *
-   * @property any middleware_resource
-   */
-  protected middleware_resource: any = {};
+  protected middleware: any = {
+    resource_level: {},
+    server_level: {},
+  };
 
   /**
    * @description
@@ -139,8 +117,8 @@ export default class Server {
 
     this.configs = configs;
 
-    if (configs.middleware) {
-      this.addMiddleware(configs);
+    if (configs.hasOwnProperty("middleware")) {
+      this.addMiddleware(configs.middleware);
     }
 
     if (configs.resources) {
@@ -212,58 +190,24 @@ export default class Server {
     );
 
     let response;
-    let output;
 
     try {
-      // Perform "before_request" server middleware
-      this.middleware_server_before_request.forEach(middlewareClass => {
-        let middleware = new middlewareClass();
-        middleware.run(request);
-      });
-
-      // Perform resource middleware defined in the resource
-      if (resource.middleware) {
-        resource.middleware.forEach(middlewareClass => {
-          if (!this.middleware_resource.hasOwnProperty(middlewareClass)) {
-            this.logger.debug(`Middleware class "${middlewareClass}" does not exist.`);
-            throw new Drash.Exceptions.HttpMiddlewareException(418);
-          }
-          let middleware = new this.middleware_resource[middlewareClass]();
-          middleware.run(request);
-        });
-      }
+      this.executeMiddlewareBeforeRequest(request, resource);
 
       // Perform the request
       this.logger.debug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
 
-      // Perform "before_response" server middleware
-      this.middleware_server_before_response.forEach(middlewareClass => {
-        let middleware = new middlewareClass();
-        middleware.run(request);
-      });
+      this.executeMiddlewareAfterRequest(request, resource);
 
       // Send the response
       this.logger.info("Sending response. " + response.status_code + ".");
-      output = response.send();
+      return response.send();
 
     } catch (error) {
       // console.log(error);
       return this.handleHttpRequestError(request, error, resource, response);
     }
-
-    // Perform "after_response" server middleware
-    this.middleware_server_after_response.forEach(middlewareClass => {
-      try {
-        let middleware = new middlewareClass();
-        middleware.run(request);
-      } catch (error) {
-        // Do nothing... the response was already sent. We don't want to throw
-        // errors after the response has been sent. TODO(crookse) log maybe?
-      }
-    });
-
-    return output;
   }
 
   /**
@@ -406,38 +350,6 @@ export default class Server {
 
   /**
    * @description
-   *     Add middleware to the server.
-   *
-   * @param Drash.Http.Middleware middlewareClass
-   *
-   * @return void
-   */
-  protected addHttpMiddlewareServer(
-    middlewareClass: Drash.Http.Middleware
-  ): void {
-    if (middlewareClass.location) {
-      this[`middleware_server_${middlewareClass.location}`].push(middlewareClass);
-      return;
-    }
-    this.middleware_server_before_request.push(middlewareClass);
-  }
-
-  /**
-   * @description
-   *     Add middleware to the server.
-   *
-   * @param Drash.Http.Middleware middlewareClass
-   *
-   * @return void
-   */
-  protected addHttpMiddlewareResource(
-    middlewareClass: Drash.Http.Middleware
-  ): void {
-    this.middleware_resource[middlewareClass.name] = middlewareClass;
-  }
-
-  /**
-   * @description
    *     Add an HTTP resource to the server which can be retrieved at specific
    *     URIs.
    *
@@ -508,21 +420,35 @@ export default class Server {
    * @description
    *     Add server-level and resource-level middleware.
    *
-   * @param any configs
+   * @param any middleware
    *
    * @return void
    */
-  protected addMiddleware(configs: any): void {
-      if (configs.middleware.hasOwnProperty("server_level")) {
-        configs.middleware.server_level.forEach(middlewareClass => {
-          this.addHttpMiddlewareServer(middlewareClass);
-        });
+  protected addMiddleware(middleware: any): void {
+    // Add server-level middleware
+    if (middleware.hasOwnProperty("server_level")) {
+      if (middleware.server_level.hasOwnProperty("before_request")) {
+        this.middleware.server_level.before_request = [];
+        middleware.server_level.before_request
+          .forEach(middlewareClass => {
+            this.middleware.server_level.before_request.push(middlewareClass);
+          });
       }
-      if (configs.middleware.hasOwnProperty("resource_level")) {
-        configs.middleware.resource_level.forEach(middlewareClass => {
-          this.addHttpMiddlewareResource(middlewareClass);
-        });
+      if (middleware.server_level.hasOwnProperty("after_request")) {
+        this.middleware.server_level.after_request = [];
+        middleware.server_level.after_request
+          .forEach(middlewareClass => {
+            this.middleware.server_level.after_request.push(middlewareClass);
+          });
       }
+    }
+
+    // Add resource-level middleware
+    if (middleware.hasOwnProperty("resource_level")) {
+      middleware.resource_level.forEach(middlewareClass => {
+        this.middleware.resource_level[middlewareClass.name] = middlewareClass;
+      });
+    }
   }
 
   /**
@@ -538,6 +464,70 @@ export default class Server {
    */
   protected addStaticPath(path: string): void {
     this.static_paths.push(path);
+  }
+
+  /**
+   * @description
+   *     Execute middleware before the request.
+   *
+   * @param any request
+   *     The request object.
+   * @param Drash.Http.Resource resource
+   *     The resource object.
+   *
+   * @return void
+   */
+  protected executeMiddlewareBeforeRequest(request, resource) {
+    // Execute server-level middleware
+    if (this.middleware.server_level.hasOwnProperty("before_request")) {
+      this.middleware.server_level.before_request.forEach(middlewareClass => {
+        let middleware = new middlewareClass(request, this);
+        middleware.run();
+      });
+    }
+
+    // Execute resource-level middleware
+    if (resource.middleware && resource.middleware.hasOwnProperty("before_request")) {
+      resource.middleware.before_request.forEach(middlewareClass => {
+        if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
+          throw new Drash.Exceptions.HttpMiddlewareException(418);
+        }
+        let middleware = new this.middleware.resource_level[middlewareClass](request, this, resource);
+        middleware.run();
+      });
+    }
+  }
+
+  /**
+   * @description
+   *     Execute middleware after the request.
+   *
+   * @param any request
+   *     The request object.
+   * @param Drash.Http.Resource resource
+   *     The resource object.
+   *
+   * @return void
+   */
+  protected executeMiddlewareAfterRequest(request, resource) {
+    // Execute server-level middleware
+    if (this.middleware.server_level.hasOwnProperty("after_request")) {
+      this.middleware.server_level.after_request.forEach(middlewareClass => {
+        let middleware = new middlewareClass(request, this);
+        middleware.run();
+      });
+    }
+
+    // Execute resource-level middleware
+    if (resource.middleware && resource.middleware.hasOwnProperty("after_request")) {
+      resource.middleware.after_request.forEach(middlewareClass => {
+        if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
+          throw new Drash.Exceptions.HttpMiddlewareException(418);
+        }
+        let middleware = new this.middleware.resource_level[middlewareClass](request, this, resource);
+        middleware.run();
+      });
+    }
   }
 
   /**

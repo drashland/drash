@@ -1070,9 +1070,97 @@
                     "signature": "public name: string",
                     "name": "name",
                     "fully_qualified_name": "Drash.Http.Middleware.name"
+                },
+                "request": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the request object."
+                    ],
+                    "annotation": {
+                        "line": "@property any request",
+                        "data_type": "any",
+                        "name": "request"
+                    },
+                    "signature": "protected request: any",
+                    "name": "request",
+                    "fully_qualified_name": "Drash.Http.Middleware.request"
+                },
+                "resource": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the resource object. This property will only contain\nthe resource object if this middleware is a resource-level middleware."
+                    ],
+                    "annotation": {
+                        "line": "@property Drash.Http.Resource resource",
+                        "data_type": "Drash.Http.Resource",
+                        "name": "resource"
+                    },
+                    "signature": "protected resource: Drash.Http.Resource",
+                    "name": "resource",
+                    "fully_qualified_name": "Drash.Http.Middleware.resource"
+                },
+                "server": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the server object handling this middleware."
+                    ],
+                    "annotation": {
+                        "line": "@property Drash.Http.Server server",
+                        "data_type": "Drash.Http.Server",
+                        "name": "server"
+                    },
+                    "signature": "protected server: Drash.Http.Server",
+                    "name": "server",
+                    "fully_qualified_name": "Drash.Http.Middleware.server"
                 }
             },
-            "methods": {}
+            "methods": {
+                "constructor": {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "description": null,
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param any request",
+                                "data_type": "any",
+                                "name": "request"
+                            }
+                        },
+                        "server": {
+                            "name": "server",
+                            "description": [
+                                "The server object handling this middleware."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Server server",
+                                "data_type": "Drash.Http.Server",
+                                "name": "server"
+                            }
+                        },
+                        "resource": {
+                            "name": "resource",
+                            "description": [
+                                "(optional) If this is a resource-level middleware, then it will have\naccess to the resource that uses it."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Resource resource",
+                                "data_type": "Drash.Http.Resource",
+                                "name": "resource"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "constructor(request: any, server: Drash.Http.Server, resource?: Drash.Http.Resource)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Middleware()"
+                }
+            }
         },
         "Resource": {
             "fully_qualified_name": "Drash.Http.Resource",
@@ -1555,62 +1643,6 @@
                     "name": "deno_server",
                     "fully_qualified_name": "Drash.Http.Server.deno_server"
                 },
-                "middleware_server_before_request": {
-                    "access_modifier": "protected",
-                    "description": [
-                        "A property to hold middleware to be run before requests."
-                    ],
-                    "annotation": {
-                        "line": "@property any middleware_server_before_request",
-                        "data_type": "any",
-                        "name": "middleware_server_before_request"
-                    },
-                    "signature": "protected middleware_server_before_request: any[] = []",
-                    "name": "middleware_server_before_request",
-                    "fully_qualified_name": "Drash.Http.Server.middleware_server_before_request"
-                },
-                "middleware_server_before_response": {
-                    "access_modifier": "protected",
-                    "description": [
-                        "A property to hold middleware to be run before responses."
-                    ],
-                    "annotation": {
-                        "line": "@property any middleware_server_before_response",
-                        "data_type": "any",
-                        "name": "middleware_server_before_response"
-                    },
-                    "signature": "protected middleware_server_before_response: any[] = []",
-                    "name": "middleware_server_before_response",
-                    "fully_qualified_name": "Drash.Http.Server.middleware_server_before_response"
-                },
-                "middleware_server_after_response": {
-                    "access_modifier": "protected",
-                    "description": [
-                        "A property to hold middleware to be run after responses."
-                    ],
-                    "annotation": {
-                        "line": "@property any middleware_server_after_response",
-                        "data_type": "any",
-                        "name": "middleware_server_after_response"
-                    },
-                    "signature": "protected middleware_server_after_response: any[] = []",
-                    "name": "middleware_server_after_response",
-                    "fully_qualified_name": "Drash.Http.Server.middleware_server_after_response"
-                },
-                "middleware_resource": {
-                    "access_modifier": "protected",
-                    "description": [
-                        "A property to hold middleware (for resource use) passed in from the\nconfigs."
-                    ],
-                    "annotation": {
-                        "line": "@property any middleware_resource",
-                        "data_type": "any",
-                        "name": "middleware_resource"
-                    },
-                    "signature": "protected middleware_resource: any = {}",
-                    "name": "middleware_resource",
-                    "fully_qualified_name": "Drash.Http.Server.middleware_resource"
-                },
                 "resources": {
                     "access_modifier": "protected",
                     "description": [
@@ -1845,70 +1877,6 @@
                     "is_async": true,
                     "fully_qualified_name": "Drash.Http.Server.run"
                 },
-                "addHttpMiddlewareServer": {
-                    "access_modifier": "protected",
-                    "name": "addHttpMiddlewareServer",
-                    "description": [
-                        "Add middleware to the server."
-                    ],
-                    "params": {
-                        "middlewareClass": {
-                            "name": "middlewareClass",
-                            "description": [],
-                            "annotation": {
-                                "line": "@param Drash.Http.Middleware middlewareClass",
-                                "data_type": "Drash.Http.Middleware",
-                                "name": "middlewareClass"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return void",
-                                "data_type": "void",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected addHttpMiddlewareServer(middlewareClass: Drash.Http.Middleware): void",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Server.addHttpMiddlewareServer"
-                },
-                "addHttpMiddlewareResource": {
-                    "access_modifier": "protected",
-                    "name": "addHttpMiddlewareResource",
-                    "description": [
-                        "Add middleware to the server."
-                    ],
-                    "params": {
-                        "middlewareClass": {
-                            "name": "middlewareClass",
-                            "description": [],
-                            "annotation": {
-                                "line": "@param Drash.Http.Middleware middlewareClass",
-                                "data_type": "Drash.Http.Middleware",
-                                "name": "middlewareClass"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return void",
-                                "data_type": "void",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected addHttpMiddlewareResource(middlewareClass: Drash.Http.Middleware): void",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Server.addHttpMiddlewareResource"
-                },
                 "addHttpResource": {
                     "access_modifier": "protected",
                     "name": "addHttpResource",
@@ -1953,13 +1921,13 @@
                         "Add server-level and resource-level middleware."
                     ],
                     "params": {
-                        "configs": {
-                            "name": "configs",
+                        "middleware": {
+                            "name": "middleware",
                             "description": [],
                             "annotation": {
-                                "line": "@param any configs",
+                                "line": "@param any middleware",
                                 "data_type": "any",
-                                "name": "configs"
+                                "name": "middleware"
                             }
                         }
                     },
@@ -1974,7 +1942,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected addMiddleware(configs: any): void",
+                    "signature": "protected addMiddleware(middleware: any): void",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addMiddleware"
                 },
@@ -2011,6 +1979,96 @@
                     "signature": "protected addStaticPath(path: string): void",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
+                },
+                "executeMiddlewareBeforeRequest": {
+                    "access_modifier": "protected",
+                    "name": "executeMiddlewareBeforeRequest",
+                    "description": [
+                        "Execute middleware before the request."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param any request",
+                                "data_type": "any",
+                                "name": "request"
+                            }
+                        },
+                        "resource": {
+                            "name": "resource",
+                            "description": [
+                                "The resource object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Resource resource",
+                                "data_type": "Drash.Http.Resource",
+                                "name": "resource"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected executeMiddlewareBeforeRequest(request, resource)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.executeMiddlewareBeforeRequest"
+                },
+                "executeMiddlewareAfterRequest": {
+                    "access_modifier": "protected",
+                    "name": "executeMiddlewareAfterRequest",
+                    "description": [
+                        "Execute middleware after the request."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param any request",
+                                "data_type": "any",
+                                "name": "request"
+                            }
+                        },
+                        "resource": {
+                            "name": "resource",
+                            "description": [
+                                "The resource object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Resource resource",
+                                "data_type": "Drash.Http.Resource",
+                                "name": "resource"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected executeMiddlewareAfterRequest(request, resource)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.executeMiddlewareAfterRequest"
                 },
                 "httpErrorResponse": {
                     "access_modifier": "protected",

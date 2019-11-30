@@ -8,9 +8,14 @@ let server = new Drash.Http.Server({
   address: "localhost:1447",
   logger: new Drash.Loggers.ConsoleLogger({enabled: true, level: "debug"}),
   middleware: {
-    server_level: [
-      VerifyTokenMiddleware
-    ]
+    resource_level: [
+      HomeResourceMiddleware,
+    ],
+    server_level: {
+      before_request: {
+        VerifyTokenMiddleware
+      }
+    }
   },
   resources: [
     HomeResource
