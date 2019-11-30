@@ -6,10 +6,10 @@ import members from "../../members.ts";
 members.test("Middleware server/resource: missing CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         VerifyCsrfToken
       ],
-      resource: [
+      resource_level: [
         UserIsAdmin
       ]
     },
@@ -47,10 +47,10 @@ members.test("Middleware server/resource: missing CSRF token", async () => {
 members.test("Middleware server/resource: wrong CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         VerifyCsrfToken
       ],
-      resource: [
+      resource_level: [
         UserIsAdmin
       ]
     },
@@ -91,10 +91,10 @@ members.test("Middleware server/resource: wrong CSRF token", async () => {
 members.test("Middleware server/resource: user is not an admin", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         VerifyCsrfToken
       ],
-      resource: [
+      resource_level: [
         UserIsAdmin
       ]
     },
@@ -136,10 +136,10 @@ members.test("Middleware server/resource: user is not an admin", async () => {
 members.test("Middleware server/resource: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         VerifyCsrfToken
       ],
-      resource: [
+      resource_level: [
         UserIsAdmin
       ]
     },
@@ -183,7 +183,7 @@ members.test("Middleware server/resource: pass", async () => {
 members.test("Middleware server/resource: middleware not found", async () => {
   let server = new members.MockServer({
     middleware: {
-      resource: [
+      resource_level: [
         UserIsAdmin
       ]
     },
@@ -216,7 +216,7 @@ members.test("Middleware server/resource: middleware not found", async () => {
 members.test("Middleware server before_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         BeforeResponse
       ]
     },
@@ -249,7 +249,7 @@ members.test("Middleware server before_response: missing header", async () => {
 members.test("Middleware server before_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         BeforeResponse
       ]
     },
@@ -282,7 +282,7 @@ members.test("Middleware server before_response: wrong header", async () => {
 members.test("Middleware server before_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         BeforeResponse
       ]
     },
@@ -315,7 +315,7 @@ members.test("Middleware server before_response: pass", async () => {
 members.test("Middleware server after_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         AfterResponse
       ]
     },
@@ -351,7 +351,7 @@ members.test("Middleware server after_response: missing header", async () => {
 members.test("Middleware server after_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         AfterResponse
       ]
     },
@@ -387,7 +387,7 @@ members.test("Middleware server after_response: wrong header", async () => {
 members.test("Middleware server after_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         AfterResponse
       ]
     },
@@ -422,7 +422,7 @@ members.test("Middleware server after_response: pass", async () => {
 members.test("Middleware server before_request: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         BeforeRequest
       ]
     },
@@ -457,7 +457,7 @@ members.test("Middleware server before_request: missing header", async () => {
 members.test("Middleware server before_request: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         BeforeRequest
       ]
     },
@@ -492,7 +492,7 @@ members.test("Middleware server before_request: wrong header", async () => {
 members.test("Middleware server before_request: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server: [
+      server_level: [
         BeforeRequest
       ]
     },

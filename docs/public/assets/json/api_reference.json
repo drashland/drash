@@ -1946,6 +1946,38 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addHttpResource"
                 },
+                "addMiddleware": {
+                    "access_modifier": "protected",
+                    "name": "addMiddleware",
+                    "description": [
+                        "Add server-level and resource-level middleware."
+                    ],
+                    "params": {
+                        "configs": {
+                            "name": "configs",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param any configs",
+                                "data_type": "any",
+                                "name": "configs"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected addMiddleware(configs: any): void",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.addMiddleware"
+                },
                 "addStaticPath": {
                     "access_modifier": "protected",
                     "name": "addStaticPath",

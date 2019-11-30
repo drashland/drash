@@ -27,9 +27,18 @@ page
         div.col
             hr
             h2#sorting Sorting
-            p Middleware is executed in the order you define them. In the below example, the middleware would execute in the following order: <code>VerifyTokenMiddleware</code>, <code>CacheMiddleware</code>, <code>SessionMiddleware</code>.
-            code-block-slotted(:header="false")
-                template(v-slot:code) {{ data.example_code.sorting.contents }}
+            p Middleware is executed in the order you define them. Take the example below.
+            p
+                code-block-slotted(:header="false" language="typescript")
+                    template(v-slot:code) {{ data.example_code.sorting.contents }}
+            p The server-level middleware would execute in the following order:
+            ul
+                li <code>OneMiddleware</code>
+                li <code>TwoMiddleware</code>
+            p The resource-level middleware would execute in the following order:
+            ul
+                li <code>RedMiddleware</code>
+                li <code>BlueMiddleware</code>
 </template>
 
 <script>

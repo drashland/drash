@@ -14,7 +14,8 @@ page-tutorial-default(
                 hr
                 h2#before-you-get-started Before You Get Started
                 ul
-                    list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+                  li Server-level middleware is middleware that is executed by the server on every request.
+                  list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
         div.row
             div.col
                 hr

@@ -14,7 +14,8 @@ page-tutorial-default(
                 hr
                 h2#before-you-get-started Before You Get Started
                 ul
-                    list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+                  li Resource-level middleware is middleware that can only be executed by resources. That is, if a resource specifies a list of middleware in its <code>middleware</code> property, then that middleware will be executed.
+                  list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
         div.row
             div.col
                 hr

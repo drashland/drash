@@ -140,16 +140,7 @@ export default class Server {
     this.configs = configs;
 
     if (configs.middleware) {
-      if (configs.middleware.hasOwnProperty("server")) {
-        configs.middleware.server.forEach(middlewareClass => {
-          this.addHttpMiddlewareServer(middlewareClass);
-        });
-      }
-      if (configs.middleware.hasOwnProperty("resource")) {
-        configs.middleware.resource.forEach(middlewareClass => {
-          this.addHttpMiddlewareResource(middlewareClass);
-        });
-      }
+      this.addMiddleware(configs);
     }
 
     if (configs.resources) {
@@ -511,6 +502,27 @@ export default class Server {
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
+  }
+
+  /**
+   * @description
+   *     Add server-level and resource-level middleware.
+   *
+   * @param any configs
+   *
+   * @return void
+   */
+  protected addMiddleware(configs: any): void {
+      if (configs.middleware.hasOwnProperty("server_level")) {
+        configs.middleware.server_level.forEach(middlewareClass => {
+          this.addHttpMiddlewareServer(middlewareClass);
+        });
+      }
+      if (configs.middleware.hasOwnProperty("resource_level")) {
+        configs.middleware.resource_level.forEach(middlewareClass => {
+          this.addHttpMiddlewareResource(middlewareClass);
+        });
+      }
   }
 
   /**
