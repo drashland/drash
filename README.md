@@ -64,6 +64,7 @@ For full documentation, visit [https://drash.io](https://crookse.github.io/deno-
 - Request Body Parsing
     - application/x-www-form-urlencoded (e.g, `username=root&password=alpine`)
     - application/json (e.g., `{"username":"root","password":"alpine"}`)
+- Middleware
 
 ## Contributing
 
