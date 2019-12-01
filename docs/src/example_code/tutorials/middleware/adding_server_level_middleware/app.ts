@@ -1,5 +1,4 @@
-// import Drash from "https://deno.land/x/drash/mod.ts";
-import Drash from "../../../../../../mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts";
 
 import HomeResource from "./home_resource.ts";
 import VerifyTokenMiddleware from "./verify_token_middleware.ts";
