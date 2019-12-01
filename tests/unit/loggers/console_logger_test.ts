@@ -4,7 +4,7 @@ const ANIMALS = {
   "#1235": "tiger"
 };
 
-members.test(function ConsoleLogger() {
+members.test("Loggers.ConsoleLogger", () => {
   let expected = "some_date | hello | tiger | This is cool!";
   let logger = new members.Drash.Loggers.ConsoleLogger({
     test: true,

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp -i $(dirname $0)/prepare-commit-msg $(dirname $0)/../../.git/hooks
+

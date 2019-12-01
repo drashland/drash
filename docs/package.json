@@ -35,6 +35,7 @@
     "install-watchdog": "console/pip.install.watchdog",
     "prettier": "../console/prettier",
     "sass": "sass public/assets/css/style-docs.scss public/assets/css/style-docs.css",
+    "test": "npm run tests",
     "tests": "../console/tests"
   }
 }

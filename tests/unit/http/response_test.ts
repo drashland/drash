@@ -12,20 +12,30 @@ let response = new members.Drash.Http.Response(request);
 response.body = "This is my body";
 let responseFormatted;
 
-members.test(function Response_generateResponse_json_default() {
+members.test("Response.generateResponse()", () => {
   members.assert.equal(
-    response.generateResponse(),
-    `{"status_code":200,"status_message":"OK","request":{"url":"/","method":"GET"},"body":"This is my body"}`
+    JSON.parse(response.generateResponse()),
+    {
+      status_code: 200,
+      status_message: "OK",
+      body: "This is my body",
+      request: {
+        method: "GET",
+        uri: "/",
+        url_query_params: {},
+        url: "/"
+      }
+    }
   );
 });
 
-members.test(function Response_generateResponse_html() {
+members.test("Response.generateResponse(): text/html", () => {
   response.headers.set("Content-Type", "text/html");
   responseFormatted = response.generateResponse();
   members.assert.equal(responseFormatted, `This is my body`);
 });
 
-members.test(function Response_generateResponse_xml() {
+members.test("Response.generateResponse(): text/xml", () => {
   response.headers.set("Content-Type", "text/xml");
   responseFormatted = response.generateResponse();
   members.assert.equal(
@@ -34,6 +44,12 @@ members.test(function Response_generateResponse_xml() {
   <statuscode>200</statuscode>
   <statusmessage>OK</statusmessage>
   <body>This is my body</body>
+  <request>
+    <method>GET</method>
+    <uri>/</uri>
+    <url_query_params>{}</url_query_params>
+    <url>/</url>
+  </request>
 </response>`
   );
   response.headers.set("Content-Type", "application/xml");
@@ -44,6 +60,12 @@ members.test(function Response_generateResponse_xml() {
   <statuscode>200</statuscode>
   <statusmessage>OK</statusmessage>
   <body>This is my body</body>
+  <request>
+    <method>GET</method>
+    <uri>/</uri>
+    <url_query_params>{}</url_query_params>
+    <url>/</url>
+  </request>
 </response>`
   );
 });

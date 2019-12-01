@@ -1,8 +1,11 @@
 import members from "../../members.ts";
 
-let exception = new members.Drash.Exceptions.HttpException(405);
-let actual = exception.code;
+members.test("Exceptions.HttpException(405)", () => {
+  let actual = new members.Drash.Exceptions.HttpException(405);
+  members.assert.equal(actual.code, 405);
+});
 
-members.test(function Resource() {
-  members.assert.equal(actual, 405);
+members.test("Exceptions.HttpException(418)", () => {
+  let actual = new members.Drash.Exceptions.HttpException(418);
+  members.assert.equal(actual.code, 418);
 });

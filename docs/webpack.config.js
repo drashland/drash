@@ -3,7 +3,7 @@ const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // Versions
-const latestRelease = "0.24.0";
+const latestRelease = "v0.24.0";
 const denoVersion = "0.24.0";
 const denoStdVersion = "0.24.0";
 
@@ -24,7 +24,6 @@ function getConf(envVars) {
     module_namespace: "Drash",
     shields: {
       requires_deno: `https://img.shields.io/badge/requires%20deno-v${denoVersion}-brightgreen.svg`,
-      deno_std: `https://img.shields.io/badge/uses%20deno__std-v${denoStdVersion}-brightgreen.svg`
     },
     webpack_mode: envVars.environment
   };

@@ -1,25 +1,29 @@
 import Drash from "https://deno.land/x/drash/mod.ts";
 
 export default class MyResource extends Drash.Http.Resource {
-  static paths = ["/", "/path/with/:my_param"];
+  static paths = [
+    "/",
+    "/:something_cool"
+  ];
 
   public GET() {
     this.response.body = "GET request received!";
-    if (this.request.path_params.my_param) {
-      this.response.body += ` Path param "${
-        this.request.path_params.my_param
-      }" received!`;
+
+    let pathParam = this.request.getPathParam('something_cool');
+    if (pathParam) {
+      this.response.body += ` Path param "${pathParam}" received!`;
     }
-    if (this.request.url_query_params.my_param) {
-      this.response.body += ` URL query param "${
-        this.request.url_query_params.my_param
-      }" received!`;
+
+    let queryParam = this.request.getQueryParam('something_cool');
+    if (queryParam) {
+      this.response.body += ` URL query param "${queryParam}" received!`;
     }
-    if (this.request.body_parsed.my_param) {
-      this.response.body += ` Body param "${
-        this.request.body_parsed.my_param
-      }" received!`;
+
+    let bodyParam = this.request.getBodyParam('something_cool');
+    if (bodyParam) {
+      this.response.body += ` Body param "${bodyParam}" received!`;
     }
+
     return this.response;
   }
 }

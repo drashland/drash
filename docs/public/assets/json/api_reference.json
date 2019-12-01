@@ -969,9 +969,199 @@
                     "fully_qualified_name": "Drash.Exceptions.HttpException()"
                 }
             }
+        },
+        "HttpMiddlewareException": {
+            "fully_qualified_name": "Drash.Exceptions.HttpMiddlewareException",
+            "namespace": "Drash.Exceptions",
+            "name": "HttpMiddlewareException",
+            "description": [
+                "This class gives you a way to throw HTTP errors semantically in the\nmiddleware classes. The difference between this class and `HttpException`\ncomes when you want to check which exception was thrown via\n`exception.constructor.name`.",
+                "This class extends `Error`."
+            ],
+            "properties": {
+                "code": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold the HTTP response code associated with this\nexception."
+                    ],
+                    "annotation": {
+                        "line": "@property number code",
+                        "data_type": "number",
+                        "name": "code"
+                    },
+                    "signature": "public code: number",
+                    "name": "code",
+                    "fully_qualified_name": "Drash.Exceptions.HttpMiddlewareException.code"
+                }
+            },
+            "methods": {
+                "constructor": {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "description": [
+                        "Construct an object of this class."
+                    ],
+                    "params": {
+                        "code": {
+                            "name": "code",
+                            "description": [
+                                "The HTTP response code associated with this exception."
+                            ],
+                            "annotation": {
+                                "line": "@param number code",
+                                "data_type": "number",
+                                "name": "code"
+                            }
+                        },
+                        "message": {
+                            "name": "message",
+                            "description": [
+                                "(optional) The exception message."
+                            ],
+                            "annotation": {
+                                "line": "@param string message",
+                                "data_type": "string",
+                                "name": "message"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "constructor(code: number, message?: string)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Exceptions.HttpMiddlewareException()"
+                }
+            }
         }
     },
     "Drash.Http": {
+        "Middleware": {
+            "fully_qualified_name": "Drash.Http.Middleware",
+            "namespace": "Drash.Http",
+            "name": "Middleware",
+            "description": [
+                "This is the base middleware class for all middleware classes."
+            ],
+            "properties": {
+                "location": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold the location that this middleware should process."
+                    ],
+                    "annotation": {
+                        "line": "@property string location",
+                        "data_type": "string",
+                        "name": "location"
+                    },
+                    "signature": "public location: string",
+                    "name": "location",
+                    "fully_qualified_name": "Drash.Http.Middleware.location"
+                },
+                "name": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold the name of this middleware class. This property is\nused by `Drash.Http.Server` to help it store middleware in the correct\n`middleware_*` property."
+                    ],
+                    "annotation": {
+                        "line": "@property string name",
+                        "data_type": "string",
+                        "name": "name"
+                    },
+                    "signature": "public name: string",
+                    "name": "name",
+                    "fully_qualified_name": "Drash.Http.Middleware.name"
+                },
+                "request": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the request object."
+                    ],
+                    "annotation": {
+                        "line": "@property any request",
+                        "data_type": "any",
+                        "name": "request"
+                    },
+                    "signature": "protected request: any",
+                    "name": "request",
+                    "fully_qualified_name": "Drash.Http.Middleware.request"
+                },
+                "resource": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the resource object. This property will only contain\nthe resource object if this middleware is a resource-level middleware."
+                    ],
+                    "annotation": {
+                        "line": "@property Drash.Http.Resource resource",
+                        "data_type": "Drash.Http.Resource",
+                        "name": "resource"
+                    },
+                    "signature": "protected resource: Drash.Http.Resource",
+                    "name": "resource",
+                    "fully_qualified_name": "Drash.Http.Middleware.resource"
+                },
+                "server": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the server object handling this middleware."
+                    ],
+                    "annotation": {
+                        "line": "@property Drash.Http.Server server",
+                        "data_type": "Drash.Http.Server",
+                        "name": "server"
+                    },
+                    "signature": "protected server: Drash.Http.Server",
+                    "name": "server",
+                    "fully_qualified_name": "Drash.Http.Middleware.server"
+                }
+            },
+            "methods": {
+                "constructor": {
+                    "access_modifier": "public",
+                    "name": "constructor",
+                    "description": null,
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param any request",
+                                "data_type": "any",
+                                "name": "request"
+                            }
+                        },
+                        "server": {
+                            "name": "server",
+                            "description": [
+                                "The server object handling this middleware."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Server server",
+                                "data_type": "Drash.Http.Server",
+                                "name": "server"
+                            }
+                        },
+                        "resource": {
+                            "name": "resource",
+                            "description": [
+                                "(optional) If this is a resource-level middleware, then it will have\naccess to the resource that uses it."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Resource resource",
+                                "data_type": "Drash.Http.Resource",
+                                "name": "resource"
+                            }
+                        }
+                    },
+                    "returns": null,
+                    "throws": null,
+                    "signature": "constructor(request: any, server: Drash.Http.Server, resource?: Drash.Http.Resource)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Middleware()"
+                }
+            }
+        },
         "Resource": {
             "fully_qualified_name": "Drash.Http.Resource",
             "namespace": "Drash.Http",
@@ -980,20 +1170,20 @@
                 "This is the base resource class for all resources. All resource classes\nmust be derived from this class."
             ],
             "properties": {
-                "paths": {
+                "middleware": {
                     "access_modifier": "public",
                     "description": [
-                        "A property to hold the paths to access this resource.",
-                        "All derived resource classes MUST define this property as `static`\n(e.g., `static paths = [\"path\"];`)"
+                        "A property to hold the middleware this resource uses.",
+                        "All derived middleware classes MUST define this property as `static`\n(e.g., `static middleware = [\"MiddlewareClass\"];`)"
                     ],
                     "annotation": {
-                        "line": "@property string[] paths",
+                        "line": "@property string[] middleware",
                         "data_type": "string[]",
-                        "name": "paths"
+                        "name": "middleware"
                     },
-                    "signature": "public paths: string[]",
-                    "name": "paths",
-                    "fully_qualified_name": "Drash.Http.Resource.paths"
+                    "signature": "public middleware: string[]",
+                    "name": "middleware",
+                    "fully_qualified_name": "Drash.Http.Resource.middleware"
                 },
                 "name": {
                     "access_modifier": "public",
@@ -1008,6 +1198,21 @@
                     "signature": "public name: string",
                     "name": "name",
                     "fully_qualified_name": "Drash.Http.Resource.name"
+                },
+                "paths": {
+                    "access_modifier": "public",
+                    "description": [
+                        "A property to hold the paths to access this resource.",
+                        "All derived resource classes MUST define this property as `static`\n(e.g., `static paths = [\"path\"];`)"
+                    ],
+                    "annotation": {
+                        "line": "@property string[] paths",
+                        "data_type": "string[]",
+                        "name": "paths"
+                    },
+                    "signature": "public paths: string[]",
+                    "name": "paths",
+                    "fully_qualified_name": "Drash.Http.Resource.paths"
                 },
                 "request;": {
                     "access_modifier": "protected",
@@ -1478,11 +1683,11 @@
                         "configs": {
                             "name": "configs",
                             "description": [
-                                "address: string",
-                                "logger: Drash.Http.ConsoleLogger|Drash.Http.FileLogger",
-                                "response_output: string (a proper MIME type)",
-                                "resources: Drash.Http.Resource[]",
-                                "static_paths: string[]"
+                                "`address`: `string`",
+                                "`logger`: `Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger`",
+                                "`response_output`: `string` (a proper MIME type)",
+                                "`resources`: `Drash.Http.Resource[]`",
+                                "`static_paths`: `string[]`"
                             ],
                             "annotation": {
                                 "line": "@param any configs",
@@ -1576,7 +1781,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequestError(request, error: any): any",
+                    "signature": "public handleHttpRequestError(request: any, error: any, resource: Drash.Http.Resource = null, response: Drash.Http.Response = null): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequestError"
                 },
@@ -1709,6 +1914,38 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addHttpResource"
                 },
+                "addMiddleware": {
+                    "access_modifier": "protected",
+                    "name": "addMiddleware",
+                    "description": [
+                        "Add server-level and resource-level middleware."
+                    ],
+                    "params": {
+                        "middleware": {
+                            "name": "middleware",
+                            "description": [],
+                            "annotation": {
+                                "line": "@param any middleware",
+                                "data_type": "any",
+                                "name": "middleware"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected addMiddleware(middleware: any): void",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.addMiddleware"
+                },
                 "addStaticPath": {
                     "access_modifier": "protected",
                     "name": "addStaticPath",
@@ -1743,9 +1980,99 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.addStaticPath"
                 },
-                "errorResponse": {
+                "executeMiddlewareBeforeRequest": {
                     "access_modifier": "protected",
-                    "name": "errorResponse",
+                    "name": "executeMiddlewareBeforeRequest",
+                    "description": [
+                        "Execute middleware before the request."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param any request",
+                                "data_type": "any",
+                                "name": "request"
+                            }
+                        },
+                        "resource": {
+                            "name": "resource",
+                            "description": [
+                                "The resource object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Resource resource",
+                                "data_type": "Drash.Http.Resource",
+                                "name": "resource"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected executeMiddlewareBeforeRequest(request, resource)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.executeMiddlewareBeforeRequest"
+                },
+                "executeMiddlewareAfterRequest": {
+                    "access_modifier": "protected",
+                    "name": "executeMiddlewareAfterRequest",
+                    "description": [
+                        "Execute middleware after the request."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param any request",
+                                "data_type": "any",
+                                "name": "request"
+                            }
+                        },
+                        "resource": {
+                            "name": "resource",
+                            "description": [
+                                "The resource object."
+                            ],
+                            "annotation": {
+                                "line": "@param Drash.Http.Resource resource",
+                                "data_type": "Drash.Http.Resource",
+                                "name": "resource"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return void",
+                                "data_type": "void",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected executeMiddlewareAfterRequest(request, resource)",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.executeMiddlewareAfterRequest"
+                },
+                "httpErrorResponse": {
+                    "access_modifier": "protected",
+                    "name": "httpErrorResponse",
                     "description": null,
                     "params": {
                         "code": {
@@ -1769,9 +2096,45 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "protected errorResponse(code: number): Drash.Exceptions.HttpException",
+                    "signature": "protected httpErrorResponse(code: number): Drash.Exceptions.HttpException",
                     "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Server.errorResponse"
+                    "fully_qualified_name": "Drash.Http.Server.httpErrorResponse"
+                },
+                "getRequest": {
+                    "access_modifier": "protected",
+                    "name": "getRequest",
+                    "description": [
+                        "Get the request object with more properties and methods."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
+                                "name": "request"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [
+                                "Returns the `ServerRequest` object with more properties and methods."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "protected getRequest(request: any): any",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.getRequest"
                 },
                 "getResourceClass": {
                     "access_modifier": "protected",

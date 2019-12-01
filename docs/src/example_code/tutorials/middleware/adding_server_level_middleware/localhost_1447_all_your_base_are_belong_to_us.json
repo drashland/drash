@@ -1,0 +1,13 @@
+{
+  "status_code": 200,
+  "status_message": "OK",
+  "body": "GET request received!",
+  "request": {
+    "method": "GET",
+    "uri": "/",
+    "url_query_params": {
+      "super_secret_token": "AllYourBaseAreBelongToUs"
+    },
+    "url": "localhost:1447/?super_secret_token=AllYourBaseAreBelongToUs"
+  }
+}
