@@ -8,11 +8,11 @@
   <a href="https://github.com/crookse/deno-drash/releases">
     <img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest">
   </a>
-  <a href="https://travis-ci.org/crookse/deno-drash">
-    <img src="https://travis-ci.org/crookse/deno-drash.svg?branch=master">
-  </a>
   <a href="https://github.com/denoland/deno">
     <img src="https://img.shields.io/badge/requires%20deno-v0.25.0-brightgreen.svg">
+  </a>
+  <a href="https://travis-ci.org/crookse/deno-drash">
+    <img src="https://img.shields.io/travis/crookse/deno-drash/master?label=master">
   </a>
 </p>
 
