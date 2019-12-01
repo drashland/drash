@@ -106,10 +106,28 @@ export default class HttpService {
       }
     }
 
+    // Attach properties
     request.url_query_params = this.getHttpRequestUrlQueryParams(request);
     request.url_query_string = this.getHttpRequestUrlQueryString(request);
     request.url_path = this.getHttpRequestUrlPath(request);
+    request.uri = this.getHttpRequestUrlPath(request);
+    request.url = options && options.base_url
+      ? options.base_url + request.url
+      : request.url;
     request.body_parsed = this.getHttpRequestBodyParsed(request);
+    // Attach methods
+    request.getBodyParam = function(httpVar: string): any {
+      return request.body_parsed[httpVar];
+    };
+    request.getHeaderParam = function(httpVar: string): any {
+      return request.headers.get(httpVar);
+    };
+    request.getPathParam = function(httpVar: string): any {
+      return request.path_params[httpVar];
+    };
+    request.getQueryParam = function(httpVar: string): any {
+      return request.url_query_params[httpVar];
+    };
 
     return request;
   }

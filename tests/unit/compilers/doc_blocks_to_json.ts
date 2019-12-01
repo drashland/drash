@@ -1,6 +1,6 @@
 import members from "../../members.ts";
 
-members.test(function DocBlocksToJson_compile_params() {
+members.test("DocBlocksToJson.compile()", () => {
   const decoder = new TextDecoder();
   let rawContents = Deno.readFileSync(
     members.Drash.getEnvVar("DRASH_DIR_ROOT").value +

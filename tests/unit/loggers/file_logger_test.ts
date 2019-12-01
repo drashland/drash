@@ -7,7 +7,7 @@ const ANIMALS = {
 const file =
   members.Drash.getEnvVar("DRASH_DIR_ROOT").value + `/tmp/file_logger_test.log`;
 
-members.test(function FileLogger() {
+members.test("Loggers.FileLogger", () => {
   let expected = "some_date | hello | tiger | This is cool!\n";
   let logger = new members.Drash.Loggers.FileLogger({
     enabled: true,

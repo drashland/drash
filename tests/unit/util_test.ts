@@ -1,7 +1,7 @@
 import members from "../members.ts";
 let parser = new members.Drash.Util.ObjectParser();
 
-members.test(function colorize_color() {
+members.test("Util.Exports.colorize()", () => {
   let expected = "\x1b[30mMy message\x1b[39m\x1b[49m\x1b[0m";
   let actual = members.Drash.Util.Exports.colorize("My message", {
     color: "black"
@@ -9,7 +9,7 @@ members.test(function colorize_color() {
   members.assert.equal(actual, expected);
 });
 
-members.test(function ObjectParser_step_1() {
+members.test("Util.ObjectParser.getNestedPropertyValue(): step 1", () => {
   let expected = "you found me!";
   let myObject = {
     step_1: {
@@ -25,7 +25,7 @@ members.test(function ObjectParser_step_1() {
   members.assert.equal(actual, expected);
 });
 
-members.test(function ObjectParser_step_2() {
+members.test("Util.ObjectParser.getNestedPropertyValue(): step 2", () => {
   let expected = "you found me!";
   let myObject = {
     step_1: {
@@ -41,7 +41,7 @@ members.test(function ObjectParser_step_2() {
   members.assert.equal(actual, expected);
 });
 
-members.test(function ObjectParser_step_3() {
+members.test("Util.ObjectParser.getNestedPropertyValue(): step 3", () => {
   let expected = "you found me!";
   let myObject = {
     step_1: {

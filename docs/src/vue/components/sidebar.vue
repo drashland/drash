@@ -18,52 +18,72 @@ div.c-sidebar
                 a(:href="$conf.base_url + '/#/introduction#quickstart'") Quickstart
                 a(:href="$conf.base_url + '/#/introduction#importing'") Importing
                 a(:href="$conf.base_url + '/#/introduction#features'") Features
+                a(:href="$conf.base_url + '/#/introduction#about-these-docs'") About These Docs
                 a(:href="$conf.base_url + '/#/introduction#file-an-issue'") File An Issue
-            a.heading-link Tutorials
+            a.heading-link(:href="$conf.base_url + '/#/tutorials/introduction'") Tutorials
             div.c-sidebar__menu-body
+                a(:href="$conf.base_url + '/#/tutorials/introduction'") Introduction
                 a Resources
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/creating-a-resource'") Creating A Resource
-                    a(:href="$conf.base_url + '/#/tutorials/resource-lifecycle-hooks'") Lifecycle Hooks
-                a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
-                a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
-                a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
-                a(:href="$conf.base_url + '/#/tutorials/content-negotiation'") Content Negotiation
+                    a(:href="$conf.base_url + '/#/tutorials/content-negotiation'") Content Negotiation
+                a Servers
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
+                    a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
+                a Responses
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
+                a Middleware
+                div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/tutorials/middleware/introduction'") Introduction
+                    div.l-submenu-2
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#basics'") Basics
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#middleware-types'") Middleware Types
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#setting-the-execution-location'") Setting The Execution Location
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#sorting-middleware'") Sorting Middleware
+                    a(:href="$conf.base_url + '/#/tutorials/middleware/adding-server-level-middleware'") Adding Server-Level Middleware
+                    a(:href="$conf.base_url + '/#/tutorials/middleware/adding-resource-level-middleware'") Adding Resource-Level Middleware
                 a Logging
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
                     a(:href="$conf.base_url + '/#/tutorials/logging-to-files'") Logging To Files
                     router-link(href="/tutorials/logging-using-log-from-deno-std") Logging Using Log From deno_std
-                a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
-            a.heading-link Tutorials (Creating An App)
-            div.c-sidebar__menu-body
-                a Hello World
+                a Misc
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-1'") Part 1 of 4: Handling GET requests
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Part 2 of 4: Building the front end
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-3'") Part 3 of 4: Handling POST requests
-                    a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Part 4 of 4: Logging
-                //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/api'") Creating An Application: API
-                //- a(:href="$conf.base_url + '/#/tutorials/creating-an-app/html'") Creating An Application: HTML
+                    a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
+                    a(:href="$conf.base_url + '/#/tutorials/adding-third-party-modules'") Adding Third-Party Modules
+            a.heading-link Advanced Tutorials
+            div.c-sidebar__menu-body
+                a Creating A Web App
+                div.l-submenu-1
+                    a Hello World
+                    div.l-submenu-2
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-1'") Part 1 of 4: Handling GET requests
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-2'") Part 2 of 4: Building the front end
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-3'") Part 3 of 4: Handling POST requests
+                        a(:href="$conf.base_url + '/#/tutorials/creating-an-app-hello-world-part-4'") Part 4 of 4: Logging
             a.heading-link API Reference
             div.c-sidebar__menu-body
-                a(:href="$conf.base_url + '/#/api-reference/exceptions'") Exceptions
+                a Exceptions
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/exceptions/http-exception'") HttpException
-                a(:href="$conf.base_url + '/#/api-reference/http'") Http
+                    a(:href="$conf.base_url + '/#/api-reference/exceptions/http-middleware-exception'") HttpMiddlewareException
+                a Http
                 div.l-submenu-1
+                    a(:href="$conf.base_url + '/#/api-reference/http/middleware'") Middleware
                     a(:href="$conf.base_url + '/#/api-reference/http/resource'") Resource
                     a(:href="$conf.base_url + '/#/api-reference/http/response'") Response
                     a(:href="$conf.base_url + '/#/api-reference/http/server'") Server
-                a(:href="$conf.base_url + '/#/api-reference/loggers'") Loggers
+                a Loggers
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/loggers/logger'") Logger
                     a(:href="$conf.base_url + '/#/api-reference/loggers/console-logger'") ConsoleLogger
                     a(:href="$conf.base_url + '/#/api-reference/loggers/file-logger'") FileLogger
-                a(:href="$conf.base_url + '/#/api-reference/services'") Services
+                a Services
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/services/http-service'") HttpService
-                a(:href="$conf.base_url + '/#/api-reference/util'") Util
+                a Util
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/api-reference/util/exports'") Exports
                     a(:href="$conf.base_url + '/#/api-reference/util/object-parser'") ObjectParser

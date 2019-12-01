@@ -1,5 +1,4 @@
-// // Random Classes
-import "./unit/env_var_test.ts";
+Deno.env().DRASH_PROCESS = "test";
 
 // Compilers
 import "./unit/compilers/doc_blocks_to_json.ts";
@@ -11,6 +10,7 @@ import "./unit/dictionaries/log_levels_test.ts";
 import "./unit/exceptions/http_exception_test.ts";
 
 // Http
+import "./unit/http/middleware_test.ts";
 import "./unit/http/resource_test.ts";
 import "./unit/http/response_test.ts";
 import "./unit/http/server_test.ts";

@@ -1,0 +1,11 @@
+{
+  "status_code": 200,
+  "status_message": "OK",
+  "body": "GET request received!",
+  "request": {
+    "method": "GET",
+    "uri": "/",
+    "url_query_params": {},
+    "url": "localhost:1447/"
+  }
+}
