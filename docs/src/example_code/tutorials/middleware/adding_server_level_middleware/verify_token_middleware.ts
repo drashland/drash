@@ -2,8 +2,8 @@
 import Drash from "../../../../../../mod.ts";
 
 export default class VerifyTokenMiddleware extends Drash.Http.Middleware {
-  public run(request: any) {
-    let token = request.getQueryParam('super_secret_token');
+  public run() {
+    let token = this.request.getQueryParam('super_secret_token');
 
     if (!token) {
       throw new Drash.Exceptions.HttpMiddlewareException(400, "Where is the token?");

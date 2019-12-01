@@ -5,7 +5,11 @@ export default class SecretResource extends Drash.Http.Resource {
 
   static paths = ["/secret", "/secret/"];
 
-  static middleware = ["VerifyTokenMiddleware"];
+  static middleware = {
+    before_request: [
+      "VerifyTokenMiddleware"
+    ]
+  };
 
   public GET() {
     this.response.body = "You have accessed the secret resource!";

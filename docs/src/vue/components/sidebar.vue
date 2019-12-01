@@ -37,9 +37,13 @@ div.c-sidebar
                 a Middleware
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/middleware/introduction'") Introduction
+                    div.l-submenu-2
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#basics'") Basics
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#middleware-types'") Middleware Types
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#setting-the-execution-location'") Setting The Execution Location
+                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#sorting-middleware'") Sorting Middleware
                     a(:href="$conf.base_url + '/#/tutorials/middleware/adding-server-level-middleware'") Adding Server-Level Middleware
                     a(:href="$conf.base_url + '/#/tutorials/middleware/adding-resource-level-middleware'") Adding Resource-Level Middleware
-                    a(:href="$conf.base_url + '/#/tutorials/middleware/setting-locations'") Setting Locations
                 a Logging
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
