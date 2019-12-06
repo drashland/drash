@@ -63,7 +63,7 @@ export default class Response {
   constructor(request) {
     this.request = request;
     this.headers = new Headers();
-    this.headers.set("Content-Type", this.getHeaderContentType());
+    this.headers.set("Content-Type", request.response_content_type);
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
@@ -75,6 +75,7 @@ export default class Response {
    * @return any
    */
   public generateResponse(): any {
+    console.log("Wtf");
     switch (this.headers.get("Content-Type")) {
       case "application/json":
         this.body_generated = this.generateJsonResponse();
@@ -239,52 +240,4 @@ export default class Response {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
-
-  /**
-   * @description
-   *     Get this response's `Content-Type` header. There are three ways to set
-   *     the response's `Content-Type` header from a request: (1) the request's
-   *     headers by setting `Response-Content-Type: "type"`, (2) the request's
-   *     URL query params by setting `?response_content_type=type`, and the
-   *     request's body by setting `{response_content_type: "type"}`.
-   *
-   *     Setting the content type using the request's body takes precedence over
-   *     all other settings.
-   *
-   *     Setting the content type using the request's URL query params takes
-   *     precedence over the header setting and the default setting.
-   *
-   *     Setting the content type using the request's header setting takes
-   *     precedence over the default setting.
-   *
-   *     If no content type is specified by the request's body, URL query
-   *     params, or header, then the default content type will be used. The
-   *     default content type is the content type defined in the
-   *     `Drash.Http.Server` object's `response_output` config.
-   *
-   * @return string
-   */
-  protected getHeaderContentType(): string {
-    let contentType = this.request.headers.get("Response-Content-Type-Default");
-
-    // Check the request's headers to see if `response-content-type:
-    // {content-type}` has been specified
-    contentType = this.request.headers.get("Response-Content-Type")
-      ? this.request.headers.get("Response-Content-Type")
-      : contentType;
-
-    // Check the request's URL query params to see if
-    // ?response_content_type={content-type} has been specified
-    contentType = this.request.url_query_params.response_content_type
-      ? this.request.url_query_params.response_content_type
-      : contentType;
-
-    // Check the request's body to see if
-    // {response_content_type: {content-type}} has been specified
-    contentType = this.request.body_parsed.response_content_type
-      ? this.request.body_parsed.response_content_type
-      : contentType;
-
-    return contentType;
-  }
 }
