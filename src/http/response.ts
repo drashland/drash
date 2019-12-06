@@ -75,7 +75,6 @@ export default class Response {
    * @return any
    */
   public generateResponse(): any {
-    console.log("Wtf");
     switch (this.headers.get("Content-Type")) {
       case "application/json":
         this.body_generated = this.generateJsonResponse();
