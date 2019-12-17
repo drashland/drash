@@ -91,7 +91,9 @@ export default class Response {
    */
   public getStatusMessage(): string {
     let message = STATUS_TEXT.get(this.status_code);
-    return message ? message : null;
+    return message
+      ? message
+      : null;
   }
 
   /**
@@ -104,19 +106,9 @@ export default class Response {
    */
   public getStatusMessageFull(): string {
     let message = STATUS_TEXT.get(this.status_code);
-    return message ? `${this.status_code} (${message})` : null;
-  }
-
-  /**
-   * @description
-   *     Get the full output details (for debugging purposes).
-   *
-   * @return string
-   */
-  public outputDetails(): string {
-    return `Content-Type: ${this.headers.get(
-      "Content-Type"
-    )}. Status: ${this.getStatusMessageFull()}.`;
+    return message
+      ? `${this.status_code} (${message})`
+      : null;
   }
 
   /**
