@@ -66,74 +66,18 @@ export default class Response {
    * @return any
    */
   public generateResponse(): any {
-    switch (this.headers.get("Content-Type")) {
+    let contentType = this.headers.get("Content-Type")
+
+    switch (contentType) {
       case "application/json":
-        this.body_generated = this.generateJsonResponse();
-        break;
-      case "text/html":
-        this.body_generated = this.generateHtmlResponse();
-        break;
+        return JSON.stringify(this.body);
       case "application/xml":
+      case "text/html":
       case "text/xml":
-        this.body_generated = this.generateXmlResponse();
-        break;
-      default:
-        this.headers.set("Content-Type", "application/json");
-        return this.generateResponse();
+        return this.body;
     }
 
-    return this.body_generated;
-  }
-
-  /**
-   * @description
-   *     Generate an HTML response. The `this.body` property should be the
-   *     entire HTML document.
-   *
-   * @return any
-   */
-  public generateHtmlResponse(): any {
-    return this.body;
-  }
-
-  /**
-   * @description
-   *     Generate a JSON response.
-   *
-   * @return string
-   */
-  public generateJsonResponse(): any {
-    return JSON.stringify({
-      status_code: this.status_code,
-      status_message: this.getStatusMessage(),
-      body: this.body,
-      request: {
-        method: this.request.method.toUpperCase(),
-        uri: this.request.url_path,
-        url_query_params: this.request.url_query_params,
-        url: this.request.url,
-      },
-    });
-  }
-
-  /**
-   * @description
-   *     Generate an XML response.
-   *
-   * @return any
-   */
-  public generateXmlResponse(): any {
-    return `<response>
-  <statuscode>${this.status_code}</statuscode>
-  <statusmessage>${this.getStatusMessage()}</statusmessage>
-  <body>${this.body}</body>
-  <request>
-    <method>${this.request.method.toUpperCase()}</method>
-    <uri>${this.request.url_path}</uri>
-    <url_query_params>${JSON.stringify(this.request.url_query_params)}</url_query_params>
-    <url>${this.request.url}</url>
-  </request>
-</response>`;
+    throw new Drash.Exceptions.HttpResponseException(400, `Response Content-Type "${contentType}" unknown.`);
   }
 
   /**
