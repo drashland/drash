@@ -111,10 +111,6 @@ export default class Server {
       configs.address = "127.0.0.1:8000";
     }
 
-    if (!configs.response_output) {
-      configs.response_output = "application/json";
-    }
-
     this.configs = configs;
 
     if (configs.hasOwnProperty("middleware")) {
@@ -136,6 +132,31 @@ export default class Server {
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get the request object with more properties and methods.
+   *
+   * @param ServerRequest request
+   *     The request object.
+   *
+   * @return any
+   *     Returns the `ServerRequest` object with more properties and methods.
+   */
+  public getRequest(request: any): any {
+    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+      base_url: this.configs.address,
+    });
+
+    // Were we able to determine the content type the request wants to receive?
+    if (!request.response_content_type) {
+      request.response_content_type = this.configs.response_output
+        ? this.configs.response_output
+        : "application/json";
+    }
+
+    return request;
+  }
 
   /**
    * @description
@@ -539,27 +560,6 @@ export default class Server {
    */
   protected httpErrorResponse(code: number): Drash.Exceptions.HttpException {
     return new Drash.Exceptions.HttpException(code);
-  }
-
-  /**
-   * @description
-   *     Get the request object with more properties and methods.
-   *
-   * @param ServerRequest request
-   *     The request object.
-   *
-   * @return any
-   *     Returns the `ServerRequest` object with more properties and methods.
-   */
-  protected getRequest(request: any): any {
-    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-      base_url: this.configs.address,
-      headers: {
-        "Response-Content-Type-Default": this.configs.response_output
-      },
-    });
-
-    return request;
   }
 
   /**

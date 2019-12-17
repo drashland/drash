@@ -7,26 +7,14 @@ let request = members.mockRequest("/", "get", {
     "Response-Content-Type-Default": "application/json"
   }
 });
+request = server.getRequest(request);
 
 let response = new members.Drash.Http.Response(request);
 response.body = "This is my body";
 let responseFormatted;
 
 members.test("Response.generateResponse()", () => {
-  members.assert.equal(
-    JSON.parse(response.generateResponse()),
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "This is my body",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "/"
-      }
-    }
-  );
+  members.assert.equal(JSON.parse(response.generateResponse()), "This is my body");
 });
 
 members.test("Response.generateResponse(): text/html", () => {
@@ -38,34 +26,8 @@ members.test("Response.generateResponse(): text/html", () => {
 members.test("Response.generateResponse(): text/xml", () => {
   response.headers.set("Content-Type", "text/xml");
   responseFormatted = response.generateResponse();
-  members.assert.equal(
-    responseFormatted,
-    `<response>
-  <statuscode>200</statuscode>
-  <statusmessage>OK</statusmessage>
-  <body>This is my body</body>
-  <request>
-    <method>GET</method>
-    <uri>/</uri>
-    <url_query_params>{}</url_query_params>
-    <url>/</url>
-  </request>
-</response>`
-  );
+  members.assert.equal(responseFormatted, `This is my body`);
   response.headers.set("Content-Type", "application/xml");
   responseFormatted = response.generateResponse();
-  members.assert.equal(
-    responseFormatted,
-    `<response>
-  <statuscode>200</statuscode>
-  <statusmessage>OK</statusmessage>
-  <body>This is my body</body>
-  <request>
-    <method>GET</method>
-    <uri>/</uri>
-    <url_query_params>{}</url_query_params>
-    <url>/</url>
-  </request>
-</response>`
-  );
+  members.assert.equal(responseFormatted, `This is my body`);
 });
