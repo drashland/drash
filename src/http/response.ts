@@ -19,15 +19,6 @@ export default class Response {
 
   /**
    * @description
-   *     A property to hold the body of this response as a string. This is
-   *     implemented to help unit testing efforts.
-   *
-   * @property string body_generated
-   */
-  public body_generated: string = "";
-
-  /**
-   * @description
    *     A property to hold this response's headers.
    *
    * @property Headers headers
