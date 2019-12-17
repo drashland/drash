@@ -43,10 +43,7 @@ class MockServer extends Drash.Http.Server {
 }
 
 function responseJsonEquals(actual: any, expected: any) {
-  return assertEquals(
-    JSON.parse(decoder.decode(actual)),
-    expected
-  );
+  return assertEquals(JSON.parse(decoder.decode(actual)), expected);
 }
 
 function runTest(name, testFn) {

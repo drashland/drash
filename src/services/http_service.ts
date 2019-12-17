@@ -277,7 +277,7 @@ export default class HttpService {
    * @return string
    */
   public getResponseContentType(request): string {
-    let contentType = request.headers.get("Response-Content-Type-Default");
+    let contentType = null;
 
     // Check the request's headers to see if `response-content-type:
     // {content-type}` has been specified
