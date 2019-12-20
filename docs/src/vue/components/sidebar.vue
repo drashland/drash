@@ -30,9 +30,6 @@ div.c-sidebar
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
                     a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
-                a Responses
-                div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/adding-content-types'") Adding Content Types
                 a Middleware
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/middleware/introduction'") Introduction
@@ -54,6 +51,7 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/tutorials/adding-third-party-modules'") Adding Third-Party Modules
             a.heading-link Advanced Tutorials
             div.c-sidebar__menu-body
+                a(:href="$conf.base_url + '/#/advanced-tutorials/introduction'") Introduction
                 a Creating A Web App
                 div.l-submenu-1
                     a Hello World
