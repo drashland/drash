@@ -100,7 +100,7 @@ export const resource = {
     paths: ["/tutorials/serving-static-paths"],
     meta: {
         title: "Serving Static Paths",
-        source_code_uri: "/serving_static_paths"
+        source_code_uri: "/tutorials/serving_static_paths"
     }
 }
 

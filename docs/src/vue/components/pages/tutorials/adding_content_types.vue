@@ -1,17 +1,5 @@
 <template lang="pug">
 page-tutorial-default(:data="data" :hide_screenshot="true")
-    template(#table-of-contents)
-        ul-toc(:data="data.toc")
-    template(#before-you-get-started)
-        li Drash servers use the <code>Drash.Http.Response</code> class to send properly formatted responses to clients.
-        li Out of the box, Drash can send responses in the following formats:
-            ul
-                li <code>application/json</code>
-                li <code>text/html</code>
-                li <code>application/xml</code>
-                li <code>text/xml</code>
-        li If you want your Drash server to send responses in more formats (to cater to clients that want to request formats other than the above), then you will need to override and replace <code>Drash.Http.Response</code>.
-        list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
     template(#steps)
         ol
             li Create your app file.
@@ -35,7 +23,7 @@ page-tutorial-default(:data="data" :hide_screenshot="true")
         h3 <code>app.ts</code>
         ol
             li Drash is imported so that all subsequent lines in the file have access to the <code>Drash</code> namespace.
-            li Your new <code>Response</code> class is imported and replaces <code>Drash.Http.Response</code>. Drash servers instantiate the <code>Drash.Http.Response</code> class to generate response objects, so replacing <code>Drash.Http.Response</code> with your new <code>Response</code> class will make your Drash server use your new <code>Response</code> class.
+            li Your new <code>Response</code> class is imported and replaces <code>Drash.Http.Response</code>. Drash servers create the <code>Drash.Http.Response</code> class to generate response objects, so replacing <code>Drash.Http.Response</code> with your new <code>Response</code> class will make your Drash server use your new <code>Response</code> class.
             li A resource class named <code>HomeResource</code> is created.
                 ul
                     li <code>HomeResource</code> contains a <code>GET()</code> method. This method will handle all <code>GET</code> requests to <code>HomeResource</code>. When a client makes a <code>GET</code> request to <code>HomeResource</code>, the response the client will receive is "Hello World!" as written in the <code>response</code> object's <code>body</code> property. All resources have access to the <code>response</code> object via <code>this.response</code>.
@@ -69,7 +57,7 @@ export const resource = {
     paths: ["/tutorials/adding-content-types"],
     meta: {
         title: "Adding Content Types",
-        source_code_uri: "/adding_content_types"
+        source_code_uri: "/tutorials/adding_content_types"
     }
 }
 

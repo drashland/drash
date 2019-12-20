@@ -44,7 +44,7 @@ export const resource = {
     paths: ["/tutorials/logging-using-log-from-deno-std"],
     meta: {
         title: "Logging Using Log From deno_std",
-        source_code_uri: "/logging_using_log_from_deno_std"
+        source_code_uri: "/tutorials/logging_using_log_from_deno_std"
     }
 }
 

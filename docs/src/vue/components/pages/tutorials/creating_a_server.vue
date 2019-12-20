@@ -52,7 +52,7 @@ export const resource = {
     paths: ["/tutorials/creating-a-server"],
     meta: {
         title: "Creating A Server",
-        source_code_uri: "/creating_a_server"
+        source_code_uri: "/tutorials/creating_a_server"
     }
 }
 

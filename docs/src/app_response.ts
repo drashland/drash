@@ -13,7 +13,7 @@ export default class AppResponse extends Drash.Http.Response {
       case "text/html":
         let indexEjsFile = `${
           Deno.env().DRASH_DIR_ROOT
-        }/docs/src/templates/index.ejs`;
+        }/docs/index.ejs`;
         Drash.Members.ConsoleLogger.debug("Rendering HTML response.");
         try {
           body = await ResponseService.getAppDataInHtml(indexEjsFile);
