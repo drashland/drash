@@ -2,9 +2,9 @@
 // const deno = Deno.env().VER_DENO_LATEST;
 // const denoStd = Deno.env().VER_DENO_STD_LATEST;
 
-const drash = "v0.25.0";
-const deno = "0.25.0";
-const denoStd = "0.25.0";
+const drash = "v0.26.0";
+const deno = "0.26.0";
+const denoStd = "0.26.0";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8");
@@ -13,7 +13,7 @@ let text = "";
 // Bump the versions in the README.md file
 const readme = Deno.readFileSync("./README.md");
 text = decoder.decode(readme);
-text = text.replace(/drash@.*([0-9]([0-9])?\.?)*([0-9]([0-9])?\.?)/g, "drash@v" + drash);
+text = text.replace(/drash@.*([0-9]([0-9])?\.?)*([0-9]([0-9])?\.?)/g, "drash@" + drash);
 text = text.replace(/deno-v([0-9]([0-9])?\.?)*/g, "deno-v" + deno);
 text = text.replace(/deno__std-v([0-9]([0-9])?\.?)*/g, "deno__std-v" + denoStd);
 Deno.writeFileSync("./README.md", encoder.encode(text));
