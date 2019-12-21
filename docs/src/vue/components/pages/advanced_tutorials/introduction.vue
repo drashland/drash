@@ -4,7 +4,10 @@ page
         div.col
             hr
             h2#about-the-tutorials About The Advanced Tutorials
-            p The advanced tutorials assume you have read through the tutorials under the Resources section and Server section.
+            p The advanced tutorials assume you have read through the following tutorials:
+            ul
+              li Resources
+              li Server
     div.row
         div.col
             hr
