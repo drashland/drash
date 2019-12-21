@@ -1,5 +1,5 @@
 #!/bin/bash
 
 (
-  $HOME/.deno/bin/deno --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/tests/test.ts
+  deno --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/tests/test.ts
 )
