@@ -68,7 +68,7 @@ page-tutorial-part(
       ol
         li
           p Add your <code>profile_card.html</code> file.
-          code-block(:data="example_code.profile_card" language="html" line_highlight="14,21")
+          code-block(:data="example_code.user" language="html" line_highlight="14,21")
           p When a request is made to your resource for the <code>text/html</code> representation of its data, this is the HTML file that will be sent as the response. After your resource reads this HTML file, it will replace the highlighted variables (<code>alias</code> and <code>name</code>) with the requested user's data. This replacement process is basically the process a template engine would perform, but in a much simpler way.
         li
           p Modify your resource (by adding the highlighted code) so that it can generate a <code>text/html</code> representation of its data.
