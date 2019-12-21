@@ -1281,20 +1281,6 @@
                     "name": "body",
                     "fully_qualified_name": "Drash.Http.Response.body"
                 },
-                "body_generated": {
-                    "access_modifier": "public",
-                    "description": [
-                        "A property to hold the body of this response as a string. This is\nimplemented to help unit testing efforts."
-                    ],
-                    "annotation": {
-                        "line": "@property string body_generated",
-                        "data_type": "string",
-                        "name": "body_generated"
-                    },
-                    "signature": "public body_generated: string = \"\"",
-                    "name": "body_generated",
-                    "fully_qualified_name": "Drash.Http.Response.body_generated"
-                },
                 "headers": {
                     "access_modifier": "public",
                     "description": [
@@ -1384,72 +1370,6 @@
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.generateResponse"
                 },
-                "generateHtmlResponse": {
-                    "access_modifier": "public",
-                    "name": "generateHtmlResponse",
-                    "description": [
-                        "Generate an HTML response. The `this.body` property should be the\nentire HTML document."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "public generateHtmlResponse(): any",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Response.generateHtmlResponse"
-                },
-                "generateJsonResponse": {
-                    "access_modifier": "public",
-                    "name": "generateJsonResponse",
-                    "description": [
-                        "Generate a JSON response."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "public generateJsonResponse(): any",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Response.generateJsonResponse"
-                },
-                "generateXmlResponse": {
-                    "access_modifier": "public",
-                    "name": "generateXmlResponse",
-                    "description": [
-                        "Generate an XML response."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "public generateXmlResponse(): any",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Response.generateXmlResponse"
-                },
                 "getStatusMessage": {
                     "access_modifier": "public",
                     "name": "getStatusMessage",
@@ -1495,28 +1415,6 @@
                     "signature": "public getStatusMessageFull(): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.getStatusMessageFull"
-                },
-                "outputDetails": {
-                    "access_modifier": "public",
-                    "name": "outputDetails",
-                    "description": [
-                        "Get the full output details (for debugging purposes)."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "public outputDetails(): string",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Response.outputDetails"
                 },
                 "send": {
                     "access_modifier": "public",
@@ -1564,32 +1462,6 @@
                     "signature": "public sendStatic(): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.sendStatic"
-                },
-                "getHeaderContentType": {
-                    "access_modifier": "protected",
-                    "name": "getHeaderContentType",
-                    "description": [
-                        "Get this response's `Content-Type` header. There are three ways to set\nthe response's `Content-Type` header from a request: (1) the request's\nheaders by setting `Response-Content-Type: \"type\"`, (2) the request's\nURL query params by setting `?response_content_type=type`, and the\nrequest's body by setting `{response_content_type: \"type\"}`.",
-                        "Setting the content type using the request's body takes precedence over\nall other settings.",
-                        "Setting the content type using the request's URL query params takes\nprecedence over the header setting and the default setting.",
-                        "Setting the content type using the request's header setting takes\nprecedence over the default setting.",
-                        "If no content type is specified by the request's body, URL query\nparams, or header, then the default content type will be used. The\ndefault content type is the content type defined in the\n`Drash.Http.Server` object's `response_output` config."
-                    ],
-                    "params": null,
-                    "returns": [
-                        {
-                            "description": [],
-                            "annotation": {
-                                "line": "@return string",
-                                "data_type": "string",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected getHeaderContentType(): string",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Response.getHeaderContentType"
                 }
             }
         },
@@ -1701,6 +1573,42 @@
                     "signature": "constructor(configs: any)",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server()"
+                },
+                "getRequest": {
+                    "access_modifier": "public",
+                    "name": "getRequest",
+                    "description": [
+                        "Get the request object with more properties and methods."
+                    ],
+                    "params": {
+                        "request": {
+                            "name": "request",
+                            "description": [
+                                "The request object."
+                            ],
+                            "annotation": {
+                                "line": "@param ServerRequest request",
+                                "data_type": "ServerRequest",
+                                "name": "request"
+                            }
+                        }
+                    },
+                    "returns": [
+                        {
+                            "description": [
+                                "Returns the `ServerRequest` object with more properties and methods."
+                            ],
+                            "annotation": {
+                                "line": "@return any",
+                                "data_type": "any",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public getRequest(request: any): any",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Http.Server.getRequest"
                 },
                 "handleHttpRequest": {
                     "access_modifier": "public",
@@ -2099,42 +2007,6 @@
                     "signature": "protected httpErrorResponse(code: number): Drash.Exceptions.HttpException",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Server.httpErrorResponse"
-                },
-                "getRequest": {
-                    "access_modifier": "protected",
-                    "name": "getRequest",
-                    "description": [
-                        "Get the request object with more properties and methods."
-                    ],
-                    "params": {
-                        "request": {
-                            "name": "request",
-                            "description": [
-                                "The request object."
-                            ],
-                            "annotation": {
-                                "line": "@param ServerRequest request",
-                                "data_type": "ServerRequest",
-                                "name": "request"
-                            }
-                        }
-                    },
-                    "returns": [
-                        {
-                            "description": [
-                                "Returns the `ServerRequest` object with more properties and methods."
-                            ],
-                            "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
-                                "name": null
-                            }
-                        }
-                    ],
-                    "throws": null,
-                    "signature": "protected getRequest(request: any): any",
-                    "is_async": false,
-                    "fully_qualified_name": "Drash.Http.Server.getRequest"
                 },
                 "getResourceClass": {
                     "access_modifier": "protected",
@@ -2899,6 +2771,33 @@
                     "signature": "public getMimeType(filePath: string, fileIsUrl: boolean = false): string",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Services.HttpService.getMimeType"
+                },
+                "getResponseContentType": {
+                    "access_modifier": "public",
+                    "name": "getResponseContentType",
+                    "description": [
+                        "Get the request's requested content type.",
+                        "There are three ways to get this value: (1) the request's headers by\nsetting `Response-Content-Type: \"type\"`, (2) the request's URL query\nparams by setting `?response_content_type=type`, and the request's body\nby setting `{response_content_type: \"type\"}`.",
+                        "The request's body takes precedence over all other settings.",
+                        "The request's URL query params takes precedence over the header setting\nand the default setting.",
+                        "The request's header setting takes precedence over the default setting.",
+                        "If no content type is specified by the request's body, URL query\nparams, or header, then the default content type will be used. The\ndefault content type is the content type defined in the\n`Drash.Http.Server` object's `response_output` config."
+                    ],
+                    "params": null,
+                    "returns": [
+                        {
+                            "description": [],
+                            "annotation": {
+                                "line": "@return string",
+                                "data_type": "string",
+                                "name": null
+                            }
+                        }
+                    ],
+                    "throws": null,
+                    "signature": "public getResponseContentType(request): string",
+                    "is_async": false,
+                    "fully_qualified_name": "Drash.Services.HttpService.getResponseContentType"
                 },
                 "parseQueryParamsString": {
                     "access_modifier": "public",

@@ -1,3 +1,4 @@
+
 <p align="center">
   <a href="https://crookse.github.io/deno-drash">
     <img height="200" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash_github.png" alt="Drash logo">
@@ -8,11 +9,11 @@
   <a href="https://github.com/crookse/deno-drash/releases">
     <img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest">
   </a>
-  <a href="https://travis-ci.org/crookse/deno-drash">
-    <img src="https://travis-ci.org/crookse/deno-drash.svg?branch=master">
-  </a>
   <a href="https://github.com/denoland/deno">
     <img src="https://img.shields.io/badge/requires%20deno-v0.25.0-brightgreen.svg">
+  </a>
+  <a href="https://travis-ci.org/crookse/deno-drash">
+    <img src="https://img.shields.io/travis/crookse/deno-drash/master?label=master">
   </a>
 </p>
 
@@ -21,7 +22,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@vv0.25.0/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.25.0/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -52,18 +53,22 @@ For full documentation, visit [https://drash.io](https://crookse.github.io/deno-
 
 ## Features
 
-- HTTP Resources
 - Content Negotiation
 - Static Path Routing
-- Request Path Params Parsing
-    - `/users/:id`
-    - `/users/{id}`
-    - `/users/([0-9]+)`
-- Request URL Query Params Parsing
-    - `/products?name=beignet&action=purchase`
-- Request Body Parsing
-    - application/x-www-form-urlencoded (e.g, `username=root&password=alpine`)
-    - application/json (e.g., `{"username":"root","password":"alpine"}`)
+- Regex Path Routing (e.g., `/users/([0-9]+)/profile`)
+- Middleware
+- Request Params Parsing
+    - Path Params (e.g., `/users/:id/profile`, `/users/{id}/profile`)
+        - `request.getPathParam("id") == "value of :id or {id}"`
+    - URL Query Params (e.g., `/products?name=beignet&action=purchase`)
+        - `request.getQueryParam("name") == beignet`
+    - Body Params Using application/x-www-form-urlencoded (e.g., `username=root&password=alpine`)
+        - `request.getBodyParam("username") == "root"`
+    - Body Params Using application/json (e.g., `{"username":"root","password":"alpine"}`)
+        - `request.getBodyParam("password") == "alpine"`
+    - Header Params (e.g., `{"Some-Header":"Some Value"}`)
+        - `request.getHeaderParam("Some-Header") == "Some Value"`
+        - ... or the default way (`request.headers.get("Some-Header") == "Some Value"`)
 
 ## Contributing
 

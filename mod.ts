@@ -19,6 +19,7 @@ import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
 import http_middleware_exception from "./src/exceptions/http_middleware_exception.ts";
+import http_response_exception from "./src/exceptions/http_response_exception.ts";
 
 // Http
 import middleware from "./src/http/middleware.ts";
@@ -69,6 +70,8 @@ namespace Drash {
     export const HttpException = http_exception;
     export type HttpMiddlewareException = http_middleware_exception;
     export const HttpMiddlewareException = http_middleware_exception;
+    export type HttpResponseException = http_response_exception;
+    export const HttpResponseException = http_response_exception;
   }
 
   export namespace Loggers {

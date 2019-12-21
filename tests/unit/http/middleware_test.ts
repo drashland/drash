@@ -27,20 +27,7 @@ members.test("Middleware server/resource: missing CSRF token", async () => {
     )
   );
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "No CSRF token, dude.",
-      request: {
-        method: "GET",
-        uri: "/users/1",
-        url_query_params: {},
-        url: "127.0.0.1:8000/users/1"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "No CSRF token, dude.");
 });
 
 /**
@@ -73,20 +60,7 @@ members.test("Middleware server/resource: wrong CSRF token", async () => {
     )
   );
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "Wrong CSRF token, dude.",
-      request: {
-        method: "GET",
-        uri: "/users/1",
-        url_query_params: {},
-        url: "127.0.0.1:8000/users/1"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "Wrong CSRF token, dude.");
 });
 
 /**
@@ -120,20 +94,7 @@ members.test("Middleware server/resource: user is not an admin", async () => {
     )
   );
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "'user_id' unknown.",
-      request: {
-        method: "GET",
-        uri: "/users/1",
-        url_query_params: {},
-        url: "127.0.0.1:8000/users/1"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "'user_id' unknown.");
 });
 
 /**
@@ -167,22 +128,7 @@ members.test("Middleware server/resource: pass", async () => {
     )
   );
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: {
-        name: "Thor"
-      },
-      request: {
-        method: "GET",
-        uri: "/users/1",
-        url_query_params: {},
-        url: "127.0.0.1:8000/users/1"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, {name: "Thor"});
 });
 
 /**
@@ -202,20 +148,7 @@ members.test("Middleware server/resource: middleware not found", async () => {
   
   let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get"));
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 418,
-      status_message: "I'm a teapot",
-      body: "I'm a teapot",
-      request: {
-        method: "GET",
-        uri: "/users/1",
-        url_query_params: {},
-        url: "127.0.0.1:8000/users/1"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "I'm a teapot");
 });
 
 /**
@@ -237,20 +170,7 @@ members.test("Middleware server before_response: missing header", async () => {
 
   let response = await server.handleHttpRequest(members.mockRequest("/", "get"));
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "Missing header, guy.",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "Missing header, guy.");
 });
 
 /**
@@ -272,20 +192,7 @@ members.test("Middleware server before_response: wrong header", async () => {
 
   let response = await server.handleHttpRequest(members.mockRequest("/", "get", {send_response: "yes please"}));
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "Ha... try again. Close though.",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "Ha... try again. Close though.");
 });
 
 /**
@@ -307,20 +214,7 @@ members.test("Middleware server before_response: pass", async () => {
 
   let response = await server.handleHttpRequest(members.mockRequest("/", "get", {send_response: "yes do it"}));
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "got",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "got");
 });
 
 /**
@@ -344,20 +238,7 @@ members.test("Middleware server before_request: missing header", async () => {
 
   members.assert.equal(request.hello, undefined);
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "Missing header, guy.",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "Missing header, guy.");
 });
 
 /**
@@ -381,20 +262,7 @@ members.test("Middleware server before_request: wrong header", async () => {
 
   members.assert.equal(request.hello, undefined);
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 400,
-      status_message: "Bad Request",
-      body: "Ha... try again. Close though.",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "Ha... try again. Close though.");
 });
 
 /**
@@ -418,20 +286,7 @@ members.test("Middleware server before_request: pass", async () => {
 
   members.assert.equal(request.hello, "changed_before_request");
 
-  members.assert.responseJsonEquals(
-    response.body,
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "got",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "127.0.0.1:8000/"
-      }
-    }
-  );
+  members.assert.responseJsonEquals(response.body, "got");
 });
 
 ////////////////////////////////////////////////////////////////////////////////

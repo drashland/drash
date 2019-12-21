@@ -7,11 +7,10 @@ class MyResource extends members.Drash.Http.Resource {
   }
 }
 
-let server = new members.Drash.Http.Server({
-  response_output: "text/html"
-});
+let server = new members.Drash.Http.Server({});
 
 let request = members.mockRequest();
+request = server.getRequest(request);
 let response = new members.Drash.Http.Response(request);
 let resource = new MyResource(request, response, server);
 
@@ -19,18 +18,5 @@ response = resource.GET();
 let actual = response.generateResponse();
 
 members.test("resource.GET().generateResponse()", () => {
-  members.assert.equal(
-    JSON.parse(actual),
-    {
-      status_code: 200,
-      status_message: "OK",
-      body: "got",
-      request: {
-        method: "GET",
-        uri: "/",
-        url_query_params: {},
-        url: "/"
-      }
-    }
-  );
+  members.assert.equal(JSON.parse(actual), "got");
 });

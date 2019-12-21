@@ -19,15 +19,6 @@ export default class Response {
 
   /**
    * @description
-   *     A property to hold the body of this response as a string. This is
-   *     implemented to help unit testing efforts.
-   *
-   * @property string body_generated
-   */
-  public body_generated: string = "";
-
-  /**
-   * @description
    *     A property to hold this response's headers.
    *
    * @property Headers headers
@@ -63,7 +54,7 @@ export default class Response {
   constructor(request) {
     this.request = request;
     this.headers = new Headers();
-    this.headers.set("Content-Type", this.getHeaderContentType());
+    this.headers.set("Content-Type", request.response_content_type);
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
@@ -75,74 +66,18 @@ export default class Response {
    * @return any
    */
   public generateResponse(): any {
-    switch (this.headers.get("Content-Type")) {
+    let contentType = this.headers.get("Content-Type")
+
+    switch (contentType) {
       case "application/json":
-        this.body_generated = this.generateJsonResponse();
-        break;
-      case "text/html":
-        this.body_generated = this.generateHtmlResponse();
-        break;
+        return JSON.stringify(this.body);
       case "application/xml":
+      case "text/html":
       case "text/xml":
-        this.body_generated = this.generateXmlResponse();
-        break;
-      default:
-        this.headers.set("Content-Type", "application/json");
-        return this.generateResponse();
+        return this.body;
     }
 
-    return this.body_generated;
-  }
-
-  /**
-   * @description
-   *     Generate an HTML response. The `this.body` property should be the
-   *     entire HTML document.
-   *
-   * @return any
-   */
-  public generateHtmlResponse(): any {
-    return this.body;
-  }
-
-  /**
-   * @description
-   *     Generate a JSON response.
-   *
-   * @return string
-   */
-  public generateJsonResponse(): any {
-    return JSON.stringify({
-      status_code: this.status_code,
-      status_message: this.getStatusMessage(),
-      body: this.body,
-      request: {
-        method: this.request.method.toUpperCase(),
-        uri: this.request.url_path,
-        url_query_params: this.request.url_query_params,
-        url: this.request.url,
-      },
-    });
-  }
-
-  /**
-   * @description
-   *     Generate an XML response.
-   *
-   * @return any
-   */
-  public generateXmlResponse(): any {
-    return `<response>
-  <statuscode>${this.status_code}</statuscode>
-  <statusmessage>${this.getStatusMessage()}</statusmessage>
-  <body>${this.body}</body>
-  <request>
-    <method>${this.request.method.toUpperCase()}</method>
-    <uri>${this.request.url_path}</uri>
-    <url_query_params>${JSON.stringify(this.request.url_query_params)}</url_query_params>
-    <url>${this.request.url}</url>
-  </request>
-</response>`;
+    throw new Drash.Exceptions.HttpResponseException(400, `Response Content-Type "${contentType}" unknown.`);
   }
 
   /**
@@ -156,7 +91,9 @@ export default class Response {
    */
   public getStatusMessage(): string {
     let message = STATUS_TEXT.get(this.status_code);
-    return message ? message : null;
+    return message
+      ? message
+      : null;
   }
 
   /**
@@ -169,19 +106,9 @@ export default class Response {
    */
   public getStatusMessageFull(): string {
     let message = STATUS_TEXT.get(this.status_code);
-    return message ? `${this.status_code} (${message})` : null;
-  }
-
-  /**
-   * @description
-   *     Get the full output details (for debugging purposes).
-   *
-   * @return string
-   */
-  public outputDetails(): string {
-    return `Content-Type: ${this.headers.get(
-      "Content-Type"
-    )}. Status: ${this.getStatusMessageFull()}.`;
+    return message
+      ? `${this.status_code} (${message})`
+      : null;
   }
 
   /**
@@ -239,52 +166,4 @@ export default class Response {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
-
-  /**
-   * @description
-   *     Get this response's `Content-Type` header. There are three ways to set
-   *     the response's `Content-Type` header from a request: (1) the request's
-   *     headers by setting `Response-Content-Type: "type"`, (2) the request's
-   *     URL query params by setting `?response_content_type=type`, and the
-   *     request's body by setting `{response_content_type: "type"}`.
-   *
-   *     Setting the content type using the request's body takes precedence over
-   *     all other settings.
-   *
-   *     Setting the content type using the request's URL query params takes
-   *     precedence over the header setting and the default setting.
-   *
-   *     Setting the content type using the request's header setting takes
-   *     precedence over the default setting.
-   *
-   *     If no content type is specified by the request's body, URL query
-   *     params, or header, then the default content type will be used. The
-   *     default content type is the content type defined in the
-   *     `Drash.Http.Server` object's `response_output` config.
-   *
-   * @return string
-   */
-  protected getHeaderContentType(): string {
-    let contentType = this.request.headers.get("Response-Content-Type-Default");
-
-    // Check the request's headers to see if `response-content-type:
-    // {content-type}` has been specified
-    contentType = this.request.headers.get("Response-Content-Type")
-      ? this.request.headers.get("Response-Content-Type")
-      : contentType;
-
-    // Check the request's URL query params to see if
-    // ?response_content_type={content-type} has been specified
-    contentType = this.request.url_query_params.response_content_type
-      ? this.request.url_query_params.response_content_type
-      : contentType;
-
-    // Check the request's body to see if
-    // {response_content_type: {content-type}} has been specified
-    contentType = this.request.body_parsed.response_content_type
-      ? this.request.body_parsed.response_content_type
-      : contentType;
-
-    return contentType;
-  }
 }
