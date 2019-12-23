@@ -14,8 +14,9 @@ address {
     // border-radius: $g_border_radius_for_buttons;
     border-radius: rem(10);
     font-size: rem(1.1);
-    padding: rem(0.75) rem(2);
+    padding: 0.5rem rem(2);
     text-transform: uppercase;
+    line-height: 1;
 }
 
 // .btn-light-2 {

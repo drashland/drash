@@ -377,8 +377,9 @@ address {
 .btn {
   border-radius: 7.25rem;
   font-size: 0.7975rem;
-  padding: 0.54375rem 1.45rem;
-  text-transform: uppercase; }
+  padding: 0.5rem 1.45rem;
+  text-transform: uppercase;
+  line-height: 1; }
 
 @media (max-width: 767px) {
   .btn {
