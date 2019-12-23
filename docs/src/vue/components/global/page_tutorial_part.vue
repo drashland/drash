@@ -15,7 +15,7 @@ div
       h2 Table Of Contents
       ul-toc(:data="toc")
   slot
-  div.row(v-if="part != -1")
+  div.row(v-if="part != -1 && part != parts")
     div.col
       p.alert.alert-info You can now move on to the next tutorial part.
   div.row
