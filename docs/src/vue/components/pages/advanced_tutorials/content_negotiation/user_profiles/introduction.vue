@@ -12,14 +12,21 @@ export const resource = {
 }
 
 export default {
-    data() {
-        return {};
-    },
+  data() {
+    return {
+      uri: "/advanced-tutorials/content-negotiation/user-profiles"
+    };
+  }
 }
 </script>
 
 <template lang="pug">
-page
+page-tutorial-part(
+  :introduction="true",
+  :part="-1"
+  :parts="5",
+  :uri="uri"
+)
   div.row
     div.col
       hr
@@ -35,5 +42,6 @@ page
       h2#end-state End State
       p Below are samples of what you will create.
       img(src="/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_2.png")
+      img(src="/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/introduction/json_2.png")
       img(src="/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_3.png")
 </template>

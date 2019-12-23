@@ -9,15 +9,15 @@ div
         :href="breadcrumb.href"
         style="margin: 0 .25rem .25rem 0"
       ) {{ breadcrumb.name }}
-  div.row
+  div.row(v-if="toc")
     div.col
       hr
       h2 Table Of Contents
       ul-toc(:data="toc")
   slot
-  div.row(v-if="!end")
+  div.row(v-if="part != -1")
     div.col
-      p(style="margin-bottom: 0") You can now move on to the next tutorial part.
+      p.alert.alert-info You can now move on to the next tutorial part.
   div.row
     div.col
       hr
@@ -37,11 +37,14 @@ div
 <script>
 export default {
   props: {
-    end: {
+    introduction: {
       default: false,
-      required: false,
       type: Boolean,
     },
+    // conclusion: {
+    //   default: false,
+    //   type: Boolean,
+    // },
     part: {
       required: true,
       type: Number,
@@ -51,7 +54,7 @@ export default {
       type: Number,
     },
     toc: {
-      required: true,
+      required: false,
       type: Object,
     },
     uri: {
@@ -62,6 +65,20 @@ export default {
   computed: {
     breadcrumbs() {
       let breadcrumbs = [];
+
+      let introduction = {
+        class: "btn-secondary",
+        href: `${this.$conf.base_url}/#${this.uri}/introduction`,
+        name: `Introduction`,
+      };
+
+      if (this.introduction) {
+        introduction.class = "btn-success";
+      }
+
+      breadcrumbs.push(introduction);
+
+      // Make the parts
       for (let i = 1; i <= this.parts; i += 1) {
         breadcrumbs.push({
           class: this.part == i
@@ -71,6 +88,19 @@ export default {
           name: `Part ${i}`,
         });
       }
+
+      // let conclusion = {
+      //   class: "btn-secondary",
+      //   href: `${this.$conf.base_url}/#${this.uri}/conclusion`,
+      //   name: `Conclusion`,
+      // };
+
+      // if (this.conclusion) {
+      //   conclusion.class = "btn-success";
+      // }
+
+      // breadcrumbs.push(conclusion);
+
       return breadcrumbs;
     }
   }
