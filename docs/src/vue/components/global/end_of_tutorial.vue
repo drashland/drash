@@ -2,5 +2,5 @@
 div.row
     div.col
         hr
-        p.text--help This is the end of this tutorial.
+        p.alert.alert-info This is the end of this tutorial.
 </template>
