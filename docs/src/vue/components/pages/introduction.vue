@@ -16,13 +16,13 @@ div
         hr
         div.row
             div.col
-                heading-h2#what-is-drash(heading="What is Drash?")
+                h2-hash What is Drash?
                 p Drash is a microframework for <a href="https://deno.land" target="_BLANK">Deno</a> focused on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web" target="_BLANK">resource</a> creation and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation" target="_BLANK">content negotiation</a>.
                 p Drash is designed to help you build your projects quickly with the ability to scale. You can build an API, a SaaS, a web app, an SPA (like these documentation pages), or even a static HTML site. How you use Drash is up to you, so that it can be everything you need and nothing you don't&mdash;like a DRASH tent.
         hr
         div.row
             div.col
-                heading-h2#quickstart(heading="Quickstart")
+                h2-hash Quickstart
                 p Write your <code>app.ts</code> file...
                 p
                     code-block(:data="example_code.app")
@@ -32,7 +32,7 @@ div
         hr
         div.row
             div.col
-                heading-h2#importing(heading="Importing")
+                h2-hash Importing
                 p
                     code-block-slotted(language="typescript" :header="false")
                         template(v-slot:code)
@@ -45,7 +45,7 @@ div
         hr
         div.row
             div.col
-                heading-h2#features(heading="Features")
+                h2-hash Features
                 ul
                     li 
                         strong HTTP Resources
@@ -74,12 +74,12 @@ div
         hr
         div.row
             div.col
-                heading-h2#about-these-docs(heading="About These Docs")
+                h2-hash About These Docs
                 p Most of the pages on this site are written in a tutorial format. You are given an introduction to the page, example code, and an end state that you can work towards. These pages mostly assume you have no working knowledge of Drash and try to be explicit as possible in the instructions. If you find that something needs more clarification, please do not hesitate to file an issue.
         hr
         div.row
             div.col
-                heading-h2#file-an-issue(heading="File An Issue")
+                h2-hash File An Issue
                 p File an issue (bugs, feature requests, more documentation needed, testing, tutorials, etc.) at <a href="https://github.com/crookse/deno-drash/issues" target="_BLANK">https://github.com/crookse/deno-drash/issues</a>. We would love to hear from you!
 </template>
 
@@ -99,4 +99,3 @@ export default {
     },
 }
 </script>
-

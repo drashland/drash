@@ -3,7 +3,7 @@ page
     div.row
         div.col
             hr
-            h2#about-the-tutorials About The Advanced Tutorials
+            h2-hash About The Advanced Tutorials
             p The advanced tutorials assume you have read through the following tutorials:
             ul
               li Resources
@@ -11,7 +11,7 @@ page
     div.row
         div.col
             hr
-            h2#example-code Example Code
+            h2-hash Example Code
             p All tutorials have example code blocks that work if copied and pasted. This is for your convenience. Also, almost all code blocks in the tutorials can be found in the repository at <a href="https://github.com/crookse/deno-drash/tree/master/docs/src/example_code/tutorials" target="_BLANK">https://github.com/crookse/deno-drash/tree/master/docs/src/example_code/advanced_tutorials</a>.
 </template>
 
