@@ -42,21 +42,11 @@ div.c-sidebar
                     router-link(href="/tutorials/logging/logging-using-log-from-deno-std") Logging Using Log From deno_std
                 a Misc
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
-                    //- a(:href="$conf.base_url + '/#/tutorials/adding-third-party-modules'") Adding Third-Party Modules
+                    a(:href="$conf.base_url + '/#/tutorials/misc/adding-global-members'") Adding Global Members
+                    //- a(:href="$conf.base_url + '/#/tutorials/misc/adding-third-party-modules'") Adding Third-Party Modules
             a.heading-link Advanced Tutorials
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/advanced-tutorials/introduction'") Introduction
-                a Creating A Web App
-                div.l-submenu-1
-                    a Hello World
-                    div.l-submenu-2
-                        a(:href="$conf.base_url + '/#/advanced-tutorials/creating-a-web-app/hello-world/introduction'") Introduction
-                        a(:href="$conf.base_url + '/#/advanced-tutorials/creating-a-web-app/hello-world/part-1'") Part 1: Handling GET Requests
-                        a(:href="$conf.base_url + '/#/advanced-tutorials/creating-a-web-app/hello-world/part-2'") Part 2: Building The Front-End
-                        a(:href="$conf.base_url + '/#/advanced-tutorials/creating-a-web-app/hello-world/part-3'") Part 3: Handling POST Requests
-                        a(:href="$conf.base_url + '/#/advanced-tutorials/creating-a-web-app/hello-world/part-4'") Part 4: Logging
-                        a(:href="$conf.base_url + '/#/advanced-tutorials/creating-a-web-app/hello-world/conclusion'") Conclusion
                 a Content Negotiation
                 div.l-submenu-1
                   a(:href="$conf.base_url + '/#/advanced-tutorials/content-negotiation/user-profiles'") User Profiles
