@@ -215,7 +215,7 @@ export default class Server {
     let resource = this.getResourceObject(resourceClass, request);
     request.resource = resource;
     this.logDebug(
-      "[drash] Using `" +
+      "Using `" +
         resource.constructor.name +
         "` resource class to handle the request."
     );
