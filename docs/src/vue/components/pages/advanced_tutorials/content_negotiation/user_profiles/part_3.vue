@@ -76,7 +76,7 @@ page-tutorial-part(
       ol
         li Run your app.
           code-block-slotted
-            template(v-slot:title) /path/to/your/project/app.ts
+            template(v-slot:title) Terminal
             template(v-slot:code)
               | deno --allow-net --allow-read app.ts
           p This time, your app requires two flags to run. You already know what the <code>--allow-net</code> flag does from Part 2. <code>--allow-read</code> is required because your resource requires read access to read your <code>users.json</code> file. You can learn more about the <code>--allow-read</code> flag at <a href="https://deno.land/std/manual.md" target="_BLANK">https://deno.land/std/manual.md</a>.

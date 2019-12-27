@@ -77,7 +77,7 @@ page-tutorial-part(
       ol
         li Run your app.
           code-block-slotted
-            template(v-slot:title) /path/to/your/project/app.ts
+            template(v-slot:title) Terminal
             template(v-slot:code)
               | deno --allow-net --allow-read app.ts
         li Make a request in your browser and specify that you want the <code>text/html</code> representation of <code>/users/1</code>.
