@@ -1,16 +1,16 @@
 <script>
 export const resource = {
-  paths: ["/tutorials/creating-a-server"],
+  paths: ["/tutorials/servers/creating-a-server"],
   meta: {
     title: "Creating A Server",
-    source_code_uri: "/tutorials/creating_a_server"
+    source_code_uri: "/tutorials/servers/creating_a_server"
   }
 }
 
 export default {
   data() {
     return {
-      example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/creating_a_server'],
+      example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/servers/creating_a_server'],
       toc: {
         items: [
           "Before You Get Started",
@@ -31,10 +31,9 @@ page-tutorial(
   div.row
     div.col
       hr
-      h2#before-you-get-started Before You Get Started
-      ul
-        li In this tutorial, you will create a very basic server that handles some common requests: <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.
-        list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      h2-hash Before You Get Started
+      p In this tutorial, you will create a very basic server that handles some common requests: <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.
+      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr
@@ -42,7 +41,7 @@ page-tutorial(
   div.row
     div.col
       hr
-      h2#steps Steps
+      h2-hash Steps
       ol
         li Create your resource file.
           code-block(:data="example_code.home_resource")
@@ -54,7 +53,7 @@ page-tutorial(
   div.row
     div.col
       hr
-      h2#verification Verification
+      h2-hash Verification
       ol
         li Run your app.
           code-block-slotted
