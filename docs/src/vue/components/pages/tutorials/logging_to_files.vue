@@ -3,9 +3,9 @@ page-tutorial-logging(:data="data")
     template(v-slot:steps)
         ol
             li Create your app file.
-                code-block(:data="data.example_code.app")
+                code-block(:data="example_code.app")
             li Run your app.
-                code-block(:data="data.example_code.run")
+                code-block(:data="example_code.run")
             li Check the terminal you used to start <code>app.ts</code>. The log messages in <code>HomeResource</code> will be written in the terminal. The other log messages come from the <code>Drash.Http.Server</code> class.
                 code-block-slotted
                     template(v-slot:title) /path/to/your/project/server.log
@@ -55,11 +55,11 @@ page-tutorial-logging(:data="data")
 
 <script>
 export const resource = {
-    paths: ["/tutorials/logging-to-files"],
+    paths: ["/tutorials/logging/logging-to-files"],
     meta: {
         title: "Logging: Logging To Files",
         tutorial_title: "Logging To Files",
-        source_code_uri: "/tutorials/logging_to_files"
+        source_code_uri: "/tutorials/logging/logging_to_files"
     }
 }
 
@@ -67,7 +67,7 @@ export default {
     data() {
         return {
             data: {
-                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/logging_to_files']
+                example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/logging/logging_to_files']
             }
         };
     },

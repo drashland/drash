@@ -42,9 +42,9 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/tutorials/middleware/adding-resource-level-middleware'") Adding Resource-Level Middleware
                 a Logging
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/logging-to-the-terminal'") Logging To The Terminal
-                    a(:href="$conf.base_url + '/#/tutorials/logging-to-files'") Logging To Files
-                    router-link(href="/tutorials/logging-using-log-from-deno-std") Logging Using Log From deno_std
+                    a(:href="$conf.base_url + '/#/tutorials/logging/logging-to-the-terminal'") Logging To The Terminal
+                    a(:href="$conf.base_url + '/#/tutorials/logging/logging-to-files'") Logging To Files
+                    router-link(href="/tutorials/logging/logging-using-log-from-deno-std") Logging Using Log From deno_std
                 a Misc
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
