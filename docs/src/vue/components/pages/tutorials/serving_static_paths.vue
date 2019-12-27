@@ -10,17 +10,15 @@ export const resource = {
 export default {
   data() {
     return {
-      data: {
-        example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/serving_static_paths'],
-        example_code_public: this.$app_data.example_code['/docs/src/example_code/tutorials/serving_static_paths/public'],
-        toc: {
-          items: [
-            "Before You Get Started",
-            "Folder Structure End State",
-            "Steps",
-            "Verification"
-          ]
-        }
+      example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/serving_static_paths'],
+      example_code_public: this.$app_data.example_code['/docs/src/example_code/tutorials/serving_static_paths/public'],
+      toc: {
+        items: [
+          "Before You Get Started",
+          "Folder Structure End State",
+          "Steps",
+          "Verification"
+        ]
       }
     };
   },
@@ -44,19 +42,19 @@ page-tutorial(
         h2#folder-structure-end-state Folder Structure End State
         ul
           li Upon completing this tutorial, your project's folder structure should look similar to:
-            code-block(:data="data.example_code.folder_structure")
+            code-block(:data="example_code.folder_structure")
     div.row
       div.col
         hr
         h2#steps Steps
         ol
           li Create your app file.
-            code-block(:data="data.example_code.app" line_highlight="7,10")
+            code-block(:data="example_code.app" line_highlight="7,10")
             p The <code>static_paths</code> config tells your Drash server what paths on your filesystem contain static files that can be served to clients. Ultimately, your Drash server will prefix the <code>directory</code> config with your paths in your <code>static_paths</code> config. For example, your Drash server will take a request to <code>/public/assets/css/style.css</code> and resolve it to <code>{directory_config}/public/assets/css/style.css</code>.
           li Create your <code>style.css</code> file in your static directory.
-            code-block(:data="data.example_code_public.style" title="/path/to/your/project/public/style.css")
+            code-block(:data="example_code_public.style" title="/path/to/your/project/public/style.css")
           li Create your resource file.
-            code-block(:data="data.example_code.home_resource")
+            code-block(:data="example_code.home_resource")
             p Your resource file will serve HTML; and your HTML will reference <code>style.css</code>.
     div.row
       div.col
