@@ -70,7 +70,12 @@ page-tutorial(
                 | deno --allow-net --allow-read app.ts
             p-deno-flag-allow-net
             p-deno-flag-allow-read-static
+          li Make a request in your browser.
+            code-block-slotted
+              template(v-slot:title) Terminal
+              template(v-slot:code)
+                | curl localhost:1447
             p You should receive the following response:
-            a(href="/deno-drash/public/assets/img/serving_static_paths.png")
+            a(href="/deno-drash/public/assets/img/example_code/tutorials/serving_static_paths/verification_1.png")
               img(:src="$conf.base_url + '/public/assets/img/example_code/tutorials/serving_static_paths/verification_1.png'")
 </template>

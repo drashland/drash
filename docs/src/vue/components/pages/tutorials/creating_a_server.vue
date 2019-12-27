@@ -1,49 +1,3 @@
-<template lang="pug">
-page-tutorial
-  template(v-slot:custom)
-    div.row
-      div.col
-        hr
-        h2 Table Of Contents
-        ul-toc(:data="data.toc")
-    div.row
-      div.col
-        hr
-        h2#before-you-get-started Before You Get Started
-        ul
-          list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
-    div.row
-      div.col
-        hr
-        h2#folder-structure-end-state Folder Structure End State
-        ul
-          li Upon completing this tutorial, your project's folder structure should look similar to:
-            code-block(:data="data.example_code.folder_structure")
-    div.row
-      div.col
-        hr
-        h2#steps Steps
-        ol
-          li Perform the initial setup of your project.
-            code-block(:data="data.example_code.folder_structure_setup")
-          li Create your HTTP resource class file and have it log an <code>INFO</code> message for each HTTP method.
-            ul
-              li This class will handle <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> requests to the <code>/</code> URI.
-            code-block(:data="data.example_code.home_resource")
-          li Create your app file.
-            ul
-              li This is the file that will be passed to the <code>deno</code> command in the terminal.
-            code-block(:data="data.example_code.app")
-          li Run your app.
-            code-block(:data="data.example_code.run")
-            p When you start your app, you should see the following in the terminal:
-            code-block(:data="data.example_code.output")
-          li Make a <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> request at <code>localhost:8000</code>.
-            ul
-              li You should see a "<code>{HTTP METHOD}</code> request received!" string as the response for each request.
-              li You can change the response message for each request by editing <code>HomeResource</code> and the assignments to <code>this.response.body</code> in the HTTP methods.
-</template>
-
 <script>
 export const resource = {
   paths: ["/tutorials/creating-a-server"],
@@ -56,17 +10,74 @@ export const resource = {
 export default {
   data() {
     return {
-      data: {
-        example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/creating_a_server'],
-        toc: {
-          items: [
-            "Before You Get Started",
-            "Folder Structure End State",
-            "Steps",
-          ]
-        }
+      example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/creating_a_server'],
+      toc: {
+        items: [
+          "Before You Get Started",
+          "Folder Structure End State",
+          "Steps",
+        ]
       }
     };
   },
 }
 </script>
+
+<template lang="pug">
+page-tutorial(
+  :toc="toc"
+)
+  div.row
+    div.col
+      hr
+      h2#before-you-get-started Before You Get Started
+      ul
+        list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+  div.row
+    div.col
+      hr
+      div-folder-structure-end-state(:code_block_data="example_code.folder_structure")
+  div.row
+    div.col
+      hr
+      h2#steps Steps
+      ol
+        li Create your resource file.
+          code-block(:data="example_code.home_resource")
+          p Your resource file will be able to handle <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code> requests to the <code>/</code> URI.
+        li Create your app file.
+          code-block(:data="example_code.app")
+          p Your app file will register your resource via the <code>resources</code> config.
+          p By default, your Drash server will send <code>application/json</code> responses via the <code>resposne_output</code>. More information about using this config can be found in the Content Negotiation tutorial.
+  div.row
+    div.col
+      hr
+      h2#verification Verification
+      ol
+        li Run your app.
+          code-block-slotted
+            template(v-slot:title) Terminal
+            template(v-slot:code)
+              | deno --allow-net --allow-read app.ts
+          p-deno-flag-allow-net
+          p-deno-flag-allow-read-static
+        li Using Postman (or similar app), make a <code>GET</code> request to <code>localhost:1447</code>.
+          p You should receive the following response:
+          a(href="/deno-drash/public/assets/img/example_code/tutorials/creating_a_server/verification_1.png")
+            img(:src="$conf.base_url + '/public/assets/img/example_code/tutorials/creating_a_server/verification_1.png'")
+        li Make a <code>PUT</code> request.
+          p You should receive the following response:
+          a(href="/deno-drash/public/assets/img/example_code/tutorials/creating_a_server/verification_2.png")
+            img(:src="$conf.base_url + '/public/assets/img/example_code/tutorials/creating_a_server/verification_2.png'")
+        li Make a <code>POST</code> request.
+          p You should receive the following response:
+          a(href="/deno-drash/public/assets/img/example_code/tutorials/creating_a_server/verification_3.png")
+            img(:src="$conf.base_url + '/public/assets/img/example_code/tutorials/creating_a_server/verification_3.png'")
+        li Make a <code>DELETE</code> request.
+          p You should receive the following response:
+          a(href="/deno-drash/public/assets/img/example_code/tutorials/creating_a_server/verification_4.png")
+            img(:src="$conf.base_url + '/public/assets/img/example_code/tutorials/creating_a_server/verification_4.png'")
+        li Make a <code>PATCH</code> request.
+          p Since <code>PATCH</code> is not defined in your resource, it is not allowed; therefore, you should receive the following response:
+          a(href="/deno-drash/public/assets/img/example_code/tutorials/creating_a_server/verification_5.png")
+            img(:src="$conf.base_url + '/public/assets/img/example_code/tutorials/creating_a_server/verification_5.png'")
