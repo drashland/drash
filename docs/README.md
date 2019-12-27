@@ -14,7 +14,6 @@ Add environment variables.
 
 ```shell
 export DRASH_DIR_ROOT="/path/to/deno-drash"
-export DRASH_SERVER_DIRECTORY="/path/to/deno-drash/docs/public"
 ```
 
 Change to `/docs` directory and install node modules.
