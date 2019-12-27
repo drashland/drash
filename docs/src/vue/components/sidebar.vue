@@ -43,7 +43,7 @@ div.c-sidebar
                 a Misc
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/adding-global-members'") Adding Global Members
-                    a(:href="$conf.base_url + '/#/tutorials/adding-third-party-modules'") Adding Third-Party Modules
+                    //- a(:href="$conf.base_url + '/#/tutorials/adding-third-party-modules'") Adding Third-Party Modules
             a.heading-link Advanced Tutorials
             div.c-sidebar__menu-body
                 a(:href="$conf.base_url + '/#/advanced-tutorials/introduction'") Introduction
