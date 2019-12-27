@@ -16,6 +16,7 @@ export default {
           "Before You Get Started",
           "Folder Structure End State",
           "Steps",
+          "Verification",
         ]
       }
     };
@@ -32,6 +33,7 @@ page-tutorial(
       hr
       h2#before-you-get-started Before You Get Started
       ul
+        li In this tutorial, you will create a very basic server that handles some common requests: <code>GET</code>, <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.
         list-item-download-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
@@ -58,9 +60,8 @@ page-tutorial(
           code-block-slotted
             template(v-slot:title) Terminal
             template(v-slot:code)
-              | deno --allow-net --allow-read app.ts
+              | deno --allow-net app.ts
           p-deno-flag-allow-net
-          p-deno-flag-allow-read-static
         li Using Postman (or similar app), make a <code>GET</code> request to <code>localhost:1447</code>.
           p You should receive the following response:
           a(href="/deno-drash/public/assets/img/example_code/tutorials/creating_a_server/verification_1.png")
