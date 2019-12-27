@@ -41,19 +41,19 @@ export const resource = {
     tutorial_title: "Logging To The Terminal",
     source_code_uri: "/tutorials/logging/logging_to_the_terminal"
   },
-  toc: {
-    items: [
-      "Before You Get Started",
-      "Steps",
-      "Verification",
-    ]
-  }
 }
 
 export default {
   data() {
     return {
-      example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/logging/logging_to_the_terminal']
+      example_code: this.$app_data.example_code['/docs/src/example_code/tutorials/logging/logging_to_the_terminal'],
+      toc: {
+        items: [
+          "Before You Get Started",
+          "Steps",
+          "Verification",
+        ]
+      }
     };
   },
 }
