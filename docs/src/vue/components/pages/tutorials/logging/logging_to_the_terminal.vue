@@ -46,10 +46,10 @@ page-tutorial(
       ol
         li Create your resource file.
           code-block(:data="example_code.home_resource")
-          p Before your resource sets the response's body, it will write log messages to the terminal.
+          p Before your resource sets the response's body, it will write log messages.
         li Create your app file.
           code-block(:data="example_code.app" line_highlight="11")
-          p Your server will display log messages based on the value of the highlighted code. In this tutorial, your server will show all log messages. See the logger's <code>configs</code> property in the <a href="/#/api-reference/loggers/logger">API Reference</a> for more information on this config.
+          p Your server will display log messages based on the value of the highlighted code. In this tutorial, your server will show all log messages.
   div.row
     div.col
       hr
