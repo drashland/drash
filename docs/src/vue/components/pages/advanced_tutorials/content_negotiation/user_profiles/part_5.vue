@@ -85,17 +85,17 @@ page-tutorial-part(
             template(v-slot:code)
               | localhost:1447/users/1?response_content_type=text/html
           p You should receive the following response:
-          img(src="/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_2.png")
+          img(src="$conf.base_url + '/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_2.png'")
         li Make a request in your browser and specify that you want the <code>application/xml</code> representation of <code>/users/2</code>.
           code-block-slotted(:header="false")
             template(v-slot:code)
               | localhost:1447/users/2?response_content_type=application/xml
           p You should receive the following response:
-          img(src="/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_3.png")
+          img(src="$conf.base_url + '/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_3.png'")
         li Make a request in your browser and specify that you want the <code>text/plain</code> representation of <code>/users/3</code>.
           code-block-slotted(:header="false")
             template(v-slot:code)
               | localhost:1447/users/3?response_content_type=text/plain
           p You should receive the following response:
-          img(src="/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_4.png")
+          img(src="$conf.base_url + '/public/assets/img/example_code/advanced_tutorials/content_negotiation/user_profiles/part_5/verification_4.png'")
 </template>
