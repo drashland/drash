@@ -40,6 +40,15 @@ export default class Server {
 
   /**
    * @description
+   *     A property to hold the location of this server on the filesystem. This
+   *     property is used when resolving static paths.
+   *
+   * @property string directory
+   */
+  protected directory: string;
+
+  /**
+   * @description
    *     A property to hold the Deno server. This property is set in
    *     `this.run()` like so: ` this.deno_server =
    *     serve(this.configs.address);`. `serve()` is imported from
@@ -125,6 +134,7 @@ export default class Server {
     }
 
     if (configs.static_paths) {
+      this.directory = configs.directory; // blow up if this doesn't exist
       configs.static_paths.forEach(path => {
         this.addStaticPath(path);
       });
@@ -329,7 +339,7 @@ export default class Server {
   public handleHttpRequestForStaticPathAsset(request): any {
     try {
       let response = new Drash.Http.Response(request);
-      return response.sendStatic();
+      return response.sendStatic(this.directory + "/" + request.url_path);
     } catch (error) {
       return this.handleHttpRequestError(request, this.httpErrorResponse(404));
     }
@@ -642,7 +652,9 @@ export default class Server {
     }
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
-    let requestUrl = `/${request.url.split("/")[1]}`;
+    let staticPath = request.url.split("/")[1];
+    // Prefix with a leading slash, so it can be matched properly
+    let requestUrl = "/" + staticPath;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
       request = Drash.Services.HttpService.hydrateHttpRequest(request, {
