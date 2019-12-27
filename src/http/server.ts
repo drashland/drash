@@ -214,8 +214,8 @@ export default class Server {
     //
     let resource = this.getResourceObject(resourceClass, request);
     request.resource = resource;
-    this.logger.debug(
-      "Using `" +
+    this.logDebug(
+      "[drash] Using `" +
         resource.constructor.name +
         "` resource class to handle the request."
     );
@@ -226,13 +226,13 @@ export default class Server {
       this.executeMiddlewareBeforeRequest(request, resource);
 
       // Perform the request
-      this.logger.debug("Calling " + request.method.toUpperCase() + "().");
+      this.logDebug("Calling " + request.method.toUpperCase() + "().");
       response = resource[request.method.toUpperCase()]();
 
       this.executeMiddlewareAfterRequest(request, resource);
 
       // Send the response
-      this.logger.info("Sending response. " + response.status_code + ".");
+      this.logDebug("Sending response. " + response.status_code + ".");
       return response.send();
 
     } catch (error) {
@@ -259,14 +259,14 @@ export default class Server {
     resource: Drash.Http.Resource = null,
     response: Drash.Http.Response = null
   ): any {
-    this.logger.debug(
+    this.logDebug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
-    this.logger.trace(error.message);
-    this.logger.trace("Stack trace below:");
-    this.logger.trace(error.stack);
+    this.logDebug(error.message);
+    this.logDebug("Stack trace below:");
+    this.logDebug(error.stack);
 
-    this.logger.trace("Generating generic error response object.");
+    this.logDebug("Generating generic error response object.");
 
     // If a resource was found, but an error occurred, then that's most likely
     // due to the HTTP method not being defined in the resource class;
@@ -288,7 +288,7 @@ export default class Server {
       ? error.message
       : response.getStatusMessage();
 
-    this.logger.info(
+    this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
         "Content-Type"
       )}. Status: ${response.getStatusMessageFull()}.`
@@ -314,8 +314,8 @@ export default class Server {
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
-      this.logger.debug("/favicon.ico requested.");
-      this.logger.debug(
+      this.logDebug("/favicon.ico requested.");
+      this.logDebug(
         "All future log messages for /favicon.ico will be muted."
       );
     }
@@ -669,5 +669,9 @@ export default class Server {
     }
 
     return false;
+  }
+
+  protected logDebug(message) {
+    this.logger.debug("[drash] " + message);
   }
 }
