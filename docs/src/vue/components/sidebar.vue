@@ -28,16 +28,11 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/tutorials/resources/creating-a-resource'") Creating A Resource
                 a Servers
                 div.l-submenu-1
-                    a(:href="$conf.base_url + '/#/tutorials/creating-a-server'") Creating A Server
-                    a(:href="$conf.base_url + '/#/tutorials/serving-static-paths'") Serving Static Paths
+                    a(:href="$conf.base_url + '/#/tutorials/servers/creating-a-server'") Creating A Server
+                    a(:href="$conf.base_url + '/#/tutorials/servers/serving-static-paths'") Serving Static Paths
                 a Middleware
                 div.l-submenu-1
                     a(:href="$conf.base_url + '/#/tutorials/middleware/introduction'") Introduction
-                    div.l-submenu-2
-                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#basics'") Basics
-                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#middleware-types'") Middleware Types
-                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#setting-the-execution-location'") Setting The Execution Location
-                      a(:href="$conf.base_url + '/#/tutorials/middleware/introduction#sorting-middleware'") Sorting Middleware
                     a(:href="$conf.base_url + '/#/tutorials/middleware/adding-server-level-middleware'") Adding Server-Level Middleware
                     a(:href="$conf.base_url + '/#/tutorials/middleware/adding-resource-level-middleware'") Adding Resource-Level Middleware
                 a Logging
