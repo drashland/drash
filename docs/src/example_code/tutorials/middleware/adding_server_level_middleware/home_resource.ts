@@ -5,7 +5,10 @@ export default class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
 
   public GET() {
-    this.response.body = "GET request received!";
+    this.response.body = {
+      method: "GET",
+      body: "Hello!"
+    };
     return this.response;
   }
 }

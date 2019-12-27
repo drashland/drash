@@ -6,7 +6,6 @@ import VerifyTokenMiddleware from "./verify_token_middleware.ts";
 
 let server = new Drash.Http.Server({
   address: "localhost:1447",
-  logger: new Drash.Loggers.ConsoleLogger({enabled: true, level: "debug"}),
   middleware: {
     resource_level: [
       VerifyTokenMiddleware
