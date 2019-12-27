@@ -135,6 +135,7 @@ function runServer() {
   echo("Starting server...");
   let server = new Drash.Http.Server({
     address: "localhost:8000",
+    directory: Deno.env().DRASH_SERVER_DIRECTORY, // TODO(crookse) make local config
     response_output: "text/html",
     logger: Drash.Members.ConsoleLogger,
     resources: [AppResource],
