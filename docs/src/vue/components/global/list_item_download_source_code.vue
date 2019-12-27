@@ -9,7 +9,7 @@ export default {
     ],
     computed: {
         source_code_url() {
-            return "https://github.com/crookse/deno-drash/tree/master/docs/src/example_code/tutorials" + this.source_code_uri
+            return "https://github.com/crookse/deno-drash/tree/master/docs/src/example_code" + this.source_code_uri
         }
     }
 }

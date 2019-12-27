@@ -1,3 +1,3 @@
-$ deno --allow-net --allow-env app.ts
+deno --allow-net app.ts
 
-Deno server started at localhost:8000. Press CTRL+C to quit.
+Deno server started at localhost:1447.

@@ -11,7 +11,10 @@ export default class SecretResource extends Drash.Http.Resource {
   };
 
   public GET() {
-    this.response.body = "You have accessed the secret resource!";
+    this.response.body = {
+      method: "GET",
+      body: "You have accessed the secret resource!"
+    };
     return this.response;
   }
 }

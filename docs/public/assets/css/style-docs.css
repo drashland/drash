@@ -185,14 +185,14 @@ ol li ul {
   .c-sidebar__menu .c-sidebar__menu-body {
     border-bottom: 1px solid #413e52; }
     .c-sidebar__menu .c-sidebar__menu-body a {
-      padding: 0.3625rem 1.0875rem 0.3625rem 2.175rem; }
+      padding: 0.3625rem 1.0875rem 0.3625rem 1.45rem; }
       @media screen and (min-width: 951px) {
         .c-sidebar__menu .c-sidebar__menu-body a {
           font-size: 0.87rem; } }
     .c-sidebar__menu .c-sidebar__menu-body .l-submenu-1 a {
-      padding-left: 3.9875rem; }
+      padding-left: 2.9rem; }
     .c-sidebar__menu .c-sidebar__menu-body .l-submenu-2 a {
-      padding-left: 5.075rem; }
+      padding-left: 4.35rem; }
 
 .c-btn {
   cursor: pointer;
@@ -377,8 +377,9 @@ address {
 .btn {
   border-radius: 7.25rem;
   font-size: 0.7975rem;
-  padding: 0.54375rem 1.45rem;
-  text-transform: uppercase; }
+  padding: 0.5rem 1.45rem;
+  text-transform: uppercase;
+  line-height: 1; }
 
 @media (max-width: 767px) {
   .btn {

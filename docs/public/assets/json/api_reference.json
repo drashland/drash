@@ -1444,10 +1444,21 @@
                     "access_modifier": "public",
                     "name": "sendStatic",
                     "description": [
-                        "Send the response of a static asset (e.g., a CSS file, JS file, PDF\nfile, etc.) to the client making the request.",
-                        "This method is reliant on the `DRASH_SERVER_DIRECTORY` environment\nvariable. The `DRASH_SERVER_DIRECTORY` environment variable MUST point\nto the parent directory of the directory (or list of directories)\ncontaining static assets. For example, if my project is located at\n`/path/to/my/project` and my CSS files are located at\n`/path/to/my/project/public/assets`, then `DRASH_SERVER_DIRECTORY`\nshould be `/path/to/my/project/public`."
+                        "Send the response of a static asset (e.g., a CSS file, JS file, PDF\nfile, etc.) to the client making the request."
                     ],
-                    "params": null,
+                    "params": {
+                        "file": {
+                            "name": "file",
+                            "description": [
+                                "The file that will be served to the client."
+                            ],
+                            "annotation": {
+                                "line": "@param string file",
+                                "data_type": "string",
+                                "name": "file"
+                            }
+                        }
+                    },
                     "returns": [
                         {
                             "description": [],
@@ -1459,7 +1470,7 @@
                         }
                     ],
                     "throws": null,
-                    "signature": "public sendStatic(): any",
+                    "signature": "public sendStatic(file): any",
                     "is_async": false,
                     "fully_qualified_name": "Drash.Http.Response.sendStatic"
                 }
@@ -1500,6 +1511,20 @@
                     "signature": "protected configs: any",
                     "name": "configs",
                     "fully_qualified_name": "Drash.Http.Server.configs"
+                },
+                "directory": {
+                    "access_modifier": "protected",
+                    "description": [
+                        "A property to hold the location of this server on the filesystem. This\nproperty is used when resolving static paths."
+                    ],
+                    "annotation": {
+                        "line": "@property string directory",
+                        "data_type": "string",
+                        "name": "directory"
+                    },
+                    "signature": "protected directory: string",
+                    "name": "directory",
+                    "fully_qualified_name": "Drash.Http.Server.directory"
                 },
                 "deno_server": {
                     "access_modifier": "protected",
