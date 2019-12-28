@@ -1,5 +1,0 @@
-▾ /path/to/your/project/
-	▾ public/
-		style.css
-	app.ts
-	home_resource.ts

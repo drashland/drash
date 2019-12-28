@@ -1,5 +1,0 @@
-▾ /path/to/your/project/
-	app.ts
-	profile_card.html
-	users.json
-	users_resource.ts

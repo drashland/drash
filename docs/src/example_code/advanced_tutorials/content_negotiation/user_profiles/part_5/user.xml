@@ -1,6 +1,0 @@
-<user>
-	<alias>{{ alias }}</alias>
-	<name>{{ name }}</name>
-	<api_key>**********</api_key>
-	<api_secret>**********</api_secret>
-</user>

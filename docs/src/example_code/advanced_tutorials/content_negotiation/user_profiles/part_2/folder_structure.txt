@@ -1,3 +1,0 @@
-▾ /path/to/your/project/
-	app.ts
-	users.json

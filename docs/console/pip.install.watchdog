@@ -1,9 +1,0 @@
-#!/bin/bash
-
-(
-  curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-  python get-pip.py --user
-  python -m pip install watchdog --user
-  rm get-pip.py
-  echo -e "\n\n!!! Add /Users/{your_username}/Library/Python/2.7/bin to your \$PATH variable !!! \n"
-)
