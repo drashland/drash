@@ -175,10 +175,10 @@ export default class Server {
    * @param ServerRequest request
    *     The request object.
    *
-   * @return any
+   * @return Promise<any>
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request): any {
+  public async handleHttpRequest(request): Promise<any> {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(request)) {
       return this.handleHttpRequestForStaticPathAsset(request);
@@ -227,7 +227,7 @@ export default class Server {
 
       // Perform the request
       this.logDebug("Calling " + request.method.toUpperCase() + "().");
-      response = resource[request.method.toUpperCase()]();
+      response = await resource[request.method.toUpperCase()]();
 
       this.executeMiddlewareAfterRequest(request, resource);
 

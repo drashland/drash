@@ -1660,15 +1660,15 @@
                                 "See `Drash.Http.Response.send()`."
                             ],
                             "annotation": {
-                                "line": "@return any",
-                                "data_type": "any",
+                                "line": "@return Promise<any>",
+                                "data_type": "Promise<any>",
                                 "name": null
                             }
                         }
                     ],
                     "throws": null,
-                    "signature": "public handleHttpRequest(request): any",
-                    "is_async": false,
+                    "signature": "public async handleHttpRequest(request): Promise<any>",
+                    "is_async": true,
                     "fully_qualified_name": "Drash.Http.Server.handleHttpRequest"
                 },
                 "handleHttpRequestError": {
