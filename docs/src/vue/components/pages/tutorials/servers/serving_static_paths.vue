@@ -34,7 +34,7 @@ page-tutorial(
       hr
       h2-hash Before You Get Started
       p In this tutorial, you will build a very simple HTML page that can serve a CSS file.
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr

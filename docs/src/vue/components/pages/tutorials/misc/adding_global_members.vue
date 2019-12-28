@@ -10,7 +10,7 @@ page-tutorial(
       p You can add global members to the <code>Drash.Members</code> namespace via <code>Drash.addMember()</code>.
       p Adding global members is helpful when you want to access a "thing" without having to remember where it's physically located. This prevents you from having to import like <code>import MyThing from "../path/../to/../some/../dir/my_thing.ts"</code>. Instead, you can add your "thing" as a global member (e.g., <code>Drash.addMember("MyThing", myThing);</code>) and access it like <code>Drash.Members.MyThing</code>.
       p All global members are added to the <code>Drash.Members</code> namespace.
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr

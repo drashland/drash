@@ -14,7 +14,7 @@ page-tutorial(
           code-block-slotted(:header="false" language="typescript" line_highlight="7")
             template(v-slot:code) {{ example_code.registering_resources.contents }}
         p When Drash servers register resources, they also register their paths as accessible URIs. An accessible URI is a URI that a client can target. Any URI that does not exist in any resource is a non-accessible URI. Non-accessible URIs ultimately lead to a response other than a <code>200 OK</code> repsonse. The default response for a request to a non-accessible URI is a <code>404 Not Found</code> error.
-        p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+        p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
     div.row
       div.col
         hr

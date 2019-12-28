@@ -35,7 +35,7 @@ page-tutorial(
       hr
       h2-hash Before You Get Started
       p Resource-level middleware is middleware that can only be executed by resources. That is, if a resource specifies a list of middleware in its <code>middleware</code> property, then that middleware will be executed.
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr

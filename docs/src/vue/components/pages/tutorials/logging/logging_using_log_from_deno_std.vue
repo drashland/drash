@@ -34,7 +34,7 @@ page-tutorial(
       h2-hash Before You Get Started
       p <a href="https://github.com/denoland/deno_std" target="_BLANK">deno_std</a> has a <a href="https://github.com/denoland/deno_std/tree/master/log" target="_BLANK">Log</a> module that is readily available and you can use it as your logger of choice.
       p Drash uses deno_std v{{ $conf.deno_std_version }}.
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr

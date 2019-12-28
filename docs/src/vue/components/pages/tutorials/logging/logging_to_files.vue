@@ -7,7 +7,7 @@ page-tutorial(
       hr
       h2-hash Before You Get Started
       p In this tutorial, you will learn how to log to the files using Drash's file logger.
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr

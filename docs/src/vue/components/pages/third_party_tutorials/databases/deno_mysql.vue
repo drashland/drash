@@ -43,7 +43,7 @@ page-tutorial(
             | +------+------+
             | | eric | m    |
             | +------+------+
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr

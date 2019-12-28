@@ -36,7 +36,7 @@ page-tutorial(
       hr
       h2-hash Before You Get Started
       p Server-level middleware is middleware that is executed by the server on every request.
-      p-download-source-code(:source_code_uri="$route.meta.source_code_uri")
+      p-view-source-code(:source_code_uri="$route.meta.source_code_uri")
   div.row
     div.col
       hr
