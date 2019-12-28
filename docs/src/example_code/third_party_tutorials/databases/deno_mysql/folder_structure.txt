@@ -1,0 +1,3 @@
+▾ /path/to/your/project/
+	app.ts
+	home_resource.ts
