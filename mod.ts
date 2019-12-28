@@ -14,7 +14,6 @@ import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
-import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db.json";
 
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
@@ -59,7 +58,6 @@ namespace Drash {
 
   export namespace Dictionaries {
     export const LogLevels = log_levels.LogLevels;
-    export const MimeDb = mime_db;
     // export namespace Enums {
     //   export const LogLevel = log_levels.LogLevel;
     // }

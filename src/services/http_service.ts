@@ -1,4 +1,6 @@
 import Drash from "../../mod.ts";
+import { contentType } from "../../deno_std.ts";
+
 const decoder = new TextDecoder();
 
 /**
@@ -238,17 +240,7 @@ export default class HttpService {
     let fileParts = filePath.split(".");
     filePath = fileParts.pop();
 
-    for (let key in Drash.Dictionaries.MimeDb) {
-      if (!mimeType) {
-        if (Drash.Dictionaries.MimeDb[key].extensions) {
-          for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
-            if (filePath == Drash.Dictionaries.MimeDb[key].extensions[index]) {
-              mimeType = key;
-            }
-          }
-        }
-      }
-    }
+    mimeType = contentType(filePath);
 
     return mimeType;
   }
