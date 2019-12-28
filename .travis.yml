@@ -6,7 +6,7 @@ python:
 env:
   - VER_DENO_LATEST="0.27.0"
     VER_DENO_STD_LATEST="0.27.0"
-    VER_DRASH_LATEST="0.27.0"
+    VER_DRASH_LATEST="0.27.3"
 
 install:
   - curl -fsSL https://deno.land/x/install/install.sh | sh -s v$VER_DENO_LATEST
