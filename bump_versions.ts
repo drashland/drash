@@ -2,7 +2,7 @@
 // const deno = Deno.env().VER_DENO_LATEST;
 // const denoStd = Deno.env().VER_DENO_STD_LATEST;
 
-const drash = "v0.27.0";
+const drash = "v0.27.1";
 const deno = "0.27.0";
 const denoStd = "0.27.0";
 
