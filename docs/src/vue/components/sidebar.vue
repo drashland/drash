@@ -57,6 +57,12 @@ div.c-sidebar
                     a(:href="$conf.base_url + '/#/advanced-tutorials/content-negotiation/user-profiles/part-3'") Part 3: Creating The Resource
                     a(:href="$conf.base_url + '/#/advanced-tutorials/content-negotiation/user-profiles/part-4'") Part 4: Handling Representations
                     a(:href="$conf.base_url + '/#/advanced-tutorials/content-negotiation/user-profiles/part-5'") Part 5: Adding More Content Types
+            a.heading-link Third Party Tutorials
+            div.c-sidebar__menu-body
+                a(:href="$conf.base_url + '/#/third-party-tutorials/introduction'") Introduction
+                a Databases
+                div.l-submenu-1
+                  a(:href="$conf.base_url + '/#/third-party-tutorials/databases/deno-mysql'") deno_mysql
             a.heading-link API Reference
             div.c-sidebar__menu-body
                 a Exceptions
