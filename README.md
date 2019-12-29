@@ -43,7 +43,7 @@ $ deno --allow-net --allow-env app.ts
 
 ## Documentation
 
-For full documentation, visit [https://drash.io](https://crookse.github.io/deno-drash/).
+For full documentation, visit [https://drashland.github.io/deno-drash-docs/#/](https://drashland.github.io/deno-drash-docs/#/).
 
 ## Features
 
