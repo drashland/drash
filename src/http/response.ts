@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { STATUS_TEXT, Status } from "../../deno_std.ts";
+import { STATUS_TEXT, Status } from "../../deps.ts";
 
 /**
  * @memberof Drash.Http

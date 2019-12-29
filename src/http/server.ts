@@ -3,7 +3,7 @@ import {
   STATUS_TEXT,
   Status,
   serve,
-} from "../../deno_std.ts";
+} from "../../deps.ts";
 
 /**
  * @memberof Drash.Http

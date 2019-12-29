@@ -1,6 +1,6 @@
 /// @doc-blocks-to-json members-only
 
-import { walkSync } from "../../deno_std.ts";
+import { walkSync } from "../../deps.ts";
 
 /**
  * @memberof Drash.Util.Exports

@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { contentType } from "../../deno_std.ts";
+import { contentType } from "../../deps.ts";
 
 const decoder = new TextDecoder();
 
