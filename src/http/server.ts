@@ -158,6 +158,8 @@ export default class Server {
       base_url: this.configs.address,
     });
 
+    request.path_params = {};
+
     // Were we able to determine the content type the request wants to receive?
     if (!request.response_content_type) {
       request.response_content_type = this.configs.response_output
