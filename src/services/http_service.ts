@@ -124,6 +124,10 @@ export default class HttpService {
     request.getQueryParam = function(httpVar: string): any {
       return request.url_query_params[httpVar];
     };
+    request.parseBody = () => {
+      return this.getHttpRequestBodyParsed(request);
+    }
+
     request.response_content_type = this.getResponseContentType(request);
 
     return request;

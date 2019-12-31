@@ -197,6 +197,7 @@ export default class Server {
     );
 
     request = this.getRequest(request);
+    await request.parseBody();
 
     let resourceClass = this.getResourceClass(request);
 
