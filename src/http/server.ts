@@ -159,6 +159,7 @@ export default class Server {
     });
 
     request.path_params = {};
+    request.body_parsed = {};
 
     // Were we able to determine the content type the request wants to receive?
     if (!request.response_content_type) {
