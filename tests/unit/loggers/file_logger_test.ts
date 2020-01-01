@@ -4,8 +4,7 @@ const ANIMALS = {
   "#1235": "tiger"
 };
 
-const file =
-  members.Drash.getEnvVar("DRASH_DIR_ROOT").value + `/tmp/file_logger_test.log`;
+const file = `../../../../tmp/file_logger_test.log`;
 
 members.test("Loggers.FileLogger", () => {
   let expected = "some_date | hello | tiger | This is cool!\n";
