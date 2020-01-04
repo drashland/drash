@@ -13,13 +13,16 @@ jobs:
       CI_USER_EMAIL: ${{ secrets.CI_USER_EMAIL }}
       CI_USER_NAME: ${{ secrets.CI_USER_NAME }}
       DENO_INSTALL: "/Users/runner/.local"
-      DENO_LATEST_VERSION: "v0.28.0"
       GIT_PUSHER_BOT: ${{ secrets.GIT_PUSHER_BOT }}
 
     runs-on: macOS-latest
 
     steps:
     - uses: actions/checkout@v1
+
+    - name: install deno
+      run: |
+        console/install_deno
 
     - name: unit tests
       run: |
