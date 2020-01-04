@@ -20,3 +20,7 @@ export {
 export {
   assertEquals
 } from "https://deno.land/std@v0.27.0/testing/asserts.ts";
+
+export {
+  contentType
+} from "https://deno.land/std@v0.27.0/media_types/mod.ts";

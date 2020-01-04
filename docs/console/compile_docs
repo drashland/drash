@@ -1,3 +1,0 @@
-#!/bin/bash
-
-deno --allow-read --allow-write --allow-env --allow-net $DRASH_DIR_ROOT/docs/docs.ts

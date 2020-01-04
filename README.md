@@ -1,19 +1,14 @@
-
 <p align="center">
-  <a href="https://crookse.github.io/deno-drash">
-    <img height="200" src="https://crookse.github.io/deno-drash/public/assets/img/logo_drash_github.png" alt="Drash logo">
-  </a>
+  <img height="200" src="https://drashland.github.io/deno-drash-docs/public/assets/img/logo_drash.png" alt="Drash logo">
+  <h1 align="center">Drash</h1>
 </p>
 <p align="center">A microframework for <a href="https://github.com/denoland/deno">Deno</a> focused on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web">resource</a> creation and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation">content negotiation</a>.</p>
 <p align="center">
-  <a href="https://github.com/crookse/deno-drash/releases">
-    <img src="https://img.shields.io/github/release/crookse/deno-drash.svg?color=bright_green&label=latest">
+  <a href="https://github.com/drashland/deno-drash/releases">
+    <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
   </a>
-  <a href="https://github.com/denoland/deno">
-    <img src="https://img.shields.io/badge/requires%20deno-v0.27.0-brightgreen.svg">
-  </a>
-  <a href="https://travis-ci.org/crookse/deno-drash">
-    <img src="https://img.shields.io/travis/crookse/deno-drash/master?label=master">
+  <a href="https://travis-ci.org/drashland/deno-drash">
+    <img src="https://img.shields.io/travis/drashland/deno-drash/master?label=master">
   </a>
 </p>
 
@@ -22,7 +17,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@v0.27.0/mod.ts";
+import Drash from "https://deno.land/x/drash/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -42,14 +37,12 @@ server.run();
 ```
 
 ```
-$ deno --allow-net --allow-env app.ts
+$ deno --allow-net app.ts
 ```
-
-For a more complicated application, try out the [Hello World](https://crookse.github.io/deno-drash/#/tutorials/creating-an-app-hello-world-part-1) tutorial series!
 
 ## Documentation
 
-For full documentation, visit [https://drash.io](https://crookse.github.io/deno-drash/).
+For full documentation, visit [https://drash.land](https://drash.land).
 
 ## Features
 

@@ -1,5 +1,5 @@
 import Drash from "../mod.ts";
-import { ServerRequest, assertEquals, runTests, test } from "../deno_std.ts";
+import { ServerRequest, assertEquals, runTests, test } from "../deps.ts";
 const decoder = new TextDecoder("utf-8");
 
 /**

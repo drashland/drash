@@ -4,10 +4,8 @@ const ANIMALS = {
   "#1235": "tiger"
 };
 
-const file =
-  members.Drash.getEnvVar("DRASH_DIR_ROOT").value + `/tmp/file_logger_test.log`;
-
-members.test("Loggers.FileLogger", () => {
+const file = `${Deno.env().DRASH_ROOT_DIR}/tmp/file_logger_test.log`;
+members.test(`Loggers.FileLogger (${file})`, () => {
   let expected = "some_date | hello | tiger | This is cool!\n";
   let logger = new members.Drash.Loggers.FileLogger({
     enabled: true,

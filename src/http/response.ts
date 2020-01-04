@@ -1,5 +1,5 @@
 import Drash from "../../mod.ts";
-import { STATUS_TEXT, Status } from "../../deno_std.ts";
+import { STATUS_TEXT, Status } from "../../deps.ts";
 
 /**
  * @memberof Drash.Http
@@ -137,27 +137,16 @@ export default class Response {
    *     Send the response of a static asset (e.g., a CSS file, JS file, PDF
    *     file, etc.) to the client making the request.
    *
-   *     This method is reliant on the `DRASH_SERVER_DIRECTORY` environment
-   *     variable. The `DRASH_SERVER_DIRECTORY` environment variable MUST point
-   *     to the parent directory of the directory (or list of directories)
-   *     containing static assets. For example, if my project is located at
-   *     `/path/to/my/project` and my CSS files are located at
-   *     `/path/to/my/project/public/assets`, then `DRASH_SERVER_DIRECTORY`
-   *     should be `/path/to/my/project/public`.
+   * @param string file
+   *     The file that will be served to the client.
    *
    * @return any
    */
-  public sendStatic(): any {
-    const file = this.request.url_path;
-    // Remove trailing slash
-    let staticPathParent = Deno.env().DRASH_SERVER_DIRECTORY;
-    staticPathParent = staticPathParent.replace(/(\/$)/, "");
-    const fullFilepath = `${staticPathParent}${file}`;
-
+  public sendStatic(file): any {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: Deno.readFileSync(fullFilepath)
+      body: Deno.readFileSync(file)
     };
 
     this.request.respond(output);

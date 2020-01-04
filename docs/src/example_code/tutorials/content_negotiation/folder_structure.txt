@@ -1,4 +1,0 @@
-▾ /path/to/your/project/
-	app.ts
-	response.ts
-	users_resource.ts

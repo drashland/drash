@@ -3,7 +3,7 @@ import {
   STATUS_TEXT,
   Status,
   serve,
-} from "../../deno_std.ts";
+} from "../../deps.ts";
 
 /**
  * @memberof Drash.Http
@@ -37,6 +37,15 @@ export default class Server {
    * @property any configs
    */
   protected configs: any;
+
+  /**
+   * @description
+   *     A property to hold the location of this server on the filesystem. This
+   *     property is used when resolving static paths.
+   *
+   * @property string directory
+   */
+  protected directory: string;
 
   /**
    * @description
@@ -125,6 +134,7 @@ export default class Server {
     }
 
     if (configs.static_paths) {
+      this.directory = configs.directory; // blow up if this doesn't exist
       configs.static_paths.forEach(path => {
         this.addStaticPath(path);
       });
@@ -148,6 +158,9 @@ export default class Server {
       base_url: this.configs.address,
     });
 
+    request.path_params = {};
+    request.body_parsed = {};
+
     // Were we able to determine the content type the request wants to receive?
     if (!request.response_content_type) {
       request.response_content_type = this.configs.response_output
@@ -165,10 +178,10 @@ export default class Server {
    * @param ServerRequest request
    *     The request object.
    *
-   * @return any
+   * @return Promise<any>
    *    See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequest(request): any {
+  public async handleHttpRequest(request): Promise<any> {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(request)) {
       return this.handleHttpRequestForStaticPathAsset(request);
@@ -184,6 +197,7 @@ export default class Server {
     );
 
     request = this.getRequest(request);
+    await request.parseBody();
 
     let resourceClass = this.getResourceClass(request);
 
@@ -204,7 +218,7 @@ export default class Server {
     //
     let resource = this.getResourceObject(resourceClass, request);
     request.resource = resource;
-    this.logger.debug(
+    this.logDebug(
       "Using `" +
         resource.constructor.name +
         "` resource class to handle the request."
@@ -216,13 +230,13 @@ export default class Server {
       this.executeMiddlewareBeforeRequest(request, resource);
 
       // Perform the request
-      this.logger.debug("Calling " + request.method.toUpperCase() + "().");
-      response = resource[request.method.toUpperCase()]();
+      this.logDebug("Calling " + request.method.toUpperCase() + "().");
+      response = await resource[request.method.toUpperCase()]();
 
       this.executeMiddlewareAfterRequest(request, resource);
 
       // Send the response
-      this.logger.info("Sending response. " + response.status_code + ".");
+      this.logDebug("Sending response. " + response.status_code + ".");
       return response.send();
 
     } catch (error) {
@@ -249,14 +263,14 @@ export default class Server {
     resource: Drash.Http.Resource = null,
     response: Drash.Http.Response = null
   ): any {
-    this.logger.debug(
+    this.logDebug(
       `Error occurred while handling request: ${request.method} ${request.url}`
     );
-    this.logger.trace(error.message);
-    this.logger.trace("Stack trace below:");
-    this.logger.trace(error.stack);
+    this.logDebug(error.message);
+    this.logDebug("Stack trace below:");
+    this.logDebug(error.stack);
 
-    this.logger.trace("Generating generic error response object.");
+    this.logDebug("Generating generic error response object.");
 
     // If a resource was found, but an error occurred, then that's most likely
     // due to the HTTP method not being defined in the resource class;
@@ -278,7 +292,7 @@ export default class Server {
       ? error.message
       : response.getStatusMessage();
 
-    this.logger.info(
+    this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
         "Content-Type"
       )}. Status: ${response.getStatusMessageFull()}.`
@@ -304,8 +318,8 @@ export default class Server {
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
-      this.logger.debug("/favicon.ico requested.");
-      this.logger.debug(
+      this.logDebug("/favicon.ico requested.");
+      this.logDebug(
         "All future log messages for /favicon.ico will be muted."
       );
     }
@@ -329,7 +343,7 @@ export default class Server {
   public handleHttpRequestForStaticPathAsset(request): any {
     try {
       let response = new Drash.Http.Response(request);
-      return response.sendStatic();
+      return response.sendStatic(this.directory + "/" + request.url_path);
     } catch (error) {
       return this.handleHttpRequestError(request, this.httpErrorResponse(404));
     }
@@ -642,7 +656,9 @@ export default class Server {
     }
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
-    let requestUrl = `/${request.url.split("/")[1]}`;
+    let staticPath = request.url.split("/")[1];
+    // Prefix with a leading slash, so it can be matched properly
+    let requestUrl = "/" + staticPath;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
       request = Drash.Services.HttpService.hydrateHttpRequest(request, {
@@ -657,5 +673,9 @@ export default class Server {
     }
 
     return false;
+  }
+
+  protected logDebug(message) {
+    this.logger.debug("[drash] " + message);
   }
 }

@@ -5,16 +5,12 @@
 // README.md
 // REQUIREMENTS.md
 
-// Core
-import env_var from "./src/core/env_var.ts";
-
 // Compilers
 // TODO(crookse) use docable when docable has TypeScript types developed
 import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
-import mime_db from "https://raw.githubusercontent.com/jshttp/mime-db/v1.39.0/db.json";
 
 // Exceptions
 import http_exception from "./src/exceptions/http_exception.ts";
@@ -47,11 +43,6 @@ import * as util_members from "./src/util/members.ts";
 //
 
 namespace Drash {
-  export namespace Core {
-    export type EnvVar = env_var;
-    export const EnvVar = env_var;
-  }
-
   export namespace Compilers {
     export type DocBlocksToJson = doc_blocks_to_json;
     export const DocBlocksToJson = doc_blocks_to_json;
@@ -59,7 +50,6 @@ namespace Drash {
 
   export namespace Dictionaries {
     export const LogLevels = log_levels.LogLevels;
-    export const MimeDb = mime_db;
     // export namespace Enums {
     //   export const LogLevel = log_levels.LogLevel;
     // }
@@ -125,43 +115,6 @@ namespace Drash {
    */
   export function addMember(name: string, app: any) {
     this.Members[name] = app;
-  }
-
-  /**
-   * Set an environment variable in `Deno.env()`.
-   *
-   * @param string variableName
-   *     The variable name.
-   *
-   * @return Drash.Core.EnvVar
-   *     Returns a new EnvVar object with helper functions. For example, if
-   *     the value of the environment variable is a JSON string, you can call
-   *     `.toArray().value` to turn it into a parsable JSON array before
-   *     retrieving the actual value.
-   */
-  export function getEnvVar(variableName: string): Drash.Core.EnvVar {
-    let exists = Deno.env().hasOwnProperty(variableName);
-    let value;
-
-    value = exists ? Deno.env()[variableName] : undefined;
-
-    return new Drash.Core.EnvVar(variableName, value);
-  }
-
-  /**
-   * Set an environment variable in `Deno.env()`.
-   *
-   * @param string variableName
-   *     The variable name which can be accessed via
-   *     `Drash.getEnvVar(variableName)`.
-   * @param string value
-   *     The value of the variable. `Deno.env()` only accepts strings. See
-   *     https://deno.land/typedoc/index.html#env for more info.
-   */
-  export function setEnvVar(variableName: string, value: string) {
-    if (!Deno.env()[variableName]) {
-      Deno.env()[variableName] = value;
-    }
   }
 }
 

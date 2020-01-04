@@ -1,4 +1,6 @@
 import Drash from "../../mod.ts";
+import { contentType } from "../../deps.ts";
+
 const decoder = new TextDecoder();
 
 /**
@@ -26,12 +28,6 @@ export default class HttpService {
    *     parsed.
    *
    * @return any
-   *     This method resolves `this.body_parsed`, but only for testing purposes.
-   *     This method can be called without assigning its resolved data to a
-   *     variable. For example, you can call `await request.parseBody();` and
-   *     access `request.body_parsed` immediately after. Before this method
-   *     resolves `this.body_parsed`, it assigns the parsed request body to
-   *     `this.body_parsed`.
    */
   public getHttpRequestBodyParsed(request): any {
     return new Promise(resolve => {
@@ -114,7 +110,7 @@ export default class HttpService {
     request.url = options && options.base_url
       ? options.base_url + request.url
       : request.url;
-    request.body_parsed = this.getHttpRequestBodyParsed(request);
+
     // Attach methods
     request.getBodyParam = function(httpVar: string): any {
       return request.body_parsed[httpVar];
@@ -128,6 +124,10 @@ export default class HttpService {
     request.getQueryParam = function(httpVar: string): any {
       return request.url_query_params[httpVar];
     };
+    request.parseBody = () => {
+      return this.getHttpRequestBodyParsed(request);
+    }
+
     request.response_content_type = this.getResponseContentType(request);
 
     return request;
@@ -238,17 +238,7 @@ export default class HttpService {
     let fileParts = filePath.split(".");
     filePath = fileParts.pop();
 
-    for (let key in Drash.Dictionaries.MimeDb) {
-      if (!mimeType) {
-        if (Drash.Dictionaries.MimeDb[key].extensions) {
-          for (let index in Drash.Dictionaries.MimeDb[key].extensions) {
-            if (filePath == Drash.Dictionaries.MimeDb[key].extensions[index]) {
-              mimeType = key;
-            }
-          }
-        }
-      }
-    }
+    mimeType = contentType(filePath);
 
     return mimeType;
   }
@@ -293,7 +283,7 @@ export default class HttpService {
 
     // Check the request's body to see if
     // {response_content_type: {content-type}} has been specified
-    contentType = request.body_parsed.response_content_type
+    contentType = request.body_parsed && request.body_parsed.response_content_type
       ? request.body_parsed.response_content_type
       : contentType;
 

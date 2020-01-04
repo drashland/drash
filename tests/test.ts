@@ -1,8 +1,5 @@
 Deno.env().DRASH_PROCESS = "test";
 
-// Compilers
-import "./unit/compilers/doc_blocks_to_json.ts";
-
 // Dictionaries
 import "./unit/dictionaries/log_levels_test.ts";
 

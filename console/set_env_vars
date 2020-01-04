@@ -1,5 +1,0 @@
-#!/bin/bash
-
-export VER_DENO_LATEST="0.22.0"
-export VER_DENO_STD_LATEST="0.20.0"
-export VER_DRASH_LATEST="0.22.3"
