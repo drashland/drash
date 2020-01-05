@@ -26,7 +26,6 @@ jobs:
 
     - name: unit tests
       run: |
-        export DRASH_ROOT_DIR=$PWD
         export PATH=$DENO_INSTALL/bin:$PATH
         console/tests
 
