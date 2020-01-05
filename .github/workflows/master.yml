@@ -26,6 +26,7 @@ jobs:
 
     - name: unit tests
       run: |
+        export PATH=$DENO_INSTALL/bin:$PATH
         console/tests
 
     - name: update long-running branches
