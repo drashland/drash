@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -30,6 +33,7 @@ jobs:
         console/tests
 
     - name: update long-running branches
+      if: github.event_name == 'push'
       run: |
         git remote rm origin
         git remote add origin https://$CI_USER_PAT@github.com/drashland/deno-drash.git
