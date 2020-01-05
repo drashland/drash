@@ -31,7 +31,7 @@ export default class HttpService {
    */
   public getHttpRequestBodyParsed(request): any {
     return new Promise(resolve => {
-      request.body().then(raw => {
+      request.body.read().then(raw => {
         let parsed: any;
         let rawString = decoder.decode(raw);
         request.body_raw_string = rawString;
