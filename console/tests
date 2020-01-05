@@ -1,6 +1,5 @@
 #!/bin/bash
 
 (
-  export DRASH_ROOT_DIR=$PWD
-  deno --allow-read --allow-write --allow-env $DRASH_DIR_ROOT/tests/test.ts
+  deno --allow-read --allow-write --allow-env tests/test.ts
 )

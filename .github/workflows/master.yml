@@ -1,0 +1,41 @@
+name: master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    env:
+      CI: true
+      CI_USER_EMAIL: ${{ secrets.CI_USER_EMAIL }}
+      CI_USER_NAME: ${{ secrets.CI_USER_NAME }}
+      CI_USER_PAT: ${{ secrets.CI_USER_PAT }}
+      DENO_INSTALL: "/Users/runner/.local"
+
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: install deno
+      run: |
+        console/install_deno
+
+    - name: unit tests
+      run: |
+        export DRASH_ROOT_DIR=$PWD
+        export PATH=$DENO_INSTALL/bin:$PATH
+        console/tests
+
+    - name: update long-running branches
+      run: |
+        git remote rm origin
+        git remote add origin https://$CI_USER_PAT@github.com/drashland/deno-drash.git
+        git config user.email $CI_USER_EMAIL
+        git config user.name $CI_USER_NAME
+        git pull origin master
+        git pull origin upgrade-deno
+        git checkout upgrade-deno && git merge origin/master
