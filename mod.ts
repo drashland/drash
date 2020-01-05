@@ -1,6 +1,5 @@
 // Version bumps:
 // console/install.deno
-// docs/webpack.config.js
 // .travis.yml
 // README.md
 // REQUIREMENTS.md
