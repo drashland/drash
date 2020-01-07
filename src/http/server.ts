@@ -24,6 +24,17 @@ export default class Server {
 
   /**
    * @description
+   *     A property to hold the Deno server. This property is set in
+   *     `this.run()` like so: ` this.deno_server =
+   *     serve(this.configs.address);`. `serve()` is imported from
+   *     [https://deno.land/x/http/server.ts](https://deno.land/x/http/server.ts).
+   *
+   * @property any deno_server
+   */
+  public deno_server: any;
+
+  /**
+   * @description
    *     A property to hold this server's logger.
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
@@ -46,17 +57,6 @@ export default class Server {
    * @property string directory
    */
   protected directory: string;
-
-  /**
-   * @description
-   *     A property to hold the Deno server. This property is set in
-   *     `this.run()` like so: ` this.deno_server =
-   *     serve(this.configs.address);`. `serve()` is imported from
-   *     [https://deno.land/x/http/server.ts](https://deno.land/x/http/server.ts).
-   *
-   * @property any deno_server
-   */
-  protected deno_server: any;
 
   /**
    * @description
