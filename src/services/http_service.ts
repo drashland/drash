@@ -27,59 +27,64 @@ export default class HttpService {
    *     `this.body_parsed` to `false` to denote that the request body was not
    *     parsed.
    *
-   * @return any
+   * @return Promise<any>
    */
-  public getHttpRequestBodyParsed(request): any {
-    return new Promise(resolve => {
-      request.body.read().then(raw => {
-        let parsed: any;
-        let rawString = decoder.decode(raw);
-        request.body_raw_string = rawString;
+  public async getHttpRequestBodyParsed(request): Promise<any> {
+    let decoder = new TextDecoder();
+    let body: any = {};
 
-        // Decide how to parse the string below. All HTTP requests will default
-        // to application/x-www-form-urlencoded IF the Content-Type header is
-        // not set in the request.
-        //
-        // ... there's going to be potential fuck ups here btw ...
+    try {
+      body = decoder.decode(await Deno.readAll(request.body));
+    } catch (error) {
+      return body; // TODO(crookse) Should return an error?
+    }
 
-        // Is this an application/json body?
-        if (request.headers.get("Content-Type") == "application/json") {
-          try {
-            parsed = JSON.parse(rawString);
-          } catch (error) {
-            parsed = false;
-          }
+    return new Promise((resolve) => {
+      let parsed: any;
+      // Decide how to parse the string below. All HTTP requests will default
+      // to application/x-www-form-urlencoded IF the Content-Type header is
+      // not set in the request.
+      //
+      // ... there's going to be potential fuck ups here btw ...
+
+      // Is this an application/json body?
+      if (request.headers.get("Content-Type") == "application/json") {
+        try {
+          parsed = JSON.parse(body);
           request.body_parsed = parsed;
-          resolve(request.body_parsed);
-          return;
+          return resolve(request.body_parsed);
+        } catch (error) {
+          parsed = false;
         }
+      }
 
-        // Does this look like an application/json body?
-        if (!parsed) {
-          try {
-            parsed = JSON.parse(rawString);
-          } catch (error) {
-            parsed = false;
+      // Does this look like an application/json body?
+      if (!parsed) {
+        try {
+          parsed = JSON.parse(body);
+          request.body_parsed = parsed;
+          return resolve(request.body_parsed);
+        } catch (error) {
+        }
+      }
+
+      // All HTTP requests default to application/x-www-form-urlencoded, so
+      // try to parse the body as a URL query params string if the above logic
+      // didn't work.
+      if (!parsed) {
+        try {
+          if (body.indexOf("?") !== -1) {
+            body = body.split("?")[1];
           }
+          parsed = this.parseQueryParamsString(body);
+          request.body_parsed = parsed;
+          return resolve(request.body_parsed);
+        } catch (error) {
         }
+      }
 
-        // All HTTP requests default to application/x-www-form-urlencoded, so
-        // try to parse the body as a URL query params string if the above logic
-        // didn't work.
-        if (!parsed) {
-          try {
-            if (rawString.indexOf("?") !== -1) {
-              rawString = rawString.split("?")[1];
-            }
-            parsed = this.parseQueryParamsString(rawString);
-          } catch (error) {
-            parsed = false;
-          }
-        }
-
-        request.body_parsed = parsed;
-        resolve(request.body_parsed);
-      });
+      request.body_parsed = undefined;
+      resolve(request.body_parsed); // resolve false if we can't parse the body
     });
   }
 
