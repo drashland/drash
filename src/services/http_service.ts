@@ -33,59 +33,61 @@ export default class HttpService {
     let decoder = new TextDecoder();
     let body: any = {};
 
+    if (!this.requestHasBody(request)) {
+      return body;
+    }
+
     try {
       body = decoder.decode(await Deno.readAll(request.body));
     } catch (error) {
       return body; // TODO(crookse) Should return an error?
     }
 
-    return new Promise((resolve) => {
-      let parsed: any;
-      // Decide how to parse the string below. All HTTP requests will default
-      // to application/x-www-form-urlencoded IF the Content-Type header is
-      // not set in the request.
-      //
-      // ... there's going to be potential fuck ups here btw ...
+    let parsed: any;
+    // Decide how to parse the string below. All HTTP requests will default
+    // to application/x-www-form-urlencoded IF the Content-Type header is
+    // not set in the request.
+    //
+    // ... there's going to be potential fuck ups here btw ...
 
-      // Is this an application/json body?
-      if (request.headers.get("Content-Type") == "application/json") {
-        try {
-          parsed = JSON.parse(body);
-          request.body_parsed = parsed;
-          return resolve(request.body_parsed);
-        } catch (error) {
-          parsed = false;
-        }
+    // Is this an application/json body?
+    if (request.headers.get("Content-Type") == "application/json") {
+      try {
+        parsed = JSON.parse(body);
+        request.body_parsed = parsed;
+        return request.body_parsed;
+      } catch (error) {
+        parsed = false;
       }
+    }
 
-      // Does this look like an application/json body?
-      if (!parsed) {
-        try {
-          parsed = JSON.parse(body);
-          request.body_parsed = parsed;
-          return resolve(request.body_parsed);
-        } catch (error) {
-        }
+    // Does this look like an application/json body?
+    if (!parsed) {
+      try {
+        parsed = JSON.parse(body);
+        request.body_parsed = parsed;
+        return request.body_parsed;
+      } catch (error) {
       }
+    }
 
-      // All HTTP requests default to application/x-www-form-urlencoded, so
-      // try to parse the body as a URL query params string if the above logic
-      // didn't work.
-      if (!parsed) {
-        try {
-          if (body.indexOf("?") !== -1) {
-            body = body.split("?")[1];
-          }
-          parsed = this.parseQueryParamsString(body);
-          request.body_parsed = parsed;
-          return resolve(request.body_parsed);
-        } catch (error) {
+    // All HTTP requests default to application/x-www-form-urlencoded, so
+    // try to parse the body as a URL query params string if the above logic
+    // didn't work.
+    if (!parsed) {
+      try {
+        if (body.indexOf("?") !== -1) {
+          body = body.split("?")[1];
         }
+        parsed = this.parseQueryParamsString(body);
+        request.body_parsed = parsed;
+        return request.body_parsed;
+      } catch (error) {
       }
+    }
 
-      request.body_parsed = undefined;
-      resolve(request.body_parsed); // resolve false if we can't parse the body
-    });
+    request.body_parsed = undefined;
+    return request.body_parsed; // return false if we can't parse the body
   }
 
   /**
@@ -329,5 +331,17 @@ export default class HttpService {
     });
 
     return queryParams;
+  }
+
+  /**
+   * @description
+   *     Does the specified request have a body?
+   *
+   * @param any request
+   *
+   * @return boolean
+   */
+  public requestHasBody(request: any): boolean {
+    return parseInt(request.headers.get("content-length")) > 0;
   }
 }
