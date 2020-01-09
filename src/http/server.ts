@@ -370,7 +370,9 @@ export default class Server {
    *     configs.
    */
   public async run(): Promise<void> {
-    console.log(`\nDeno server started at ${this.configs.address}.\n`);
+    if (Deno.env().DRASH_PROCESS != "test") {
+      console.log(`\nDeno server started at ${this.configs.address}.\n`);
+    }
     this.deno_server = serve(this.configs.address);
     for await (const request of this.deno_server) {
       try {
