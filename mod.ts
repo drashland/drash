@@ -1,6 +1,5 @@
 // Version bumps:
 // console/install.deno
-// .travis.yml
 // README.md
 // REQUIREMENTS.md
 
