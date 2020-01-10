@@ -12,14 +12,25 @@ members.test("Server.handleHttpRequest(): GET", async () => {
 
 members.test("Server.handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
+    address: "localhost:1447",
     resources: [HomeResource]
   });
 
-  let response = await server.handleHttpRequest(
-    members.mockRequest("/", "POST")
-  );
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, {body: "posted"});
+  const response = await fetch("http://localhost:1447", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      body_param: "hello"
+    })
+  });
+
+  members.assert.equal(JSON.parse(await response.text()), {body: "hello"});
+  server.deno_server.close();
+  fetch("http://localhost:1447");
 });
 
 members.test("Server.handleHttpRequest(): getPathParam() for :id and {id}", async () => {
@@ -80,7 +91,7 @@ class HomeResource extends members.Drash.Http.Resource {
     return this.response;
   }
   public POST() {
-    this.response.body = {body: "posted"};
+    this.response.body = {body: this.request.getBodyParam("body_param")};
     return this.response;
   }
 }

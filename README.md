@@ -7,8 +7,8 @@
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
   </a>
-  <a href="https://travis-ci.org/drashland/deno-drash">
-    <img src="https://img.shields.io/travis/drashland/deno-drash/master?label=master">
+  <a href="https://github.com/drashland/deno-drash/actions">
+    <img src="https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=master">
   </a>
 </p>
 
