@@ -30,7 +30,6 @@ export default class HttpService {
    * @return Promise<any>
    */
   public async getHttpRequestBodyParsed(request): Promise<any> {
-    let decoder = new TextDecoder();
     let body: any = {};
 
     if (!this.requestHasBody(request)) {
