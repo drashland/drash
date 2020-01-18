@@ -51,6 +51,23 @@ function runTest(name, testFn) {
   return test(testFn);
 }
 
+const makeRequest = {
+  get(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "GET",
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  },
+  post(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "POST",
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  }
+};
+
 export default {
   Drash,
   ServerRequest,
@@ -59,6 +76,7 @@ export default {
     responseJsonEquals: responseJsonEquals
   },
   decoder,
+  fetch: makeRequest,
   mockRequest,
   MockServer,
   runTests,
