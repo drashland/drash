@@ -5,9 +5,13 @@ members.test("Server.handleHttpRequest(): GET", async () => {
     resources: [HomeResource]
   });
 
-  let response = await server.handleHttpRequest(members.mockRequest());
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, {body: "got"});
+  let response = await members.fetch.get("http://localhost:8000");
+
+  members.assert.responseJsonEquals(await response.text(), {body: "got"});
+
+  server.deno_server.close();
 });
 
 members.test("Server.handleHttpRequest(): POST", async () => {
@@ -18,54 +22,61 @@ members.test("Server.handleHttpRequest(): POST", async () => {
 
   server.run();
 
-  const response = await fetch("http://localhost:1447", {
-    method: "POST",
+  const response = await members.fetch.post("http://localhost:1447", {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
+    body: {
       body_param: "hello"
-    })
+    }
   });
 
-  members.assert.equal(JSON.parse(await response.text()), {body: "hello"});
+  members.assert.responseJsonEquals(await response.text(), {body: "hello"});
+
   server.deno_server.close();
-  fetch("http://localhost:1447");
 });
 
 members.test("Server.handleHttpRequest(): getPathParam() for :id and {id}", async () => {
   let server = new members.MockServer({
+    address: "localhost:1447",
     resources: [
       NotesResource,
       UsersResource,
     ]
   });
 
-  let response = null;
+  server.run();
 
-  response = await server.handleHttpRequest(
-    members.mockRequest("/users/1", "GET")
-  );
+  let response;
 
-  members.assert.responseJsonEquals(response.body, {user_id: "1"});
+  response = await members.fetch.get("http://localhost:1447/users/1");
 
-  response = await server.handleHttpRequest(
-    members.mockRequest("/notes/1447", "GET")
-  );
+  members.assert.responseJsonEquals(await response.text(), {user_id: "1"});
 
-  members.assert.responseJsonEquals(response.body, {note_id: "1447"});
+  response = await members.fetch.get("http://localhost:1447/notes/1447");
+
+  members.assert.responseJsonEquals(await response.text(), {note_id: "1447"});
+
+  server.deno_server.close();
 });
 
 members.test("Server.handleHttpRequest(): getHeaderParam()", async () => {
   let server = new members.MockServer({
+    address: "localhost:1447",
     resources: [GetHeaderParam]
   });
 
-  let response = await server.handleHttpRequest(
-    members.mockRequest("/", "GET", {id: 12345})
-  );
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, {header_param: "12345"})
+  let response = await members.fetch.get("http://localhost:1447", {
+    headers: {
+      id: 12345
+    }
+  });
+
+  members.assert.responseJsonEquals(await response.text(), {header_param: "12345"})
+
+  server.deno_server.close();
 });
 
 members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
@@ -73,11 +84,13 @@ members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
     resources: [GetQueryParam]
   });
 
-  let response = await server.handleHttpRequest(
-    members.mockRequest("/?id=123459", "GET")
-  );
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, {query_param: "123459"});
+  let response = await members.fetch.get("http://localhost:8000?id=123459");
+
+  members.assert.responseJsonEquals(await response.text(), {query_param: "123459"});
+
+  server.deno_server.close();
 });
 
 ////////////////////////////////////////////////////////////////////////////////

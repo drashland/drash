@@ -20,14 +20,13 @@ members.test("Middleware server/resource: missing CSRF token", async () => {
     ]
   });
 
-  let response = await server.handleHttpRequest(
-    members.mockRequest(
-      "/users/1",
-      "get"
-    )
-  );
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "No CSRF token, dude.");
+  let response = await members.fetch.get("http://localhost:8000/users/1");
+
+  members.assert.responseJsonEquals(await response.text(), "No CSRF token, dude.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -50,17 +49,17 @@ members.test("Middleware server/resource: wrong CSRF token", async () => {
     ]
   });
 
-  let response = await server.handleHttpRequest(
-    members.mockRequest(
-      "/users/1",
-      "get",
-      {
+  server.run();
+
+  let response = await members.fetch.get("http://localhost:8000/users/1", {
+    headers: {
         csrf_token: "hehe"
       }
-    )
-  );
+  });
 
-  members.assert.responseJsonEquals(response.body, "Wrong CSRF token, dude.");
+  members.assert.responseJsonEquals(await response.text(), "Wrong CSRF token, dude.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -83,18 +82,18 @@ members.test("Middleware server/resource: user is not an admin", async () => {
     ]
   });
 
-  let response = await server.handleHttpRequest(
-    members.mockRequest(
-      "/users/1",
-      "get",
-      {
+  server.run();
+
+  let response = await members.fetch.get("http://localhost:8000/users/1", {
+    headers: {
         csrf_token: "all your base",
         user_id: 123
       }
-    )
-  );
+  });
 
-  members.assert.responseJsonEquals(response.body, "'user_id' unknown.");
+  members.assert.responseJsonEquals(await response.text(), "'user_id' unknown.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -116,19 +115,19 @@ members.test("Middleware server/resource: pass", async () => {
       ResourceWithMiddleware
     ]
   });
-  
-  let response = await server.handleHttpRequest(
-    members.mockRequest(
-      "/users/1",
-      "get",
-      {
+
+  server.run();
+
+  let response = await members.fetch.get("http://localhost:8000/users/1", {
+    headers: {
         csrf_token: "all your base",
         user_id: 999
       }
-    )
-  );
+  });
+  
+  members.assert.responseJsonEquals(await response.text(), {name: "Thor"});
 
-  members.assert.responseJsonEquals(response.body, {name: "Thor"});
+  server.deno_server.close();
 });
 
 /**
@@ -145,10 +144,14 @@ members.test("Middleware server/resource: middleware not found", async () => {
       ResourceWithMiddlewareNotFound
     ]
   });
-  
-  let response = await server.handleHttpRequest(members.mockRequest("/users/1", "get"));
 
-  members.assert.responseJsonEquals(response.body, "I'm a teapot");
+  server.run();
+
+  let response = await members.fetch.get("http://localhost:8000/users/1");
+  
+  members.assert.responseJsonEquals(await response.text(), "I'm a teapot");
+
+  server.deno_server.close();
 });
 
 /**
@@ -168,9 +171,13 @@ members.test("Middleware server before_response: missing header", async () => {
     ]
   });
 
-  let response = await server.handleHttpRequest(members.mockRequest("/", "get"));
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "Missing header, guy.");
+  let response = await members.fetch.get("http://localhost:8000/");
+
+  members.assert.responseJsonEquals(await response.text(), "Missing header, guy.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -190,9 +197,17 @@ members.test("Middleware server before_response: wrong header", async () => {
     ]
   });
 
-  let response = await server.handleHttpRequest(members.mockRequest("/", "get", {send_response: "yes please"}));
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "Ha... try again. Close though.");
+  let response = await members.fetch.get("http://localhost:8000/", {
+    headers: {
+        send_response: "yes please"
+      }
+  });
+
+  members.assert.responseJsonEquals(await response.text(), "Ha... try again. Close though.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -212,9 +227,17 @@ members.test("Middleware server before_response: pass", async () => {
     ]
   });
 
-  let response = await server.handleHttpRequest(members.mockRequest("/", "get", {send_response: "yes do it"}));
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "got");
+  let response = await members.fetch.get("http://localhost:8000/", {
+    headers: {
+        send_response: "yes do it"
+      }
+  });
+
+  members.assert.responseJsonEquals(await response.text(), "got");
+
+  server.deno_server.close();
 });
 
 /**
@@ -233,12 +256,14 @@ members.test("Middleware server before_request: missing header", async () => {
       ResourceWithMiddlewareHooked
     ]
   });
-  let request = members.mockRequest("/", "get");
-  let response = await server.handleHttpRequest(request);
 
-  members.assert.equal(request.hello, undefined);
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "Missing header, guy.");
+  let response = await members.fetch.get("http://localhost:8000/");
+
+  members.assert.responseJsonEquals(await response.text(), "Missing header, guy.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -257,12 +282,18 @@ members.test("Middleware server before_request: wrong header", async () => {
       ResourceWithMiddlewareHooked
     ]
   });
-  let request = members.mockRequest("/", "get", {before: "yes"});
-  let response = await server.handleHttpRequest(request);
 
-  members.assert.equal(request.hello, undefined);
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "Ha... try again. Close though.");
+  let response = await members.fetch.get("http://localhost:8000/", {
+    headers: {
+        before: "yes"
+      }
+  });
+
+  members.assert.responseJsonEquals(await response.text(), "Ha... try again. Close though.");
+
+  server.deno_server.close();
 });
 
 /**
@@ -281,12 +312,18 @@ members.test("Middleware server before_request: pass", async () => {
       ResourceWithMiddlewareHooked
     ]
   });
-  let request = members.mockRequest("/", "get", {before: "yesss"});
-  let response = await server.handleHttpRequest(request);
 
-  members.assert.equal(request.hello, "changed_before_request");
+  server.run();
 
-  members.assert.responseJsonEquals(response.body, "got");
+  let response = await members.fetch.get("http://localhost:8000/", {
+    headers: {
+        before: "yesss"
+      }
+  });
+
+  members.assert.responseJsonEquals(await response.text(), "got");
+
+  server.deno_server.close();
 });
 
 ////////////////////////////////////////////////////////////////////////////////

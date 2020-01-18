@@ -43,13 +43,30 @@ class MockServer extends Drash.Http.Server {
 }
 
 function responseJsonEquals(actual: any, expected: any) {
-  return assertEquals(JSON.parse(decoder.decode(actual)), expected);
+  return assertEquals(JSON.parse(actual), expected);
 }
 
 function runTest(name, testFn) {
   Object.defineProperty(testFn, "name", { value: name });
   return test(testFn);
 }
+
+const makeRequest = {
+  get(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "GET",
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  },
+  post(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "POST",
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  }
+};
 
 export default {
   Drash,
@@ -59,6 +76,7 @@ export default {
     responseJsonEquals: responseJsonEquals
   },
   decoder,
+  fetch: makeRequest,
   mockRequest,
   MockServer,
   runTests,
