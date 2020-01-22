@@ -383,6 +383,14 @@ export default class Server {
     }
   }
 
+  /**
+   * @description
+   *     Close the server.
+   */
+  public close() {
+    this.deno_server.close();
+  }
+
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   /**
