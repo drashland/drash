@@ -42,7 +42,8 @@ $ deno --allow-net app.ts
 
 ## Documentation
 
-For full documentation, visit [https://drash.land](https://drash.land).
+Full documentation: [https://drash.land](https://drash.land)
+Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 
 ## Features
 
