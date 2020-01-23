@@ -27,7 +27,7 @@ class HomeResource extends Drash.Http.Resource {
   }
 }
 
-let server = new Drash.Http.Server({
+const server = new Drash.Http.Server({
   address: "localhost:1337",
   response_output: "text/html",
   resources: [HomeResource]
