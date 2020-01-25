@@ -2,12 +2,13 @@ import members from "../../members.ts";
 
 members.test("Server.handleHttpRequest(): GET", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     resources: [HomeResource]
   });
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000");
+  let response = await members.fetch.get("http://localhost:1557");
 
   members.assert.responseJsonEquals(await response.text(), {body: "got"});
 
@@ -16,13 +17,13 @@ members.test("Server.handleHttpRequest(): GET", async () => {
 
 members.test("Server.handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
-    address: "localhost:1447",
+    address: "localhost:1557",
     resources: [HomeResource]
   });
 
   server.run();
 
-  const response = await members.fetch.post("http://localhost:1447", {
+  const response = await members.fetch.post("http://localhost:1557", {
     headers: {
       "Content-Type": "application/json"
     },
@@ -38,7 +39,7 @@ members.test("Server.handleHttpRequest(): POST", async () => {
 
 members.test("Server.handleHttpRequest(): getPathParam() for :id and {id}", async () => {
   let server = new members.MockServer({
-    address: "localhost:1447",
+    address: "localhost:1557",
     resources: [
       NotesResource,
       UsersResource,
@@ -49,26 +50,26 @@ members.test("Server.handleHttpRequest(): getPathParam() for :id and {id}", asyn
 
   let response;
 
-  response = await members.fetch.get("http://localhost:1447/users/1");
+  response = await members.fetch.get("http://localhost:1557/users/1");
 
   members.assert.responseJsonEquals(await response.text(), {user_id: "1"});
 
-  response = await members.fetch.get("http://localhost:1447/notes/1447");
+  response = await members.fetch.get("http://localhost:1557/notes/1557");
 
-  members.assert.responseJsonEquals(await response.text(), {note_id: "1447"});
+  members.assert.responseJsonEquals(await response.text(), {note_id: "1557"});
 
   server.deno_server.close();
 });
 
 members.test("Server.handleHttpRequest(): getHeaderParam()", async () => {
   let server = new members.MockServer({
-    address: "localhost:1447",
+    address: "localhost:1557",
     resources: [GetHeaderParam]
   });
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:1447", {
+  let response = await members.fetch.get("http://localhost:1557", {
     headers: {
       id: 12345
     }
@@ -81,21 +82,81 @@ members.test("Server.handleHttpRequest(): getHeaderParam()", async () => {
 
 members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     resources: [GetQueryParam]
   });
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000?id=123459");
+  let response = await members.fetch.get("http://localhost:1557?id=123459");
 
   members.assert.responseJsonEquals(await response.text(), {query_param: "123459"});
 
   server.deno_server.close();
 });
 
+members.test("Server.handleHttpRequest(): POST multipart/form-data", async () => {
+  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("hello.txt")));
+  let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
+  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
+
+  let expected = {
+    foo: {
+      "headers": {
+        "content-disposition": "form-data",
+        "name": "foo",
+        "filename": null,
+        "content-type": "application/octet-stream",
+      },
+      "contents": `foo
+`
+    },
+    bar: {
+      "headers": {
+        "content-type": "application/octet-stream",
+        "content-disposition": "form-data",
+        "name": "bar",
+        "filename": null,
+      },
+      "contents": `bar
+`
+    },
+    file: {
+      "headers": {
+        "content-disposition": "form-data",
+        "name": "file",
+        "filename": "tsconfig.json",
+        "content-type": "application/octet-stream",
+      },
+      "contents": `{
+  "compilerOptions": {
+    "target": "es2018",
+    "baseUrl": ".",
+    "paths": {
+      "deno": ["./deno.d.ts"],
+      "https://*": ["../../.deno/deps/https/*"],
+      "http://*": ["../../.deno/deps/http/*"]
+    }
+  }
+}
+`
+    }
+  };
+
+  members.assert.equals(parsed, expected);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+class MultipartFormData extends members.Drash.Http.Resource {
+  static paths = ["/"];
+  public POST() {
+    this.response.body = {body: this.request.getBodyMultipartForm("body_param")};
+    return this.response;
+  }
+}
 
 class HomeResource extends members.Drash.Http.Resource {
   static paths = ["/"];

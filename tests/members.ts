@@ -73,6 +73,7 @@ export default {
   ServerRequest,
   assert: {
     equal: assertEquals,
+    equals: assertEquals,
     responseJsonEquals: responseJsonEquals
   },
   decoder,
