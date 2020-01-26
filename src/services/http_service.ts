@@ -3,6 +3,19 @@ import { contentType } from "../../deps.ts";
 import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
 const decoder = new TextDecoder();
 
+interface FormFileSchema {
+  contents: any;
+  headers: FormFileHeadersSchema;
+  size?: number;
+}
+
+interface FormFileHeadersSchema {
+  content_disposition?: string;
+  content_type?: string;
+  filename?: string;
+  name: string;
+}
+
 /**
  * @memberof Drash.Services
  * @class HttpService
@@ -78,7 +91,7 @@ export default class HttpService {
       .replace(/\"/g, "")
       .substr(1); // remove beginning ampersand
     // console.log(headers);
-    let headersObj = this.parseQueryParamsString(headers);
+    let headersObj = this.parseQueryParamsString(headers, "underscore", "lowercase");
     if (!headersObj.filename) {
       headersObj.filename = null;
     }
@@ -180,6 +193,9 @@ export default class HttpService {
    *     Parse the body of the request so that it can be used as an associative
    *     array.
    *
+   *     If the request body's content type is `multipart/form-data`, then the
+   *     files specified will use the `FormFileSchema` interface.
+   *
    *     If the request body's content type is `application/json`, then
    *     `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
    *
@@ -187,9 +203,9 @@ export default class HttpService {
    *     `application/x-www-form-urlencoded`, then
    *     `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
    *
-   *     If the body can't be parsed, then this method will set
-   *     `this.body_parsed` to `false` to denote that the request body was not
-   *     parsed.
+   *     If the body can't be parsed, then this method will return false.
+   *
+   *     If a body isn't specified, then this method will return undefined.
    *
    * @return Promise<any>
    */
@@ -206,13 +222,6 @@ export default class HttpService {
       }
     }
 
-    // Decide how to parse the string below. All HTTP requests will default
-    // to application/x-www-form-urlencoded IF the Content-Type header is
-    // not set in the request.
-    //
-    // ... there's going to be potential fuck ups here btw ...
-
-    // Is this an application/json body?
     if (request.headers.get("Content-Type").includes("application/json")) {
       try {
         return this.parseRequestBodyJson(request);
@@ -221,9 +230,6 @@ export default class HttpService {
       }
     }
 
-    // All HTTP requests default to application/x-www-form-urlencoded, so
-    // try to parse the body as a URL query params string if the above logic
-    // didn't work.
     try {
       return this.parseRequestBodyDefault(request);
     } catch (error) {
@@ -457,7 +463,7 @@ export default class HttpService {
    * @param string queryParamsString
    *     The query params string (e.g., hello=world&ok=then&git=hub)
    */
-  public parseQueryParamsString(queryParamsString: string): any {
+  public parseQueryParamsString(queryParamsString: string, keyFormat: string = "normal", keyCase: string = "normal"): any {
     let queryParams = {};
 
     if (!queryParamsString) {
@@ -472,7 +478,26 @@ export default class HttpService {
 
     queryParamsExploded.forEach(kvpString => {
       let kvpStringSplit = kvpString.split("=");
-      queryParams[kvpStringSplit[0]] = kvpStringSplit[1];
+      let key: string;
+      if (keyFormat == "normal") {
+        key = kvpStringSplit[0];
+        if (keyCase == "normal") {
+          queryParams[key] = kvpStringSplit[1];
+        }
+        if (keyCase == "lowercase") {
+          queryParams[key.toLowerCase()] = kvpStringSplit[1];
+        }
+      }
+      if (keyFormat == "underscore") {
+        key = kvpStringSplit[0]
+          .replace(/-/g, "_");
+        if (keyCase == "normal") {
+          queryParams[key] = kvpStringSplit[1];
+        }
+        if (keyCase == "lowercase") {
+          queryParams[key.toLowerCase()] = kvpStringSplit[1];
+        }
+      }
     });
 
     return queryParams;

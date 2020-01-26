@@ -103,17 +103,17 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data", async () =>
   let expected = {
     foo: {
       "headers": {
-        "content-disposition": "form-data",
+        "content_disposition": "form-data",
         "name": "foo",
         "filename": null,
-        "content-type": "application/octet-stream",
+        "content_type": "application/octet-stream",
       },
       "contents": "foo\n"
     },
     bar: {
       "headers": {
-        "content-type": "application/octet-stream",
-        "content-disposition": "form-data",
+        "content_type": "application/octet-stream",
+        "content_disposition": "form-data",
         "name": "bar",
         "filename": null,
       },
@@ -121,10 +121,10 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data", async () =>
     },
     file: {
       "headers": {
-        "content-disposition": "form-data",
+        "content_disposition": "form-data",
         "name": "file",
         "filename": "tsconfig.json",
-        "content-type": "application/octet-stream",
+        "content_type": "application/octet-stream",
       },
       "contents": `{
   "compilerOptions": {
@@ -152,10 +152,10 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data - one part", 
   let expected = {
     file: {
       "headers": {
-        "Content-Disposition": "form-data",
+        "content_disposition": "form-data",
         "name": "file",
         "filename": "hello.txt",
-        "Content-Type": "text/plain",
+        "content_type": "text/plain",
       },
       "contents": "test\n"
         + "test\n"
