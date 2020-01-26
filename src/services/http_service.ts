@@ -97,11 +97,32 @@ export default class HttpService {
     };
   }
 
-  public async parseMultipartFormData(request): Promise<any> {
+  public async parseRequestBodyDefault(request: any): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(request.body));
+      if (body.indexOf("?") !== -1) {
+        body = body.split("?")[1];
+      }
+      return this.parseQueryParamsString(body);
+    } catch (error) {
+      throw new Error("Could not parse request body.\n" + error);
+    }
+  }
+
+  public async parseRequestBodyMultipartFormData(request: any): Promise<any> {
     let body = new TextDecoder().decode(await Deno.readAll(request.body));
     let boundary = this.getMultipartFormDataBoundary(body);
     let parts = await this.parseMultipartFormDataParts(body, boundary);
     return parts;
+  }
+
+  public async parseRequestBodyJson(request: any): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(request.body));
+      return JSON.parse(body);
+    } catch (error) {
+      throw new Error("Could not parse request body as JSON.\n" + error);
+    }
   }
 
   public async parseMultipartFormDataParts(body: string, boundary: string): Promise<any> {
@@ -172,25 +193,19 @@ export default class HttpService {
    *
    * @return Promise<any>
    */
-  public async getHttpRequestBodyParsed(request): Promise<any> {
-    let body: any = {};
-
+  public async parseRequestBody(request): Promise<any> {
     if (!this.requestHasBody(request)) {
-      return body;
+      return undefined;
     }
 
     if (request.headers.get("Content-Type").includes("multipart/form-data")) {
-      request.body_parsed = await this.parseMultipartFormData(request);
-      return request.body_parsed;
+      try {
+        return await this.parseRequestBodyMultipartFormData(request);
+      } catch (error) {
+        return false;
+      }
     }
 
-    try {
-      body = decoder.decode(await Deno.readAll(request.body));
-    } catch (error) {
-      return body; // TODO(crookse) Should return an error?
-    }
-
-    let parsed: any;
     // Decide how to parse the string below. All HTTP requests will default
     // to application/x-www-form-urlencoded IF the Content-Type header is
     // not set in the request.
@@ -198,43 +213,22 @@ export default class HttpService {
     // ... there's going to be potential fuck ups here btw ...
 
     // Is this an application/json body?
-    if (request.headers.get("Content-Type") == "application/json") {
+    if (request.headers.get("Content-Type").includes("application/json")) {
       try {
-        parsed = JSON.parse(body);
-        request.body_parsed = parsed;
-        return request.body_parsed;
+        return this.parseRequestBodyJson(request);
       } catch (error) {
-        parsed = false;
-      }
-    }
-
-    // Does this look like an application/json body?
-    if (!parsed) {
-      try {
-        parsed = JSON.parse(body);
-        request.body_parsed = parsed;
-        return request.body_parsed;
-      } catch (error) {
+        return false;
       }
     }
 
     // All HTTP requests default to application/x-www-form-urlencoded, so
     // try to parse the body as a URL query params string if the above logic
     // didn't work.
-    if (!parsed) {
-      try {
-        if (body.indexOf("?") !== -1) {
-          body = body.split("?")[1];
-        }
-        parsed = this.parseQueryParamsString(body);
-        request.body_parsed = parsed;
-        return request.body_parsed;
-      } catch (error) {
-      }
+    try {
+      return this.parseRequestBodyDefault(request);
+    } catch (error) {
+      return false;
     }
-
-    request.body_parsed = undefined;
-    return request.body_parsed; // return false if we can't parse the body
   }
 
   /**
@@ -269,7 +263,6 @@ export default class HttpService {
     request.getBodyParam = function(httpVar: string): any {
       return request.body_parsed[httpVar];
     };
-
     request.getBodyMultipartFormData = function(inputName): any {
       return request.body_parsed[inputName];
     };
@@ -282,8 +275,9 @@ export default class HttpService {
     request.getQueryParam = function(httpVar: string): any {
       return request.url_query_params[httpVar];
     };
-    request.parseBody = () => {
-      return this.getHttpRequestBodyParsed(request);
+    request.parseBody = async () => {
+      request.body_parsed = await this.parseRequestBody(request);
+      return request.body_parsed;
     }
 
     request.response_content_type = this.getResponseContentType(request);
