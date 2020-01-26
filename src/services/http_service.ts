@@ -2,6 +2,7 @@ import Drash from "../../mod.ts";
 import { contentType } from "../../deps.ts";
 import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
 const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 
 interface FormFileSchema {
   content_disposition?: string;
@@ -27,7 +28,7 @@ export default class HttpService {
     const dBoundary = decoder.decode(boundary).trim();
     const dBoundaryEnd = "--";
 
-    // console.log(headers.headers_as_string);
+    // console.log(headers.as_string);
 
     let contents = "";
 
@@ -47,7 +48,7 @@ export default class HttpService {
       }
       // console.log("dLine: " + dLine);
       // Is this a header?
-      if (headers.headers_as_array.indexOf(dLine) != -1) {
+      if (headers.as_array.indexOf(dLine) != -1) {
         // console.log("is header");
         continue;
       }
@@ -87,9 +88,9 @@ export default class HttpService {
       .replace(/\"/g, "")
       .substr(1); // remove beginning ampersand
     // console.log(headers);
-    let headersObj = this.parseQueryParamsString(headers, "underscore", "lowercase");
-    if (!headersObj.filename) {
-      headersObj.filename = null;
+    let headersAsObj = this.parseQueryParamsString(headers, "underscore", "lowercase");
+    if (!headersAsObj.filename) {
+      headersAsObj.filename = null;
     }
     // console.log("------------------------------- END HEADERS");
 
@@ -100,9 +101,9 @@ export default class HttpService {
     });
 
     return {
-      headers: headersObj,
-      headers_as_string: headersAsString,
-      headers_as_array: headersAsArrayFiltered
+      as_obj: headersAsObj,
+      as_string: headersAsString,
+      as_array: headersAsArrayFiltered
     };
   }
 
@@ -134,38 +135,18 @@ export default class HttpService {
     }
   }
 
-  public async parseMultipartFormDataParts(body: string, boundary: string): Promise<any> {
+  public async parseMultipartFormDataParts(
+    body: string,
+    boundary: string
+  ): Promise< boolean | FormFileSchema > {
     // console.log(body);
-    let parsed: any = {};
-    let matches = body.match(new RegExp(boundary, "g")).length;
     let parts = body.split(boundary);
     parts.shift();
-    // The boundary end should always be `boundary` + --, so if -- wasn't found
-    // at the end of the array, then we don't know what the hell it is we're
-    // parsing.
-    parts.forEach((part, index) => {
-      parts[index] = parts[index].replace(boundary + "--", "");
-    });
-    // if (parts.length > 1) {
-    //   const end = parts[parts.length - 1].trim();
-    //   console.log("end");
-    //   console.log(end);
-    //   console.log("end end");
-    //   if (
-    //     end != "--"
-    //     && end != boundary.trim()
-    //   ) {
-    //     throw new Error("Error parsing boundary end.");
-    //   }
-    //   parts.pop();
-    // } else {
-    //   parts[0] = parts[0].replace(boundary + "--", "");
-    // }
 
-    let parsedRaw: any = {};
+    let formFiles: any = {};
 
     for (let i in parts) {
-      let part = parts[i];
+      let part = parts[i].replace(boundary + "--", "");
       if (
         part.trim() == "--"
         || part.trim() == ""
@@ -173,24 +154,27 @@ export default class HttpService {
         continue;
       }
       const headers = await this.getMultipartPartHeaders(part);
-      parsedRaw[headers.headers.name] = {
-        contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers) + "\n",
+      const contents = await this.getMultipartPartContents(part + "--", encoder.encode(boundary), headers) + "\n";
+      const headersObj = headers.as_obj;
+      formFiles[headersObj.name] = {
+        name: headersObj.name, // This is not the same as the filename field
+        filename: headersObj.filename
+          ? headersObj.filename
+          : null,
+        content_disposition: headersObj.content_disposition
+          ? headersObj.content_disposition
+          : null,
+        content_type: headersObj.content_type
+          ? headersObj.content_type
+          : null,
+        size: headersObj.size
+          ? headersObj.size
+          : null,
+        contents: contents
       };
-      parsedRaw[headers.headers.name].name = headers.headers.name;
-      parsedRaw[headers.headers.name].content_disposition = headers.headers.content_disposition
-        ? headers.headers.content_disposition
-        : null;
-      parsedRaw[headers.headers.name].content_type = headers.headers.content_type
-        ? headers.headers.content_type
-        : null;
-      parsedRaw[headers.headers.name].filename = headers.headers.filename
-        ? headers.headers.filename
-        : null;
-      parsedRaw[headers.headers.name].size = headers.headers.size
-        ? headers.headers.size
-        : null;
     }
-    return parsedRaw;
+
+    return formFiles;
   }
 
   public getMultipartFormDataBoundary(body: string): string {
