@@ -28,3 +28,7 @@ export {
 export {
   BufReader
 } from "https://deno.land/std@v0.30.0/io/bufio.ts";
+
+export {
+  StringReader
+} from "https://deno.land/std@v0.30.0/io/readers.ts";

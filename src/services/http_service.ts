@@ -14,67 +14,70 @@ export default class HttpService {
   public async parseMultipartFormData(request): Promise<any> {
     let body = new TextDecoder().decode(await Deno.readAll(request.body));
     let boundary = this.getMultipartFormDataBoundary(body);
-    let parts = this.parseMultipartFormDataParts(body, boundary);
+    let parts = await this.parseMultipartFormDataParts(body, boundary);
     return parts;
   }
   public async parseMultipartFormDataParts(body: string, boundary: string): Promise<any> {
     let parsed: any = {};
     let parts = body.split(boundary);
+    parts.shift();
     // The boundary end should always be `boundary` + --, so if it -- wasn't
     // found at the end of the array, then we don't know what the hell it is
     // we're parsing
-    const end = parts[parts.length - 1].trim();
-    if (end != "--") {
-      throw new Error("Error parsing boundary end.");
+    if (parts.length > 1) {
+      const end = parts[parts.length - 1].trim();
+      if (end != "--") {
+        throw new Error("Error parsing boundary end.");
+      }
+      parts.pop();
+    } else {
+      parts[0] = parts[0].replace(boundary + "--", "");
     }
-    // Clean up the array so we can parse what we care about
-    parts.shift();
-    parts.pop();
 
     let parsedRaw: any = {};
 
-    parts.forEach((part) => {
-      const headers: string|string[] = part.match(/.+(\r|\n).+/);
-      headers.pop();
-      let splitHeaders = headers[0].split("\n")
-      let content = part.split(splitHeaders[splitHeaders.length - 1]);
-      content.shift();
+    return new Promise((resolve) => {
+      parts.forEach((part) => {
+        const headers: string|string[] = part.match(/.+(\r|\n).+/);
+        headers.pop();
+        let splitHeaders = headers[0].split("\n")
+        let content = part.split(splitHeaders[splitHeaders.length - 1]);
+        content.shift();
 
-      let parsedHeaders = headers.map((header) => {
-        let parsedHeaders: any = {};
-        let splitHeader = header.split("\n");
-        if (splitHeader.length > 1) {
-          splitHeader.forEach((fullLine, index) => {
-            let splitLine = fullLine.split(";");
-            if (splitLine.length > 1) {
-              splitHeader.shift();
-              splitLine.forEach((linePart) => {
-                splitHeader.push(linePart.trim());
-              });
-            }
+        let parsedHeaders = headers.map((header) => {
+          let parsedHeaders: any = {};
+          let splitHeader = header.split("\n");
+          if (splitHeader.length > 1) {
+            splitHeader.forEach((fullLine, index) => {
+              let splitLine = fullLine.split(";");
+              if (splitLine.length > 1) {
+                splitHeader.shift();
+                splitLine.forEach((linePart) => {
+                  splitHeader.push(linePart.trim());
+                });
+              }
+            });
+          }
+          splitHeader = splitHeader.map((fullLine) => {
+            return fullLine
+              .replace(": ", "=")
+              .replace(/\"/g, "");
           });
-        }
-        splitHeader = splitHeader.map((fullLine) => {
-          return fullLine
-          .replace(": ", "=")
-          .replace(/\"/g, "");
+          let parsableString = splitHeader.join("&");
+          let params = this.parseQueryParamsString(parsableString);
+          if (!params.filename) {
+            params.filename = null;
+          }
+          return params;
+        })[0];
 
-        });
-        let parsableString = splitHeader.join("&");
-        let params = this.parseQueryParamsString(parsableString);
-        if (!params.filename) {
-          params.filename = null;
-        }
-        return params;
-      })[0];
-
-      parsedRaw[parsedHeaders.name] = {
-        headers: parsedHeaders,
-        contents: content[0].trim() + "\n"
-      };
+        parsedRaw[parsedHeaders.name] = {
+          headers: parsedHeaders,
+          contents: content[0].trim() + "\n"
+        };
+      });
+      resolve(parsedRaw);
     });
-
-    return parsedRaw;
   }
   public getMultipartFormDataBoundary(body: string): string {
     return body.split("\n").shift();
@@ -105,7 +108,7 @@ export default class HttpService {
     }
 
     if (request.headers.get("Content-Type").includes("multipart/form-data")) {
-      request.body_parsed = this.parseMultipartFormData(request);
+      request.body_parsed = await this.parseMultipartFormData(request);
       return request.body_parsed;
     }
 

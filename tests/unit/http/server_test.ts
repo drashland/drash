@@ -146,6 +146,38 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data", async () =>
   members.assert.equals(parsed, expected);
 });
 
+members.test("Server.handleHttpRequest(): POST multipart/form-data - one part", async () => {
+  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("hello_2.txt")));
+  let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
+  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
+
+  let expected = {
+    file: {
+      "headers": {
+        "Content-Disposition": "form-data",
+        "name": "file",
+        "filename": "hello.txt",
+        "Content-Type": "text/plain",
+      },
+      "contents": `test
+test
+test
+test
+test
+test
+test
+test
+test
+test
+test
+test
+`
+    }
+  };
+
+  members.assert.equals(parsed, expected);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
