@@ -48,22 +48,32 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 
 ## Features
 
-- Content Negotiation
-- Static Path Routing
-- Regex Path Routing (e.g., `/users/([0-9]+)/profile`)
-- Middleware
-- Request Params Parsing
-    - Path Params (e.g., `/users/:id/profile`, `/users/{id}/profile`)
-        - `request.getPathParam("id") == "value of :id or {id}"`
-    - URL Query Params (e.g., `/products?name=beignet&action=purchase`)
-        - `request.getQueryParam("name") == beignet`
-    - Body Params Using application/x-www-form-urlencoded (e.g., `username=root&password=alpine`)
-        - `request.getBodyParam("username") == "root"`
-    - Body Params Using application/json (e.g., `{"username":"root","password":"alpine"}`)
-        - `request.getBodyParam("password") == "alpine"`
-    - Header Params (e.g., `{"Some-Header":"Some Value"}`)
-        - `request.getHeaderParam("Some-Header") == "Some Value"`
-        - ... or the default way (`request.headers.get("Some-Header") == "Some Value"`)
+- [Content Negotiation](http://drash.land/#/advanced-tutorials/content-negotiation/user-profiles)
+- [Static Path Routing](http://drash.land/#/tutorials/servers/serving-static-paths)
+- [Regex Path Routing](http://drash.land/#/tutorials/resources/creating-a-resource#regular-expression-uris)
+- [Middleware](http://drash.land/#/tutorials/middleware/introduction)
+- [Request Params Parsing](http://drash.land/#/tutorials/requests/handling-request-params)
+- Request `multipart/form-data` Body Parsing
+
+    Example file (name: apollo.txt):
+
+    ```
+    Apollo wants shrimp.
+    ```
+
+    `this.request.getBodyMultipartFormData("apollo")`:
+
+    ```
+    {
+      "contents":"Apollo wants shrimp.\n",
+      "name":"apollo",
+      "content_disposition":"form-data",
+      "content_type":"text/plain",
+      "filename":"apollo.txt",
+      "size":null
+    }
+    ```
+    
 
 ## Contributing
 
