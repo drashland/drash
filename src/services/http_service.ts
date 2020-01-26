@@ -270,8 +270,8 @@ export default class HttpService {
       return request.body_parsed[httpVar];
     };
 
-    request.getBodyMultipartForm= function(): any {
-      return request.body_parsed;
+    request.getBodyMultipartFormData = function(inputName): any {
+      return request.body_parsed[inputName];
     };
     request.getHeaderParam = function(httpVar: string): any {
       return request.headers.get(httpVar);
