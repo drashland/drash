@@ -11,80 +11,88 @@ const decoder = new TextDecoder();
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
-  public async getMultipartPartContents(part: string, boundary: Uint8Array, headersAsString: string): Promise<any> {
+  public async getMultipartPartContents(part: string, boundary: Uint8Array, headers: any): Promise<any> {
     const sr = new StringReader(part);
     const br = new BufReader(sr);
     const decoder = new TextDecoder();
-    let dBoundary = decoder.decode(boundary).trim();
-    let dBoundaryEnd = "--";
-    const headers = headersAsString.split("\n");
+    const dBoundary = decoder.decode(boundary).trim();
+    const dBoundaryEnd = "--";
+
+    // console.log(headers.headers_as_string);
 
     let contents = "";
-    let parseMore = true;
-    let bf = 0;
+
     for (;;) {
       let line: any = await br.readLine();
       line = line.line;
       let dLine = decoder.decode(line);
+      // console.log("dLine: " + dLine);
       // Is this a header?
-      if (headers.indexOf(dLine.trim()) != -1) {
+      if (headers.headers_as_array.indexOf(dLine) != -1) {
+        // console.log("is header");
         continue;
       }
       // Is this a boundary end?
-      let sliced = dLine.slice(0, -2).trim();
-      if (sliced == dBoundary) {
+      if (dLine.slice(0, -2).trim() == dBoundary) {
+        // console.log("sliced");
         break;
       }
       if (dLine == dBoundaryEnd) {
+        // console.log("boundary end");
         break;
       }
+      // console.log("contents is now");
       contents += "\n" + dLine;
+      // console.log(contents);
     }
-    return contents.trimLeft();
+    return contents.trim();
   }
 
   public async getMultipartPartHeaders(part: string): Promise<any> {
-    const headers = part.match(/.+(\r|\n).+/);
-    headers.pop();
+    part = part.trim();
+    const sr = new StringReader(part);
+    const br = new BufReader(sr);
 
-    let splitHeaders = headers[0].split("\n")
-    let headersAsString = headers[0];
+    let contents = "";
+    let headersAsString = "";
 
-    return new Promise(async (resolve) => {
-      let parsedHeaders = headers.map((header) => {
-        let splitHeader = header.split("\n");
-        if (splitHeader.length > 1) {
-          splitHeader.forEach((fullLine, index) => {
-            let splitLine = fullLine.split(";");
-            if (splitLine.length > 1) {
-              splitHeader.shift();
-              splitLine.forEach((linePart) => {
-                splitHeader.push(linePart.trim());
-              });
-            }
-          });
-        }
-        splitHeader = splitHeader.map((fullLine) => {
-          return fullLine
-            .replace(": ", "=")
-            .replace(/\"/g, "");
-        });
-        let parsableString = splitHeader.join("&");
-        // TODO(crookse) parseKeyValuePars(inputString, delim)
-        let params = this.parseQueryParamsString(parsableString);
-        // All of the headers should have a filename param even if one wasn't
-        // specified. This helps keep the headers object uniform for every part.
-        if (!params.filename) {
-          params.filename = null;
-        }
-        return params;
-      })[0];
-      resolve({
-        headers: parsedHeaders,
-        headers_as_string: headersAsString
-      });
+    for (;;) {
+      let line: any = await br.readLine();
+      line = line.line;
+      let dLine = decoder.decode(line);
+      if (dLine.trim() == "") {
+        break;
+      }
+      // console.log(dLine);
+      contents += ("; " + dLine);
+      headersAsString += (dLine + "\n");
+    }
+
+    contents = contents.trim();
+
+    // console.log("------------------------------- HEADERS");
+    let headers = contents
+      .replace(/: /g, "=")
+      .replace(/; /g, "&")
+      .replace(/\"/g, "")
+      .substr(1); // remove beginning ampersand
+    // console.log(headers);
+    let headersObj = this.parseQueryParamsString(headers);
+    if (!headersObj.filename) {
+      headersObj.filename = null;
+    }
+    // console.log("------------------------------- END HEADERS");
+
+    let headersAsArray = headersAsString.split("\n");
+    let headersAsArrayFiltered = headersAsArray.filter((header) => {
+      return header.trim() != "";
     });
 
+    return {
+      headers: headersObj,
+      headers_as_string: headersAsString,
+      headers_as_array: headersAsArrayFiltered
+    };
   }
 
   public async parseMultipartFormData(request): Promise<any> {
@@ -121,7 +129,7 @@ export default class HttpService {
       const headers = await this.getMultipartPartHeaders(part);
       parsedRaw[headers.headers.name] = {
         headers: headers.headers,
-        contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers.headers_as_string),
+        contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers) + "\n",
       };
     }
     return parsedRaw;
