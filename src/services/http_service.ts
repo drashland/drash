@@ -4,16 +4,12 @@ import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 interface FormFileSchema {
-  contents: any;
-  headers: FormFileHeadersSchema;
-  size?: number;
-}
-
-interface FormFileHeadersSchema {
   content_disposition?: string;
   content_type?: string;
+  contents: any;
   filename?: string;
   name: string;
+  size?: number;
 }
 
 /**
@@ -178,9 +174,21 @@ export default class HttpService {
       }
       const headers = await this.getMultipartPartHeaders(part);
       parsedRaw[headers.headers.name] = {
-        headers: headers.headers,
         contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers) + "\n",
       };
+      parsedRaw[headers.headers.name].name = headers.headers.name;
+      parsedRaw[headers.headers.name].content_disposition = headers.headers.content_disposition
+        ? headers.headers.content_disposition
+        : null;
+      parsedRaw[headers.headers.name].content_type = headers.headers.content_type
+        ? headers.headers.content_type
+        : null;
+      parsedRaw[headers.headers.name].filename = headers.headers.filename
+        ? headers.headers.filename
+        : null;
+      parsedRaw[headers.headers.name].size = headers.headers.size
+        ? headers.headers.size
+        : null;
     }
     return parsedRaw;
   }
