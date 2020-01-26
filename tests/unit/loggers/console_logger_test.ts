@@ -1,10 +1,14 @@
 import members from "../../members.ts";
 
+members.test("-", () => {
+  console.log("console_logger.ts");
+});
+
 const ANIMALS = {
   "#1235": "tiger"
 };
 
-members.test("Loggers.ConsoleLogger", () => {
+members.test("ConsoleLogger", () => {
   let expected = "some_date | hello | tiger | This is cool!";
   let logger = new members.Drash.Loggers.ConsoleLogger({
     test: true,

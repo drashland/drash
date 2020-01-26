@@ -1,6 +1,10 @@
 import members from "../../members.ts";
 
-members.test("Server.handleHttpRequest(): GET", async () => {
+members.test("-", () => {
+  console.log("server.ts");
+});
+
+members.test("handleHttpRequest(): GET", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [HomeResource]
@@ -15,7 +19,7 @@ members.test("Server.handleHttpRequest(): GET", async () => {
   server.deno_server.close();
 });
 
-members.test("Server.handleHttpRequest(): POST", async () => {
+members.test("handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [HomeResource]
@@ -37,7 +41,7 @@ members.test("Server.handleHttpRequest(): POST", async () => {
   server.deno_server.close();
 });
 
-members.test("Server.handleHttpRequest(): getPathParam() for :id and {id}", async () => {
+members.test("handleHttpRequest(): getPathParam() for :id and {id}", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [
@@ -61,7 +65,7 @@ members.test("Server.handleHttpRequest(): getPathParam() for :id and {id}", asyn
   server.deno_server.close();
 });
 
-members.test("Server.handleHttpRequest(): getHeaderParam()", async () => {
+members.test("handleHttpRequest(): getHeaderParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [GetHeaderParam]
@@ -80,7 +84,7 @@ members.test("Server.handleHttpRequest(): getHeaderParam()", async () => {
   server.deno_server.close();
 });
 
-members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
+members.test("handleHttpRequest(): getQueryParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [GetQueryParam]
@@ -93,128 +97,6 @@ members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
   members.assert.responseJsonEquals(await response.text(), {query_param: "123459"});
 
   server.deno_server.close();
-});
-
-members.test("Server.handleHttpRequest(): POST multipart/form-data - multiple parts (windows)", async () => {
-  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_3_mchar.txt")));
-  let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
-
-  let expected = {
-    foo: {
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "foo",
-      "filename": null,
-      "content_type": "application/octet-stream",
-      "contents": "foo\n"
-    },
-    bar: {
-      "content_type": "application/octet-stream",
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "bar",
-      "filename": null,
-      "contents": "bar\n"
-    },
-    file: {
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "file",
-      "filename": "tsconfig.json",
-      "content_type": "application/octet-stream",
-      "contents": `{
-  "compilerOptions": {
-    "target": "es2018",
-    "baseUrl": ".",
-    "paths": {
-      "deno": ["./deno.d.ts"],
-      "https://*": ["../../.deno/deps/https/*"],
-      "http://*": ["../../.deno/deps/http/*"]
-    }
-  }
-}
-`
-    }
-  };
-
-  members.assert.equals(parsed, expected);
-});
-
-members.test("Server.handleHttpRequest(): POST multipart/form-data - multiple parts (mac)", async () => {
-  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_1.txt")));
-  let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
-
-  let expected = {
-    foo: {
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "foo",
-      "filename": null,
-      "content_type": "application/octet-stream",
-      "contents": "foo\n"
-    },
-    bar: {
-      "content_type": "application/octet-stream",
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "bar",
-      "filename": null,
-      "contents": "bar\n"
-    },
-    file: {
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "file",
-      "filename": "tsconfig.json",
-      "content_type": "application/octet-stream",
-      "contents": `{
-  "compilerOptions": {
-    "target": "es2018",
-    "baseUrl": ".",
-    "paths": {
-      "deno": ["./deno.d.ts"],
-      "https://*": ["../../.deno/deps/https/*"],
-      "http://*": ["../../.deno/deps/http/*"]
-    }
-  }
-}
-`
-    }
-  };
-
-  members.assert.equals(parsed, expected);
-});
-
-members.test("Server.handleHttpRequest(): POST multipart/form-data - one part", async () => {
-  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_2.txt")));
-  let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
-
-  let expected = {
-    file: {
-      "content_disposition": "form-data",
-      "size": null,
-      "name": "file",
-      "filename": "hello.txt",
-      "content_type": "text/plain",
-      "contents": "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-    }
-  };
-
-  members.assert.equals(parsed, expected);
 });
 
 ////////////////////////////////////////////////////////////////////////////////
