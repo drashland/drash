@@ -15,11 +15,7 @@ export default class HttpService {
     const sr = new StringReader(part);
     const br = new BufReader(sr);
     const decoder = new TextDecoder();
-    let dBoundary = decoder.decode(boundary);
-    let newString = "";
-    for (let i = 0; i < dBoundary.length; i++) {
-      newString += dBoundary[i];
-    }
+    let dBoundary = decoder.decode(boundary).trim();
     let dBoundaryEnd = "--";
     const headers = headersAsString.split("\n");
 
@@ -35,10 +31,11 @@ export default class HttpService {
         continue;
       }
       // Is this a boundary end?
-      if (
-        dLine == dBoundaryEnd
-        || dLine.slice(0, -2) == dBoundary
-      ) {
+      let sliced = dLine.slice(0, -2).trim();
+      if (sliced == dBoundary) {
+        break;
+      }
+      if (dLine == dBoundaryEnd) {
         break;
       }
       contents += "\n" + dLine;
