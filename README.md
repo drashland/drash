@@ -63,13 +63,13 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 
     `this.request.getBodyMultipartFormData("apollo")`:
 
-    ```
+    ```typescript
     {
+      "name":"apollo", // filename without the extension
+      "filename":"apollo.txt",
       "contents":"Apollo wants shrimp.\n",
-      "name":"apollo",
       "content_disposition":"form-data",
       "content_type":"text/plain",
-      "filename":"apollo.txt",
       "size":null
     }
     ```
