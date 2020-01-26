@@ -108,8 +108,7 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data", async () =>
         "filename": null,
         "content-type": "application/octet-stream",
       },
-      "contents": `foo
-`
+      "contents": "foo\n"
     },
     bar: {
       "headers": {
@@ -118,8 +117,7 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data", async () =>
         "name": "bar",
         "filename": null,
       },
-      "contents": `bar
-`
+      "contents": "bar\n"
     },
     file: {
       "headers": {
@@ -159,19 +157,18 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data - one part", 
         "filename": "hello.txt",
         "Content-Type": "text/plain",
       },
-      "contents": `test
-test
-test
-test
-test
-test
-test
-test
-test
-test
-test
-test
-`
+      "contents": "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
+        + "test\n"
     }
   };
 

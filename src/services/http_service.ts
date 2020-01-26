@@ -1,6 +1,6 @@
 import Drash from "../../mod.ts";
 import { contentType } from "../../deps.ts";
-import { BufReader } from "../../deps.ts";
+import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -11,19 +11,102 @@ const decoder = new TextDecoder();
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
+  public async getMultipartPartContents(part: string, boundary: Uint8Array, headersAsString: string): Promise<any> {
+    const sr = new StringReader(part);
+    const br = new BufReader(sr);
+    const decoder = new TextDecoder();
+    let dBoundary = decoder.decode(boundary);
+    let newString = "";
+    for (let i = 0; i < dBoundary.length; i++) {
+      newString += dBoundary[i];
+    }
+    let dBoundaryEnd = "--";
+    const headers = headersAsString.split("\n");
+
+    let contents = "";
+    let parseMore = true;
+    let bf = 0;
+    for (;;) {
+      let line: any = await br.readLine();
+      line = line.line;
+      let dLine = decoder.decode(line);
+      // Is this a header?
+      if (headers.indexOf(dLine.trim()) != -1) {
+        continue;
+      }
+      // Is this a boundary end?
+      if (
+        dLine == dBoundaryEnd
+        || dLine.slice(0, -2) == dBoundary
+      ) {
+        break;
+      }
+      contents += "\n" + dLine;
+    }
+    return contents.trimLeft();
+  }
+
+  public async getMultipartPartHeaders(part: string): Promise<any> {
+    const headers = part.match(/.+(\r|\n).+/);
+    headers.pop();
+
+    let splitHeaders = headers[0].split("\n")
+    let headersAsString = headers[0];
+
+    return new Promise(async (resolve) => {
+      let parsedHeaders = headers.map((header) => {
+        let splitHeader = header.split("\n");
+        if (splitHeader.length > 1) {
+          splitHeader.forEach((fullLine, index) => {
+            let splitLine = fullLine.split(";");
+            if (splitLine.length > 1) {
+              splitHeader.shift();
+              splitLine.forEach((linePart) => {
+                splitHeader.push(linePart.trim());
+              });
+            }
+          });
+        }
+        splitHeader = splitHeader.map((fullLine) => {
+          return fullLine
+            .replace(": ", "=")
+            .replace(/\"/g, "");
+        });
+        let parsableString = splitHeader.join("&");
+        // TODO(crookse) parseKeyValuePars(inputString, delim)
+        let params = this.parseQueryParamsString(parsableString);
+        // All of the headers should have a filename param even if one wasn't
+        // specified. This helps keep the headers object uniform for every part.
+        if (!params.filename) {
+          params.filename = null;
+        }
+        return params;
+      })[0];
+      resolve({
+        headers: parsedHeaders,
+        headers_as_string: headersAsString
+      });
+    });
+
+  }
+
   public async parseMultipartFormData(request): Promise<any> {
     let body = new TextDecoder().decode(await Deno.readAll(request.body));
     let boundary = this.getMultipartFormDataBoundary(body);
     let parts = await this.parseMultipartFormDataParts(body, boundary);
     return parts;
   }
+
   public async parseMultipartFormDataParts(body: string, boundary: string): Promise<any> {
     let parsed: any = {};
+    let matches = body.match(new RegExp(boundary, "g")).length;
+    // let matchedB = body.match(new RegExp(boundary + "--", "g")).length;
+    // console.log(matchedB);
     let parts = body.split(boundary);
     parts.shift();
-    // The boundary end should always be `boundary` + --, so if it -- wasn't
-    // found at the end of the array, then we don't know what the hell it is
-    // we're parsing
+    // The boundary end should always be `boundary` + --, so if -- wasn't found
+    // at the end of the array, then we don't know what the hell it is we're
+    // parsing.
     if (parts.length > 1) {
       const end = parts[parts.length - 1].trim();
       if (end != "--") {
@@ -36,49 +119,17 @@ export default class HttpService {
 
     let parsedRaw: any = {};
 
-    return new Promise((resolve) => {
-      parts.forEach((part) => {
-        const headers: string|string[] = part.match(/.+(\r|\n).+/);
-        headers.pop();
-        let splitHeaders = headers[0].split("\n")
-        let content = part.split(splitHeaders[splitHeaders.length - 1]);
-        content.shift();
-
-        let parsedHeaders = headers.map((header) => {
-          let parsedHeaders: any = {};
-          let splitHeader = header.split("\n");
-          if (splitHeader.length > 1) {
-            splitHeader.forEach((fullLine, index) => {
-              let splitLine = fullLine.split(";");
-              if (splitLine.length > 1) {
-                splitHeader.shift();
-                splitLine.forEach((linePart) => {
-                  splitHeader.push(linePart.trim());
-                });
-              }
-            });
-          }
-          splitHeader = splitHeader.map((fullLine) => {
-            return fullLine
-              .replace(": ", "=")
-              .replace(/\"/g, "");
-          });
-          let parsableString = splitHeader.join("&");
-          let params = this.parseQueryParamsString(parsableString);
-          if (!params.filename) {
-            params.filename = null;
-          }
-          return params;
-        })[0];
-
-        parsedRaw[parsedHeaders.name] = {
-          headers: parsedHeaders,
-          contents: content[0].trim() + "\n"
-        };
-      });
-      resolve(parsedRaw);
-    });
+    for (let i in parts) {
+      let part = parts[i];
+      const headers = await this.getMultipartPartHeaders(part);
+      parsedRaw[headers.headers.name] = {
+        headers: headers.headers,
+        contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers.headers_as_string),
+      };
+    }
+    return parsedRaw;
   }
+
   public getMultipartFormDataBoundary(body: string): string {
     return body.split("\n").shift();
   }
