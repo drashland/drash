@@ -96,7 +96,7 @@ members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
 });
 
 members.test("Server.handleHttpRequest(): POST multipart/form-data", async () => {
-  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("hello.txt")));
+  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_1.txt")));
   let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
   let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
 
@@ -142,7 +142,7 @@ members.test("Server.handleHttpRequest(): POST multipart/form-data", async () =>
 });
 
 members.test("Server.handleHttpRequest(): POST multipart/form-data - one part", async () => {
-  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("hello_2.txt")));
+  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_2.txt")));
   let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
   let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
 
