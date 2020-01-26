@@ -38,19 +38,19 @@ export default class HttpService {
     for (;;) {
       let line: any = await br.readLine();
       line = line.line;
-      let dLine = decoder.decode(line);
-      debug("dLine: " + dLine);
+      let decodedLine = decoder.decode(line);
+      debug("decodedLine: " + decodedLine);
       // Is this a boundary end?
-      if (dLine.trim() == "--") {
+      if (decodedLine.trim() == "--") {
         debug("is boundary end");
         break;
       }
       // Is this a header?
-      if (headers.as_array.indexOf(dLine) != -1) {
+      if (headers.as_array.indexOf(decodedLine) != -1) {
         // debug("is header");
         continue;
       }
-      contents += "\n" + dLine;
+      contents += ("\n" + decodedLine);
       // debug("contents is now");
       // debug(contents);
     }
@@ -75,12 +75,12 @@ export default class HttpService {
     for (;;) {
       let line: any = await br.readLine();
       line = line.line;
-      let dLine = decoder.decode(line);
-      if (dLine.trim() == "") {
+      let decodedLine = decoder.decode(line);
+      if (decodedLine.trim() == "") {
         break;
       }
-      contents += ("; " + dLine);
-      headersAsString += (dLine + "\n");
+      contents += ("; " + decodedLine);
+      headersAsString += (decodedLine + "\n");
     }
 
     contents = contents.trim();
@@ -110,7 +110,10 @@ export default class HttpService {
     };
   }
 
-  public async parseRequestBodyDefault(request: any): Promise<any> {
+  public async parseRequestBodyDefault(
+    request: any,
+    isDefault: boolean = false
+  ): Promise<any> {
     try {
       let body = decoder.decode(await Deno.readAll(request.body));
       if (body.indexOf("?") !== -1) {
@@ -118,20 +121,40 @@ export default class HttpService {
       }
       return this.parseQueryParamsString(body);
     } catch (error) {
-      throw new Error("Could not parse request body.\n" + error);
+      throw new Error("Error reading the request body.\n" + error);
     }
   }
 
-  public async parseRequestBodyMultipartFormData(request: any): Promise<any> {
-    return await this.parseMultipartFormDataParts(await Deno.readAll(request.body));
+  public async parseRequestBodyAsFormUrlEncoded(
+    request: any,
+    isDefault: boolean = false
+  ): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(request.body));
+      if (body.indexOf("?") !== -1) {
+        body = body.split("?")[1];
+      }
+      return this.parseQueryParamsString(body);
+    } catch (error) {
+      throw new Error("Error reading request body as application/x-www-form-urlencoded.\n" + error);
+    }
   }
 
-  public async parseRequestBodyJson(request: any): Promise<any> {
+  public async parseRequestBodyAsMultipartFormData(request: any): Promise<any> {
+    try {
+      let body = await Deno.readAll(request.body)
+      return await this.parseMultipartFormDataParts(body);
+    } catch (error) {
+      throw new Error("Error reading request body as multipart/form-data.\n" + error);
+    }
+  }
+
+  public async parseRequestBodyAsJson(request: any): Promise<any> {
     try {
       let body = decoder.decode(await Deno.readAll(request.body));
       return JSON.parse(body);
     } catch (error) {
-      throw new Error("Could not parse request body as JSON.\n" + error);
+      throw new Error("Error reading request body as application/json.\n" + error);
     }
   }
 
@@ -141,40 +164,40 @@ export default class HttpService {
   ): Promise<any> {
     let br = new BufReader(new Buffer(body));
     let boundary: string = null
-    let parts: string[] = [];
+    let decodedParts: string[] = [];
     let contents: string = "";
 
     for (;;) {
       let line: any = await br.readLine();
       // Trim the right side because line endings can suck between OSs and can
       // cause lines (coming from different OSs) to be parsed differently
-      let dLine = decoder.decode(line.line).trimRight();
+      let decodedLine = decoder.decode(line.line).trimRight();
       if (!boundary) {
-        boundary = dLine;
+        boundary = decodedLine;
         continue;
       }
-      if (dLine == boundary) {
-        parts.push(contents.trimRight());
+      if (decodedLine == boundary) {
+        decodedParts.push(contents.trimRight());
         contents = "";
         continue;
       }
-      if (dLine == (boundary + "--")) {
+      if (decodedLine == (boundary + "--")) {
         // Trim the right side again. `getMultipartPartContents` will add the
         // "\n" character after it is done parsing through the content part of
         // the data
-        parts.push(contents.trimRight());
+        decodedParts.push(contents.trimRight());
         contents = "";
         break;
       }
-      contents += dLine + "\n";
+      contents += (decodedLine + "\n");
     }
 
-    // debug(parts);
+    // debug(decodedParts);
 
     let formFiles: any = {};
 
-    for (let i in parts) {
-      let part = parts[i].trim().replace(boundary + "--", "");
+    for (let i in decodedParts) {
+      let part = decodedParts[i].trim().replace(boundary + "--", "");
       const headers = await this.getMultipartPartHeaders(encoder.encode(part));
       const contents = await this.getMultipartPartContents(part, encoder.encode(boundary), headers);
       const headersObj = headers.as_obj;
@@ -226,26 +249,19 @@ export default class HttpService {
     }
 
     if (request.headers.get("Content-Type").includes("multipart/form-data")) {
-      try {
-        return await this.parseRequestBodyMultipartFormData(request);
-      } catch (error) {
-        return false;
-      }
+      return await this.parseRequestBodyAsMultipartFormData(request);
     }
 
     if (request.headers.get("Content-Type").includes("application/json")) {
-      try {
-        return this.parseRequestBodyJson(request);
-      } catch (error) {
-        return false;
-      }
+      return this.parseRequestBodyAsJson(request);
     }
 
-    try {
-      return this.parseRequestBodyDefault(request);
-    } catch (error) {
-      return false;
+    if (request.headers.get("Content-Type").includes("application/x-www-form-urlencoded")) {
+      return this.parseRequestBodyAsFormUrlEncoded(request);
     }
+
+    // Default to parsing as application/x-www-form-urlencoded
+    return this.parseRequestBodyDefault(request, true);
   }
 
   /**
