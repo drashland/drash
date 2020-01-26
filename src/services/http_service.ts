@@ -28,23 +28,23 @@ export default class HttpService {
       let dLine = decoder.decode(line);
       // Is this a boundary end?
       if (dLine.trim() == dBoundaryEnd) {
-        console.log("boundary end");
+        // console.log("boundary end");
         break;
       }
       // Is this a boundary end?
       if (dLine.slice(0, -2).trim() == dBoundary) {
-        console.log("sliced");
+        // console.log("sliced");
         break;
       }
-      console.log("dLine: " + dLine);
+      // console.log("dLine: " + dLine);
       // Is this a header?
       if (headers.headers_as_array.indexOf(dLine) != -1) {
-        console.log("is header");
+        // console.log("is header");
         continue;
       }
-      console.log("contents is now");
+      // console.log("contents is now");
       contents += "\n" + dLine;
-      console.log(contents);
+      // console.log(contents);
     }
     return contents.trim();
   }
@@ -85,7 +85,7 @@ export default class HttpService {
     // console.log("------------------------------- END HEADERS");
 
     let headersAsArray = headersAsString.split("\n");
-    console.log(headersAsArray);
+    // console.log(headersAsArray);
     let headersAsArrayFiltered = headersAsArray.filter((header) => {
       return header.trim() != "";
     });
@@ -108,16 +108,12 @@ export default class HttpService {
     // console.log(body);
     let parsed: any = {};
     let matches = body.match(new RegExp(boundary, "g")).length;
-    // let matchedB = body.match(new RegExp(boundary + "--", "g")).length;
-    // console.log(matchedB);
     let parts = body.split(boundary);
     parts.shift();
     // The boundary end should always be `boundary` + --, so if -- wasn't found
     // at the end of the array, then we don't know what the hell it is we're
     // parsing.
     parts.forEach((part, index) => {
-      console.log(index);
-      console.log(part);
       parts[index] = parts[index].replace(boundary + "--", "");
     });
     // if (parts.length > 1) {
@@ -140,8 +136,13 @@ export default class HttpService {
 
     for (let i in parts) {
       let part = parts[i];
+      if (
+        part.trim() == "--"
+        || part.trim() == ""
+      ) {
+        continue;
+      }
       const headers = await this.getMultipartPartHeaders(part);
-      console.log(part);
       parsedRaw[headers.headers.name] = {
         headers: headers.headers,
         contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers) + "\n",
