@@ -26,24 +26,25 @@ export default class HttpService {
       let line: any = await br.readLine();
       line = line.line;
       let dLine = decoder.decode(line);
-      // console.log("dLine: " + dLine);
-      // Is this a header?
-      if (headers.headers_as_array.indexOf(dLine) != -1) {
-        // console.log("is header");
-        continue;
+      // Is this a boundary end?
+      if (dLine.trim() == dBoundaryEnd) {
+        console.log("boundary end");
+        break;
       }
       // Is this a boundary end?
       if (dLine.slice(0, -2).trim() == dBoundary) {
-        // console.log("sliced");
+        console.log("sliced");
         break;
       }
-      if (dLine == dBoundaryEnd) {
-        // console.log("boundary end");
-        break;
+      console.log("dLine: " + dLine);
+      // Is this a header?
+      if (headers.headers_as_array.indexOf(dLine) != -1) {
+        console.log("is header");
+        continue;
       }
-      // console.log("contents is now");
+      console.log("contents is now");
       contents += "\n" + dLine;
-      // console.log(contents);
+      console.log(contents);
     }
     return contents.trim();
   }
@@ -84,6 +85,7 @@ export default class HttpService {
     // console.log("------------------------------- END HEADERS");
 
     let headersAsArray = headersAsString.split("\n");
+    console.log(headersAsArray);
     let headersAsArrayFiltered = headersAsArray.filter((header) => {
       return header.trim() != "";
     });
@@ -103,6 +105,7 @@ export default class HttpService {
   }
 
   public async parseMultipartFormDataParts(body: string, boundary: string): Promise<any> {
+    // console.log(body);
     let parsed: any = {};
     let matches = body.match(new RegExp(boundary, "g")).length;
     // let matchedB = body.match(new RegExp(boundary + "--", "g")).length;
@@ -112,21 +115,33 @@ export default class HttpService {
     // The boundary end should always be `boundary` + --, so if -- wasn't found
     // at the end of the array, then we don't know what the hell it is we're
     // parsing.
-    if (parts.length > 1) {
-      const end = parts[parts.length - 1].trim();
-      if (end != "--") {
-        throw new Error("Error parsing boundary end.");
-      }
-      parts.pop();
-    } else {
-      parts[0] = parts[0].replace(boundary + "--", "");
-    }
+    parts.forEach((part, index) => {
+      console.log(index);
+      console.log(part);
+      parts[index] = parts[index].replace(boundary + "--", "");
+    });
+    // if (parts.length > 1) {
+    //   const end = parts[parts.length - 1].trim();
+    //   console.log("end");
+    //   console.log(end);
+    //   console.log("end end");
+    //   if (
+    //     end != "--"
+    //     && end != boundary.trim()
+    //   ) {
+    //     throw new Error("Error parsing boundary end.");
+    //   }
+    //   parts.pop();
+    // } else {
+    //   parts[0] = parts[0].replace(boundary + "--", "");
+    // }
 
     let parsedRaw: any = {};
 
     for (let i in parts) {
       let part = parts[i];
       const headers = await this.getMultipartPartHeaders(part);
+      console.log(part);
       parsedRaw[headers.headers.name] = {
         headers: headers.headers,
         contents: await this.getMultipartPartContents(part + "--", new TextEncoder().encode(boundary), headers) + "\n",
