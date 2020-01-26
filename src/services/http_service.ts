@@ -1,6 +1,7 @@
 import Drash from "../../mod.ts";
 import { contentType } from "../../deps.ts";
 import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
+const { Buffer } = Deno;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const debug = (message) => {
@@ -65,10 +66,8 @@ export default class HttpService {
     return contents;
   }
 
-  public async getMultipartPartHeaders(part: string): Promise<any> {
-    part = part.trim();
-    const sr = new StringReader(part);
-    const br = new BufReader(sr);
+  public async getMultipartPartHeaders(part: Uint8Array): Promise<any> {
+    const br = new BufReader(new Buffer(part));
 
     let contents = "";
     let headersAsString = "";
@@ -124,10 +123,7 @@ export default class HttpService {
   }
 
   public async parseRequestBodyMultipartFormData(request: any): Promise<any> {
-    let body = new TextDecoder().decode(await Deno.readAll(request.body));
-    let boundary = this.getMultipartFormDataBoundary(body);
-    let parts = await this.parseMultipartFormDataParts(body, boundary);
-    return parts;
+    return await this.parseMultipartFormDataParts(await Deno.readAll(request.body));
   }
 
   public async parseRequestBodyJson(request: any): Promise<any> {
@@ -140,22 +136,46 @@ export default class HttpService {
   }
 
   public async parseMultipartFormDataParts(
-    body: string,
-    boundary: string
-  ): Promise<boolean|FormFileSchema> {
-    const boundaryEnd = boundary + "--";
-    let parts = body.split(boundary);
-    parts.shift();
+    body: Uint8Array
+  // ): Promise<boolean|FormFileSchema> {
+  ): Promise<any> {
+    let br = new BufReader(new Buffer(body));
+    let boundary: string = null
+    let parts: string[] = [];
+    let contents: string = "";
 
-    if (parts[parts.length -1].trim() == "--") {
-      parts.pop();
+    for (;;) {
+      let line: any = await br.readLine();
+      // Trim the right side because line endings can suck between OSs and can
+      // cause lines (coming from different OSs) to be parsed differently
+      let dLine = decoder.decode(line.line).trimRight();
+      if (!boundary) {
+        boundary = dLine;
+        continue;
+      }
+      if (dLine == boundary) {
+        parts.push(contents.trimRight());
+        contents = "";
+        continue;
+      }
+      if (dLine == (boundary + "--")) {
+        // Trim the right side again. `getMultipartPartContents` will add the
+        // "\n" character after it is done parsing through the content part of
+        // the data
+        parts.push(contents.trimRight());
+        contents = "";
+        break;
+      }
+      contents += dLine + "\n";
     }
+
+    // debug(parts);
 
     let formFiles: any = {};
 
     for (let i in parts) {
-      let part = parts[i].trim().replace(boundaryEnd, "");
-      const headers = await this.getMultipartPartHeaders(part);
+      let part = parts[i].trim().replace(boundary + "--", "");
+      const headers = await this.getMultipartPartHeaders(encoder.encode(part));
       const contents = await this.getMultipartPartContents(part, encoder.encode(boundary), headers);
       const headersObj = headers.as_obj;
       formFiles[headersObj.name] = {
@@ -179,9 +199,6 @@ export default class HttpService {
     return formFiles;
   }
 
-  public getMultipartFormDataBoundary(body: string): string {
-    return body.split("\n").shift();
-  }
   /**
    * @description
    *     Parse the body of the request so that it can be used as an associative
