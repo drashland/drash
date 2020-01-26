@@ -3,6 +3,11 @@ import { contentType } from "../../deps.ts";
 import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
+const debug = (message) => {
+  if (Deno.env().DEBUG_HTTP_SERVICE) {
+    console.log(message);
+  }
+};
 
 interface FormFileSchema {
   content_disposition?: string;
@@ -22,13 +27,10 @@ interface FormFileSchema {
  */
 export default class HttpService {
   public async getMultipartPartContents(part: string, boundary: Uint8Array, headers: any): Promise<any> {
-    const sr = new StringReader(part);
+    const sr = new StringReader(part + "\n\n--");
     const br = new BufReader(sr);
     const decoder = new TextDecoder();
     const dBoundary = decoder.decode(boundary).trim();
-    const dBoundaryEnd = "--";
-
-    // console.log(headers.as_string);
 
     let contents = "";
 
@@ -36,27 +38,31 @@ export default class HttpService {
       let line: any = await br.readLine();
       line = line.line;
       let dLine = decoder.decode(line);
+      debug("dLine: " + dLine);
       // Is this a boundary end?
-      if (dLine.trim() == dBoundaryEnd) {
-        // console.log("boundary end");
+      if (dLine.trim() == "--") {
+        debug("is boundary end");
         break;
       }
-      // Is this a boundary end?
-      if (dLine.slice(0, -2).trim() == dBoundary) {
-        // console.log("sliced");
-        break;
-      }
-      // console.log("dLine: " + dLine);
       // Is this a header?
       if (headers.as_array.indexOf(dLine) != -1) {
-        // console.log("is header");
+        // debug("is header");
         continue;
       }
-      // console.log("contents is now");
       contents += "\n" + dLine;
-      // console.log(contents);
+      // debug("contents is now");
+      // debug(contents);
     }
-    return contents.trim();
+
+    contents = contents
+      .trim()
+      .replace(dBoundary + "--", "")
+      .trim()
+      .concat("\n");
+    // debug("full contents");
+    // debug(contents);
+    // debug("end full contents");
+    return contents;
   }
 
   public async getMultipartPartHeaders(part: string): Promise<any> {
@@ -74,28 +80,26 @@ export default class HttpService {
       if (dLine.trim() == "") {
         break;
       }
-      // console.log(dLine);
       contents += ("; " + dLine);
       headersAsString += (dLine + "\n");
     }
 
     contents = contents.trim();
 
-    // console.log("------------------------------- HEADERS");
+    // debug("headers");
     let headers = contents
       .replace(/: /g, "=")
       .replace(/; /g, "&")
       .replace(/\"/g, "")
       .substr(1); // remove beginning ampersand
-    // console.log(headers);
+    // debug(headers);
+    // debug("end headers");
     let headersAsObj = this.parseQueryParamsString(headers, "underscore", "lowercase");
     if (!headersAsObj.filename) {
       headersAsObj.filename = null;
     }
-    // console.log("------------------------------- END HEADERS");
 
     let headersAsArray = headersAsString.split("\n");
-    // console.log(headersAsArray);
     let headersAsArrayFiltered = headersAsArray.filter((header) => {
       return header.trim() != "";
     });
@@ -138,23 +142,21 @@ export default class HttpService {
   public async parseMultipartFormDataParts(
     body: string,
     boundary: string
-  ): Promise< boolean | FormFileSchema > {
-    // console.log(body);
+  ): Promise<boolean|FormFileSchema> {
+    const boundaryEnd = boundary + "--";
     let parts = body.split(boundary);
     parts.shift();
+
+    if (parts[parts.length -1].trim() == "--") {
+      parts.pop();
+    }
 
     let formFiles: any = {};
 
     for (let i in parts) {
-      let part = parts[i].replace(boundary + "--", "");
-      if (
-        part.trim() == "--"
-        || part.trim() == ""
-      ) {
-        continue;
-      }
+      let part = parts[i].trim().replace(boundaryEnd, "");
       const headers = await this.getMultipartPartHeaders(part);
-      const contents = await this.getMultipartPartContents(part + "--", encoder.encode(boundary), headers) + "\n";
+      const contents = await this.getMultipartPartContents(part, encoder.encode(boundary), headers);
       const headersObj = headers.as_obj;
       formFiles[headersObj.name] = {
         name: headersObj.name, // This is not the same as the filename field
