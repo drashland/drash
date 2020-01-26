@@ -95,7 +95,53 @@ members.test("Server.handleHttpRequest(): getQueryParam()", async () => {
   server.deno_server.close();
 });
 
-members.test("Server.handleHttpRequest(): POST multipart/form-data", async () => {
+members.test("Server.handleHttpRequest(): POST multipart/form-data - multiple parts (windows)", async () => {
+  let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_3_mchar.txt")));
+  let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
+  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
+
+  let expected = {
+    foo: {
+      "content_disposition": "form-data",
+      "size": null,
+      "name": "foo",
+      "filename": null,
+      "content_type": "application/octet-stream",
+      "contents": "foo\n"
+    },
+    bar: {
+      "content_type": "application/octet-stream",
+      "content_disposition": "form-data",
+      "size": null,
+      "name": "bar",
+      "filename": null,
+      "contents": "bar\n"
+    },
+    file: {
+      "content_disposition": "form-data",
+      "size": null,
+      "name": "file",
+      "filename": "tsconfig.json",
+      "content_type": "application/octet-stream",
+      "contents": `{
+  "compilerOptions": {
+    "target": "es2018",
+    "baseUrl": ".",
+    "paths": {
+      "deno": ["./deno.d.ts"],
+      "https://*": ["../../.deno/deps/https/*"],
+      "http://*": ["../../.deno/deps/http/*"]
+    }
+  }
+}
+`
+    }
+  };
+
+  members.assert.equals(parsed, expected);
+});
+
+members.test("Server.handleHttpRequest(): POST multipart/form-data - multiple parts (mac)", async () => {
   let body = await new TextDecoder().decode(await Deno.readAll(await Deno.open("./tests/data/multipart_1.txt")));
   let boundary = members.Drash.Services.HttpService.getMultipartFormDataBoundary(body);
   let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body, boundary);
