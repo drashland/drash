@@ -1,7 +1,6 @@
 import Drash from "../../mod.ts";
 import { contentType } from "../../deps.ts";
 import { BufReader } from "../../deps.ts";
-const { Buffer } = Deno;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const debug = (message) => {
@@ -142,7 +141,7 @@ export default class HttpService {
    */
   public async parseRequestBodyAsMultipartFormData(reqBody: Deno.Reader): Promise<any> {
     try {
-      let br = new BufReader(new Buffer(await Deno.readAll(reqBody)));
+      let br = new BufReader(new Deno.Buffer(await Deno.readAll(reqBody)));
       let boundary: string = null
       let decodedParts: string[] = [];
       let contents: string = "";
@@ -390,7 +389,7 @@ export default class HttpService {
     boundary: string,
     headersAsArray: string[]
   ): Promise<string> {
-    const br = new BufReader(new Buffer(part));
+    const br = new BufReader(new Deno.Buffer(part));
 
     let contents: string = "";
 
@@ -436,7 +435,7 @@ export default class HttpService {
    *     Returns the headers in three forms: object, array, and string.
    */
   public async getMultipartPartHeaders(part: Uint8Array): Promise<any> {
-    const br = new BufReader(new Buffer(part));
+    const br = new BufReader(new Deno.Buffer(part));
 
     let contents = "";
     let headersAsString = "";
