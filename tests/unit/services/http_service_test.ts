@@ -86,7 +86,7 @@ members.test("parseMultipartFormDataParts(): multiple parts (macOS)", async () =
   let expected = {
     foo: {
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 4,
       "name": "foo",
       "filename": null,
       "content_type": "application/octet-stream",
@@ -95,14 +95,14 @@ members.test("parseMultipartFormDataParts(): multiple parts (macOS)", async () =
     bar: {
       "content_type": "application/octet-stream",
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 4,
       "name": "bar",
       "filename": null,
       "contents": "bar\n"
     },
     file: {
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 222,
       "name": "file",
       "filename": "tsconfig.json",
       "content_type": "application/octet-stream",
@@ -131,7 +131,7 @@ members.test("parseMultipartFormDataParts(): one part (macOS)", async () => {
   let expected = {
     file: {
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 60,
       "name": "file",
       "filename": "hello.txt",
       "content_type": "text/plain",
@@ -160,7 +160,7 @@ members.test("parseMultipartFormDataParts(): multiple parts (windows with ^M cha
   let expected = {
     foo: {
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 4,
       "name": "foo",
       "filename": null,
       "content_type": "application/octet-stream",
@@ -169,14 +169,14 @@ members.test("parseMultipartFormDataParts(): multiple parts (windows with ^M cha
     bar: {
       "content_type": "application/octet-stream",
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 4,
       "name": "bar",
       "filename": null,
       "contents": "bar\n"
     },
     file: {
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 222,
       "name": "file",
       "filename": "tsconfig.json",
       "content_type": "application/octet-stream",
@@ -205,7 +205,7 @@ members.test("parseMultipartFormDataParts(): one part (windows with ^M char)", a
   let expected = {
     foo: {
       "content_disposition": "form-data",
-      "size": null,
+      "bytes": 4,
       "name": "foo",
       "filename": null,
       "content_type": "application/octet-stream",

@@ -212,9 +212,7 @@ export default class HttpService {
         content_type: headersObj.content_type
           ? headersObj.content_type
           : null,
-        size: headersObj.size
-          ? headersObj.size
-          : null,
+        bytes: encoder.encode(contents).byteLength,
         contents: contents
       };
     }
