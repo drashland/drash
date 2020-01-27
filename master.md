@@ -65,12 +65,12 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 
     ```typescript
     {
-      "name":"apollos_file",
-      "filename":"apollo.txt",
-      "contents":"Apollo wants shrimp.\n",
-      "content_disposition":"form-data",
-      "content_type":"text/plain",
-      "bytes":21
+      name: "apollos_file",
+      filename: "apollo.txt",
+      contents: "Apollo wants shrimp.\n",
+      content_disposition: "form-data",
+      content_type: "text/plain",
+      bytes: 21
     }
     ```
 
