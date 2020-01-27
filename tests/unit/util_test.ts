@@ -1,6 +1,10 @@
 import members from "../members.ts";
 let parser = new members.Drash.Util.ObjectParser();
 
+members.test("-", () => {
+  console.log("util.ts");
+});
+
 members.test("Util.Exports.colorize()", () => {
   let expected = "\x1b[30mMy message\x1b[39m\x1b[49m\x1b[0m";
   let actual = members.Drash.Util.Exports.colorize("My message", {

@@ -1,5 +1,9 @@
 import members from "../../members.ts";
 
+members.test("-", () => {
+  console.log("http_exception.ts");
+});
+
 members.test("Exceptions.HttpException(405)", () => {
   let actual = new members.Drash.Exceptions.HttpException(405);
   members.assert.equal(actual.code, 405);
