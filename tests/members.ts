@@ -46,11 +46,6 @@ function responseJsonEquals(actual: any, expected: any) {
   return assertEquals(JSON.parse(actual), expected);
 }
 
-function runTest(name, testFn) {
-  Object.defineProperty(testFn, "name", { value: name });
-  return test(testFn);
-}
-
 const makeRequest = {
   get(url: string, options: any = {}) {
     options = Object.assign(options, {
@@ -73,6 +68,7 @@ export default {
   ServerRequest,
   assert: {
     equal: assertEquals,
+    equals: assertEquals,
     responseJsonEquals: responseJsonEquals
   },
   decoder,
@@ -80,5 +76,5 @@ export default {
   mockRequest,
   MockServer,
   runTests,
-  test: runTest,
+  test
 };

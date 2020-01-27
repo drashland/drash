@@ -1,5 +1,9 @@
 import members from "../members.ts";
 
+members.test("-", () => {
+  console.log("mod.ts");
+});
+
 members.test("Drash.addMember(): class", () => {
   class SomeCoolService {
     public coolify() {

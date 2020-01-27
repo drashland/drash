@@ -1,10 +1,15 @@
 import members from "../../members.ts";
 
+members.test("-", () => {
+  console.log("middleware.ts");
+});
+
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server/resource: missing CSRF token", async () => {
+members.test("server/resource: missing CSRF token", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -22,7 +27,7 @@ members.test("Middleware server/resource: missing CSRF token", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/users/1");
+  let response = await members.fetch.get("http://localhost:1557/users/1");
 
   members.assert.responseJsonEquals(await response.text(), "No CSRF token, dude.");
 
@@ -32,8 +37,9 @@ members.test("Middleware server/resource: missing CSRF token", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server/resource: wrong CSRF token", async () => {
+members.test("server/resource: wrong CSRF token", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -51,7 +57,7 @@ members.test("Middleware server/resource: wrong CSRF token", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/users/1", {
+  let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
         csrf_token: "hehe"
       }
@@ -65,8 +71,9 @@ members.test("Middleware server/resource: wrong CSRF token", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server/resource: user is not an admin", async () => {
+members.test("server/resource: user is not an admin", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -84,7 +91,7 @@ members.test("Middleware server/resource: user is not an admin", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/users/1", {
+  let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
         csrf_token: "all your base",
         user_id: 123
@@ -99,8 +106,9 @@ members.test("Middleware server/resource: user is not an admin", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server/resource: pass", async () => {
+members.test("server/resource: pass", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -118,7 +126,7 @@ members.test("Middleware server/resource: pass", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/users/1", {
+  let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
         csrf_token: "all your base",
         user_id: 999
@@ -133,8 +141,9 @@ members.test("Middleware server/resource: pass", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server/resource: middleware not found", async () => {
+members.test("server/resource: middleware not found", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       resource_level: [
         UserIsAdmin
@@ -147,7 +156,7 @@ members.test("Middleware server/resource: middleware not found", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/users/1");
+  let response = await members.fetch.get("http://localhost:1557/users/1");
   
   members.assert.responseJsonEquals(await response.text(), "I'm a teapot");
 
@@ -157,8 +166,9 @@ members.test("Middleware server/resource: middleware not found", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server before_response: missing header", async () => {
+members.test("server before_response: missing header", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         after_request: [
@@ -173,7 +183,7 @@ members.test("Middleware server before_response: missing header", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/");
+  let response = await members.fetch.get("http://localhost:1557/");
 
   members.assert.responseJsonEquals(await response.text(), "Missing header, guy.");
 
@@ -183,8 +193,9 @@ members.test("Middleware server before_response: missing header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server before_response: wrong header", async () => {
+members.test("server before_response: wrong header", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         after_request: [
@@ -199,7 +210,7 @@ members.test("Middleware server before_response: wrong header", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/", {
+  let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
         send_response: "yes please"
       }
@@ -213,8 +224,9 @@ members.test("Middleware server before_response: wrong header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server before_response: pass", async () => {
+members.test("server before_response: pass", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         after_request: [
@@ -229,7 +241,7 @@ members.test("Middleware server before_response: pass", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/", {
+  let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
         send_response: "yes do it"
       }
@@ -243,8 +255,9 @@ members.test("Middleware server before_response: pass", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server before_request: missing header", async () => {
+members.test("server before_request: missing header", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -259,7 +272,7 @@ members.test("Middleware server before_request: missing header", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/");
+  let response = await members.fetch.get("http://localhost:1557/");
 
   members.assert.responseJsonEquals(await response.text(), "Missing header, guy.");
 
@@ -269,8 +282,9 @@ members.test("Middleware server before_request: missing header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server before_request: wrong header", async () => {
+members.test("server before_request: wrong header", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -285,7 +299,7 @@ members.test("Middleware server before_request: wrong header", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/", {
+  let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
         before: "yes"
       }
@@ -299,8 +313,9 @@ members.test("Middleware server before_request: wrong header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("Middleware server before_request: pass", async () => {
+members.test("server before_request: pass", async () => {
   let server = new members.MockServer({
+    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [
@@ -315,7 +330,7 @@ members.test("Middleware server before_request: pass", async () => {
 
   server.run();
 
-  let response = await members.fetch.get("http://localhost:8000/", {
+  let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
         before: "yesss"
       }

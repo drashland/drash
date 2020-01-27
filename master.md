@@ -53,6 +53,26 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 - [Regex Path Routing](http://drash.land/#/tutorials/resources/creating-a-resource#regular-expression-uris)
 - [Middleware](http://drash.land/#/tutorials/middleware/introduction)
 - [Request Params Parsing](http://drash.land/#/tutorials/requests/handling-request-params)
+- Request `multipart/form-data` Body Parsing
+
+    Example file (name: apollo.txt):
+
+    ```
+    Apollo wants shrimp.
+    ```
+
+    `this.request.getBodyMultipartFormData("apollo")`:
+
+    ```typescript
+    {
+      name: "apollos_file",
+      filename: "apollo.txt",
+      contents: "Apollo wants shrimp.\n",
+      content_disposition: "form-data",
+      content_type: "text/plain",
+      bytes: 21
+    }
+    ```
 
 ## Contributing
 

@@ -383,6 +383,17 @@ export default class Server {
     }
   }
 
+  /**
+   * @description
+   *     Close the server.
+   */
+  public close() {
+    if (Deno.env().DRASH_PROCESS != "test") {
+      console.log(`\nDeno server at ${this.configs.address} stopped.\n`);
+    }
+    this.deno_server.close();
+  }
+
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
 
   /**

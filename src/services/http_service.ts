@@ -1,7 +1,26 @@
 import Drash from "../../mod.ts";
 import { contentType } from "../../deps.ts";
-
+import { BufReader } from "../../deps.ts";
 const decoder = new TextDecoder();
+const encoder = new TextEncoder();
+const debug = (message) => {
+  if (Deno.env().DEBUG_HTTP_SERVICE) {
+    console.log(message);
+  }
+};
+
+interface MultipartHeadersSchema {
+  content_disposition?: string;
+  content_type?: string;
+  filename?: string;
+  name: string;
+}
+
+interface MultipartSchema {
+  MultipartHeadersSchema,
+  contents: any;
+  size?: number;
+}
 
 /**
  * @memberof Drash.Services
@@ -11,134 +30,6 @@ const decoder = new TextDecoder();
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
-  /**
-   * @description
-   *     Parse the body of the request so that it can be used as an associative
-   *     array.
-   *
-   *     If the request body's content type is `application/json`, then
-   *     `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
-   *
-   *     If the request body's content type is
-   *     `application/x-www-form-urlencoded`, then
-   *     `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
-   *
-   *     If the body can't be parsed, then this method will set
-   *     `this.body_parsed` to `false` to denote that the request body was not
-   *     parsed.
-   *
-   * @return Promise<any>
-   */
-  public async getHttpRequestBodyParsed(request): Promise<any> {
-    let body: any = {};
-
-    if (!this.requestHasBody(request)) {
-      return body;
-    }
-
-    try {
-      body = decoder.decode(await Deno.readAll(request.body));
-    } catch (error) {
-      return body; // TODO(crookse) Should return an error?
-    }
-
-    let parsed: any;
-    // Decide how to parse the string below. All HTTP requests will default
-    // to application/x-www-form-urlencoded IF the Content-Type header is
-    // not set in the request.
-    //
-    // ... there's going to be potential fuck ups here btw ...
-
-    // Is this an application/json body?
-    if (request.headers.get("Content-Type") == "application/json") {
-      try {
-        parsed = JSON.parse(body);
-        request.body_parsed = parsed;
-        return request.body_parsed;
-      } catch (error) {
-        parsed = false;
-      }
-    }
-
-    // Does this look like an application/json body?
-    if (!parsed) {
-      try {
-        parsed = JSON.parse(body);
-        request.body_parsed = parsed;
-        return request.body_parsed;
-      } catch (error) {
-      }
-    }
-
-    // All HTTP requests default to application/x-www-form-urlencoded, so
-    // try to parse the body as a URL query params string if the above logic
-    // didn't work.
-    if (!parsed) {
-      try {
-        if (body.indexOf("?") !== -1) {
-          body = body.split("?")[1];
-        }
-        parsed = this.parseQueryParamsString(body);
-        request.body_parsed = parsed;
-        return request.body_parsed;
-      } catch (error) {
-      }
-    }
-
-    request.body_parsed = undefined;
-    return request.body_parsed; // return false if we can't parse the body
-  }
-
-  /**
-   * @description
-   *     Hydrate the request with data that is useful for the
-   *     `Drash.Http.Server` class.
-   *
-   * @param ServerRequest request
-   *     The request object.
-   * @param any options
-   *     A list of options.
-   */
-  public hydrateHttpRequest(request, options?: any) {
-    if (options) {
-      if (options.headers) {
-        for (let key in options.headers) {
-          request.headers.set(key, options.headers[key]);
-        }
-      }
-    }
-
-    // Attach properties
-    request.url_query_params = this.getHttpRequestUrlQueryParams(request);
-    request.url_query_string = this.getHttpRequestUrlQueryString(request);
-    request.url_path = this.getHttpRequestUrlPath(request);
-    request.uri = this.getHttpRequestUrlPath(request);
-    request.url = options && options.base_url
-      ? options.base_url + request.url
-      : request.url;
-
-    // Attach methods
-    request.getBodyParam = function(httpVar: string): any {
-      return request.body_parsed[httpVar];
-    };
-    request.getHeaderParam = function(httpVar: string): any {
-      return request.headers.get(httpVar);
-    };
-    request.getPathParam = function(httpVar: string): any {
-      return request.path_params[httpVar];
-    };
-    request.getQueryParam = function(httpVar: string): any {
-      return request.url_query_params[httpVar];
-    };
-    request.parseBody = () => {
-      return this.getHttpRequestBodyParsed(request);
-    }
-
-    request.response_content_type = this.getResponseContentType(request);
-
-    return request;
-  }
-
   /**
    * @description
    *     Get the specified HTTP request's URL path.
@@ -250,6 +141,123 @@ export default class HttpService {
   }
 
   /**
+   * Get the contents of a single multipart body part.
+   *
+   * @param Uint8Array part
+   *     The part containing the contents.
+   * @param Uint8Array boundary
+   *     The boundary of the entire multipart body. This should not included a
+   *     line ending character.
+   * @param MultipartHeadersSchema headers
+   *     The headers of this part.
+   *
+   * @return Promise<string>
+   *     Returns the contents.
+   */
+  public async getMultipartPartContents(
+    part: Uint8Array,
+    boundary: string,
+    headersAsArray: string[]
+  ): Promise<string> {
+    const br = new BufReader(new Deno.Buffer(part));
+
+    let contents: string = "";
+
+    for (;;) {
+      let line: any = await br.readLine();
+      line = line.line;
+      let decodedLine: string = decoder.decode(line);
+      // debug("decodedLine: " + decodedLine);
+      // Is this a boundary end? Yes, we are comparing to "--" because the
+      // boundary end is expected to be stripped off by the caller.
+      if (decodedLine.trim() == "--") {
+        // debug("is boundary end");
+        break;
+      }
+      // Is this a header?
+      if (headersAsArray.indexOf(decodedLine) != -1) {
+        // debug("is header");
+        continue;
+      }
+      contents += ("\n" + decodedLine);
+      // debug("contents is now");
+      // debug(contents);
+    }
+
+    contents = contents
+      .trim()
+      .replace(boundary + "--", "")
+      .trim()
+      .concat("\n");
+    // debug("full contents");
+    // debug(contents);
+    // debug("end full contents");
+    return contents;
+  }
+
+  /**
+   * Get the headers of a single multipart body part.
+   *
+   * @param Uint8Array part
+   *     The part containing the headers.
+   *
+   * @return Promise<any>
+   *     Returns the headers in three forms: object, array, and string.
+   */
+  public async getMultipartPartHeaders(part: Uint8Array): Promise<any> {
+    const br = new BufReader(new Deno.Buffer(part));
+
+    let contents = "";
+    let headersAsString = "";
+
+    for (;;) {
+      let line: any = await br.readLine();
+      line = line.line;
+      let decodedLine = decoder.decode(line);
+      // Once we hit an empty line, that's when we know we're done parsing the
+      // headers
+      if (decodedLine.trim() == "") {
+        break;
+      }
+      // Let's change up how the headers appear by adding a ; as a delimeter.
+      // This makes it easier to parse and separate them into key-value pairs.
+      contents += ("; " + decodedLine);
+      headersAsString += (decodedLine + "\n");
+    }
+
+    contents = contents.trim();
+
+    // debug("headers");
+    let headers = contents
+      .replace(/: /g, "=")
+      .replace(/; /g, "&")
+      .replace(/\"/g, "")
+      .substr(1); // remove beginning ampersand
+    // debug(headers);
+    // debug("end headers");
+    let headersAsObj = this.parseQueryParamsString(
+      headers,
+      "underscore",
+      "lowercase"
+    );
+    if (!headersAsObj.filename) {
+      headersAsObj.filename = null;
+    }
+
+    let headersAsArray = headersAsString
+      .split("\n")
+      .filter((header) => {
+        return header.trim() != "";
+      });
+
+    return {
+      as_array: headersAsArray,
+      as_object: headersAsObj,
+      as_string: headersAsString,
+    };
+  }
+
+  /**
    * @description
    *     Get the request's requested content type.
    *
@@ -298,6 +306,60 @@ export default class HttpService {
 
   /**
    * @description
+   *     Hydrate the request with data that is useful for the
+   *     `Drash.Http.Server` class.
+   *
+   * @param ServerRequest request
+   *     The request object.
+   * @param any options
+   *     A list of options.
+   */
+  public hydrateHttpRequest(request, options?: any) {
+    if (options) {
+      if (options.headers) {
+        for (let key in options.headers) {
+          request.headers.set(key, options.headers[key]);
+        }
+      }
+    }
+
+    // Attach properties
+    request.url_query_params = this.getHttpRequestUrlQueryParams(request);
+    request.url_query_string = this.getHttpRequestUrlQueryString(request);
+    request.url_path = this.getHttpRequestUrlPath(request);
+    request.uri = this.getHttpRequestUrlPath(request);
+    request.url = options && options.base_url
+      ? options.base_url + request.url
+      : request.url;
+
+    // Attach methods
+    request.getBodyParam = function(httpVar: string): any {
+      return request.body_parsed[httpVar];
+    };
+    request.getBodyMultipartFormData = function(inputName): any {
+      return request.body_parsed[inputName];
+    };
+    request.getHeaderParam = function(httpVar: string): any {
+      return request.headers.get(httpVar);
+    };
+    request.getPathParam = function(httpVar: string): any {
+      return request.path_params[httpVar];
+    };
+    request.getQueryParam = function(httpVar: string): any {
+      return request.url_query_params[httpVar];
+    };
+    request.parseBody = async () => {
+      request.body_parsed = await this.parseRequestBody(request);
+      return request.body_parsed;
+    }
+
+    request.response_content_type = this.getResponseContentType(request);
+
+    return request;
+  }
+
+  /**
+   * @description
    *     Parse a URL query string in it's raw form.
    *
    *     If the request body's content type is application/json, then
@@ -310,8 +372,22 @@ export default class HttpService {
    *
    * @param string queryParamsString
    *     The query params string (e.g., hello=world&ok=then&git=hub)
+   * @param string keyFormat
+   *     (optional) The format the keys should be mutated to. For example, if
+   *     `underscore` is specified, then the keys will be converted from
+   *     `key-name` to `key_name`. Defaults to `normal`, which does not mutate
+   *     the keys.
+   * @param string keyCase
+   *     (optional) The case the keys should be mutated to. For example, if
+   *     `lowercase` is specified, then the keys will be converted from
+   *     `Key-Name` to `Key-Name`. Defaults to `normal`, which does not mutate
+   *     the keys.
    */
-  public parseQueryParamsString(queryParamsString: string): any {
+  public parseQueryParamsString(
+    queryParamsString: string,
+    keyFormat: string = "normal",
+    keyCase: string = "normal"
+  ): any {
     let queryParams = {};
 
     if (!queryParamsString) {
@@ -326,7 +402,26 @@ export default class HttpService {
 
     queryParamsExploded.forEach(kvpString => {
       let kvpStringSplit = kvpString.split("=");
-      queryParams[kvpStringSplit[0]] = kvpStringSplit[1];
+      let key: string;
+      if (keyFormat == "normal") {
+        key = kvpStringSplit[0];
+        if (keyCase == "normal") {
+          queryParams[key] = kvpStringSplit[1];
+        }
+        if (keyCase == "lowercase") {
+          queryParams[key.toLowerCase()] = kvpStringSplit[1];
+        }
+      }
+      if (keyFormat == "underscore") {
+        key = kvpStringSplit[0]
+          .replace(/-/g, "_");
+        if (keyCase == "normal") {
+          queryParams[key] = kvpStringSplit[1];
+        }
+        if (keyCase == "lowercase") {
+          queryParams[key.toLowerCase()] = kvpStringSplit[1];
+        }
+      }
     });
 
     return queryParams;
@@ -334,11 +429,189 @@ export default class HttpService {
 
   /**
    * @description
+   *     Parse the request body depending on its Content-Type.
+   *
+   * @return Promise<any|boolean>
+   *     Returns a parsable object depending on the Content-Type of the request
+   *     body. See the `parseRequestBodyAs*` methods below for return types.
+   *
+   *     Returns `false` if the body cannot be parsed.
+   */
+  public async parseRequestBody(request): Promise<boolean|any> {
+    if (!this.requestHasBody(request)) {
+      return undefined;
+    }
+
+    if (request.headers.get("Content-Type").includes("multipart/form-data")) {
+      return await this.parseRequestBodyAsMultipartFormData(request.body);
+    }
+
+    if (request.headers.get("Content-Type").includes("application/json")) {
+      return this.parseRequestBodyAsJson(request.body);
+    }
+
+    if (request.headers.get("Content-Type").includes("application/x-www-form-urlencoded")) {
+      return this.parseRequestBodyAsFormUrlEncoded(request.body);
+    }
+
+    // Default to parsing as application/x-www-form-urlencoded
+    return this.parseRequestBodyAsDefault(request.body);
+  }
+
+  /**
+   * @description
+   *     This method tries to parse the request body as if it were
+   *     `application/x-www-form-urlencoded`. This is the default way to parse
+   *     the request body if all attempts to identify the Content-Type fail.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body in key-value pair format.
+   */
+  public async parseRequestBodyAsDefault(reqBody: Deno.Reader): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(reqBody));
+      if (body.indexOf("?") !== -1) {
+        body = body.split("?")[1];
+      }
+      return this.parseQueryParamsString(body);
+    } catch (error) {
+      throw new Error("Error reading the request body.\n" + error);
+    }
+  }
+
+  /**
+   * @description
+   *     Parse the specified request body as `application/json`.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body as a parsable JSON object.
+   */
+  public async parseRequestBodyAsJson(reqBody: Deno.Reader): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(reqBody));
+      return JSON.parse(body);
+    } catch (error) {
+      throw new Error("Error reading request body as application/json.\n" + error);
+    }
+  }
+
+  /**
+   * @description
+   *     Parse the specified request body as `application/x-www-url-encoded`.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body in key-value pair format.
+   */
+  public async parseRequestBodyAsFormUrlEncoded(reqBody: Deno.Reader): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(reqBody));
+      if (body.indexOf("?") !== -1) {
+        body = body.split("?")[1];
+      }
+      return this.parseQueryParamsString(body);
+    } catch (error) {
+      throw new Error("Error reading request body as application/x-www-form-urlencoded.\n" + error);
+    }
+  }
+
+  /**
+   * @description
+   *     Parse the specified request body as `multipart/form-data`.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body as a parsable JSON object where the first level of keys
+   *     are the names of the parts. For example, if the name of the first part
+   *     is `file_number_one`, then it will be accessible in the returned object
+   *     as `{returned_object}.file_number_one`.
+   */
+  public async parseRequestBodyAsMultipartFormData(reqBody: Deno.Reader): Promise<any> {
+    try {
+      let br = new BufReader(new Deno.Buffer(await Deno.readAll(reqBody)));
+      let boundary: string = null
+      let decodedParts: string[] = [];
+      let contents: string = "";
+
+      for (;;) {
+        let line: any = await br.readLine();
+        // Trim the right side because line endings can suck between OSs and can
+        // cause lines (coming from different OSs) to be parsed differently
+        let decodedLine = decoder.decode(line.line).trimRight();
+        if (!boundary) {
+          boundary = decodedLine;
+          continue;
+        }
+        if (decodedLine == boundary) {
+          decodedParts.push(contents.trimRight());
+          contents = "";
+          continue;
+        }
+        if (decodedLine == (boundary + "--")) {
+          // Trim the right side again. `getMultipartPartContents` will add the
+          // "\n" character after it is done parsing through the content part of
+          // the data
+          decodedParts.push(contents.trimRight());
+          contents = "";
+          break;
+        }
+        contents += (decodedLine + "\n");
+      }
+
+      // debug(decodedParts);
+
+      let formFiles: any = {};
+
+      for (let i in decodedParts) {
+        let part = decodedParts[i].trim().replace(boundary + "--", "");
+        const headers = await this.getMultipartPartHeaders(encoder.encode(part));
+        const contents = await this.getMultipartPartContents(
+          encoder.encode(part + "\n\n--"),
+          boundary,
+          headers.as_array
+        );
+        const headersObj = headers.as_object;
+        formFiles[headersObj.name] = {
+          name: headersObj.name, // This is not the same as the filename field
+          filename: headersObj.filename
+            ? headersObj.filename
+            : null,
+          content_disposition: headersObj.content_disposition
+            ? headersObj.content_disposition
+            : null,
+          content_type: headersObj.content_type
+            ? headersObj.content_type
+            : null,
+          bytes: encoder.encode(contents).byteLength,
+          contents: contents
+        };
+      }
+
+      return formFiles;
+    } catch (error) {
+      throw new Error("Error reading request body as multipart/form-data.\n" + error);
+    }
+  }
+
+  /**
+   * @description
    *     Does the specified request have a body?
    *
    * @param any request
+   *     The request object.
    *
    * @return boolean
+   *     Returns `true` if the request has a body. Returns `false` if not.
    */
   public requestHasBody(request: any): boolean {
     return parseInt(request.headers.get("content-length")) > 0;
