@@ -79,9 +79,9 @@ members.test("parseQueryParamsString()", () => {
   members.assert.equal(actual, { these: "are", query: "params" });
 });
 
-members.test("parseMultipartFormDataParts(): multiple parts (macOS)", async () => {
-  let body = await Deno.readAll(await Deno.open("./tests/data/multipart_1.txt"));
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body);
+members.test("parseRequestBodyAsMultipartFormData(): multiple parts (macOS)", async () => {
+  let body = await Deno.open("./tests/data/multipart_1.txt");
+  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
   let expected = {
     foo: {
@@ -124,9 +124,9 @@ members.test("parseMultipartFormDataParts(): multiple parts (macOS)", async () =
   members.assert.equals(parsed, expected);
 });
 
-members.test("parseMultipartFormDataParts(): one part (macOS)", async () => {
-  let body = await Deno.readAll(await Deno.open("./tests/data/multipart_2.txt"));
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body);
+members.test("parseRequestBodyAsMultipartFormData(): one part (macOS)", async () => {
+  let body = await Deno.open("./tests/data/multipart_2.txt");
+  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
   let expected = {
     file: {
@@ -153,9 +153,9 @@ members.test("parseMultipartFormDataParts(): one part (macOS)", async () => {
   members.assert.equals(parsed, expected);
 });
 
-members.test("parseMultipartFormDataParts(): multiple parts (windows with ^M char)", async () => {
-  let body = await Deno.readAll(await Deno.open("./tests/data/multipart_3_mchar.txt"));
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body);
+members.test("parseRequestBodyAsMultipartFormData(): multiple parts (windows with ^M char)", async () => {
+  let body = await Deno.open("./tests/data/multipart_3_mchar.txt");
+  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
   let expected = {
     foo: {
@@ -198,9 +198,9 @@ members.test("parseMultipartFormDataParts(): multiple parts (windows with ^M cha
   members.assert.equals(parsed, expected);
 });
 
-members.test("parseMultipartFormDataParts(): one part (windows with ^M char)", async () => {
-  let body = await Deno.readAll(await Deno.open("./tests/data/multipart_4_mchar.txt"));
-  let parsed = await members.Drash.Services.HttpService.parseMultipartFormDataParts(body);
+members.test("parseRequestBodyAsMultipartFormData(): one part (windows with ^M char)", async () => {
+  let body = await Deno.open("./tests/data/multipart_4_mchar.txt");
+  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
   let expected = {
     foo: {

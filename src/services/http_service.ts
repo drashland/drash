@@ -1,6 +1,6 @@
 import Drash from "../../mod.ts";
 import { contentType } from "../../deps.ts";
-import { BufReader, ReadLineResult, StringReader } from "../../deps.ts";
+import { BufReader } from "../../deps.ts";
 const { Buffer } = Deno;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -10,12 +10,16 @@ const debug = (message) => {
   }
 };
 
-interface FormFileSchema {
+interface MultipartHeadersSchema {
   content_disposition?: string;
   content_type?: string;
-  contents: any;
   filename?: string;
   name: string;
+}
+
+interface MultipartSchema {
+  MultipartHeadersSchema,
+  contents: any;
   size?: number;
 }
 
@@ -27,95 +31,52 @@ interface FormFileSchema {
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
-  public async getMultipartPartContents(part: string, boundary: Uint8Array, headers: any): Promise<any> {
-    const sr = new StringReader(part + "\n\n--");
-    const br = new BufReader(sr);
-    const decoder = new TextDecoder();
-    const dBoundary = decoder.decode(boundary).trim();
-
-    let contents = "";
-
-    for (;;) {
-      let line: any = await br.readLine();
-      line = line.line;
-      let decodedLine = decoder.decode(line);
-      debug("decodedLine: " + decodedLine);
-      // Is this a boundary end?
-      if (decodedLine.trim() == "--") {
-        debug("is boundary end");
-        break;
-      }
-      // Is this a header?
-      if (headers.as_array.indexOf(decodedLine) != -1) {
-        // debug("is header");
-        continue;
-      }
-      contents += ("\n" + decodedLine);
-      // debug("contents is now");
-      // debug(contents);
+  /**
+   * @description
+   *     Parse the request body depending on its Content-Type.
+   *
+   * @return Promise<any|boolean>
+   *     Returns a parsable object depending on the Content-Type of the request
+   *     body. See the `parseRequestBodyAs*` methods below for return types.
+   *
+   *     Returns `false` if the body cannot be parsed.
+   */
+  public async parseRequestBody(request): Promise<boolean|any> {
+    if (!this.requestHasBody(request)) {
+      return undefined;
     }
 
-    contents = contents
-      .trim()
-      .replace(dBoundary + "--", "")
-      .trim()
-      .concat("\n");
-    // debug("full contents");
-    // debug(contents);
-    // debug("end full contents");
-    return contents;
+    if (request.headers.get("Content-Type").includes("multipart/form-data")) {
+      return await this.parseRequestBodyAsMultipartFormData(request.body);
+    }
+
+    if (request.headers.get("Content-Type").includes("application/json")) {
+      return this.parseRequestBodyAsJson(request.body);
+    }
+
+    if (request.headers.get("Content-Type").includes("application/x-www-form-urlencoded")) {
+      return this.parseRequestBodyAsFormUrlEncoded(request.body);
+    }
+
+    // Default to parsing as application/x-www-form-urlencoded
+    return this.parseRequestBodyAsDefault(request.body);
   }
 
-  public async getMultipartPartHeaders(part: Uint8Array): Promise<any> {
-    const br = new BufReader(new Buffer(part));
-
-    let contents = "";
-    let headersAsString = "";
-
-    for (;;) {
-      let line: any = await br.readLine();
-      line = line.line;
-      let decodedLine = decoder.decode(line);
-      if (decodedLine.trim() == "") {
-        break;
-      }
-      contents += ("; " + decodedLine);
-      headersAsString += (decodedLine + "\n");
-    }
-
-    contents = contents.trim();
-
-    // debug("headers");
-    let headers = contents
-      .replace(/: /g, "=")
-      .replace(/; /g, "&")
-      .replace(/\"/g, "")
-      .substr(1); // remove beginning ampersand
-    // debug(headers);
-    // debug("end headers");
-    let headersAsObj = this.parseQueryParamsString(headers, "underscore", "lowercase");
-    if (!headersAsObj.filename) {
-      headersAsObj.filename = null;
-    }
-
-    let headersAsArray = headersAsString.split("\n");
-    let headersAsArrayFiltered = headersAsArray.filter((header) => {
-      return header.trim() != "";
-    });
-
-    return {
-      as_obj: headersAsObj,
-      as_string: headersAsString,
-      as_array: headersAsArrayFiltered
-    };
-  }
-
-  public async parseRequestBodyDefault(
-    request: any,
-    isDefault: boolean = false
-  ): Promise<any> {
+  /**
+   * @description
+   *     This method tries to parse the request body as if it were
+   *     `application/x-www-form-urlencoded`. This is the default way to parse
+   *     the request body if all attempts to identify the Content-Type fail.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body in key-value pair format.
+   */
+  public async parseRequestBodyAsDefault(reqBody: Deno.Reader): Promise<any> {
     try {
-      let body = decoder.decode(await Deno.readAll(request.body));
+      let body = decoder.decode(await Deno.readAll(reqBody));
       if (body.indexOf("?") !== -1) {
         body = body.split("?")[1];
       }
@@ -125,12 +86,38 @@ export default class HttpService {
     }
   }
 
-  public async parseRequestBodyAsFormUrlEncoded(
-    request: any,
-    isDefault: boolean = false
-  ): Promise<any> {
+  /**
+   * @description
+   *     Parse the specified request body as `application/json`.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body as a parsable JSON object.
+   */
+  public async parseRequestBodyAsJson(reqBody: Deno.Reader): Promise<any> {
     try {
-      let body = decoder.decode(await Deno.readAll(request.body));
+      let body = decoder.decode(await Deno.readAll(reqBody));
+      return JSON.parse(body);
+    } catch (error) {
+      throw new Error("Error reading request body as application/json.\n" + error);
+    }
+  }
+
+  /**
+   * @description
+   *     Parse the specified request body as `application/x-www-url-encoded`.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body in key-value pair format.
+   */
+  public async parseRequestBodyAsFormUrlEncoded(reqBody: Deno.Reader): Promise<any> {
+    try {
+      let body = decoder.decode(await Deno.readAll(reqBody));
       if (body.indexOf("?") !== -1) {
         body = body.split("?")[1];
       }
@@ -140,126 +127,84 @@ export default class HttpService {
     }
   }
 
-  public async parseRequestBodyAsMultipartFormData(request: any): Promise<any> {
+  /**
+   * @description
+   *     Parse the specified request body as `multipart/form-data`.
+   *
+   * @param Deno.Reader reqBody
+   *     The request body.
+   *
+   * @return Promise<any>
+   *     Returns a body as a parsable JSON object where the first level of keys
+   *     are the names of the parts. For example, if the name of the first part
+   *     is `file_number_one`, then it will be accessible in the returned object
+   *     as `{returned_object}.file_number_one`.
+   */
+  public async parseRequestBodyAsMultipartFormData(reqBody: Deno.Reader): Promise<any> {
     try {
-      let body = await Deno.readAll(request.body)
-      return await this.parseMultipartFormDataParts(body);
+      let br = new BufReader(new Buffer(await Deno.readAll(reqBody)));
+      let boundary: string = null
+      let decodedParts: string[] = [];
+      let contents: string = "";
+
+      for (;;) {
+        let line: any = await br.readLine();
+        // Trim the right side because line endings can suck between OSs and can
+        // cause lines (coming from different OSs) to be parsed differently
+        let decodedLine = decoder.decode(line.line).trimRight();
+        if (!boundary) {
+          boundary = decodedLine;
+          continue;
+        }
+        if (decodedLine == boundary) {
+          decodedParts.push(contents.trimRight());
+          contents = "";
+          continue;
+        }
+        if (decodedLine == (boundary + "--")) {
+          // Trim the right side again. `getMultipartPartContents` will add the
+          // "\n" character after it is done parsing through the content part of
+          // the data
+          decodedParts.push(contents.trimRight());
+          contents = "";
+          break;
+        }
+        contents += (decodedLine + "\n");
+      }
+
+      // debug(decodedParts);
+
+      let formFiles: any = {};
+
+      for (let i in decodedParts) {
+        let part = decodedParts[i].trim().replace(boundary + "--", "");
+        const headers = await this.getMultipartPartHeaders(encoder.encode(part));
+        const contents = await this.getMultipartPartContents(
+          encoder.encode(part + "\n\n--"),
+          boundary,
+          headers.as_array
+        );
+        const headersObj = headers.as_object;
+        formFiles[headersObj.name] = {
+          name: headersObj.name, // This is not the same as the filename field
+          filename: headersObj.filename
+            ? headersObj.filename
+            : null,
+          content_disposition: headersObj.content_disposition
+            ? headersObj.content_disposition
+            : null,
+          content_type: headersObj.content_type
+            ? headersObj.content_type
+            : null,
+          bytes: encoder.encode(contents).byteLength,
+          contents: contents
+        };
+      }
+
+      return formFiles;
     } catch (error) {
       throw new Error("Error reading request body as multipart/form-data.\n" + error);
     }
-  }
-
-  public async parseRequestBodyAsJson(request: any): Promise<any> {
-    try {
-      let body = decoder.decode(await Deno.readAll(request.body));
-      return JSON.parse(body);
-    } catch (error) {
-      throw new Error("Error reading request body as application/json.\n" + error);
-    }
-  }
-
-  public async parseMultipartFormDataParts(
-    body: Uint8Array
-  // ): Promise<boolean|FormFileSchema> {
-  ): Promise<any> {
-    let br = new BufReader(new Buffer(body));
-    let boundary: string = null
-    let decodedParts: string[] = [];
-    let contents: string = "";
-
-    for (;;) {
-      let line: any = await br.readLine();
-      // Trim the right side because line endings can suck between OSs and can
-      // cause lines (coming from different OSs) to be parsed differently
-      let decodedLine = decoder.decode(line.line).trimRight();
-      if (!boundary) {
-        boundary = decodedLine;
-        continue;
-      }
-      if (decodedLine == boundary) {
-        decodedParts.push(contents.trimRight());
-        contents = "";
-        continue;
-      }
-      if (decodedLine == (boundary + "--")) {
-        // Trim the right side again. `getMultipartPartContents` will add the
-        // "\n" character after it is done parsing through the content part of
-        // the data
-        decodedParts.push(contents.trimRight());
-        contents = "";
-        break;
-      }
-      contents += (decodedLine + "\n");
-    }
-
-    // debug(decodedParts);
-
-    let formFiles: any = {};
-
-    for (let i in decodedParts) {
-      let part = decodedParts[i].trim().replace(boundary + "--", "");
-      const headers = await this.getMultipartPartHeaders(encoder.encode(part));
-      const contents = await this.getMultipartPartContents(part, encoder.encode(boundary), headers);
-      const headersObj = headers.as_obj;
-      formFiles[headersObj.name] = {
-        name: headersObj.name, // This is not the same as the filename field
-        filename: headersObj.filename
-          ? headersObj.filename
-          : null,
-        content_disposition: headersObj.content_disposition
-          ? headersObj.content_disposition
-          : null,
-        content_type: headersObj.content_type
-          ? headersObj.content_type
-          : null,
-        bytes: encoder.encode(contents).byteLength,
-        contents: contents
-      };
-    }
-
-    return formFiles;
-  }
-
-  /**
-   * @description
-   *     Parse the body of the request so that it can be used as an associative
-   *     array.
-   *
-   *     If the request body's content type is `multipart/form-data`, then the
-   *     files specified will use the `FormFileSchema` interface.
-   *
-   *     If the request body's content type is `application/json`, then
-   *     `{"username":"root","password":"alpine"}` becomes `{ username: "root", password: "alpine" }`.
-   *
-   *     If the request body's content type is
-   *     `application/x-www-form-urlencoded`, then
-   *     `username=root&password=alpine` becomes `{ username: "root", password: "alpine" }`.
-   *
-   *     If the body can't be parsed, then this method will return false.
-   *
-   *     If a body isn't specified, then this method will return undefined.
-   *
-   * @return Promise<any>
-   */
-  public async parseRequestBody(request): Promise<any> {
-    if (!this.requestHasBody(request)) {
-      return undefined;
-    }
-
-    if (request.headers.get("Content-Type").includes("multipart/form-data")) {
-      return await this.parseRequestBodyAsMultipartFormData(request);
-    }
-
-    if (request.headers.get("Content-Type").includes("application/json")) {
-      return this.parseRequestBodyAsJson(request);
-    }
-
-    if (request.headers.get("Content-Type").includes("application/x-www-form-urlencoded")) {
-      return this.parseRequestBodyAsFormUrlEncoded(request);
-    }
-
-    // Default to parsing as application/x-www-form-urlencoded
-    return this.parseRequestBodyDefault(request, true);
   }
 
   /**
@@ -427,6 +372,123 @@ export default class HttpService {
   }
 
   /**
+   * Get the contents of a single multipart body part.
+   *
+   * @param Uint8Array part
+   *     The part containing the contents.
+   * @param Uint8Array boundary
+   *     The boundary of the entire multipart body. This should not included a
+   *     line ending character.
+   * @param MultipartHeadersSchema headers
+   *     The headers of this part.
+   *
+   * @return Promise<string>
+   *     Returns the contents.
+   */
+  public async getMultipartPartContents(
+    part: Uint8Array,
+    boundary: string,
+    headersAsArray: string[]
+  ): Promise<string> {
+    const br = new BufReader(new Buffer(part));
+
+    let contents: string = "";
+
+    for (;;) {
+      let line: any = await br.readLine();
+      line = line.line;
+      let decodedLine: string = decoder.decode(line);
+      // debug("decodedLine: " + decodedLine);
+      // Is this a boundary end? Yes, we are comparing to "--" because the
+      // boundary end is expected to be stripped off by the caller.
+      if (decodedLine.trim() == "--") {
+        // debug("is boundary end");
+        break;
+      }
+      // Is this a header?
+      if (headersAsArray.indexOf(decodedLine) != -1) {
+        // debug("is header");
+        continue;
+      }
+      contents += ("\n" + decodedLine);
+      // debug("contents is now");
+      // debug(contents);
+    }
+
+    contents = contents
+      .trim()
+      .replace(boundary + "--", "")
+      .trim()
+      .concat("\n");
+    // debug("full contents");
+    // debug(contents);
+    // debug("end full contents");
+    return contents;
+  }
+
+  /**
+   * Get the headers of a single multipart body part.
+   *
+   * @param Uint8Array part
+   *     The part containing the headers.
+   *
+   * @return Promise<any>
+   *     Returns the headers in three forms: object, array, and string.
+   */
+  public async getMultipartPartHeaders(part: Uint8Array): Promise<any> {
+    const br = new BufReader(new Buffer(part));
+
+    let contents = "";
+    let headersAsString = "";
+
+    for (;;) {
+      let line: any = await br.readLine();
+      line = line.line;
+      let decodedLine = decoder.decode(line);
+      // Once we hit an empty line, that's when we know we're done parsing the
+      // headers
+      if (decodedLine.trim() == "") {
+        break;
+      }
+      // Let's change up how the headers appear by adding a ; as a delimeter.
+      // This makes it easier to parse and separate them into key-value pairs.
+      contents += ("; " + decodedLine);
+      headersAsString += (decodedLine + "\n");
+    }
+
+    contents = contents.trim();
+
+    // debug("headers");
+    let headers = contents
+      .replace(/: /g, "=")
+      .replace(/; /g, "&")
+      .replace(/\"/g, "")
+      .substr(1); // remove beginning ampersand
+    // debug(headers);
+    // debug("end headers");
+    let headersAsObj = this.parseQueryParamsString(
+      headers,
+      "underscore",
+      "lowercase"
+    );
+    if (!headersAsObj.filename) {
+      headersAsObj.filename = null;
+    }
+
+    let headersAsArray = headersAsString
+      .split("\n")
+      .filter((header) => {
+        return header.trim() != "";
+      });
+
+    return {
+      as_array: headersAsArray,
+      as_object: headersAsObj,
+      as_string: headersAsString,
+    };
+  }
+
+  /**
    * @description
    *     Get the request's requested content type.
    *
@@ -487,8 +549,22 @@ export default class HttpService {
    *
    * @param string queryParamsString
    *     The query params string (e.g., hello=world&ok=then&git=hub)
+   * @param string keyFormat
+   *     (optional) The format the keys should be mutated to. For example, if
+   *     `underscore` is specified, then the keys will be converted from
+   *     `key-name` to `key_name`. Defaults to `normal`, which does not mutate
+   *     the keys.
+   * @param string keyCase
+   *     (optional) The case the keys should be mutated to. For example, if
+   *     `lowercase` is specified, then the keys will be converted from
+   *     `Key-Name` to `Key-Name`. Defaults to `normal`, which does not mutate
+   *     the keys.
    */
-  public parseQueryParamsString(queryParamsString: string, keyFormat: string = "normal", keyCase: string = "normal"): any {
+  public parseQueryParamsString(
+    queryParamsString: string,
+    keyFormat: string = "normal",
+    keyCase: string = "normal"
+  ): any {
     let queryParams = {};
 
     if (!queryParamsString) {
@@ -533,8 +609,10 @@ export default class HttpService {
    *     Does the specified request have a body?
    *
    * @param any request
+   *     The request object.
    *
    * @return boolean
+   *     Returns `true` if the request has a body. Returns `false` if not.
    */
   public requestHasBody(request: any): boolean {
     return parseInt(request.headers.get("content-length")) > 0;
