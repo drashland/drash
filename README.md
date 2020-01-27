@@ -18,6 +18,7 @@
 // File: app.ts
 
 import Drash from "https://deno.land/x/drash/mod.ts";
+// or import Drash from "https://deno.land/x/drash@{version}/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
