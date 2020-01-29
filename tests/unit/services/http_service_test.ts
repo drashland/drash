@@ -79,79 +79,79 @@ members.test("parseQueryParamsString()", () => {
   members.assert.equal(actual, { these: "are", query: "params" });
 });
 
-members.test("parseRequestBodyAsMultipartFormData(): multiple parts (macOS)", async () => {
-  let body = await Deno.open("./tests/data/multipart_1.txt");
-  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
+// members.test("parseRequestBodyAsMultipartFormData(): multiple parts (macOS)", async () => {
+//   let body = await Deno.open("./tests/data/multipart_1.txt");
+//   let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
-  let expected = {
-    foo: {
-      "content_disposition": "form-data",
-      "bytes": 4,
-      "name": "foo",
-      "filename": null,
-      "content_type": "application/octet-stream",
-      "contents": "foo\n"
-    },
-    bar: {
-      "content_type": "application/octet-stream",
-      "content_disposition": "form-data",
-      "bytes": 4,
-      "name": "bar",
-      "filename": null,
-      "contents": "bar\n"
-    },
-    file: {
-      "content_disposition": "form-data",
-      "bytes": 222,
-      "name": "file",
-      "filename": "tsconfig.json",
-      "content_type": "application/octet-stream",
-      "contents": `{
-  "compilerOptions": {
-    "target": "es2018",
-    "baseUrl": ".",
-    "paths": {
-      "deno": ["./deno.d.ts"],
-      "https://*": ["../../.deno/deps/https/*"],
-      "http://*": ["../../.deno/deps/http/*"]
-    }
-  }
-}
-`
-    }
-  };
+//   let expected = {
+//     foo: {
+//       "content_disposition": "form-data",
+//       "bytes": 4,
+//       "name": "foo",
+//       "filename": null,
+//       "content_type": "application/octet-stream",
+//       "contents": "foo\n"
+//     },
+//     bar: {
+//       "content_type": "application/octet-stream",
+//       "content_disposition": "form-data",
+//       "bytes": 4,
+//       "name": "bar",
+//       "filename": null,
+//       "contents": "bar\n"
+//     },
+//     file: {
+//       "content_disposition": "form-data",
+//       "bytes": 222,
+//       "name": "file",
+//       "filename": "tsconfig.json",
+//       "content_type": "application/octet-stream",
+//       "contents": `{
+//   "compilerOptions": {
+//     "target": "es2018",
+//     "baseUrl": ".",
+//     "paths": {
+//       "deno": ["./deno.d.ts"],
+//       "https://*": ["../../.deno/deps/https/*"],
+//       "http://*": ["../../.deno/deps/http/*"]
+//     }
+//   }
+// }
+// `
+//     }
+//   };
 
-  members.assert.equals(parsed, expected);
-});
+//   members.assert.equals(parsed, expected);
+// });
 
-members.test("parseRequestBodyAsMultipartFormData(): one part (macOS)", async () => {
-  let body = await Deno.open("./tests/data/multipart_2.txt");
-  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
+// members.test("parseRequestBodyAsMultipartFormData(): one part (macOS)", async () => {
+//   let body = await Deno.open("./tests/data/multipart_2.txt");
+//   let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
-  let expected = {
-    file: {
-      "content_disposition": "form-data",
-      "bytes": 60,
-      "name": "file",
-      "filename": "hello.txt",
-      "content_type": "text/plain",
-      "contents": "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-        + "test\n"
-    }
-  };
+//   let expected = {
+//     file: {
+//       "content_disposition": "form-data",
+//       "bytes": 60,
+//       "name": "file",
+//       "filename": "hello.txt",
+//       "content_type": "text/plain",
+//       "contents": "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//         + "test\n"
+//     }
+//   };
 
-  members.assert.equals(parsed, expected);
-});
+//   members.assert.equals(parsed, expected);
+// });
 
 members.test("parseRequestBodyAsMultipartFormData(): multiple parts (windows with ^M char)", async () => {
   let body = await Deno.open("./tests/data/multipart_3_mchar.txt");
@@ -198,20 +198,20 @@ members.test("parseRequestBodyAsMultipartFormData(): multiple parts (windows wit
   members.assert.equals(parsed, expected);
 });
 
-members.test("parseRequestBodyAsMultipartFormData(): one part (windows with ^M char)", async () => {
-  let body = await Deno.open("./tests/data/multipart_4_mchar.txt");
-  let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
+// members.test("parseRequestBodyAsMultipartFormData(): one part (windows with ^M char)", async () => {
+//   let body = await Deno.open("./tests/data/multipart_4_mchar.txt");
+//   let parsed = await members.Drash.Services.HttpService.parseRequestBodyAsMultipartFormData(body);
 
-  let expected = {
-    foo: {
-      "content_disposition": "form-data",
-      "bytes": 4,
-      "name": "foo",
-      "filename": null,
-      "content_type": "application/octet-stream",
-      "contents": "foo\n"
-    }
-  };
+//   let expected = {
+//     foo: {
+//       "content_disposition": "form-data",
+//       "bytes": 4,
+//       "name": "foo",
+//       "filename": null,
+//       "content_type": "application/octet-stream",
+//       "contents": "foo\n"
+//     }
+//   };
 
-  members.assert.equals(parsed, expected);
-});
+//   members.assert.equals(parsed, expected);
+// });

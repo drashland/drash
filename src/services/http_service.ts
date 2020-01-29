@@ -18,8 +18,8 @@ interface MultipartHeadersSchema {
 
 interface MultipartSchema {
   MultipartHeadersSchema,
-  contents: any;
-  size?: number;
+  contents: Uint8Array;
+  bytes: number;
 }
 
 /**
@@ -158,19 +158,18 @@ export default class HttpService {
     part: Uint8Array,
     boundary: string,
     headersAsArray: string[]
-  ): Promise<string> {
+  ): Promise<Uint8Array> {
     const br = new BufReader(new Deno.Buffer(part));
 
-    let contents: string = "";
+    let contents: any = [];
 
     for (;;) {
       let line: any = await br.readLine();
       line = line.line;
       let decodedLine: string = decoder.decode(line);
       // debug("decodedLine: " + decodedLine);
-      // Is this a boundary end? Yes, we are comparing to "--" because the
-      // boundary end is expected to be stripped off by the caller.
-      if (decodedLine.trim() == "--") {
+      // Is this a boundary end?
+      if (decodedLine.trim() == (boundary + "--")) {
         // debug("is boundary end");
         break;
       }
@@ -179,19 +178,23 @@ export default class HttpService {
         // debug("is header");
         continue;
       }
-      contents += ("\n" + decodedLine);
+      contents.push({
+        line: line,
+        bytes: line.byteLength
+      });
       // debug("contents is now");
       // debug(contents);
     }
 
-    contents = contents
-      .trim()
-      .replace(boundary + "--", "")
-      .trim()
-      .concat("\n");
     // debug("full contents");
     // debug(contents);
     // debug("end full contents");
+
+    const totalBytes = contents.reduce((a, b) => {
+      a.byteLength + b.byteLength;
+    });
+    let combinedLines = new Uint8Array(totalBytes);
+
     return contents;
   }
 
@@ -207,54 +210,58 @@ export default class HttpService {
   public async getMultipartPartHeaders(part: Uint8Array): Promise<any> {
     const br = new BufReader(new Deno.Buffer(part));
 
-    let contents = "";
-    let headersAsString = "";
+    try {
+      let contents = "";
+      let headersAsString = "";
 
-    for (;;) {
-      let line: any = await br.readLine();
-      line = line.line;
-      let decodedLine = decoder.decode(line);
-      // Once we hit an empty line, that's when we know we're done parsing the
-      // headers
-      if (decodedLine.trim() == "") {
-        break;
+      for (;;) {
+        let line: any = await br.readLine();
+        line = line.line;
+        let decodedLine = decoder.decode(line);
+        // Once we hit an empty line, that's when we know we're done parsing the
+        // headers
+        if (decodedLine.trim() == "") {
+          break;
+        }
+        // Let's change up how the headers appear by adding a ; as a delimeter.
+        // This makes it easier to parse and separate them into key-value pairs.
+        contents += ("; " + decodedLine);
+        headersAsString += (decodedLine + "\n");
       }
-      // Let's change up how the headers appear by adding a ; as a delimeter.
-      // This makes it easier to parse and separate them into key-value pairs.
-      contents += ("; " + decodedLine);
-      headersAsString += (decodedLine + "\n");
+
+      contents = contents.trim();
+
+      // debug("headers");
+      let headers = contents
+        .replace(/: /g, "=")
+        .replace(/; /g, "&")
+        .replace(/\"/g, "")
+        .substr(1); // remove beginning ampersand
+      // debug(headers);
+      // debug("end headers");
+      let headersAsObj = this.parseQueryParamsString(
+        headers,
+        "underscore",
+        "lowercase"
+      );
+      if (!headersAsObj.filename) {
+        headersAsObj.filename = null;
+      }
+
+      let headersAsArray = headersAsString
+        .split("\n")
+        .filter((header) => {
+          return header.trim() != "";
+        });
+
+      return {
+        as_array: headersAsArray,
+        as_object: headersAsObj,
+        as_string: headersAsString,
+      };
+    } catch (error) {
+      throw new Error("Could not read headers from multipart part.\n" + error.stack);
     }
-
-    contents = contents.trim();
-
-    // debug("headers");
-    let headers = contents
-      .replace(/: /g, "=")
-      .replace(/; /g, "&")
-      .replace(/\"/g, "")
-      .substr(1); // remove beginning ampersand
-    // debug(headers);
-    // debug("end headers");
-    let headersAsObj = this.parseQueryParamsString(
-      headers,
-      "underscore",
-      "lowercase"
-    );
-    if (!headersAsObj.filename) {
-      headersAsObj.filename = null;
-    }
-
-    let headersAsArray = headersAsString
-      .split("\n")
-      .filter((header) => {
-        return header.trim() != "";
-      });
-
-    return {
-      as_array: headersAsArray,
-      as_object: headersAsObj,
-      as_string: headersAsString,
-    };
   }
 
   /**
@@ -478,7 +485,7 @@ export default class HttpService {
       }
       return this.parseQueryParamsString(body);
     } catch (error) {
-      throw new Error("Error reading the request body.\n" + error);
+      throw new Error("Error reading the request body.\n" + error.stack);
     }
   }
 
@@ -497,7 +504,7 @@ export default class HttpService {
       let body = decoder.decode(await Deno.readAll(reqBody));
       return JSON.parse(body);
     } catch (error) {
-      throw new Error("Error reading request body as application/json.\n" + error);
+      throw new Error("Error reading request body as application/json.\n" + error.stack);
     }
   }
 
@@ -519,8 +526,39 @@ export default class HttpService {
       }
       return this.parseQueryParamsString(body);
     } catch (error) {
-      throw new Error("Error reading request body as application/x-www-form-urlencoded.\n" + error);
+      throw new Error("Error reading request body as application/x-www-form-urlencoded.\n" + error.stack);
     }
+  }
+
+  public mergeUint8Arrays(typedArrays): Uint8Array {
+    let totalBytes = 0;
+    for (let i in typedArrays) {
+      let typedArray = typedArrays[i];
+      if (typedArray && typedArray.length) {
+        totalBytes += typedArray.length;
+        if (typedArray.length == 0) {
+          totalBytes += 1;
+        }
+      }
+    }
+    let ret = new Uint8Array(totalBytes);
+    let position = 0;
+    for (let i in typedArrays) {
+      let typedArray = typedArrays[i];
+      ret.set(typedArray, position);
+      position += typedArray.length;
+      if (typedArray.length == 0) {
+        position += 1;
+      }
+    }
+    return ret;
+  }
+
+  public addNewLineToUint8ArrayLine(line) {
+      let newLined = new Uint8Array(line.length + 1);
+      newLined.set(line, 0);
+      newLined.set(encoder.encode("\n"), line.length)
+      return newLined;
   }
 
   /**
@@ -536,70 +574,107 @@ export default class HttpService {
    *     is `file_number_one`, then it will be accessible in the returned object
    *     as `{returned_object}.file_number_one`.
    */
-  public async parseRequestBodyAsMultipartFormData(reqBody: Deno.Reader): Promise<any> {
-    try {
-      let br = new BufReader(new Deno.Buffer(await Deno.readAll(reqBody)));
-      let boundary: string = null
-      let decodedParts: string[] = [];
-      let contents: string = "";
+  public async parseRequestBodyAsMultipartFormData(
+    reqBody: Deno.Reader
+  ): Promise<MultipartSchema> {
+    let br = new BufReader(new Deno.Buffer(await Deno.readAll(reqBody)));
+    let boundary: string = null;
+    let finalBoundary: string = null;
+    let parts: any = [];
+    let contents: any = [];
+    let headers: any = [];
+    let allHeadersFound: boolean = false;
 
-      for (;;) {
+    try {
+      for (let i = 0;; i++) {
         let line: any = await br.readLine();
         // Trim the right side because line endings can suck between OSs and can
         // cause lines (coming from different OSs) to be parsed differently
         let decodedLine = decoder.decode(line.line).trimRight();
+        // If for some reason the next line after the first boundary is an empty
+        // line, then damn... skip it.
+        if (i == 1) {
+          if (decodedLine == "") {
+            continue;
+          }
+        }
+        // No boundary found yet? Set it.
         if (!boundary) {
           boundary = decodedLine;
+          finalBoundary = decodedLine + "--";
           continue;
         }
-        if (decodedLine == boundary) {
-          decodedParts.push(contents.trimRight());
-          contents = "";
+        // Did we hit a boundary? Continue on to the next part or end parsing.
+        if (decodedLine.includes(boundary)) {
+          parts.push({
+            headers: this.mergeUint8Arrays(headers),
+            contents: this.mergeUint8Arrays(contents)
+          });
+          // Before continue, we want to make sure we've reset the contents and
+          // the headers so that the next part doesn't get mixed in with the
+          // part we're currently parsing.
+          contents = [];
+          headers = []
+          allHeadersFound = false;
+          if (decodedLine == boundary.trim()) {
+            continue;
+          }
+          if (decodedLine == finalBoundary.trim()) {
+            break;
+          }
+        }
+        if (!allHeadersFound) {
+          if (decodedLine == "") {
+            allHeadersFound = true;
+            continue;
+          }
+          // `readLine()` doesn't read the line ending, so we're adding it
+          headers.push(this.addNewLineToUint8ArrayLine(line.line));
           continue;
         }
-        if (decodedLine == (boundary + "--")) {
-          // Trim the right side again. `getMultipartPartContents` will add the
-          // "\n" character after it is done parsing through the content part of
-          // the data
-          decodedParts.push(contents.trimRight());
-          contents = "";
-          break;
-        }
-        contents += (decodedLine + "\n");
+        // `readLine()` doesn't read the line ending, so we're adding it
+        contents.push(this.addNewLineToUint8ArrayLine(line.line));
       }
+    } catch (error) {
+      throw new Error("Could not separate parts from boundaries.\n" + error.stack);
+    }
 
-      // debug(decodedParts);
+    // debug(parts);
 
+    try {
       let formFiles: any = {};
 
-      for (let i in decodedParts) {
-        let part = decodedParts[i].trim().replace(boundary + "--", "");
-        const headers = await this.getMultipartPartHeaders(encoder.encode(part));
-        const contents = await this.getMultipartPartContents(
-          encoder.encode(part + "\n\n--"),
-          boundary,
-          headers.as_array
-        );
-        const headersObj = headers.as_object;
-        formFiles[headersObj.name] = {
-          name: headersObj.name, // This is not the same as the filename field
-          filename: headersObj.filename
-            ? headersObj.filename
-            : null,
-          content_disposition: headersObj.content_disposition
-            ? headersObj.content_disposition
-            : null,
-          content_type: headersObj.content_type
-            ? headersObj.content_type
-            : null,
-          bytes: encoder.encode(contents).byteLength,
-          contents: contents
-        };
+      for (let i in parts) {
+        // If the boundary (for some reason not known to the universe) still
+        // exists after not being included in the code above, then strip that
+        // shit out again.
+        let part = parts[i];
+        // const headers = await this.getMultipartPartHeaders(part);
+        // const contents = await this.getMultipartPartContents(
+        //   part,
+        //   boundary,
+        //   headers.as_array
+        // );
+        // const headersObj = headers.as_object;
+        // formFiles[headersObj.name] = {
+        //   name: headersObj.name, // This is not the same as the filename field
+        //   filename: headersObj.filename
+        //     ? headersObj.filename
+        //     : null,
+        //   content_disposition: headersObj.content_disposition
+        //     ? headersObj.content_disposition
+        //     : null,
+        //   content_type: headersObj.content_type
+        //     ? headersObj.content_type
+        //     : null,
+        //   bytes: contents.byteLength,
+        //   contents: contents
+        // };
       }
 
       return formFiles;
     } catch (error) {
-      throw new Error("Error reading request body as multipart/form-data.\n" + error);
+      throw new Error("Error reading request body as multipart/form-data.\n" + error.stack);
     }
   }
 
