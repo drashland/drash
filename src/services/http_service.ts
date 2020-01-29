@@ -587,6 +587,7 @@ export default class HttpService {
     // [x] Parse the headers into key-value pairs
     // [x] Parse the contents
     // [ ] readLine() might not be the way to go... might have to do readSlice()
+    // [ ] when pdf comes in, what does it look like?
     try {
       let formFiles: any = {};
 
