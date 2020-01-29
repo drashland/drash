@@ -141,64 +141,6 @@ export default class HttpService {
   }
 
   /**
-   * Get the contents of a single multipart body part.
-   *
-   * @param Uint8Array part
-   *     The part containing the contents.
-   * @param Uint8Array boundary
-   *     The boundary of the entire multipart body. This should not included a
-   *     line ending character.
-   * @param MultipartHeadersSchema headers
-   *     The headers of this part.
-   *
-   * @return Promise<string>
-   *     Returns the contents.
-   */
-  public async getMultipartPartContents(
-    part: Uint8Array,
-    boundary: string,
-    headersAsArray: string[]
-  ): Promise<Uint8Array> {
-    const br = new BufReader(new Deno.Buffer(part));
-
-    let contents: any = [];
-
-    for (;;) {
-      let line: any = await br.readLine();
-      line = line.line;
-      let decodedLine: string = decoder.decode(line);
-      // debug("decodedLine: " + decodedLine);
-      // Is this a boundary end?
-      if (decodedLine.trim() == (boundary + "--")) {
-        // debug("is boundary end");
-        break;
-      }
-      // Is this a header?
-      if (headersAsArray.indexOf(decodedLine) != -1) {
-        // debug("is header");
-        continue;
-      }
-      contents.push({
-        line: line,
-        bytes: line.byteLength
-      });
-      // debug("contents is now");
-      // debug(contents);
-    }
-
-    // debug("full contents");
-    // debug(contents);
-    // debug("end full contents");
-
-    const totalBytes = contents.reduce((a, b) => {
-      a.byteLength + b.byteLength;
-    });
-    let combinedLines = new Uint8Array(totalBytes);
-
-    return contents;
-  }
-
-  /**
    * Get the headers of a single multipart body part.
    *
    * @param Uint8Array part
@@ -641,6 +583,9 @@ export default class HttpService {
 
     // debug(parts);
 
+    // TODO
+    // [ ] Parse the headers into key-value pairs
+    // [ ] Parse the contents
     try {
       let formFiles: any = {};
 
@@ -649,27 +594,22 @@ export default class HttpService {
         // exists after not being included in the code above, then strip that
         // shit out again.
         let part = parts[i];
-        // const headers = await this.getMultipartPartHeaders(part);
-        // const contents = await this.getMultipartPartContents(
-        //   part,
-        //   boundary,
-        //   headers.as_array
-        // );
-        // const headersObj = headers.as_object;
-        // formFiles[headersObj.name] = {
-        //   name: headersObj.name, // This is not the same as the filename field
-        //   filename: headersObj.filename
-        //     ? headersObj.filename
-        //     : null,
-        //   content_disposition: headersObj.content_disposition
-        //     ? headersObj.content_disposition
-        //     : null,
-        //   content_type: headersObj.content_type
-        //     ? headersObj.content_type
-        //     : null,
-        //   bytes: contents.byteLength,
-        //   contents: contents
-        // };
+        const headers = await this.getMultipartPartHeaders(part.headers);
+        const headersObj = headers.as_object;
+        formFiles[headersObj.name] = {
+          name: headersObj.name, // This is not the same as the filename field
+          filename: headersObj.filename
+            ? headersObj.filename
+            : null,
+          content_disposition: headersObj.content_disposition
+            ? headersObj.content_disposition
+            : null,
+          content_type: headersObj.content_type
+            ? headersObj.content_type
+            : null,
+          bytes: part.contents.byteLength,
+          contents: decoder.decode(part.contents)
+        };
       }
 
       return formFiles;
