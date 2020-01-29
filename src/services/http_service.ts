@@ -584,8 +584,9 @@ export default class HttpService {
     // debug(parts);
 
     // TODO
-    // [ ] Parse the headers into key-value pairs
-    // [ ] Parse the contents
+    // [x] Parse the headers into key-value pairs
+    // [x] Parse the contents
+    // [ ] readLine() might not be the way to go... might have to do readSlice()
     try {
       let formFiles: any = {};
 
