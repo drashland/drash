@@ -608,7 +608,7 @@ export default class HttpService {
             ? headersObj.content_type
             : null,
           bytes: part.contents.byteLength,
-          contents: decoder.decode(part.contents)
+          contents: part.contents
         };
       }
 
