@@ -139,6 +139,10 @@ export default class Server {
       delete this.configs.resources;
     }
 
+    if (!configs.memory_allocation) {
+      configs.memory_allocation = {};
+    }
+
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
       configs.static_paths.forEach(path => {

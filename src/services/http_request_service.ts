@@ -4,6 +4,7 @@ import {
   contentType,
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
+type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
@@ -270,8 +271,8 @@ export default class HttpRequestService {
     request.getBodyParam = function getRequestBodyParam(input: string) {
       return t.getRequestBodyParam(pb, input);
     };
-    request.getHeaderParam = async function getRequestHeaderParam(input: string) {
-      return await t.getRequestHeaderParam(request, input);
+    request.getHeaderParam = function getRequestHeaderParam(input: string) {
+      return t.getRequestHeaderParam(request, input);
     };
     request.getPathParam = function getRequestPathParam(input: string) {
       return t.getRequestPathParam(request, input);
@@ -324,7 +325,8 @@ export default class HttpRequestService {
     if (contentType && contentType.includes("multipart/form-data")) {
       try {
         ret.data = await this.parseBodyAsMultipartFormData(
-          request,
+          request.body,
+          contentType.match(/boundary=([^\s]+)/)[1],
           options.memory_allocation.multipart_form_data
         );
         ret.content_type = "multipart/form-data";
@@ -396,12 +398,11 @@ export default class HttpRequestService {
    * @return any
    */
   public async parseBodyAsMultipartFormData(
-    request: any,
+    body: Reader,
+    boundary: string,
     maxMemory: number
   ): Promise<any> {
-    const contentType = request.headers.get("content-type");
-    const boundary = contentType.match(/boundary=([^\s]+)/)[1];
-    const mr = await new MultipartReader(request.body, boundary);
+    const mr = await new MultipartReader(body, boundary);
     return await mr.readForm(maxMemory);
   }
 
