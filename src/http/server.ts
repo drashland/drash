@@ -17,7 +17,7 @@ import {
  */
 export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
-  static REGEX_URI_REPLACEMENT = "([^/]+)";
+  static REGEX_URI_REPLACEMENT = "([^/]+)\/?";
   protected trackers = {
     requested_favicon: false
   };
