@@ -153,6 +153,7 @@ members.test("CoffeeResource", async () => {
   );
   members.assert.equals(await response.text(), '{"name":"Medium"}');
 
+  // TODO(crookse) application/x-www-form-urlencoded works, but this test keeps failing. Fix.
   // data = { id: 18 };
   // response = await members.fetch.get("http://localhost:1667/coffee/19/?location=from_body", {
   //   headers: {
@@ -163,6 +164,31 @@ members.test("CoffeeResource", async () => {
   // });
   // members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
 });
+
+// members.test("FilesResource", async () => {
+//   let response;
+
+//   const file = new TextDecoder().decode(await Deno.readAll(await Deno.open("./file_1.txt")))
+//   console.log(file);
+//   let formData = new FormData()
+//   await formData.append(
+//     "file_1",
+//     file,
+//     "file_1.txt"
+//   );
+
+//   console.log("file");
+
+//   response = await members.fetch.post("http://localhost:1667/files", {
+//     headers: {
+//       "Content-Type": undefined,
+//       // "Content-Type": "multipart/form-data; boundary=--------------------------434049563556637648550474",
+//       "Content-Length": 6
+//     },
+//     body: formData
+//   });
+//   members.assert.equals(await response.text(), '"Please specify a user ID."');
+// });
 
 await members.runTests();
 

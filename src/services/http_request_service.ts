@@ -261,8 +261,8 @@ export default class HttpRequestService {
 
     // Attach methods
     const t = this;
-    request.getBodyFile = async function getRequestBodyFile(input: string) {
-      return await t.getRequestBodyFile(pb, input);
+    request.getBodyFile = function getRequestBodyFile(input: string) {
+      return t.getRequestBodyFile(pb, input);
     };
     request.getBodyParam = function getRequestBodyParam(input: string) {
       return t.getRequestBodyParam(pb, input);
@@ -294,14 +294,6 @@ export default class HttpRequestService {
       return ret;
     }
 
-    // Convert memory to megabytes for parsing multipart/form-data. Also,
-    // default to 10 megabytes if memory allocation wasn't specified.
-    if (!options.memory_allocation.multipart_form_data) {
-      options.memory_allocation.multipart_form_data = 1024 * 1024 * 128;
-    } else {
-      options.memory_allocation.multipart_form_data *= 1024 * 1024;
-    }
-
     const contentType = request.headers.get("Content-Type");
 
     // No Content-Type header? Default to this.
@@ -320,10 +312,18 @@ export default class HttpRequestService {
     }
 
     if (contentType && contentType.includes("multipart/form-data")) {
+      let boundary: string;
+      try {
+        boundary = contentType.match(/boundary=([^\s]+)/)[1];
+      } catch (error) {
+        throw new Error(
+          `Error trying to find boundary.\n` + error.stack
+        );
+      }
       try {
         ret.data = await this.parseBodyAsMultipartFormData(
           request.body,
-          contentType.match(/boundary=([^\s]+)/)[1],
+          boundary,
           options.memory_allocation.multipart_form_data
         );
         ret.content_type = "multipart/form-data";
@@ -400,6 +400,13 @@ export default class HttpRequestService {
     boundary: string,
     maxMemory: number
   ): Promise<any> {
+    // Convert memory to megabytes for parsing multipart/form-data. Also,
+    // default to 128 megabytes if memory allocation wasn't specified.
+    if (!maxMemory) {
+      maxMemory = 1024 * 1024 * 128;
+    } else {
+      maxMemory *= 1024 * 1024;
+    }
     const mr = await new MultipartReader(body, boundary);
     return await mr.readForm(maxMemory);
   }

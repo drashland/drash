@@ -1,16 +1,12 @@
 import Drash from "../mod.ts";
 
 export default class FilesResource extends Drash.Http.Resource {
-  static paths = ["/files", "/files/:name"];
+  static paths = ["/files"];
 
-  public GET() {
-    return this.response;
-  }
-
-  public POST() {
-    this.response.body = this.request.getBodyParam("v-bp");
-    this.response.body = this.request.getHeaderParam("v-header");
-    this.response.body = this.request.getQueryParam("v_qp");
+  public async POST() {
+    this.response.body = new TextDecoder().decode(
+      await Deno.readAll(this.request.getBodyFile("file_1").contents)
+    );
     return this.response;
   }
 
