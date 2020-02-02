@@ -5,6 +5,10 @@ import {
   serve,
 } from "../../deps.ts";
 
+interface RunOptions {
+  address?: string;
+}
+
 /**
  * @memberof Drash.Http
  * @class Server
@@ -17,7 +21,7 @@ import {
  */
 export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
-  static REGEX_URI_REPLACEMENT = "([^/]+)\/?";
+  static REGEX_URI_REPLACEMENT = "([^/]+)";
   protected trackers = {
     requested_favicon: false
   };
@@ -241,7 +245,7 @@ export default class Server {
       return response.send();
 
     } catch (error) {
-      // console.log(error);
+    this.logDebug(error.stack);
       return this.handleHttpRequestError(request, error, resource, response);
     }
   }
@@ -370,11 +374,14 @@ export default class Server {
    *     This method just listens for requests at the address you provide in the
    *     configs.
    */
-  public async run(): Promise<void> {
+  public async run(options?: RunOptions): Promise<void> {
+    let address = options && options.address
+      ? options.address
+      : this.configs.address
     if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno server started at ${this.configs.address}.\n`);
+      console.log(`\nDeno server started at ${address}.\n`);
     }
-    this.deno_server = serve(this.configs.address);
+    this.deno_server = serve(address);
     for await (const request of this.deno_server) {
       try {
         this.handleHttpRequest(request);
@@ -431,7 +438,7 @@ export default class Server {
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
-            "$",
+              "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path
               .replace(":", "")
@@ -450,7 +457,7 @@ export default class Server {
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
-            "$",
+              "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path
               .replace(":", "")

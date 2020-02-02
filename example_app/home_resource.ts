@@ -2,15 +2,28 @@ import Drash from "../mod.ts";
 
 export default class HomeResource extends Drash.Http.Resource {
 
-  static paths = ["/"];
+  static paths = [
+    "/",
+    "/home"
+  ];
 
   public GET() {
     this.response.body = "GET request received!";
     return this.response;
   }
 
-  public async POST() {
-    this.response.body = await this.request.getBodyFile("file", 1024 * 1024);
+  public POST() {
+    this.response.body = "POST request received!"
+    return this.response;
+  }
+
+  public PUT() {
+    this.response.body = "PUT request received!"
+    return this.response;
+  }
+
+  public DELETE() {
+    this.response.body = "DELETE request received!"
     return this.response;
   }
 }

@@ -8,8 +8,8 @@ const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 interface ParsedBody {
-  content_type: any|undefined,
-  data: any|undefined
+  content_type: any|undefined;
+  data: any|undefined;
 }
 
 /**
@@ -41,18 +41,7 @@ export default class HttpRequestService {
    *     is `file_number_one`, then it will be accessible in the returned object
    *     as `{returned_object}.file_number_one`.
    */
-  public getBodyFile(parsedBody: ParsedBody, input: string): any {
-    if (
-      !parsedBody.content_type
-      || !parsedBody.content_type.includes("multipart/form-data")
-    ) {
-      throw new Error(
-        `Cannot read request Content-Type of ${contentType}. `
-        + `When using \`getBodyFile()\`, the only allowed type is `
-        + `\`multipart/form-data\`.`
-      );
-    }
-
+  public getRequestBodyFile(parsedBody: ParsedBody, input: string): any {
     return parsedBody.data[input];
   }
 
@@ -65,21 +54,7 @@ export default class HttpRequestService {
    *
    * @return any
    */
-  public getBodyParam(parsedBody: ParsedBody, input: string): any {
-    if (
-      !parsedBody.content_type
-      || (
-        !parsedBody.content_type.includes("application/json")
-        && !parsedBody.content_type.includes("application/x-www-form-urlencoded")
-      )
-    ) {
-      throw new Error(
-        `Cannot read request Content-Type of ${contentType}. `
-        + `When using \`getBodyParam()\`, the only allowed types are `
-        + `\`application/json\` and \`application/x-www-form-urlencoded\`.`
-      );
-    }
-
+  public getRequestBodyParam(parsedBody: ParsedBody, input: string): any {
     return parsedBody.data[input];
   }
 
@@ -89,7 +64,7 @@ export default class HttpRequestService {
    *
    * @return string
    */
-  public getHeaderParam(request: any, input: string): any {
+  public getRequestHeaderParam(request: any, input: string): any {
     return request.headers.get(input);
   }
 
@@ -99,7 +74,7 @@ export default class HttpRequestService {
    *
    * @return string
    */
-  public getPathParam(request: any, input: string): string {
+  public getRequestPathParam(request: any, input: string): string {
     // request.path_params is set in Drash.Http.Server.getResourceClass()
     return request.path_params[input];
   }
@@ -110,10 +85,7 @@ export default class HttpRequestService {
    *
    * @return string
    */
-  public getQueryParam(request: any, input: string): string {
-    if (!request.url_query_params) {
-      request.url_query_params = this.getUrlQueryParams(request);
-    }
+  public getRequestQueryParam(request: any, input: string): string {
     return request.url_query_params[input];
   };
 
@@ -254,8 +226,12 @@ export default class HttpRequestService {
    * @return boolean
    *     Returns `true` if the request has a body. Returns `false` if not.
    */
-  public hasBody(request: any): boolean {
-    return parseInt(request.headers.get("content-length")) > 0;
+  public async hasBody(request: any): Promise<any> {
+    let ret = parseInt(request.headers.get("content-length")) > 0;
+    if (!ret) {
+      ret = parseInt(request.headers.get("Content-Length")) > 0;
+    }
+    return ret;
   }
 
   /**
@@ -275,7 +251,6 @@ export default class HttpRequestService {
 
     // Attach properties
     request.url_path = this.getUrlPath(request);
-    console.log(request.url_path);
     request.url_query_params = this.getUrlQueryParams(request);
     request.response_content_type = this.getResponseContentType(
       request,
@@ -288,20 +263,21 @@ export default class HttpRequestService {
     const pb: ParsedBody = await this.parseBody(request, options);
 
     // Attach methods
-    request.getBodyFile = async function getBodyFile(input: string) {
-      return await this.getBodyFile(pb, input);
+    const t = this;
+    request.getBodyFile = async function getRequestBodyFile(input: string) {
+      return await t.getRequestBodyFile(pb, input);
     };
-    request.getBodyParam = async function getBodyParam(input: string) {
-      return await this.getBodyParam(pb, input);
+    request.getBodyParam = function getRequestBodyParam(input: string) {
+      return t.getRequestBodyParam(pb, input);
     };
-    request.getHeaderParam = async function getHeaderParam(input: string) {
-      return await this.getHeaderParam(request, input);
+    request.getHeaderParam = async function getRequestHeaderParam(input: string) {
+      return await t.getRequestHeaderParam(request, input);
     };
-    request.getPathParam = async function getPathParam(input: string) {
-      return await this.getPathParam(request, input);
+    request.getPathParam = function getRequestPathParam(input: string) {
+      return t.getRequestPathParam(request, input);
     };
-    request.getQueryParam = async function getQueryParam(input: string) {
-      return await this.getQueryParam(pb, input);
+    request.getQueryParam = function getRequestQueryParam(input: string) {
+      return t.getRequestQueryParam(request, input);
     };
 
     return request;
@@ -312,7 +288,10 @@ export default class HttpRequestService {
    *     Parse the specified request's body.
    */
   public async parseBody(request: any, options: any = {}): Promise<ParsedBody> {
-    let ret: ParsedBody;
+    let ret = {
+      content_type: undefined,
+      data: undefined,
+    };
 
     if (!this.hasBody(request)) {
       return ret;
@@ -331,7 +310,7 @@ export default class HttpRequestService {
     // No Content-Type header? Default to this.
     if (!contentType) {
       try {
-        ret.data = this.parseBodyAsFormUrlEncoded(request);
+        ret.data = await this.parseBodyAsFormUrlEncoded(request);
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
@@ -342,7 +321,7 @@ export default class HttpRequestService {
       }
     }
 
-    if (contentType.includes("multipart/form-data")) {
+    if (contentType && contentType.includes("multipart/form-data")) {
       try {
         ret.data = await this.parseBodyAsMultipartFormData(
           request,
@@ -357,9 +336,9 @@ export default class HttpRequestService {
       }
     }
 
-    if (request.headers.get("Content-Type").includes("application/json")) {
+    if (contentType && contentType.includes("application/json")) {
       try {
-        ret.data = this.parseBodyAsJson(request);
+        ret.data = await this.parseBodyAsJson(request);
         ret.content_type= "application/json";
       } catch (error) {
         throw new Error(
@@ -369,9 +348,9 @@ export default class HttpRequestService {
       }
     }
 
-    if (contentType.includes("application/x-www-form-urlencoded")) {
+    if (contentType && contentType.includes("application/x-www-form-urlencoded")) {
       try {
-        ret.data = this.parseBodyAsFormUrlEncoded(request);
+        ret.data = await this.parseBodyAsFormUrlEncoded(request);
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
@@ -395,6 +374,7 @@ export default class HttpRequestService {
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
     }
+    body = body.replace(/\"/g, "");
     return StringService.parseQueryParamsString(body);
   }
 
