@@ -2,7 +2,6 @@ import Drash from "../../mod.ts";
 import {
   STATUS_TEXT,
   Status,
-  ServerRequest,
   serve,
 } from "../../deps.ts";
 
@@ -156,27 +155,29 @@ export default class Server {
    *     The request object.
    *
    * @return any
-   *     Returns the `ServerRequest` object (or any "request" object) with more
-   *     properties and methods.
+   *     Returns any "request" object with more properties and methods that
+   *     Drash uses. For example, deno uses the `ServerRequest` object; and this
+   *     method takes that object and hydrates it with more properties and
+   *     methods.
    */
-  public getRequest(request: any): any {
-    const service = new Drash.Services.HttpRequestService(
-      request,
-      {
-        default_response_content_type: this.configs.response_output,
-        headers: {
-          base_url: this.configs.address
-        }
+  public async getRequest(request: any): Promise<any> {
+    request = await Drash.Services.HttpRequestService.hydrate(request, {
+      default_response_content_type: this.configs.response_output,
+      memory_allocation: {
+        multipart_form_data: this.configs.memory_allocation.multipart_form_data
+      },
+      headers: {
+        base_url: this.configs.address
       }
-    );
-    return service.getRequest();
+    });
+    return request;
   }
 
   /**
    * @description
    *     Handle an HTTP request from the Deno server.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return Promise<any>
@@ -197,7 +198,7 @@ export default class Server {
       `Request received: ${request.method.toUpperCase()} ${request.url}`
     );
 
-    request = this.getRequest(request);
+    request = await this.getRequest(request);
 
     let resourceClass = this.getResourceClass(request);
 
@@ -249,7 +250,7 @@ export default class Server {
    * @description
    *     Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    * @param any error
    *     The error object.
@@ -307,7 +308,7 @@ export default class Server {
    *     short-circuit favicon requests--preventing the requests from clogging
    *     the logs.
    *
-   * @param ServerRequest request
+   * @param any request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
@@ -334,7 +335,7 @@ export default class Server {
    * @description
    *     Handle HTTP requests for static path assets.
    *
-   * @param ServerRequest request
+   * @param any request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
@@ -596,7 +597,7 @@ export default class Server {
    * @description
    *     Get the resource class.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
@@ -635,7 +636,7 @@ export default class Server {
           }
 
           // Create the path params
-          // TODO(crookse) put in HttpService
+          // TODO(crookse) Put in HttpRequestService
           let requestPathnameParams = request.url_path.match(
             pathObj.regex_path
           );
@@ -661,7 +662,7 @@ export default class Server {
    * @description
    *     Is the request targeting a static path?
    *
-   * @param ServerRequest request
+   * @param any request
    *
    * @return boolean
    *     Returns true if the request targets a static path.
@@ -677,17 +678,14 @@ export default class Server {
     let requestUrl = "/" + staticPath;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = new Drash.Services.HttpRequestService(
-        request,
-        {
-          headers: {
-            "Response-Content-Type": Drash.Services.HttpService.getMimeType(
-              request.url,
-              true
-            )
-          }
+      request = Drash.Services.HttpRequestService.hydrate(request, {
+        headers: {
+          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+            request.url,
+            true
+          )
         }
-      );
+      });
       return true;
     }
 

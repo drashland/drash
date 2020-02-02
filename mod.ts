@@ -87,7 +87,7 @@ namespace Drash {
     export type HttpService = http_service;
     export const HttpService = new http_service();
     export type HttpRequestService = http_request_service;
-    export const HttpRequestService = http_request_service;
+    export const HttpRequestService = new http_request_service();
   }
 
   export namespace Util {
