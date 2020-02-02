@@ -2,6 +2,7 @@ import Drash from "../../mod.ts";
 import {
   STATUS_TEXT,
   Status,
+  ServerRequest,
   serve,
 } from "../../deps.ts";
 
@@ -90,7 +91,9 @@ export default class Server {
    */
   protected static_paths: string[] = [];
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -141,34 +144,32 @@ export default class Server {
     }
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
    *     Get the request object with more properties and methods.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any
-   *     Returns the `ServerRequest` object with more properties and methods.
+   *     Returns the `ServerRequest` object (or any "request" object) with more
+   *     properties and methods.
    */
   public getRequest(request: any): any {
-    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-      base_url: this.configs.address,
-    });
-
-    request.path_params = {};
-    request.body_parsed = {};
-
-    // Were we able to determine the content type the request wants to receive?
-    if (!request.response_content_type) {
-      request.response_content_type = this.configs.response_output
-        ? this.configs.response_output
-        : "application/json";
-    }
-
-    return request;
+    const service = new Drash.Services.HttpRequestService(
+      request,
+      {
+        default_response_content_type: this.configs.response_output,
+        headers: {
+          base_url: this.configs.address
+        }
+      }
+    );
+    return service.getRequest();
   }
 
   /**
@@ -197,7 +198,6 @@ export default class Server {
     );
 
     request = this.getRequest(request);
-    await request.parseBody();
 
     let resourceClass = this.getResourceClass(request);
 
@@ -394,7 +394,9 @@ export default class Server {
     this.deno_server.close();
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -459,6 +461,7 @@ export default class Server {
       } catch (error) {
       }
     });
+
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
@@ -674,14 +677,17 @@ export default class Server {
     let requestUrl = "/" + staticPath;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-        headers: {
-          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
-            request.url,
-            true
-          )
+      request = new Drash.Services.HttpRequestService(
+        request,
+        {
+          headers: {
+            "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+              request.url,
+              true
+            )
+          }
         }
-      });
+      );
       return true;
     }
 
