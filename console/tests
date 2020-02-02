@@ -2,8 +2,15 @@
 
 (
   export DRASH_ROOT_DIR=$PWD
+  echo -e "==================================================\n"
+  echo -e "Running source code tests...\n"
   deno --allow-net --allow-read --allow-write --allow-env tests/test.ts
+  echo -e "Done.\n"
   cd example_app
+  echo -e "==================================================\n"
+  echo -e "Running example app tests...\n"
   deno --allow-net --allow-read --allow-write --allow-env app_test.ts
+  echo -e "Done.\n"
+  echo -e "==================================================\n\n"
   cd -
 )
