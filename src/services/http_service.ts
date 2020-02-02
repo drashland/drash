@@ -9,7 +9,6 @@ import { MultipartReader, contentType } from "../../deps.ts";
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
-
   /**
    * @description
    *     Get a MIME type for a file based on its extension.

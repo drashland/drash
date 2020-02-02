@@ -54,8 +54,7 @@ export default class StringService {
         }
       }
       if (keyFormat == "underscore") {
-        key = kvpStringSplit[0]
-          .replace(/-/g, "_");
+        key = kvpStringSplit[0].replace(/-/g, "_");
         if (keyCase == "normal") {
           queryParams[key] = kvpStringSplit[1];
         }

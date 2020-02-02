@@ -1,9 +1,5 @@
 import Drash from "../../mod.ts";
-import {
-  STATUS_TEXT,
-  Status,
-  serve,
-} from "../../deps.ts";
+import { STATUS_TEXT, Status, serve } from "../../deps.ts";
 
 interface RunOptions {
   address?: string;
@@ -70,7 +66,7 @@ export default class Server {
    */
   protected middleware: any = {
     resource_level: {},
-    server_level: {},
+    server_level: {}
   };
 
   /**
@@ -247,9 +243,8 @@ export default class Server {
       // Send the response
       this.logDebug("Sending response. " + response.status_code + ".");
       return response.send();
-
     } catch (error) {
-    this.logDebug(error.stack);
+      this.logDebug(error.stack);
       return this.handleHttpRequestError(request, error, resource, response);
     }
   }
@@ -287,19 +282,15 @@ export default class Server {
     // (Method Not Allowed) response.
     if (resource) {
       if (!response) {
-        if (typeof resource[request.method.toUpperCase()] !== 'function') {
+        if (typeof resource[request.method.toUpperCase()] !== "function") {
           error = new Drash.Exceptions.HttpException(405);
         }
       }
     }
 
     response = new Drash.Http.Response(request);
-    response.status_code = error.code
-      ? error.code
-      : null;
-    response.body = error.message
-      ? error.message
-      : response.getStatusMessage();
+    response.status_code = error.code ? error.code : null;
+    response.body = error.message ? error.message : response.getStatusMessage();
 
     this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
@@ -328,9 +319,7 @@ export default class Server {
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logDebug("/favicon.ico requested.");
-      this.logDebug(
-        "All future log messages for /favicon.ico will be muted."
-      );
+      this.logDebug("All future log messages for /favicon.ico will be muted.");
     }
     let response = {
       status: 200,
@@ -359,7 +348,11 @@ export default class Server {
   }
 
   public getResourceObject(resourceClass: any, request: any): any {
-    let resourceObj = new resourceClass(request, new Drash.Http.Response(request), this);
+    let resourceObj = new resourceClass(
+      request,
+      new Drash.Http.Response(request),
+      this
+    );
     // We have to add the static properties back because they get blown away
     // when the resource object is created
     resourceObj.paths = resourceClass.paths;
@@ -379,9 +372,8 @@ export default class Server {
    *     configs.
    */
   public async run(options?: RunOptions): Promise<void> {
-    let address = options && options.address
-      ? options.address
-      : this.configs.address
+    let address =
+      options && options.address ? options.address : this.configs.address;
     if (Deno.env().DRASH_PROCESS != "test") {
       console.log(`\nDeno server started at ${address}.\n`);
     }
@@ -430,9 +422,8 @@ export default class Server {
       let pathObj;
       let pathIsWildCard = false;
       try {
-        pathIsWildCard = (path == "*" || path.includes("*"));
-      } catch (error) {
-      }
+        pathIsWildCard = path == "*" || path.includes("*");
+      } catch (error) {}
       if (pathIsWildCard) {
         pathObj = {
           og_path: path,
@@ -442,7 +433,7 @@ export default class Server {
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
-              "/?$",
+            "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path
               .replace(":", "")
@@ -461,7 +452,7 @@ export default class Server {
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
-              "/?$",
+            "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path
               .replace(":", "")
@@ -470,10 +461,8 @@ export default class Server {
           })
         };
         resourceClass.paths[index] = pathObj;
-      } catch (error) {
-      }
+      } catch (error) {}
     });
-
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
@@ -492,17 +481,15 @@ export default class Server {
     if (middleware.hasOwnProperty("server_level")) {
       if (middleware.server_level.hasOwnProperty("before_request")) {
         this.middleware.server_level.before_request = [];
-        middleware.server_level.before_request
-          .forEach(middlewareClass => {
-            this.middleware.server_level.before_request.push(middlewareClass);
-          });
+        middleware.server_level.before_request.forEach(middlewareClass => {
+          this.middleware.server_level.before_request.push(middlewareClass);
+        });
       }
       if (middleware.server_level.hasOwnProperty("after_request")) {
         this.middleware.server_level.after_request = [];
-        middleware.server_level.after_request
-          .forEach(middlewareClass => {
-            this.middleware.server_level.after_request.push(middlewareClass);
-          });
+        middleware.server_level.after_request.forEach(middlewareClass => {
+          this.middleware.server_level.after_request.push(middlewareClass);
+        });
       }
     }
 
@@ -550,12 +537,19 @@ export default class Server {
     }
 
     // Execute resource-level middleware
-    if (resource.middleware && resource.middleware.hasOwnProperty("before_request")) {
+    if (
+      resource.middleware &&
+      resource.middleware.hasOwnProperty("before_request")
+    ) {
       resource.middleware.before_request.forEach(middlewareClass => {
         if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
-        let middleware = new this.middleware.resource_level[middlewareClass](request, this, resource);
+        let middleware = new this.middleware.resource_level[middlewareClass](
+          request,
+          this,
+          resource
+        );
         middleware.run();
       });
     }
@@ -582,12 +576,19 @@ export default class Server {
     }
 
     // Execute resource-level middleware
-    if (resource.middleware && resource.middleware.hasOwnProperty("after_request")) {
+    if (
+      resource.middleware &&
+      resource.middleware.hasOwnProperty("after_request")
+    ) {
       resource.middleware.after_request.forEach(middlewareClass => {
         if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
-        let middleware = new this.middleware.resource_level[middlewareClass](request, this, resource);
+        let middleware = new this.middleware.resource_level[middlewareClass](
+          request,
+          this,
+          resource
+        );
         middleware.run();
       });
     }

@@ -8,7 +8,6 @@ import Drash from "../../mod.ts";
  *     This is the base middleware class for all middleware classes.
  */
 export default abstract class Middleware {
-
   /**
    * @description
    *     A property to hold the location that this middleware should process.
@@ -70,9 +69,7 @@ export default abstract class Middleware {
   ) {
     this.request = request;
     this.server = server;
-    this.resource = resource
-      ? resource
-      : null;
+    this.resource = resource ? resource : null;
   }
 
   // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////

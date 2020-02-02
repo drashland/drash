@@ -1,16 +1,12 @@
-import {
-  MultipartReader,
-  ServerRequest,
-  contentType,
-} from "../../deps.ts";
+import { MultipartReader, ServerRequest, contentType } from "../../deps.ts";
 import StringService from "./string_service.ts";
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 interface ParsedBody {
-  content_type: any|undefined;
-  data: any|undefined;
+  content_type: any | undefined;
+  data: any | undefined;
 }
 
 /**
@@ -21,7 +17,6 @@ interface ParsedBody {
  *     This class helps perform HTTP request related processes.
  */
 export default class HttpRequestService {
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC //////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -88,7 +83,7 @@ export default class HttpRequestService {
    */
   public getRequestQueryParam(request: any, input: string): string {
     return request.url_query_params[input];
-  };
+  }
 
   /**
    * @description
@@ -137,9 +132,10 @@ export default class HttpRequestService {
 
     // Check the request's body to see if
     // {response_content_type: {content-type}} has been specified
-    contentType = request.parsed_body && request.parsed_body.response_content_type
-      ? request.parsed_body.response_content_type
-      : contentType;
+    contentType =
+      request.parsed_body && request.parsed_body.response_content_type
+        ? request.parsed_body.response_content_type
+        : contentType;
 
     if (!contentType) {
       contentType = defaultContentType;
@@ -291,7 +287,7 @@ export default class HttpRequestService {
   public async parseBody(request: any, options: any = {}): Promise<ParsedBody> {
     let ret = {
       content_type: undefined,
-      data: undefined,
+      data: undefined
     };
 
     if (!this.hasBody(request)) {
@@ -301,9 +297,9 @@ export default class HttpRequestService {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 10 megabytes if memory allocation wasn't specified.
     if (!options.memory_allocation.multipart_form_data) {
-      options.memory_allocation.multipart_form_data = (1024 * 1024) * 128;
+      options.memory_allocation.multipart_form_data = 1024 * 1024 * 128;
     } else {
-      options.memory_allocation.multipart_form_data *= (1024 * 1024);
+      options.memory_allocation.multipart_form_data *= 1024 * 1024;
     }
 
     const contentType = request.headers.get("Content-Type");
@@ -315,9 +311,10 @@ export default class HttpRequestService {
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
-          `Error reading request body. No Content-Type header was specified. `
-          + `Therefore, the body was parsed as application/x-www-form-urlencoded `
-          + `by default and failed.\n` + error.stack
+          `Error reading request body. No Content-Type header was specified. ` +
+            `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
+            `by default and failed.\n` +
+            error.stack
         );
       }
     }
@@ -332,8 +329,7 @@ export default class HttpRequestService {
         ret.content_type = "multipart/form-data";
       } catch (error) {
         throw new Error(
-          `Error reading request body as multipart/form-data.\n`
-          + error.stack
+          `Error reading request body as multipart/form-data.\n` + error.stack
         );
       }
     }
@@ -341,23 +337,25 @@ export default class HttpRequestService {
     if (contentType && contentType.includes("application/json")) {
       try {
         ret.data = await this.parseBodyAsJson(request);
-        ret.content_type= "application/json";
+        ret.content_type = "application/json";
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/json.\n`
-          + error.stack
+          `Error reading request body as application/json.\n` + error.stack
         );
       }
     }
 
-    if (contentType && contentType.includes("application/x-www-form-urlencoded")) {
+    if (
+      contentType &&
+      contentType.includes("application/x-www-form-urlencoded")
+    ) {
       try {
         ret.data = await this.parseBodyAsFormUrlEncoded(request);
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/x-www-form-urlencoded.\n`
-          + error.stack
+          `Error reading request body as application/x-www-form-urlencoded.\n` +
+            error.stack
         );
       }
     }
@@ -413,7 +411,7 @@ export default class HttpRequestService {
    * @param any request
    * @param any headers
    */
-  public setHeaders(request:any, headers: any) {
+  public setHeaders(request: any, headers: any) {
     if (headers) {
       for (let key in headers) {
         request.headers.set(key, headers[key]);
