@@ -5,11 +5,7 @@ const decoder = new TextDecoder("utf-8");
 /**
  * Get a mocked request object.
  */
-function mockRequest(
-  url = "/",
-  method = "get",
-  headers?: any,
-): any {
+function mockRequest(url = "/", method = "get", headers?: any): any {
   let request: any = new ServerRequest();
   request.url = url;
   request.method = method;
@@ -31,13 +27,12 @@ function mockRequest(
   };
 
   return request;
-};
+}
 
 /**
  * Get a mocked server object.
  */
-class MockServer extends Drash.Http.Server {
-}
+class MockServer extends Drash.Http.Server {}
 
 function responseJsonEquals(actual: any, expected: any) {
   return assertEquals(JSON.parse(actual), expected);
@@ -46,35 +41,35 @@ function responseJsonEquals(actual: any, expected: any) {
 const makeRequest = {
   get(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "GET",
+      method: "GET"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
   post(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "POST",
+      method: "POST"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
   put(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "PUT",
+      method: "PUT"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
   delete(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "DELETE",
+      method: "DELETE"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
   patch(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "PATCH",
+      method: "PATCH"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
