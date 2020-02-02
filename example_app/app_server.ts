@@ -10,12 +10,7 @@ let server = new Drash.Http.Server({
   memory_allocation: {
     multipart_form_data: 128
   },
-  resources: [
-    CoffeeResource,
-    FilesResource,
-    HomeResource,
-    UsersResource,
-  ],
+  resources: [CoffeeResource, FilesResource, HomeResource, UsersResource]
 });
 
 export default server;

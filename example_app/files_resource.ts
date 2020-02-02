@@ -1,11 +1,7 @@
 import Drash from "../mod.ts";
 
 export default class FilesResource extends Drash.Http.Resource {
-
-  static paths = [
-    "/files",
-    "/files/:name"
-  ];
+  static paths = ["/files", "/files/:name"];
 
   public GET() {
     return this.response;

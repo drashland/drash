@@ -1,57 +1,58 @@
 import members from "../tests/members.ts";
 import server from "./app_server.ts";
-server.run({address: "localhost:1667"});
+server.run({ address: "localhost:1667" });
 
 members.test("HomeResource", async () => {
   let response;
 
   response = await members.fetch.get("http://localhost:1667");
-  members.assert.equals(await response.text(), "\"GET request received!\"");
+  members.assert.equals(await response.text(), '"GET request received!"');
 
   response = await members.fetch.get("http://localhost:1667/home");
-  members.assert.equals(await response.text(), "\"GET request received!\"");
+  members.assert.equals(await response.text(), '"GET request received!"');
 
   response = await members.fetch.get("http://localhost:1667/home/");
-  members.assert.equals(await response.text(), "\"GET request received!\"");
+  members.assert.equals(await response.text(), '"GET request received!"');
 
   response = await members.fetch.get("http://localhost:1667/home//");
-  members.assert.equals(await response.text(), "\"Not Found\"");
+  members.assert.equals(await response.text(), '"Not Found"');
 
   response = await members.fetch.post("http://localhost:1667");
-  members.assert.equals(await response.text(), "\"POST request received!\"");
+  members.assert.equals(await response.text(), '"POST request received!"');
 
   response = await members.fetch.put("http://localhost:1667");
-  members.assert.equals(await response.text(), "\"PUT request received!\"");
+  members.assert.equals(await response.text(), '"PUT request received!"');
 
   response = await members.fetch.delete("http://localhost:1667");
-  members.assert.equals(await response.text(), "\"DELETE request received!\"");
+  members.assert.equals(await response.text(), '"DELETE request received!"');
 
   response = await members.fetch.patch("http://localhost:1667");
-  members.assert.equals(await response.text(), "\"Method Not Allowed\"");
-
+  members.assert.equals(await response.text(), '"Method Not Allowed"');
 });
 
 members.test("UsersResource", async () => {
   let response;
 
   response = await members.fetch.get("http://localhost:1667/users");
-  members.assert.equals(await response.text(), "\"Please specify a user ID.\"");
+  members.assert.equals(await response.text(), '"Please specify a user ID."');
 
   response = await members.fetch.get("http://localhost:1667/users/");
-  members.assert.equals(await response.text(), "\"Please specify a user ID.\"");
+  members.assert.equals(await response.text(), '"Please specify a user ID."');
 
   response = await members.fetch.get("http://localhost:1667/users//");
-  members.assert.equals(await response.text(), "\"Not Found\"");
+  members.assert.equals(await response.text(), '"Not Found"');
 
   response = await members.fetch.get("http://localhost:1667/users/17");
-  members.assert.equals(await response.text(), "{\"id\":17,\"name\":\"Thor\"}");
+  members.assert.equals(await response.text(), '{"id":17,"name":"Thor"}');
 
   response = await members.fetch.get("http://localhost:1667/users/17/");
-  members.assert.equals(await response.text(), "{\"id\":17,\"name\":\"Thor\"}");
+  members.assert.equals(await response.text(), '{"id":17,"name":"Thor"}');
 
   response = await members.fetch.get("http://localhost:1667/users/18");
-  members.assert.equals(await response.text(), `\"User with ID \\\"18\\\" not found.\"`);
-
+  members.assert.equals(
+    await response.text(),
+    `\"User with ID \\\"18\\\" not found.\"`
+  );
 });
 
 members.test("CoffeeResource", async () => {
@@ -62,89 +63,95 @@ members.test("CoffeeResource", async () => {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "\"Please specify a coffee ID.\"");
+  members.assert.equals(await response.text(), '"Please specify a coffee ID."');
 
   response = await members.fetch.get("http://localhost:1667/coffee/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "\"Please specify a coffee ID.\"");
+  members.assert.equals(await response.text(), '"Please specify a coffee ID."');
 
   response = await members.fetch.get("http://localhost:1667/coffee//", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "\"Not Found\"");
+  members.assert.equals(await response.text(), '"Not Found"');
 
   response = await members.fetch.get("http://localhost:1667/coffee/17", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "{\"name\":\"Light\"}");
+  members.assert.equals(await response.text(), '{"name":"Light"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/17/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "{\"name\":\"Light\"}");
+  members.assert.equals(await response.text(), '{"name":"Light"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/18", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
+  members.assert.equals(await response.text(), '{"name":"Medium"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/18/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
+  members.assert.equals(await response.text(), '{"name":"Medium"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/19", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "{\"name\":\"Dark\"}");
+  members.assert.equals(await response.text(), '{"name":"Dark"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/19/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "{\"name\":\"Dark\"}");
+  members.assert.equals(await response.text(), '{"name":"Dark"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/20", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), `\"Coffee with ID \\\"20\\\" not found.\"`);
+  members.assert.equals(
+    await response.text(),
+    `\"Coffee with ID \\\"20\\\" not found.\"`
+  );
 
   response = await members.fetch.post("http://localhost:1667/coffee/17/", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded"
     }
   });
-  members.assert.equals(await response.text(), "\"Method Not Allowed\"");
+  members.assert.equals(await response.text(), '"Method Not Allowed"');
 
   let data;
 
   data = { id: 18 };
-  response = await members.fetch.get("http://localhost:1667/coffee/19?location=from_body", {
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": JSON.stringify(data).length
-    },
-    body: data
-  });
-  members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
+  response = await members.fetch.get(
+    "http://localhost:1667/coffee/19?location=from_body",
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": JSON.stringify(data).length
+      },
+      body: data
+    }
+  );
+  members.assert.equals(await response.text(), '{"name":"Medium"}');
 
   // data = { id: 18 };
   // response = await members.fetch.get("http://localhost:1667/coffee/19/?location=from_body", {
@@ -157,7 +164,6 @@ members.test("CoffeeResource", async () => {
   // members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
 });
 
-await members.runTests()
+await members.runTests();
 
 server.close();
-

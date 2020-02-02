@@ -1,11 +1,7 @@
 import Drash from "../mod.ts";
 
 export default class UsersResource extends Drash.Http.Resource {
-
-  static paths = [
-    "/users",
-    "/users/:id",
-  ]
+  static paths = ["/users", "/users/:id"];
 
   public GET() {
     const userId = this.request.getPathParam("id");
@@ -32,11 +28,17 @@ export default class UsersResource extends Drash.Http.Resource {
       users = JSON.parse(users);
       user = users[userId];
     } catch (error) {
-      throw new Drash.Exceptions.HttpException(400, `Error getting user with ID "${userId}". Error: ${error.message}.`);
+      throw new Drash.Exceptions.HttpException(
+        400,
+        `Error getting user with ID "${userId}". Error: ${error.message}.`
+      );
     }
 
     if (!user) {
-      throw new Drash.Exceptions.HttpException(404, `User with ID "${userId}" not found.`);
+      throw new Drash.Exceptions.HttpException(
+        404,
+        `User with ID "${userId}" not found.`
+      );
     }
 
     return user;

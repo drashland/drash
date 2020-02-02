@@ -1,11 +1,7 @@
 import Drash from "../mod.ts";
 
 export default class CoffeeResource extends Drash.Http.Resource {
-
-  static paths = [
-    "/coffee",
-    "/coffee/:id",
-  ]
+  static paths = ["/coffee", "/coffee/:id"];
 
   protected coffee = {
     17: {
@@ -16,7 +12,7 @@ export default class CoffeeResource extends Drash.Http.Resource {
     },
     19: {
       name: "Dark"
-    },
+    }
   };
 
   public GET() {
@@ -44,11 +40,17 @@ export default class CoffeeResource extends Drash.Http.Resource {
     try {
       coffee = this.coffee[coffeeId];
     } catch (error) {
-      throw new Drash.Exceptions.HttpException(400, `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`);
+      throw new Drash.Exceptions.HttpException(
+        400,
+        `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`
+      );
     }
 
     if (!coffee) {
-      throw new Drash.Exceptions.HttpException(404, `Coffee with ID "${coffeeId}" not found.`);
+      throw new Drash.Exceptions.HttpException(
+        404,
+        `Coffee with ID "${coffeeId}" not found.`
+      );
     }
 
     return coffee;
