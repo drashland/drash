@@ -5,21 +5,14 @@ const decoder = new TextDecoder("utf-8");
 /**
  * Get a mocked request object.
  */
-function mockRequest(
-  url = "/",
-  method = "get",
-  headers?: any,
-  hydrate = true
-): any {
-  let request = new ServerRequest();
+function mockRequest(url = "/", method = "get", headers?: any): any {
+  let request: any = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
-  if (hydrate) {
-    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-      headers: headers
-    });
-  }
+  request = Drash.Services.HttpRequestService.hydrate(request, {
+    headers: headers
+  });
 
   //
   // Stub `respond()` so we don't run into the following error:
@@ -34,13 +27,12 @@ function mockRequest(
   };
 
   return request;
-};
+}
 
 /**
  * Get a mocked server object.
  */
-class MockServer extends Drash.Http.Server {
-}
+class MockServer extends Drash.Http.Server {}
 
 function responseJsonEquals(actual: any, expected: any) {
   return assertEquals(JSON.parse(actual), expected);
@@ -49,14 +41,35 @@ function responseJsonEquals(actual: any, expected: any) {
 const makeRequest = {
   get(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "GET",
+      method: "GET"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
   post(url: string, options: any = {}) {
     options = Object.assign(options, {
-      method: "POST",
+      method: "POST"
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  },
+  put(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "PUT"
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  },
+  delete(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "DELETE"
+    });
+    options.body = JSON.stringify(options.body);
+    return fetch(url, options);
+  },
+  patch(url: string, options: any = {}) {
+    options = Object.assign(options, {
+      method: "PATCH"
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);

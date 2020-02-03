@@ -8,8 +8,6 @@ import "./unit/exceptions/http_exception_test.ts";
 
 // Http
 import "./unit/http/middleware_test.ts";
-import "./unit/http/resource_test.ts";
-import "./unit/http/response_test.ts";
 import "./unit/http/server_test.ts";
 
 // Loggers
@@ -18,6 +16,7 @@ import "./unit/loggers/console_logger_test.ts";
 
 // Services
 import "./unit/services/http_service_test.ts";
+// import "./unit/services/http_request_service_test.ts";
 
 // Util
 import "./unit/util_test.ts";

@@ -139,7 +139,7 @@ export function getFileSystemStructure(dir: string): any {
       snake_cased: filename.replace(".", "_"),
       // Is this file a directory?
       isDirectory: () => {
-        let extension = filename.split(".")[1]
+        let extension = filename.split(".")[1];
         return !extension;
       }
     });

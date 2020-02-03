@@ -33,3 +33,7 @@ export {
 export {
   StringReader
 } from "https://deno.land/std@v0.31.0/io/readers.ts";
+
+export {
+  MultipartReader
+} from "https://deno.land/std@v0.31.0/mime/multipart.ts";

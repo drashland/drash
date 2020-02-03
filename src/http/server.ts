@@ -1,9 +1,9 @@
 import Drash from "../../mod.ts";
-import {
-  STATUS_TEXT,
-  Status,
-  serve,
-} from "../../deps.ts";
+import { STATUS_TEXT, Status, serve } from "../../deps.ts";
+
+interface RunOptions {
+  address?: string;
+}
 
 /**
  * @memberof Drash.Http
@@ -66,7 +66,7 @@ export default class Server {
    */
   protected middleware: any = {
     resource_level: {},
-    server_level: {},
+    server_level: {}
   };
 
   /**
@@ -90,7 +90,9 @@ export default class Server {
    */
   protected static_paths: string[] = [];
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -133,6 +135,10 @@ export default class Server {
       delete this.configs.resources;
     }
 
+    if (!configs.memory_allocation) {
+      configs.memory_allocation = {};
+    }
+
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
       configs.static_paths.forEach(path => {
@@ -141,33 +147,33 @@ export default class Server {
     }
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
    *     Get the request object with more properties and methods.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return any
-   *     Returns the `ServerRequest` object with more properties and methods.
+   *     Returns any "request" object with more properties and methods that
+   *     Drash uses. For example, deno uses the `ServerRequest` object; and this
+   *     method takes that object and hydrates it with more properties and
+   *     methods.
    */
-  public getRequest(request: any): any {
-    request = Drash.Services.HttpService.hydrateHttpRequest(request, {
-      base_url: this.configs.address,
+  public async getRequest(request: any): Promise<any> {
+    request = await Drash.Services.HttpRequestService.hydrate(request, {
+      default_response_content_type: this.configs.response_output,
+      memory_allocation: {
+        multipart_form_data: this.configs.memory_allocation.multipart_form_data
+      },
+      headers: {
+        base_url: this.configs.address
+      }
     });
-
-    request.path_params = {};
-    request.body_parsed = {};
-
-    // Were we able to determine the content type the request wants to receive?
-    if (!request.response_content_type) {
-      request.response_content_type = this.configs.response_output
-        ? this.configs.response_output
-        : "application/json";
-    }
-
     return request;
   }
 
@@ -175,7 +181,7 @@ export default class Server {
    * @description
    *     Handle an HTTP request from the Deno server.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return Promise<any>
@@ -196,8 +202,7 @@ export default class Server {
       `Request received: ${request.method.toUpperCase()} ${request.url}`
     );
 
-    request = this.getRequest(request);
-    await request.parseBody();
+    request = await this.getRequest(request);
 
     let resourceClass = this.getResourceClass(request);
 
@@ -238,9 +243,8 @@ export default class Server {
       // Send the response
       this.logDebug("Sending response. " + response.status_code + ".");
       return response.send();
-
     } catch (error) {
-      // console.log(error);
+      this.logDebug(error.stack);
       return this.handleHttpRequestError(request, error, resource, response);
     }
   }
@@ -249,7 +253,7 @@ export default class Server {
    * @description
    *     Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    * @param any error
    *     The error object.
@@ -278,19 +282,15 @@ export default class Server {
     // (Method Not Allowed) response.
     if (resource) {
       if (!response) {
-        if (typeof resource[request.method.toUpperCase()] !== 'function') {
+        if (typeof resource[request.method.toUpperCase()] !== "function") {
           error = new Drash.Exceptions.HttpException(405);
         }
       }
     }
 
     response = new Drash.Http.Response(request);
-    response.status_code = error.code
-      ? error.code
-      : null;
-    response.body = error.message
-      ? error.message
-      : response.getStatusMessage();
+    response.status_code = error.code ? error.code : null;
+    response.body = error.message ? error.message : response.getStatusMessage();
 
     this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
@@ -307,7 +307,7 @@ export default class Server {
    *     short-circuit favicon requests--preventing the requests from clogging
    *     the logs.
    *
-   * @param ServerRequest request
+   * @param any request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
@@ -319,9 +319,7 @@ export default class Server {
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logDebug("/favicon.ico requested.");
-      this.logDebug(
-        "All future log messages for /favicon.ico will be muted."
-      );
+      this.logDebug("All future log messages for /favicon.ico will be muted.");
     }
     let response = {
       status: 200,
@@ -334,7 +332,7 @@ export default class Server {
    * @description
    *     Handle HTTP requests for static path assets.
    *
-   * @param ServerRequest request
+   * @param any request
    *
    * @return any
    *     Returns the response as stringified JSON. This is only used for unit
@@ -350,7 +348,11 @@ export default class Server {
   }
 
   public getResourceObject(resourceClass: any, request: any): any {
-    let resourceObj = new resourceClass(request, new Drash.Http.Response(request), this);
+    let resourceObj = new resourceClass(
+      request,
+      new Drash.Http.Response(request),
+      this
+    );
     // We have to add the static properties back because they get blown away
     // when the resource object is created
     resourceObj.paths = resourceClass.paths;
@@ -369,11 +371,13 @@ export default class Server {
    *     This method just listens for requests at the address you provide in the
    *     configs.
    */
-  public async run(): Promise<void> {
+  public async run(options?: RunOptions): Promise<void> {
+    let address =
+      options && options.address ? options.address : this.configs.address;
     if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno server started at ${this.configs.address}.\n`);
+      console.log(`\nDeno server started at ${address}.\n`);
     }
-    this.deno_server = serve(this.configs.address);
+    this.deno_server = serve(address);
     for await (const request of this.deno_server) {
       try {
         this.handleHttpRequest(request);
@@ -394,7 +398,9 @@ export default class Server {
     this.deno_server.close();
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -416,9 +422,8 @@ export default class Server {
       let pathObj;
       let pathIsWildCard = false;
       try {
-        pathIsWildCard = (path == "*" || path.includes("*"));
-      } catch (error) {
-      }
+        pathIsWildCard = path == "*" || path.includes("*");
+      } catch (error) {}
       if (pathIsWildCard) {
         pathObj = {
           og_path: path,
@@ -428,7 +433,7 @@ export default class Server {
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
-            "$",
+            "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path
               .replace(":", "")
@@ -447,7 +452,7 @@ export default class Server {
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
-            "$",
+            "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(path => {
             return path
               .replace(":", "")
@@ -456,8 +461,7 @@ export default class Server {
           })
         };
         resourceClass.paths[index] = pathObj;
-      } catch (error) {
-      }
+      } catch (error) {}
     });
 
     // Store the resource so it can be retrieved when requested
@@ -477,17 +481,15 @@ export default class Server {
     if (middleware.hasOwnProperty("server_level")) {
       if (middleware.server_level.hasOwnProperty("before_request")) {
         this.middleware.server_level.before_request = [];
-        middleware.server_level.before_request
-          .forEach(middlewareClass => {
-            this.middleware.server_level.before_request.push(middlewareClass);
-          });
+        middleware.server_level.before_request.forEach(middlewareClass => {
+          this.middleware.server_level.before_request.push(middlewareClass);
+        });
       }
       if (middleware.server_level.hasOwnProperty("after_request")) {
         this.middleware.server_level.after_request = [];
-        middleware.server_level.after_request
-          .forEach(middlewareClass => {
-            this.middleware.server_level.after_request.push(middlewareClass);
-          });
+        middleware.server_level.after_request.forEach(middlewareClass => {
+          this.middleware.server_level.after_request.push(middlewareClass);
+        });
       }
     }
 
@@ -535,12 +537,19 @@ export default class Server {
     }
 
     // Execute resource-level middleware
-    if (resource.middleware && resource.middleware.hasOwnProperty("before_request")) {
+    if (
+      resource.middleware &&
+      resource.middleware.hasOwnProperty("before_request")
+    ) {
       resource.middleware.before_request.forEach(middlewareClass => {
         if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
-        let middleware = new this.middleware.resource_level[middlewareClass](request, this, resource);
+        let middleware = new this.middleware.resource_level[middlewareClass](
+          request,
+          this,
+          resource
+        );
         middleware.run();
       });
     }
@@ -567,12 +576,19 @@ export default class Server {
     }
 
     // Execute resource-level middleware
-    if (resource.middleware && resource.middleware.hasOwnProperty("after_request")) {
+    if (
+      resource.middleware &&
+      resource.middleware.hasOwnProperty("after_request")
+    ) {
       resource.middleware.after_request.forEach(middlewareClass => {
         if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
-        let middleware = new this.middleware.resource_level[middlewareClass](request, this, resource);
+        let middleware = new this.middleware.resource_level[middlewareClass](
+          request,
+          this,
+          resource
+        );
         middleware.run();
       });
     }
@@ -593,7 +609,7 @@ export default class Server {
    * @description
    *     Get the resource class.
    *
-   * @param ServerRequest request
+   * @param any request
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
@@ -632,7 +648,7 @@ export default class Server {
           }
 
           // Create the path params
-          // TODO(crookse) put in HttpService
+          // TODO(crookse) Put in HttpRequestService
           let requestPathnameParams = request.url_path.match(
             pathObj.regex_path
           );
@@ -658,7 +674,7 @@ export default class Server {
    * @description
    *     Is the request targeting a static path?
    *
-   * @param ServerRequest request
+   * @param any request
    *
    * @return boolean
    *     Returns true if the request targets a static path.
@@ -674,7 +690,7 @@ export default class Server {
     let requestUrl = "/" + staticPath;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = Drash.Services.HttpService.hydrateHttpRequest(request, {
+      request = Drash.Services.HttpRequestService.hydrate(request, {
         headers: {
           "Response-Content-Type": Drash.Services.HttpService.getMimeType(
             request.url,

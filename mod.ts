@@ -28,6 +28,7 @@ import file_logger from "./src/loggers/file_logger.ts";
 
 // Services
 import http_service from "./src/services/http_service.ts";
+import http_request_service from "./src/services/http_request_service.ts";
 
 // Util
 import util_object_parser from "./src/util/object_parser.ts";
@@ -85,6 +86,8 @@ namespace Drash {
   export namespace Services {
     export type HttpService = http_service;
     export const HttpService = new http_service();
+    export type HttpRequestService = http_request_service;
+    export const HttpRequestService = new http_request_service();
   }
 
   export namespace Util {

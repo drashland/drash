@@ -79,10 +79,10 @@ export default class ClassOne {
   public multiLineSig(
     paramUno: any,
     paramDos: number,
-    paramTres: string
-    paramFour: boolean
-    paramFive: any
-    paramSix: number
+    paramTres: string,
+    paramFour: boolean,
+    paramFive: any,
+    paramSix: number,
     paramSeven: string
   ): any {}
 }
