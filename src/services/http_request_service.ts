@@ -31,7 +31,7 @@ export default class HttpRequestService {
    * @param number maxMemory
    *     The max memory to allocate for this process. Defaults to 1MB.
    *
-   * @return Promise<any>
+   * @return any
    *     Returns a body as a parsable JSON object where the first level of keys
    *     are the names of the parts. For example, if the name of the first part
    *     is `file_number_one`, then it will be accessible in the returned object
@@ -60,7 +60,7 @@ export default class HttpRequestService {
    *
    * @return string
    */
-  public getRequestHeaderParam(request: any, input: string): any {
+  public getRequestHeaderParam(request: any, input: string): string {
     return request.headers.get(input);
   }
 
@@ -220,7 +220,7 @@ export default class HttpRequestService {
    * @description
    *     Does the specified request have a body?
    *
-   * @return boolean
+   * @return Promise<any>
    *     Returns `true` if the request has a body. Returns `false` if not.
    */
   public async hasBody(request: any): Promise<any> {
@@ -235,7 +235,7 @@ export default class HttpRequestService {
    * @description
    *     Hydrate the specified request object.
    *
-   * @return
+   * @return Promise<any>
    *     Returns a hydrated request object. For example, deno uses the
    *     `ServerRequest` object. This method takes that object and adds more
    *     porperties and methods to it. This makes it easier for Drash to process
@@ -373,7 +373,7 @@ export default class HttpRequestService {
    * @description
    *    Parse this request's body as application/x-www-form-url-encoded.
    *
-   * @return any
+   * @return Promise<any>
    */
   public async parseBodyAsFormUrlEncoded(request: any): Promise<any> {
     let body = decoder.decode(await Deno.readAll(request.body));
@@ -388,7 +388,7 @@ export default class HttpRequestService {
    * @description
    *    Parse this request's body as application/json.
    *
-   * @return any
+   * @return Promise<any>
    */
   public async parseBodyAsJson(request: any): Promise<any> {
     const data = decoder.decode(await Deno.readAll(request.body));
@@ -400,10 +400,13 @@ export default class HttpRequestService {
    *    Parse this request's body as multipart/form-data.
    *
    * @param Reader body
+   *     The request's body.
    * @param string boundary
+   *     The boundary of the part (e.g., `----------437192313`)
    * @param number maxMemory
+   *     The maximum memory to allocate to this process in megabytes.
    *
-   * @return any
+   * @return Promise<any>
    */
   public async parseBodyAsMultipartFormData(
     body: Reader,
