@@ -540,11 +540,8 @@ export default class Server {
         if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
-        let middleware = new this.middleware.resource_level[middlewareClass](
-          request,
-          this,
-          resource
-        );
+        let mc = this.middleware.resource_level[middlewareClass];
+        let middleware = new mc(request, this, resource);
         middleware.run();
       });
     }
@@ -571,11 +568,8 @@ export default class Server {
         if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
-        let middleware = new this.middleware.resource_level[middlewareClass](
-          request,
-          this,
-          resource
-        );
+        let mc = this.middleware.resource_level[middlewareClass];
+        let middleware = new mc(request, this, resource);
         middleware.run();
       });
     }
@@ -616,7 +610,7 @@ export default class Server {
   protected executeMiddlewareServerLevelAfterRequest(request, resource) {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request.forEach(middlewareClass => {
-        let middleware = new middlewareClass(request, this);
+        let middleware = new middlewareClass(request, this, resource);
         middleware.run();
       });
     }
