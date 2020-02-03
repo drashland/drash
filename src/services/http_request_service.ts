@@ -81,7 +81,7 @@ export default class HttpRequestService {
    *
    * @return string
    */
-  public getRequestQueryParam(request: any, input: string): string {
+  public getRequestUrlQueryParam(request: any, input: string): string {
     return request.url_query_params[input];
   }
 
@@ -273,8 +273,8 @@ export default class HttpRequestService {
     request.getPathParam = function getRequestPathParam(input: string) {
       return t.getRequestPathParam(request, input);
     };
-    request.getQueryParam = function getRequestQueryParam(input: string) {
-      return t.getRequestQueryParam(request, input);
+    request.getUrlQueryParam = function getRequestUrlQueryParam(input: string) {
+      return t.getRequestUrlQueryParam(request, input);
     };
 
     return request;

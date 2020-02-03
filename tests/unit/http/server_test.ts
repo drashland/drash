@@ -88,10 +88,10 @@ members.test("handleHttpRequest(): getHeaderParam()", async () => {
   server.deno_server.close();
 });
 
-members.test("handleHttpRequest(): getQueryParam()", async () => {
+members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
-    resources: [GetQueryParam]
+    resources: [GetUrlQueryParam]
   });
 
   server.run();
@@ -155,10 +155,10 @@ class GetHeaderParam extends members.Drash.Http.Resource {
   }
 }
 
-class GetQueryParam extends members.Drash.Http.Resource {
+class GetUrlQueryParam extends members.Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
-    this.response.body = { query_param: this.request.getQueryParam("id") };
+    this.response.body = { query_param: this.request.getUrlQueryParam("id") };
     return this.response;
   }
 }
