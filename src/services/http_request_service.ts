@@ -311,7 +311,6 @@ export default class HttpRequestService {
       }
     }
 
-
     // I want to thank https://github.com/artisonian for pointing me in the
     // right direction with using the logic below correctly. I was HELLA using
     // it incorrectly and couldn't parse a multipart/form-data body. Out of
@@ -322,9 +321,7 @@ export default class HttpRequestService {
       try {
         boundary = contentType.match(/boundary=([^\s]+)/)[1];
       } catch (error) {
-        throw new Error(
-          `Error trying to find boundary.\n` + error.stack
-        );
+        throw new Error(`Error trying to find boundary.\n` + error.stack);
       }
       try {
         ret.data = await this.parseBodyAsMultipartFormData(

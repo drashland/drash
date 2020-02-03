@@ -214,7 +214,10 @@ export default class Server {
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
-        return this.handleHttpRequestError(request, this.httpErrorResponse(404));
+        return this.handleHttpRequestError(
+          request,
+          this.httpErrorResponse(404)
+        );
       }
 
       // @ts-ignore
