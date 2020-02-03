@@ -198,6 +198,9 @@ export default class Server {
       return this.handleHttpRequestForFavicon(request);
     }
 
+    let response;
+    let resource;
+
     try {
       this.logger.info(
         `Request received: ${request.method.toUpperCase()} ${request.url}`
@@ -207,7 +210,7 @@ export default class Server {
 
       let resourceClass = this.getResourceClass(request);
 
-      this.executeMiddlewareBeforeRequest(request, resource);
+      this.executeServerLevelMiddlewareBeforeRequest(request);
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
@@ -224,7 +227,7 @@ export default class Server {
       // TS2351: Cannot use 'new' with an expression whose type lacks a call or
       // construct signature.
       //
-      let resource = this.getResourceObject(resourceClass, request);
+      resource = this.getResourceObject(resourceClass, request);
       request.resource = resource;
       this.logDebug(
         "Using `" +
@@ -232,7 +235,7 @@ export default class Server {
           "` resource class to handle the request."
       );
 
-      let response;
+      this.executeResourceLevelMiddlewareBeforeRequest(request, resource);
 
       // Perform the request
       this.logDebug("Calling " + request.method.toUpperCase() + "().");
@@ -516,28 +519,9 @@ export default class Server {
     this.static_paths.push(path);
   }
 
-  /**
-   * @description
-   *     Execute middleware before the request.
-   *
-   * @param any request
-   *     The request object.
-   * @param Drash.Http.Resource resource
-   *     The resource object.
-   *
-   * @return void
-   */
-  protected executeMiddlewareBeforeRequest(request, resource) {
-    // Execute server-level middleware
-    if (this.middleware.server_level.hasOwnProperty("before_request")) {
-      this.middleware.server_level.before_request.forEach(middlewareClass => {
-        let middleware = new middlewareClass(request, this);
-        middleware.run();
-      });
-    }
-
-    // Execute resource-level middleware
+  protected executeResourceLevelMiddlewareBeforeRequest(request, resource) {
     if (
+      resource &&
       resource.middleware &&
       resource.middleware.hasOwnProperty("before_request")
     ) {
@@ -550,6 +534,27 @@ export default class Server {
           this,
           resource
         );
+        middleware.run();
+      });
+    }
+  }
+
+  /**
+   * @description
+   *     Execute middleware before the request.
+   *
+   * @param any request
+   *     The request object.
+   * @param Drash.Http.Resource resource
+   *     The resource object.
+   *
+   * @return void
+   */
+  protected executeServerLevelMiddlewareBeforeRequest(request) {
+    // Execute server-level middleware
+    if (this.middleware.server_level.hasOwnProperty("before_request")) {
+      this.middleware.server_level.before_request.forEach(middlewareClass => {
+        let middleware = new middlewareClass(request, this);
         middleware.run();
       });
     }
