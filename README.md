@@ -55,7 +55,7 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 - [Middleware](http://drash.land/#/tutorials/middleware/introduction)
 - [Body Handling: application/json](http://drash.land/#/tutorials/requests/handling-application-json-bodies)
 - [Body Handling: application/x-www-form-urlencoded](http://drash.land/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
-- [Body Handling: multipart/form-data](http://drash.land/#/tutorials/requests/handling-multipart-form-data)
+- [Body Handling: multipart/form-data](http://drash.land/#/tutorials/requests/handling-multipart-form-data-bodies)
 - [Handling Path Params](http://drash.land/#/tutorials/requests/handling-path-params)
 - [Handling URL Query Params](http://drash.land/#/tutorials/requests/handling-url-query-params)
 
