@@ -74,6 +74,7 @@ export default class Response {
       case "application/xml":
       case "text/html":
       case "text/xml":
+      case "text/plain":
         return this.body;
     }
 
