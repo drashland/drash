@@ -169,7 +169,6 @@ members.test("CoffeeResource", async () => {
 //   let response;
 
 //   const file = new TextDecoder().decode(await Deno.readAll(await Deno.open("./file_1.txt")))
-//   console.log(file);
 //   let formData = new FormData()
 //   await formData.append(
 //     "file_1",
@@ -183,7 +182,7 @@ members.test("CoffeeResource", async () => {
 //     headers: {
 //       "Content-Type": undefined,
 //       // "Content-Type": "multipart/form-data; boundary=--------------------------434049563556637648550474",
-//       "Content-Length": 6
+//       "Content-Length": file.length
 //     },
 //     body: formData
 //   });
