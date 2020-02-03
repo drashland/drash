@@ -200,13 +200,12 @@ export default class Server {
 
     let response;
     let resource;
+    request = await this.getRequest(request);
 
     try {
       this.logger.info(
         `Request received: ${request.method.toUpperCase()} ${request.url}`
       );
-
-      request = await this.getRequest(request);
 
       let resourceClass = this.getResourceClass(request);
 
@@ -301,6 +300,16 @@ export default class Server {
         "Content-Type"
       )}. Status: ${response.getStatusMessageFull()}.`
     );
+
+    try {
+      this.executeMiddlewareServerLevelAfterRequest(request, null, response);
+    } catch (error) {
+      // Do nothing. The `executeMiddlewareServerLevelAfterRequest()` method is
+      // run once in `handleHttpRequest()`. We run this method a second time
+      // here in case the server has middleware that needs to run (e.g.,
+      // logging middleware) without throwing uncaught exceptions. This is a bit
+      // hacky, but it works. Refactor when needed.
+    }
 
     return response.send();
   }
