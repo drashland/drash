@@ -66,10 +66,12 @@ export default abstract class Middleware {
     request: any,
     server: Drash.Http.Server,
     resource?: Drash.Http.Resource
+    response?: Drash.Http.Response
   ) {
     this.request = request;
     this.server = server;
     this.resource = resource ? resource : null;
+    this.response = response ? response : null;
   }
 
   // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////

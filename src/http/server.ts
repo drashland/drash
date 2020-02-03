@@ -241,8 +241,8 @@ export default class Server {
       this.logDebug("Calling " + request.method.toUpperCase() + "().");
       response = await resource[request.method.toUpperCase()]();
 
-      this.executeMiddlewareServerLevelAfterRequest(request, resource);
-      this.executeMiddlewareResourceLevelAfterRequest(request, resource);
+      this.executeMiddlewareServerLevelAfterRequest(request, resource, response);
+      this.executeMiddlewareResourceLevelAfterRequest(request, resource, response);
 
       // Send the response
       this.logDebug("Sending response. " + response.status_code + ".");
@@ -531,7 +531,11 @@ export default class Server {
    *
    * @return void
    */
-  protected executeMiddlewareResourceLevelAfterRequest(request, resource) {
+  protected executeMiddlewareResourceLevelAfterRequest(
+    request,
+    resource,
+    response
+  ) {
     if (
       resource.middleware &&
       resource.middleware.hasOwnProperty("after_request")
@@ -541,7 +545,7 @@ export default class Server {
           throw new Drash.Exceptions.HttpMiddlewareException(418);
         }
         let mc = this.middleware.resource_level[middlewareClass];
-        let middleware = new mc(request, this, resource);
+        let middleware = new mc(request, this, resource, response);
         middleware.run();
       });
     }
@@ -607,7 +611,11 @@ export default class Server {
    *
    * @return void
    */
-  protected executeMiddlewareServerLevelAfterRequest(request, resource) {
+  protected executeMiddlewareServerLevelAfterRequest(
+    request,
+    resource,
+    response
+  ) {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request.forEach(middlewareClass => {
         let middleware = new middlewareClass(request, this, resource);
