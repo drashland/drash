@@ -53,7 +53,11 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 - [Static Path Routing](http://drash.land/#/tutorials/servers/serving-static-paths)
 - [Regex Path Routing](http://drash.land/#/tutorials/resources/creating-a-resource#regular-expression-uris)
 - [Middleware](http://drash.land/#/tutorials/middleware/introduction)
-- [Request Params Parsing](http://drash.land/#/tutorials/requests/handling-request-params)
+- [Body Handling: application/json](http://drash.land/#/tutorials/requests/handling-application-json-bodies)
+- [Body Handling: application/x-www-form-urlencoded](http://drash.land/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
+- [Body Handling: multipart/form-data](http://drash.land/#/tutorials/requests/handling-multipart-form-data)
+- [Handling Path Params](http://drash.land/#/tutorials/requests/handling-path-params)
+- [Handling URL Query Params](http://drash.land/#/tutorials/requests/handling-url-query-params)
 
 ## Contributing
 
