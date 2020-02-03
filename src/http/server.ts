@@ -618,7 +618,7 @@ export default class Server {
   ) {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request.forEach(middlewareClass => {
-        let middleware = new middlewareClass(request, this, resource);
+        let middleware = new middlewareClass(request, this, resource, response);
         middleware.run();
       });
     }
