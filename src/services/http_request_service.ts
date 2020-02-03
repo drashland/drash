@@ -311,6 +311,12 @@ export default class HttpRequestService {
       }
     }
 
+
+    // I want to thank https://github.com/artisonian for pointing me in the
+    // right direction with using the logic below correctly. I was HELLA using
+    // it incorrectly and couldn't parse a multipart/form-data body. Out of
+    // frustration, I filed an issue on deno about my findings; and artisonian
+    // gave an example of a working copy. Great work. Thank you!
     if (contentType && contentType.includes("multipart/form-data")) {
       let boundary: string;
       try {
@@ -392,6 +398,10 @@ export default class HttpRequestService {
   /**
    * @description
    *    Parse this request's body as multipart/form-data.
+   *
+   * @param Reader body
+   * @param string boundary
+   * @param number maxMemory
    *
    * @return any
    */
