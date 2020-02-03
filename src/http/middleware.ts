@@ -45,6 +45,16 @@ export default abstract class Middleware {
 
   /**
    * @description
+   *     A property to hold the response object. This property will only contain
+   *     the response object if the server was able to get a response from the
+   *     resource.
+   *
+   * @property Drash.Http.Resource resource
+   */
+  protected response: Drash.Http.Response;
+
+  /**
+   * @description
    *     A property to hold the server object handling this middleware.
    *
    * @property Drash.Http.Server server
@@ -65,7 +75,7 @@ export default abstract class Middleware {
   constructor(
     request: any,
     server: Drash.Http.Server,
-    resource?: Drash.Http.Resource
+    resource?: Drash.Http.Resource,
     response?: Drash.Http.Response
   ) {
     this.request = request;
