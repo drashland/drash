@@ -198,41 +198,41 @@ export default class Server {
       return this.handleHttpRequestForFavicon(request);
     }
 
-    this.logger.info(
-      `Request received: ${request.method.toUpperCase()} ${request.url}`
-    );
-
-    request = await this.getRequest(request);
-
-    let resourceClass = this.getResourceClass(request);
-
-    // No resource? Send a 404 (Not Found) response.
-    if (!resourceClass) {
-      return this.handleHttpRequestError(request, this.httpErrorResponse(404));
-    }
-
-    // @ts-ignore
-    // (crookse)
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    // it with the following error:
-    //
-    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
-    // construct signature.
-    //
-    let resource = this.getResourceObject(resourceClass, request);
-    request.resource = resource;
-    this.logDebug(
-      "Using `" +
-        resource.constructor.name +
-        "` resource class to handle the request."
-    );
-
-    let response;
-
     try {
+      this.logger.info(
+        `Request received: ${request.method.toUpperCase()} ${request.url}`
+      );
+
+      request = await this.getRequest(request);
+
+      let resourceClass = this.getResourceClass(request);
+
       this.executeMiddlewareBeforeRequest(request, resource);
+
+      // No resource? Send a 404 (Not Found) response.
+      if (!resourceClass) {
+        return this.handleHttpRequestError(request, this.httpErrorResponse(404));
+      }
+
+      // @ts-ignore
+      // (crookse)
+      //
+      // We ignore this because `resourceClass` could be `undefined`. `undefined`
+      // doesn't have a construct signature and the compiler will complain about
+      // it with the following error:
+      //
+      // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+      // construct signature.
+      //
+      let resource = this.getResourceObject(resourceClass, request);
+      request.resource = resource;
+      this.logDebug(
+        "Using `" +
+          resource.constructor.name +
+          "` resource class to handle the request."
+      );
+
+      let response;
 
       // Perform the request
       this.logDebug("Calling " + request.method.toUpperCase() + "().");
