@@ -210,14 +210,11 @@ export default class Server {
 
       let resourceClass = this.getResourceClass(request);
 
-      this.executeServerLevelMiddlewareBeforeRequest(request);
+      this.executeMiddlewareServerLevelBeforeRequest(request);
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
-        return this.handleHttpRequestError(
-          request,
-          this.httpErrorResponse(404)
-        );
+        return this.handleHttpRequestError(request, this.httpErrorResponse(404));
       }
 
       // @ts-ignore
@@ -238,13 +235,14 @@ export default class Server {
           "` resource class to handle the request."
       );
 
-      this.executeResourceLevelMiddlewareBeforeRequest(request, resource);
+      this.executeMiddlewareResourceLevelBeforeRequest(request, resource);
 
       // Perform the request
       this.logDebug("Calling " + request.method.toUpperCase() + "().");
       response = await resource[request.method.toUpperCase()]();
 
-      this.executeMiddlewareAfterRequest(request, resource);
+      this.executeMiddlewareServerLevelAfterRequest(request, resource);
+      this.executeMiddlewareResourceLevelAfterRequest(request, resource);
 
       // Send the response
       this.logDebug("Sending response. " + response.status_code + ".");
@@ -522,7 +520,48 @@ export default class Server {
     this.static_paths.push(path);
   }
 
-  protected executeResourceLevelMiddlewareBeforeRequest(request, resource) {
+  /**
+   * @description
+   *     Execute resource-level middleware after the request.
+   *
+   * @param any request
+   *     The request object.
+   * @param Drash.Http.Resource resource
+   *     The resource object.
+   *
+   * @return void
+   */
+  protected executeMiddlewareResourceLevelAfterRequest(request, resource) {
+    if (
+      resource.middleware &&
+      resource.middleware.hasOwnProperty("after_request")
+    ) {
+      resource.middleware.after_request.forEach(middlewareClass => {
+        if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
+          throw new Drash.Exceptions.HttpMiddlewareException(418);
+        }
+        let middleware = new this.middleware.resource_level[middlewareClass](
+          request,
+          this,
+          resource
+        );
+        middleware.run();
+      });
+    }
+  }
+
+  /**
+   * @description
+   *     Execute resource-level middleware before the request.
+   *
+   * @param any request
+   *     The request object.
+   * @param Drash.Http.Resource resource
+   *     The resource object.
+   *
+   * @return void
+   */
+  protected executeMiddlewareResourceLevelBeforeRequest(request, resource) {
     if (
       resource &&
       resource.middleware &&
@@ -544,7 +583,7 @@ export default class Server {
 
   /**
    * @description
-   *     Execute middleware before the request.
+   *     Execute server-level middleware before the request.
    *
    * @param any request
    *     The request object.
@@ -553,7 +592,7 @@ export default class Server {
    *
    * @return void
    */
-  protected executeServerLevelMiddlewareBeforeRequest(request) {
+  protected executeMiddlewareServerLevelBeforeRequest(request) {
     // Execute server-level middleware
     if (this.middleware.server_level.hasOwnProperty("before_request")) {
       this.middleware.server_level.before_request.forEach(middlewareClass => {
@@ -565,7 +604,7 @@ export default class Server {
 
   /**
    * @description
-   *     Execute middleware after the request.
+   *     Execute server-level middleware after the request.
    *
    * @param any request
    *     The request object.
@@ -574,29 +613,10 @@ export default class Server {
    *
    * @return void
    */
-  protected executeMiddlewareAfterRequest(request, resource) {
-    // Execute server-level middleware
+  protected executeMiddlewareServerLevelAfterRequest(request, resource) {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request.forEach(middlewareClass => {
         let middleware = new middlewareClass(request, this);
-        middleware.run();
-      });
-    }
-
-    // Execute resource-level middleware
-    if (
-      resource.middleware &&
-      resource.middleware.hasOwnProperty("after_request")
-    ) {
-      resource.middleware.after_request.forEach(middlewareClass => {
-        if (!this.middleware.resource_level.hasOwnProperty(middlewareClass)) {
-          throw new Drash.Exceptions.HttpMiddlewareException(418);
-        }
-        let middleware = new this.middleware.resource_level[middlewareClass](
-          request,
-          this,
-          resource
-        );
         middleware.run();
       });
     }
