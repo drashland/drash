@@ -21,6 +21,9 @@ import resource from "./src/http/resource.ts";
 import response from "./src/http/response.ts";
 import server from "./src/http/server.ts";
 
+// Interfaces
+import * as interface_logger_configs from "./src/interfaces/logger_configs.ts";
+
 // Loggers
 import base_logger from "./src/loggers/logger.ts";
 import console_logger from "./src/loggers/console_logger.ts";
@@ -81,6 +84,10 @@ namespace Drash {
     export let Response = response;
     export type Server = server;
     export const Server = server;
+  }
+
+  export namespace Interfaces {
+    export const LoggerConfigs = interface_logger_configs;
   }
 
   export namespace Services {

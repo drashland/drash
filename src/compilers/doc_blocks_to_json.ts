@@ -25,7 +25,7 @@ export default class DocBlocksToJson {
   protected re_export = new RegExp(/export.+/, "g");
   // protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
   protected re_for_all_members = new RegExp(
-    /\/\*\*((\s)+\*.*)+?\s+\*\/\n(export)?( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\?:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/,
+    /\/\*\*((\s)+\*.*)+?\s+\*\/\n(export)?( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\??:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/,
     "g"
   );
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
