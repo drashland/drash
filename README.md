@@ -59,6 +59,25 @@ Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 - <a href="http://drash.land/#/tutorials/requests/handling-path-params" target="_BLANK">Handling Path Params</a>
 - <a href="http://drash.land/#/tutorials/requests/handling-url-query-params" target="_BLANK">Handling URL Query Params</a>
 
+## Why Use Drash?
+
+Drash takes concepts from the following:
+
+
+* <a href="https://flask.palletsprojects.com/en/1.1.x/" target="_BLANK">Flask</a> &mdash; being <a href="https://flask.palletsprojects.com/en/1.1.x/foreword/#what-does-micro-mean" target="_BLANK">micro</a> and extensible
+* <a href="https://laravel.com/" target="_BLANK">Laravel</a> &mdash; use of similarly styled <a href="https://laravel.com/docs/master/middleware">middleware</a>
+* <a href="https://www.peej.co.uk/tonic/" target="_BLANK">Tonic</a> &mdash; use of <a href="https://github.com/peej/tonic#how-it-works" target="_BLANK">resources</a>
+* <a href="https://www.restapitutorial.com/lessons/whatisrest.html" target="_BLANK">RESTful</a> principles &mdash; content negotiation, HTTP verbs, URIs, etc.
+
+Thrown into the mix is Drash's own concepts such as:
+
+
+* Documentation-driven development
+* Test-driven development
+* Lowering barriers to usage
+
+Drash does not force you to use all of its code. You can pick and choose which data members you want/need and use them however you deem fit. For example, Drash comes with a console logger and a file logger. If you want just these, then you can import just these into your non-Drash project. How you use it is really up to you.
+
 ## Contributing
 
 Contributors are welcomed!
