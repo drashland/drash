@@ -23,7 +23,7 @@ import Drash from "https://deno.land/x/drash/mod.ts";
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
-    this.response.body = "Hello World!";
+    this.response.body = "Hello World! deno + Drash is cool!";
     return this.response;
   }
 }
@@ -39,6 +39,11 @@ server.run();
 
 ```
 $ deno --allow-net app.ts
+```
+
+```
+$ curl -v localhost:1337
+Hello World! deno + Drash is cool!
 ```
 
 ## Documentation
