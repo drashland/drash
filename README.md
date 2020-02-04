@@ -42,7 +42,7 @@ $ deno --allow-net app.ts
 ```
 
 ```
-$ curl -v localhost:1337
+$ curl localhost:1337
 Hello World! deno + Drash is cool!
 ```
 
