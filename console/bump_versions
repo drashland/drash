@@ -1,0 +1,5 @@
+#!/bin/bash
+
+(
+  deno --allow-read --allow-write --allow-env console/typescript/bump_versions.ts
+)
