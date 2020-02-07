@@ -66,13 +66,20 @@ namespace Drash {
     export const HttpResponseException = http_response_exception;
   }
 
-  export namespace Loggers {
+  export namespace CoreLoggers {
     export type ConsoleLogger = console_logger;
     export const ConsoleLogger = console_logger;
     export type FileLogger = file_logger;
     export const FileLogger = file_logger;
     export type Logger = base_logger;
     export const Logger = base_logger;
+  };
+
+  export const Loggers: any = {};
+
+  export function addLogger(name: string, logger: any) {
+    // todo: throw error
+    this.Loggers[name] = logger;
   }
 
   export namespace Http {

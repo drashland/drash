@@ -21,7 +21,7 @@ export default class FileLogger extends Logger {
    *     Construct an object of this class.
    *
    * @param any configs
-   *     See `Drash.Loggers.Logger.configs`.
+   *     See `Drash.CoreLoggers.Logger.configs`.
    *
    */
   constructor(configs) {
