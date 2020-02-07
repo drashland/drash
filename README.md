@@ -55,6 +55,8 @@ Full documentation: [https://drash.land](https://drash.land)
 
 Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 
+Lifecycle Diagram: http://drash.land/#/lifecycle-diagram
+
 ## Features
 
 - <a href="http://drash.land/#/advanced-tutorials/content-negotiation/user-profiles" target="_BLANK">Content Negotiation</a>
