@@ -5,6 +5,7 @@ import "./unit/dictionaries/log_levels_test.ts";
 
 // Exceptions
 import "./unit/exceptions/http_exception_test.ts";
+import "./unit/exceptions/name_collision_test.ts";
 
 // Http
 import "./unit/http/middleware_test.ts";

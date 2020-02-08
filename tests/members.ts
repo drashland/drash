@@ -1,5 +1,11 @@
 import Drash from "../mod.ts";
-import { ServerRequest, assertEquals, runTests, test } from "../deps.ts";
+import {
+  ServerRequest,
+  assertEquals,
+  assertThrows,
+  runTests,
+  test
+} from "../deps.ts";
 const decoder = new TextDecoder("utf-8");
 
 /**
@@ -82,6 +88,7 @@ export default {
   assert: {
     equal: assertEquals,
     equals: assertEquals,
+    throws: assertThrows,
     responseJsonEquals: responseJsonEquals
   },
   decoder,
