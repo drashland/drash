@@ -7,7 +7,7 @@ import { LoggerConfigs } from "../interfaces/logger_configs.ts";
  * @class Logger
  *
  * @description
- *     This logger is the base logger class for all logger classes.
+ *     This Logger is the base logger class for all logger classes.
  */
 export default abstract class Logger {
   /**
@@ -38,7 +38,7 @@ export default abstract class Logger {
    *     Construct an object of this class.
    *
    * @param any configs
-   *     See [Drash.Loggers.Logger.configs](/#/api-reference/loggers/logger#configs).
+   *     See [Drash.CoreLoggers.Logger.configs](/#/api-reference/loggers/logger#configs).
    */
   constructor(configs: any) {
     if (configs.test === true) {

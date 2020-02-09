@@ -14,6 +14,7 @@ import * as log_levels from "./src/dictionaries/log_levels.ts";
 import http_exception from "./src/exceptions/http_exception.ts";
 import http_middleware_exception from "./src/exceptions/http_middleware_exception.ts";
 import http_response_exception from "./src/exceptions/http_response_exception.ts";
+import name_collision_exception from "./src/exceptions/name_collision_exception.ts";
 
 // Http
 import middleware from "./src/http/middleware.ts";
@@ -64,15 +65,26 @@ namespace Drash {
     export const HttpMiddlewareException = http_middleware_exception;
     export type HttpResponseException = http_response_exception;
     export const HttpResponseException = http_response_exception;
+    export type NameCollisionException = name_collision_exception;
+    export const NameCollisionException = name_collision_exception;
   }
 
-  export namespace Loggers {
+  export namespace CoreLoggers {
     export type ConsoleLogger = console_logger;
     export const ConsoleLogger = console_logger;
     export type FileLogger = file_logger;
     export const FileLogger = file_logger;
     export type Logger = base_logger;
     export const Logger = base_logger;
+  };
+
+  export const Loggers: any = {};
+
+  export function addLogger(name: string, logger: any) {
+    if (this.Loggers[name]) {
+      throw new this.Exceptions.NameCollisionException(`Loggers must be unique: "${name}" found.`);
+    }
+    this.Loggers[name] = logger;
   }
 
   export namespace Http {

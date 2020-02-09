@@ -39,7 +39,7 @@ export default class Server {
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
    */
-  public logger: Drash.Loggers.ConsoleLogger | Drash.Loggers.FileLogger;
+  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
 
   /**
    * @description
@@ -111,7 +111,7 @@ export default class Server {
    */
   constructor(configs: any) {
     if (!configs.logger) {
-      this.logger = new Drash.Loggers.ConsoleLogger({
+      this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false
       });
     } else {

@@ -69,3 +69,31 @@ members.test("Drash.addMember(): types", () => {
     members.assert.equal(members.Drash.Members[key], data[key]);
   }
 });
+
+members.test("Drash.addLogger(): class", () => {
+  const testLogger = new members.Drash.CoreLoggers.FileLogger({
+    enabled: true,
+    level: "debug"
+  });
+  members.Drash.addLogger("TestLogger", testLogger);
+  let expected = {
+    "TestLogger": testLogger
+  };
+  members.assert.equal(members.Drash.Loggers, expected);
+});
+
+members.test("Drash.addLogger(): names must be unique", () => {
+  const testLogger = new members.Drash.CoreLoggers.FileLogger({
+    enabled: true,
+    level: "debug"
+  });
+  members.assert.throws(
+    (): void  => {
+      members.Drash.addLogger("TestLogger", testLogger);
+      members.Drash.addLogger("TestLogger", testLogger);
+    },
+    members.Drash.Exceptions.NameCollisionException,
+    'Loggers must be unique: "TestLogger" found.'
+  );
+});
+
