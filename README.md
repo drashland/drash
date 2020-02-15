@@ -93,7 +93,7 @@ Drash does not force you to use all of its code. You can pick and choose which d
 
 ## Example Drash App
 
-The `example_app` directory contains an example Drash application. You can run it using `deno` locally.
+The [`example_app`](https://github.com/drashland/deno-drash/tree/master/example_app) directory contains an example Drash application. You can run it using `deno` locally.
 
 1. Install deno.
 
