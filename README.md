@@ -59,15 +59,17 @@ Lifecycle Diagram: http://drash.land/#/lifecycle-diagram
 
 ## Features
 
-- <a href="http://drash.land/#/advanced-tutorials/content-negotiation/user-profiles" target="_BLANK">Content Negotiation</a>
-- <a href="http://drash.land/#/tutorials/servers/serving-static-paths" target="_BLANK">Static Path Routing</a>
-- <a href="http://drash.land/#/tutorials/resources/creating-a-resource#regular-expression-uris" target="_BLANK">Regex Path Routing</a>
-- <a href="http://drash.land/#/tutorials/middleware/introduction" target="_BLANK">Middleware</a>
-- <a href="http://drash.land/#/tutorials/requests/handling-application-json-bodies" target="_BLANK">Body Handling: application/json</a>
-- <a href="http://drash.land/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies" target="_BLANK">Body Handling: application/x-www-form-urlencoded</a>
-- <a href="http://drash.land/#/tutorials/requests/handling-multipart-form-data-bodies" target="_BLANK">Body Handling: multipart/form-data</a>
-- <a href="http://drash.land/#/tutorials/requests/handling-path-params" target="_BLANK">Handling Path Params</a>
-- <a href="http://drash.land/#/tutorials/requests/handling-url-query-params" target="_BLANK">Handling URL Query Params</a>
+- [Content Negotiation](http://drash.land/#/advanced-tutorials/content-negotiation/user-profiles)
+- [Static Path Routing](http://drash.land/#/tutorials/servers/serving-static-paths)
+- [Regex Path Routing](http://drash.land/#/tutorials/resources/creating-a-resource#regular-expression-uris)
+- [Middleware](http://drash.land/#/tutorials/middleware/introduction)
+- [Body Handling: application/json](http://drash.land/#/tutorials/requests/handling-application-json-bodies)
+- [Body Handling: application/x-www-form-urlencoded](http://drash.land/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
+- [Body Handling: multipart/form-data](http://drash.land/#/tutorials/requests/handling-multipart-form-data-bodies)
+- [Handling Path Params](http://drash.land/#/tutorials/requests/handling-path-params)
+- [Handling URL Query Params](http://drash.land/#/tutorials/requests/handling-url-query-params)
+- [Console Logging](http://drash.land/#/tutorials/logging/logging-to-the-terminal)
+- [File Logging](http://drash.land/#/tutorials/logging/logging-to-files)
 
 ## Why Use Drash?
 
