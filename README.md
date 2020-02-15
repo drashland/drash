@@ -91,6 +91,66 @@ Thrown into the mix is Drash's own concepts such as:
 
 Drash does not force you to use all of its code. You can pick and choose which data members you want/need and use them however you deem fit. For example, Drash comes with a console logger and a file logger. If you only want these, then you only import these into your non-Drash project. How you use it is really up to you.
 
+## Example Drash App
+
+The `example_app` directory contains an example Drash application. You can run it using `deno` locally.
+
+1. Install deno.
+
+```
+curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.32.0
+```
+
+2. Run the Drash application using `deno`.
+
+```
+deno --allow-net --allow-env https://deno.land/x/drash@v0.32.0/example_app/app.ts
+```
+
+2. Make the following request: `GET /`.
+
+```
+curl --request GET localhost:1447/coffee/17
+
+"GET request received!"
+```
+
+3. Make the following request `GET /coffee/17`.
+
+```
+curl --request GET localhost:1447/coffee/17
+
+{"name":"Light"}
+```
+
+4. Make the following request `POST /`.
+
+```
+curl --request POST localhost:1447
+
+"POST request received!"
+```
+
+5. Make the following request `PATCH /` (with verbose flag). This method is not defined in the [`HomeResource`](https://github.com/drashland/deno-drash/blob/master/example_app/home_resource.ts) class, so you should receive a `405` response.
+
+```
+curl --request PATCH --verbose localhost:1447
+
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 1447 (#0)
+> PATCH / HTTP/1.1
+> Host: localhost:1447
+> User-Agent: curl/7.64.1
+> Accept: */*
+>
+< HTTP/1.1 405 Method Not Allowed
+< content-type: application/json
+< content-length: 20
+<
+* Connection #0 to host localhost left intact
+"Method Not Allowed"* Closing connection 0
+```
 
 ## Contributing
 
