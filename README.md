@@ -110,7 +110,7 @@ deno --allow-net --allow-env https://deno.land/x/drash@v0.32.0/example_app/app.t
 2. Make the following request: `GET /`.
 
 ```
-curl --request GET localhost:1447/coffee/17
+curl --request GET localhost:1447
 
 "GET request received!"
 ```
