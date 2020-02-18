@@ -3,7 +3,7 @@ import LogLevels from "../dictionaries/log_levels.ts";
 import { LoggerConfigs } from "../interfaces/logger_configs.ts";
 
 /**
- * @memberof Drash.Loggers
+ * @memberof Drash.CoreLoggers
  * @class Logger
  *
  * @description

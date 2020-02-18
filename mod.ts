@@ -26,9 +26,9 @@ import server from "./src/http/server.ts";
 import * as interface_logger_configs from "./src/interfaces/logger_configs.ts";
 
 // Loggers
-import base_logger from "./src/loggers/logger.ts";
-import console_logger from "./src/loggers/console_logger.ts";
-import file_logger from "./src/loggers/file_logger.ts";
+import base_logger from "./src/core_loggers/logger.ts";
+import console_logger from "./src/core_loggers/console_logger.ts";
+import file_logger from "./src/core_loggers/file_logger.ts";
 
 // Services
 import http_service from "./src/services/http_service.ts";

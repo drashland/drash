@@ -1,37 +1,27 @@
 import Logger from "./logger.ts";
 
 /**
- * @memberof Drash.Loggers
- * @class FileLogger
+ * @memberof Drash.CoreLoggers
+ * @class ConsoleLogger
  *
  * @description
- *     This logger allows you to log messages to a file.
+ *     This logger allows you to log messages to the console.
  */
-export default class FileLogger extends Logger {
-  /**
-   * @description
-   *     The file this logger will write log messages to.
-   *
-   * @property string file
-   */
-  protected file: string;
-
+export default class ConsoleLogger extends Logger {
   /**
    * @description
    *     Construct an object of this class.
    *
    * @param any configs
    *     See `Drash.CoreLoggers.Logger.configs`.
-   *
    */
   constructor(configs) {
     super(configs);
-    this.file = configs.file;
   }
 
   /**
    * @description
-   *     Write a log message to `this.file`.
+   *     Write a log message to the console.
    *
    *     This method is not intended to be called directly. It is already used
    *     in the base class (`Logger`) and automatically called.
@@ -43,9 +33,10 @@ export default class FileLogger extends Logger {
    *     Returns the log message which is used for unit testing purposes.
    */
   public write(logMethodLevelDefinition, message): string {
-    const encoder = new TextEncoder();
-    let encoded = encoder.encode(message + "\n");
-    Deno.writeFileSync(this.file, encoded, { append: true });
-    return message;
+    if (this.test) {
+      return message;
+    }
+
+    console.log(message);
   }
 }
