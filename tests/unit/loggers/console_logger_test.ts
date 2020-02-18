@@ -10,7 +10,7 @@ const ANIMALS = {
 
 members.test("ConsoleLogger", () => {
   let expected = "some_date | hello | tiger | This is cool!";
-  let logger = new members.Drash.Loggers.ConsoleLogger({
+  let logger = new members.Drash.CoreLoggers.ConsoleLogger({
     test: true,
     enabled: true,
     level: "debug",

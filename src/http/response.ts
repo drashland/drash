@@ -66,7 +66,7 @@ export default class Response {
    * @return any
    */
   public generateResponse(): any {
-    let contentType = this.headers.get("Content-Type")
+    let contentType = this.headers.get("Content-Type");
 
     switch (contentType) {
       case "application/json":
@@ -74,10 +74,14 @@ export default class Response {
       case "application/xml":
       case "text/html":
       case "text/xml":
+      case "text/plain":
         return this.body;
     }
 
-    throw new Drash.Exceptions.HttpResponseException(400, `Response Content-Type "${contentType}" unknown.`);
+    throw new Drash.Exceptions.HttpResponseException(
+      400,
+      `Response Content-Type "${contentType}" unknown.`
+    );
   }
 
   /**
@@ -91,9 +95,7 @@ export default class Response {
    */
   public getStatusMessage(): string {
     let message = STATUS_TEXT.get(this.status_code);
-    return message
-      ? message
-      : null;
+    return message ? message : null;
   }
 
   /**
@@ -106,9 +108,7 @@ export default class Response {
    */
   public getStatusMessageFull(): string {
     let message = STATUS_TEXT.get(this.status_code);
-    return message
-      ? `${this.status_code} (${message})`
-      : null;
+    return message ? `${this.status_code} (${message})` : null;
   }
 
   /**

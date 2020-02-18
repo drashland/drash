@@ -14,6 +14,7 @@ import * as log_levels from "./src/dictionaries/log_levels.ts";
 import http_exception from "./src/exceptions/http_exception.ts";
 import http_middleware_exception from "./src/exceptions/http_middleware_exception.ts";
 import http_response_exception from "./src/exceptions/http_response_exception.ts";
+import name_collision_exception from "./src/exceptions/name_collision_exception.ts";
 
 // Http
 import middleware from "./src/http/middleware.ts";
@@ -21,13 +22,17 @@ import resource from "./src/http/resource.ts";
 import response from "./src/http/response.ts";
 import server from "./src/http/server.ts";
 
+// Interfaces
+import * as interface_logger_configs from "./src/interfaces/logger_configs.ts";
+
 // Loggers
-import base_logger from "./src/loggers/logger.ts";
-import console_logger from "./src/loggers/console_logger.ts";
-import file_logger from "./src/loggers/file_logger.ts";
+import base_logger from "./src/core_loggers/logger.ts";
+import console_logger from "./src/core_loggers/console_logger.ts";
+import file_logger from "./src/core_loggers/file_logger.ts";
 
 // Services
 import http_service from "./src/services/http_service.ts";
+import http_request_service from "./src/services/http_request_service.ts";
 
 // Util
 import util_object_parser from "./src/util/object_parser.ts";
@@ -60,15 +65,26 @@ namespace Drash {
     export const HttpMiddlewareException = http_middleware_exception;
     export type HttpResponseException = http_response_exception;
     export const HttpResponseException = http_response_exception;
+    export type NameCollisionException = name_collision_exception;
+    export const NameCollisionException = name_collision_exception;
   }
 
-  export namespace Loggers {
+  export namespace CoreLoggers {
     export type ConsoleLogger = console_logger;
     export const ConsoleLogger = console_logger;
     export type FileLogger = file_logger;
     export const FileLogger = file_logger;
     export type Logger = base_logger;
     export const Logger = base_logger;
+  };
+
+  export const Loggers: any = {};
+
+  export function addLogger(name: string, logger: any) {
+    if (this.Loggers[name]) {
+      throw new this.Exceptions.NameCollisionException(`Loggers must be unique: "${name}" found.`);
+    }
+    this.Loggers[name] = logger;
   }
 
   export namespace Http {
@@ -82,9 +98,15 @@ namespace Drash {
     export const Server = server;
   }
 
+  export namespace Interfaces {
+    export const LoggerConfigs = interface_logger_configs;
+  }
+
   export namespace Services {
     export type HttpService = http_service;
     export const HttpService = new http_service();
+    export type HttpRequestService = http_request_service;
+    export const HttpRequestService = new http_request_service();
   }
 
   export namespace Util {

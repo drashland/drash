@@ -24,18 +24,28 @@ export default class DocBlocksToJson {
   );
   protected re_export = new RegExp(/export.+/, "g");
   // protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n.+/, "g");
-  protected re_for_all_members = new RegExp(/\/\*\*((\s)+\*.*)+?\s+\*\/\n(export)?( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\?:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/, "g");
+  protected re_for_all_members = new RegExp(
+    /\/\*\*((\s)+\*.*)+?\s+\*\/\n(export)?( +)?(export|constructor|interface|public|protected|private) ?(((\w+ {(\n.+\??:.+;)+)\n})|(((\w+ )*{)|(\w+.+;)|((async|function)? ?(\w+)?\(.+\)?{)|((async|function)? ?(\w+)?\(((\n? + .+:.+,?)+({|(\n( +)?\).+{))))))/,
+    "g"
+  );
   protected re_ignore_line = new RegExp(/doc-blocks-to-json ignore-line/);
   protected re_is_class = new RegExp(/\* @class/);
   protected re_is_enum = new RegExp(/@enum +\w+/);
   protected re_is_function = new RegExp(/@(function|func|method) +\w+/); // TODO(crookse) multiline
   protected re_is_interface = new RegExp(/@interface +\w+/);
-  protected re_is_ignored_block = new RegExp(/\* @doc-blocks-to-json ignore-doc-block/, "g");
+  protected re_is_ignored_block = new RegExp(
+    /\* @doc-blocks-to-json ignore-doc-block/,
+    "g"
+  );
   protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
-  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+((\n? + .+:.+,?)+{)?/);
+  protected re_is_method = new RegExp(
+    /.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+((\n? + .+:.+,?)+{)?/
+  );
   protected re_is_constructor = new RegExp(/.+constructor\((.+)?\)?/);
   protected re_is_property = new RegExp(/@property/);
-  protected re_members_only = new RegExp(/\/\/\/ +@doc-blocks-to-json members-only/);
+  protected re_members_only = new RegExp(
+    /\/\/\/ +@doc-blocks-to-json members-only/
+  );
   protected re_namespace = new RegExp(/(\*|\*\*) ?@memberof.+/, "g"); // doc-blocks-to-json ignore-line
   // protected re_class = new RegExp(/@class +\w+/, "g");
   // protected re_for_class_doc_block = new RegExp(/@class.+((\n .*)*)?\*\//);
@@ -44,7 +54,8 @@ export default class DocBlocksToJson {
   // protected re_for_method_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*\).*{/, "g");
   // protected re_for_property_doc_blocks = new RegExp(/\/\*\*((\s)+\*.*)*\s.*[:|=].+;/, "g");
   // protected re_function = new RegExp(/@(function|func|method).+/, "g");
-  protected re__member_names = "@(class|enum|function|func|interface|method|module)";
+  protected re__member_names =
+    "@(class|enum|function|func|interface|method|module)";
 
   /**
    * @description
@@ -464,7 +475,7 @@ export default class DocBlocksToJson {
 
     let ret: any = {
       access_modifier: accessModifier,
-      name: '', // TODO(crookse) do something about this.. is it needed?
+      name: "", // TODO(crookse) do something about this.. is it needed?
       description: this.getSection("@description", text),
       params: this.getSection("@param", text),
       returns: this.getSection("@return", text),
@@ -552,7 +563,7 @@ export default class DocBlocksToJson {
     return undefined;
   }
 
-  protected getMemberNameInterface(textByLine, index = -1, line = '') {
+  protected getMemberNameInterface(textByLine, index = -1, line = "") {
     if (index == -1) {
       index = textByLine.length - 1;
     }
@@ -576,7 +587,7 @@ export default class DocBlocksToJson {
     return this.getMemberNameInterface(textByLine, index, line);
   }
 
-  protected getMemberNameMethod(textByLine, index = -1, line = '') {
+  protected getMemberNameMethod(textByLine, index = -1, line = "") {
     if (index == -1) {
       index = textByLine.length - 1;
     }
@@ -781,7 +792,7 @@ export default class DocBlocksToJson {
         let currentNamespace = this.getAndCreateNamespace(docBlock);
         let memberName = this.getMemberName(docBlock);
         let data = this.getDocBlockDataForFunction(docBlock);
-        data.is_function= true;
+        data.is_function = true;
         if (!currentNamespace) {
           data.fully_qualified_name = memberName;
           this.parsed[memberName] = data;
@@ -882,9 +893,8 @@ export default class DocBlocksToJson {
         let data = this.getDocBlockDataForMethod(docBlock);
         // TODO(crookse) remove part where constructor is checked... we know
         // it's a constructor, so just assign that here.
-        data.name = 'constructor';
-        data.fully_qualified_name =
-          classMap.fully_qualified_name + "()";
+        data.name = "constructor";
+        data.fully_qualified_name = classMap.fully_qualified_name + "()";
         classMap.methods[methodName] = data;
       }
 
