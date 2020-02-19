@@ -46,3 +46,4 @@ jobs:
         git pull origin master
         git pull origin upgrade-deno
         git checkout upgrade-deno && git merge origin/master
+        git push
