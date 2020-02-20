@@ -45,7 +45,6 @@ import * as util_members from "./src/util/members.ts";
 namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
-    export type ObjectParser = util_object_parser;
     export const Exports = util_members;
   }
 
