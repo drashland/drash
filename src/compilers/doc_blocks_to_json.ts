@@ -10,6 +10,26 @@
 
 import Drash from "../../mod.ts";
 
+interface ReturnData {
+  line?: string,
+  data_type?: string,
+  name?: string,
+  exported?: boolean,
+  description?: Array<any>,
+  params?: Array<any>,
+  returns?: Array<any>,
+  throws?: Array<any>,
+  signature?: string,
+  access_modifier?: string,
+  is_async?: boolean,
+  annotation?: object,
+  is_function?: boolean,
+  fully_qualified_name?: string,
+  is_enum?: boolean,
+  is_interface?: boolean,
+  is_const?: boolean
+}
+
 /**
  * @memberof Drash.Compilers
  * @class DocBlocksToJson
@@ -275,13 +295,13 @@ export default class DocBlocksToJson {
    * @param string docBlock
    *     The doc block to get the `@annotationname` definitions from.
    *
-   * @return any
+   * @return ReturnData
    *     Returns an object containing the annotation lines data.
    */
-  protected getAnnotation(annotation: string, docBlock: string): any {
+  protected getAnnotation(annotation: string, docBlock: string): ReturnData {
     let re = new RegExp(annotation + ".+", "g");
     let match = docBlock.match(re);
-    let line = {
+    let line: ReturnData = {
       line: null,
       data_type: null,
       name: null
@@ -383,9 +403,9 @@ export default class DocBlocksToJson {
    * @param string text
    *     The text containing the interface's data.
    *
-   * @return any
+   * @return ReturnData
    */
-  protected getDocBlockDataForConst(text: string): any {
+  protected getDocBlockDataForConst(text: string): ReturnData {
     return {
       exported: this.isMemberExported("const", text),
       name: this.getNameOfConst(text),
@@ -401,10 +421,10 @@ export default class DocBlocksToJson {
    * @param string text
    *     The text containing the enum's data.
    *
-   * @return any
+   * @return ReturnData
    */
-  protected getDocBlockDataForEnum(text: string): any {
-    let ret: any = {
+  protected getDocBlockDataForEnum(text: string): ReturnData {
+    let ret: ReturnData = {
       exported: this.isMemberExported("enum", text),
       name: this.getNameOfEnum(text),
       description: this.getSection("@description", text)
@@ -420,10 +440,10 @@ export default class DocBlocksToJson {
    * @param string text
    *     The text containing the functions's data.
    *
-   * @return any
+   * @return ReturnData
    */
-  protected getDocBlockDataForFunction(text: string): any {
-    let ret: any = {
+  protected getDocBlockDataForFunction(text: string): ReturnData {
+    let ret: ReturnData = {
       exported: this.isMemberExported("function", text),
       name: this.getNameOfFunction(text),
       description: this.getSection("@description", text),
@@ -443,9 +463,9 @@ export default class DocBlocksToJson {
    * @param string text
    *     The text containing the interface's data.
    *
-   * @return any
+   * @return ReturnData
    */
-  protected getDocBlockDataForInterface(text: string): any {
+  protected getDocBlockDataForInterface(text: string): ReturnData {
     return {
       exported: this.isMemberExported("interface", text),
       name: this.getMemberName(text),
@@ -461,9 +481,9 @@ export default class DocBlocksToJson {
    * @param string text
    *     The text containing the method's data.
    *
-   * @return any
+   * @return ReturnData
    */
-  protected getDocBlockDataForMethod(text: string): any {
+  protected getDocBlockDataForMethod(text: string): ReturnData {
     let signature = this.getSignatureOfMethod(text);
 
     // Methods have constructors which are always public, so we want to make
@@ -473,7 +493,7 @@ export default class DocBlocksToJson {
       ? "public"
       : signature.split(" ")[0];
 
-    let ret: any = {
+    let ret: ReturnData = {
       access_modifier: accessModifier,
       name: "", // TODO(crookse) do something about this.. is it needed?
       description: this.getSection("@description", text),
@@ -494,14 +514,14 @@ export default class DocBlocksToJson {
    * @param string text
    *     The text containing the property's data.
    *
-   * @return any
+   * @return ReturnData
    */
-  protected getDocBlockDataForProperty(text: string): any {
+  protected getDocBlockDataForProperty(text: string): ReturnData {
     let signature = this.getSignatureOfProperty(text);
 
     let accessModifier = signature.split(" ")[0];
 
-    let ret: any = {
+    let ret: ReturnData = {
       access_modifier: accessModifier,
       description: this.getSection("@description", text),
       annotation: this.getAnnotation("@property", text),
@@ -563,7 +583,16 @@ export default class DocBlocksToJson {
     return undefined;
   }
 
-  protected getMemberNameInterface(textByLine, index = -1, line = "") {
+  /**
+   * @description
+   * 
+   * @param any textByLine 
+   * @param number index 
+   * @param string line 
+   * 
+   * @return string
+   */
+  protected getMemberNameInterface(textByLine: any, index: number = -1, line: string = ""): string {
     if (index == -1) {
       index = textByLine.length - 1;
     }
@@ -587,7 +616,15 @@ export default class DocBlocksToJson {
     return this.getMemberNameInterface(textByLine, index, line);
   }
 
-  protected getMemberNameMethod(textByLine, index = -1, line = "") {
+  /**
+   * 
+   * @param textByLine 
+   * @param index 
+   * @param line 
+   * 
+   * @return string
+   */
+  protected getMemberNameMethod(textByLine: any, index: number = -1, line: string = ""): string {
     if (index == -1) {
       index = textByLine.length - 1;
     }
@@ -779,8 +816,10 @@ export default class DocBlocksToJson {
    *     annotation.
    *
    * @param string fileContents
+   * 
+   * @return void
    */
-  protected parseMembersOnlyFile(fileContents) {
+  protected parseMembersOnlyFile(fileContents: string): void {
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     docBlocks.forEach(docBlock => {
@@ -855,8 +894,10 @@ export default class DocBlocksToJson {
    *     using this method.
    *
    * @param string fileContents
+   * 
+   * @return void
    */
-  protected parseClassFile(fileContents) {
+  protected parseClassFile(fileContents: string): void {
     let docBlocks = fileContents.match(this.re_for_all_members);
 
     let classMap: any = {

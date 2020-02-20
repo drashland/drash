@@ -1,8 +1,22 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status, serve } from "../../deps.ts";
+import Resource from "./resource.ts";
 
 interface RunOptions {
   address?: string;
+}
+
+interface ServerConfigs {
+  resources: any,
+  address?: string,
+  middleware?: any,
+  logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger,
+  memory_allocation?: { multipart_form_data?: number },
+  static_paths?: string[],
+  directory?: string,
+  response_output?: string,
+  resource_level?: any,
+  server_level?: any
 }
 
 /**
@@ -47,7 +61,7 @@ export default class Server {
    *
    * @property any configs
    */
-  protected configs: any;
+  protected configs: ServerConfigs;
 
   /**
    * @description
@@ -109,7 +123,7 @@ export default class Server {
    *
    *     `static_paths`: `string[]`
    */
-  constructor(configs: any) {
+  constructor(configs: ServerConfigs) {
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false
@@ -322,11 +336,11 @@ export default class Server {
    *
    * @param any request
    *
-   * @return any
+   * @return string
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForFavicon(request): any {
+  public handleHttpRequestForFavicon(request): string {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -341,6 +355,7 @@ export default class Server {
     request.respond(response);
     return JSON.stringify(response);
   }
+
   /**
    * @description
    *     Handle HTTP requests for static path assets.
@@ -360,8 +375,17 @@ export default class Server {
     }
   }
 
-  public getResourceObject(resourceClass: any, request: any): any {
-    let resourceObj = new resourceClass(
+  /**
+   * 
+   * @param resourceClass 
+   * @param request 
+   * 
+   * @return resourceClass
+   *     Returns an instance of the resourceClass passed in, and setting the
+   *     `paths` and `middleware` properties
+   */
+  public getResourceObject(resourceClass: any, request: any): Resource {
+    let resourceObj: Resource = new resourceClass(
       request,
       new Drash.Http.Response(request),
       this
@@ -404,7 +428,7 @@ export default class Server {
    * @description
    *     Close the server.
    */
-  public close() {
+  public close(): void {
     if (Deno.env().DRASH_PROCESS != "test") {
       console.log(`\nDeno server at ${this.configs.address} stopped.\n`);
     }
@@ -544,7 +568,7 @@ export default class Server {
     request,
     resource,
     response
-  ) {
+  ): void {
     if (
       resource.middleware &&
       resource.middleware.hasOwnProperty("after_request")
@@ -571,7 +595,7 @@ export default class Server {
    *
    * @return void
    */
-  protected executeMiddlewareResourceLevelBeforeRequest(request, resource) {
+  protected executeMiddlewareResourceLevelBeforeRequest(request, resource): void {
     if (
       resource &&
       resource.middleware &&
@@ -599,7 +623,7 @@ export default class Server {
    *
    * @return void
    */
-  protected executeMiddlewareServerLevelBeforeRequest(request) {
+  protected executeMiddlewareServerLevelBeforeRequest(request): void {
     // Execute server-level middleware
     if (this.middleware.server_level.hasOwnProperty("before_request")) {
       this.middleware.server_level.before_request.forEach(middlewareClass => {
@@ -624,7 +648,7 @@ export default class Server {
     request,
     resource,
     response
-  ) {
+  ): void {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request.forEach(middlewareClass => {
         let middleware = new middlewareClass(request, this, resource, response);
@@ -743,7 +767,16 @@ export default class Server {
     return false;
   }
 
-  protected logDebug(message) {
+  /**
+   * @description
+   *     Log a debug message
+   * 
+   * @param string message
+   *     Message to log
+   * 
+   * @return void
+   */
+  protected logDebug(message: string): void {
     this.logger.debug("[drash] " + message);
   }
 }

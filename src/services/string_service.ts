@@ -23,12 +23,15 @@ export default class StringService {
    *     `lowercase` is specified, then the keys will be converted from
    *     `Key-Name` to `Key-Name`. Defaults to `normal`, which does not mutate
    *     the keys.
+   * 
+   * @return { [key: string]: string }
+   *     Empty object if the 1st param is empty, else a key value pair array
    */
   static parseQueryParamsString(
     queryParamsString: string,
     keyFormat: string = "normal",
     keyCase: string = "normal"
-  ): any {
+  ): { [key: string]: string } {
     let queryParams = {};
 
     if (!queryParamsString) {

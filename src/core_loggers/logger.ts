@@ -40,7 +40,7 @@ export default abstract class Logger {
    * @param any configs
    *     See [Drash.CoreLoggers.Logger.configs](/#/api-reference/loggers/logger#configs).
    */
-  constructor(configs: any) {
+  constructor(configs: LoggerConfigs) {
     if (configs.test === true) {
       this.test = true;
     }
