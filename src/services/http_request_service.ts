@@ -1,13 +1,14 @@
-import { MultipartReader, ServerRequest, contentType, FormFile } from "../../deps.ts";
+import {
+  FormFile,
+  MultipartReader,
+  ServerRequest,
+  contentType
+} from "../../deps.ts";
 import StringService from "./string_service.ts";
+import { ParsedRequestBody } from "../interfaces/parsed_request_body.ts";
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
-
-interface ParsedBody {
-  content_type: any | undefined;
-  data: any | undefined;
-}
 
 interface OptionsConfig {
   default_response_content_type?: string,
@@ -43,7 +44,7 @@ export default class HttpRequestService {
    *     is `file_number_one`, then it will be accessible in the returned object
    *     as `{returned_object}.file_number_one`.
    */
-  public getRequestBodyFile(parsedBody: ParsedBody, input: string): any {
+  public getRequestBodyFile(parsedBody: ParsedRequestBody, input: string): any {
     return parsedBody.data[input];
   }
 
@@ -56,7 +57,7 @@ export default class HttpRequestService {
    *
    * @return any
    */
-  public getRequestBodyParam(parsedBody: ParsedBody, input: string): any {
+  public getRequestBodyParam(parsedBody: ParsedRequestBody, input: string): any {
     return parsedBody.data[input];
   }
 
@@ -263,7 +264,7 @@ export default class HttpRequestService {
     // Parse the body now so that callers don't have to use async-await when
     // trying to get the body at a later time. We're sacrificing performance for
     // convenience here.
-    const pb: ParsedBody = await this.parseBody(request, options);
+    const pb: ParsedRequestBody = await this.parseBody(request, options);
 
     // Attach methods
     const t = this;
@@ -298,7 +299,7 @@ export default class HttpRequestService {
    *     the body itself in that format. If there is no body, it
    *     returns an empty properties
    */
-  public async parseBody(request: any, options: OptionsConfig): Promise<ParsedBody> {
+  public async parseBody(request: any, options: OptionsConfig): Promise<ParsedRequestBody> {
     let ret: {
       content_type: string,
       data: any

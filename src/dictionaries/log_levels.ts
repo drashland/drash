@@ -1,12 +1,6 @@
-/// @doc-blocks-to-json members-only
-
-interface LogLevelStructure {
-  name: string;
-  rank: number;
-}
+import { LogLevelStructure } from "../interfaces/log_level_structure.ts";
 
 /**
- * @doc-blocks-to-json ignore-doc-block
  * @memberof Drash.Dictionaries
  *
  * @description

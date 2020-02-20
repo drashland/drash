@@ -12,7 +12,7 @@ import { LoggerConfigs } from "../interfaces/logger_configs.ts";
 export default abstract class Logger {
   /**
    * @description
-   *     This logger's configs. See [LoggerConfigs](/#/api-reference/interfaces/logger-configs).
+   *     See Drash.Interfaces.LoggerConfigs
    *
    * @property any configs
    */
@@ -37,8 +37,8 @@ export default abstract class Logger {
    * @description
    *     Construct an object of this class.
    *
-   * @param any configs
-   *     See [Drash.CoreLoggers.Logger.configs](/#/api-reference/loggers/logger#configs).
+   * @param LoggerConfigs configs
+   *     See Drash.Interfaces.LoggerConfigs.
    */
   constructor(configs: LoggerConfigs) {
     if (configs.test === true) {
@@ -69,7 +69,8 @@ export default abstract class Logger {
 
   /**
    * @description
-   *     Write a log message.
+   *     Write a log message. All extended classes must implement this method.
+   *     See Drash.CoreLoggers.ConsoleLogger/FileLogger for examples.
    *
    * @param any logMethodLevelDefinition
    * @param string message

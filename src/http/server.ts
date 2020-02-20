@@ -1,22 +1,10 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status, serve } from "../../deps.ts";
 import Resource from "./resource.ts";
+import { ServerConfigs } from "../interfaces/server_configs.ts";
 
 interface RunOptions {
   address?: string;
-}
-
-interface ServerConfigs {
-  resources: any,
-  address?: string,
-  middleware?: any,
-  logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger,
-  memory_allocation?: { multipart_form_data?: number },
-  static_paths?: string[],
-  directory?: string,
-  response_output?: string,
-  resource_level?: any,
-  server_level?: any
 }
 
 /**
@@ -39,9 +27,11 @@ export default class Server {
   /**
    * @description
    *     A property to hold the Deno server. This property is set in
-   *     `this.run()` like so: ` this.deno_server =
-   *     serve(this.configs.address);`. `serve()` is imported from
-   *     [https://deno.land/x/http/server.ts](https://deno.land/x/http/server.ts).
+   *     this.run() like so:
+   *
+   *         this.deno_server = serve(this.configs.address);
+   *
+   *     serve() is imported from https://deno.land/x/http/server.ts.
    *
    * @property any deno_server
    */
@@ -97,7 +87,7 @@ export default class Server {
    *     usually intended to retrieve some type of concrete resource (e.g., a
    *     CSS file or a JS file). If an HTTP request is matched to a static path
    *     and the resource the HTTP request is trying to get is found, then
-   *     `Drash.Http.Response` will use its `sendStatic()` method to send the
+   *     Drash.Http.Response will use its sendStatic() method to send the
    *     static asset back to the client.
    *
    * @property string[] static_paths
@@ -112,16 +102,8 @@ export default class Server {
    * @description
    *     Construct an object of this class.
    *
-   * @param any configs
-   *     `address`: `string`
-   *
-   *     `logger`: `Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger`
-   *
-   *     `response_output`: `string` (a proper MIME type)
-   *
-   *     `resources`: `Drash.Http.Resource[]`
-   *
-   *     `static_paths`: `string[]`
+   * @param ServerConfigs configs
+   *     See Drash.Interfaces.ServerConfigs
    */
   constructor(configs: ServerConfigs) {
     if (!configs.logger) {

@@ -4,8 +4,6 @@
  *
  * @description
  *     This class gives you a way to throw HTTP errors semantically.
- *
- *     This class extends `Error`.
  */
 export default class HttpException extends Error {
   /**

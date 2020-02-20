@@ -13,8 +13,8 @@ export default class Resource {
    * @description
    *     A property to hold the middleware this resource uses.
    *
-   *     All derived middleware classes MUST define this property as `static`
-   *     (e.g., `static middleware = ["MiddlewareClass"];`)
+   *     All derived middleware classes MUST define this property as static
+   *     (e.g., static middleware = ["MiddlewareClass"];)
    *
    * @property string[] middleware
    */
@@ -23,8 +23,8 @@ export default class Resource {
   /**
    * @description
    *     A property to hold the name of this resource. This property is used by
-   *     `Drash.Http.Server` to help it store resources in its `resources`
-   *     property by name.
+   *     Drash.Http.Server to help it store resources in its resources property
+   *     by name.
    *
    * @property string name
    */
@@ -34,8 +34,8 @@ export default class Resource {
    * @description
    *     A property to hold the paths to access this resource.
    *
-   *     All derived resource classes MUST define this property as `static`
-   *     (e.g., `static paths = ["path"];`)
+   *     All derived resource classes MUST define this property as static
+   *     (e.g., static paths = ["path"];)
    *
    * @property string[] paths
    */
