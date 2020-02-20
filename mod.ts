@@ -33,6 +33,8 @@ import file_logger from "./src/core_loggers/file_logger.ts";
 import http_service from "./src/services/http_service.ts";
 import http_request_service from "./src/services/http_request_service.ts";
 
+import * as util_members from "./src/util/members.ts";
+
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER: NAMESPACE - DRASH //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,6 +43,12 @@ import http_request_service from "./src/services/http_request_service.ts";
 //
 
 namespace Drash {
+  // TODO: Remove this when the docs don't need it
+  export namespace Util {
+    export type ObjectParser = util_object_parser;
+    export const Exports = util_members;
+  }
+
   export namespace Dictionaries {
     export const LogLevels = log_levels.LogLevels;
     // export namespace Enums {
