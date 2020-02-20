@@ -31,12 +31,12 @@ export default class Response {
    *
    * @property ServerRequest request
    */
-  public request;
+  public request: any;
 
   /**
    * @description
    *     A property to hold this response's status code (e.g., 200 for OK).
-   *     This class uses `Status` and `STATUS_TEXT` from the Deno Standard
+   *     This class uses Status and STATUS_TEXT from the Deno Standard
    *     Modules' http_status module for response codes.
    *
    * @property number status_code
@@ -89,8 +89,8 @@ export default class Response {
    *     Get the status message based on the status code.
    *
    * @return string
-   *     Returns the status message associated with `this.status_code`. For
-   *     example, if the response's `status_code` is `200`, then this method
+   *     Returns the status message associated with this.status_code. For
+   *     example, if the response's status_code is 200, then this method
    *     will return "OK" as the status message.
    */
   public getStatusMessage(): string {
@@ -101,8 +101,10 @@ export default class Response {
   /**
    * @description
    *     Get the full status message based on the status code. This is just the
-   *     status code and the status message together (e.g., `200 (OK)`, `401
-   *     (Unauthorized)`, etc.).
+   *     status code and the status message together. For example:
+   *
+   *         If the status code is 200, then this will return "200 (OK)"
+   *         If the status code is 404, then this will return "404 (Not Found)"
    *
    * @return string
    */
@@ -140,9 +142,9 @@ export default class Response {
    * @param string file
    *     The file that will be served to the client.
    *
-   * @return any
+   * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file): any {
+  public sendStatic(file: string): {status: number, headers: Headers, body: any} {
     let output = {
       status: this.status_code,
       headers: this.headers,

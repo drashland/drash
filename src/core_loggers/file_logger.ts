@@ -1,4 +1,5 @@
 import Logger from "./logger.ts";
+import { LoggerConfigs } from "../interfaces/logger_configs.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -20,21 +21,21 @@ export default class FileLogger extends Logger {
    * @description
    *     Construct an object of this class.
    *
-   * @param any configs
-   *     See `Drash.CoreLoggers.Logger.configs`.
+   * @param LoggerConfigs configs
+   *     See Drash.Interfaces.LoggerConfigs.
    *
    */
-  constructor(configs) {
+  constructor(configs: LoggerConfigs) {
     super(configs);
     this.file = configs.file;
   }
 
   /**
    * @description
-   *     Write a log message to `this.file`.
+   *     Write a log message to this.file.
    *
    *     This method is not intended to be called directly. It is already used
-   *     in the base class (`Logger`) and automatically called.
+   *     in the base class (Logger) and automatically called.
    *
    * @param any logMethodLevelDefinition
    * @param string message

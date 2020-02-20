@@ -3,10 +3,6 @@
 // README.md
 // REQUIREMENTS.md
 
-// Compilers
-// TODO(crookse) use docable when docable has TypeScript types developed
-import doc_blocks_to_json from "./src/compilers/doc_blocks_to_json.ts";
-
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 
@@ -24,6 +20,9 @@ import server from "./src/http/server.ts";
 
 // Interfaces
 import * as interface_logger_configs from "./src/interfaces/logger_configs.ts";
+import * as interface_log_level_structure from "./src/interfaces/log_level_structure.ts";
+import * as interface_parsed_request_body from "./src/interfaces/parsed_request_body.ts";
+import * as interface_server_configs from "./src/interfaces/server_configs.ts";
 
 // Loggers
 import base_logger from "./src/core_loggers/logger.ts";
@@ -34,8 +33,6 @@ import file_logger from "./src/core_loggers/file_logger.ts";
 import http_service from "./src/services/http_service.ts";
 import http_request_service from "./src/services/http_request_service.ts";
 
-// Util
-import util_object_parser from "./src/util/object_parser.ts";
 import * as util_members from "./src/util/members.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,9 +43,9 @@ import * as util_members from "./src/util/members.ts";
 //
 
 namespace Drash {
-  export namespace Compilers {
-    export type DocBlocksToJson = doc_blocks_to_json;
-    export const DocBlocksToJson = doc_blocks_to_json;
+  // TODO: Remove this when the docs don't need it
+  export namespace Util {
+    export const Exports = util_members;
   }
 
   export namespace Dictionaries {
@@ -78,15 +75,6 @@ namespace Drash {
     export const Logger = base_logger;
   };
 
-  export const Loggers: any = {};
-
-  export function addLogger(name: string, logger: any) {
-    if (this.Loggers[name]) {
-      throw new this.Exceptions.NameCollisionException(`Loggers must be unique: "${name}" found.`);
-    }
-    this.Loggers[name] = logger;
-  }
-
   export namespace Http {
     export type Middleware = middleware;
     export let Middleware = middleware;
@@ -99,7 +87,10 @@ namespace Drash {
   }
 
   export namespace Interfaces {
+    export const LogLevelStructure = interface_log_level_structure;
     export const LoggerConfigs = interface_logger_configs;
+    export const ParsedRequestBody = interface_parsed_request_body;
+    export const ServerConfigs = interface_server_configs;
   }
 
   export namespace Services {
@@ -109,15 +100,18 @@ namespace Drash {
     export const HttpRequestService = new http_request_service();
   }
 
-  export namespace Util {
-    export type ObjectParser = util_object_parser;
-    export const ObjectParser = util_object_parser;
-    export const Exports = util_members;
-  }
+  /**
+   * A property to hold all loggers added via Drash.addLogger(). This property
+   * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
+   * a namespace for loggers.
+   *
+   * @property Drash.Loggers Loggers
+   */
+  export const Loggers: any = {};
 
   /**
-   * A property to hold all members added via `Drash.addMember()`. This property
-   * allows users to access members via `Drash.Members.SomeMember` and acts like
+   * A property to hold all members added via Drash.addMember(). This property
+   * allows users to access members via Drash.Members.SomeMember and acts like
    * a namespace for members that are external to Drash.
    *
    * @property Drash.Members Members
@@ -125,16 +119,39 @@ namespace Drash {
   export const Members: any = {};
 
   /**
-   * Add an app to the Members namespace. After adding an app, you can use the
-   * app via `Drash.Members.YourApp.doSomething()`.
+   * Add a member to the Members namespace. After adding a member, you can use
+   * the member via Drash.Members.YourMember.doSomething().
    *
    * @param string name
-   *     The app's name which can be accessed via `Drash.Members[name]`.
-   * @param any app
-   *     The app.
+   *     The member's name which can be accessed via Drash.Members[name].
+   * @param any member
+   *     The member.
    */
-  export function addMember(name: string, app: any) {
-    this.Members[name] = app;
+  export function addMember(name: string, member: any) {
+    if (this.Members[name]) {
+      throw new this.Exceptions.NameCollisionException(
+        `Members must be unique: "${name}" was already added.`
+      );
+    }
+    this.Members[name] = member;
+  }
+
+  /**
+   * Add a logger to the Loggers namespace. After adding a logger, you can use
+   * the logger via Drash.Loggers.YourLogger.doSomething().
+   *
+   * @param string name
+   *     The logger's name which can be accessed via Drash.Members[name].
+   * @param any logger
+   *     The logger.
+   */
+  export function addLogger(name: string, logger: any) {
+    if (this.Loggers[name]) {
+      throw new this.Exceptions.NameCollisionException(
+        `Loggers must be unique: "${name}" was already added.`
+      );
+    }
+    this.Loggers[name] = logger;
   }
 }
 

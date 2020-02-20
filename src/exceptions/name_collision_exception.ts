@@ -3,9 +3,9 @@
  * @class NameCollisionException
  *
  * @description
- *     This class gives you a way to throw name collision errors.
- *
- *     This class extends `Error`.
+ *     This class gives you a way to throw name collision errors. For example,
+ *     if you try to add two loggers via Drash.addLogger() with the same name,
+ *     then this exception will be thrown because the names are colliding.
  */
 export default class NameCollisionException extends Error {
     /**

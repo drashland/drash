@@ -93,7 +93,7 @@ members.test("Drash.addLogger(): names must be unique", () => {
       members.Drash.addLogger("TestLogger", testLogger);
     },
     members.Drash.Exceptions.NameCollisionException,
-    'Loggers must be unique: "TestLogger" found.'
+    'Loggers must be unique: "TestLogger" was already added.'
   );
 });
 

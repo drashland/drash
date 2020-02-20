@@ -1,5 +1,8 @@
 import Drash from "../../mod.ts";
-import { MultipartReader, contentType } from "../../deps.ts";
+import {
+  MultipartReader,
+  contentType
+} from "../../deps.ts";
 
 /**
  * @memberof Drash.Services
@@ -9,6 +12,7 @@ import { MultipartReader, contentType } from "../../deps.ts";
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
+
   /**
    * @description
    *     Get a MIME type for a file based on its extension.
