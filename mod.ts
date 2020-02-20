@@ -21,6 +21,8 @@ import server from "./src/http/server.ts";
 // Interfaces
 import * as interface_logger_configs from "./src/interfaces/logger_configs.ts";
 import * as interface_log_level_structure from "./src/interfaces/log_level_structure.ts";
+import * as interface_parsed_request_body from "./src/interfaces/parsed_request_body.ts";
+import * as interface_server_configs from "./src/interfaces/server_configs.ts";
 
 // Loggers
 import base_logger from "./src/core_loggers/logger.ts";
@@ -78,8 +80,10 @@ namespace Drash {
   }
 
   export namespace Interfaces {
-    export const LoggerConfigs = interface_logger_configs;
     export const LogLevelStructure = interface_log_level_structure;
+    export const LoggerConfigs = interface_logger_configs;
+    export const ParsedRequestBody = interface_parsed_request_body;
+    export const ServerConfigs = interface_server_configs;
   }
 
   export namespace Services {
