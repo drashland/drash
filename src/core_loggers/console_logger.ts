@@ -1,4 +1,5 @@
 import Logger from "./logger.ts";
+import { LoggerConfigs } from "../interfaces/logger_configs.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -15,7 +16,7 @@ export default class ConsoleLogger extends Logger {
    * @param any configs
    *     See `Drash.CoreLoggers.Logger.configs`.
    */
-  constructor(configs) {
+  constructor(configs: LoggerConfigs) {
     super(configs);
   }
 
@@ -32,7 +33,7 @@ export default class ConsoleLogger extends Logger {
    * @return string
    *     Returns the log message which is used for unit testing purposes.
    */
-  public write(logMethodLevelDefinition, message): string {
+  public write(logMethodLevelDefinition, message): string|void {
     if (this.test) {
       return message;
     }

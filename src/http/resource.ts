@@ -47,7 +47,7 @@ export default class Resource {
    *
    * @property ServerRequest request
    */
-  protected request;
+  protected request: any;
 
   /**
    * @description

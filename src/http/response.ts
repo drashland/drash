@@ -31,7 +31,7 @@ export default class Response {
    *
    * @property ServerRequest request
    */
-  public request;
+  public request: any;
 
   /**
    * @description
@@ -140,9 +140,9 @@ export default class Response {
    * @param string file
    *     The file that will be served to the client.
    *
-   * @return any
+   * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file): any {
+  public sendStatic(file: string): {status: number, headers: Headers, body: any} {
     let output = {
       status: this.status_code,
       headers: this.headers,

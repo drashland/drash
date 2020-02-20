@@ -1,4 +1,4 @@
-import { MultipartReader, ServerRequest, contentType } from "../../deps.ts";
+import { MultipartReader, ServerRequest, contentType, FormFile } from "../../deps.ts";
 import StringService from "./string_service.ts";
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
@@ -7,6 +7,12 @@ const encoder = new TextEncoder();
 interface ParsedBody {
   content_type: any | undefined;
   data: any | undefined;
+}
+
+interface OptionsConfig {
+  default_response_content_type?: string,
+  memory_allocation?: { multipart_form_data?: number },
+  headers: any
 }
 
 /**
@@ -220,10 +226,10 @@ export default class HttpRequestService {
    * @description
    *     Does the specified request have a body?
    *
-   * @return Promise<any>
+   * @return Promise<boolean>
    *     Returns `true` if the request has a body. Returns `false` if not.
    */
-  public async hasBody(request: any): Promise<any> {
+  public async hasBody(request: any): Promise<boolean> {
     let ret = parseInt(request.headers.get("content-length")) > 0;
     if (!ret) {
       ret = parseInt(request.headers.get("Content-Length")) > 0;
@@ -235,13 +241,13 @@ export default class HttpRequestService {
    * @description
    *     Hydrate the specified request object.
    *
-   * @return Promise<any>
+   * @return Promise<boolean>
    *     Returns a hydrated request object. For example, deno uses the
    *     `ServerRequest` object. This method takes that object and adds more
    *     porperties and methods to it. This makes it easier for Drash to process
    *     the object for its own purposes.
    */
-  public async hydrate(request: any, options?: any): Promise<any> {
+  public async hydrate(request: any, options?: OptionsConfig): Promise<boolean> {
     if (options.headers) {
       this.setHeaders(request, options.headers);
     }
@@ -283,10 +289,21 @@ export default class HttpRequestService {
   /**
    * @description
    *     Parse the specified request's body.
+   * 
+   * @param any request
+   * @param OptionsConfig options
+   * 
+   * @returns {content_type: string, data: any}
+   *     Returns the content type of the body, and based on this
+   *     the body itself in that format. If there is no body, it
+   *     returns an empty properties
    */
-  public async parseBody(request: any, options: any = {}): Promise<ParsedBody> {
-    let ret = {
-      content_type: undefined,
+  public async parseBody(request: any, options: OptionsConfig): Promise<ParsedBody> {
+    let ret: {
+      content_type: string,
+      data: any
+    } = {
+      content_type: '',
       data: undefined
     };
 
@@ -294,7 +311,7 @@ export default class HttpRequestService {
       return ret;
     }
 
-    const contentType = request.headers.get("Content-Type");
+    const contentType: string = request.headers.get("Content-Type");
 
     // No Content-Type header? Default to this.
     if (!contentType) {
@@ -370,9 +387,11 @@ export default class HttpRequestService {
    * @description
    *    Parse this request's body as application/x-www-form-url-encoded.
    *
-   * @return Promise<any>
+   * @return Promise<object|Array<>>
+   *    Returns an empty object if no body exists, else a key/value pair
+   *    array e.g. returnValue['someKey']
    */
-  public async parseBodyAsFormUrlEncoded(request: any): Promise<any> {
+  public async parseBodyAsFormUrlEncoded(request: any): Promise<object|Array<any>> {
     let body = decoder.decode(await Deno.readAll(request.body));
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
@@ -385,9 +404,10 @@ export default class HttpRequestService {
    * @description
    *    Parse this request's body as application/json.
    *
-   * @return Promise<any>
+   * @return Promise<object>
+   *    JSON object - the decoded request body
    */
-  public async parseBodyAsJson(request: any): Promise<any> {
+  public async parseBodyAsJson(request: any): Promise<object> {
     const data = decoder.decode(await Deno.readAll(request.body));
     return JSON.parse(data);
   }
@@ -403,13 +423,15 @@ export default class HttpRequestService {
    * @param number maxMemory
    *     The maximum memory to allocate to this process in megabytes.
    *
-   * @return Promise<any>
+   * @return Promise<{ [key: string]: string | FormFile }>
+   *     Returned values can be seen here (look for `readForm`:
+   *     https://deno.land/std@v0.32.0/mime/multipart.ts
    */
   public async parseBodyAsMultipartFormData(
     body: Reader,
     boundary: string,
     maxMemory: number
-  ): Promise<any> {
+  ): Promise<{ [key: string]: string | FormFile }> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -427,8 +449,10 @@ export default class HttpRequestService {
    *
    * @param any request
    * @param any headers
+   * 
+   * @return void
    */
-  public setHeaders(request: any, headers: any) {
+  public setHeaders(request: any, headers: Headers): void {
     if (headers) {
       for (let key in headers) {
         request.headers.set(key, headers[key]);

@@ -111,10 +111,18 @@ export function colorize(message: string, options: ColorizeOptions): string {
  *     }
  */
 export function getFileSystemStructure(dir: string): any {
-  let files = [];
+  let files: Array<{
+    basename: string,
+    extension: string,
+    filename: string,
+    path: string,
+    pathname: string,
+    snake_cased: string,
+    isDirectory: Function
+  }> = [];
 
   for (const fileInfo of walkSync(dir)) {
-    let filename = fileInfo.filename;
+    let filename: string = fileInfo.filename;
     let path = filename;
     let filenameSplit = filename.split("/");
     filename = filenameSplit[filenameSplit.length - 1];

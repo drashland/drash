@@ -80,7 +80,7 @@ namespace Drash {
 
   export const Loggers: any = {};
 
-  export function addLogger(name: string, logger: any) {
+  export function addLogger(name: string, logger: Drash.CoreLoggers.Logger) {
     if (this.Loggers[name]) {
       throw new this.Exceptions.NameCollisionException(`Loggers must be unique: "${name}" found.`);
     }
