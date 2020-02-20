@@ -156,7 +156,6 @@ export default class Server {
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
       configs.static_paths.forEach(path => {
-        console.log(path)
         this.addStaticPath(path);
       });
     }

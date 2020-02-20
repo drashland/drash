@@ -33,7 +33,7 @@ export default class ConsoleLogger extends Logger {
    * @return string
    *     Returns the log message which is used for unit testing purposes.
    */
-  public write(logMethodLevelDefinition, message): string|void {
+  public write(logMethodLevelDefinition: any, message: string): string|void {
     if (this.test) {
       return message;
     }
