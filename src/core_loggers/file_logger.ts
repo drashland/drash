@@ -15,7 +15,7 @@ export default class FileLogger extends Logger {
    *
    * @property string file
    */
-  protected file: string;
+  protected file: string = "tmp_log.log";
 
   /**
    * @description
@@ -27,7 +27,9 @@ export default class FileLogger extends Logger {
    */
   constructor(configs: LoggerConfigs) {
     super(configs);
-    this.file = configs.file;
+    if (configs.file) {
+      this.file = configs.file;
+    }
   }
 
   /**
@@ -43,7 +45,7 @@ export default class FileLogger extends Logger {
    * @return string
    *     Returns the log message which is used for unit testing purposes.
    */
-  public write(logMethodLevelDefinition, message): string {
+  public write(logMethodLevelDefinition: any, message: string): string {
     const encoder = new TextEncoder();
     let encoded = encoder.encode(message + "\n");
     Deno.writeFileSync(this.file, encoded, { append: true });

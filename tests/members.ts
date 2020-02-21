@@ -3,8 +3,6 @@ import {
   ServerRequest,
   assertEquals,
   assertThrows,
-  runTests,
-  test
 } from "../deps.ts";
 const decoder = new TextDecoder("utf-8");
 
@@ -95,6 +93,5 @@ export default {
   fetch: makeRequest,
   mockRequest,
   MockServer,
-  runTests,
-  test
+  test: Deno.test
 };

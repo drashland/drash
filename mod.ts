@@ -108,6 +108,7 @@ namespace Drash {
    * @property Drash.Loggers Loggers
    */
   export const Loggers: any = {};
+  export type Loggers = {};
 
   /**
    * A property to hold all members added via Drash.addMember(). This property
@@ -117,6 +118,7 @@ namespace Drash {
    * @property Drash.Members Members
    */
   export const Members: any = {};
+  export type Members = {};
 
   /**
    * Add a member to the Members namespace. After adding a member, you can use
@@ -128,12 +130,12 @@ namespace Drash {
    *     The member.
    */
   export function addMember(name: string, member: any) {
-    if (this.Members[name]) {
-      throw new this.Exceptions.NameCollisionException(
+    if (Members[name]) {
+      throw new Exceptions.NameCollisionException(
         `Members must be unique: "${name}" was already added.`
       );
     }
-    this.Members[name] = member;
+    Members[name] = member;
   }
 
   /**
@@ -146,12 +148,12 @@ namespace Drash {
    *     The logger.
    */
   export function addLogger(name: string, logger: any) {
-    if (this.Loggers[name]) {
-      throw new this.Exceptions.NameCollisionException(
+    if (Loggers[name]) {
+      throw new Exceptions.NameCollisionException(
         `Loggers must be unique: "${name}" was already added.`
       );
     }
-    this.Loggers[name] = logger;
+    Loggers[name] = logger;
   }
 }
 

@@ -52,7 +52,7 @@ members.test("Drash.addMember(): object", () => {
 });
 
 members.test("Drash.addMember(): types", () => {
-  let data = {
+  let data: any = {
     myBooleanTrue: true,
     myBooleanFalse: false,
     myString: "string",

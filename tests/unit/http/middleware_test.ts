@@ -319,7 +319,7 @@ class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static middleware = {
     before_request: ["UserIsAdmin"]
   };
-  public users = {
+  public users: any = {
     1: {
       name: "Thor"
     },
@@ -346,7 +346,7 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   static middleware = {
     before_request: ["muahahaha"]
   };
-  public users = {
+  public users: any = {
     1: {
       name: "Thor"
     },

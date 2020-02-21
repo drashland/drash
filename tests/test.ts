@@ -24,4 +24,4 @@ import "./unit/mod_test.ts";
 
 import members from "./members.ts";
 
-members.runTests();
+Deno.runTests();
