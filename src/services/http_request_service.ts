@@ -271,12 +271,7 @@ export default class HttpRequestService {
     // Parse the body now so that callers don't have to use async-await when
     // trying to get the body at a later time. We're sacrificing performance for
     // convenience here.
-    const pb: ParsedRequestBody = await this.parseBody(
-      request,
-      options
-        ? options
-        : {}
-    );
+    const pb: ParsedRequestBody = await this.parseBody(request, options);
 
     // Attach methods
     const t = this;
@@ -311,7 +306,7 @@ export default class HttpRequestService {
    *     the body itself in that format. If there is no body, it
    *     returns an empty properties
    */
-  public async parseBody(request: any, options: OptionsConfig): Promise<ParsedRequestBody> {
+  public async parseBody(request: any, options: OptionsConfig = {}): Promise<ParsedRequestBody> {
     let ret: { content_type: string, data: any } = {
       content_type: '',
       data: undefined
