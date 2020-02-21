@@ -352,9 +352,11 @@ export default class HttpRequestService {
         throw new Error(`Error trying to find boundary.\n` + error.stack);
       }
       try {
-        const maxMemory = options && options.memory_allocation && options.memory_allocation.multipart_form_data
-          ? options.memory_allocation.multipart_form_data
-          : 10;
+        let maxMemory: number = 10;
+        const config = options.memory_allocation;
+        if (config && config.multipart_form_data && config.multipart_form_data > 10) {
+          maxMemory = config.multipart_form_data;
+        }
         ret.data = await this.parseBodyAsMultipartFormData(
           request.body,
           boundary,
