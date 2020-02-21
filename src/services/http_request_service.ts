@@ -351,9 +351,6 @@ export default class HttpRequestService {
       } catch (error) {
         throw new Error(`Error trying to find boundary.\n` + error.stack);
       }
-      if (!boundary) {
-        return ret;
-      }
       try {
         const maxMemory = options && options.memory_allocation && options.memory_allocation.multipart_form_data
           ? options.memory_allocation.multipart_form_data
