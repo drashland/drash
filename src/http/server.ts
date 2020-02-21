@@ -161,19 +161,20 @@ export default class Server {
    *     methods.
    */
   public async getRequest(request: any): Promise<any> {
-    request = await Drash.Services.HttpRequestService.hydrate(request, {
+    let options: any = {
       default_response_content_type: this.configs.response_output,
-      memory_allocation: {
-        multipart_form_data: this.configs.memory_allocation
-          ? this.configs.memory_allocation.multipart_form_data
-            ? this.configs.memory_allocation.multipart_form_data
-            : 10
-          : 10
-      },
       headers: {
         base_url: this.configs.address
+      },
+      memory_allocation: {
+        multipart_form_data: 10
       }
-    });
+    };
+    const config: any = this.configs.memory_allocation;
+    if (config && config.multipart_form_data) {
+      options.memory_allocation.multipart_form_data = config.multipart_form_data;
+    }
+    request = await Drash.Services.HttpRequestService.hydrate(request, options);
     return request;
   }
 
