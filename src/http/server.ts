@@ -58,7 +58,7 @@ export default class Server {
    *     A property to hold the location of this server on the filesystem. This
    *     property is used when resolving static paths.
    *
-   * @property null|string directory
+   * @property string|undefined directory
    */
   protected directory: string|undefined = undefined;
 
