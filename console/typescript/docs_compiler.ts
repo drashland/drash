@@ -8,7 +8,7 @@ import { BufReader } from "../../deps.ts";
 export default class ClassCompiler {
 
   protected path: string = "";
-  protected process: string = "";
+
   protected re_doc_block_closing_slash = new RegExp(/\*\//);
   protected re_doc_block_opening_slash = new RegExp(/\/\*\*?/);
   protected re_method_opening_bracket = new RegExp(/\{/);
@@ -29,17 +29,14 @@ export default class ClassCompiler {
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(path: string = "") {
-    if (path) {
-      this.setPath(path);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   public setPath(path: string): void {
+    if (path.trim() == "") {
+      throw new Error("Path is required.");
+    }
     this.path = path;
   }
 
