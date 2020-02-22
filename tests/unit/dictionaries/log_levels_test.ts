@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 
-members.test("-", () => {
-  console.log("log_levels.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       log_levels.ts");
 });
 
 let expected = {

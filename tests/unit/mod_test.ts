@@ -1,7 +1,7 @@
 import members from "../members.ts";
 
-members.test("-", () => {
-  console.log("mod.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       mod.ts");
 });
 
 members.test("Drash.addMember(): class", () => {

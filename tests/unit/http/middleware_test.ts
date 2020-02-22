@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 
-members.test("-", () => {
-  console.log("middleware.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       middleware.ts");
 });
 
 /**
