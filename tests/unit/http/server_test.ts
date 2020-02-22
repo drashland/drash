@@ -16,7 +16,7 @@ members.test("handleHttpRequest(): GET", async () => {
 
   members.assert.responseJsonEquals(await response.text(), { body: "got" });
 
-  server.deno_server.close();
+  server.close();
 });
 
 members.test("handleHttpRequest(): POST", async () => {
@@ -38,7 +38,7 @@ members.test("handleHttpRequest(): POST", async () => {
 
   members.assert.responseJsonEquals(await response.text(), { body: "hello" });
 
-  server.deno_server.close();
+  server.close();
 });
 
 members.test(
@@ -63,7 +63,7 @@ members.test(
       note_id: "1557"
     });
 
-    server.deno_server.close();
+    server.close();
   }
 );
 
@@ -85,7 +85,7 @@ members.test("handleHttpRequest(): getHeaderParam()", async () => {
     header_param: "12345"
   });
 
-  server.deno_server.close();
+  server.close();
 });
 
 members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
@@ -102,7 +102,7 @@ members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
     query_param: "123459"
   });
 
-  server.deno_server.close();
+  server.close();
 });
 
 ////////////////////////////////////////////////////////////////////////////////
