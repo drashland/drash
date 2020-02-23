@@ -24,7 +24,7 @@ export default abstract class Logger {
    *
    * @property string current_log_message_level_name
    */
-  protected current_log_message_level_name: string;
+  protected current_log_message_level_name: string = "";
 
   /**
    * @doc-blocks-to-json ignore-doc-block
@@ -75,7 +75,7 @@ export default abstract class Logger {
    * @param any logMethodLevelDefinition
    * @param string message
    */
-  abstract write(logMethodLevelDefinition, message);
+  abstract write(logMethodLevelDefinition: any, message: string): string|void;
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public debug(message) {
+  public debug(message: string): string|void {
     return this.sendToWriteMethod(LogLevels.get("debug"), message);
   }
 
@@ -97,7 +97,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public error(message) {
+  public error(message: string): string|void {
     return this.sendToWriteMethod(LogLevels.get("error"), message);
   }
 
@@ -108,7 +108,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public fatal(message) {
+  public fatal(message: string): string|void {
     return this.sendToWriteMethod(LogLevels.get("fatal"), message);
   }
 
@@ -119,7 +119,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public info(message) {
+  public info(message: string): string|void {
     return this.sendToWriteMethod(LogLevels.get("info"), message);
   }
 
@@ -130,7 +130,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public trace(message) {
+  public trace(message: string): string|void {
     return this.sendToWriteMethod(LogLevels.get("trace"), message);
   }
 
@@ -141,7 +141,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public warn(message) {
+  public warn(message: string): string|void {
     return this.sendToWriteMethod(LogLevels.get("warn"), message);
   }
 
@@ -154,11 +154,11 @@ export default abstract class Logger {
    * @return string
    */
   protected getTagStringParsed(): string {
-    if (this.configs.tag_string.trim() == "") {
+    if (this.configs.tag_string && this.configs.tag_string.trim() == "") {
       return "";
     }
 
-    let tagString = this.configs.tag_string;
+    let tagString: any = this.configs.tag_string;
 
     try {
       tagString = tagString.replace(
@@ -192,16 +192,15 @@ export default abstract class Logger {
    * @return string
    *     Returns the log message which is used for unit testing purposes.
    */
-  protected sendToWriteMethod(logMethodLevelDefinition, message): string {
+  protected sendToWriteMethod(logMethodLevelDefinition: any, message: string): string|void {
     // Logger not enabled? Womp womp...
     if (!this.configs.enabled) {
       return;
     }
-
-    // Log level specified in the configs doesn't exist? Womp womp...
-    if (!LogLevels.get(this.configs.level)) {
+    if (!this.configs.level) {
       return;
     }
+    const key: string = this.configs.level ? this.configs.level : "";
 
     // We only want to output messages that have a lower rank than the specified
     // level in the configs. This ensures that we only show the least amount of
@@ -209,8 +208,12 @@ export default abstract class Logger {
     // wants to output FATAL log messages (has a rank of 400), then any log
     // message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE)
     // will NOT be processed.
+    const level = LogLevels.get(key);
+    if (!level) {
+      return;
+    }
     if (
-      logMethodLevelDefinition.rank > LogLevels.get(this.configs.level).rank
+      logMethodLevelDefinition.rank > level.rank
     ) {
       return;
     }

@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 
-members.test("-", () => {
-  console.log("name_collisions_test.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       name_collisions_test.ts");
 });
 
 members.test("Exceptions.NameCollisionException('Error')", () => {

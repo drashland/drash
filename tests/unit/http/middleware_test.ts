@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 
-members.test("-", () => {
-  console.log("middleware.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       middleware.ts");
 });
 
 /**
@@ -28,7 +28,7 @@ members.test("server/resource: missing CSRF token", async () => {
     "No CSRF token, dude."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -59,7 +59,7 @@ members.test("server/resource: wrong CSRF token", async () => {
     "Wrong CSRF token, dude."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -91,7 +91,7 @@ members.test("server/resource: user is not an admin", async () => {
     "'user_id' unknown."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -120,7 +120,7 @@ members.test("server/resource: pass", async () => {
 
   members.assert.responseJsonEquals(await response.text(), { name: "Thor" });
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -141,7 +141,7 @@ members.test("server/resource: middleware not found", async () => {
 
   members.assert.responseJsonEquals(await response.text(), "I'm a teapot");
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -167,7 +167,7 @@ members.test("server before_response: missing header", async () => {
     "Missing header, guy."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -197,7 +197,7 @@ members.test("server before_response: wrong header", async () => {
     "Ha... try again. Close though."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -224,7 +224,7 @@ members.test("server before_response: pass", async () => {
 
   members.assert.responseJsonEquals(await response.text(), "got");
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -250,7 +250,7 @@ members.test("server before_request: missing header", async () => {
     "Missing header, guy."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -280,7 +280,7 @@ members.test("server before_request: wrong header", async () => {
     "Ha... try again. Close though."
   );
 
-  server.deno_server.close();
+  server.close();
 });
 
 /**
@@ -307,7 +307,7 @@ members.test("server before_request: pass", async () => {
 
   members.assert.responseJsonEquals(await response.text(), "got");
 
-  server.deno_server.close();
+  server.close();
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -319,7 +319,7 @@ class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static middleware = {
     before_request: ["UserIsAdmin"]
   };
-  public users = {
+  public users: any = {
     1: {
       name: "Thor"
     },
@@ -346,7 +346,7 @@ class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   static middleware = {
     before_request: ["muahahaha"]
   };
-  public users = {
+  public users: any = {
     1: {
       name: "Thor"
     },

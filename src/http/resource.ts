@@ -18,7 +18,7 @@ export default class Resource {
    *
    * @property string[] middleware
    */
-  public middleware: string[];
+  public middleware: {after_request?: [], before_request?: []} = {};
 
   /**
    * @description
@@ -28,7 +28,7 @@ export default class Resource {
    *
    * @property string name
    */
-  public name: string;
+  public name: string = "";
 
   /**
    * @description
@@ -37,9 +37,9 @@ export default class Resource {
    *     All derived resource classes MUST define this property as static
    *     (e.g., static paths = ["path"];)
    *
-   * @property string[] paths
+   * @property any[] paths
    */
-  public paths: string[];
+  public paths: any[] = [];
 
   /**
    * @description
@@ -81,7 +81,7 @@ export default class Resource {
    *     The server object.
    */
   constructor(
-    request,
+    request: any,
     response: Drash.Http.Response,
     server: Drash.Http.Server
   ) {

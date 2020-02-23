@@ -11,9 +11,9 @@ const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 interface OptionsConfig {
-  default_response_content_type?: string,
-  memory_allocation?: { multipart_form_data?: number },
-  headers: any
+  default_response_content_type?: string;
+  memory_allocation?: { multipart_form_data?: number };
+  headers?: any;
 }
 
 /**
@@ -117,13 +117,13 @@ export default class HttpRequestService {
   public getResponseContentType(
     request: any,
     defaultContentType: string = "application/json"
-  ): void {
+  ): string {
     // application/json will be used for any falsy defaultContentType argument
     defaultContentType = defaultContentType
       ? defaultContentType
       : "application/json";
 
-    let contentType = null;
+    let contentType: null|string = null;
 
     // Check the request's headers to see if `response-content-type:
     // {content-type}` has been specified
@@ -158,7 +158,7 @@ export default class HttpRequestService {
    * @return string
    *     Returns the URL path.
    */
-  public getUrlPath(request): string {
+  public getUrlPath(request: any): string {
     let path = request.url;
 
     if (path == "/") {
@@ -189,10 +189,13 @@ export default class HttpRequestService {
    *     Returns the URL query string in key-value pair format.
    */
   public getUrlQueryParams(request: any): any {
-    let queryParams = {};
+    let queryParams: any = {};
 
     try {
-      let queryParamsString = this.getUrlQueryString(request);
+      let queryParamsString: null|string = this.getUrlQueryString(request);
+      if (!queryParamsString) {
+        queryParamsString = "";
+      }
       queryParams = StringService.parseQueryParamsString(queryParamsString);
     } catch (error) {}
 
@@ -203,11 +206,11 @@ export default class HttpRequestService {
    * @description
    *     Get the specified HTTP request's URL query string.
    *
-   * @return string
+   * @return null|string
    *     Returns the URL query string (e.g., key1=value1&key2=value2) without
    *     the leading "?" character.
    */
-  public getUrlQueryString(request: any): string {
+  public getUrlQueryString(request: any): null|string {
     let queryString = null;
 
     if (request.url.indexOf("?") == -1) {
@@ -249,16 +252,20 @@ export default class HttpRequestService {
    *     the object for its own purposes.
    */
   public async hydrate(request: any, options?: OptionsConfig): Promise<boolean> {
-    if (options.headers) {
+    if (options && options.headers) {
       this.setHeaders(request, options.headers);
     }
+
+    const contentType = options && options.default_response_content_type
+      ? options.default_response_content_type
+      : "application/json";
 
     // Attach properties
     request.url_path = this.getUrlPath(request);
     request.url_query_params = this.getUrlQueryParams(request);
     request.response_content_type = this.getResponseContentType(
       request,
-      options.default_response_content_type
+      contentType
     );
 
     // Parse the body now so that callers don't have to use async-await when
@@ -299,11 +306,8 @@ export default class HttpRequestService {
    *     the body itself in that format. If there is no body, it
    *     returns an empty properties
    */
-  public async parseBody(request: any, options: OptionsConfig): Promise<ParsedRequestBody> {
-    let ret: {
-      content_type: string,
-      data: any
-    } = {
+  public async parseBody(request: any, options: OptionsConfig = {}): Promise<ParsedRequestBody> {
+    let ret: { content_type: string, data: any } = {
       content_type: '',
       data: undefined
     };
@@ -335,17 +339,28 @@ export default class HttpRequestService {
     // frustration, I filed an issue on deno about my findings; and artisonian
     // gave an example of a working copy. Great work. Thank you!
     if (contentType && contentType.includes("multipart/form-data")) {
-      let boundary: string;
+      let boundary: null|string = null;
       try {
-        boundary = contentType.match(/boundary=([^\s]+)/)[1];
+        const match = contentType.match(/boundary=([^\s]+)/);
+        if (match) {
+          boundary = match[1];
+        }
+        if (!boundary) {
+          return ret;
+        }
       } catch (error) {
         throw new Error(`Error trying to find boundary.\n` + error.stack);
       }
       try {
+        let maxMemory: number = 10;
+        const config = options.memory_allocation;
+        if (config && config.multipart_form_data && config.multipart_form_data > 10) {
+          maxMemory = config.multipart_form_data;
+        }
         ret.data = await this.parseBodyAsMultipartFormData(
           request.body,
           boundary,
-          options.memory_allocation.multipart_form_data
+          maxMemory
         );
         ret.content_type = "multipart/form-data";
       } catch (error) {
@@ -432,7 +447,7 @@ export default class HttpRequestService {
     body: Reader,
     boundary: string,
     maxMemory: number
-  ): Promise<{ [key: string]: string | FormFile }> {
+  ): Promise<{ [key: string]: string | FormFile | null}> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -453,7 +468,7 @@ export default class HttpRequestService {
    * 
    * @return void
    */
-  public setHeaders(request: any, headers: Headers): void {
+  public setHeaders(request: any, headers: any): void {
     if (headers) {
       for (let key in headers) {
         request.headers.set(key, headers[key]);
