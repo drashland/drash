@@ -30,18 +30,18 @@ export default class HttpService {
    *     Returns the name of the MIME type based on the extension of the
    *     file path .
    */
-  public getMimeType(filePath: string, fileIsUrl: boolean = false): string {
-    let mimeType = null;
-
+  public getMimeType(filePath: string, fileIsUrl: boolean = false): string|undefined {
     if (fileIsUrl) {
       filePath = filePath.split("?")[0];
     }
 
     let fileParts = filePath.split(".");
-    filePath = fileParts.pop();
+    const popped: string|undefined = fileParts.pop();
 
-    mimeType = contentType(filePath);
+    if (!popped) {
+      return undefined;
+    }
 
-    return mimeType;
+    return contentType(popped);
   }
 }

@@ -15,7 +15,7 @@ export default class Response {
    *
    * @property any body
    */
-  public body: any = {};
+  public body: any = "";
 
   /**
    * @description
@@ -49,9 +49,9 @@ export default class Response {
    * @description
    *     Construct an object of this class.
    *
-   * @param ServerRequest request
+   * @param any request
    */
-  constructor(request) {
+  constructor(request: any) {
     this.request = request;
     this.headers = new Headers();
     this.headers.set("Content-Type", request.response_content_type);
@@ -88,12 +88,12 @@ export default class Response {
    * @description
    *     Get the status message based on the status code.
    *
-   * @return string
+   * @return null|string
    *     Returns the status message associated with this.status_code. For
    *     example, if the response's status_code is 200, then this method
    *     will return "OK" as the status message.
    */
-  public getStatusMessage(): string {
+  public getStatusMessage(): null|string {
     let message = STATUS_TEXT.get(this.status_code);
     return message ? message : null;
   }
@@ -106,9 +106,9 @@ export default class Response {
    *         If the status code is 200, then this will return "200 (OK)"
    *         If the status code is 404, then this will return "404 (Not Found)"
    *
-   * @return string
+   * @return null|string
    */
-  public getStatusMessageFull(): string {
+  public getStatusMessageFull(): null|string {
     let message = STATUS_TEXT.get(this.status_code);
     return message ? `${this.status_code} (${message})` : null;
   }

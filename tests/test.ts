@@ -22,6 +22,8 @@ import "./unit/services/http_service_test.ts";
 // Drash functions
 import "./unit/mod_test.ts";
 
+import "./unit_minimal/server_test.ts";
+
 import members from "./members.ts";
 
-members.runTests();
+Deno.runTests();

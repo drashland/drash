@@ -1,7 +1,7 @@
 import members from "../members.ts";
 
-members.test("-", () => {
-  console.log("mod.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       mod.ts");
 });
 
 members.test("Drash.addMember(): class", () => {
@@ -52,7 +52,7 @@ members.test("Drash.addMember(): object", () => {
 });
 
 members.test("Drash.addMember(): types", () => {
-  let data = {
+  let data: any = {
     myBooleanTrue: true,
     myBooleanFalse: false,
     myString: "string",

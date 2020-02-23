@@ -1,8 +1,9 @@
 import members from "../../members.ts";
 
-members.test("-", () => {
-  console.log("http_service.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       http_service.ts");
 });
+
 members.test("getMimeType(): file is not a URL", () => {
   let actual;
 

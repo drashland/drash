@@ -189,6 +189,6 @@ members.test("CoffeeResource", async () => {
 //   members.assert.equals(await response.text(), '"Please specify a user ID."');
 // });
 
-await members.runTests();
+await Deno.runTests();
 
 server.close();

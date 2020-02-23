@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 
-members.test("-", () => {
-  console.log("file_logger.ts");
+members.test("--------------------------------------------------------", () => {
+  console.log("\n       file_logger.ts");
 });
 
 const ANIMALS = {
