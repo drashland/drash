@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200" src="https://drashland.github.io/deno-drash-docs/public/assets/img/logo_drash.png" alt="Drash logo">
+  <img height="200" src="https://drashland.github.io/deno-drash-docs/public/assets/homepage/images/drash.png" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
 <p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>.</p>
