@@ -6,6 +6,7 @@ import {
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
 import { ParsedRequestBody } from "../interfaces/parsed_request_body.ts";
+import { getCookies, Cookie } from "../../deps.ts"
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -27,6 +28,22 @@ export default class HttpRequestService {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC //////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get a cookie value by the name that is sent in with the request
+   * 
+   * @param string cookie
+   *     The name of the cookie to retrieve
+   * 
+   * @return string
+   *     The cookie value associated with the cookie name or undefined
+   *     if a cookie with that name doesn't exist
+   */
+  public getCookie (request: any, name: string): string {
+    const cookies: { [key: string]: string } = getCookies(request)
+    return cookies[name]
+  }
 
   /**
    * @description
@@ -289,6 +306,9 @@ export default class HttpRequestService {
     };
     request.getUrlQueryParam = function getRequestUrlQueryParam(input: string) {
       return t.getRequestUrlQueryParam(request, input);
+    };
+    request.getCookie = function getCookie (name: string) {
+      return t.getCookie(request, name);
     };
 
     return request;
