@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200" src="https://drashland.github.io/deno-drash-docs/public/assets/img/logo_drash.png" alt="Drash logo">
+  <img height="200" src="https://drashland.github.io/deno-drash-docs/public/assets/homepage/images/drash.png" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
 <p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>.</p>
@@ -20,7 +20,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@v0.33.1/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.34.0/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -47,6 +47,8 @@ $ deno --allow-net app.ts
 $ curl localhost:1337
 Hello World! deno + Drash is cool!
 ```
+
+Don't feel like writing the quickstart code? Watch how easy it is to set up your env [here](https://www.youtube.com/watch?v=9gQj5Ywdclk).
 
 ## Documentation
 
