@@ -52,11 +52,9 @@ Don't feel like writing the quickstart code? Watch how easy it is to set up your
 
 ## Documentation
 
-Full documentation: [https://drash.land](https://drash.land)
+[Full Documentation](https://drash.land/deno-drash)
 
-Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
-
-Lifecycle Diagram: [http://drash.land/deno-drash/#/lifecycle-diagram](http://drash.land/deno-drash/#/lifecycle-diagram)
+[Lifecycle Diagram](http://drash.land/deno-drash/#/lifecycle-diagram)
 
 ## Features
 
