@@ -40,7 +40,7 @@ server.run();
 ```
 
 ```
-$ deno --allow-net app.ts
+$ deno --allow-net --allow-env app.ts
 ```
 
 ```
