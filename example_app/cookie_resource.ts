@@ -1,6 +1,6 @@
 import Drash from "../mod.ts";
 
-export default class HomeResource extends Drash.Http.Resource {
+export default class CookieResource extends Drash.Http.Resource {
   static paths = ["/cookie", "/cookie/"];
 
   public GET() {
