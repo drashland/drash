@@ -73,7 +73,7 @@ namespace Drash {
     export const FileLogger = file_logger;
     export type Logger = base_logger;
     export const Logger = base_logger;
-  };
+  }
 
   export namespace Http {
     export type Middleware = middleware;
