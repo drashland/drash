@@ -39,4 +39,4 @@ export {
   setCookie,
   delCookie,
   Cookie
-} from "https://deno.land/std/http/cookie.ts"
+} from "https://deno.land/std@v0.34.0/http/cookie.ts"
