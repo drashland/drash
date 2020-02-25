@@ -12,7 +12,6 @@ import {
  *     This class helps perform HTTP-related processes.
  */
 export default class HttpService {
-
   /**
    * @description
    *     Get a MIME type for a file based on its extension.
@@ -30,13 +29,15 @@ export default class HttpService {
    *     Returns the name of the MIME type based on the extension of the
    *     file path .
    */
-  public getMimeType(filePath: string, fileIsUrl: boolean = false): string|undefined {
+  public getMimeType(filePath: string, fileIsUrl: boolean = false): string
+    | undefined
+  {
     if (fileIsUrl) {
       filePath = filePath.split("?")[0];
     }
 
     let fileParts = filePath.split(".");
-    const popped: string|undefined = fileParts.pop();
+    const popped: string | undefined = fileParts.pop();
 
     if (!popped) {
       return undefined;

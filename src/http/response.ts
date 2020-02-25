@@ -93,7 +93,7 @@ export default class Response {
    *     example, if the response's status_code is 200, then this method
    *     will return "OK" as the status message.
    */
-  public getStatusMessage(): null|string {
+  public getStatusMessage(): null | string {
     let message = STATUS_TEXT.get(this.status_code);
     return message ? message : null;
   }
@@ -108,7 +108,7 @@ export default class Response {
    *
    * @return null|string
    */
-  public getStatusMessageFull(): null|string {
+  public getStatusMessageFull(): null | string {
     let message = STATUS_TEXT.get(this.status_code);
     return message ? `${this.status_code} (${message})` : null;
   }
@@ -144,7 +144,11 @@ export default class Response {
    *
    * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file: string): {status: number, headers: Headers, body: any} {
+  public sendStatic(file: string): {
+    status: number;
+    headers: Headers;
+    body: any;
+  } {
     let output = {
       status: this.status_code,
       headers: this.headers,

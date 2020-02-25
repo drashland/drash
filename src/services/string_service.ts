@@ -40,8 +40,7 @@ export default class StringService {
     queryParamsString: string,
     keyFormat: string = "normal",
     keyCase: string = "normal"
-  ): { [key: string]: string } {
-
+  ): { [key: string]: string; } {
     let queryParams: any = {};
 
     if (!queryParamsString) {
