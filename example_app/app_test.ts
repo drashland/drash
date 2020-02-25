@@ -28,6 +28,7 @@ members.test("HomeResource", async () => {
 
   response = await members.fetch.patch("http://localhost:1667");
   members.assert.equals(await response.text(), '"Method Not Allowed"');
+  
 });
 
 members.test("UsersResource", async () => {
@@ -164,6 +165,44 @@ members.test("CoffeeResource", async () => {
   // });
   // members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
 });
+
+members.test("CookieResource", async () => {
+  let response;
+  let cookies;
+  let cookieName;
+  let cookieVal;
+
+  const cookie = { name: 'testCookie', value: 'Drash' }
+
+  // Post
+  response = await members.fetch.post("http://localhost:1667/cookie", {
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: cookie
+  });
+  members.assert.equals(await response.text(), "\"Saved your cookie!\"")
+
+  // Get - relies on POST saving a cookie
+  response = await members.fetch.get("http://localhost:1667/cookie", {
+    credentials: 'same-origin',
+  });
+  cookies = response.headers.get('set-cookie') || ''
+  cookieName = cookies.split(';')[0].split('=')[0]
+  cookieVal = cookies.split(';')[0].split('=')[1]
+  members.assert.equals(cookieName, cookie.name)
+  members.assert.equals(cookieVal, cookie.value)
+
+  // Remove
+  response = await members.fetch.delete("http://localhost:1667/cookie", {
+    method: 'DELETE'
+  });
+  cookies = response.headers.get('set-cookie') || ''
+  cookieName = cookies.split(';')[0].split('=')[0]
+  cookieVal = cookies.split(';')[0].split('=')[1]
+  members.assert.equals(cookieVal, '')
+  
+})
 
 // members.test("FilesResource", async () => {
 //   let response;
