@@ -56,7 +56,7 @@ Full documentation: [https://drash.land](https://drash.land)
 
 Repository: [deno-drash-docs](https://github.com/drashland/deno-drash-docs)
 
-Lifecycle Diagram: http://drash.land/#/lifecycle-diagram
+Lifecycle Diagram: [http://drash.land/deno-drash/#/lifecycle-diagram](http://drash.land/deno-drash/#/lifecycle-diagram)
 
 ## Features
 
