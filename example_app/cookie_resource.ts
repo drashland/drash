@@ -4,13 +4,13 @@ export default class CookieResource extends Drash.Http.Resource {
   static paths = ["/cookie", "/cookie/"];
 
   public GET() {
-    this.response.body = "GET request received!";
-    this.response.setCookie({name: 'testCookie', value: 'Drash'})
-    return this.response;
+    const cookieValue = this.request.getCookie('testCookie')
+    this.response.body = cookieValue
+    return this.response
   }
 
   public POST () {
-    const cookie = this.request.getBodyParam('name')
+    this.response.setCookie({ name: 'testCookie', value: 'Drash' })
     this.response.body = "Saved your cookie!";
     return this.response;
   }

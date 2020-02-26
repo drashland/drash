@@ -183,17 +183,16 @@ members.test("CookieResource", async () => {
   });
   members.assert.equals(await response.text(), "\"Saved your cookie!\"")
 
-  // Get - relies on POST saving a cookie
+  // Get - Dependent on the above post request saving a cookie
   response = await members.fetch.get("http://localhost:1667/cookie", {
     credentials: 'same-origin',
+    headers: {
+      'Cookie': 'testCookie=Drash'
+    }
   });
-  cookies = response.headers.get('set-cookie') || ''
-  cookieName = cookies.split(';')[0].split('=')[0]
-  cookieVal = cookies.split(';')[0].split('=')[1]
-  members.assert.equals(cookieName, cookie.name)
-  members.assert.equals(cookieVal, cookie.value)
+  members.assert.equals(await response.text(), "\"Drash\"")
 
-  // Remove
+  // Remove - Dependent on the above post request saving a cookie
   response = await members.fetch.delete("http://localhost:1667/cookie", {
     method: 'DELETE'
   });
