@@ -33,3 +33,10 @@ export {
 export {
   MultipartReader, FormFile
 } from "https://deno.land/std@v0.34.0/mime/multipart.ts";
+
+export { 
+  getCookies,
+  setCookie,
+  delCookie,
+  Cookie
+} from "https://deno.land/std@v0.34.0/http/cookie.ts"
