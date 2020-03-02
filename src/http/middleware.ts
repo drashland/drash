@@ -33,7 +33,7 @@ export default abstract class Middleware {
    *
    * @property Drash.Http.Resource|null resource
    */
-  protected resource: Drash.Http.Resource|null;
+  protected resource: Drash.Http.Resource | null;
 
   /**
    * @description
@@ -43,7 +43,7 @@ export default abstract class Middleware {
    *
    * @property Drash.Http.Resource|null resource
    */
-  protected response: Drash.Http.Response|null;
+  protected response: Drash.Http.Response | null;
 
   /**
    * @description
@@ -72,8 +72,8 @@ export default abstract class Middleware {
   constructor(
     request: any,
     server: Drash.Http.Server,
-    resource?: Drash.Http.Resource|null,
-    response?: Drash.Http.Response|null
+    resource?: Drash.Http.Resource | null,
+    response?: Drash.Http.Response | null
   ) {
     this.request = request;
     this.server = server;
@@ -87,5 +87,5 @@ export default abstract class Middleware {
    * @description
    *     Run this middleware.
    */
-  abstract run(): any|void;
+  abstract run(): any | void;
 }

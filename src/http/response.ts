@@ -1,5 +1,6 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
+import { setCookie, delCookie, Cookie } from "../../deps.ts"
 
 /**
  * @memberof Drash.Http
@@ -61,6 +62,34 @@ export default class Response {
 
   /**
    * @description
+   *     Create a cookie to be sent in the response.
+   *     Note: Once set, it cannot be read until the next
+   *     request
+   * 
+   * @param Cookie cookie
+   *     Object holding all the properties for a cookie object
+   * 
+   * @return void
+   */
+  public setCookie(cookie: Cookie): void {
+    setCookie(this, cookie)
+  }
+
+  /**
+   * @description
+   *     Delete a cookie before sending a response
+   * 
+   * @param string cookieName 
+   *     The cookie name to delete
+   * 
+   * @return void
+   */
+  public delCookie (cookieName: string): void {
+    delCookie(this, cookieName)
+  }
+
+  /**
+   * @description
    *     Generate a response.
    *
    * @return any
@@ -93,7 +122,7 @@ export default class Response {
    *     example, if the response's status_code is 200, then this method
    *     will return "OK" as the status message.
    */
-  public getStatusMessage(): null|string {
+  public getStatusMessage(): null | string {
     let message = STATUS_TEXT.get(this.status_code);
     return message ? message : null;
   }
@@ -108,7 +137,7 @@ export default class Response {
    *
    * @return null|string
    */
-  public getStatusMessageFull(): null|string {
+  public getStatusMessageFull(): null | string {
     let message = STATUS_TEXT.get(this.status_code);
     return message ? `${this.status_code} (${message})` : null;
   }
@@ -144,7 +173,11 @@ export default class Response {
    *
    * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file: string): {status: number, headers: Headers, body: any} {
+  public sendStatic(file: string): {
+    status: number;
+    headers: Headers;
+    body: any;
+  } {
     let output = {
       status: this.status_code,
       headers: this.headers,

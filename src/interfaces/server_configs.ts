@@ -69,7 +69,7 @@ export interface ServerConfigs {
   address?: string;
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
-  memory_allocation?: { multipart_form_data?: number };
+  memory_allocation?: { multipart_form_data?: number; };
   middleware?: any;
   resources: any;
   response_output?: string;
