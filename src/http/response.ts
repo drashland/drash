@@ -130,7 +130,6 @@ export default class Response {
       headers: this.headers,
       body: new TextEncoder().encode(body)
     };
-
     return this.request.respond(output);
   }
 
@@ -144,7 +143,7 @@ export default class Response {
    *
    * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file: string): {status: number, headers: Headers, body: any} {
+  public sendStatic(file: string): { status: number, headers: Headers, body: any } {
     let output = {
       status: this.status_code,
       headers: this.headers,
@@ -157,4 +156,30 @@ export default class Response {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+
+  /**
+   * @description
+   *     Redirect the client to another URL.
+   *
+   * @param number httpStatusCode
+   *     Response's status code.
+   *     Permanent: (301 and 308)
+   *     Temporary: (302, 303, and 307)
+   *
+   * @param string location
+   *     URL of desired redirection.
+   *     Relative or external paths (e.g., "/users/1", https://drash.land)
+   * 
+   * @return {status: number, headers: Headers, body: any}
+   */
+  public redirect(httpStatusCode: number, location: string) {
+    this.status_code = httpStatusCode;
+    this.headers.set("Location", location);
+
+    let output = {
+      status: this.status_code,
+      headers: this.headers,
+    };
+    return this.request.respond(output);
+  }
 }

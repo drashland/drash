@@ -18,7 +18,6 @@ export default class CoffeeResource extends Drash.Http.Resource {
   public GET() {
     let coffeeId = this.request.getPathParam("id");
     const location = this.request.getUrlQueryParam("location");
-
     if (location) {
       if (location == "from_body") {
         coffeeId = this.request.getBodyParam("id");
@@ -30,11 +29,15 @@ export default class CoffeeResource extends Drash.Http.Resource {
       return this.response;
     }
 
+    if (coffeeId === "123") {
+      return this.response.redirect(302, "/coffee/17");
+    }
+
     this.response.body = this.getCoffee(coffeeId);
     return this.response;
   }
 
-  protected getCoffee(coffeeId: number) {
+  protected getCoffee(coffeeId: string) {
     let coffee = null;
 
     try {
