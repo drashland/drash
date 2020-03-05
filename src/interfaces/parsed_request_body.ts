@@ -13,7 +13,6 @@
  *         The data passed in the body of the request.
  */
 export interface ParsedRequestBody {
-  content_type: any|undefined;
-  data: any|undefined;
+  content_type: any | undefined;
+  data: any | undefined;
 }
-

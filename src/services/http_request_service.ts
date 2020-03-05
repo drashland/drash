@@ -6,13 +6,14 @@ import {
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
 import { ParsedRequestBody } from "../interfaces/parsed_request_body.ts";
+import { getCookies, Cookie } from "../../deps.ts"
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 interface OptionsConfig {
   default_response_content_type?: string;
-  memory_allocation?: { multipart_form_data?: number };
+  memory_allocation?: { multipart_form_data?: number; };
   headers?: any;
 }
 
@@ -30,6 +31,22 @@ export default class HttpRequestService {
 
   /**
    * @description
+   *     Get a cookie value by the name that is sent in with the request
+   * 
+   * @param string cookie
+   *     The name of the cookie to retrieve
+   * 
+   * @return string
+   *     The cookie value associated with the cookie name or undefined
+   *     if a cookie with that name doesn't exist
+   */
+  public getCookie (request: any, name: string): string {
+    const cookies: { [key: string]: string } = getCookies(request)
+    return cookies[name]
+  }
+
+  /**
+   * @description
    *     Parse this request's body as `multipart/form-data` and get the
    *     requested input.
    *
@@ -44,7 +61,10 @@ export default class HttpRequestService {
    *     is `file_number_one`, then it will be accessible in the returned object
    *     as `{returned_object}.file_number_one`.
    */
-  public getRequestBodyFile(parsedBody: ParsedRequestBody, input: string): any {
+  public getRequestBodyFile(
+    parsedBody: ParsedRequestBody,
+    input: string
+  ): any {
     return parsedBody.data[input];
   }
 
@@ -57,7 +77,10 @@ export default class HttpRequestService {
    *
    * @return any
    */
-  public getRequestBodyParam(parsedBody: ParsedRequestBody, input: string): any {
+  public getRequestBodyParam(
+    parsedBody: ParsedRequestBody,
+    input: string
+  ): any {
     return parsedBody.data[input];
   }
 
@@ -123,7 +146,7 @@ export default class HttpRequestService {
       ? defaultContentType
       : "application/json";
 
-    let contentType: null|string = null;
+    let contentType: null | string = null;
 
     // Check the request's headers to see if `response-content-type:
     // {content-type}` has been specified
@@ -192,7 +215,7 @@ export default class HttpRequestService {
     let queryParams: any = {};
 
     try {
-      let queryParamsString: null|string = this.getUrlQueryString(request);
+      let queryParamsString: null | string = this.getUrlQueryString(request);
       if (!queryParamsString) {
         queryParamsString = "";
       }
@@ -210,7 +233,7 @@ export default class HttpRequestService {
    *     Returns the URL query string (e.g., key1=value1&key2=value2) without
    *     the leading "?" character.
    */
-  public getUrlQueryString(request: any): null|string {
+  public getUrlQueryString(request: any): null | string {
     let queryString = null;
 
     if (request.url.indexOf("?") == -1) {
@@ -251,7 +274,10 @@ export default class HttpRequestService {
    *     porperties and methods to it. This makes it easier for Drash to process
    *     the object for its own purposes.
    */
-  public async hydrate(request: any, options?: OptionsConfig): Promise<boolean> {
+  public async hydrate(
+    request: any,
+    options?: OptionsConfig
+  ): Promise<boolean> {
     if (options && options.headers) {
       this.setHeaders(request, options.headers);
     }
@@ -287,8 +313,13 @@ export default class HttpRequestService {
     request.getPathParam = function getRequestPathParam(input: string) {
       return t.getRequestPathParam(request, input);
     };
-    request.getUrlQueryParam = function getRequestUrlQueryParam(input: string) {
+    request.getUrlQueryParam = function getRequestUrlQueryParam(
+      input: string
+    ) {
       return t.getRequestUrlQueryParam(request, input);
+    };
+    request.getCookie = function getCookie (name: string) {
+      return t.getCookie(request, name);
     };
 
     return request;
@@ -306,9 +337,12 @@ export default class HttpRequestService {
    *     the body itself in that format. If there is no body, it
    *     returns an empty properties
    */
-  public async parseBody(request: any, options: OptionsConfig = {}): Promise<ParsedRequestBody> {
-    let ret: { content_type: string, data: any } = {
-      content_type: '',
+  public async parseBody(
+    request: any,
+    options: OptionsConfig = {}
+  ): Promise<ParsedRequestBody> {
+    let ret: { content_type: string; data: any; } = {
+      content_type: "",
       data: undefined
     };
 
@@ -339,7 +373,7 @@ export default class HttpRequestService {
     // frustration, I filed an issue on deno about my findings; and artisonian
     // gave an example of a working copy. Great work. Thank you!
     if (contentType && contentType.includes("multipart/form-data")) {
-      let boundary: null|string = null;
+      let boundary: null | string = null;
       try {
         const match = contentType.match(/boundary=([^\s]+)/);
         if (match) {
@@ -354,7 +388,9 @@ export default class HttpRequestService {
       try {
         let maxMemory: number = 10;
         const config = options.memory_allocation;
-        if (config && config.multipart_form_data && config.multipart_form_data > 10) {
+        if (config && config.multipart_form_data &&
+          config.multipart_form_data > 10)
+        {
           maxMemory = config.multipart_form_data;
         }
         ret.data = await this.parseBodyAsMultipartFormData(
@@ -407,7 +443,9 @@ export default class HttpRequestService {
    *    Returns an empty object if no body exists, else a key/value pair
    *    array e.g. returnValue['someKey']
    */
-  public async parseBodyAsFormUrlEncoded(request: any): Promise<object|Array<any>> {
+  public async parseBodyAsFormUrlEncoded(
+    request: any
+  ): Promise<object | Array<any>> {
     let body = decoder.decode(await Deno.readAll(request.body));
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
@@ -447,7 +485,7 @@ export default class HttpRequestService {
     body: Reader,
     boundary: string,
     maxMemory: number
-  ): Promise<{ [key: string]: string | FormFile | null}> {
+  ): Promise<{ [key: string]: string | FormFile | null; }> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {

@@ -18,7 +18,7 @@ export default class Resource {
    *
    * @property string[] middleware
    */
-  public middleware: {after_request?: [], before_request?: []} = {};
+  public middleware: { after_request?: []; before_request?: []; } = {};
 
   /**
    * @description
