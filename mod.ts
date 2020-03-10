@@ -57,13 +57,13 @@ namespace Drash {
 
   export namespace Exceptions {
     export type HttpException = http_exception;
-    export const HttpException = http_exception;
+    export let HttpException = http_exception;
     export type HttpMiddlewareException = http_middleware_exception;
-    export const HttpMiddlewareException = http_middleware_exception;
+    export let HttpMiddlewareException = http_middleware_exception;
     export type HttpResponseException = http_response_exception;
-    export const HttpResponseException = http_response_exception;
+    export let HttpResponseException = http_response_exception;
     export type NameCollisionException = name_collision_exception;
-    export const NameCollisionException = name_collision_exception;
+    export let NameCollisionException = name_collision_exception;
   }
 
   export namespace CoreLoggers {
@@ -79,11 +79,11 @@ namespace Drash {
     export type Middleware = middleware;
     export let Middleware = middleware;
     export type Resource = resource;
-    export const Resource = resource;
+    export let Resource = resource;
     export type Response = response;
     export let Response = response;
     export type Server = server;
-    export const Server = server;
+    export let Server = server;
   }
 
   export namespace Interfaces {
