@@ -75,7 +75,8 @@ export default abstract class Logger {
    * @param any logMethodLevelDefinition
    * @param string message
    */
-  abstract write(logMethodLevelDefinition: any, message: string): string|void;
+  abstract write(logMethodLevelDefinition: any, message: string): string
+    | void;
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
@@ -86,7 +87,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public debug(message: string): string|void {
+  public debug(message: string): string | void {
     return this.sendToWriteMethod(LogLevels.get("debug"), message);
   }
 
@@ -97,7 +98,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public error(message: string): string|void {
+  public error(message: string): string | void {
     return this.sendToWriteMethod(LogLevels.get("error"), message);
   }
 
@@ -108,7 +109,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public fatal(message: string): string|void {
+  public fatal(message: string): string | void {
     return this.sendToWriteMethod(LogLevels.get("fatal"), message);
   }
 
@@ -119,7 +120,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public info(message: string): string|void {
+  public info(message: string): string | void {
     return this.sendToWriteMethod(LogLevels.get("info"), message);
   }
 
@@ -130,7 +131,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public trace(message: string): string|void {
+  public trace(message: string): string | void {
     return this.sendToWriteMethod(LogLevels.get("trace"), message);
   }
 
@@ -141,7 +142,7 @@ export default abstract class Logger {
    * @param string message
    *     The log message.
    */
-  public warn(message: string): string|void {
+  public warn(message: string): string | void {
     return this.sendToWriteMethod(LogLevels.get("warn"), message);
   }
 
@@ -192,7 +193,10 @@ export default abstract class Logger {
    * @return string
    *     Returns the log message which is used for unit testing purposes.
    */
-  protected sendToWriteMethod(logMethodLevelDefinition: any, message: string): string|void {
+  protected sendToWriteMethod(
+    logMethodLevelDefinition: any,
+    message: string
+  ): string | void {
     // Logger not enabled? Womp womp...
     if (!this.configs.enabled) {
       return;
@@ -218,7 +222,8 @@ export default abstract class Logger {
       return;
     }
 
-    this.current_log_message_level_name = logMethodLevelDefinition.name.toUpperCase();
+    this.current_log_message_level_name = logMethodLevelDefinition.name
+      .toUpperCase();
 
     return this.write(
       logMethodLevelDefinition,

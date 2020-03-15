@@ -105,6 +105,28 @@ members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
   server.close();
 });
 
+members.test(
+  "handleHttpRequest(): response.redirect()",
+  async () => {
+    let server = new members.MockServer({
+      address: "localhost:1557",
+      resources: [NotesResource]
+    });
+
+    server.run();
+
+    let response;
+
+    response = await members.fetch.get("http://localhost:1557/notes/123");
+
+    members.assert.responseJsonEquals(await response.text(), {
+      note_id: "1557"
+    });
+
+    server.close();
+  }
+);
+
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +164,11 @@ class UsersResource extends members.Drash.Http.Resource {
 class NotesResource extends members.Drash.Http.Resource {
   static paths = ["/notes/{id}"];
   public GET() {
-    this.response.body = { note_id: this.request.getPathParam("id") };
+    const noteId = this.request.getPathParam("id");
+    if (noteId === "123") {
+      return this.response.redirect(302, "/notes/1557")
+    }
+    this.response.body = { note_id: noteId };
     return this.response;
   }
 }

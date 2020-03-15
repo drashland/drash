@@ -4,7 +4,7 @@ import Resource from "./resource.ts";
 import { ServerConfigs } from "../interfaces/server_configs.ts";
 
 interface RunOptions {
-  address?: string|any; // Use any to be more dynamic instead of using Pick
+  address?: string | any; // Use any to be more dynamic instead of using Pick
 }
 
 /**
@@ -43,7 +43,8 @@ export default class Server {
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
    */
-  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
+  public logger: Drash.CoreLoggers.ConsoleLogger
+    | Drash.CoreLoggers.FileLogger;
 
   /**
    * @description
@@ -60,7 +61,7 @@ export default class Server {
    *
    * @property string|undefined directory
    */
-  protected directory: string|undefined = undefined;
+  protected directory: string | undefined = undefined;
 
   /**
    * @description
@@ -79,7 +80,7 @@ export default class Server {
    *
    * @property any[] resources
    */
-  protected resources: {[key: string]: Drash.Http.Resource} = {};
+  protected resources: { [key: string]: Drash.Http.Resource; } = {};
 
   /**
    * @description
@@ -172,9 +173,13 @@ export default class Server {
     };
     const config: any = this.configs.memory_allocation;
     if (config && config.multipart_form_data) {
-      options.memory_allocation.multipart_form_data = config.multipart_form_data;
+      options.memory_allocation.multipart_form_data = config
+        .multipart_form_data;
     }
-    request = await Drash.Services.HttpRequestService.hydrate(request, options);
+    request = await Drash.Services.HttpRequestService.hydrate(
+      request,
+      options
+    );
     return request;
   }
 
@@ -214,7 +219,10 @@ export default class Server {
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
-        return this.handleHttpRequestError(request, this.httpErrorResponse(404));
+        return this.handleHttpRequestError(
+          request,
+          this.httpErrorResponse(404)
+        );
       }
 
       // @ts-ignore
@@ -244,8 +252,16 @@ export default class Server {
       }
       response = await resource[request.method.toUpperCase()]();
 
-      this.executeMiddlewareServerLevelAfterRequest(request, resource, response);
-      this.executeMiddlewareResourceLevelAfterRequest(request, resource, response);
+      this.executeMiddlewareServerLevelAfterRequest(
+        request,
+        resource,
+        response
+      );
+      this.executeMiddlewareResourceLevelAfterRequest(
+        request,
+        resource,
+        response
+      );
 
       // Send the response
       this.logDebug("Sending response. " + response.status_code + ".");
@@ -279,8 +295,8 @@ export default class Server {
   public handleHttpRequestError(
     request: any,
     error: any,
-    resource: Drash.Http.Resource|any = {},
-    response: Drash.Http.Response|any = {}
+    resource: Drash.Http.Resource | any = {},
+    response: Drash.Http.Response | any = {}
   ): any {
     this.logDebug(
       `Error occurred while handling request: ${request.method} ${request.url}`
@@ -305,7 +321,9 @@ export default class Server {
 
     response = new Drash.Http.Response(request);
     response.status_code = error.code ? error.code : null;
-    response.body = error.message ? error.message : response.getStatusMessage();
+    response.body = error.message
+      ? error.message
+      : response.getStatusMessage();
 
     this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
@@ -407,8 +425,9 @@ export default class Server {
    *     configs.
    */
   public async run(options?: RunOptions): Promise<void> {
-    let address =
-      options && options.address ? options.address : this.configs.address;
+    let address = options && options.address
+      ? options.address
+      : this.configs.address;
     if (Deno.env().DRASH_PROCESS != "test") {
       console.log(`\nDeno server started at ${address}.\n`);
     }
@@ -462,38 +481,40 @@ export default class Server {
       if (pathIsWildCard) {
         pathObj = {
           og_path: path,
-          regex_path:
-            "^." +
+          regex_path: "^." +
             path.replace(
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
             "/?$",
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map((path: string) => {
-            return path
-              .replace(":", "")
-              .replace("{", "")
-              .replace("}", "");
-          })
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+            (path: string) => {
+              return path
+                .replace(":", "")
+                .replace("{", "")
+                .replace("}", "");
+            }
+          )
         };
         return;
       }
       try {
         pathObj = {
           og_path: path,
-          regex_path:
-            "^" +
+          regex_path: "^" +
             path.replace(
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT
             ) +
             "/?$",
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map((path: string) => {
-            return path
-              .replace(":", "")
-              .replace("{", "")
-              .replace("}", "");
-          })
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+            (path: string) => {
+              return path
+                .replace(":", "")
+                .replace("{", "")
+                .replace("}", "");
+            }
+          )
         };
         resourceClass.paths[index] = pathObj;
       } catch (error) {}
@@ -539,7 +560,8 @@ export default class Server {
       middleware
         .resource_level
         .forEach((middlewareClass: Drash.Http.Middleware) => {
-          this.middleware.resource_level[middlewareClass.name] = middlewareClass;
+          this.middleware.resource_level[middlewareClass.name] =
+            middlewareClass;
         });
     }
   }
@@ -658,13 +680,18 @@ export default class Server {
    */
   protected executeMiddlewareServerLevelAfterRequest(
     request: any,
-    resource: Drash.Http.Resource|null,
-    response: Drash.Http.Response|null
+    resource: Drash.Http.Resource | null,
+    response: Drash.Http.Response | null
   ): void {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request
         .forEach((middlewareClass: any) => {
-          let middleware = new middlewareClass(request, this, resource, response);
+          let middleware = new middlewareClass(
+            request,
+            this,
+            resource,
+            response
+          );
           middleware.run();
         });
     }
@@ -694,7 +721,7 @@ export default class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: any): Drash.Http.Resource|undefined {
+  protected getResourceClass(request: any): Drash.Http.Resource | undefined {
     let matchedResourceClass: any = undefined;
 
     for (let className in this.resources) {
