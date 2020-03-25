@@ -7,29 +7,29 @@ members.test("--------------------------------------------------------", () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server/resource: missing CSRF token", async () => {
-  let server = new members.MockServer({
-    address: "localhost:1557",
-    middleware: {
-      server_level: {
-        before_request: [VerifyCsrfToken]
-      },
-      resource_level: [UserIsAdmin]
-    },
-    resources: [ResourceWithMiddleware]
-  });
+// members.test("server/resource: missing CSRF token", async () => {
+//   let server = new members.MockServer({
+//     address: "localhost:1557",
+//     middleware: {
+//       server_level: {
+//         before_request: [VerifyCsrfToken]
+//       },
+//       resource_level: [UserIsAdmin]
+//     },
+//     resources: [ResourceWithMiddleware]
+//   });
 
-  server.run();
+//   server.run();
 
-  let response = await members.fetch.get("http://localhost:1557/users/1");
+//   let response = await members.fetch.get("http://localhost:1557/users/1");
 
-  members.assert.responseJsonEquals(
-    await response.text(),
-    "No CSRF token, dude."
-  );
+//   members.assert.responseJsonEquals(
+//     await response.text(),
+//     "No CSRF token, dude."
+//   );
 
-  server.close();
-});
+//   server.close();
+// });
 
 /**
  * @covers Server.handleHttpRequest()

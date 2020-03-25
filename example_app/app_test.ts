@@ -166,42 +166,42 @@ members.test("CoffeeResource", async () => {
   // members.assert.equals(await response.text(), "{\"name\":\"Medium\"}");
 });
 
-members.test("CookieResource", async () => {
-  let response;
-  let cookies;
-  let cookieName;
-  let cookieVal;
+// members.test("CookieResource", async () => {
+//   let response;
+//   let cookies;
+//   let cookieName;
+//   let cookieVal;
 
-  const cookie = { name: 'testCookie', value: 'Drash' }
+//   const cookie = { name: 'testCookie', value: 'Drash' }
 
-  // Post
-  response = await members.fetch.post("http://localhost:1667/cookie", {
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: cookie
-  });
-  members.assert.equals(await response.text(), "\"Saved your cookie!\"")
+//   // Post
+//   response = await members.fetch.post("http://localhost:1667/cookie", {
+//     headers: {
+//       "Content-Type": "application/json"
+//     },
+//     body: cookie
+//   });
+//   members.assert.equals(await response.text(), "\"Saved your cookie!\"")
 
-  // Get - Dependent on the above post request saving a cookie
-  response = await members.fetch.get("http://localhost:1667/cookie", {
-    credentials: 'same-origin',
-    headers: {
-      'Cookie': 'testCookie=Drash'
-    }
-  });
-  members.assert.equals(await response.text(), "\"Drash\"")
+//   // Get - Dependent on the above post request saving a cookie
+//   response = await members.fetch.get("http://localhost:1667/cookie", {
+//     credentials: 'same-origin',
+//     headers: {
+//       'Cookie': 'testCookie=Drash'
+//     }
+//   });
+//   members.assert.equals(await response.text(), "\"Drash\"")
 
-  // Remove - Dependent on the above post request saving a cookie
-  response = await members.fetch.delete("http://localhost:1667/cookie", {
-    method: 'DELETE'
-  });
-  cookies = response.headers.get('set-cookie') || ''
-  cookieName = cookies.split(';')[0].split('=')[0]
-  cookieVal = cookies.split(';')[0].split('=')[1]
-  members.assert.equals(cookieVal, '')
-  
-})
+//   // Remove - Dependent on the above post request saving a cookie
+//   response = await members.fetch.delete("http://localhost:1667/cookie", {
+//     method: 'DELETE'
+//   });
+//   cookies = response.headers.get('set-cookie') || ''
+//   cookieName = cookies.split(';')[0].split('=')[0]
+//   cookieVal = cookies.split(';')[0].split('=')[1]
+//   members.assert.equals(cookieVal, '')
+
+// })
 
 // members.test("FilesResource", async () => {
 //   let response;
@@ -227,6 +227,7 @@ members.test("CookieResource", async () => {
 //   members.assert.equals(await response.text(), '"Please specify a user ID."');
 // });
 
-await Deno.runTests();
+Deno.runTests().then(() => {
+  server.close();
+});
 
-server.close();
