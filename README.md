@@ -10,8 +10,11 @@
   <a href="https://github.com/drashland/deno-drash/actions">
     <img src="https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=master">
   </a>
-  <a href="https://gitter.im/drashspace/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge">
-    <img src="https://badges.gitter.im/drashspace/community.svg">
+  <a href="https://discord.gg/SgejNXq">
+    <img src="https://img.shields.io/badge/chat-on%20discord-blue">
+  </a>
+  <a href="https://twitter.com/drash_land">
+    <img src="https://img.shields.io/twitter/url?label=%40drash_land&style=social&url=https%3A%2F%2Ftwitter.com%2Fdrash_land">
   </a>
 </p>
 
