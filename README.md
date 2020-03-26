@@ -23,7 +23,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@v0.37.0/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.37.1/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -102,13 +102,13 @@ The [`example_app`](https://github.com/drashland/deno-drash/tree/master/example_
 1. Install deno.
 
 ```
-curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.37.0
+curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.37.1
 ```
 
 2. Run the Drash application using `deno`.
 
 ```
-deno --allow-net --allow-env https://deno.land/x/drash@v0.37.0/example_app/app.ts
+deno --allow-net --allow-env https://deno.land/x/drash@v0.37.1/example_app/app.ts
 ```
 
 2. Make the following request: `GET /`.

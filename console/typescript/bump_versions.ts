@@ -5,6 +5,6 @@ async function bumpVersions(fromV: string, toV: string) {
   return data;
 }
 
-let result = await bumpVersions("v0.36.0", "v0.37.0");
+let result = await bumpVersions("v0.37.0", "v0.37.1");
 
 console.log(result);
