@@ -23,7 +23,7 @@
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@v0.36.0/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.37.0/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
