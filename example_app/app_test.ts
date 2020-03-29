@@ -171,26 +171,34 @@ members.test("CookieResource", async () => {
   let cookieName;
   let cookieVal;
 
-  const cookie = { name: 'testCookie', value: 'Drash' }
+  const cookie = { name: "testCookie", value: "Drash" };
 
   // Post
   response = await members.fetch.post("http://localhost:1667/cookie", {
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: cookie
+    body: cookie,
   });
-  members.assert.equals(await response.text(), "\"Saved your cookie!\"")
+  members.assert.equals(await response.text(), '"Saved your cookie!"');
 
   // Get - Dependent on the above post request saving a cookie
   response = await members.fetch.get("http://localhost:1667/cookie", {
-    credentials: 'same-origin',
+    credentials: "same-origin",
     headers: {
-      'Cookie': 'testCookie=Drash'
-    }
+      "Cookie": "testCookie=Drash",
+    },
   });
-  members.assert.equals(await response.text(), "\"Drash\"")
+  await members.assert.equals(await response.text(), '"Drash"');
 
+  // Remove - Dependent on the above post request saving a cookie
+  // TODO(crookse)
+  // [ ] Fix the following: "Error: Test case is leaking async ops."
+  // response = await members.fetch.get("http://localhost:1667/cookie");
+  // cookies = response.headers.get('set-cookie') || '';
+  // cookieName = cookies.split(';')[0].split('=')[0];
+  // cookieVal = cookies.split(';')[0].split('=')[1];
+  // members.assert.equals(cookieVal, '');
 });
 
 // members.test("FilesResource", async () => {
