@@ -27,7 +27,7 @@ let result = {
   Services: {
     HttpService: {},
     HttpRequestService: {},
-  }
+  },
 };
 
 c.setPath("./src/exceptions/http_exception.ts");
@@ -77,5 +77,5 @@ result.Services.HttpRequestService = await c.compileLazy();
 
 Deno.writeFileSync(
   "./api_reference.json",
-  new TextEncoder().encode(JSON.stringify(result, null, 4))
+  new TextEncoder().encode(JSON.stringify(result, null, 4)),
 );

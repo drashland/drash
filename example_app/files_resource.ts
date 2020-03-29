@@ -5,7 +5,7 @@ export default class FilesResource extends Drash.Http.Resource {
 
   public async POST() {
     this.response.body = new TextDecoder().decode(
-      await Deno.readAll(this.request.getBodyFile("file_1").contents)
+      await Deno.readAll(this.request.getBodyFile("file_1").contents),
     );
     return this.response;
   }

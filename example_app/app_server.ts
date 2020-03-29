@@ -9,9 +9,15 @@ let server = new Drash.Http.Server({
   address: "localhost:1447",
   response_output: "application/json",
   memory_allocation: {
-    multipart_form_data: 128
+    multipart_form_data: 128,
   },
-  resources: [CoffeeResource, FilesResource, HomeResource, UsersResource, CookieResource]
+  resources: [
+    CoffeeResource,
+    FilesResource,
+    HomeResource,
+    UsersResource,
+    CookieResource,
+  ],
 });
 
 export default server;

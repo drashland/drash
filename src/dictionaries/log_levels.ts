@@ -16,7 +16,7 @@ export enum LogLevel {
   Info,
   Debug,
   Trace,
-  All
+  All,
 }
 
 /**
@@ -34,7 +34,7 @@ export const LogLevels = new Map<string, LogLevelStructure>([
   ["info", { name: "Info", rank: LogLevel.Info }],
   ["debug", { name: "Debug", rank: LogLevel.Debug }],
   ["trace", { name: "Trace", rank: LogLevel.Trace }],
-  ["all", { name: "All", rank: LogLevel.All }]
+  ["all", { name: "All", rank: LogLevel.All }],
 ]);
 
 export default LogLevels;

@@ -132,7 +132,7 @@ namespace Drash {
   export function addMember(name: string, member: any) {
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
-        `Members must be unique: "${name}" was already added.`
+        `Members must be unique: "${name}" was already added.`,
       );
     }
     Members[name] = member;
@@ -150,7 +150,7 @@ namespace Drash {
   export function addLogger(name: string, logger: any) {
     if (Loggers[name]) {
       throw new Exceptions.NameCollisionException(
-        `Loggers must be unique: "${name}" was already added.`
+        `Loggers must be unique: "${name}" was already added.`,
       );
     }
     Loggers[name] = logger;

@@ -7,7 +7,7 @@ members.test("--------------------------------------------------------", () => {
 members.test("handleHttpRequest(): GET", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
-    resources: [HomeResource]
+    resources: [HomeResource],
   });
 
   server.run();
@@ -22,18 +22,18 @@ members.test("handleHttpRequest(): GET", async () => {
 members.test("handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
-    resources: [HomeResource]
+    resources: [HomeResource],
   });
 
   server.run();
 
   const response = await members.fetch.post("http://localhost:1557", {
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: {
-      body_param: "hello"
-    }
+      body_param: "hello",
+    },
   });
 
   members.assert.responseJsonEquals(await response.text(), { body: "hello" });
@@ -46,7 +46,7 @@ members.test(
   async () => {
     let server = new members.MockServer({
       address: "localhost:1557",
-      resources: [NotesResource, UsersResource]
+      resources: [NotesResource, UsersResource],
     });
 
     server.run();
@@ -60,29 +60,29 @@ members.test(
     response = await members.fetch.get("http://localhost:1557/notes/1557");
 
     members.assert.responseJsonEquals(await response.text(), {
-      note_id: "1557"
+      note_id: "1557",
     });
 
     server.close();
-  }
+  },
 );
 
 members.test("handleHttpRequest(): getHeaderParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
-    resources: [GetHeaderParam]
+    resources: [GetHeaderParam],
   });
 
   server.run();
 
   let response = await members.fetch.get("http://localhost:1557", {
     headers: {
-      id: 12345
-    }
+      id: 12345,
+    },
   });
 
   members.assert.responseJsonEquals(await response.text(), {
-    header_param: "12345"
+    header_param: "12345",
   });
 
   server.close();
@@ -91,7 +91,7 @@ members.test("handleHttpRequest(): getHeaderParam()", async () => {
 members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
-    resources: [GetUrlQueryParam]
+    resources: [GetUrlQueryParam],
   });
 
   server.run();
@@ -99,7 +99,7 @@ members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
   let response = await members.fetch.get("http://localhost:1557?id=123459");
 
   members.assert.responseJsonEquals(await response.text(), {
-    query_param: "123459"
+    query_param: "123459",
   });
 
   server.close();
@@ -110,7 +110,7 @@ members.test(
   async () => {
     let server = new members.MockServer({
       address: "localhost:1557",
-      resources: [NotesResource]
+      resources: [NotesResource],
     });
 
     server.run();
@@ -120,11 +120,11 @@ members.test(
     response = await members.fetch.get("http://localhost:1557/notes/123");
 
     members.assert.responseJsonEquals(await response.text(), {
-      note_id: "1557"
+      note_id: "1557",
     });
 
     server.close();
-  }
+  },
 );
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +135,7 @@ class MultipartFormData extends members.Drash.Http.Resource {
   static paths = ["/"];
   public POST() {
     this.response.body = {
-      body: this.request.getBodyMultipartForm("body_param")
+      body: this.request.getBodyMultipartForm("body_param"),
     };
     return this.response;
   }
@@ -166,7 +166,7 @@ class NotesResource extends members.Drash.Http.Resource {
   public GET() {
     const noteId = this.request.getPathParam("id");
     if (noteId === "123") {
-      return this.response.redirect(302, "/notes/1557")
+      return this.response.redirect(302, "/notes/1557");
     }
     this.response.body = { note_id: noteId };
     return this.response;

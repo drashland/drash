@@ -83,6 +83,6 @@ export default class ClassOne {
     paramFour: boolean,
     paramFive: any,
     paramSix: number,
-    paramSeven: string
+    paramSeven: string,
   ): any {}
 }

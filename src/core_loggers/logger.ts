@@ -75,7 +75,8 @@ export default abstract class Logger {
    * @param any logMethodLevelDefinition
    * @param string message
    */
-  abstract write(logMethodLevelDefinition: any, message: string): string
+  abstract write(logMethodLevelDefinition: any, message: string):
+    | string
     | void;
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
@@ -164,7 +165,7 @@ export default abstract class Logger {
     try {
       tagString = tagString.replace(
         "{level}",
-        this.current_log_message_level_name
+        this.current_log_message_level_name,
       );
     } catch (error) {
       // ha... do nothing
@@ -195,7 +196,7 @@ export default abstract class Logger {
    */
   protected sendToWriteMethod(
     logMethodLevelDefinition: any,
-    message: string
+    message: string,
   ): string | void {
     // Logger not enabled? Womp womp...
     if (!this.configs.enabled) {
@@ -227,7 +228,7 @@ export default abstract class Logger {
 
     return this.write(
       logMethodLevelDefinition,
-      this.getTagStringParsed() + message
+      this.getTagStringParsed() + message,
     );
   }
 }

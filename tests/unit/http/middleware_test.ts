@@ -39,24 +39,24 @@ members.test("server/resource: wrong CSRF token", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        before_request: [VerifyCsrfToken]
+        before_request: [VerifyCsrfToken],
       },
-      resource_level: [UserIsAdmin]
+      resource_level: [UserIsAdmin],
     },
-    resources: [ResourceWithMiddleware]
+    resources: [ResourceWithMiddleware],
   });
 
   server.run();
 
   let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
-      csrf_token: "hehe"
-    }
+      csrf_token: "hehe",
+    },
   });
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "Wrong CSRF token, dude."
+    "Wrong CSRF token, dude.",
   );
 
   server.close();
@@ -70,11 +70,11 @@ members.test("server/resource: user is not an admin", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        before_request: [VerifyCsrfToken]
+        before_request: [VerifyCsrfToken],
       },
-      resource_level: [UserIsAdmin]
+      resource_level: [UserIsAdmin],
     },
-    resources: [ResourceWithMiddleware]
+    resources: [ResourceWithMiddleware],
   });
 
   server.run();
@@ -82,13 +82,13 @@ members.test("server/resource: user is not an admin", async () => {
   let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
       csrf_token: "all your base",
-      user_id: 123
-    }
+      user_id: 123,
+    },
   });
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "'user_id' unknown."
+    "'user_id' unknown.",
   );
 
   server.close();
@@ -102,11 +102,11 @@ members.test("server/resource: pass", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        before_request: [VerifyCsrfToken]
+        before_request: [VerifyCsrfToken],
       },
-      resource_level: [UserIsAdmin]
+      resource_level: [UserIsAdmin],
     },
-    resources: [ResourceWithMiddleware]
+    resources: [ResourceWithMiddleware],
   });
 
   server.run();
@@ -114,8 +114,8 @@ members.test("server/resource: pass", async () => {
   let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
       csrf_token: "all your base",
-      user_id: 999
-    }
+      user_id: 999,
+    },
   });
 
   members.assert.responseJsonEquals(await response.text(), { name: "Thor" });
@@ -130,9 +130,9 @@ members.test("server/resource: middleware not found", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
-      resource_level: [UserIsAdmin]
+      resource_level: [UserIsAdmin],
     },
-    resources: [ResourceWithMiddlewareNotFound]
+    resources: [ResourceWithMiddlewareNotFound],
   });
 
   server.run();
@@ -152,10 +152,10 @@ members.test("server before_response: missing header", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        after_request: [AfterRequest]
-      }
+        after_request: [AfterRequest],
+      },
     },
-    resources: [ResourceWithMiddlewareHooked]
+    resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run();
@@ -164,7 +164,7 @@ members.test("server before_response: missing header", async () => {
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "Missing header, guy."
+    "Missing header, guy.",
   );
 
   server.close();
@@ -178,23 +178,23 @@ members.test("server before_response: wrong header", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        after_request: [AfterRequest]
-      }
+        after_request: [AfterRequest],
+      },
     },
-    resources: [ResourceWithMiddlewareHooked]
+    resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run();
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
-      send_response: "yes please"
-    }
+      send_response: "yes please",
+    },
   });
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "Ha... try again. Close though."
+    "Ha... try again. Close though.",
   );
 
   server.close();
@@ -208,18 +208,18 @@ members.test("server before_response: pass", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        after_request: [AfterRequest]
-      }
+        after_request: [AfterRequest],
+      },
     },
-    resources: [ResourceWithMiddlewareHooked]
+    resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run();
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
-      send_response: "yes do it"
-    }
+      send_response: "yes do it",
+    },
   });
 
   members.assert.responseJsonEquals(await response.text(), "got");
@@ -235,10 +235,10 @@ members.test("server before_request: missing header", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        before_request: [BeforeRequest]
-      }
+        before_request: [BeforeRequest],
+      },
     },
-    resources: [ResourceWithMiddlewareHooked]
+    resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run();
@@ -247,7 +247,7 @@ members.test("server before_request: missing header", async () => {
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "Missing header, guy."
+    "Missing header, guy.",
   );
 
   server.close();
@@ -261,23 +261,23 @@ members.test("server before_request: wrong header", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        before_request: [BeforeRequest]
-      }
+        before_request: [BeforeRequest],
+      },
     },
-    resources: [ResourceWithMiddlewareHooked]
+    resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run();
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
-      before: "yes"
-    }
+      before: "yes",
+    },
   });
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "Ha... try again. Close though."
+    "Ha... try again. Close though.",
   );
 
   server.close();
@@ -291,18 +291,18 @@ members.test("server before_request: pass", async () => {
     address: "localhost:1557",
     middleware: {
       server_level: {
-        before_request: [BeforeRequest]
-      }
+        before_request: [BeforeRequest],
+      },
     },
-    resources: [ResourceWithMiddlewareHooked]
+    resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run();
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
-      before: "yesss"
-    }
+      before: "yesss",
+    },
   });
 
   members.assert.responseJsonEquals(await response.text(), "got");
@@ -317,15 +317,15 @@ members.test("server before_request: pass", async () => {
 class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   static middleware = {
-    before_request: ["UserIsAdmin"]
+    before_request: ["UserIsAdmin"],
   };
   public users: any = {
     1: {
-      name: "Thor"
+      name: "Thor",
     },
     2: {
-      name: "Hulk"
-    }
+      name: "Hulk",
+    },
   };
   public GET() {
     this.response.body = this.users[this.request.getPathParam("id")];
@@ -344,15 +344,15 @@ class ResourceWithMiddlewareHooked extends members.Drash.Http.Resource {
 class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   static middleware = {
-    before_request: ["muahahaha"]
+    before_request: ["muahahaha"],
   };
   public users: any = {
     1: {
-      name: "Thor"
+      name: "Thor",
     },
     2: {
-      name: "Hulk"
-    }
+      name: "Hulk",
+    },
   };
   public GET() {
     this.response.body = this.users[this.request.getPathParam("id")];
@@ -365,13 +365,13 @@ class BeforeRequest extends members.Drash.Http.Middleware {
     if (!this.request.getHeaderParam("before")) {
       throw new members.Drash.Exceptions.HttpException(
         400,
-        "Missing header, guy."
+        "Missing header, guy.",
       );
     }
     if (this.request.getHeaderParam("before") != "yesss") {
       throw new members.Drash.Exceptions.HttpException(
         400,
-        "Ha... try again. Close though."
+        "Ha... try again. Close though.",
       );
     }
 
@@ -384,13 +384,13 @@ class AfterRequest extends members.Drash.Http.Middleware {
     if (!this.request.getHeaderParam("send_response")) {
       throw new members.Drash.Exceptions.HttpException(
         400,
-        "Missing header, guy."
+        "Missing header, guy.",
       );
     }
     if (this.request.getHeaderParam("send_response") != "yes do it") {
       throw new members.Drash.Exceptions.HttpException(
         400,
-        "Ha... try again. Close though."
+        "Ha... try again. Close though.",
       );
     }
   }
@@ -402,13 +402,13 @@ class UserIsAdmin extends members.Drash.Http.Middleware {
     if (!this.request.getHeaderParam("user_id")) {
       throw new members.Drash.Exceptions.HttpMiddlewareException(
         400,
-        "'user_id' not specified."
+        "'user_id' not specified.",
       );
     }
     if (this.request.getHeaderParam("user_id") != this.user_id) {
       throw new members.Drash.Exceptions.HttpMiddlewareException(
         400,
-        "'user_id' unknown."
+        "'user_id' unknown.",
       );
     }
   }
@@ -419,13 +419,13 @@ class VerifyCsrfToken extends members.Drash.Http.Middleware {
     if (!this.request.getHeaderParam("csrf_token")) {
       throw new members.Drash.Exceptions.HttpException(
         400,
-        "No CSRF token, dude."
+        "No CSRF token, dude.",
       );
     }
     if (this.request.getHeaderParam("csrf_token") != "all your base") {
       throw new members.Drash.Exceptions.HttpException(
         400,
-        "Wrong CSRF token, dude."
+        "Wrong CSRF token, dude.",
       );
     }
   }

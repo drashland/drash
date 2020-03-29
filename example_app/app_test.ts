@@ -28,7 +28,6 @@ members.test("HomeResource", async () => {
 
   response = await members.fetch.patch("http://localhost:1667");
   members.assert.equals(await response.text(), '"Method Not Allowed"');
-  
 });
 
 members.test("UsersResource", async () => {
@@ -52,7 +51,7 @@ members.test("UsersResource", async () => {
   response = await members.fetch.get("http://localhost:1667/users/18");
   members.assert.equals(
     await response.text(),
-    `\"User with ID \\\"18\\\" not found.\"`
+    `\"User with ID \\\"18\\\" not found.\"`,
   );
 });
 
@@ -61,81 +60,81 @@ members.test("CoffeeResource", async () => {
 
   response = await members.fetch.get("http://localhost:1667/coffee", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '"Please specify a coffee ID."');
 
   response = await members.fetch.get("http://localhost:1667/coffee/", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '"Please specify a coffee ID."');
 
   response = await members.fetch.get("http://localhost:1667/coffee//", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '"Not Found"');
 
   response = await members.fetch.get("http://localhost:1667/coffee/17", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '{"name":"Light"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/17/", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '{"name":"Light"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/18", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '{"name":"Medium"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/18/", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '{"name":"Medium"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/19", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '{"name":"Dark"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/19/", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '{"name":"Dark"}');
 
   response = await members.fetch.get("http://localhost:1667/coffee/20", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(
     await response.text(),
-    `\"Coffee with ID \\\"20\\\" not found.\"`
+    `\"Coffee with ID \\\"20\\\" not found.\"`,
   );
 
   response = await members.fetch.post("http://localhost:1667/coffee/17/", {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
   members.assert.equals(await response.text(), '"Method Not Allowed"');
 
@@ -147,10 +146,10 @@ members.test("CoffeeResource", async () => {
     {
       headers: {
         "Content-Type": "application/json",
-        "Content-Length": JSON.stringify(data).length
+        "Content-Length": JSON.stringify(data).length,
       },
-      body: data
-    }
+      body: data,
+    },
   );
   members.assert.equals(await response.text(), '{"name":"Medium"}');
 
@@ -230,4 +229,3 @@ members.test("CoffeeResource", async () => {
 Deno.runTests().then(() => {
   server.close();
 });
-

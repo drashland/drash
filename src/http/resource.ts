@@ -18,7 +18,7 @@ export default class Resource {
    *
    * @property string[] middleware
    */
-  public middleware: { after_request?: []; before_request?: []; } = {};
+  public middleware: { after_request?: []; before_request?: [] } = {};
 
   /**
    * @description
@@ -83,7 +83,7 @@ export default class Resource {
   constructor(
     request: any,
     response: Drash.Http.Response,
-    server: Drash.Http.Server
+    server: Drash.Http.Server,
   ) {
     this.request = request;
     this.response = response;

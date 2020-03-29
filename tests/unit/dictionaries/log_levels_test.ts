@@ -7,36 +7,36 @@ members.test("--------------------------------------------------------", () => {
 let expected = {
   all: {
     rank: 7,
-    name: "All"
+    name: "All",
   },
   trace: {
     rank: 6,
-    name: "Trace"
+    name: "Trace",
   },
   debug: {
     rank: 5,
-    name: "Debug"
+    name: "Debug",
   },
   info: {
     rank: 4,
-    name: "Info"
+    name: "Info",
   },
   warn: {
     rank: 3,
-    name: "Warn"
+    name: "Warn",
   },
   error: {
     rank: 2,
-    name: "Error"
+    name: "Error",
   },
   fatal: {
     rank: 1,
-    name: "Fatal"
+    name: "Fatal",
   },
   off: {
     rank: 0,
-    name: "Off"
-  }
+    name: "Off",
+  },
 };
 
 let actual: any = {};

@@ -6,7 +6,6 @@ import { BufReader } from "../../deps.ts";
 //
 
 export default class ClassCompiler {
-
   protected path: string = "";
 
   protected re_doc_block_closing_slash = new RegExp(/\*\//);
@@ -19,7 +18,9 @@ export default class ClassCompiler {
   protected re_is_function = new RegExp(/@(function|func|method) +\w+/);
   protected re_is_interface = new RegExp(/@interface +\w+/);
   protected re_is_const = new RegExp(/export? ?const \w+ +?= +?.+/, "g");
-  protected re_is_method = new RegExp(/.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+((\n? + .+:.+,?)+{)?/);
+  protected re_is_method = new RegExp(
+    /.+(static|public|protected|private)( async)? \w+\((\n.+)?(\n +\))?.+((\n? + .+:.+,?)+{)?/,
+  );
   protected re_is_constructor = new RegExp(/.+constructor\((.+)?\)?/);
   protected re_is_property = new RegExp(/@property/);
   protected re_members_only = new RegExp(/\/\/\/ +@members-only/);
@@ -65,8 +66,8 @@ export default class ClassCompiler {
       // member's signature.
       if (lookForSignature) {
         if (
-          this.re_property_closing_semicolon.test(dLine)
-          || this.re_method_opening_bracket.test(dLine)
+          this.re_property_closing_semicolon.test(dLine) ||
+          this.re_method_opening_bracket.test(dLine)
         ) {
           docBlockFound = false;
           lookForSignature = false;
@@ -133,4 +134,3 @@ export default class ClassCompiler {
     return br;
   }
 }
-

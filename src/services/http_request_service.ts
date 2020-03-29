@@ -6,14 +6,14 @@ import {
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
 import { ParsedRequestBody } from "../interfaces/parsed_request_body.ts";
-import { getCookies, Cookie } from "../../deps.ts"
+import { getCookies, Cookie } from "../../deps.ts";
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 interface OptionsConfig {
   default_response_content_type?: string;
-  memory_allocation?: { multipart_form_data?: number; };
+  memory_allocation?: { multipart_form_data?: number };
   headers?: any;
 }
 
@@ -40,9 +40,9 @@ export default class HttpRequestService {
    *     The cookie value associated with the cookie name or undefined
    *     if a cookie with that name doesn't exist
    */
-  public getCookie (request: any, name: string): string {
-    const cookies: { [key: string]: string } = getCookies(request)
-    return cookies[name]
+  public getCookie(request: any, name: string): string {
+    const cookies: { [key: string]: string } = getCookies(request);
+    return cookies[name];
   }
 
   /**
@@ -63,7 +63,7 @@ export default class HttpRequestService {
    */
   public getRequestBodyFile(
     parsedBody: ParsedRequestBody,
-    input: string
+    input: string,
   ): any {
     return parsedBody.data[input];
   }
@@ -79,7 +79,7 @@ export default class HttpRequestService {
    */
   public getRequestBodyParam(
     parsedBody: ParsedRequestBody,
-    input: string
+    input: string,
   ): any {
     return parsedBody.data[input];
   }
@@ -139,7 +139,7 @@ export default class HttpRequestService {
    */
   public getResponseContentType(
     request: any,
-    defaultContentType: string = "application/json"
+    defaultContentType: string = "application/json",
   ): string {
     // application/json will be used for any falsy defaultContentType argument
     defaultContentType = defaultContentType
@@ -276,7 +276,7 @@ export default class HttpRequestService {
    */
   public async hydrate(
     request: any,
-    options?: OptionsConfig
+    options?: OptionsConfig,
   ): Promise<boolean> {
     if (options && options.headers) {
       this.setHeaders(request, options.headers);
@@ -291,7 +291,7 @@ export default class HttpRequestService {
     request.url_query_params = this.getUrlQueryParams(request);
     request.response_content_type = this.getResponseContentType(
       request,
-      contentType
+      contentType,
     );
 
     // Parse the body now so that callers don't have to use async-await when
@@ -314,11 +314,11 @@ export default class HttpRequestService {
       return t.getRequestPathParam(request, input);
     };
     request.getUrlQueryParam = function getRequestUrlQueryParam(
-      input: string
+      input: string,
     ) {
       return t.getRequestUrlQueryParam(request, input);
     };
-    request.getCookie = function getCookie (name: string) {
+    request.getCookie = function getCookie(name: string) {
       return t.getCookie(request, name);
     };
 
@@ -339,11 +339,11 @@ export default class HttpRequestService {
    */
   public async parseBody(
     request: any,
-    options: OptionsConfig = {}
+    options: OptionsConfig = {},
   ): Promise<ParsedRequestBody> {
-    let ret: { content_type: string; data: any; } = {
+    let ret: { content_type: string; data: any } = {
       content_type: "",
-      data: undefined
+      data: undefined,
     };
 
     if (!this.hasBody(request)) {
@@ -362,7 +362,7 @@ export default class HttpRequestService {
           `Error reading request body. No Content-Type header was specified. ` +
             `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
             `by default and failed.\n` +
-            error.stack
+            error.stack,
         );
       }
     }
@@ -388,20 +388,21 @@ export default class HttpRequestService {
       try {
         let maxMemory: number = 10;
         const config = options.memory_allocation;
-        if (config && config.multipart_form_data &&
-          config.multipart_form_data > 10)
-        {
+        if (
+          config && config.multipart_form_data &&
+          config.multipart_form_data > 10
+        ) {
           maxMemory = config.multipart_form_data;
         }
         ret.data = await this.parseBodyAsMultipartFormData(
           request.body,
           boundary,
-          maxMemory
+          maxMemory,
         );
         ret.content_type = "multipart/form-data";
       } catch (error) {
         throw new Error(
-          `Error reading request body as multipart/form-data.\n` + error.stack
+          `Error reading request body as multipart/form-data.\n` + error.stack,
         );
       }
     }
@@ -412,7 +413,7 @@ export default class HttpRequestService {
         ret.content_type = "application/json";
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/json.\n` + error.stack
+          `Error reading request body as application/json.\n` + error.stack,
         );
       }
     }
@@ -427,7 +428,7 @@ export default class HttpRequestService {
       } catch (error) {
         throw new Error(
           `Error reading request body as application/x-www-form-urlencoded.\n` +
-            error.stack
+            error.stack,
         );
       }
     }
@@ -444,7 +445,7 @@ export default class HttpRequestService {
    *    array e.g. returnValue['someKey']
    */
   public async parseBodyAsFormUrlEncoded(
-    request: any
+    request: any,
   ): Promise<object | Array<any>> {
     let body = decoder.decode(await Deno.readAll(request.body));
     if (body.indexOf("?") !== -1) {
@@ -484,8 +485,8 @@ export default class HttpRequestService {
   public async parseBodyAsMultipartFormData(
     body: Reader,
     boundary: string,
-    maxMemory: number
-  ): Promise<{ [key: string]: string | FormFile | null; }> {
+    maxMemory: number,
+  ): Promise<{ [key: string]: string | FormFile | null }> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {

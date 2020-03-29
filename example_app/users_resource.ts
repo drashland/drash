@@ -30,14 +30,14 @@ export default class UsersResource extends Drash.Http.Resource {
     } catch (error) {
       throw new Drash.Exceptions.HttpException(
         400,
-        `Error getting user with ID "${userId}". Error: ${error.message}.`
+        `Error getting user with ID "${userId}". Error: ${error.message}.`,
       );
     }
 
     if (!user) {
       throw new Drash.Exceptions.HttpException(
         404,
-        `User with ID "${userId}" not found.`
+        `User with ID "${userId}" not found.`,
       );
     }
 

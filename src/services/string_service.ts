@@ -39,8 +39,8 @@ export default class StringService {
   static parseQueryParamsString(
     queryParamsString: string,
     keyFormat: string = "normal",
-    keyCase: string = "normal"
-  ): { [key: string]: string; } {
+    keyCase: string = "normal",
+  ): { [key: string]: string } {
     let queryParams: any = {};
 
     if (!queryParamsString) {
@@ -53,7 +53,7 @@ export default class StringService {
 
     let queryParamsExploded = queryParamsString.split("&");
 
-    queryParamsExploded.forEach(kvpString => {
+    queryParamsExploded.forEach((kvpString) => {
       let kvpStringSplit = kvpString.split("=");
       let key: string;
       if (keyFormat == "normal") {

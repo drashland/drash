@@ -5,14 +5,14 @@ export default class CoffeeResource extends Drash.Http.Resource {
 
   protected coffee: any = {
     17: {
-      name: "Light"
+      name: "Light",
     },
     18: {
-      name: "Medium"
+      name: "Medium",
     },
     19: {
-      name: "Dark"
-    }
+      name: "Dark",
+    },
   };
 
   public GET() {
@@ -45,14 +45,14 @@ export default class CoffeeResource extends Drash.Http.Resource {
     } catch (error) {
       throw new Drash.Exceptions.HttpException(
         400,
-        `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`
+        `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`,
       );
     }
 
     if (!coffee) {
       throw new Drash.Exceptions.HttpException(
         404,
-        `Coffee with ID "${coffeeId}" not found.`
+        `Coffee with ID "${coffeeId}" not found.`,
       );
     }
 

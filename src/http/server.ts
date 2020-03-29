@@ -21,7 +21,7 @@ export default class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
   protected trackers = {
-    requested_favicon: false
+    requested_favicon: false,
   };
 
   /**
@@ -43,7 +43,8 @@ export default class Server {
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
    */
-  public logger: Drash.CoreLoggers.ConsoleLogger
+  public logger:
+    | Drash.CoreLoggers.ConsoleLogger
     | Drash.CoreLoggers.FileLogger;
 
   /**
@@ -71,7 +72,7 @@ export default class Server {
    */
   protected middleware: any = {
     resource_level: {},
-    server_level: {}
+    server_level: {},
   };
 
   /**
@@ -80,7 +81,7 @@ export default class Server {
    *
    * @property any[] resources
    */
-  protected resources: { [key: string]: Drash.Http.Resource; } = {};
+  protected resources: { [key: string]: Drash.Http.Resource } = {};
 
   /**
    * @description
@@ -109,7 +110,7 @@ export default class Server {
   constructor(configs: ServerConfigs) {
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
-        enabled: false
+        enabled: false,
       });
     } else {
       this.logger = configs.logger;
@@ -138,7 +139,7 @@ export default class Server {
 
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
-      configs.static_paths.forEach(path => {
+      configs.static_paths.forEach((path) => {
         this.addStaticPath(path);
       });
     }
@@ -165,11 +166,11 @@ export default class Server {
     let options: any = {
       default_response_content_type: this.configs.response_output,
       headers: {
-        base_url: this.configs.address
+        base_url: this.configs.address,
       },
       memory_allocation: {
-        multipart_form_data: 10
-      }
+        multipart_form_data: 10,
+      },
     };
     const config: any = this.configs.memory_allocation;
     if (config && config.multipart_form_data) {
@@ -178,7 +179,7 @@ export default class Server {
     }
     request = await Drash.Services.HttpRequestService.hydrate(
       request,
-      options
+      options,
     );
     return request;
   }
@@ -210,7 +211,7 @@ export default class Server {
 
     try {
       this.logger.info(
-        `Request received: ${request.method.toUpperCase()} ${request.url}`
+        `Request received: ${request.method.toUpperCase()} ${request.url}`,
       );
 
       let resourceClass = this.getResourceClass(request);
@@ -221,7 +222,7 @@ export default class Server {
       if (!resourceClass) {
         return this.handleHttpRequestError(
           request,
-          this.httpErrorResponse(404)
+          this.httpErrorResponse(404),
         );
       }
 
@@ -240,7 +241,7 @@ export default class Server {
       this.logDebug(
         "Using `" +
           resource.constructor.name +
-          "` resource class to handle the request."
+          "` resource class to handle the request.",
       );
 
       this.executeMiddlewareResourceLevelBeforeRequest(request, resource);
@@ -255,12 +256,12 @@ export default class Server {
       this.executeMiddlewareServerLevelAfterRequest(
         request,
         resource,
-        response
+        response,
       );
       this.executeMiddlewareResourceLevelAfterRequest(
         request,
         resource,
-        response
+        response,
       );
 
       // Send the response
@@ -296,10 +297,10 @@ export default class Server {
     request: any,
     error: any,
     resource: Drash.Http.Resource | any = {},
-    response: Drash.Http.Response | any = {}
+    response: Drash.Http.Response | any = {},
   ): any {
     this.logDebug(
-      `Error occurred while handling request: ${request.method} ${request.url}`
+      `Error occurred while handling request: ${request.method} ${request.url}`,
     );
     this.logDebug(error.message);
     this.logDebug("Stack trace below:");
@@ -327,8 +328,8 @@ export default class Server {
 
     this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
-        "Content-Type"
-      )}. Status: ${response.getStatusMessageFull()}.`
+        "Content-Type",
+      )}. Status: ${response.getStatusMessageFull()}.`,
     );
 
     try {
@@ -366,7 +367,7 @@ export default class Server {
     }
     let response = {
       status: 200,
-      headers: headers
+      headers: headers,
     };
     request.respond(response);
     return JSON.stringify(response);
@@ -404,7 +405,7 @@ export default class Server {
     let resourceObj: Resource = new resourceClass(
       request,
       new Drash.Http.Response(request),
-      this
+      this,
     );
     // We have to add the static properties back because they get blown away
     // when the resource object is created
@@ -484,7 +485,7 @@ export default class Server {
           regex_path: "^." +
             path.replace(
               Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT
+              Server.REGEX_URI_REPLACEMENT,
             ) +
             "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
@@ -493,8 +494,8 @@ export default class Server {
                 .replace(":", "")
                 .replace("{", "")
                 .replace("}", "");
-            }
-          )
+            },
+          ),
         };
         return;
       }
@@ -504,7 +505,7 @@ export default class Server {
           regex_path: "^" +
             path.replace(
               Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT
+              Server.REGEX_URI_REPLACEMENT,
             ) +
             "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
@@ -513,8 +514,8 @@ export default class Server {
                 .replace(":", "")
                 .replace("{", "")
                 .replace("}", "");
-            }
-          )
+            },
+          ),
         };
         resourceClass.paths[index] = pathObj;
       } catch (error) {}
@@ -595,7 +596,7 @@ export default class Server {
   protected executeMiddlewareResourceLevelAfterRequest(
     request: any,
     resource: Drash.Http.Resource,
-    response: Drash.Http.Response
+    response: Drash.Http.Response,
   ): void {
     if (
       resource.middleware &&
@@ -625,7 +626,7 @@ export default class Server {
    */
   protected executeMiddlewareResourceLevelBeforeRequest(
     request: any,
-    resource: Drash.Http.Resource
+    resource: Drash.Http.Resource,
   ): void {
     if (
       resource &&
@@ -655,7 +656,7 @@ export default class Server {
    * @return void
    */
   protected executeMiddlewareServerLevelBeforeRequest(
-    request: any
+    request: any,
   ): void {
     // Execute server-level middleware
     if (this.middleware.server_level.before_request) {
@@ -681,7 +682,7 @@ export default class Server {
   protected executeMiddlewareServerLevelAfterRequest(
     request: any,
     resource: Drash.Http.Resource | null,
-    response: Drash.Http.Response | null
+    response: Drash.Http.Response | null,
   ): void {
     if (this.middleware.server_level.hasOwnProperty("after_request")) {
       this.middleware.server_level.after_request
@@ -690,7 +691,7 @@ export default class Server {
             request,
             this,
             resource,
-            response
+            response,
           );
           middleware.run();
         });
@@ -744,7 +745,7 @@ export default class Server {
           // Check if the current path we're working on matches the request's
           // pathname
           thisPathMatchesRequestPathname = request.url_path.match(
-            pathObj.regex_path
+            pathObj.regex_path,
           );
           if (!thisPathMatchesRequestPathname) {
             return;
@@ -753,7 +754,7 @@ export default class Server {
           // Create the path params
           // TODO(crookse) Put in HttpRequestService
           let requestPathnameParams = request.url_path.match(
-            pathObj.regex_path
+            pathObj.regex_path,
           );
           let pathParamsInKvpForm: any = {};
           try {
@@ -797,9 +798,9 @@ export default class Server {
         headers: {
           "Response-Content-Type": Drash.Services.HttpService.getMimeType(
             request.url,
-            true
-          )
-        }
+            true,
+          ),
+        },
       });
       return true;
     }

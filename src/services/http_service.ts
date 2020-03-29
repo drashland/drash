@@ -29,9 +29,9 @@ export default class HttpService {
    *     Returns the name of the MIME type based on the extension of the
    *     file path .
    */
-  public getMimeType(filePath: string, fileIsUrl: boolean = false): string
-    | undefined
-  {
+  public getMimeType(filePath: string, fileIsUrl: boolean = false):
+    | string
+    | undefined {
     if (fileIsUrl) {
       filePath = filePath.split("?")[0];
     }

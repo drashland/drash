@@ -1,6 +1,6 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
-import { setCookie, delCookie, Cookie } from "../../deps.ts"
+import { setCookie, delCookie, Cookie } from "../../deps.ts";
 
 /**
  * @memberof Drash.Http
@@ -72,7 +72,7 @@ export default class Response {
    * @return void
    */
   public setCookie(cookie: Cookie): void {
-    setCookie(this, cookie)
+    setCookie(this, cookie);
   }
 
   /**
@@ -84,8 +84,8 @@ export default class Response {
    * 
    * @return void
    */
-  public delCookie (cookieName: string): void {
-    delCookie(this, cookieName)
+  public delCookie(cookieName: string): void {
+    delCookie(this, cookieName);
   }
 
   /**
@@ -109,7 +109,7 @@ export default class Response {
 
     throw new Drash.Exceptions.HttpResponseException(
       400,
-      `Response Content-Type "${contentType}" unknown.`
+      `Response Content-Type "${contentType}" unknown.`,
     );
   }
 
@@ -157,7 +157,7 @@ export default class Response {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body)
+      body: new TextEncoder().encode(body),
     };
     return this.request.respond(output);
   }
@@ -180,7 +180,7 @@ export default class Response {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: Deno.readFileSync(file)
+      body: Deno.readFileSync(file),
     };
 
     this.request.respond(output);

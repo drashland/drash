@@ -51,7 +51,7 @@ export function getFileSystemStructure(dir: string): any {
       isDirectory: () => {
         let extension = filename.split(".")[1];
         return !extension;
-      }
+      },
     });
   }
 

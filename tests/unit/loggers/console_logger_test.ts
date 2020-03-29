@@ -5,7 +5,7 @@ members.test("--------------------------------------------------------", () => {
 });
 
 const ANIMALS = {
-  "#1235": "tiger"
+  "#1235": "tiger",
 };
 
 members.test("ConsoleLogger", () => {
@@ -17,11 +17,11 @@ members.test("ConsoleLogger", () => {
     tag_string: "{date} | {greeting} | {animal} |",
     tag_string_fns: {
       date: "some_date",
-      greeting: function() {
+      greeting: function () {
         return "hello";
       },
-      animal: ANIMALS["#1235"]
-    }
+      animal: ANIMALS["#1235"],
+    },
   });
   let actual = logger.info("This is cool!");
   members.assert.equal(actual, expected);

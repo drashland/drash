@@ -5,7 +5,7 @@ members.test("--------------------------------------------------------", () => {
 });
 
 const ANIMALS = {
-  "#1235": "tiger"
+  "#1235": "tiger",
 };
 
 const file = `${Deno.env().DRASH_ROOT_DIR}/tmp/file_logger_test.log`;
@@ -17,12 +17,12 @@ members.test(`FileLogger (${file})`, () => {
     tag_string: "{date} | {greeting} | {animal} |",
     tag_string_fns: {
       date: "some_date",
-      greeting: function() {
+      greeting: function () {
         return "hello";
       },
-      animal: ANIMALS["#1235"]
+      animal: ANIMALS["#1235"],
     },
-    file: file
+    file: file,
   });
   logger.info("This is cool!");
   const decoder = new TextDecoder();
