@@ -20,7 +20,7 @@ If the `deno-drash-docs` repo needs to be updated, then make a PR to it by updat
 
 ## Upgrading Deno
 
-Update the `deps.ts` file automaticlaly by updating line `8` in `console/typescript/bump_versions.ts` to reflect which version to update from and which version to update to. See below as an example.
+Update the `deps.ts` file automaticlaly by updating line the `bumpVersions()` call in `console/typescript/bump_versions.ts`. This call should reflect which version to update from and which version to update to. See below as an example.
 
 ```typescript
 let result = await bumpVersions(fromVersion, toVersion);
@@ -32,6 +32,8 @@ Run the following command.
 console/bump_verisons
 ```
 
-Update `README.md` version by updating line `26`.
+Update `README.md`.
 
-Update `console/install_deno` version by updating line `4`.
+Update `console/install_deno`.
+
+Update `REQUIREMENTS.md`.
