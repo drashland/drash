@@ -14,7 +14,7 @@ let server = new Drash.Http.Server({
   response_output: "application/json",
   middleware: {
     resource_level: [
-      Middleware
+      Middleware,
     ],
   },
   memory_allocation: {

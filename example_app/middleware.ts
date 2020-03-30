@@ -10,4 +10,3 @@ export default class Middleware extends Drash.Http.Middleware {
     }
   }
 }
-

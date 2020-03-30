@@ -4,7 +4,7 @@ export default class MiddlewareResource extends Drash.Http.Resource {
   static paths = ["/middleware"];
   static middleware = {
     before_request: [
-      "Middleware"
+      "Middleware",
     ],
   };
 
