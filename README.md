@@ -1,22 +1,10 @@
-<p align="center">
-  <img height="200" src="https://drash.land/public/assets/img/drash.svg" alt="Drash logo">
-  <h1 align="center">Drash</h1>
-</p>
-<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>.</p>
-<p align="center">
-  <a href="https://github.com/drashland/deno-drash/releases">
-    <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
-  </a>
-  <a href="https://github.com/drashland/deno-drash/actions">
-    <img src="https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=master">
-  </a>
-  <a href="https://discord.gg/SgejNXq">
-    <img src="https://img.shields.io/badge/chat-on%20discord-blue">
-  </a>
-  <a href="https://twitter.com/drash_land">
-    <img src="https://img.shields.io/twitter/url?label=%40drash_land&style=social&url=https%3A%2F%2Ftwitter.com%2Fdrash_land">
-  </a>
-</p>
+## Drash
+A REST microframework for [Deno](https://github.com/denoland/deno)
+
+[![Latest](https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest)](https://github.com/drashland/deno-drash/releases)
+[![Build Status](https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=master)](https://github.com/drashland/deno-drash/actions)
+[![Discord](https://img.shields.io/badge/chat-on%20discord-blue)](https://discord.gg/SgejNXq)
+[![Twitter](https://img.shields.io/twitter/url?label=%40drash_land&style=social&url=https%3A%2F%2Ftwitter.com%2Fdrash_land)](https://twitter.com/drash_land)
 
 ---
 
