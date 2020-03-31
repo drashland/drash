@@ -1,4 +1,4 @@
-## Drash
+# Drash
 A REST microframework for [Deno](https://github.com/denoland/deno)
 
 [![Latest](https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest)](https://github.com/drashland/deno-drash/releases)
