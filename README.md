@@ -1,17 +1,29 @@
-# Drash
-A REST microframework for [Deno](https://github.com/denoland/deno)
-
-[![Latest](https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest)](https://github.com/drashland/deno-drash/releases)
-[![Build Status](https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=master)](https://github.com/drashland/deno-drash/actions)
-[![Discord](https://img.shields.io/badge/chat-on%20discord-blue)](https://discord.gg/SgejNXq)
-[![Twitter](https://img.shields.io/twitter/url?label=%40drash_land&style=social&url=https%3A%2F%2Ftwitter.com%2Fdrash_land)](https://twitter.com/drash_land)
+<p align="center">
+  <img height="200" src="https://drash.land/public/assets/img/drash.svg" alt="Drash logo">
+  <h1 align="center">Drash</h1>
+</p>
+<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>.</p>
+<p align="center">
+  <a href="https://github.com/drashland/deno-drash/releases">
+    <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
+  </a>
+  <a href="https://github.com/drashland/deno-drash/actions">
+    <img src="https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=master">
+  </a>
+  <a href="https://discord.gg/SgejNXq">
+    <img src="https://img.shields.io/badge/chat-on%20discord-blue">
+  </a>
+  <a href="https://twitter.com/drash_land">
+    <img src="https://img.shields.io/twitter/url?label=%40drash_land&style=social&url=https%3A%2F%2Ftwitter.com%2Fdrash_land">
+  </a>
+</p>
 
 ---
 
 ```typescript
 // File: app.ts
 
-import Drash from "https://deno.land/x/drash@v0.38.0/mod.ts";
+import Drash from "https://deno.land/x/drash@v0.39.0/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -90,13 +102,13 @@ The [`example_app`](https://github.com/drashland/deno-drash/tree/master/example_
 1. Install deno.
 
 ```
-curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.38.0
+curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.39.0
 ```
 
 2. Run the Drash application using `deno`.
 
 ```
-deno --allow-net --allow-env https://deno.land/x/drash@v0.38.0/example_app/app.ts
+deno --allow-net --allow-env https://deno.land/x/drash@v0.39.0/example_app/app.ts
 ```
 
 2. Make the following request: `GET /`.
