@@ -1,5 +1,12 @@
 # Dev Environment Setup
 
+## Table of Contents
+
+* [Copy git hook for standardized commit messages](#copy-git-hook-for-standardized-commit-messages)
+* [Building the API Reference pages JSON data](#building-the-api-reference-pages-json-data)
+* [Upgrading Deno](#upgrading-deno)
+* [Upgrading mime-db](#upgrading-mime-db)
+
 ## Copy git hook for standardized commit messages
 
 This makes your commit messages as follows: `[branch-name] commit message`
@@ -8,7 +15,7 @@ This makes your commit messages as follows: `[branch-name] commit message`
 /path/to/deno-drash/console/git_hooks/copy-prepare-commit-msg
 ```
 
-## Building API Reference pages JSON data
+## Building the API Reference page's JSON data
 
 ```shell
 console/build_docs
@@ -49,6 +56,27 @@ Commit your changes.
 
 ```
 git commit -m "upgrade deno to {version}"
+```
+
+Make a pull request to `master`.
+
+## Upgrading mime-db
+
+Check out the `upgrade-mime-db` branch.
+
+```
+git checkout upgrade-mime-db
+git pull
+```
+
+Go to https://github.com/jshttp/mime-db/blob/master/db.json
+
+Copy the file's contents into `/src/dictionaries/mime_db.json`.
+
+Commit your changes.
+
+```
+git commit -m "upgrade mime-db to {version}"
 ```
 
 Make a pull request to `master`.
