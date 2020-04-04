@@ -105,12 +105,13 @@ export default class Response {
       case "text/xml":
       case "text/plain":
         return this.body;
+
     }
 
-    throw new Drash.Exceptions.HttpResponseException(
-      400,
-      `Response Content-Type "${contentType}" unknown.`,
-    );
+    this.body = `Response Content-Type "${contentType}" unknown.`;
+    this.status_code = 400;
+
+    return this.body;
   }
 
   /**

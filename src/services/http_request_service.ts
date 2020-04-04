@@ -2,7 +2,6 @@ import {
   FormFile,
   MultipartReader,
   ServerRequest,
-  contentType
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
 import { ParsedRequestBody } from "../interfaces/parsed_request_body.ts";

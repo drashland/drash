@@ -1,7 +1,6 @@
 import Drash from "../../mod.ts";
 import {
   MultipartReader,
-  contentType
 } from "../../deps.ts";
 
 /**
@@ -29,20 +28,34 @@ export default class HttpService {
    *     Returns the name of the MIME type based on the extension of the
    *     file path .
    */
-  public getMimeType(filePath: string, fileIsUrl: boolean = false):
-    | string
-    | undefined {
+  public getMimeType(filePath: string | undefined, fileIsUrl: boolean = false):
+    | null
+    | string {
+    let mimeType = null;
+
     if (fileIsUrl) {
-      filePath = filePath.split("?")[0];
+      filePath = filePath ? filePath.split("?")[0] : undefined;
     }
 
-    let fileParts = filePath.split(".");
-    const popped: string | undefined = fileParts.pop();
+    if (filePath) {
+      let fileParts = filePath.split(".");
+      filePath = fileParts.pop();
 
-    if (!popped) {
-      return undefined;
+      const database: any = Drash.Dictionaries.MimeDb;
+
+      for (let key in database) {
+        if (!mimeType) {
+          if (database[key].extensions) {
+            for (let index in database[key].extensions) {
+              if (filePath == database[key].extensions[index]) {
+                mimeType = key;
+              }
+            }
+          }
+        }
+      }
     }
 
-    return contentType(popped);
+    return mimeType;
   }
 }
