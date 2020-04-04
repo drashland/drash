@@ -51,8 +51,6 @@ $ curl localhost:1337
 Hello World! deno + Drash is cool!
 ```
 
-Don't feel like writing the quickstart code? Watch how easy it is to set up your env [here](https://www.youtube.com/watch?v=9gQj5Ywdclk).
-
 ## Documentation
 
 [Full Documentation](https://drash.land/docs)
