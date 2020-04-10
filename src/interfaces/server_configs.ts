@@ -44,6 +44,13 @@ import Drash from "../../mod.ts";
  *               server_level: { ... }
  *             }
  *
+ *     pretty_links?: boolean
+ *
+ *         Enabling pretty links allows your Drash server to check whether or
+ *         not an index.html file exists in a static directory. For example, if
+ *         /public/app/index.html exists, then you can go to /public/app and it
+ *         will serve the index.html in that static directory.
+ *
  *     resources: any
  *
  *         An array of resources that the server should register. Passing in 0
@@ -71,7 +78,7 @@ export interface ServerConfigs {
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
   middleware?: any;
-  pretty_links: boolean;
+  pretty_links?: boolean;
   resources: any;
   response_output?: string;
   static_paths?: string[];
