@@ -71,6 +71,7 @@ export interface ServerConfigs {
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
   middleware?: any;
+  pretty_links: boolean;
   resources: any;
   response_output?: string;
   static_paths?: string[];
