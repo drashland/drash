@@ -1,7 +1,7 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
 import { setCookie, delCookie, Cookie } from "../../deps.ts";
-import { ResponseOptions } from "../interfaces/response_options";
+import { ResponseOptions } from "../interfaces/response_options.ts";
 
 /**
  * @memberof Drash.Http
@@ -52,7 +52,7 @@ export default class Response {
    *
    * @property string views_path
    */
-  private views_path: string;
+  private views_path: string | undefined;
 
   /**
    * @description
@@ -60,7 +60,7 @@ export default class Response {
    *
    * @property any views_renderer
    */
-  private renderer: any;
+  private renderer: any = null;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
@@ -90,17 +90,44 @@ export default class Response {
    *     Read and return the contents of a .html or dejs view file.
    *     Can accept data to populate the view with dynamic data.
    *     Will use the views_path property to find the requested view name
-   * @param args
+   *
+   * @param any args
    *
    * @example
-   *     this.response.body = this.response.render('/users/add.html', { name: 'Drash' })
+   *     const content = await this.response.render('/users/add.html', { name: 'Drash' })
+   *     if (!content) throw new Error(...)
+   *     this.response.body = content
    *
-   * @return string
-   *     The html content of the view
+   * @return string|boolean
+   *     The html content of the view, or false if the `views_path` or
+   *     `views_renderer` within your server object is not set
    */
-  public render (...args) {
-    args[0] = this.views_path += args[1];
-    return this.renderer(...args);
+  public async render (...args: any): Promise<string|boolean> {
+    if (!this.views_path || !this.renderer) {
+      return false
+    }
+    args[0] = this.views_path += args[0];
+
+    // IF DEJS CANT POPULATE DYANMIC DATA INSIDE A HTML FILE
+    // const fileContentsRaw = Deno.readFileSync(args[0]);
+    // const decoder = new TextDecoder();
+    // let decoded = decoder.decode(fileContentsRaw);
+    // if (args[0].slice(-5) === '.html') {
+    //   Object.keys(args[1]).forEach((propName: string, index: number) => {
+    //     const regex = new RegExp("\{\{ " + propName + " \}\}");
+    //     decoded = decoded.replace(regex, args[index][propName])
+    //   })
+    //   return decoded
+    // }
+    // if (args[0].slice(-4) === '.ejs') {
+    //   if (!this.renderer) {
+    //     throw new Error('No renderer exists. Unable to return a HTML response.')
+    //   }
+    //   const tpl = await this.renderer(decoded, { name: 'world'});
+    //   return tpl
+    // }
+
+    return await this.renderer(...args)
   }
 
   /**
