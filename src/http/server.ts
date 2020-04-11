@@ -357,7 +357,7 @@ export default class Server {
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForFavicon(request: any): string {
+  public async handleHttpRequestForFavicon(request: any): Promise<string> {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     if (!this.trackers.requested_favicon) {
@@ -368,6 +368,7 @@ export default class Server {
     let response = {
       status: 200,
       headers: headers,
+      body: Deno.readFileSync(`${await Deno.realpath('.')}/favicon.ico`),
     };
     request.respond(response);
     return JSON.stringify(response);
