@@ -391,6 +391,7 @@ export default class Server {
         if (!extension) {
           let contents = Deno.readFileSync(this.directory + "/" + request.url_path + "/index.html");
           if (contents) {
+            response.headers.set("Content-Type", "text/html");
             return response.sendStatic(null, contents);
           }
         }
