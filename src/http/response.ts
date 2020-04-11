@@ -1,6 +1,7 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
 import { setCookie, delCookie, Cookie } from "../../deps.ts";
+import { ResponseOptions } from "../interfaces/response_options";
 
 /**
  * @memberof Drash.Http
@@ -44,6 +45,23 @@ export default class Response {
    */
   public status_code: number = Status.OK;
 
+  /**
+   * @description
+   *     A property to hold the path to the users views directory
+   *     from their project root
+   *
+   * @property string views_path
+   */
+  private views_path: string;
+
+  /**
+   * @description
+   *     The render method extracted from dejs
+   *
+   * @property any views_renderer
+   */
+  private renderer: any;
+
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
@@ -51,14 +69,39 @@ export default class Response {
    *     Construct an object of this class.
    *
    * @param any request
+   *
+   * @param ResponseOptions options
+   *     See Drash.Interfaces.ResponseOptions
    */
-  constructor(request: any) {
+  constructor(request: any, options: ResponseOptions = {}) {
     this.request = request;
     this.headers = new Headers();
+    if (options.views_renderer) {
+      this.renderer = options.views_renderer;
+      this.views_path = options.views_path; // if there's a views renderer, then there must be a views path
+    }
     this.headers.set("Content-Type", request.response_content_type);
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Read and return the contents of a .html or dejs view file.
+   *     Can accept data to populate the view with dynamic data.
+   *     Will use the views_path property to find the requested view name
+   * @param args
+   *
+   * @example
+   *     this.response.body = this.response.render('/users/add.html', { name: 'Drash' })
+   *
+   * @return string
+   *     The html content of the view
+   */
+  public render (...args) {
+    args[0] = this.views_path += args[1];
+    return this.renderer(...args);
+  }
 
   /**
    * @description
