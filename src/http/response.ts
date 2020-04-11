@@ -105,7 +105,6 @@ export default class Response {
       case "text/xml":
       case "text/plain":
         return this.body;
-
     }
 
     this.body = `Response Content-Type "${contentType}" unknown.`;
