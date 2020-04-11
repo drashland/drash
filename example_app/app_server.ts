@@ -12,6 +12,7 @@ import TemplateEngineResource from "./template_engine_resource.ts";
 
 let server = new Drash.Http.Server({
   address: "localhost:1447",
+  directory: Deno.realpathSync("./"),
   response_output: "application/json",
   middleware: {
     resource_level: [
@@ -21,6 +22,7 @@ let server = new Drash.Http.Server({
   memory_allocation: {
     multipart_form_data: 128,
   },
+  pretty_links: true,
   resources: [
     CoffeeResource,
     CookieResource,
@@ -30,6 +32,7 @@ let server = new Drash.Http.Server({
     TemplateEngineResource,
     UsersResource,
   ],
+  static_paths: ["/public"]
 });
 
 export default server;

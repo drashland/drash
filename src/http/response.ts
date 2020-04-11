@@ -104,6 +104,7 @@ export default class Response {
       case "text/html":
       case "text/xml":
       case "text/plain":
+      default:
         return this.body;
     }
 
@@ -167,12 +168,12 @@ export default class Response {
    *     Send the response of a static asset (e.g., a CSS file, JS file, PDF
    *     file, etc.) to the client making the request.
    *
-   * @param string file
+   * @param null|string file
    *     The file that will be served to the client.
    *
    * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file: string): {
+  public sendStatic(file: null|string, contents: null|Uint8Array = null): {
     status: number;
     headers: Headers;
     body: any;
@@ -180,7 +181,7 @@ export default class Response {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: Deno.readFileSync(file),
+      body: file ? Deno.readFileSync(file) : contents,
     };
 
     this.request.respond(output);

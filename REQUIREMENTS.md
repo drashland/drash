@@ -1,5 +1,6 @@
 # Requirements
 
+* v0.39.1
 * v0.39.0
 
     * Deno v0.39.0
