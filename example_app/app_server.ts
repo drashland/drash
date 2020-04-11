@@ -8,6 +8,7 @@ import MiddlewareResource from "./middleware_resource.ts";
 import UsersResource from "./users_resource.ts";
 // Middleware
 import Middleware from "./middleware.ts";
+import TemplateEngineResource from "./template_engine_resource.ts";
 
 let server = new Drash.Http.Server({
   address: "localhost:1447",
@@ -26,6 +27,7 @@ let server = new Drash.Http.Server({
     FilesResource,
     HomeResource,
     MiddlewareResource,
+    TemplateEngineResource,
     UsersResource,
   ],
 });

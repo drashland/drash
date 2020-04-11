@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html class="h-full w-full">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+    <title>Skills</title>
+  </head>
+  <body>
+    <div style="max-width: 640px; margin: 50px auto;">
+      <h1 class="text-5xl"><? user.name ?></h1>
+      <h2 class="text-4xl">Skills</h2>
+      <ul>
+        <? for (let index in this.skills) { ?>
+        <li><? this.skills[index] ?></li>
+        <? } ?>
+      </p>
+    </div>
+  </body>
+</html>
