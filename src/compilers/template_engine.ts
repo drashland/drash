@@ -3,7 +3,7 @@ export default class TemplateEngine {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
     let match: any;
-    let re: any = /<\?(.+?)\?>/g;
+    let re: any = /<%(.+?)\%>/g;
     let reExp: any = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
     let result: any;
     function add(line: any, js: any = null) {
