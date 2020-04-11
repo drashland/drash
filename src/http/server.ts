@@ -324,7 +324,10 @@ export default class Server {
       }
     }
 
-    response = new Drash.Http.Response(request);
+    response = new Drash.Http.Response(request, {
+      views_path: this.configs.views_path,
+      views_renderer: this.configs.views_renderer
+    });
     response.status_code = error.code ? error.code : null;
     response.body = error.message
       ? error.message
@@ -389,7 +392,10 @@ export default class Server {
    */
   public handleHttpRequestForStaticPathAsset(request: any): any {
     try {
-      let response = new Drash.Http.Response(request);
+      let response = new Drash.Http.Response(request, {
+        views_renderer: this.configs.views_renderer,
+        views_path: this.configs.views_path
+      });
       if (this.configs.pretty_links) {
         let extension = request.url_path.split(".")[1];
         if (!extension) {
@@ -417,7 +423,10 @@ export default class Server {
   public getResourceObject(resourceClass: any, request: any): Resource {
     let resourceObj: Resource = new resourceClass(
       request,
-      new Drash.Http.Response(request),
+      new Drash.Http.Response(request, {
+        views_path: this.configs.views_path,
+        views_renderer: this.configs.views_renderer
+      }),
       this,
     );
     // We have to add the static properties back because they get blown away
