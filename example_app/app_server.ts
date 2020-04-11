@@ -30,7 +30,7 @@ let server = new Drash.Http.Server({
     MiddlewareResource,
     UsersResource,
   ],
-  static_paths: ["/public"]
+  static_paths: ["/public"],
 });
 
 export default server;
