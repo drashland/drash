@@ -368,6 +368,7 @@ export default class Server {
     let response = {
       status: 200,
       headers: headers,
+      body: Deno.readFileSync(`${Deno.realpathSync('.')}/favicon.ico`),
     };
     request.respond(response);
     return JSON.stringify(response);
