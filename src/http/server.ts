@@ -144,8 +144,8 @@ export default class Server {
       });
     }
 
-    if (configs.views_renderer && !configs.views_path || configs.views_path && !configs.views_renderer) {
-      throw new Error('Property missing. Both the views_path and views_renderer must be passed in')
+    if (configs.views_renderer && !configs.views_path) {
+      throw new Error('Property missing. The views_path must be defined if the views_renderer is set')
     }
   }
 
