@@ -386,6 +386,15 @@ export default class Server {
   public handleHttpRequestForStaticPathAsset(request: any): any {
     try {
       let response = new Drash.Http.Response(request);
+      if (this.configs.pretty_links) {
+        let extension = request.url_path.split(".")[1];
+        if (!extension) {
+          let contents = Deno.readFileSync(this.directory + "/" + request.url_path + "/index.html");
+          if (contents) {
+            return response.sendStatic(null, contents);
+          }
+        }
+      }
       return response.sendStatic(this.directory + "/" + request.url_path);
     } catch (error) {
       return this.handleHttpRequestError(request, this.httpErrorResponse(404));
