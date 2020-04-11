@@ -216,29 +216,18 @@ members.test("MiddlewareResource", async () => {
   await members.assert.equals(await response.text(), '"No token, dude."');
 });
 
-// members.test("FilesResource", async () => {
-//   let response;
+members.test("FilesResource", async () => {
+  let response;
 
-//   const file = new TextDecoder().decode(await Deno.readAll(await Deno.open("./file_1.txt")))
-//   let formData = new FormData()
-//   await formData.append(
-//     "file_1",
-//     file,
-//     "file_1.txt"
-//   );
+  let formData = new FormData();
+  formData.append('file_1', 'John');
 
-//   console.log("file");
-
-//   response = await members.fetch.post("http://localhost:1667/files", {
-//     headers: {
-//       "Content-Type": undefined,
-//       // "Content-Type": "multipart/form-data; boundary=--------------------------434049563556637648550474",
-//       "Content-Length": file.length
-//     },
-//     body: formData
-//   });
-//   members.assert.equals(await response.text(), '"Please specify a user ID."');
-// });
+  response = await fetch("http://localhost:1667/files", {
+    method: "POST",
+    body: formData
+  });
+  members.assert.equals(await response.text(), '"John"');
+});
 
 Deno.runTests().then(() => {
   server.close();
