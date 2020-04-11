@@ -10,7 +10,7 @@ export default class TemplateEngineResource extends Drash.Http.Resource {
       user: {
         name: "Steve Rogers"
       }
-    }).replace("\n", "");
+    });
     return this.response;
   }
 }
