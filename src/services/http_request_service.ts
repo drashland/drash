@@ -2,7 +2,7 @@ import Drash from "../../mod.ts";
 import {
   FormFile,
   MultipartReader,
-  ServerRequest,
+  ServerRequest
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
 import { getCookies, Cookie } from "../../deps.ts";
@@ -296,7 +296,10 @@ export default class HttpRequestService {
     // Parse the body now so that callers don't have to use async-await when
     // trying to get the body at a later time. We're sacrificing performance for
     // convenience here.
-    const pb: Drash.Interfaces.ParsedRequestBody = await this.parseBody(request, options);
+    const pb: Drash.Interfaces.ParsedRequestBody = await this.parseBody(
+      request,
+      options,
+    );
 
     // Attach methods
     const t = this;

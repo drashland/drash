@@ -26,4 +26,3 @@ members.test("HomeResource", async () => {
   response = await members.fetch.patch("http://localhost:1667");
   members.assert.equals(await response.text(), '"Method Not Allowed"');
 });
-

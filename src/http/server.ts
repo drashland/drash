@@ -367,7 +367,7 @@ export default class Server {
     let response = {
       status: 200,
       headers: headers,
-      body: Deno.readFileSync(`${Deno.realpathSync('.')}/favicon.ico`),
+      body: Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`),
     };
     request.respond(response);
     return JSON.stringify(response);
@@ -389,7 +389,9 @@ export default class Server {
       if (this.configs.pretty_links) {
         let extension = request.url_path.split(".")[1];
         if (!extension) {
-          let contents = Deno.readFileSync(this.directory + "/" + request.url_path + "/index.html");
+          let contents = Deno.readFileSync(
+            this.directory + "/" + request.url_path + "/index.html",
+          );
           if (contents) {
             response.headers.set("Content-Type", "text/html");
             return response.sendStatic(null, contents);

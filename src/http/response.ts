@@ -106,7 +106,6 @@ export default class Response {
       case "text/plain":
       default:
         return this.body;
-
     }
 
     this.body = `Response Content-Type "${contentType}" unknown.`;
@@ -174,7 +173,7 @@ export default class Response {
    *
    * @return {status: number, headers: Headers, body: any}
    */
-  public sendStatic(file: null|string, contents: null|Uint8Array = null): {
+  public sendStatic(file: null | string, contents: null | Uint8Array = null): {
     status: number;
     headers: Headers;
     body: any;
