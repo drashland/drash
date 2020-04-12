@@ -10,12 +10,12 @@ members.test("getMimeType(): file is not a URL", () => {
   actual = members.Drash.Services.HttpService.getMimeType(
     "/this/is/the/path.txt",
   );
-  members.assert.equal(actual, "text/plain; charset=utf-8");
+  members.assert.equal(actual, "text/plain");
 
   actual = members.Drash.Services.HttpService.getMimeType(
     "/this/is/the/path.json",
   );
-  members.assert.equal(actual, "application/json; charset=utf-8");
+  members.assert.equal(actual, "application/json");
 
   actual = members.Drash.Services.HttpService.getMimeType(
     "/this/is/the/path.xml",
@@ -34,12 +34,12 @@ members.test("getMimeType(): file is a URL", () => {
   actual = members.Drash.Services.HttpService.getMimeType(
     "https://localhost:1337/this/is/the/path.txt",
   );
-  members.assert.equal(actual, "text/plain; charset=utf-8");
+  members.assert.equal(actual, "text/plain");
 
   actual = members.Drash.Services.HttpService.getMimeType(
     "https://localhost:1337/this/is/the/path.json",
   );
-  members.assert.equal(actual, "application/json; charset=utf-8");
+  members.assert.equal(actual, "application/json");
 
   actual = members.Drash.Services.HttpService.getMimeType(
     "https://localhost:1337/this/is/the/path.xml",

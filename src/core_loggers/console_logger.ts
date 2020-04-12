@@ -1,5 +1,5 @@
+import Drash from "../../mod.ts";
 import Logger from "./logger.ts";
-import { LoggerConfigs } from "../interfaces/logger_configs.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -16,7 +16,7 @@ export default class ConsoleLogger extends Logger {
    * @param any configs
    *     See Drash.Interfaces.LoggerConfigs.
    */
-  constructor(configs: LoggerConfigs) {
+  constructor(configs: Drash.Interfaces.LoggerConfigs) {
     super(configs);
   }
 

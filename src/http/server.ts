@@ -1,7 +1,6 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status, serve } from "../../deps.ts";
 import Resource from "./resource.ts";
-import { ServerConfigs } from "../interfaces/server_configs.ts";
 
 interface RunOptions {
   address?: string | any; // Use any to be more dynamic instead of using Pick
@@ -53,7 +52,7 @@ export default class Server {
    *
    * @property any configs
    */
-  protected configs: ServerConfigs;
+  protected configs: Drash.Interfaces.ServerConfigs;
 
   /**
    * @description
@@ -104,10 +103,10 @@ export default class Server {
    * @description
    *     Construct an object of this class.
    *
-   * @param ServerConfigs configs
+   * @param Drash.Interfaces.ServerConfigs configs
    *     See Drash.Interfaces.ServerConfigs
    */
-  constructor(configs: ServerConfigs) {
+  constructor(configs: Drash.Interfaces.ServerConfigs) {
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -139,7 +138,7 @@ export default class Server {
 
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
-      configs.static_paths.forEach((path) => {
+      configs.static_paths.forEach((path: string) => {
         this.addStaticPath(path);
       });
     }
@@ -360,14 +359,25 @@ export default class Server {
   public handleHttpRequestForFavicon(request: any): string {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
+    let body: any;
+    try {
+      body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`)
+    } catch (error) {
+    }
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logDebug("/favicon.ico requested.");
+      if (!body) {
+        this.logDebug("/favicon.ico was not found.");
+      } else {
+        this.logDebug("/favicon.ico was found.");
+      }
       this.logDebug("All future log messages for /favicon.ico will be muted.");
     }
     let response = {
       status: 200,
       headers: headers,
+      body: body ? body : ""
     };
     request.respond(response);
     return JSON.stringify(response);
@@ -389,8 +399,11 @@ export default class Server {
       if (this.configs.pretty_links) {
         let extension = request.url_path.split(".")[1];
         if (!extension) {
-          let contents = Deno.readFileSync(this.directory + "/" + request.url_path + "/index.html");
+          let contents = Deno.readFileSync(
+            this.directory + "/" + request.url_path + "/index.html",
+          );
           if (contents) {
+            response.headers.set("Content-Type", "text/html");
             return response.sendStatic(null, contents);
           }
         }
@@ -827,6 +840,6 @@ export default class Server {
    * @return void
    */
   protected logDebug(message: string): void {
-    this.logger.debug("[drash] " + message);
+    this.logger.debug("[syslog] " + message);
   }
 }
