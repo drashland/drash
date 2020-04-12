@@ -27,10 +27,11 @@ jobs:
       run: |
         console/install_deno
 
-    # - name: source code unit tests
-    #   run: |
-    #     export PATH=$DENO_INSTALL/bin:$PATH
-    #     console/tests
+    - name: source code unit tests
+      run: |
+        export PATH=$DENO_INSTALL/bin:$PATH
+
+        console/tests
     - name: example app fetch tests
       run: |
         export PATH=$DENO_INSTALL/bin:$PATH
