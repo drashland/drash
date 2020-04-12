@@ -18,8 +18,8 @@ export default class TemplateEngine {
       });
     }
     // Check for partials
-    let partials: any = html.match(/<% include_partial.* %>/g);
-    if (partials) {
+    let partials: any;
+    while (partials = html.match(/<% include_partial.* %>/g)) {
       partials.forEach((m: any, i: number) => {
         let template = m.replace("<% include_partial(\"", "")
           .replace("\") %>", "");
