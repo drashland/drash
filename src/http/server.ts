@@ -364,10 +364,15 @@ export default class Server {
       this.logDebug("/favicon.ico requested.");
       this.logDebug("All future log messages for /favicon.ico will be muted.");
     }
+    let body: any;
+    try {
+      body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`)
+    } catch (error) {
+    }
     let response = {
       status: 200,
       headers: headers,
-      body: Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`),
+      body: body,
     };
     request.respond(response);
     return JSON.stringify(response);

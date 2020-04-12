@@ -9,6 +9,12 @@ import "./home_resource_test.ts";
 import "./middleware_resource_test.ts";
 import "./users_resource_test.ts";
 
+
+members.test("config.pretty_links", async () => {
+  let response = await members.fetch.get("http://localhost:1667/public/pretty");
+  members.assert.equals(await response.text(), "Pretty links!\n");
+});
+
 await Deno.runTests();
 
 server.close();
