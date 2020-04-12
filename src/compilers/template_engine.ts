@@ -17,6 +17,9 @@ export default class TemplateEngine {
         html = html.replace(m, template);
       });
     }
+    // The following code was taken from (and modified):
+    // https://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
+    // Thanks, Krasimir!
     let re: any = /<%(.+?)\%>/g;
     let reExp: any = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
     let result: any;
