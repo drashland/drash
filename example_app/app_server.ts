@@ -13,6 +13,10 @@ let server = new Drash.Http.Server({
   address: "localhost:1447",
   directory: Deno.realpathSync("./"),
   response_output: "application/json",
+  logger: new Drash.CoreLoggers.ConsoleLogger({
+    enabled: true,
+    level: "debug"
+  }),
   middleware: {
     resource_level: [
       Middleware,
@@ -30,7 +34,7 @@ let server = new Drash.Http.Server({
     MiddlewareResource,
     UsersResource,
   ],
-  static_paths: ["/public"]
+  static_paths: ["/public"],
 });
 
 export default server;

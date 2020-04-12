@@ -1,6 +1,5 @@
 import Drash from "../../mod.ts";
 import LogLevels from "../dictionaries/log_levels.ts";
-import { LoggerConfigs } from "../interfaces/logger_configs.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -16,7 +15,7 @@ export default abstract class Logger {
    *
    * @property any configs
    */
-  protected configs: LoggerConfigs;
+  protected configs: Drash.Interfaces.LoggerConfigs;
 
   /**
    * @description
@@ -37,10 +36,10 @@ export default abstract class Logger {
    * @description
    *     Construct an object of this class.
    *
-   * @param LoggerConfigs configs
+   * @param Drash.Interfaces.LoggerConfigs configs
    *     See Drash.Interfaces.LoggerConfigs.
    */
-  constructor(configs: LoggerConfigs) {
+  constructor(configs: Drash.Interfaces.LoggerConfigs) {
     if (configs.test === true) {
       this.test = true;
     }
