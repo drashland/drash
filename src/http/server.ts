@@ -359,15 +359,20 @@ export default class Server {
   public handleHttpRequestForFavicon(request: any): string {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
-    if (!this.trackers.requested_favicon) {
-      this.trackers.requested_favicon = true;
-      this.logDebug("/favicon.ico requested.");
-      this.logDebug("All future log messages for /favicon.ico will be muted.");
-    }
     let body: any;
     try {
       body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`)
     } catch (error) {
+    }
+    if (!this.trackers.requested_favicon) {
+      this.trackers.requested_favicon = true;
+      this.logDebug("/favicon.ico requested.");
+      if (!body) {
+        this.logDebug("/favicon.ico was not found.");
+      } else {
+        this.logDebug("/favicon.ico was found.");
+      }
+      this.logDebug("All future log messages for /favicon.ico will be muted.");
     }
     let response = {
       status: 200,
