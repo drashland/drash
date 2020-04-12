@@ -90,9 +90,13 @@ namespace Drash {
 
   export namespace Interfaces {
     export const LogLevelStructure = interface_log_level_structure;
+    export type LogLevelStructure = interface_log_level_structure;
     export const LoggerConfigs = interface_logger_configs;
+    export type LoggerConfigs = interface_logger_configs;
     export const ParsedRequestBody = interface_parsed_request_body;
+    export type ParsedRequestBody = interface_parsed_request_body;
     export const ServerConfigs = interface_server_configs;
+    export type ServerConfigs = interface_server_configs;
   }
 
   export namespace Services {
