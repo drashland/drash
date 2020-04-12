@@ -72,7 +72,7 @@ import Drash from "../../mod.ts";
  *         you have /public as a static path, then clients can look at things
  *         under your /path/to/your/server/public directory.
  */
-export interface ServerConfigs {
+export default interface ServerConfigs {
   address?: string;
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;

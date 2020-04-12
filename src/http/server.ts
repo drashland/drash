@@ -1,7 +1,6 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status, serve } from "../../deps.ts";
 import Resource from "./resource.ts";
-import { ServerConfigs } from "../interfaces/server_configs.ts";
 
 interface RunOptions {
   address?: string | any; // Use any to be more dynamic instead of using Pick
@@ -53,7 +52,7 @@ export default class Server {
    *
    * @property any configs
    */
-  protected configs: ServerConfigs;
+  protected configs: Drash.Interfaces.ServerConfigs;
 
   /**
    * @description
@@ -104,10 +103,10 @@ export default class Server {
    * @description
    *     Construct an object of this class.
    *
-   * @param ServerConfigs configs
+   * @param Drash.Interfaces.ServerConfigs configs
    *     See Drash.Interfaces.ServerConfigs
    */
-  constructor(configs: ServerConfigs) {
+  constructor(configs: Drash.Interfaces.ServerConfigs) {
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -139,7 +138,7 @@ export default class Server {
 
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
-      configs.static_paths.forEach((path) => {
+      configs.static_paths.forEach((path: string) => {
         this.addStaticPath(path);
       });
     }

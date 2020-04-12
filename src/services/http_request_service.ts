@@ -1,10 +1,10 @@
+import Drash from "../../mod.ts";
 import {
   FormFile,
   MultipartReader,
   ServerRequest,
 } from "../../deps.ts";
 import StringService from "./string_service.ts";
-import { ParsedRequestBody } from "../interfaces/parsed_request_body.ts";
 import { getCookies, Cookie } from "../../deps.ts";
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
@@ -61,7 +61,7 @@ export default class HttpRequestService {
    *     as `{returned_object}.file_number_one`.
    */
   public getRequestBodyFile(
-    parsedBody: ParsedRequestBody,
+    parsedBody: Drash.Interfaces.ParsedRequestBody,
     input: string,
   ): any {
     return parsedBody.data[input];
@@ -77,7 +77,7 @@ export default class HttpRequestService {
    * @return any
    */
   public getRequestBodyParam(
-    parsedBody: ParsedRequestBody,
+    parsedBody: Drash.Interfaces.ParsedRequestBody,
     input: string,
   ): any {
     return parsedBody.data[input];
@@ -296,7 +296,7 @@ export default class HttpRequestService {
     // Parse the body now so that callers don't have to use async-await when
     // trying to get the body at a later time. We're sacrificing performance for
     // convenience here.
-    const pb: ParsedRequestBody = await this.parseBody(request, options);
+    const pb: Drash.Interfaces.ParsedRequestBody = await this.parseBody(request, options);
 
     // Attach methods
     const t = this;
@@ -339,7 +339,7 @@ export default class HttpRequestService {
   public async parseBody(
     request: any,
     options: OptionsConfig = {},
-  ): Promise<ParsedRequestBody> {
+  ): Promise<Drash.Interfaces.ParsedRequestBody> {
     let ret: { content_type: string; data: any } = {
       content_type: "",
       data: undefined,

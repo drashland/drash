@@ -12,7 +12,7 @@
  *
  *         The data passed in the body of the request.
  */
-export interface ParsedRequestBody {
+export default interface ParsedRequestBody {
   content_type: any | undefined;
   data: any | undefined;
 }
