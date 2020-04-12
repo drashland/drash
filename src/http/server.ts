@@ -840,6 +840,6 @@ export default class Server {
    * @return void
    */
   protected logDebug(message: string): void {
-    this.logger.debug("[drash] " + message);
+    this.logger.debug("[syslog] " + message);
   }
 }
