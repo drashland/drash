@@ -5,12 +5,22 @@ export default class TemplateEngine {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
     let html: string = decoder.decode(Deno.readFileSync(template));
-    // console.log(html);
     let match: any;
-    let matchPartial: any;
-    let matches: any = html.match(/<% include_partial.* %>/g);
-    if (matches) {
-      matches.forEach((m: any, i: number) => {
+    // Check if the template extends another template
+    let extended = html.match(/<% extends.* %>/g);
+    if (extended) {
+      extended.forEach((m: any, i: number) => {
+        html = html.replace(m, "");
+        let template = m.replace("<% extends(\"", "")
+          .replace("\") %>", "");
+        template = decoder.decode(Deno.readFileSync(template));
+        html = template.replace("<% yield %>", html);
+      });
+    }
+    // Check for partials
+    let partials: any = html.match(/<% include_partial.* %>/g);
+    if (partials) {
+      partials.forEach((m: any, i: number) => {
         let template = m.replace("<% include_partial(\"", "")
           .replace("\") %>", "");
         template = decoder.decode(Deno.readFileSync(template));
