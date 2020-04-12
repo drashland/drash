@@ -372,10 +372,8 @@ export default class Server {
     let response = {
       status: 200,
       headers: headers,
+      body: body ? body : ""
     };
-    if (body) {
-      response.body = body;
-    }
     request.respond(response);
     return JSON.stringify(response);
   }
