@@ -7,29 +7,49 @@ import Drash from "../../mod.ts";
  * @description
  *     address?: string
  *
- *         The hostname and port that the server will run on. For example,
+ *         The hostname and port that the server will run on. For example, the
+ *         following would tell the server to listen on locahost:1337:
  *
  *             address: "localhost:1337"
+ *
+ *         Not specifying an address will default the server to use the
+ *         following hostname and port:
+ *
+ *             127.0.0.1:8000.
  *
  *     directory?: string
  *
  *         The path to the directory of the server on the filesystem.  This is
  *         used when resolving static paths, so make sure you have this set
- *         correctly if you are serving static paths.
+ *         correctly if you are serving static paths. A quick way to implement
+ *         this could be the following:
+ *
+ *             directory: `${await Deno.realpath('.')}`
  *
  *     logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger
  *
- *         The server's logger.
+ *         The server's logger. For example:
+ *
+ *             logger: new Drash.CoreLoggers.ConsoleLogger({
+ *               enabled: true,
+ *               level: "debug",
+ *               tag_string: "{date} | {level} |",
+ *               tag_string_fns: {
+ *                 date: function() {
+ *                   return new Date().toISOString().replace("T", " ");
+ *                 },
+ *               },
+ *             })
  *
  *     memory_allocation?: {
  *       multipart_form_data?: number
  *     }
- *         How much memory should be allocated to certain parts of the codebase.
+ *         The amount of memory to allocate to certain parts of the codebase.
  *         For example, the multipart reader uses a default of 10MB, but you can
  *         override that default by specifying the following:
  *
  *             memory_allocation: {
- *               multipart_form_data: 128 // Would be translated to 128MB
+ *               multipart_form_data: 128 // This would be translated to 128MB
  *             }
  *
  *     middleware?: any
@@ -37,7 +57,7 @@ import Drash from "../../mod.ts";
  *         The middleware that the server should use. Server-level middleware
  *         should be placed in middleware.server_level. Resource-level
  *         middleware should be placed in middleware.resource_level. For
- *         example,
+ *         example:
  *
  *             middleware: {
  *               resource_level: { ... },
@@ -59,9 +79,9 @@ import Drash from "../../mod.ts";
  *
  *     response_output?: string
  *
- *         The fallback response Content-Type that the server should use. For
- *         example, the following would have the server default to JSON
- *         responses. The response_output MUST be a proper MIME type.
+ *         The fallback response Content-Type that the server should use. The
+ *         response_output MUST be a proper MIME type. For example, the
+ *         following would have the server default to JSON responses:
  *
  *             response_output: "application/json"
  *
