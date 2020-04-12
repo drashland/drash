@@ -5,7 +5,18 @@ export default class TemplateEngine {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
     let html: string = decoder.decode(Deno.readFileSync(template));
+    // console.log(html);
     let match: any;
+    let matchPartial: any;
+    let matches: any = html.match(/<% include_partial.* %>/g);
+    if (matches) {
+      matches.forEach((m: any, i: number) => {
+        let template = m.replace("<% include_partial(\"", "")
+          .replace("\") %>", "");
+        template = decoder.decode(Deno.readFileSync(template));
+        html = html.replace(m, template);
+      });
+    }
     let re: any = /<%(.+?)\%>/g;
     let reExp: any = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
     let result: any;

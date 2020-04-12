@@ -10,11 +10,8 @@
     <div style="max-width: 640px; margin: 50px auto;">
       <h1 class="text-5xl"><% user.name %></h1>
       <h2 class="text-4xl">Skills</h2>
-      <ul>
-        <% for (let index in this.skills) { %>
-        <li><% this.skills[index] %></li>
-        <% } %>
-      </ul>
+      <% include_partial("./skills.html") %>
+      <% include_partial("./footer.html") %>
     </div>
   </body>
 </html>
