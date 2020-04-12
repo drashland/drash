@@ -1,7 +1,10 @@
+const decoder = new TextDecoder();
+
 export default class TemplateEngine {
-  public render(html: string, data: any) {
+  public render(template: string, data: any) {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
+    let html: string = decoder.decode(Deno.readFileSync(template));
     let match: any;
     let re: any = /<%(.+?)\%>/g;
     let reExp: any = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
