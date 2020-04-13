@@ -17,3 +17,5 @@ members.test("ViewResource - HTML Without Data", async () => {
     });
     members.assert.equals(await response.text(), '"<body>\\n    <h1>Hello {{ name }}</h1>\\n</body>"');
 });
+
+// TODO :: Assert a response when `template_engine` = true, and theres a html file using the template engine
