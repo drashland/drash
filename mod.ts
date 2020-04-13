@@ -3,6 +3,9 @@
 // README.md
 // REQUIREMENTS.md
 
+// Compilers
+import template_engine from "./src/compilers/template_engine.ts";
+
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "./src/dictionaries/mime_db.json";
@@ -47,6 +50,11 @@ namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
     export const Exports = util_members;
+  }
+
+  export namespace Compilers {
+    export type TemplateEngine = template_engine;
+    export const TemplateEngine = template_engine;
   }
 
   export namespace Dictionaries {
