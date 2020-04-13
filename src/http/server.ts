@@ -144,7 +144,7 @@ export default class Server {
     }
 
     if (configs.template_engine && !configs.views_path) {
-      throw new Error('Property missing. The views_path must be defined if the views_renderer is set')
+      throw new Error('Property missing. The views_path must be defined if template_engine is true')
     }
   }
 

@@ -1,5 +1,3 @@
-import Drash from "../../mod.ts";
-
 /**
  * @memberof Drash.Interfaces
  * @interface ResponseOptions

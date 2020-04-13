@@ -115,7 +115,6 @@ export default class Response {
     let decoded = decoder.decode(fileContentsRaw);
     if (data) {
       Object.keys(data).forEach((propName: string, index: number) => {
-        console.log(propName, data[propName])
         const pattern = new RegExp("\{\{ " + propName + " \}\}");
         decoded = decoded.replace(pattern, data[propName])
       })
