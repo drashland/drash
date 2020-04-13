@@ -60,7 +60,7 @@ export default class Response {
    *
    * @property any views_renderer
    */
-  private template_engine: boolean = false;
+  private template_engine: boolean | undefined = false;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
@@ -76,10 +76,8 @@ export default class Response {
   constructor(request: any, options: ResponseOptions = {}) {
     this.request = request;
     this.headers = new Headers();
-    if (options.views_renderer) {
-      this.template_engine = options.template_engine;
-      this.views_path = options.views_path; // if there's a views renderer, then there must be a views path
-    }
+    this.template_engine = options.template_engine;
+    this.views_path = options.views_path;
     this.headers.set("Content-Type", request.response_content_type);
   }
 
@@ -89,33 +87,40 @@ export default class Response {
    * @description
    *     Render html files. Can be used with Drash's template engine, basic HTML files
    *     or HTML files with dynamic data, such as: `<p>{{ user.name }}</p>`.
+   *     This method will read a file based on the `views_path` and filename passed in
    *
    * @param any args
    *
    * @example
-   *     const content = await this.response.render('/users/add.html', { name: 'Drash' })
+   *     // if `views_path` is "/public/views", file to read is "/public/views/index.html"
+   *     const content = this.response.render('/users/add.html', { name: 'Drash' })
    *     if (!content) throw new Error(...)
    *     this.response.body = content
    *
    * @return string|boolean
    *     The html content of the view, or false if the `views_path`.
    */
-  // TODO :: Does this method still need to be async? if so remove the async bit from the doc block above, the name below
-  public async render (...args: any): Promise<string|boolean> {
+  public render (...args: any): string|boolean {
     if (!this.views_path) {
       return false
     }
-    args[0] = this.views_path += args[0];
-    if (this.template_engine) {
-      return // TODO :: Call template engine method
+    const filename = this.views_path += args[0];
+    const data = args.length >= 2 ? args[1] : null
+    if (this.template_engine && data) {
+      const engine = new Drash.Compilers.TemplateEngine();
+      return engine.render(filename, data);
     }
+    const fileContentsRaw = Deno.readFileSync(filename);
     const decoder = new TextDecoder();
-    let contents = Deno.readFileSync(args[0])
-    contents = decoder.decode(contents)
-    if (args[1]) { // data has been passed in
-      // TODO :: Do the usual `.replace({{}}) stuff
+    let decoded = decoder.decode(fileContentsRaw);
+    if (data) {
+      Object.keys(data).forEach((propName: string, index: number) => {
+        console.log(propName, data[propName])
+        const pattern = new RegExp("\{\{ " + propName + " \}\}");
+        decoded = decoded.replace(pattern, data[propName])
+      })
     }
-    return contents
+    return decoded
   }
 
   /**
