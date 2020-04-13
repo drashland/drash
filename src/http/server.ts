@@ -403,7 +403,7 @@ export default class Server {
   public handleHttpRequestForStaticPathAsset(request: any): any {
     try {
       let response = new Drash.Http.Response(request, {
-        views_renderer: this.configs.views_renderer,
+        views_path: this.configs.views_path,
         template_engine: this.configs.template_engine
       });
       if (this.configs.pretty_links) {
