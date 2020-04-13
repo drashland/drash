@@ -1,7 +1,6 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
 import { setCookie, delCookie, Cookie } from "../../deps.ts";
-import { ResponseOptions } from "../interfaces/response_options.ts";
 
 /**
  * @memberof Drash.Http
@@ -85,9 +84,9 @@ export default class Response {
 
   /**
    * @description
-   *     Render html files. Can be used with Drash's template engine, basic HTML files
-   *     or HTML files with dynamic data, such as: `<p>{{ user.name }}</p>`.
-   *     This method will read a file based on the `views_path` and filename passed in
+   *     Render html files. Can be used with Drash's template engine or basic
+   *     HTML files. This method will read a file based on the `views_path`
+   *     and filename passed in
    *
    * @param any args
    *
@@ -107,19 +106,13 @@ export default class Response {
     }
     const filename = this.views_path += args[0];
     const data = args.length >= 2 ? args[1] : null
-    if (this.template_engine && data) {
+    if (this.template_engine) {
       const engine = new Drash.Compilers.TemplateEngine();
       return engine.render(filename, data);
     }
     const fileContentsRaw = Deno.readFileSync(filename);
     const decoder = new TextDecoder();
     let decoded = decoder.decode(fileContentsRaw);
-    if (data) {
-      Object.keys(data).forEach((propName: string, index: number) => {
-        const pattern = new RegExp("\{\{ " + propName + " \}\}");
-        decoded = decoded.replace(pattern, data[propName])
-      })
-    }
     return decoded
   }
 
