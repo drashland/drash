@@ -8,13 +8,14 @@ import MiddlewareResource from "./middleware_resource.ts";
 import UsersResource from "./users_resource.ts";
 // Middleware
 import Middleware from "./middleware.ts";
+import TemplateEngineResource from "./template_engine_resource.ts";
 
 let server = new Drash.Http.Server({
   address: "localhost:1447",
   directory: Deno.realpathSync("./"),
   response_output: "application/json",
   logger: new Drash.CoreLoggers.ConsoleLogger({
-    enabled: true,
+    enabled: false,
     level: "debug"
   }),
   middleware: {
@@ -32,6 +33,7 @@ let server = new Drash.Http.Server({
     FilesResource,
     HomeResource,
     MiddlewareResource,
+    TemplateEngineResource,
     UsersResource,
   ],
   static_paths: ["/public"],
