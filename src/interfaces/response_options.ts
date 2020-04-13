@@ -27,6 +27,6 @@ import Drash from "../../mod.ts";
  *             })
  */
 export interface ResponseOptions {
-    views_renderer?: any;
+    views_path?: string;
     template_engine?: boolean
 }
