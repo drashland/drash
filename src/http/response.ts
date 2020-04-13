@@ -73,7 +73,7 @@ export default class Response {
    * @param ResponseOptions options
    *     See Drash.Interfaces.ResponseOptions
    */
-  constructor(request: any, options: ResponseOptions = {}) {
+  constructor(request: any, options: Drash.Interfaces.ResponseOptions = {}) {
     this.request = request;
     this.headers = new Headers();
     this.template_engine = options.template_engine;
