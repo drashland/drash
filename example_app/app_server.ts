@@ -6,6 +6,7 @@ import FilesResource from "./files_resource.ts";
 import HomeResource from "./home_resource.ts";
 import MiddlewareResource from "./middleware_resource.ts";
 import UsersResource from "./users_resource.ts";
+import ViewResource from "./view_resource.ts";
 // Middleware
 import Middleware from "./middleware.ts";
 import TemplateEngineResource from "./template_engine_resource.ts";
@@ -35,8 +36,10 @@ let server = new Drash.Http.Server({
     MiddlewareResource,
     TemplateEngineResource,
     UsersResource,
+    ViewResource,
   ],
   static_paths: ["/public"],
+  views_path: "./public/views",
 });
 
 export default server;

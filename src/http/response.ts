@@ -92,13 +92,14 @@ export default class Response {
    * @param any args
    *
    * @example
-   *     // if `views_path` is "/public/views", file to read is "/public/views/index.html"
+   *     // if `views_path` is "/public/views",
+   *     // file to read is "/public/views/users/add.html"
    *     const content = this.response.render('/users/add.html', { name: 'Drash' })
    *     if (!content) throw new Error(...)
    *     this.response.body = content
    *
    * @return string|boolean
-   *     The html content of the view, or false if the `views_path`.
+   *     The html content of the view, or false if the `views_path` is not set.
    */
   public render (...args: any): string|boolean {
     if (!this.views_path) {
