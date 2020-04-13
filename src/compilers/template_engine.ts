@@ -49,6 +49,9 @@ export default class TemplateEngine {
     add(html.substr(cursor, html.length - cursor));
     code = (code + 'return r.join(""); }').replace(/[\r\t\n]/g, " ");
     try {
+      if (!data) {
+        data = {};
+      }
       result = new Function("obj", code).apply(data, [data]);
     } catch (err) {
       console.error("'" + err.message + "'", " in \n\nCode:\n", code, "\n");
