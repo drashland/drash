@@ -123,5 +123,5 @@ export default interface ServerConfigs {
   response_output?: string;
   static_paths?: string[];
   views_path?: string;
-  views_renderer?: any;
+  template_engine?: boolean;
 }
