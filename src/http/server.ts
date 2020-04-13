@@ -143,7 +143,7 @@ export default class Server {
       });
     }
 
-    if (configs.views_renderer && !configs.views_path) {
+    if (configs.template_engine && !configs.views_path) {
       throw new Error('Property missing. The views_path must be defined if the views_renderer is set')
     }
   }
@@ -325,7 +325,7 @@ export default class Server {
 
     response = new Drash.Http.Response(request, {
       views_path: this.configs.views_path,
-      views_renderer: this.configs.views_renderer
+      template_engine: this.configs.template_engine
     });
     response.status_code = error.code ? error.code : null;
     response.body = error.message
@@ -404,7 +404,7 @@ export default class Server {
     try {
       let response = new Drash.Http.Response(request, {
         views_renderer: this.configs.views_renderer,
-        views_path: this.configs.views_path
+        template_engine: this.configs.template_engine
       });
       if (this.configs.pretty_links) {
         let extension = request.url_path.split(".")[1];
@@ -438,7 +438,7 @@ export default class Server {
       request,
       new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
-        views_renderer: this.configs.views_renderer
+        template_engine: this.configs.template_engine
       }),
       this,
     );
