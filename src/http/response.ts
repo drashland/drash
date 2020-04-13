@@ -1,6 +1,7 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
 import { setCookie, delCookie, Cookie } from "../../deps.ts";
+const decoder = new TextDecoder();
 
 /**
  * @memberof Drash.Http
@@ -100,20 +101,22 @@ export default class Response {
    * @return string|boolean
    *     The html content of the view, or false if the `views_path` is not set.
    */
-  public render (...args: any): string|boolean {
+  public render(...args: any): string | boolean {
     if (!this.views_path) {
-      return false
+      return false;
     }
+
     const filename = this.views_path += args[0];
-    const data = args.length >= 2 ? args[1] : null
+    const data = args.length >= 2 ? args[1] : null;
+
     if (this.template_engine) {
       const engine = new Drash.Compilers.TemplateEngine();
       return engine.render(filename, data);
     }
+
     const fileContentsRaw = Deno.readFileSync(filename);
-    const decoder = new TextDecoder();
     let decoded = decoder.decode(fileContentsRaw);
-    return decoded
+    return decoded;
   }
 
   /**
