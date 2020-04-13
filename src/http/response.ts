@@ -87,7 +87,8 @@ export default class Response {
    * @description
    *     Render html files. Can be used with Drash's template engine or basic
    *     HTML files. This method will read a file based on the `views_path`
-   *     and filename passed in
+   *     and filename passed in. When called, will set the response content
+   *     type to "text/html"
    *
    * @param any args
    *
@@ -107,6 +108,7 @@ export default class Response {
     }
 
     const data = args.length >= 2 ? args[1] : null;
+    this.headers.set("Content-Type", "text/html");
 
     if (this.template_engine) {
       const engine = new Drash.Compilers.TemplateEngine(this.views_path);
