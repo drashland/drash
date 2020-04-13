@@ -4,5 +4,6 @@
   export DRASH_ROOT_DIR=$PWD
   cd example_app
   deno --allow-net --allow-read --allow-write --allow-env app_test.ts
+  deno --allow-net --allow-read --allow-write --allow-env app_two_test.ts
   cd -
 )
