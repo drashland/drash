@@ -60,7 +60,7 @@ export default class Response {
    *
    * @property any views_renderer
    */
-  private renderer: any = null;
+  private template_engine: boolean = false;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
@@ -77,7 +77,7 @@ export default class Response {
     this.request = request;
     this.headers = new Headers();
     if (options.views_renderer) {
-      this.renderer = options.views_renderer;
+      this.template_engine = options.template_engine;
       this.views_path = options.views_path; // if there's a views renderer, then there must be a views path
     }
     this.headers.set("Content-Type", request.response_content_type);
@@ -87,9 +87,8 @@ export default class Response {
 
   /**
    * @description
-   *     Read and return the contents of a .html or dejs view file.
-   *     Can accept data to populate the view with dynamic data.
-   *     Will use the views_path property to find the requested view name
+   *     Render html files. Can be used with Drash's template engine, basic HTML files
+   *     or HTML files with dynamic data, such as: `<p>{{ user.name }}</p>`.
    *
    * @param any args
    *
@@ -99,35 +98,24 @@ export default class Response {
    *     this.response.body = content
    *
    * @return string|boolean
-   *     The html content of the view, or false if the `views_path` or
-   *     `views_renderer` within your server object is not set
+   *     The html content of the view, or false if the `views_path`.
    */
+  // TODO :: Does this method still need to be async? if so remove the async bit from the doc block above, the name below
   public async render (...args: any): Promise<string|boolean> {
-    if (!this.views_path || !this.renderer) {
+    if (!this.views_path) {
       return false
     }
     args[0] = this.views_path += args[0];
-
-    // IF DEJS CANT POPULATE DYANMIC DATA INSIDE A HTML FILE
-    // const fileContentsRaw = Deno.readFileSync(args[0]);
-    // const decoder = new TextDecoder();
-    // let decoded = decoder.decode(fileContentsRaw);
-    // if (args[0].slice(-5) === '.html') {
-    //   Object.keys(args[1]).forEach((propName: string, index: number) => {
-    //     const regex = new RegExp("\{\{ " + propName + " \}\}");
-    //     decoded = decoded.replace(regex, args[index][propName])
-    //   })
-    //   return decoded
-    // }
-    // if (args[0].slice(-4) === '.ejs') {
-    //   if (!this.renderer) {
-    //     throw new Error('No renderer exists. Unable to return a HTML response.')
-    //   }
-    //   const tpl = await this.renderer(decoded, { name: 'world'});
-    //   return tpl
-    // }
-
-    return await this.renderer(...args)
+    if (this.template_engine) {
+      return // TODO :: Call template engine method
+    }
+    const decoder = new TextDecoder();
+    let contents = Deno.readFileSync(args[0])
+    contents = decoder.decode(contents)
+    if (args[1]) { // data has been passed in
+      // TODO :: Do the usual `.replace({{}}) stuff
+    }
+    return contents
   }
 
   /**
