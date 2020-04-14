@@ -1,6 +1,7 @@
 import Drash from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
 import { setCookie, delCookie, Cookie } from "../../deps.ts";
+const decoder = new TextDecoder();
 
 /**
  * @memberof Drash.Http
@@ -44,6 +45,23 @@ export default class Response {
    */
   public status_code: number = Status.OK;
 
+  /**
+   * @description
+   *     A property to hold the path to the users views directory
+   *     from their project root
+   *
+   * @property string views_path
+   */
+  private views_path: string | undefined;
+
+  /**
+   * @description
+   *     The render method extracted from dejs
+   *
+   * @property any views_renderer
+   */
+  private template_engine: boolean | undefined = false;
+
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
   /**
@@ -51,14 +69,57 @@ export default class Response {
    *     Construct an object of this class.
    *
    * @param any request
+   *
+   * @param ResponseOptions options
+   *     See Drash.Interfaces.ResponseOptions
    */
-  constructor(request: any) {
+  constructor(request: any, options: Drash.Interfaces.ResponseOptions = {}) {
     this.request = request;
     this.headers = new Headers();
+    this.template_engine = options.template_engine;
+    this.views_path = options.views_path;
     this.headers.set("Content-Type", request.response_content_type);
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Render html files. Can be used with Drash's template engine or basic
+   *     HTML files. This method will read a file based on the `views_path`
+   *     and filename passed in. When called, will set the response content
+   *     type to "text/html"
+   *
+   * @param any args
+   *
+   * @example
+   *     // if `views_path` is "/public/views",
+   *     // file to read is "/public/views/users/add.html"
+   *     const content = this.response.render('/users/add.html', { name: 'Drash' })
+   *     if (!content) throw new Error(...)
+   *     this.response.body = content
+   *
+   * @return string|boolean
+   *     The html content of the view, or false if the `views_path` is not set.
+   */
+  public render(...args: any): string | boolean {
+    if (!this.views_path) {
+      return false;
+    }
+
+    const data = args.length >= 2 ? args[1] : null;
+    this.headers.set("Content-Type", "text/html");
+
+    if (this.template_engine) {
+      const engine = new Drash.Compilers.TemplateEngine(this.views_path);
+      return engine.render(args[0], data);
+    }
+
+    const filename = this.views_path += args[0];
+    const fileContentsRaw = Deno.readFileSync(filename);
+    let decoded = decoder.decode(fileContentsRaw);
+    return decoded;
+  }
 
   /**
    * @description

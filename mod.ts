@@ -27,6 +27,7 @@ import interface_logger_configs from "./src/interfaces/logger_configs.ts";
 import interface_log_level_structure from "./src/interfaces/log_level_structure.ts";
 import interface_parsed_request_body from "./src/interfaces/parsed_request_body.ts";
 import interface_server_configs from "./src/interfaces/server_configs.ts";
+import interface_response_options from "./src/interfaces/response_options.ts"
 
 // Loggers
 import base_logger from "./src/core_loggers/logger.ts";
@@ -101,6 +102,7 @@ namespace Drash {
     export type LoggerConfigs = interface_logger_configs;
     export type ParsedRequestBody = interface_parsed_request_body;
     export type ServerConfigs = interface_server_configs;
+    export type ResponseOptions = interface_response_options;
   }
 
   export namespace Services {
