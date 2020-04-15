@@ -1,4 +1,4 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
 import { setCookie, delCookie, Cookie } from "../../deps.ts";
 const decoder = new TextDecoder();

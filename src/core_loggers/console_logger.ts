@@ -1,4 +1,5 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
+
 import Logger from "./logger.ts";
 
 /**

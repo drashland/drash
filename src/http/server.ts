@@ -1,4 +1,4 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 import { STATUS_TEXT, Status, serve } from "../../deps.ts";
 import Resource from "./resource.ts";
 

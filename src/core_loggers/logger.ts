@@ -1,4 +1,4 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 import LogLevels from "../dictionaries/log_levels.ts";
 
 /**
