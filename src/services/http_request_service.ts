@@ -51,17 +51,15 @@ export default class HttpRequestService {
    */
   public accepts (request: any, type: string|string[]): boolean|string {
     const acceptHeader = request.headers.get('Accept')
-    const acceptedContentTypes = acceptHeader.split(';')[0];
 
     // for when `type` is a string
     if (typeof type === 'string')
-      return acceptedContentTypes.indexOf(type) >= 0 ? type : false;
+      return acceptHeader.indexOf(type) >= 0 ? type : false;
 
     // for when `type` is an array
-    const matches = type.filter(t => acceptedContentTypes.indexOf(t) >= 0);
+    const matches = type.filter(t => acceptHeader.indexOf(t) >= 0);
     return matches.length ? matches[0] : false // return first match
   }
-
 
   /**
    * @description
