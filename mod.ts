@@ -44,7 +44,7 @@ import * as util_members from "./src/util/members.ts";
 // FILE MARKER: NAMESPACE - DRASH //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Usage: import Drash from "/path/to/drash/mod.ts";
+// Usage: import { Drash } from "/path/to/drash/mod.ts";
 //
 
 export namespace Drash {
