@@ -47,7 +47,7 @@ import * as util_members from "./src/util/members.ts";
 // Usage: import Drash from "/path/to/drash/mod.ts";
 //
 
-namespace Drash {
+export declare namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
     export const Exports = util_members;
@@ -168,5 +168,3 @@ namespace Drash {
     Loggers[name] = logger;
   }
 }
-
-export default Drash;
