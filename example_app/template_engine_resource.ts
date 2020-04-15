@@ -12,7 +12,7 @@ export default class TemplateEngineResource extends Drash.Http.Resource {
         user: {
           name: "Steve Rogers",
         },
-        footer_item_3: "Footer Item 3"
+        footer_item_3: "Footer Item 3",
       },
     );
     return this.response;

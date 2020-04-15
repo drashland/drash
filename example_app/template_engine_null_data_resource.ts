@@ -1,6 +1,7 @@
 import Drash from "../mod.ts";
 
-export default class TemplateEngineNullDataResource extends Drash.Http.Resource {
+export default class TemplateEngineNullDataResource
+  extends Drash.Http.Resource {
   static paths = ["/template-engine-null-data"];
   public GET() {
     this.response.headers.set("Content-Type", "text/html");
