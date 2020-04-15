@@ -20,7 +20,7 @@ let server = new Drash.Http.Server({
   response_output: "application/json",
   logger: new Drash.CoreLoggers.ConsoleLogger({
     enabled: false,
-    level: "debug"
+    level: "debug",
   }),
   middleware: {
     resource_level: [
@@ -41,7 +41,7 @@ let server = new Drash.Http.Server({
     TemplateEngineNullDataResource,
     UsersResource,
     ViewResource,
-    RequestAcceptsResource
+    RequestAcceptsResource,
   ],
   static_paths: ["/public"],
   views_path: "./public/views",

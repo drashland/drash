@@ -7,14 +7,14 @@ import Drash from "../mod.ts";
 import ViewResource from "./view_resource.ts";
 
 const serverTwo = new Drash.Http.Server({
-    address: "localhost:1447",
-    directory: Deno.realpathSync("./"),
-    resources: [
-        ViewResource,
-    ],
-    static_paths: ["/public"],
-    views_path: "./public/views",
-    template_engine: true
+  address: "localhost:1447",
+  directory: Deno.realpathSync("./"),
+  resources: [
+    ViewResource,
+  ],
+  static_paths: ["/public"],
+  views_path: "./public/views",
+  template_engine: true,
 });
 
-export default serverTwo
+export default serverTwo;

@@ -7,15 +7,19 @@ export default class RequestAcceptsResource extends Drash.Http.Resource {
     const typeToRequest = this.request.getUrlQueryParam("typeToCheck");
 
     let matchedType;
-    if (typeToRequest)
+    if (typeToRequest) {
       matchedType = this.request.accepts(typeToRequest);
-    else
+    } else {
       matchedType = this.request.accepts(["text/html", "application/json"]);
+    }
 
-    if (!matchedType)
+    if (!matchedType) {
       this.response.body = JSON.stringify({ success: false });
-    else
-      this.response.body = JSON.stringify({ success: true, message: matchedType });
+    } else {
+      this.response.body = JSON.stringify(
+        { success: true, message: matchedType },
+      );
+    }
 
     return this.response;
   }

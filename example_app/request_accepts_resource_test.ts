@@ -6,21 +6,27 @@ members.test("RequestAcceptsResource", async () => {
 
   // Accepts the correct type the resource will give - tests calling the `accepts` method with a string and finds a match
   typeToCheck = "application/json";
-  response = await members.fetch.get("http://localhost:1667/request-accepts?typeToCheck=" + typeToCheck, {
-    headers: {
-      "Accept": "application/json",
+  response = await members.fetch.get(
+    "http://localhost:1667/request-accepts?typeToCheck=" + typeToCheck,
+    {
+      headers: {
+        "Accept": "application/json",
+      },
     },
-  });
+  );
   json = JSON.parse(await response.json());
   members.assert.equals(json.success, true);
   members.assert.equals(json.message, "application/json");
 
   // Does not accept the type the resource expects - tests calling the `accepts` method with a string with no match
-  response = await members.fetch.get("http://localhost:1667/request-accepts?typeToCheck=" + typeToCheck, {
-    headers: {
-      "Accept": "text/html",
+  response = await members.fetch.get(
+    "http://localhost:1667/request-accepts?typeToCheck=" + typeToCheck,
+    {
+      headers: {
+        "Accept": "text/html",
+      },
     },
-  });
+  );
   json = JSON.parse(await response.json());
   await members.assert.equals(json.success, false);
   members.assert.equals(json.message, undefined);
@@ -44,5 +50,4 @@ members.test("RequestAcceptsResource", async () => {
   json = JSON.parse(await response.json());
   members.assert.equals(json.success, false);
   members.assert.equals(json.message, undefined);
-
 });
