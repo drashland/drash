@@ -59,10 +59,7 @@ export default class HttpRequestService {
 
     // for when `type` is an array
     const matches = type.filter(t => acceptedContentTypes.indexOf(t) >= 0);
-    if (matches[0])
-      return matches[0];
-
-    return false;
+    return matches.length ? matches[0] : false // return first match
   }
 
 
