@@ -1,13 +1,9 @@
 import members from "../../members.ts";
 
-members.test("--------------------------------------------------------", () => {
-  console.log("\n       middleware.ts");
-});
-
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server/resource: missing CSRF token", async () => {
+members.test("middleware_test.ts | server/resource: missing CSRF token", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -34,7 +30,7 @@ members.test("server/resource: missing CSRF token", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server/resource: wrong CSRF token", async () => {
+members.test("middleware_test.ts | server/resource: wrong CSRF token", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -65,7 +61,7 @@ members.test("server/resource: wrong CSRF token", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server/resource: user is not an admin", async () => {
+members.test("middleware_test.ts | server/resource: user is not an admin", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -97,7 +93,7 @@ members.test("server/resource: user is not an admin", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server/resource: pass", async () => {
+members.test("middleware_test.ts | server/resource: pass", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -126,7 +122,7 @@ members.test("server/resource: pass", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server/resource: middleware not found", async () => {
+members.test("middleware_test.ts | server/resource: middleware not found", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -147,7 +143,7 @@ members.test("server/resource: middleware not found", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server before_response: missing header", async () => {
+members.test("middleware_test.ts | server before_response: missing header", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -173,7 +169,7 @@ members.test("server before_response: missing header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server before_response: wrong header", async () => {
+members.test("middleware_test.ts | server before_response: wrong header", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -203,7 +199,7 @@ members.test("server before_response: wrong header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server before_response: pass", async () => {
+members.test("middleware_test.ts | server before_response: pass", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -230,7 +226,7 @@ members.test("server before_response: pass", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server before_request: missing header", async () => {
+members.test("middleware_test.ts | server before_request: missing header", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -256,7 +252,7 @@ members.test("server before_request: missing header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server before_request: wrong header", async () => {
+members.test("middleware_test.ts | server before_request: wrong header", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {
@@ -286,7 +282,7 @@ members.test("server before_request: wrong header", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("server before_request: pass", async () => {
+members.test("middleware_test.ts | server before_request: pass", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     middleware: {

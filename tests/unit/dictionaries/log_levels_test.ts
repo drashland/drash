@@ -1,9 +1,5 @@
 import members from "../../members.ts";
 
-members.test("--------------------------------------------------------", () => {
-  console.log("\n       log_levels.ts");
-});
-
 let expected = {
   all: {
     rank: 7,
@@ -45,6 +41,6 @@ for (let logLevel in expected) {
   actual[logLevel] = members.Drash.Dictionaries.LogLevels.get(logLevel);
 }
 
-members.test("LogLevels", () => {
+members.test("log_levels_test.ts | LogLevels", () => {
   members.assert.equal(actual, expected);
 });

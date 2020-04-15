@@ -1,10 +1,6 @@
 import members from "../../members.ts";
 
-members.test("--------------------------------------------------------", () => {
-  console.log("\n       server.ts");
-});
-
-members.test("handleHttpRequest(): GET", async () => {
+members.test("server_test.ts | handleHttpRequest(): GET", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [HomeResource],
@@ -19,7 +15,7 @@ members.test("handleHttpRequest(): GET", async () => {
   server.close();
 });
 
-members.test("handleHttpRequest(): POST", async () => {
+members.test("server_test.ts | handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [HomeResource],
@@ -67,7 +63,7 @@ members.test(
   },
 );
 
-members.test("handleHttpRequest(): getHeaderParam()", async () => {
+members.test("server_test.ts | handleHttpRequest(): getHeaderParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [GetHeaderParam],
@@ -88,7 +84,7 @@ members.test("handleHttpRequest(): getHeaderParam()", async () => {
   server.close();
 });
 
-members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
+members.test("server_test.ts | handleHttpRequest(): getUrlQueryParam()", async () => {
   let server = new members.MockServer({
     address: "localhost:1557",
     resources: [GetUrlQueryParam],

@@ -1,10 +1,6 @@
 import members from "../../members.ts";
 
-members.test("--------------------------------------------------------", () => {
-  console.log("\n       http_service.ts");
-});
-
-members.test("getMimeType(): file is not a URL", () => {
+members.test("http_service_test.ts | getMimeType(): file is not a URL", () => {
   let actual;
 
   actual = members.Drash.Services.HttpService.getMimeType(
@@ -28,7 +24,7 @@ members.test("getMimeType(): file is not a URL", () => {
   members.assert.equal(actual, "application/pdf");
 });
 
-members.test("getMimeType(): file is a URL", () => {
+members.test("http_service_test.ts | getMimeType(): file is a URL", () => {
   let actual;
 
   actual = members.Drash.Services.HttpService.getMimeType(
