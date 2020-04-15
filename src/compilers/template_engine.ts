@@ -4,7 +4,7 @@ export class TemplateEngine {
 
   /**
    * @description
-   *     A property to hold the base path to the template.
+   *     A property to hold the base path to the template(s).
    *
    * @property string views_path
    */
@@ -16,10 +16,8 @@ export class TemplateEngine {
    * @description
    *     Construct an object of this class.
    *
-   * @param number code
-   *     The HTTP response code associated with this exception.
-   * @param string message
-   *     (optional) The exception message.
+   * @param string viewsPath
+   *     The base path to the template(s).
    */
 
   constructor(viewsPath: string) {
