@@ -2,11 +2,31 @@ const decoder = new TextDecoder();
 
 export default class TemplateEngine {
 
+  /**
+   * @description
+   *     A property to hold the base path to the template.
+   *
+   * @property string views_path
+   */
   public views_path: string = "";
+
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Construct an object of this class.
+   *
+   * @param number code
+   *     The HTTP response code associated with this exception.
+   * @param string message
+   *     (optional) The exception message.
+   */
 
   constructor(viewsPath: string) {
     this.views_path = viewsPath;
   }
+
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   /**
    * Render a template file and replace all template variables with the
