@@ -1,10 +1,6 @@
 import members from "../members.ts";
 
-members.test("--------------------------------------------------------", () => {
-  console.log("\n       mod.ts");
-});
-
-members.test("Drash.addMember(): class", () => {
+members.test("mod_test.ts | Drash.addMember(): class", () => {
   class SomeCoolService {
     public coolify() {
       return "OK!";
@@ -16,7 +12,7 @@ members.test("Drash.addMember(): class", () => {
   members.assert.equal(service.coolify(), expected);
 });
 
-members.test("Drash.addMember(): function", () => {
+members.test("mod_test.ts | Drash.addMember(): function", () => {
   let SomeCoolServiceFunction = function (arg: string): string {
     return `You specified the following arg: ${arg}`;
   };
@@ -29,7 +25,7 @@ members.test("Drash.addMember(): function", () => {
   members.assert.equal(actual, expected);
 });
 
-members.test("Drash.addMember(): object", () => {
+members.test("mod_test.ts | Drash.addMember(): object", () => {
   let SomeCoolDictionary = {
     "Item 1": {
       definition: "This is Item 1. It is cool.",
@@ -51,7 +47,7 @@ members.test("Drash.addMember(): object", () => {
   members.assert.equal(actual, expected);
 });
 
-members.test("Drash.addMember(): types", () => {
+members.test("mod_test.ts | Drash.addMember(): types", () => {
   let data: any = {
     myBooleanTrue: true,
     myBooleanFalse: false,
@@ -70,7 +66,7 @@ members.test("Drash.addMember(): types", () => {
   }
 });
 
-members.test("Drash.addLogger(): class", () => {
+members.test("mod_test.ts | Drash.addLogger(): class", () => {
   const testLogger = new members.Drash.CoreLoggers.FileLogger({
     enabled: true,
     level: "debug",
@@ -82,7 +78,7 @@ members.test("Drash.addLogger(): class", () => {
   members.assert.equal(members.Drash.Loggers, expected);
 });
 
-members.test("Drash.addLogger(): names must be unique", () => {
+members.test("mod_test.ts | Drash.addLogger(): names must be unique", () => {
   const testLogger = new members.Drash.CoreLoggers.FileLogger({
     enabled: true,
     level: "debug",

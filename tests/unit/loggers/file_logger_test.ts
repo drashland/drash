@@ -1,9 +1,5 @@
 import members from "../../members.ts";
 
-members.test("--------------------------------------------------------", () => {
-  console.log("\n       file_logger.ts");
-});
-
 const ANIMALS = {
   "#1235": "tiger",
 };

@@ -1,4 +1,4 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 
 /**
  * @memberof Drash.Http
@@ -8,7 +8,7 @@ import Drash from "../../mod.ts";
  *     This is the base resource class for all resources. All resource classes
  *     must be derived from this class.
  */
-export default class Resource {
+export class Resource {
   /**
    * @description
    *     A property to hold the middleware this resource uses.

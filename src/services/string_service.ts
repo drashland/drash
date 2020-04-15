@@ -6,7 +6,7 @@
  *     This class helps perform string-related processes like string
  *     transformations, reading, and replacing.
  */
-export default class StringService {
+export class StringService {
   /**
    * @description
    *     Parse a URL query string in it's raw form.

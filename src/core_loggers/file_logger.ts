@@ -1,5 +1,5 @@
-import Drash from "../../mod.ts";
-import Logger from "./logger.ts";
+import { Drash } from "../../mod.ts";
+import { Logger } from "./logger.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -8,7 +8,7 @@ import Logger from "./logger.ts";
  * @description
  *     This logger allows you to log messages to a file.
  */
-export default class FileLogger extends Logger {
+export class FileLogger extends Logger {
   /**
    * @description
    *     The file this logger will write log messages to.

@@ -1,6 +1,5 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 import { STATUS_TEXT, Status, serve } from "../../deps.ts";
-import Resource from "./resource.ts";
 
 interface RunOptions {
   address?: string | any; // Use any to be more dynamic instead of using Pick
@@ -16,7 +15,7 @@ interface RunOptions {
  *     appropriate responses, and handling any errors that bubble up within the
  *     request-resource-response lifecycle.
  */
-export default class Server {
+export class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
   protected trackers = {
@@ -433,8 +432,8 @@ export default class Server {
    *     Returns an instance of the resourceClass passed in, and setting the
    *     `paths` and `middleware` properties
    */
-  public getResourceObject(resourceClass: any, request: any): Resource {
-    let resourceObj: Resource = new resourceClass(
+  public getResourceObject(resourceClass: any, request: any): Drash.Http.Resource {
+    let resourceObj: Drash.Http.Resource = new resourceClass(
       request,
       new Drash.Http.Response(request, {
         views_path: this.configs.views_path,

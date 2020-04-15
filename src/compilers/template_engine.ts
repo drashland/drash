@@ -1,14 +1,41 @@
 const decoder = new TextDecoder();
 
-export default class TemplateEngine {
+export class TemplateEngine {
 
+  /**
+   * @description
+   *     A property to hold the base path to the template(s).
+   *
+   * @property string views_path
+   */
   public views_path: string = "";
+
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Construct an object of this class.
+   *
+   * @param string viewsPath
+   *     The base path to the template(s).
+   */
 
   constructor(viewsPath: string) {
     this.views_path = viewsPath;
   }
 
-  public render(template: string, data: any) {
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  /**
+   * Render a template file and replace all template variables with the
+   * specified data.
+   *
+   * @param string template
+   *     The template to render.
+   * @param any data
+   *     The data that should be rendered with the template.
+   */
+  public render(template: string, data: any): string {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
     let html: string = decoder.decode(Deno.readFileSync(this.views_path + template));

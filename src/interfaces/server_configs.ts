@@ -1,4 +1,4 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 
 /**
  * @memberof Drash.Interfaces
@@ -110,7 +110,7 @@ import Drash from "../../mod.ts";
  *               template_engine: true
  *             })
  */
-export default interface ServerConfigs {
+export interface ServerConfigs {
   address?: string;
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;

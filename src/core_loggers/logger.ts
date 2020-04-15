@@ -1,5 +1,4 @@
-import Drash from "../../mod.ts";
-import LogLevels from "../dictionaries/log_levels.ts";
+import { Drash } from "../../mod.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -8,7 +7,7 @@ import LogLevels from "../dictionaries/log_levels.ts";
  * @description
  *     This Logger is the base logger class for all logger classes.
  */
-export default abstract class Logger {
+export abstract class Logger {
   /**
    * @description
    *     See Drash.Interfaces.LoggerConfigs
@@ -49,7 +48,7 @@ export default abstract class Logger {
     }
 
     configs.level = configs.level ? configs.level.toLowerCase() : "debug";
-    if (!LogLevels.get(configs.level)) {
+    if (!Drash.Dictionaries.LogLevels.get(configs.level)) {
       configs.level = "debug";
     }
 
@@ -88,7 +87,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public debug(message: string): string | void {
-    return this.sendToWriteMethod(LogLevels.get("debug"), message);
+    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("debug"), message);
   }
 
   /**
@@ -99,7 +98,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public error(message: string): string | void {
-    return this.sendToWriteMethod(LogLevels.get("error"), message);
+    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("error"), message);
   }
 
   /**
@@ -110,7 +109,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public fatal(message: string): string | void {
-    return this.sendToWriteMethod(LogLevels.get("fatal"), message);
+    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("fatal"), message);
   }
 
   /**
@@ -121,7 +120,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public info(message: string): string | void {
-    return this.sendToWriteMethod(LogLevels.get("info"), message);
+    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("info"), message);
   }
 
   /**
@@ -132,7 +131,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public trace(message: string): string | void {
-    return this.sendToWriteMethod(LogLevels.get("trace"), message);
+    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("trace"), message);
   }
 
   /**
@@ -143,7 +142,7 @@ export default abstract class Logger {
    *     The log message.
    */
   public warn(message: string): string | void {
-    return this.sendToWriteMethod(LogLevels.get("warn"), message);
+    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("warn"), message);
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
@@ -212,7 +211,7 @@ export default abstract class Logger {
     // wants to output FATAL log messages (has a rank of 400), then any log
     // message with a rank greater than that (ERROR, WARN, INFO, DEBUG, TRACE)
     // will NOT be processed.
-    const level = LogLevels.get(key);
+    const level = Drash.Dictionaries.LogLevels.get(key);
     if (!level) {
       return;
     }

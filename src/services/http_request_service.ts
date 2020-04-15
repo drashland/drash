@@ -1,10 +1,9 @@
-import Drash from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 import {
   FormFile,
   MultipartReader,
   ServerRequest
 } from "../../deps.ts";
-import StringService from "./string_service.ts";
 import { getCookies, Cookie } from "../../deps.ts";
 type Reader = Deno.Reader;
 const decoder = new TextDecoder();
@@ -23,7 +22,7 @@ interface OptionsConfig {
  * @description
  *     This class helps perform HTTP request related processes.
  */
-export default class HttpRequestService {
+export class HttpRequestService {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC //////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -218,7 +217,7 @@ export default class HttpRequestService {
       if (!queryParamsString) {
         queryParamsString = "";
       }
-      queryParams = StringService.parseQueryParamsString(queryParamsString);
+      queryParams = Drash.Services.StringService.parseQueryParamsString(queryParamsString);
     } catch (error) {}
 
     return queryParams;
@@ -454,7 +453,7 @@ export default class HttpRequestService {
       body = body.split("?")[1];
     }
     body = body.replace(/\"/g, "");
-    return StringService.parseQueryParamsString(body);
+    return Drash.Services.StringService.parseQueryParamsString(body);
   }
 
   /**
