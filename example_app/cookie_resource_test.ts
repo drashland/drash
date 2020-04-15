@@ -26,8 +26,6 @@ members.test("CookieResource", async () => {
   await members.assert.equals(await response.text(), '"Drash"');
 
   // Remove - Dependent on the above post request saving a cookie
-  // TODO(crookse)
-  // [ ] Fix the following: "Error: Test case is leaking async ops."
   response = await members.fetch.delete("http://localhost:1667/cookie");
   cookies = response.headers.get('set-cookie') || '';
   cookieVal = cookies.split(';')[0].split('=')[1];
