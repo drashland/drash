@@ -1,6 +1,6 @@
 const decoder = new TextDecoder();
 
-export default class TemplateEngine {
+export class TemplateEngine {
 
   /**
    * @description

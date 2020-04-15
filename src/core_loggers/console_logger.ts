@@ -1,6 +1,5 @@
 import { Drash } from "../../mod.ts";
-
-import Logger from "./logger.ts";
+import { Logger } from "./logger.ts";
 
 /**
  * @memberof Drash.CoreLoggers
@@ -9,7 +8,7 @@ import Logger from "./logger.ts";
  * @description
  *     This logger allows you to log messages to the console.
  */
-export default class ConsoleLogger extends Logger {
+export class ConsoleLogger extends Logger {
   /**
    * @description
    *     Construct an object of this class.

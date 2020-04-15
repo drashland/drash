@@ -50,7 +50,7 @@
  *         silence the console logger from outputting to the console so you can
  *         test without actually logging to the console.
  */
-export default interface LoggerConfigs {
+export interface LoggerConfigs {
   enabled: boolean;
   file?: string;
   level?: string;

@@ -13,7 +13,7 @@
  *         Drash.Dictionaries.LogLevels.LogLevel enum member to see the ranking
  *         structure of the log levels.
  */
-export default interface LogLevelStructure {
+export interface LogLevelStructure {
   name: string;
   rank: number;
 }

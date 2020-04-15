@@ -4,39 +4,40 @@
 // REQUIREMENTS.md
 
 // Compilers
-import template_engine from "./src/compilers/template_engine.ts";
+import { TemplateEngine as template_engine } from "./src/compilers/template_engine.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "./src/dictionaries/mime_db.json";
 
 // Exceptions
-import http_exception from "./src/exceptions/http_exception.ts";
-import http_middleware_exception from "./src/exceptions/http_middleware_exception.ts";
-import http_response_exception from "./src/exceptions/http_response_exception.ts";
-import name_collision_exception from "./src/exceptions/name_collision_exception.ts";
+import { HttpException as http_exception } from "./src/exceptions/http_exception.ts";
+import { HttpMiddlewareException as http_middleware_exception } from "./src/exceptions/http_middleware_exception.ts";
+import { HttpResponseException as http_response_exception } from "./src/exceptions/http_response_exception.ts";
+import { NameCollisionException as name_collision_exception } from "./src/exceptions/name_collision_exception.ts";
 
 // Http
-import middleware from "./src/http/middleware.ts";
-import resource from "./src/http/resource.ts";
-import response from "./src/http/response.ts";
-import server from "./src/http/server.ts";
+import { Middleware as middleware } from "./src/http/middleware.ts";
+import { Resource as resource } from "./src/http/resource.ts";
+import { Response as response } from "./src/http/response.ts";
+import { Server as server } from "./src/http/server.ts";
 
 // Interfaces
-import interface_logger_configs from "./src/interfaces/logger_configs.ts";
-import interface_log_level_structure from "./src/interfaces/log_level_structure.ts";
-import interface_parsed_request_body from "./src/interfaces/parsed_request_body.ts";
-import interface_server_configs from "./src/interfaces/server_configs.ts";
-import interface_response_options from "./src/interfaces/response_options.ts"
+import { LoggerConfigs as interface_logger_configs } from "./src/interfaces/logger_configs.ts";
+import { LogLevelStructure as interface_log_level_structure } from "./src/interfaces/log_level_structure.ts";
+import { ParsedRequestBody as interface_parsed_request_body } from "./src/interfaces/parsed_request_body.ts";
+import { ServerConfigs as interface_server_configs } from "./src/interfaces/server_configs.ts";
+import { ResponseOptions as interface_response_options } from "./src/interfaces/response_options.ts"
 
 // Loggers
-import base_logger from "./src/core_loggers/logger.ts";
-import console_logger from "./src/core_loggers/console_logger.ts";
-import file_logger from "./src/core_loggers/file_logger.ts";
+import { Logger as base_logger } from "./src/core_loggers/logger.ts";
+import { ConsoleLogger as console_logger } from "./src/core_loggers/console_logger.ts";
+import { FileLogger as file_logger } from "./src/core_loggers/file_logger.ts";
 
 // Services
-import http_service from "./src/services/http_service.ts";
-import http_request_service from "./src/services/http_request_service.ts";
+import { HttpService as http_service } from "./src/services/http_service.ts";
+import { HttpRequestService as http_request_service } from "./src/services/http_request_service.ts";
+import { StringService as string_service } from "./src/services/string_service.ts";
 
 import * as util_members from "./src/util/members.ts";
 
@@ -110,6 +111,8 @@ export namespace Drash {
     export const HttpService = new http_service();
     export type HttpRequestService = http_request_service;
     export const HttpRequestService = new http_request_service();
+    export type StringService = string_service;
+    export const StringService = string_service;
   }
 
   /**

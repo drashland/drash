@@ -1,5 +1,5 @@
 import members from "../members.ts";
-import Server from "../../src/http/server.ts";
+import { Server } from "../../src/http/server.ts";
 
 members.test("minimal server_test.ts | handleHttpRequest(): GET", async () => {
   let server = new Server({

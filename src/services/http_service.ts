@@ -10,7 +10,7 @@ import {
  * @description
  *     This class helps perform HTTP-related processes.
  */
-export default class HttpService {
+export class HttpService {
   /**
    * @description
    *     Get a MIME type for a file based on its extension.

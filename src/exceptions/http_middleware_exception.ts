@@ -8,7 +8,7 @@
  *     comes when you want to check which exception was thrown via
  *     exception.constructor.name.
  */
-export default class HttpMiddlewareException extends Error {
+export class HttpMiddlewareException extends Error {
   /**
    * @description
    *     A property to hold the HTTP response code associated with this

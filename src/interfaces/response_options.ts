@@ -24,7 +24,7 @@
  *               template_engine: true
  *             })
  */
-export default interface ResponseOptions {
+export interface ResponseOptions {
     views_path?: string;
     template_engine?: boolean
 }

@@ -10,7 +10,7 @@ const decoder = new TextDecoder();
  * @description
  *     Response handles sending a response to the client making the request.
  */
-export default class Response {
+export class Response {
   /**
    * @description
    *     A property to hold the body of this response.

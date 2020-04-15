@@ -7,7 +7,7 @@ import { Drash } from "../../mod.ts";
  * @description
  *     This is the base middleware class for all middleware classes.
  */
-export default abstract class Middleware {
+export abstract class Middleware {
   /**
    * @description
    *     A property to hold the name of this middleware class. This property is

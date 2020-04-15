@@ -36,5 +36,3 @@ export const LogLevels = new Map<string, Drash.Interfaces.LogLevelStructure>([
   ["trace", { name: "Trace", rank: LogLevel.Trace }],
   ["all", { name: "All", rank: LogLevel.All }],
 ]);
-
-export default LogLevels;
