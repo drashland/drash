@@ -38,7 +38,7 @@ members.test("server_test.ts | handleHttpRequest(): POST", async () => {
 });
 
 members.test(
-  "handleHttpRequest(): getPathParam() for :id and {id}",
+  "server_test.ts | handleHttpRequest(): getPathParam() for :id and {id}",
   async () => {
     let server = new members.MockServer({
       address: "localhost:1557",
@@ -102,7 +102,7 @@ members.test("server_test.ts | handleHttpRequest(): getUrlQueryParam()", async (
 });
 
 members.test(
-  "handleHttpRequest(): response.redirect()",
+  "server_test.ts | handleHttpRequest(): response.redirect()",
   async () => {
     let server = new members.MockServer({
       address: "localhost:1557",
