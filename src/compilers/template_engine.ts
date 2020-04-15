@@ -8,7 +8,16 @@ export default class TemplateEngine {
     this.views_path = viewsPath;
   }
 
-  public render(template: string, data: any) {
+  /**
+   * Render a template file and replace all template variables with the
+   * specified data.
+   *
+   * @param string template
+   *     The template to render.
+   * @param any data
+   *     The data that should be rendered with the template.
+   */
+  public render(template: string, data: any): string {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
     let html: string = decoder.decode(Deno.readFileSync(this.views_path + template));
