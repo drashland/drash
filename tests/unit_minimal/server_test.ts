@@ -39,7 +39,7 @@ members.test("minimal server_test.ts | handleHttpRequest(): POST", async () => {
 });
 
 members.test(
-  "handleHttpRequest(): getPathParam() for :id and {id}",
+  "minimal server_test.ts | handleHttpRequest(): getPathParam() for :id and {id}",
   async () => {
     let server = new Server({
       address: "localhost:1557",
