@@ -152,8 +152,8 @@ export class HttpRequestService {
    *
    *     There are three ways to get this value: (1) the request's headers by
    *     setting `Response-Content-Type: "type"`, (2) the request's URL query
-   *     params by setting `?accept=type`, and the request's body
-   *     by setting `{accept: "type"}`.
+   *     params by setting `?response_content_type=type`, and the request's body
+   *     by setting `{response_content_type: "type"}`.
    *
    *     The request's body takes precedence over all other settings.
    *
@@ -186,16 +186,16 @@ export class HttpRequestService {
       : contentType;
 
     // Check the request's URL query params to see if
-    // ?accept={content-type} has been specified
-    contentType = request.url_query_params.accept
-      ? request.url_query_params.accept
+    // ?response_content_type={content-type} has been specified
+    contentType = request.url_query_params.response_content_type
+      ? request.url_query_params.response_content_type
       : contentType;
 
     // Check the request's body to see if
-    // {accept: {content-type}} has been specified
+    // {response_content_type: {content-type}} has been specified
     contentType =
-      request.parsed_body && request.parsed_body.accept
-        ? request.parsed_body.accept
+      request.parsed_body && request.parsed_body.response_content_type
+        ? request.parsed_body.response_content_type
         : contentType;
 
     if (!contentType) {
@@ -320,7 +320,7 @@ export class HttpRequestService {
     // Attach properties
     request.url_path = this.getUrlPath(request);
     request.url_query_params = this.getUrlQueryParams(request);
-    request.accept = this.getResponseContentType(
+    request.response_content_type = this.getResponseContentType(
       request,
       contentType,
     );
