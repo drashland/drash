@@ -21,7 +21,7 @@ import { Middleware as middleware } from "./src/http/middleware.ts";
 import { Resource as resource } from "./src/http/resource.ts";
 import { Response as response } from "./src/http/response.ts";
 import { Server as server } from "./src/http/server.ts";
-import { middlewareTest } from "./src/http/new-middleware.ts"
+import { Middleware } from "./src/decorators/middleware.ts"
 
 // Interfaces
 import { LoggerConfigs as interface_logger_configs } from "./src/interfaces/logger_configs.ts";
@@ -175,5 +175,5 @@ namespace Drash {
 
 export  {
   Drash,
-  middlewareTest
+  Middleware
 };
