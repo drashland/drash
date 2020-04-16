@@ -96,7 +96,7 @@ export class HttpRequestService {
     parsedBody: Drash.Interfaces.ParsedRequestBody,
     input: string,
   ): any {
-    return parsedBody.data[input];
+    return parsedBody.data.value(input);
   }
 
   /**
@@ -523,7 +523,7 @@ export class HttpRequestService {
     body: Reader,
     boundary: string,
     maxMemory: number,
-  ): Promise<{ [key: string]: string | FormFile | null }> {
+  ): Promise<any> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -532,7 +532,9 @@ export class HttpRequestService {
       maxMemory *= 1024 * 1024;
     }
     const mr = await new MultipartReader(body, boundary);
-    return await mr.readForm(maxMemory);
+    const ret = await mr.readForm(maxMemory);
+    // console.log(ret);
+    return ret;
   }
 
   /**
