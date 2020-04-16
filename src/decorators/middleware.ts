@@ -41,17 +41,16 @@ let middlewareDecorators: IMiddlewareDecorator[] = [];
  *     @middleware(['auth', 'logout']) // says 'run the auth then logout middleware'
  *
  */
-function middleware (middlewareToRun: string|string[]) {
+function Middleware (middlewareToRun: string|string[]) {
     return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
         // Useful data
         // console.log({
         //     middlewareToRun, // eg could be 'auth' if we want a route with the middleware of authorisation
-        //     target, // unsure
+        //     class: target.constructor, // the class
         //     methodName, // the method the decorator was used with
-        //     descriptor, // holds a few key props, see below
+        //     descriptor, // holds a few key props
         //     className: target.constructor.name, // the name of the class that holds the method we added the decorator to
-        //     possibleClassObject: target.constructor, // untested, possibly the actual class object
-        //     methodWithDecorator: descriptor.value, // the actual method we could call
+        //     methodWithDecorator: descriptor.value, // the actual function that can be called
         // })
         if (typeof middlewareToRun === 'string') middlewareToRun = [middlewareToRun]
         middlewareToRun.forEach(middlewareName => {
@@ -66,23 +65,21 @@ function middleware (middlewareToRun: string|string[]) {
     }
 }
 
-function getMiddlewares (resourceName: string, methodName: string) {
+function getMiddlewareDecorators (resourceName: string, methodName: string): IMiddlewareDecorator[] {
     let foundMiddlewareDecorators: IMiddlewareDecorator[] = []
-    middlewareDecorators.forEach(middleware => {
-        console.log('looping through the middlewares')
-        console.log(middleware)
+    middlewareDecorators.forEach(decorator => {
         if (
-            middleware.resourceName === resourceName
+            decorator.resourceName === resourceName
             &&
-            middleware.resourceMethodNameThatIsUsingTheDecorator === methodName.toUpperCase()
+            decorator.resourceMethodNameThatIsUsingTheDecorator === methodName.toUpperCase()
         ) {
-            foundMiddlewareDecorators.push(middleware)
+            foundMiddlewareDecorators.push(decorator)
         }
     })
     return foundMiddlewareDecorators
 }
 
 export {
-    middleware,
-    getMiddlewares
+    Middleware,
+    getMiddlewareDecorators
 }
