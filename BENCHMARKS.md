@@ -3,9 +3,9 @@
 
 ### Drash vs. Express
 
-_Uses DigitalOcean Ubuntu 18.04.3 (LTS) x64, 2 vPCUs, 4GB Memory / 25GB SSD ($40/mo) Droplet_
+___Configuration: DigitalOcean Droplet ($40/mo), Ubuntu 18.04.3 (LTS) x64, 2 vPCUs, 4GB Memory / 25GB SSD___
 
-Express
+__Express__
 
 ```
 $ autocannon -c 1024 -t30 drash.io
@@ -31,7 +31,7 @@ Req/Bytes counts sampled once per second.
 2 errors (0 timeouts)
 ```
 
-Drash
+__Drash__
 
 ```
 $ autocannon -c 1024 -t30 drash.io
@@ -56,9 +56,9 @@ Req/Bytes counts sampled once per second.
 28k requests in 10.2s, 5.62 MB read
 ```
 
-_Uses MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD_
+___Configuration: MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD___
 
-Express
+__Express__
 
 ```
 $ autocannon -c40 -t30 localhost:1447
@@ -83,7 +83,7 @@ Req/Bytes counts sampled once per second.
 170k requests in 10.05s, 36.8 MB read
 ```
 
-Drash
+__Drash__
 
 ```
 $ autocannon -c40 -t30 localhost:1447
