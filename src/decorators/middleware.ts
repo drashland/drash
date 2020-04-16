@@ -21,7 +21,7 @@
 // THEN ON  REQUEST, USE THE RESOURCE NAME AND METHOD NEEDED TO SEARCH THRU THE MIDDLEWARES AND CALL THE REQUIRED MIDDLEWARE
 // METHOD (THAT METHOD WPULD NEED TO BE ADDED EG callMethodByName(methodName)
 
-interface IMiddleware {
+interface IMiddlewareDecorator {
     resource: any,
     resourceName: string,
     middlewareNameToRun: string,
@@ -29,7 +29,7 @@ interface IMiddleware {
     resourceMethodToRun: Function
 }
 
-let middlewares: IMiddleware[] = [];
+let middlewareDecorators: IMiddlewareDecorator[] = [];
 
 /**
  * @description
@@ -41,7 +41,7 @@ let middlewares: IMiddleware[] = [];
  *     @middleware(['auth', 'logout']) // says 'run the auth then logout middleware'
  *
  */
-function middlewareTest (middlewareToRun: string|string[]) {
+function middleware (middlewareToRun: string|string[]) {
     return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
         // Useful data
         // console.log({
@@ -55,7 +55,7 @@ function middlewareTest (middlewareToRun: string|string[]) {
         // })
         if (typeof middlewareToRun === 'string') middlewareToRun = [middlewareToRun]
         middlewareToRun.forEach(middlewareName => {
-            middlewares.push({
+            middlewareDecorators.push({
                 resource: target.constructor,
                 resourceName: target.constructor.name,
                 middlewareNameToRun: middlewareName,
@@ -67,8 +67,8 @@ function middlewareTest (middlewareToRun: string|string[]) {
 }
 
 function getMiddlewares (resourceName: string, methodName: string) {
-    let foundMiddlewares: IMiddleware[] = []
-    middlewares.forEach(middleware => {
+    let foundMiddlewareDecorators: IMiddlewareDecorator[] = []
+    middlewareDecorators.forEach(middleware => {
         console.log('looping through the middlewares')
         console.log(middleware)
         if (
@@ -76,10 +76,13 @@ function getMiddlewares (resourceName: string, methodName: string) {
             &&
             middleware.resourceMethodNameThatIsUsingTheDecorator === methodName.toUpperCase()
         ) {
-            foundMiddlewares.push(middleware)
+            foundMiddlewareDecorators.push(middleware)
         }
     })
-    return foundMiddlewares
+    return foundMiddlewareDecorators
 }
 
-export {middlewareTest, getMiddlewares}
+export {
+    middleware,
+    getMiddlewares
+}
