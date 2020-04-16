@@ -21,6 +21,7 @@ import { Middleware as middleware } from "./src/http/middleware.ts";
 import { Resource as resource } from "./src/http/resource.ts";
 import { Response as response } from "./src/http/response.ts";
 import { Server as server } from "./src/http/server.ts";
+import { middlewareTest } from "./src/http/new-middleware.ts"
 
 // Interfaces
 import { LoggerConfigs as interface_logger_configs } from "./src/interfaces/logger_configs.ts";
@@ -48,7 +49,7 @@ import * as util_members from "./src/util/members.ts";
 // Usage: import { Drash } from "/path/to/drash/mod.ts";
 //
 
-export namespace Drash {
+namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
     export const Exports = util_members;
@@ -172,4 +173,7 @@ export namespace Drash {
   }
 }
 
-export default Drash;
+export  {
+  Drash,
+  middlewareTest
+};
