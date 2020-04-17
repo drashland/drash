@@ -1,14 +1,28 @@
+# Benchmarks
 
-## Benchmarks
+The results below are the top-performing results out of three benchmark runs. Each benchmark was run against the "Hello World!" application of all frameworks listed.
+
+## Table of Contents
+
+* Drash vs. Express
+* Drash vs. Oak
+* Drash vs. Pogo
+
+## Results
 
 ### Drash vs. Express
 
-___Configuration: DigitalOcean Droplet ($40/mo), Ubuntu 18.04.3 (LTS) x64, 2 vPCUs, 4GB Memory / 25GB SSD___
+__Configuration:__ DigitalOcean Droplet ($40/mo), Ubuntu 18.04.3 (LTS) x64, 2 vPCUs, 4GB Memory / 25GB SSD
+
+__Command used:__
+
+```
+autocannon -c 1024 -t30 drash.io
+```
 
 __Express__
 
 ```
-$ autocannon -c 1024 -t30 drash.io
 Running 10s test @ http://drash.io
 1024 connections
 
@@ -34,7 +48,6 @@ Req/Bytes counts sampled once per second.
 __Drash__
 
 ```
-$ autocannon -c 1024 -t30 drash.io
 Running 10s test @ http://drash.io
 1024 connections
 
@@ -56,12 +69,17 @@ Req/Bytes counts sampled once per second.
 28k requests in 10.2s, 5.62 MB read
 ```
 
-___Configuration: MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD___
+__Configuration:__ MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD
+
+__Command used:__
+
+```
+autocannon -c40 -t30 localhost:1447
+```
 
 __Express__
 
 ```
-$ autocannon -c40 -t30 localhost:1447
 Running 10s test @ http://localhost:1447
 40 connections
 
@@ -86,7 +104,6 @@ Req/Bytes counts sampled once per second.
 __Drash__
 
 ```
-$ autocannon -c40 -t30 localhost:1447
 Running 10s test @ http://localhost:1447
 40 connections
 
@@ -106,4 +123,62 @@ Running 10s test @ http://localhost:1447
 Req/Bytes counts sampled once per second.
 
 235k requests in 10.06s, 17.8 MB read
+```
+
+### Drash vs. Oak
+
+__Configuration:__ MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD; autocannon
+
+__Command used:__
+
+```
+autocannon -c40 -t30 localhost:1447
+```
+
+__Oak__
+
+```
+Running 10s test @ http://localhost:1447
+40 connections
+
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬──────────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max      │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼──────────┤
+│ Latency │ 2 ms │ 2 ms │ 3 ms  │ 4 ms │ 2.08 ms │ 0.54 ms │ 35.29 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴──────────┘
+┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+│ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev   │ Min     │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ Req/Sec   │ 15847   │ 15847   │ 16799   │ 17119   │ 16686   │ 450.97  │ 15841   │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ Bytes/Sec │ 1.46 MB │ 1.46 MB │ 1.55 MB │ 1.57 MB │ 1.54 MB │ 41.6 kB │ 1.46 MB │
+└───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+
+Req/Bytes counts sampled once per second.
+
+167k requests in 10.06s, 15.4 MB read
+```
+
+__Drash__
+
+```
+Running 10s test @ http://localhost:1447
+40 connections
+
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬─────────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max     │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼─────────┤
+│ Latency │ 1 ms │ 1 ms │ 2 ms  │ 3 ms │ 1.11 ms │ 0.48 ms │ 33.9 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴─────────┘
+┌───────────┬─────────┬─────────┬────────┬─────────┬─────────┬─────────┬─────────┐
+│ Stat      │ 1%      │ 2.5%    │ 50%    │ 97.5%   │ Avg     │ Stdev   │ Min     │
+├───────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┼─────────┤
+│ Req/Sec   │ 23375   │ 23375   │ 25007  │ 25279   │ 24897.6 │ 544.77  │ 23372   │
+├───────────┼─────────┼─────────┼────────┼─────────┼─────────┼─────────┼─────────┤
+│ Bytes/Sec │ 1.78 MB │ 1.78 MB │ 1.9 MB │ 1.92 MB │ 1.89 MB │ 41.5 kB │ 1.78 MB │
+└───────────┴─────────┴─────────┴────────┴─────────┴─────────┴─────────┴─────────┘
+
+Req/Bytes counts sampled once per second.
+
+249k requests in 10.06s, 18.9 MB read
 ```
