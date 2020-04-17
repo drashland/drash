@@ -3,7 +3,7 @@
  *  `template_engine` compared to server one
  */
 
-import Drash from "../mod.ts";
+import { Drash } from "../mod.ts";
 import ViewResource from "./view_resource.ts";
 
 const serverTwo = new Drash.Http.Server({

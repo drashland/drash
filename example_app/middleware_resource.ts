@@ -1,13 +1,11 @@
-import { Drash } from "../mod.ts";
+import { Drash, Middleware } from "../mod.ts";
 
 export default class MiddlewareResource extends Drash.Http.Resource {
-  static paths = ["/middleware"];
-  static middleware = {
-    before_request: [
-      "Middleware",
-    ],
-  };
 
+  static paths = ["/middleware"];
+
+  @Middleware("Middleware")
+  // @ts-ignore
   public GET() {
     this.response.body = "GET request received!";
     return this.response;

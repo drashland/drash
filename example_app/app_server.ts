@@ -24,9 +24,11 @@ let server = new Drash.Http.Server({
     level: "debug",
   }),
   middleware: {
-    resource_level: [
-      Middleware,
-    ],
+    resource_level: {
+      after_request: [
+        Middleware,
+      ]
+    }
   },
   memory_allocation: {
     multipart_form_data: 128,
