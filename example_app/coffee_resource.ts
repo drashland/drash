@@ -1,4 +1,4 @@
-import Drash from "../mod.ts";
+import { Drash } from "../mod.ts";
 
 export default class CoffeeResource extends Drash.Http.Resource {
   static paths = ["/coffee", "/coffee/:id"];

@@ -1,4 +1,4 @@
-import Drash from "../mod.ts";
+import { Drash } from "../mod.ts";
 // Resources
 import CoffeeResource from "./coffee_resource.ts";
 import CookieResource from "./cookie_resource.ts";
