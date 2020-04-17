@@ -2,7 +2,7 @@
   <img height="200" src="https://drash.land/public/assets/img/drash.svg" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
-<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>.</p>
+<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a> with zero dependencies.</p>
 <p align="center">
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
@@ -23,7 +23,7 @@
 ```typescript
 // File: app.ts
 
-import { Drash } from "https://deno.land/x/drash@v0.39.5/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v0.41.0/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -100,13 +100,13 @@ The [`example_app`](https://github.com/drashland/deno-drash/tree/master/example_
 1. Install deno.
 
 ```
-curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.39.0
+curl -fsSL https://deno.land/x/install/install.sh | sh -s v0.41.0
 ```
 
 2. Run the Drash application using `deno`.
 
 ```
-deno --allow-net --allow-env https://deno.land/x/drash@v0.39.5/example_app/app.ts
+deno --allow-net --allow-env https://deno.land/x/drash@v0.41.0/example_app/app.ts
 ```
 
 2. Make the following request: `GET /`.
