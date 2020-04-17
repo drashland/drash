@@ -8,9 +8,7 @@ The results below are the top-performing results out of three benchmark runs. Ea
 * Drash vs. Oak
 * Drash vs. Pogo
 
-## Results
-
-### Drash vs. Express
+## Drash vs. Express
 
 __Configuration:__ DigitalOcean Droplet ($40/mo), Ubuntu 18.04.3 (LTS) x64, 2 vPCUs, 4GB Memory / 25GB SSD
 
@@ -125,7 +123,7 @@ Req/Bytes counts sampled once per second.
 235k requests in 10.06s, 17.8 MB read
 ```
 
-### Drash vs. Oak
+## Drash vs. Oak
 
 __Configuration:__ MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD; autocannon
 
@@ -181,4 +179,63 @@ Running 10s test @ http://localhost:1447
 Req/Bytes counts sampled once per second.
 
 249k requests in 10.06s, 18.9 MB read
+```
+
+
+## Drash vs. Pogo
+
+__Configuration:__ MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD; autocannon
+
+__Command used:__
+
+```
+autocannon -c40 -t30 localhost:1447
+```
+
+__Pogo__
+
+```
+Running 10s test @ http://localhost:1447
+40 connections
+
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬──────────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max      │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼──────────┤
+│ Latency │ 1 ms │ 1 ms │ 5 ms  │ 5 ms │ 1.23 ms │ 1.05 ms │ 32.29 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴──────────┘
+┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+│ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev   │ Min     │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ Req/Sec   │ 20543   │ 20543   │ 21967   │ 22303   │ 21844.8 │ 477.75  │ 20539   │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ Bytes/Sec │ 1.89 MB │ 1.89 MB │ 2.02 MB │ 2.05 MB │ 2.01 MB │ 43.8 kB │ 1.89 MB │
+└───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+
+Req/Bytes counts sampled once per second.
+
+218k requests in 10.06s, 20.1 MB read
+```
+
+__Drash__
+
+```
+Running 10s test @ http://localhost:1447
+40 connections
+
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬──────────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max      │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼──────────┤
+│ Latency │ 1 ms │ 1 ms │ 2 ms  │ 3 ms │ 1.11 ms │ 0.52 ms │ 41.16 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴──────────┘
+┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+│ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev   │ Min     │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ Req/Sec   │ 23119   │ 23119   │ 24847   │ 25135   │ 24721.6 │ 548.61  │ 23110   │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ Bytes/Sec │ 1.76 MB │ 1.76 MB │ 1.89 MB │ 1.91 MB │ 1.88 MB │ 41.7 kB │ 1.76 MB │
+└───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+
+Req/Bytes counts sampled once per second.
+
+247k requests in 10.06s, 18.8 MB read
 ```
