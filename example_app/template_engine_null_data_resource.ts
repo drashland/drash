@@ -1,4 +1,4 @@
-import Drash from "../mod.ts";
+import { Drash } from "../mod.ts";
 
 export default class TemplateEngineNullDataResource
   extends Drash.Http.Resource {
