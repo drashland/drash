@@ -461,6 +461,9 @@ export class Server {
    *     request object and passes it to
    *     `Drash.Http.Server.handleHttpRequest()`.
    *
+   * @param HTTPOptions options
+   *     The HTTPOptions interface from https://deno.land/std/http/server.ts.
+   *
    * @return Promise<void>
    *     This method just listens for requests at the hostname you provide in the
    *     configs.
@@ -494,6 +497,9 @@ export class Server {
    *     HTTPS Server. This method takes each HTTP request and creates a new and
    *     more workable request object and passes it to
    *     `Drash.Http.Server.handleHttpRequest()`.
+   *
+   * @param HTTPSOptions options
+   *     The HTTPSOptions interface from https://deno.land/std/http/server.ts.
    *
    * @return Promise<void>
    *     This method just listens for requests at the hostname you provide in
