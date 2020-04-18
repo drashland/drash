@@ -6,6 +6,9 @@
 // Compilers
 import { TemplateEngine as template_engine } from "./src/compilers/template_engine.ts";
 
+// Decorators
+export { MiddlewareFunction, MiddlewareType as MiddlewareInterface, MiddlewareHandler } from "./src/decorators/middleware.ts";
+
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "./src/dictionaries/mime_db.json";
