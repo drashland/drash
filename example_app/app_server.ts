@@ -16,7 +16,6 @@ import ViewResource from "./view_resource.ts";
 import Middleware from "./middleware.ts";
 
 let server = new Drash.Http.Server({
-  address: "localhost:1447",
   directory: Deno.realpathSync("./"),
   response_output: "application/json",
   logger: new Drash.CoreLoggers.ConsoleLogger({

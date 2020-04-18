@@ -41,13 +41,6 @@ import { StringService as BaseStringService } from "./src/services/string_servic
 
 import * as util_members from "./src/util/members.ts";
 
-////////////////////////////////////////////////////////////////////////////////
-// FILE MARKER: NAMESPACE - DRASH //////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-//
-// Usage: import { Drash } from "/path/to/drash/mod.ts";
-//
-
 export namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
