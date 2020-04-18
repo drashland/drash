@@ -3,11 +3,13 @@ import { Server } from "../../src/http/server.ts";
 
 members.test("minimal server_test.ts | handleHttpRequest(): GET", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [HomeResource],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
 
   let response = await members.fetch.get("http://localhost:1557");
 
@@ -18,11 +20,13 @@ members.test("minimal server_test.ts | handleHttpRequest(): GET", async () => {
 
 members.test("minimal server_test.ts | handleHttpRequest(): POST", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [HomeResource],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
 
   const response = await members.fetch.post("http://localhost:1557", {
     headers: {
@@ -42,12 +46,14 @@ members.test(
   "minimal server_test.ts | handleHttpRequest(): getPathParam() for :id and {id}",
   async () => {
     let server = new Server({
-      address: "localhost:1557",
       resources: [NotesResource, UsersResource],
     });
 
-    server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
     let response;
 
     response = await members.fetch.get("http://localhost:1557/users/1");
@@ -66,12 +72,14 @@ members.test(
 
 members.test("minimal server_test.ts | handleHttpRequest(): getHeaderParam()", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [GetHeaderParam],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
   let response = await members.fetch.get("http://localhost:1557", {
     headers: {
       id: 12345,
@@ -87,12 +95,14 @@ members.test("minimal server_test.ts | handleHttpRequest(): getHeaderParam()", a
 
 members.test("minimal server_test.ts | handleHttpRequest(): getUrlQueryParam()", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [GetUrlQueryParam],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
   let response = await members.fetch.get("http://localhost:1557?id=123459");
 
   members.assert.responseJsonEquals(await response.text(), {

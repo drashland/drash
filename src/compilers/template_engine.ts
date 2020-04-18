@@ -1,7 +1,6 @@
 const decoder = new TextDecoder();
 
 export class TemplateEngine {
-
   /**
    * @description
    *     A property to hold the base path to the template(s).
@@ -38,16 +37,20 @@ export class TemplateEngine {
   public render(template: string, data: any): string {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
-    let html: string = decoder.decode(Deno.readFileSync(this.views_path + template));
+    let html: string = decoder.decode(
+      Deno.readFileSync(this.views_path + template),
+    );
     let match: any;
     // Check if the template extends another template
     let extended = html.match(/<% extends.* %>/g);
     if (extended) {
       extended.forEach((m: any, i: number) => {
         html = html.replace(m, "");
-        let template = m.replace("<% extends(\"", "")
-          .replace("\") %>", "");
-        template = decoder.decode(Deno.readFileSync(this.views_path + template));
+        let template = m.replace('<% extends("', "")
+          .replace('") %>', "");
+        template = decoder.decode(
+          Deno.readFileSync(this.views_path + template),
+        );
         html = template.replace("<% yield %>", html);
       });
     }
@@ -55,9 +58,11 @@ export class TemplateEngine {
     let partials: any;
     while (partials = html.match(/<% include_partial.* %>/g)) {
       partials.forEach((m: any, i: number) => {
-        let template = m.replace("<% include_partial(\"", "")
-          .replace("\") %>", "");
-        template = decoder.decode(Deno.readFileSync(this.views_path + template));
+        let template = m.replace('<% include_partial("', "")
+          .replace('") %>', "");
+        template = decoder.decode(
+          Deno.readFileSync(this.views_path + template),
+        );
         html = html.replace(m, template);
       });
     }
