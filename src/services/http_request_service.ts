@@ -2,7 +2,7 @@ import { Drash } from "../../mod.ts";
 import {
   FormFile,
   MultipartReader,
-  ServerRequest
+  ServerRequest,
 } from "../../deps.ts";
 import { getCookies, Cookie } from "../../deps.ts";
 type Reader = Deno.Reader;
@@ -48,16 +48,17 @@ export class HttpRequestService {
    *     False if the request doesn't accept any of the passed in types,
    *     or the content type that was matches
    */
-  public accepts (request: any, type: string|string[]): boolean|string {
-    const acceptHeader = request.headers.get('Accept')
+  public accepts(request: any, type: string | string[]): boolean | string {
+    const acceptHeader = request.headers.get("Accept");
 
     // for when `type` is a string
-    if (typeof type === 'string')
+    if (typeof type === "string") {
       return acceptHeader.indexOf(type) >= 0 ? type : false;
+    }
 
     // for when `type` is an array
-    const matches = type.filter(t => acceptHeader.indexOf(t) >= 0);
-    return matches.length ? matches[0] : false // return first match
+    const matches = type.filter((t) => acceptHeader.indexOf(t) >= 0);
+    return matches.length ? matches[0] : false; // return first match
   }
 
   /**
@@ -250,7 +251,9 @@ export class HttpRequestService {
       if (!queryParamsString) {
         queryParamsString = "";
       }
-      queryParams = Drash.Services.StringService.parseQueryParamsString(queryParamsString);
+      queryParams = Drash.Services.StringService.parseQueryParamsString(
+        queryParamsString,
+      );
     } catch (error) {}
 
     return queryParams;
@@ -355,9 +358,11 @@ export class HttpRequestService {
     request.getCookie = function getCookie(name: string) {
       return t.getCookie(request, name);
     };
-    request.accepts = function accepts(type: string|string[]): boolean|string {
-      return t.accepts(request, type)
-    }
+    request.accepts = function accepts(
+      type: string | string[],
+    ): boolean | string {
+      return t.accepts(request, type);
+    };
 
     return request;
   }

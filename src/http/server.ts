@@ -144,7 +144,9 @@ export class Server {
     }
 
     if (configs.template_engine && !configs.views_path) {
-      throw new Error('Property missing. The views_path must be defined if template_engine is true')
+      throw new Error(
+        "Property missing. The views_path must be defined if template_engine is true",
+      );
     }
   }
 
@@ -325,7 +327,7 @@ export class Server {
 
     response = new Drash.Http.Response(request, {
       views_path: this.configs.views_path,
-      template_engine: this.configs.template_engine
+      template_engine: this.configs.template_engine,
     });
     response.status_code = error.code ? error.code : null;
     response.body = error.message
@@ -368,7 +370,7 @@ export class Server {
     headers.set("Content-Type", "image/x-icon");
     let body: any;
     try {
-      body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`)
+      body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
     } catch (error) {
     }
     if (!this.trackers.requested_favicon) {
@@ -384,7 +386,7 @@ export class Server {
     let response = {
       status: 200,
       headers: headers,
-      body: body ? body : ""
+      body: body ? body : "",
     };
     request.respond(response);
     return JSON.stringify(response);
@@ -404,7 +406,7 @@ export class Server {
     try {
       let response = new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine
+        template_engine: this.configs.template_engine,
       });
       if (this.configs.pretty_links) {
         let extension = request.url_path.split(".")[1];
@@ -433,12 +435,15 @@ export class Server {
    *     Returns an instance of the resourceClass passed in, and setting the
    *     `paths` and `middleware` properties
    */
-  public getResourceObject(resourceClass: any, request: any): Drash.Http.Resource {
+  public getResourceObject(
+    resourceClass: any,
+    request: any,
+  ): Drash.Http.Resource {
     let resourceObj: Drash.Http.Resource = new resourceClass(
       request,
       new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine
+        template_engine: this.configs.template_engine,
       }),
       this,
     );
@@ -469,7 +474,9 @@ export class Server {
     }
     this.hostname = options.hostname;
     if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno HTTP server started at ${options.hostname}:${options.port}.\n`);
+      console.log(
+        `\nDeno HTTP server started at ${options.hostname}:${options.port}.\n`,
+      );
     }
     this.deno_server = serve(options);
     for await (const request of this.deno_server) {
@@ -481,6 +488,17 @@ export class Server {
     }
   }
 
+  /**
+   * @description
+   *     Run the Deno server at the hostname specified in the configs as an
+   *     HTTPS Server. This method takes each HTTP request and creates a new and
+   *     more workable request object and passes it to
+   *     `Drash.Http.Server.handleHttpRequest()`.
+   *
+   * @return Promise<void>
+   *     This method just listens for requests at the hostname you provide in
+   *     the configs.
+   */
   public async runTLS(options: HTTPSOptions): Promise<void> {
     if (!options.hostname) {
       options.hostname = this.hostname;
@@ -490,7 +508,9 @@ export class Server {
     }
     this.hostname = options.hostname;
     if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno HTTPS server started at ${options.hostname}:${options.port}.\n`);
+      console.log(
+        `\nDeno HTTPS server started at ${options.hostname}:${options.port}.\n`,
+      );
     }
     this.deno_server = serveTLS(options);
     for await (const request of this.deno_server) {

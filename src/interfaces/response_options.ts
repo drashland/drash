@@ -25,6 +25,6 @@
  *             })
  */
 export interface ResponseOptions {
-    views_path?: string;
-    template_engine?: boolean
+  views_path?: string;
+  template_engine?: boolean;
 }
