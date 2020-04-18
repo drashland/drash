@@ -1,6 +1,9 @@
 import members from "../tests/members.ts";
 import server from "./app_server.ts";
-server.run({ address: "localhost:1667" });
+server.run({
+  hostname: "localhost",
+  port: 1667
+});
 
 import "./coffee_resource_test.ts";
 import "./cookie_resource_test.ts";

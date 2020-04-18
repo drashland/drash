@@ -1,9 +1,12 @@
 import { Drash } from "../../mod.ts";
-import { STATUS_TEXT, Status, serve } from "../../deps.ts";
-
-interface RunOptions {
-  address?: string | any; // Use any to be more dynamic instead of using Pick
-}
+import {
+  HTTPOptions,
+  HTTPSOptions,
+  STATUS_TEXT,
+  Status,
+  serve,
+  serveTLS,
+} from "../../deps.ts";
 
 /**
  * @memberof Drash.Http
@@ -27,13 +30,15 @@ export class Server {
    *     A property to hold the Deno server. This property is set in
    *     this.run() like so:
    *
-   *         this.deno_server = serve(this.configs.address);
+   *         this.deno_server = serve(HTTPOptions);
    *
    *     serve() is imported from https://deno.land/x/http/server.ts.
    *
    * @property any deno_server
    */
   public deno_server: any;
+
+  public hostname: string = "localhost";
 
   /**
    * @description
@@ -114,10 +119,6 @@ export class Server {
       this.logger = configs.logger;
     }
 
-    if (!configs.address) {
-      configs.address = "127.0.0.1:8000";
-    }
-
     this.configs = configs;
 
     if (configs.hasOwnProperty("middleware")) {
@@ -168,7 +169,7 @@ export class Server {
     let options: any = {
       default_response_content_type: this.configs.response_output,
       headers: {
-        base_url: this.configs.address,
+        base_url: this.hostname,
       },
       memory_allocation: {
         multipart_form_data: 10,
@@ -450,23 +451,48 @@ export class Server {
 
   /**
    * @description
-   *     Run the Deno server at the address specified in the configs. This
+   *     Run the Deno server at the hostname specified in the configs. This
    *     method takes each HTTP request and creates a new and more workable
    *     request object and passes it to
    *     `Drash.Http.Server.handleHttpRequest()`.
    *
    * @return Promise<void>
-   *     This method just listens for requests at the address you provide in the
+   *     This method just listens for requests at the hostname you provide in the
    *     configs.
    */
-  public async run(options?: RunOptions): Promise<void> {
-    let address = options && options.address
-      ? options.address
-      : this.configs.address;
-    if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno server started at ${address}.\n`);
+  public async run(options: HTTPOptions): Promise<void> {
+    if (!options.hostname) {
+      options.hostname = this.hostname;
     }
-    this.deno_server = serve(address);
+    if (!options.port) {
+      options.port = 1447;
+    }
+    this.hostname = options.hostname;
+    if (Deno.env().DRASH_PROCESS != "test") {
+      console.log(`\nDeno HTTP server started at ${options.hostname}:${options.port}.\n`);
+    }
+    this.deno_server = serve(options);
+    for await (const request of this.deno_server) {
+      try {
+        this.handleHttpRequest(request);
+      } catch (error) {
+        this.handleHttpRequestError(request, this.httpErrorResponse(500));
+      }
+    }
+  }
+
+  public async runTLS(options: HTTPSOptions): Promise<void> {
+    if (!options.hostname) {
+      options.hostname = this.hostname;
+    }
+    if (!options.port) {
+      options.port = 1447;
+    }
+    this.hostname = options.hostname;
+    if (Deno.env().DRASH_PROCESS != "test") {
+      console.log(`\nDeno HTTPS server started at ${options.hostname}:${options.port}.\n`);
+    }
+    this.deno_server = serveTLS(options);
     for await (const request of this.deno_server) {
       try {
         this.handleHttpRequest(request);
@@ -482,7 +508,7 @@ export class Server {
    */
   public close(): void {
     if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno server at ${this.configs.address} stopped.\n`);
+      console.log(`\nDeno server stopped.\n`);
     }
     this.deno_server.close();
   }

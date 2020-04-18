@@ -7,7 +7,6 @@ import Drash from "../mod.ts";
 import ViewResource from "./view_resource.ts";
 
 const serverTwo = new Drash.Http.Server({
-  address: "localhost:1447",
   directory: Deno.realpathSync("./"),
   resources: [
     ViewResource,
