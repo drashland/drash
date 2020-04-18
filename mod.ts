@@ -4,7 +4,7 @@
 // REQUIREMENTS.md
 
 // Compilers
-import { TemplateEngine as template_engine } from "./src/compilers/template_engine.ts";
+import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
@@ -55,8 +55,7 @@ export namespace Drash {
   }
 
   export namespace Compilers {
-    export type TemplateEngine = template_engine;
-    export const TemplateEngine = template_engine;
+    export class TemplateEngine extends BaseTemplateEngine { }
   }
 
   export namespace Dictionaries {
