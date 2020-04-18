@@ -89,3 +89,34 @@ export abstract class Middleware {
    */
   abstract run(): any | void;
 }
+
+export type middlewareToRun = {
+  before_request?: any[];
+  after_request?: any[];
+};
+export function runMiddleware(obj: middlewareToRun) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    const originalMethod = descriptor.value;
+    descriptor.value = function (...args: any[]) {
+      const { request, server, response } = Object.getOwnPropertyDescriptors(
+        this,
+      );
+      if (obj.before_request != null) {
+        for (const fn of obj.before_request) {
+          fn(request.value, server.value, response.value);
+        }
+      }
+      const result = originalMethod.apply(this, args);
+      if (obj.after_request != null) {
+        for (const fn of obj.after_request) {
+          fn(request.value, server.value, response.value);
+        }
+      }
+      return result;
+    };
+  };
+}
