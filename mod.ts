@@ -164,5 +164,3 @@ export namespace Drash {
     Loggers[name] = logger;
   }
 }
-
-export default Drash;
