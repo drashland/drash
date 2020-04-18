@@ -2,11 +2,13 @@ import members from "../../members.ts";
 
 members.test("server_test.ts | handleHttpRequest(): GET", async () => {
   let server = new members.MockServer({
-    address: "localhost:1557",
     resources: [HomeResource],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
 
   let response = await members.fetch.get("http://localhost:1557");
 
@@ -17,11 +19,13 @@ members.test("server_test.ts | handleHttpRequest(): GET", async () => {
 
 members.test("server_test.ts | handleHttpRequest(): POST", async () => {
   let server = new members.MockServer({
-    address: "localhost:1557",
     resources: [HomeResource],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
 
   const response = await members.fetch.post("http://localhost:1557", {
     headers: {
@@ -41,11 +45,13 @@ members.test(
   "server_test.ts | handleHttpRequest(): getPathParam() for :id and {id}",
   async () => {
     let server = new members.MockServer({
-      address: "localhost:1557",
       resources: [NotesResource, UsersResource],
     });
 
-    server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
 
     let response;
 
@@ -65,12 +71,14 @@ members.test(
 
 members.test("server_test.ts | handleHttpRequest(): getHeaderParam()", async () => {
   let server = new members.MockServer({
-    address: "localhost:1557",
     resources: [GetHeaderParam],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
   let response = await members.fetch.get("http://localhost:1557", {
     headers: {
       id: 12345,
@@ -86,12 +94,14 @@ members.test("server_test.ts | handleHttpRequest(): getHeaderParam()", async () 
 
 members.test("server_test.ts | handleHttpRequest(): getUrlQueryParam()", async () => {
   let server = new members.MockServer({
-    address: "localhost:1557",
     resources: [GetUrlQueryParam],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1557
+  });
   let response = await members.fetch.get("http://localhost:1557?id=123459");
 
   members.assert.responseJsonEquals(await response.text(), {
@@ -105,12 +115,14 @@ members.test(
   "server_test.ts | handleHttpRequest(): response.redirect()",
   async () => {
     let server = new members.MockServer({
-      address: "localhost:1557",
       resources: [NotesResource],
     });
 
-    server.run();
 
+    server.run({
+      hostname: "localhost",
+      port: 1557
+    });
     let response;
 
     response = await members.fetch.get("http://localhost:1557/notes/123");

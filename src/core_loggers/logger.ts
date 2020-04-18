@@ -87,7 +87,10 @@ export abstract class Logger {
    *     The log message.
    */
   public debug(message: string): string | void {
-    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("debug"), message);
+    return this.sendToWriteMethod(
+      Drash.Dictionaries.LogLevels.get("debug"),
+      message,
+    );
   }
 
   /**
@@ -98,7 +101,10 @@ export abstract class Logger {
    *     The log message.
    */
   public error(message: string): string | void {
-    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("error"), message);
+    return this.sendToWriteMethod(
+      Drash.Dictionaries.LogLevels.get("error"),
+      message,
+    );
   }
 
   /**
@@ -109,7 +115,10 @@ export abstract class Logger {
    *     The log message.
    */
   public fatal(message: string): string | void {
-    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("fatal"), message);
+    return this.sendToWriteMethod(
+      Drash.Dictionaries.LogLevels.get("fatal"),
+      message,
+    );
   }
 
   /**
@@ -120,7 +129,10 @@ export abstract class Logger {
    *     The log message.
    */
   public info(message: string): string | void {
-    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("info"), message);
+    return this.sendToWriteMethod(
+      Drash.Dictionaries.LogLevels.get("info"),
+      message,
+    );
   }
 
   /**
@@ -131,7 +143,10 @@ export abstract class Logger {
    *     The log message.
    */
   public trace(message: string): string | void {
-    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("trace"), message);
+    return this.sendToWriteMethod(
+      Drash.Dictionaries.LogLevels.get("trace"),
+      message,
+    );
   }
 
   /**
@@ -142,7 +157,10 @@ export abstract class Logger {
    *     The log message.
    */
   public warn(message: string): string | void {
-    return this.sendToWriteMethod(Drash.Dictionaries.LogLevels.get("warn"), message);
+    return this.sendToWriteMethod(
+      Drash.Dictionaries.LogLevels.get("warn"),
+      message,
+    );
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
