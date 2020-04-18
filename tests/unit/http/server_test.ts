@@ -6,7 +6,10 @@ members.test("server_test.ts | handleHttpRequest(): GET", async () => {
     resources: [HomeResource],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557");
 
@@ -21,7 +24,10 @@ members.test("server_test.ts | handleHttpRequest(): POST", async () => {
     resources: [HomeResource],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   const response = await members.fetch.post("http://localhost:1557", {
     headers: {
@@ -45,7 +51,10 @@ members.test(
       resources: [NotesResource, UsersResource],
     });
 
-    server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
     let response;
 
@@ -69,8 +78,11 @@ members.test("server_test.ts | handleHttpRequest(): getHeaderParam()", async () 
     resources: [GetHeaderParam],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
   let response = await members.fetch.get("http://localhost:1557", {
     headers: {
       id: 12345,
@@ -90,8 +102,11 @@ members.test("server_test.ts | handleHttpRequest(): getUrlQueryParam()", async (
     resources: [GetUrlQueryParam],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
   let response = await members.fetch.get("http://localhost:1557?id=123459");
 
   members.assert.responseJsonEquals(await response.text(), {
@@ -109,8 +124,11 @@ members.test(
       resources: [NotesResource],
     });
 
-    server.run();
 
+    server.run({
+      hostname: "localhost",
+      port: 1447
+    });
     let response;
 
     response = await members.fetch.get("http://localhost:1557/notes/123");

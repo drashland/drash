@@ -5,7 +5,6 @@ import members from "../../members.ts";
  */
 members.test("middleware_test.ts | server/resource: missing CSRF token", async () => {
   let server = new members.MockServer({
-    address: "localhost:1557",
     middleware: {
       server_level: {
         before_request: [VerifyCsrfToken]
@@ -15,7 +14,10 @@ members.test("middleware_test.ts | server/resource: missing CSRF token", async (
     resources: [ResourceWithMiddleware]
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/users/1");
 
@@ -42,7 +44,10 @@ members.test("middleware_test.ts | server/resource: wrong CSRF token", async () 
     resources: [ResourceWithMiddleware],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
@@ -73,7 +78,10 @@ members.test("middleware_test.ts | server/resource: user is not an admin", async
     resources: [ResourceWithMiddleware],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
@@ -105,7 +113,10 @@ members.test("middleware_test.ts | server/resource: pass", async () => {
     resources: [ResourceWithMiddleware],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/users/1", {
     headers: {
@@ -131,7 +142,10 @@ members.test("middleware_test.ts | server/resource: middleware not found", async
     resources: [ResourceWithMiddlewareNotFound],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/users/1");
 
@@ -154,7 +168,10 @@ members.test("middleware_test.ts | server before_response: missing header", asyn
     resources: [ResourceWithMiddlewareHooked],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/");
 
@@ -180,7 +197,10 @@ members.test("middleware_test.ts | server before_response: wrong header", async 
     resources: [ResourceWithMiddlewareHooked],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
@@ -210,8 +230,11 @@ members.test("middleware_test.ts | server before_response: pass", async () => {
     resources: [ResourceWithMiddlewareHooked],
   });
 
-  server.run();
 
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
       send_response: "yes do it",
@@ -237,7 +260,10 @@ members.test("middleware_test.ts | server before_request: missing header", async
     resources: [ResourceWithMiddlewareHooked],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/");
 
@@ -263,7 +289,10 @@ members.test("middleware_test.ts | server before_request: wrong header", async (
     resources: [ResourceWithMiddlewareHooked],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
@@ -293,7 +322,10 @@ members.test("middleware_test.ts | server before_request: pass", async () => {
     resources: [ResourceWithMiddlewareHooked],
   });
 
-  server.run();
+  server.run({
+    hostname: "localhost",
+    port: 1447
+  });
 
   let response = await members.fetch.get("http://localhost:1557/", {
     headers: {
