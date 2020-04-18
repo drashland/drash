@@ -3,7 +3,6 @@ import { Server } from "../../src/http/server.ts";
 
 members.test("minimal server_test.ts | handleHttpRequest(): GET", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [HomeResource],
   });
 
@@ -21,7 +20,6 @@ members.test("minimal server_test.ts | handleHttpRequest(): GET", async () => {
 
 members.test("minimal server_test.ts | handleHttpRequest(): POST", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [HomeResource],
   });
 
@@ -48,7 +46,6 @@ members.test(
   "minimal server_test.ts | handleHttpRequest(): getPathParam() for :id and {id}",
   async () => {
     let server = new Server({
-      address: "localhost:1557",
       resources: [NotesResource, UsersResource],
     });
 
@@ -75,7 +72,6 @@ members.test(
 
 members.test("minimal server_test.ts | handleHttpRequest(): getHeaderParam()", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [GetHeaderParam],
   });
 
@@ -99,7 +95,6 @@ members.test("minimal server_test.ts | handleHttpRequest(): getHeaderParam()", a
 
 members.test("minimal server_test.ts | handleHttpRequest(): getUrlQueryParam()", async () => {
   let server = new Server({
-    address: "localhost:1557",
     resources: [GetUrlQueryParam],
   });
 

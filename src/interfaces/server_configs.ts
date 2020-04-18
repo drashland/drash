@@ -5,18 +5,6 @@ import { Drash } from "../../mod.ts";
  * @interface ServerConfigs
  *
  * @description
- *     address?: string
- *
- *         The hostname and port that the server will run on. For example, the
- *         following would tell the server to listen on locahost:1337:
- *
- *             address: "localhost:1337"
- *
- *         Not specifying an address will default the server to use the
- *         following hostname and port:
- *
- *             127.0.0.1:8000.
- *
  *     directory?: string
  *
  *         The path to the directory of the server on the filesystem.  This is
@@ -111,7 +99,6 @@ import { Drash } from "../../mod.ts";
  *             })
  */
 export interface ServerConfigs {
-  address?: string;
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
