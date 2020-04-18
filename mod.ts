@@ -11,33 +11,33 @@ import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "./src/dictionaries/mime_db.json";
 
 // Exceptions
-import { HttpException as http_exception } from "./src/exceptions/http_exception.ts";
-import { HttpMiddlewareException as http_middleware_exception } from "./src/exceptions/http_middleware_exception.ts";
-import { HttpResponseException as http_response_exception } from "./src/exceptions/http_response_exception.ts";
-import { NameCollisionException as name_collision_exception } from "./src/exceptions/name_collision_exception.ts";
+import { HttpException as BaseHttpException } from "./src/exceptions/http_exception.ts";
+import { HttpMiddlewareException as BaseHttpMiddlewareException } from "./src/exceptions/http_middleware_exception.ts";
+import { HttpResponseException as BaseHttpResponseException } from "./src/exceptions/http_response_exception.ts";
+import { NameCollisionException as BaseNameCollisionException } from "./src/exceptions/name_collision_exception.ts";
 
 // Http
-import { Middleware as middleware } from "./src/http/middleware.ts";
-import { Resource as resource } from "./src/http/resource.ts";
-import { Response as response } from "./src/http/response.ts";
-import { Server as server } from "./src/http/server.ts";
+import { Middleware as BaseMiddleware } from "./src/http/middleware.ts";
+import { Resource as BaseResource } from "./src/http/resource.ts";
+import { Response as BaseResponse } from "./src/http/response.ts";
+import { Server as BaseServer } from "./src/http/server.ts";
 
 // Interfaces
-import { LoggerConfigs as interface_logger_configs } from "./src/interfaces/logger_configs.ts";
-import { LogLevelStructure as interface_log_level_structure } from "./src/interfaces/log_level_structure.ts";
-import { ParsedRequestBody as interface_parsed_request_body } from "./src/interfaces/parsed_request_body.ts";
-import { ServerConfigs as interface_server_configs } from "./src/interfaces/server_configs.ts";
-import { ResponseOptions as interface_response_options } from "./src/interfaces/response_options.ts"
+import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
+import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
+import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
+import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
+import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts"
 
 // Loggers
-import { Logger as base_logger } from "./src/core_loggers/logger.ts";
-import { ConsoleLogger as console_logger } from "./src/core_loggers/console_logger.ts";
-import { FileLogger as file_logger } from "./src/core_loggers/file_logger.ts";
+import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
+import { ConsoleLogger as BaseConsoleLogger } from "./src/core_loggers/console_logger.ts";
+import { FileLogger as BaseFileLogger } from "./src/core_loggers/file_logger.ts";
 
 // Services
-import { HttpService as http_service } from "./src/services/http_service.ts";
-import { HttpRequestService as http_request_service } from "./src/services/http_request_service.ts";
-import { StringService as string_service } from "./src/services/string_service.ts";
+import { HttpService as BaseHttpService } from "./src/services/http_service.ts";
+import { HttpRequestService as BaseHttpRequestService } from "./src/services/http_request_service.ts";
+import { StringService as BaseStringService } from "./src/services/string_service.ts";
 
 import * as util_members from "./src/util/members.ts";
 
@@ -61,57 +61,40 @@ export namespace Drash {
   export namespace Dictionaries {
     export const LogLevels = log_levels.LogLevels;
     export const MimeDb = mime_db;
-    // export namespace Enums {
-    //   export const LogLevel = log_levels.LogLevel;
-    // }
   }
 
   export namespace Exceptions {
-    export type HttpException = http_exception;
-    export let HttpException = http_exception;
-    export type HttpMiddlewareException = http_middleware_exception;
-    export let HttpMiddlewareException = http_middleware_exception;
-    export type HttpResponseException = http_response_exception;
-    export let HttpResponseException = http_response_exception;
-    export type NameCollisionException = name_collision_exception;
-    export let NameCollisionException = name_collision_exception;
+    export class HttpException extends BaseHttpException { }
+    export class HttpMiddlewareException extends BaseHttpMiddlewareException { }
+    export class HttpResponseException extends BaseHttpResponseException { }
+    export class NameCollisionException extends BaseNameCollisionException { }
   }
 
   export namespace CoreLoggers {
-    export type ConsoleLogger = console_logger;
-    export const ConsoleLogger = console_logger;
-    export type FileLogger = file_logger;
-    export const FileLogger = file_logger;
-    export type Logger = base_logger;
-    export const Logger = base_logger;
+    export class ConsoleLogger extends BaseConsoleLogger { }
+    export class FileLogger extends BaseFileLogger { }
+    export abstract class Logger extends BaseLogger { }
   }
 
   export namespace Http {
-    export type Middleware = middleware;
-    export let Middleware = middleware;
-    export type Resource = resource;
-    export let Resource = resource;
-    export type Response = response;
-    export let Response = response;
-    export type Server = server;
-    export let Server = server;
+    export abstract class Middleware extends BaseMiddleware { }
+    export class Resource extends BaseResource { }
+    export class Response extends BaseResponse { }
+    export class Server extends BaseServer { }
   }
 
   export namespace Interfaces {
-    export type LogLevelStructure = interface_log_level_structure;
-    export type LoggerConfigs = interface_logger_configs;
-    export type ParsedRequestBody = interface_parsed_request_body;
-    export type ServerConfigs = interface_server_configs;
-    export type ResponseOptions = interface_response_options;
+    export interface LogLevelStructure extends BaseLogLevelStructure { }
+    export interface LoggerConfigs extends BaseLoggerConfigs { }
+    export interface ParsedRequestBody extends BaseParsedRequestBody { }
+    export interface ServerConfigs extends BaseServerConfigs { }
+    export interface ResponseOptions extends BaseResponseOptions { }
   }
 
   export namespace Services {
-    export type HttpService = http_service;
-    export const HttpService = new http_service();
-    export type HttpRequestService = http_request_service;
-    export const HttpRequestService = new http_request_service();
-    export type StringService = string_service;
-    export const StringService = string_service;
+    export class HttpService extends BaseHttpService { }
+    export class HttpRequestService extends BaseHttpRequestService { }
+    export class StringService extends BaseStringService { }
   }
 
   /**

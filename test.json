@@ -1,0 +1,1175 @@
+[
+  {
+    "kind": "namespace",
+    "name": "Drash",
+    "location": {
+      "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+      "line": 51,
+      "col": 0
+    },
+    "jsDoc": null,
+    "namespaceDef": {
+      "elements": [
+        {
+          "kind": "namespace",
+          "name": "Util",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 53,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "variable",
+                "name": "Exports",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 54,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "variableDef": {
+                  "tsType": null,
+                  "kind": "const"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "Compilers",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 57,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "class",
+                "name": "TemplateEngine",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 58,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseTemplateEngine",
+                  "implements": [],
+                  "typeParams": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "Dictionaries",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 61,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "variable",
+                "name": "LogLevels",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 62,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "variableDef": {
+                  "tsType": null,
+                  "kind": "const"
+                }
+              },
+              {
+                "kind": "variable",
+                "name": "MimeDb",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 63,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "variableDef": {
+                  "tsType": null,
+                  "kind": "const"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "Exceptions",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 66,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "class",
+                "name": "HttpException",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 67,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseHttpException",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "HttpMiddlewareException",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 68,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseHttpMiddlewareException",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "HttpResponseException",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 69,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseHttpResponseException",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "NameCollisionException",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 70,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseNameCollisionException",
+                  "implements": [],
+                  "typeParams": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "CoreLoggers",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 73,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "class",
+                "name": "ConsoleLogger",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 74,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseConsoleLogger",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "FileLogger",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 75,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseFileLogger",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "Logger",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 76,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": true,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseLogger",
+                  "implements": [],
+                  "typeParams": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "Http",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 79,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "class",
+                "name": "Middleware",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 80,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": true,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseMiddleware",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "Resource",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 81,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseResource",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "Response",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 82,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseResponse",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "Server",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 83,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseServer",
+                  "implements": [],
+                  "typeParams": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "Interfaces",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 86,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "interface",
+                "name": "LogLevelStructure",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 102,
+                  "col": 4
+                },
+                "jsDoc": "@memberof Drash.Interfaces\n@interface LogLevelStructure\n\n@description\n    name: string\n\n        The name of the log level (e.g., \"debug\").\n\n    rank: number\n\n        The rank of the log level. See the\n        Drash.Dictionaries.LogLevels.LogLevel enum member to see the ranking\n        structure of the log levels.",
+                "interfaceDef": {
+                  "extends": [],
+                  "methods": [],
+                  "properties": [
+                    {
+                      "name": "name",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 103,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "rank",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 104,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": false,
+                      "tsType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "keyword": "number"
+                      },
+                      "typeParams": []
+                    }
+                  ],
+                  "callSignatures": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "interface",
+                "name": "LoggerConfigs",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 158,
+                  "col": 4
+                },
+                "jsDoc": "@memberof Drash.Interfaces\n@interface LoggerConfigs\n\n@description\n    enabled: boolean\n\n        Is the logger enabled? This is useful if you have a config file that\n        can toggle this option between `true` and `false`.\n\n    file?: string\n\n        The filename to log to (used in Drash.CoreLoggers.FileLogger).\n\n    level?: string\n\n        Options are:\n\n            all\n            trace\n            debug\n            info\n            warn\n            error\n            fatal\n            off\n\n        Defaults to \"debug\".\n\n    tag_string?: string\n\n        A string with tags. Tags must be wrapped in brackets in order for the\n        logger classes to properly identify them. For example,\n\n            {some_tag} | {some_tag} * {some_tag} [{some_tag}]`.\n\n    tag_string_fns?: any\n\n        This takes an object of key-value pairs where the key is the name of\n        the tag defined in the `tag_string` config. This object is used to\n        replace tags in the `tag_string` config by matching keys to tags and\n        replacing tags with the values of the keys. For example, if\n        `tag_string` was `{my_cool_tag}` and `tags_string_fns.my_cool_tag`\n        returns `\"HELLO\"`, then `{my_cool_tag}` would be replaced with\n        `HELLO`.\n\n    test?: boolean\n\n        Is the logger running in a test process? Setting this to true will\n        silence the console logger from outputting to the console so you can\n        test without actually logging to the console.",
+                "interfaceDef": {
+                  "extends": [],
+                  "methods": [],
+                  "properties": [
+                    {
+                      "name": "enabled",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 159,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": false,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "keyword": "boolean"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "file",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 160,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "level",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 161,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "tag_string",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 162,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "tag_string_fns",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 163,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "any",
+                        "kind": "keyword",
+                        "keyword": "any"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "test",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 164,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "keyword": "boolean"
+                      },
+                      "typeParams": []
+                    }
+                  ],
+                  "callSignatures": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "interface",
+                "name": "ParsedRequestBody",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 181,
+                  "col": 4
+                },
+                "jsDoc": "@memberof Drash.Interfaces\n@interface ParsedRequestBody\n\n@description\n    content_type: any|undefined\n\n        The Content-Type of the request body. For example, if the body is\n        JSON, then the Content-Type should be application/json.\n\n    data: any|undefined\n\n        The data passed in the body of the request.",
+                "interfaceDef": {
+                  "extends": [],
+                  "methods": [],
+                  "properties": [
+                    {
+                      "name": "content_type",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 182,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": false,
+                      "tsType": {
+                        "repr": "",
+                        "kind": "union",
+                        "union": [
+                          {
+                            "repr": "any",
+                            "kind": "keyword",
+                            "keyword": "any"
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "keyword": "undefined"
+                          }
+                        ]
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "data",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 183,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": false,
+                      "tsType": {
+                        "repr": "",
+                        "kind": "union",
+                        "union": [
+                          {
+                            "repr": "any",
+                            "kind": "keyword",
+                            "keyword": "any"
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "keyword": "undefined"
+                          }
+                        ]
+                      },
+                      "typeParams": []
+                    }
+                  ],
+                  "callSignatures": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "interface",
+                "name": "ResponseOptions",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 212,
+                  "col": 4
+                },
+                "jsDoc": "@memberof Drash.Interfaces\n@interface ResponseOptions\n\n@description\n    views_path?: string\n\n        A string that contains the path to the views directory from\n        your project directory. This must exist if the `views_renderer` property\n        is set by you. Only needs to be set if you plan to return HTML\n\n          const server = new Drash.Http.Server({\n            ...,\n            views_path: \"/public/views\"\n          })\n\n    template_engine?: boolean\n\n        True if you wish to use Drash's own template engine to render html files.\n        The `views_path` property must be set if this is set to true\n\n            const server = new Drash.Http.Server({\n              ...\n              template_engine: true\n            })",
+                "interfaceDef": {
+                  "extends": [],
+                  "methods": [],
+                  "properties": [
+                    {
+                      "name": "views_path",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 213,
+                        "col": 8
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "template_engine",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 214,
+                        "col": 8
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "keyword": "boolean"
+                      },
+                      "typeParams": []
+                    }
+                  ],
+                  "callSignatures": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "interface",
+                "name": "ServerConfigs",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 327,
+                  "col": 4
+                },
+                "jsDoc": "@memberof Drash.Interfaces\n@interface ServerConfigs\n\n@description\n    address?: string\n\n        The hostname and port that the server will run on. For example, the\n        following would tell the server to listen on locahost:1337:\n\n            address: \"localhost:1337\"\n\n        Not specifying an address will default the server to use the\n        following hostname and port:\n\n            127.0.0.1:8000.\n\n    directory?: string\n\n        The path to the directory of the server on the filesystem.  This is\n        used when resolving static paths, so make sure you have this set\n        correctly if you are serving static paths. A quick way to implement\n        this could be the following:\n\n            directory: `${await Deno.realpath('.')}`\n\n    logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger\n\n        The server's logger. For example:\n\n            logger: new Drash.CoreLoggers.ConsoleLogger({\n              enabled: true,\n              level: \"debug\",\n              tag_string: \"{date} | {level} |\",\n              tag_string_fns: {\n                date: function() {\n                  return new Date().toISOString().replace(\"T\", \" \");\n                },\n              },\n            })\n\n    memory_allocation?: {\n      multipart_form_data?: number\n    }\n        The amount of memory to allocate to certain parts of the codebase.\n        For example, the multipart reader uses a default of 10MB, but you can\n        override that default by specifying the following:\n\n            memory_allocation: {\n              multipart_form_data: 128 // This would be translated to 128MB\n            }\n\n    middleware?: any\n\n        The middleware that the server should use. Server-level middleware\n        should be placed in middleware.server_level. Resource-level\n        middleware should be placed in middleware.resource_level. For\n        example:\n\n            middleware: {\n              resource_level: { ... },\n              server_level: { ... }\n            }\n\n    pretty_links?: boolean\n\n        Enabling pretty links allows your Drash server to check whether or\n        not an index.html file exists in a static directory. For example, if\n        /public/app/index.html exists, then you can go to /public/app and it\n        will serve the index.html in that static directory.\n\n    resources: any\n\n        An array of resources that the server should register. Passing in 0\n        resources means clients can't access anything on the server--because\n        there aren't any resources.\n\n    response_output?: string\n\n        The fallback response Content-Type that the server should use. The\n        response_output MUST be a proper MIME type. For example, the\n        following would have the server default to JSON responses:\n\n            response_output: \"application/json\"\n\n    static_paths?: string[]\n\n        An array of static paths. Static paths are made public to clients.\n        This means they can access anything in static paths. For example, if\n        you have /public as a static path, then clients can look at things\n        under your /path/to/your/server/public directory.\n\n    views_path?: string\n\n        A string that contains the path to the views directory from\n        your project directory. This must exist if the `views_renderer` property\n        is set by you. Only needs to be set if you plan to return HTML\n\n            views_path: \"/public/views/\"\n\n    template_engine?: boolean\n\n        True if you wish to use Drash's own template engine to render html files.\n        The `views_path` property must be set if this is set to true\n\n            const server = new Drash.Http.Server({\n              ...\n              template_engine: true\n            })",
+                "interfaceDef": {
+                  "extends": [],
+                  "methods": [],
+                  "properties": [
+                    {
+                      "name": "address",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 328,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "directory",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 329,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "logger",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 330,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "",
+                        "kind": "union",
+                        "union": [
+                          {
+                            "repr": "Drash.CoreLoggers.ConsoleLogger",
+                            "kind": "typeRef",
+                            "typeRef": {
+                              "typeParams": null,
+                              "typeName": "Drash.CoreLoggers.ConsoleLogger"
+                            }
+                          },
+                          {
+                            "repr": "Drash.CoreLoggers.FileLogger",
+                            "kind": "typeRef",
+                            "typeRef": {
+                              "typeParams": null,
+                              "typeName": "Drash.CoreLoggers.FileLogger"
+                            }
+                          }
+                        ]
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "memory_allocation",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 331,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "",
+                        "kind": "typeLiteral",
+                        "typeLiteral": {
+                          "methods": [],
+                          "properties": [
+                            {
+                              "name": "multipart_form_data",
+                              "params": [],
+                              "computed": false,
+                              "optional": true,
+                              "tsType": {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "keyword": "number"
+                              },
+                              "typeParams": []
+                            }
+                          ],
+                          "callSignatures": []
+                        }
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "middleware",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 332,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "any",
+                        "kind": "keyword",
+                        "keyword": "any"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "pretty_links",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 333,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "keyword": "boolean"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "resources",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 334,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": false,
+                      "tsType": {
+                        "repr": "any",
+                        "kind": "keyword",
+                        "keyword": "any"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "response_output",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 335,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "static_paths",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 336,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "",
+                        "kind": "array",
+                        "array": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "keyword": "string"
+                        }
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "template_engine",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 337,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "keyword": "boolean"
+                      },
+                      "typeParams": []
+                    },
+                    {
+                      "name": "views_path",
+                      "location": {
+                        "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                        "line": 338,
+                        "col": 6
+                      },
+                      "jsDoc": null,
+                      "params": [],
+                      "computed": false,
+                      "optional": true,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "keyword": "string"
+                      },
+                      "typeParams": []
+                    }
+                  ],
+                  "callSignatures": [],
+                  "typeParams": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "namespace",
+          "name": "Services",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 343,
+            "col": 2
+          },
+          "jsDoc": null,
+          "namespaceDef": {
+            "elements": [
+              {
+                "kind": "class",
+                "name": "HttpService",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 344,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseHttpService",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "HttpRequestService",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 345,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseHttpRequestService",
+                  "implements": [],
+                  "typeParams": []
+                }
+              },
+              {
+                "kind": "class",
+                "name": "StringService",
+                "location": {
+                  "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+                  "line": 346,
+                  "col": 4
+                },
+                "jsDoc": null,
+                "classDef": {
+                  "isAbstract": false,
+                  "constructors": [],
+                  "properties": [],
+                  "methods": [],
+                  "extends": "BaseStringService",
+                  "implements": [],
+                  "typeParams": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "variable",
+          "name": "Loggers",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 356,
+            "col": 2
+          },
+          "jsDoc": "A property to hold all loggers added via Drash.addLogger(). This property\nallows users to access loggers via Drash.Loggers.SomeLogger and acts like\na namespace for loggers.\n\n@property Drash.Loggers Loggers",
+          "variableDef": {
+            "tsType": {
+              "repr": "any",
+              "kind": "keyword",
+              "keyword": "any"
+            },
+            "kind": "const"
+          }
+        },
+        {
+          "kind": "typeAlias",
+          "name": "Loggers",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 357,
+            "col": 2
+          },
+          "jsDoc": null,
+          "typeAliasDef": {
+            "tsType": {
+              "repr": "",
+              "kind": "typeLiteral",
+              "typeLiteral": {
+                "methods": [],
+                "properties": [],
+                "callSignatures": []
+              }
+            },
+            "typeParams": []
+          }
+        },
+        {
+          "kind": "variable",
+          "name": "Members",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 366,
+            "col": 2
+          },
+          "jsDoc": "A property to hold all members added via Drash.addMember(). This property\nallows users to access members via Drash.Members.SomeMember and acts like\na namespace for members that are external to Drash.\n\n@property Drash.Members Members",
+          "variableDef": {
+            "tsType": {
+              "repr": "any",
+              "kind": "keyword",
+              "keyword": "any"
+            },
+            "kind": "const"
+          }
+        },
+        {
+          "kind": "typeAlias",
+          "name": "Members",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 367,
+            "col": 2
+          },
+          "jsDoc": null,
+          "typeAliasDef": {
+            "tsType": {
+              "repr": "",
+              "kind": "typeLiteral",
+              "typeLiteral": {
+                "methods": [],
+                "properties": [],
+                "callSignatures": []
+              }
+            },
+            "typeParams": []
+          }
+        },
+        {
+          "kind": "function",
+          "name": "addMember",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 378,
+            "col": 2
+          },
+          "jsDoc": "Add a member to the Members namespace. After adding a member, you can use\nthe member via Drash.Members.YourMember.doSomething().\n\n@param string name\n    The member's name which can be accessed via Drash.Members[name].\n@param any member\n    The member.",
+          "functionDef": {
+            "params": [
+              {
+                "name": "name",
+                "kind": "identifier",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              },
+              {
+                "name": "member",
+                "kind": "identifier",
+                "optional": false,
+                "tsType": {
+                  "repr": "any",
+                  "kind": "keyword",
+                  "keyword": "any"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          }
+        },
+        {
+          "kind": "function",
+          "name": "addLogger",
+          "location": {
+            "filename": "file:///private/var/src/drashland/deno-drash/mod.ts",
+            "line": 396,
+            "col": 2
+          },
+          "jsDoc": "Add a logger to the Loggers namespace. After adding a logger, you can use\nthe logger via Drash.Loggers.YourLogger.doSomething().\n\n@param string name\n    The logger's name which can be accessed via Drash.Members[name].\n@param any logger\n    The logger.",
+          "functionDef": {
+            "params": [
+              {
+                "name": "name",
+                "kind": "identifier",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              },
+              {
+                "name": "logger",
+                "kind": "identifier",
+                "optional": false,
+                "tsType": {
+                  "repr": "any",
+                  "kind": "keyword",
+                  "keyword": "any"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          }
+        }
+      ]
+    }
+  }
+]
