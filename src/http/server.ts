@@ -476,11 +476,6 @@ export class Server {
       options.port = 1447;
     }
     this.hostname = options.hostname;
-    if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(
-        `\nDeno HTTP server started at ${options.hostname}:${options.port}.\n`,
-      );
-    }
     this.deno_server = serve(options);
     for await (const request of this.deno_server) {
       try {
@@ -513,11 +508,6 @@ export class Server {
       options.port = 1447;
     }
     this.hostname = options.hostname;
-    if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(
-        `\nDeno HTTPS server started at ${options.hostname}:${options.port}.\n`,
-      );
-    }
     this.deno_server = serveTLS(options);
     for await (const request of this.deno_server) {
       try {
@@ -533,9 +523,6 @@ export class Server {
    *     Close the server.
    */
   public close(): void {
-    if (Deno.env().DRASH_PROCESS != "test") {
-      console.log(`\nDeno server stopped.\n`);
-    }
     this.deno_server.close();
   }
 
