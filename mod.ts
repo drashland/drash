@@ -7,7 +7,7 @@
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
 // Decorators
-export { MiddlewareFunction, MiddlewareType as MiddlewareInterface, MiddlewareHandler } from "./src/decorators/middleware.ts";
+import { MiddlewareFunction as MiddlewareFunctionType, MiddlewareType as MiddlewareInterface, MiddlewareHandler as MiddlewareFunctionHandler } from "./src/decorators/middleware.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
@@ -48,6 +48,12 @@ export namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
     export const Exports = util_members;
+  }
+
+  export namespace Decorators{
+    export type MiddlewareFunction = MiddlewareFunctionType;
+    export type MiddlewareType = MiddlewareInterface;
+    export const Middleware = MiddlewareFunctionHandler;
   }
 
   export namespace Compilers {
