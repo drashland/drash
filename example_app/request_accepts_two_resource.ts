@@ -27,7 +27,7 @@ export default class RequestAcceptsTwoResource extends Drash.Http.Resource {
 
   protected jsonResponse(): Drash.Http.Response {
     this.response.headers.set("Content-Type", "application/json");
-    this.response.body = {response: "application/json"};
+    this.response.body = { response: "application/json" };
     return this.response;
   }
 
