@@ -3,13 +3,10 @@ import members from "../../members.ts";
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server/resource: missing CSRF token", async () => {
+members.test("middleware_test.ts | server: missing CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         before_request: [VerifyCsrfToken]
-      },
-      resource_level: [UserIsAdmin]
     },
     resources: [ResourceWithMiddleware]
   });
@@ -32,13 +29,10 @@ members.test("middleware_test.ts | server/resource: missing CSRF token", async (
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server/resource: wrong CSRF token", async () => {
+members.test("middleware_test.ts | server: wrong CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         before_request: [VerifyCsrfToken],
-      },
-      resource_level: [UserIsAdmin],
     },
     resources: [ResourceWithMiddleware],
   });
@@ -65,100 +59,10 @@ members.test("middleware_test.ts | server/resource: wrong CSRF token", async () 
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server/resource: user is not an admin", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      server_level: {
-        before_request: [VerifyCsrfToken],
-      },
-      resource_level: [UserIsAdmin],
-    },
-    resources: [ResourceWithMiddleware],
-  });
-
-  server.run({
-    hostname: "localhost",
-    port: 1111
-  });
-
-  let response = await members.fetch.get("http://localhost:1111/users/1", {
-    headers: {
-      csrf_token: "all your base",
-      user_id: 123,
-    },
-  });
-
-  members.assert.responseJsonEquals(
-    await response.text(),
-    "'user_id' unknown.",
-  );
-
-  server.close();
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | server/resource: pass", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      server_level: {
-        before_request: [VerifyCsrfToken],
-      },
-      resource_level: [UserIsAdmin],
-    },
-    resources: [ResourceWithMiddleware],
-  });
-
-  server.run({
-    hostname: "localhost",
-    port: 1222
-  });
-
-  let response = await members.fetch.get("http://localhost:1222/users/1", {
-    headers: {
-      csrf_token: "all your base",
-      user_id: 999,
-    },
-  });
-
-  members.assert.responseJsonEquals(await response.text(), { name: "Thor" });
-
-  server.close();
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | server/resource: middleware not found", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      resource_level: [UserIsAdmin],
-    },
-    resources: [ResourceWithMiddlewareNotFound],
-  });
-
-  server.run({
-    hostname: "localhost",
-    port: 1337
-  });
-
-  let response = await members.fetch.get("http://localhost:1337/users/1");
-
-  members.assert.responseJsonEquals(await response.text(), "I'm a teapot");
-
-  server.close();
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
 members.test("middleware_test.ts | server before_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         after_request: [AfterRequest],
-      },
     },
     resources: [ResourceWithMiddlewareHooked],
   });
@@ -184,9 +88,7 @@ members.test("middleware_test.ts | server before_response: missing header", asyn
 members.test("middleware_test.ts | server before_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         after_request: [AfterRequest],
-      },
     },
     resources: [ResourceWithMiddlewareHooked],
   });
@@ -216,9 +118,7 @@ members.test("middleware_test.ts | server before_response: wrong header", async 
 members.test("middleware_test.ts | server before_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         after_request: [AfterRequest],
-      },
     },
     resources: [ResourceWithMiddlewareHooked],
   });
@@ -245,9 +145,7 @@ members.test("middleware_test.ts | server before_response: pass", async () => {
 members.test("middleware_test.ts | server before_request: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         before_request: [BeforeRequest],
-      },
     },
     resources: [ResourceWithMiddlewareHooked],
   });
@@ -273,9 +171,7 @@ members.test("middleware_test.ts | server before_request: missing header", async
 members.test("middleware_test.ts | server before_request: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         before_request: [BeforeRequest],
-      },
     },
     resources: [ResourceWithMiddlewareHooked],
   });
@@ -305,9 +201,7 @@ members.test("middleware_test.ts | server before_request: wrong header", async (
 members.test("middleware_test.ts | server before_request: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-      server_level: {
         before_request: [BeforeRequest],
-      },
     },
     resources: [ResourceWithMiddlewareHooked],
   });
@@ -334,9 +228,6 @@ members.test("middleware_test.ts | server before_request: pass", async () => {
 
 class ResourceWithMiddleware extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  static middleware = {
-    before_request: ["UserIsAdmin"],
-  };
   public users: any = {
     1: {
       name: "Thor",
@@ -361,9 +252,6 @@ class ResourceWithMiddlewareHooked extends members.Drash.Http.Resource {
 
 class ResourceWithMiddlewareNotFound extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  static middleware = {
-    before_request: ["muahahaha"],
-  };
   public users: any = {
     1: {
       name: "Thor",
