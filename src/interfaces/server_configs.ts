@@ -59,7 +59,7 @@ import { Drash } from "../../mod.ts";
  *         /public/app/index.html exists, then you can go to /public/app and it
  *         will serve the index.html in that static directory.
  *
- *     resources: any
+ *     resources?: any
  *
  *         An array of resources that the server should register. Passing in 0
  *         resources means clients can't access anything on the server--because
@@ -104,7 +104,7 @@ export interface ServerConfigs {
   memory_allocation?: { multipart_form_data?: number };
   middleware?: any;
   pretty_links?: boolean;
-  resources: any;
+  resources?: any;
   response_output?: string;
   static_paths?: string[];
   views_path?: string;
