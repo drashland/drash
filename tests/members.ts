@@ -14,7 +14,7 @@ function mockRequest(url = "/", method = "get", headers?: any): any {
   request.url = url;
   request.method = method;
   request.headers = new Headers();
-  request = Drash.Services.HttpRequestService.hydrate(request, {
+  request = new Drash.Services.HttpRequestService().hydrate(request, {
     headers: headers,
   });
 

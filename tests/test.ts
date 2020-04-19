@@ -1,5 +1,3 @@
-Deno.env().DRASH_PROCESS = "test";
-
 // Dictionaries
 import "./unit/dictionaries/log_levels_test.ts";
 
