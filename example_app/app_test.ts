@@ -2,7 +2,7 @@ import members from "../tests/members.ts";
 import server from "./app_server.ts";
 server.run({
   hostname: "localhost",
-  port: 1667
+  port: 9999
 });
 
 import "./coffee_resource_test.ts";

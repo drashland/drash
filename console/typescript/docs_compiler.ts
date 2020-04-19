@@ -1,4 +1,7 @@
-import { BufReader } from "../../deps.ts";
+import {
+  RUNTIME,
+  BufReader,
+} from "../../deps.ts";
 
 //
 // @method compileLazy
@@ -42,7 +45,7 @@ export default class ClassCompiler {
   }
 
   public async compileLazy(): Promise<any> {
-    const contents = await Deno.readAll(await Deno.open(this.path));
+    const contents = await RUNTIME.readAll(await RUNTIME.open(this.path));
     const br = await this.getBufReader(contents);
     let docBlock: string = "";
     let docBlockFound: boolean = false;
@@ -54,7 +57,7 @@ export default class ClassCompiler {
       let line: any = await br.readLine();
 
       // Yay! We made it! (maybe)...
-      if (line === Deno.EOF) {
+      if (line === RUNTIME.EOF) {
         break;
       }
 
@@ -130,7 +133,7 @@ export default class ClassCompiler {
   //////////////////////////////////////////////////////////////////////////////
 
   protected async getBufReader(contents: any): Promise<any> {
-    const br = new BufReader(new Deno.Buffer(contents));
+    const br = new BufReader(new RUNTIME.Buffer(contents));
     return br;
   }
 }

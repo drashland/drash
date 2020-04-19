@@ -1,3 +1,6 @@
+import {
+  RUNTIME,
+} from "../../deps.ts";
 const decoder = new TextDecoder();
 
 export class TemplateEngine {
@@ -38,7 +41,7 @@ export class TemplateEngine {
     let code: any = "with(obj) { var r=[];\n";
     let cursor: any = 0;
     let html: string = decoder.decode(
-      Deno.readFileSync(this.views_path + template),
+      RUNTIME.readFileSync(this.views_path + template),
     );
     let match: any;
     // Check if the template extends another template
@@ -49,7 +52,7 @@ export class TemplateEngine {
         let template = m.replace('<% extends("', "")
           .replace('") %>', "");
         template = decoder.decode(
-          Deno.readFileSync(this.views_path + template),
+          RUNTIME.readFileSync(this.views_path + template),
         );
         html = template.replace("<% yield %>", html);
       });
@@ -61,7 +64,7 @@ export class TemplateEngine {
         let template = m.replace('<% include_partial("', "")
           .replace('") %>', "");
         template = decoder.decode(
-          Deno.readFileSync(this.views_path + template),
+          RUNTIME.readFileSync(this.views_path + template),
         );
         html = html.replace(m, template);
       });

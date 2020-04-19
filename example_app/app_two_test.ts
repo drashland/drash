@@ -7,12 +7,12 @@ import members from "../tests/members.ts";
 import serverTwo from "./app_server_two.ts";
 serverTwo.run({
   hostname: "localhost",
-  port: 1667
+  port: 9999
 });
 
 members.test("ViewResource - Template Engine", async () => {
   let response = await members.fetch.get(
-    "http://localhost:1667/view?data=true&file=/template_engine.html",
+    "http://localhost:9999/view?data=true&file=/template_engine.html",
   );
   members.assert.equals(
     await response.text(),

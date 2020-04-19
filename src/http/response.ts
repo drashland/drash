@@ -1,6 +1,12 @@
 import { Drash } from "../../mod.ts";
-import { STATUS_TEXT, Status } from "../../deps.ts";
-import { setCookie, delCookie, Cookie } from "../../deps.ts";
+import {
+  Cookie,
+  RUNTIME,
+  STATUS_TEXT,
+  Status,
+  delCookie,
+  setCookie,
+} from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -38,8 +44,8 @@ export class Response {
   /**
    * @description
    *     A property to hold this response's status code (e.g., 200 for OK).
-   *     This class uses Status and STATUS_TEXT from the Deno Standard
-   *     Modules' http_status module for response codes.
+   *     This class uses Status and STATUS_TEXT from the deno_std's http_status
+   *     module for response codes.
    *
    * @property number status_code
    */
@@ -116,7 +122,7 @@ export class Response {
     }
 
     const filename = this.views_path += args[0];
-    const fileContentsRaw = Deno.readFileSync(filename);
+    const fileContentsRaw = RUNTIME.readFileSync(filename);
     let decoded = decoder.decode(fileContentsRaw);
     return decoded;
   }
@@ -242,7 +248,7 @@ export class Response {
     let output = {
       status: this.status_code,
       headers: this.headers,
-      body: file ? Deno.readFileSync(file) : contents,
+      body: file ? RUNTIME.readFileSync(file) : contents,
     };
 
     this.request.respond(output);

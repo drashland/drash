@@ -2,6 +2,7 @@ import { Drash } from "../../mod.ts";
 import {
   HTTPOptions,
   HTTPSOptions,
+  RUNTIME,
   STATUS_TEXT,
   Status,
   serve,
@@ -27,8 +28,8 @@ export class Server {
 
   /**
    * @description
-   *     A property to hold the Deno server. This property is set in
-   *     this.run() like so:
+   *     A property to hold the server. This property is set in this.run() like
+   *     so:
    *
    *         this.deno_server = serve(HTTPOptions);
    *
@@ -191,7 +192,7 @@ export class Server {
 
   /**
    * @description
-   *     Handle an HTTP request from the Deno server.
+   *     Handle an HTTP request from the server.
    *
    * @param any request
    *     The request object.
@@ -370,7 +371,7 @@ export class Server {
     headers.set("Content-Type", "image/x-icon");
     let body: any;
     try {
-      body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
+      body = RUNTIME.readFileSync(`${RUNTIME.realpathSync(".")}/favicon.ico`);
     } catch (error) {
     }
     if (!this.trackers.requested_favicon) {
@@ -411,7 +412,7 @@ export class Server {
       if (this.configs.pretty_links) {
         let extension = request.url_path.split(".")[1];
         if (!extension) {
-          let contents = Deno.readFileSync(
+          let contents = RUNTIME.readFileSync(
             this.directory + "/" + request.url_path + "/index.html",
           );
           if (contents) {
@@ -456,10 +457,9 @@ export class Server {
 
   /**
    * @description
-   *     Run the Deno server at the hostname specified in the configs. This
-   *     method takes each HTTP request and creates a new and more workable
-   *     request object and passes it to
-   *     `Drash.Http.Server.handleHttpRequest()`.
+   *     Run the server at the hostname specified in the configs. This method
+   *     takes each HTTP request and creates a new and more workable request
+   *     object and passes it to `Drash.Http.Server.handleHttpRequest()`.
    *
    * @param HTTPOptions options
    *     The HTTPOptions interface from https://deno.land/std/http/server.ts.
@@ -488,9 +488,9 @@ export class Server {
 
   /**
    * @description
-   *     Run the Deno server at the hostname specified in the configs as an
-   *     HTTPS Server. This method takes each HTTP request and creates a new and
-   *     more workable request object and passes it to
+   *     Run the server at the hostname specified in the configs as an HTTPS
+   *     Server. This method takes each HTTP request and creates a new and more
+   *     workable request object and passes it to
    *     `Drash.Http.Server.handleHttpRequest()`.
    *
    * @param HTTPSOptions options

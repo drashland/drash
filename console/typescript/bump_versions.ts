@@ -1,9 +1,11 @@
+import { RUNTIME } from "../../deps.ts";
+
 async function bumpVersions(fromV: string, toV: string) {
   let data = new TextDecoder().decode(
-    await Deno.readAll(await Deno.open("./deps.ts")),
+    await RUNTIME.readAll(await Deno.open("./deps.ts")),
   );
   data = data.replace(new RegExp(fromV, "g"), toV);
-  Deno.writeFileSync("./deps.ts", new TextEncoder().encode(data));
+  RUNTIME.writeFileSync("./deps.ts", new TextEncoder().encode(data));
   return data;
 }
 

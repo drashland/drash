@@ -40,3 +40,6 @@ export {
   getCookies,
   setCookie
 } from "https://deno.land/std@v0.41.0/http/cookie.ts";
+
+export const RUNTIME = Deno;
+export type Reader = Deno.Reader;

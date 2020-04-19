@@ -45,10 +45,10 @@ members.test("middleware_test.ts | server/resource: wrong CSRF token", async () 
 
   server.run({
     hostname: "localhost",
-    port: 1667
+    port: 1668
   });
 
-  let response = await members.fetch.get("http://localhost:1667/users/1", {
+  let response = await members.fetch.get("http://localhost:1668/users/1", {
     headers: {
       csrf_token: "hehe",
     },

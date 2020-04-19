@@ -1,11 +1,13 @@
 import { Drash } from "../../mod.ts";
 import {
+  Cookie,
   FormFile,
   MultipartReader,
+  RUNTIME,
+  Reader,
   ServerRequest,
+  getCookies,
 } from "../../deps.ts";
-import { getCookies, Cookie } from "../../deps.ts";
-type Reader = Deno.Reader;
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
@@ -489,7 +491,7 @@ export class HttpRequestService {
   public async parseBodyAsFormUrlEncoded(
     request: any,
   ): Promise<object | Array<any>> {
-    let body = decoder.decode(await Deno.readAll(request.body));
+    let body = decoder.decode(await RUNTIME.readAll(request.body));
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
     }
@@ -505,7 +507,7 @@ export class HttpRequestService {
    *    JSON object - the decoded request body
    */
   public async parseBodyAsJson(request: any): Promise<object> {
-    const data = decoder.decode(await Deno.readAll(request.body));
+    const data = decoder.decode(await RUNTIME.readAll(request.body));
     return JSON.parse(data);
   }
 
