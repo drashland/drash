@@ -6,7 +6,8 @@ import { Drash } from "../../mod.ts";
  * @param server Contains the instance of the server.
  * @param response Contains the instance of the response.
  */
-export type MiddlewareFunction = (request: any, server: Drash.Http.Server, response: Drash.Http.Response) => void;
+export type MiddlewareFunction = ((request: any, server: Drash.Http.Server, response: Drash.Http.Response) => Promise<void>) | ((request: any, server: Drash.Http.Server, response: Drash.Http.Response) => void);
+
 
 /**
  * @type MiddlewareType
@@ -33,7 +34,7 @@ export type MiddlewareType = {
 export function MiddlewareHandler(middlewares: MiddlewareType) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const originalMethod = descriptor.value;
-        descriptor.value = function (...args: any[]) {
+        descriptor.value = async function (...args: any[]) {
             // Fetch function context
             const { request, server, response } = Object.getOwnPropertyDescriptors(this);
 
@@ -41,7 +42,7 @@ export function MiddlewareHandler(middlewares: MiddlewareType) {
             if (middlewares.before_request != null) {
                 try {
                     for (const fn of middlewares.before_request) {
-                        fn(request.value, server.value, response.value);
+                        await fn(request.value, server.value, response.value);
                     }
                 } catch (error) {
                     throw error;
@@ -54,7 +55,7 @@ export function MiddlewareHandler(middlewares: MiddlewareType) {
             if (middlewares.after_request != null) {
                 try {
                     for (const fn of middlewares.after_request) {
-                        fn(request.value, server.value, response.value);
+                        await fn(request.value, server.value, response.value);
                     }
                 } catch (error) {
                     throw error;
