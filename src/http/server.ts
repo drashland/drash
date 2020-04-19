@@ -182,7 +182,7 @@ export class Server {
       options.memory_allocation.multipart_form_data = config
         .multipart_form_data;
     }
-    request = await Drash.Services.HttpRequestService.hydrate(
+    request = await new Drash.Services.HttpRequestService().hydrate(
       request,
       options,
     );
@@ -867,9 +867,9 @@ export class Server {
     let requestUrl = "/" + staticPath;
 
     if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = Drash.Services.HttpRequestService.hydrate(request, {
+      request = new Drash.Services.HttpRequestService().hydrate(request, {
         headers: {
-          "Response-Content-Type": Drash.Services.HttpService.getMimeType(
+          "Response-Content-Type": new Drash.Services.HttpService().getMimeType(
             request.url,
             true,
           ),
