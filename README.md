@@ -42,10 +42,13 @@ server.run({
   hostname: "localhost",
   port: 1447
 });
+
+console.log("Server listening: http://localhost:1447");
 ```
 
 ```
-$ deno --allow-net --allow-env app.ts
+$ deno --allow-net app.ts
+Server listening: http://localhost:1447
 ```
 
 ```
