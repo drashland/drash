@@ -6,6 +6,9 @@
 // Compilers
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
+// Decorators
+import { HttpMethodMiddleware as http_method_middleware } from "./src/decorators/http_method_middleware.ts";
+
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "./src/dictionaries/mime_db.json";
@@ -49,6 +52,10 @@ export namespace Drash {
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine { }
+  }
+
+  export namespace Decorators {
+    export const HttpMethodMiddleware = http_method_middleware;
   }
 
   export namespace Dictionaries {
