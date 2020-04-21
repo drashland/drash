@@ -26,7 +26,7 @@ export type MiddlewareType = {
 };
 
 export function Middleware(middlewares: MiddlewareType) {
-    return function (...args: any[]) {
+    return function (this:any ,...args: any) {
         switch (args.length) {
             case 1:
                 // Class decorator
