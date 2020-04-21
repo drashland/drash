@@ -38,7 +38,21 @@ export class Server {
    */
   public deno_server: any;
 
+  /**
+   * @description
+   *     The hostname of the Deno server.
+   *
+   * @property string hostname
+   */
   public hostname: string = "localhost";
+
+  /**
+   * @description
+   *     The port of the Deno server.
+   *
+   * @property number port
+   */
+  public port: number = 1447;
 
   /**
    * @description
@@ -473,7 +487,7 @@ export class Server {
       options.hostname = this.hostname;
     }
     if (!options.port) {
-      options.port = 1447;
+      options.port = this.port;
     }
     this.hostname = options.hostname;
     this.deno_server = serve(options);
@@ -505,7 +519,7 @@ export class Server {
       options.hostname = this.hostname;
     }
     if (!options.port) {
-      options.port = 1447;
+      options.port = this.port;
     }
     this.hostname = options.hostname;
     this.deno_server = serveTLS(options);
