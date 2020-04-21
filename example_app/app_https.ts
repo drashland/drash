@@ -5,6 +5,5 @@ server.runTLS({
   hostname: "localhost",
   port: 1447,
   certFile: "./tls/server.crt",
-  keyFile: "./tls/server.key"
+  keyFile: "./tls/server.key",
 });
-

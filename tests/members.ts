@@ -2,7 +2,7 @@ import { Drash } from "../mod.ts";
 import {
   ServerRequest,
   assertEquals,
-  assertThrows
+  assertThrows,
 } from "../deps.ts";
 const decoder = new TextDecoder("utf-8");
 
