@@ -7,7 +7,7 @@ members.test("server_test.ts | handleHttpRequest(): GET", async () => {
 
   server.run({
     hostname: "localhost",
-    port: 1557
+    port: 1557,
   });
 
   let response = await members.fetch.get("http://localhost:1557");
@@ -24,7 +24,7 @@ members.test("server_test.ts | handleHttpRequest(): POST", async () => {
 
   server.run({
     hostname: "localhost",
-    port: 1557
+    port: 1557,
   });
 
   const response = await members.fetch.post("http://localhost:1557", {
@@ -48,10 +48,10 @@ members.test(
       resources: [NotesResource, UsersResource],
     });
 
-  server.run({
-    hostname: "localhost",
-    port: 1557
-  });
+    server.run({
+      hostname: "localhost",
+      port: 1557,
+    });
 
     let response;
 
@@ -74,10 +74,9 @@ members.test("server_test.ts | handleHttpRequest(): getHeaderParam()", async () 
     resources: [GetHeaderParam],
   });
 
-
   server.run({
     hostname: "localhost",
-    port: 1557
+    port: 1557,
   });
   let response = await members.fetch.get("http://localhost:1557", {
     headers: {
@@ -97,10 +96,9 @@ members.test("server_test.ts | handleHttpRequest(): getUrlQueryParam()", async (
     resources: [GetUrlQueryParam],
   });
 
-
   server.run({
     hostname: "localhost",
-    port: 1557
+    port: 1557,
   });
   let response = await members.fetch.get("http://localhost:1557?id=123459");
 
@@ -118,10 +116,9 @@ members.test(
       resources: [NotesResource],
     });
 
-
     server.run({
       hostname: "localhost",
-      port: 1557
+      port: 1557,
     });
     let response;
 

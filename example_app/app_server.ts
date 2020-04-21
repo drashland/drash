@@ -16,34 +16,34 @@ import ViewResource from "./view_resource.ts";
 import Middleware from "./middleware.ts";
 
 let server = new Drash.Http.Server({
-    directory: Deno.realpathSync("./"),
-    response_output: "application/json",
-    logger: new Drash.CoreLoggers.ConsoleLogger({
-        enabled: false,
-        level: "debug",
-    }),
-    middleware: {
-        before_request: [Middleware],
-    },
-    memory_allocation: {
-        multipart_form_data: 128,
-    },
-    pretty_links: true,
-    resources: [
-        CoffeeResource,
-        CookieResource,
-        FilesResource,
-        HomeResource,
-        MiddlewareResource,
-        RequestAcceptsResource,
-        RequestAcceptsTwoResource,
-        TemplateEngineNullDataResource,
-        TemplateEngineResource,
-        UsersResource,
-        ViewResource,
-    ],
-    static_paths: ["/public"],
-    views_path: "./public/views",
+  directory: Deno.realpathSync("./"),
+  response_output: "application/json",
+  logger: new Drash.CoreLoggers.ConsoleLogger({
+    enabled: false,
+    level: "debug",
+  }),
+  middleware: {
+    before_request: [Middleware],
+  },
+  memory_allocation: {
+    multipart_form_data: 128,
+  },
+  pretty_links: true,
+  resources: [
+    CoffeeResource,
+    CookieResource,
+    FilesResource,
+    HomeResource,
+    MiddlewareResource,
+    RequestAcceptsResource,
+    RequestAcceptsTwoResource,
+    TemplateEngineNullDataResource,
+    TemplateEngineResource,
+    UsersResource,
+    ViewResource,
+  ],
+  static_paths: ["/public"],
+  views_path: "./public/views",
 });
 
 export default server;

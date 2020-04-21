@@ -7,7 +7,11 @@
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
 // Decorators
-import { Middleware as MiddlewareHandler, MiddlewareFunction as MiddlewareFunctionDefinition, MiddlewareType as MiddlewareTypeDefinition } from "./src/decorators/middleware.ts";
+import {
+  Middleware as MiddlewareHandler,
+  MiddlewareFunction as MiddlewareFunctionDefinition,
+  MiddlewareType as MiddlewareTypeDefinition,
+} from "./src/decorators/middleware.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";

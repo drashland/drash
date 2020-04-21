@@ -6,21 +6,21 @@ import members from "../../members.ts";
 members.test("middleware_test.ts | server: missing CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-        before_request: [VerifyCsrfToken]
+      before_request: [VerifyCsrfToken],
     },
-    resources: [ResourceWithMiddleware]
+    resources: [ResourceWithMiddleware],
   });
 
   server.run({
     hostname: "localhost",
-    port: 1557
+    port: 1557,
   });
 
   let response = await members.fetch.get("http://localhost:1557/users/1");
 
   members.assert.responseJsonEquals(
     await response.text(),
-    "No CSRF token, dude."
+    "No CSRF token, dude.",
   );
 
   server.close();
@@ -32,14 +32,14 @@ members.test("middleware_test.ts | server: missing CSRF token", async () => {
 members.test("middleware_test.ts | server: wrong CSRF token", async () => {
   let server = new members.MockServer({
     middleware: {
-        before_request: [VerifyCsrfToken],
+      before_request: [VerifyCsrfToken],
     },
     resources: [ResourceWithMiddleware],
   });
 
   server.run({
     hostname: "localhost",
-    port: 1667
+    port: 1667,
   });
 
   let response = await members.fetch.get("http://localhost:1667/users/1", {
@@ -62,14 +62,14 @@ members.test("middleware_test.ts | server: wrong CSRF token", async () => {
 members.test("middleware_test.ts | server before_response: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-        after_request: [AfterRequest],
+      after_request: [AfterRequest],
     },
     resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run({
     hostname: "localhost",
-    port: 1777
+    port: 1777,
   });
 
   let response = await members.fetch.get("http://localhost:1777/");
@@ -88,14 +88,14 @@ members.test("middleware_test.ts | server before_response: missing header", asyn
 members.test("middleware_test.ts | server before_response: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-        after_request: [AfterRequest],
+      after_request: [AfterRequest],
     },
     resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run({
     hostname: "localhost",
-    port: 3000
+    port: 3000,
   });
 
   let response = await members.fetch.get("http://localhost:3000/", {
@@ -118,15 +118,14 @@ members.test("middleware_test.ts | server before_response: wrong header", async 
 members.test("middleware_test.ts | server before_response: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-        after_request: [AfterRequest],
+      after_request: [AfterRequest],
     },
     resources: [ResourceWithMiddlewareHooked],
   });
 
-
   server.run({
     hostname: "localhost",
-    port: 4000
+    port: 4000,
   });
   let response = await members.fetch.get("http://localhost:4000/", {
     headers: {
@@ -145,14 +144,14 @@ members.test("middleware_test.ts | server before_response: pass", async () => {
 members.test("middleware_test.ts | server before_request: missing header", async () => {
   let server = new members.MockServer({
     middleware: {
-        before_request: [BeforeRequest],
+      before_request: [BeforeRequest],
     },
     resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run({
     hostname: "localhost",
-    port: 5000
+    port: 5000,
   });
 
   let response = await members.fetch.get("http://localhost:5000/");
@@ -171,14 +170,14 @@ members.test("middleware_test.ts | server before_request: missing header", async
 members.test("middleware_test.ts | server before_request: wrong header", async () => {
   let server = new members.MockServer({
     middleware: {
-        before_request: [BeforeRequest],
+      before_request: [BeforeRequest],
     },
     resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run({
     hostname: "localhost",
-    port: 6000
+    port: 6000,
   });
 
   let response = await members.fetch.get("http://localhost:6000/", {
@@ -201,14 +200,14 @@ members.test("middleware_test.ts | server before_request: wrong header", async (
 members.test("middleware_test.ts | server before_request: pass", async () => {
   let server = new members.MockServer({
     middleware: {
-        before_request: [BeforeRequest],
+      before_request: [BeforeRequest],
     },
     resources: [ResourceWithMiddlewareHooked],
   });
 
   server.run({
     hostname: "localhost",
-    port: 7000
+    port: 7000,
   });
 
   let response = await members.fetch.get("http://localhost:7000/", {

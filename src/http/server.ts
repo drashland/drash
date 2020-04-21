@@ -73,7 +73,10 @@ export class Server {
    *
    * @property any middleware
    */
-  protected middleware: { before_request?: Drash.Http.Middleware[]; after_request?: Drash.Http.Middleware[] } = {};
+  protected middleware: {
+    before_request?: Drash.Http.Middleware[];
+    after_request?: Drash.Http.Middleware[];
+  } = {};
 
   /**
    * @description
@@ -599,16 +602,16 @@ export class Server {
   protected addMiddleware(middleware: any): void {
     // Add server-level middleware
     if (middleware.before_request != null) {
-        this.middleware.before_request = [];
-        for (const middlewareClass of middleware.before_request) {
-            this.middleware.before_request.push(middlewareClass);
-        }
+      this.middleware.before_request = [];
+      for (const middlewareClass of middleware.before_request) {
+        this.middleware.before_request.push(middlewareClass);
+      }
     }
     if (middleware.after_request != null) {
-        this.middleware.after_request = [];
-        for (const middlewareClass of middleware.after_request) {
-            this.middleware.after_request.push(middlewareClass);
-        }
+      this.middleware.after_request = [];
+      for (const middlewareClass of middleware.after_request) {
+        this.middleware.after_request.push(middlewareClass);
+      }
     }
   }
 

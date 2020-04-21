@@ -7,7 +7,7 @@ import members from "../tests/members.ts";
 import serverTwo from "./app_server_two.ts";
 serverTwo.run({
   hostname: "localhost",
-  port: 1667
+  port: 1667,
 });
 
 members.test("ViewResource - Template Engine", async () => {
