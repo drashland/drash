@@ -7,12 +7,7 @@
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
 // Decorators
-import {
-    MiddlewareFunction as MiddlewareFunctionType,
-    MiddlewareType as MiddlewareInterface,
-    MiddlewareMethodHandler as MiddlewareMethodFunctionHandler,
-    MiddlewareClassHandler as MiddlewareClassFunctionHandler,
-} from "./src/decorators/middleware.ts";
+import { Middleware as MiddlewareHandler, MiddlewareFunction as MiddlewareFunctionDefinition, MiddlewareType as MiddlewareTypeDefinition } from "./src/decorators/middleware.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
@@ -50,82 +45,81 @@ import { StringService as BaseStringService } from "./src/services/string_servic
 import * as util_members from "./src/util/members.ts";
 
 export namespace Drash {
-    // TODO: Remove this when the docs don't need it
-    export namespace Util {
-        export const Exports = util_members;
-    }
+  // TODO: Remove this when the docs don't need it
+  export namespace Util {
+    export const Exports = util_members;
+  }
 
-    export namespace Decorators {
-        export type MiddlewareFunction = MiddlewareFunctionType;
-        export type MiddlewareType = MiddlewareInterface;
-        export const MiddlewareMethod = MiddlewareMethodFunctionHandler;
-        export const MiddlewareClass = MiddlewareClassFunctionHandler;
-    }
+  export namespace Decorators {
+    export type MiddlewareFunction = MiddlewareFunctionDefinition;
+    export type MiddlewareType = MiddlewareTypeDefinition;
+    export const Middleware = MiddlewareHandler;
+  }
 
-    export namespace Compilers {
-        export class TemplateEngine extends BaseTemplateEngine {}
-    }
+  export namespace Compilers {
+    export class TemplateEngine extends BaseTemplateEngine {}
+  }
 
-    export namespace Dictionaries {
-        export const LogLevels = log_levels.LogLevels;
-        export const MimeDb = mime_db;
-    }
+  export namespace Dictionaries {
+    export const LogLevels = log_levels.LogLevels;
+    export const MimeDb = mime_db;
+  }
 
-    export namespace Exceptions {
-        export class HttpException extends BaseHttpException {}
-        export class HttpMiddlewareException extends BaseHttpMiddlewareException {}
-        export class HttpResponseException extends BaseHttpResponseException {}
-        export class NameCollisionException extends BaseNameCollisionException {}
-    }
+  export namespace Exceptions {
+    export class HttpException extends BaseHttpException {}
+    export class HttpMiddlewareException extends BaseHttpMiddlewareException {}
+    export class HttpResponseException extends BaseHttpResponseException {}
+    export class NameCollisionException extends BaseNameCollisionException {}
+  }
 
-    export namespace CoreLoggers {
-        export class ConsoleLogger extends BaseConsoleLogger {}
-        export class FileLogger extends BaseFileLogger {}
-        export abstract class Logger extends BaseLogger {}
-    }
+  export namespace CoreLoggers {
+    export class ConsoleLogger extends BaseConsoleLogger {}
+    export class FileLogger extends BaseFileLogger {}
+    export abstract class Logger extends BaseLogger {}
+  }
 
-    export namespace Http {
-        export abstract class Middleware extends BaseMiddleware {}
-        export class Resource extends BaseResource {}
-        export class Response extends BaseResponse {}
-        export class Server extends BaseServer {}
-    }
+  export namespace Http {
+    export abstract class Middleware extends BaseMiddleware {}
+    export class Resource extends BaseResource {}
+    export class Response extends BaseResponse {}
+    export class Server extends BaseServer {}
+  }
 
-    export namespace Interfaces {
-        export interface LogLevelStructure extends BaseLogLevelStructure {}
-        export interface LoggerConfigs extends BaseLoggerConfigs {}
-        export interface ParsedRequestBody extends BaseParsedRequestBody {}
-        export interface ServerConfigs extends BaseServerConfigs {}
-        export interface ResponseOptions extends BaseResponseOptions {}
-    }
+  export namespace Interfaces {
+    export interface LogLevelStructure extends BaseLogLevelStructure {}
+    export interface LoggerConfigs extends BaseLoggerConfigs {}
+    export interface ParsedRequestBody extends BaseParsedRequestBody {}
+    export interface ServerConfigs extends BaseServerConfigs {}
+    export interface ResponseOptions extends BaseResponseOptions {}
+  }
 
-    export namespace Services {
-        export class HttpService extends BaseHttpService {}
-        export class HttpRequestService extends BaseHttpRequestService {}
-        export class StringService extends BaseStringService {}
-    }
+  export namespace Services {
+    export class HttpService extends BaseHttpService {}
+    export class HttpRequestService extends BaseHttpRequestService {}
+    export class StringService extends BaseStringService {}
+  }
 
-    /**
+  /**
      * A property to hold all loggers added via Drash.addLogger(). This property
      * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
      * a namespace for loggers.
      *
      * @property Drash.Loggers Loggers
      */
-    export const Loggers: any = {};
-    export type Loggers = {};
+  export const Loggers: any = {};
+  export type Loggers = {};
 
-    /**
+  /**
      * A property to hold all members added via Drash.addMember(). This property
      * allows users to access members via Drash.Members.SomeMember and acts like
      * a namespace for members that are external to Drash.
      *
      * @property Drash.Members Members
      */
-    export const Members: any = {};
-    export type Members = {};
+  export const Members: any = {};
+  export type Members = {};
 
-    /**
+  /**
      * Add a member to the Members namespace. After adding a member, you can use
      * the member via Drash.Members.YourMember.doSomething().
      *
@@ -134,14 +128,16 @@ export namespace Drash {
      * @param any member
      *     The member.
      */
-    export function addMember(name: string, member: any) {
-        if (Members[name]) {
-            throw new Exceptions.NameCollisionException(`Members must be unique: "${name}" was already added.`);
-        }
-        Members[name] = member;
+  export function addMember(name: string, member: any) {
+    if (Members[name]) {
+      throw new Exceptions.NameCollisionException(
+        `Members must be unique: "${name}" was already added.`,
+      );
     }
+    Members[name] = member;
+  }
 
-    /**
+  /**
      * Add a logger to the Loggers namespace. After adding a logger, you can use
      * the logger via Drash.Loggers.YourLogger.doSomething().
      *
@@ -150,10 +146,12 @@ export namespace Drash {
      * @param any logger
      *     The logger.
      */
-    export function addLogger(name: string, logger: any) {
-        if (Loggers[name]) {
-            throw new Exceptions.NameCollisionException(`Loggers must be unique: "${name}" was already added.`);
-        }
-        Loggers[name] = logger;
+  export function addLogger(name: string, logger: any) {
+    if (Loggers[name]) {
+      throw new Exceptions.NameCollisionException(
+        `Loggers must be unique: "${name}" was already added.`,
+      );
     }
+    Loggers[name] = logger;
+  }
 }

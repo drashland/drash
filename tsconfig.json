@@ -1,0 +1,7 @@
+{
+    "compilerOptions": {
+        "noImplicitThis": false,
+        "strictBindCallApply": false,
+        "experimentalDecorators": true
+    }
+}

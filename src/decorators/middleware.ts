@@ -6,9 +6,7 @@ import { Drash } from "../../mod.ts";
  * @param server Contains the instance of the server.
  * @param response Contains the instance of the response.
  */
-export type MiddlewareFunction =
-    | ((request: any, server: Drash.Http.Server, response: Drash.Http.Response) => Promise<void>)
-    | ((request: any, server: Drash.Http.Server, response: Drash.Http.Response) => void);
+export type MiddlewareFunction = ((request: any, response: Drash.Http.Response) => Promise<void>) | ((request: any, response: Drash.Http.Response) => void);
 
 /**
  * @type MiddlewareType
@@ -27,50 +25,23 @@ export type MiddlewareType = {
     after_request?: MiddlewareFunction[];
 };
 
-/**
- * Executes the middleware function before or after the request at class level
- *
- * @param middlewares Contains all middleware to be run
- */
-export function MiddlewareClassHandler(middlewares: MiddlewareType) {
-    return function (constructor: Function) {
-        // Get all class methods
-        const methods = Object.getOwnPropertyDescriptors(constructor.prototype);
-        for (const method in methods) {
-            // ignore constructor
-            if (method == "constructor") {
-                continue;
-            }
-            const originalMethod = constructor.prototype[method];
-            constructor.prototype[method] = async function (...args: any[]) {
-                // Fetch function context
-                const { request, server, response } = Object.getOwnPropertyDescriptors(this);
-
-                // Execute before_request Middleware if exist
-                if (middlewares.before_request != null) {
-                    try {
-                        for (const fn of middlewares.before_request) {
-                            await fn(request.value, server.value, response.value);
-                        }
-                    } catch (error) {
-                        throw error;
-                    }
+export function Middleware(middlewares: MiddlewareType) {
+    return function (...args: any[]) {
+        switch (args.length) {
+            case 1:
+                // Class decorator
+                return ClassMiddleware(middlewares).apply(this, args);
+            case 2:
+                // Property decorator
+                break;
+            case 3:
+                if (typeof args[2] == "number") {
+                    // Parameter decorator
+                    break;
                 }
-                // Execute original function
-                const result = originalMethod.apply(this, args);
-
-                // Execute after_request Middleware if exist
-                if (middlewares.after_request != null) {
-                    try {
-                        for (const fn of middlewares.after_request) {
-                            await fn(request.value, server.value, response.value);
-                        }
-                    } catch (error) {
-                        throw error;
-                    }
-                }
-                return result;
-            };
+                return MethodMiddleware(middlewares).apply(this, args);
+            default:
+                throw new Error("Not a valid decorator");
         }
     };
 }
@@ -80,37 +51,59 @@ export function MiddlewareClassHandler(middlewares: MiddlewareType) {
  *
  * @param middlewares Contains all middleware to be run
  */
-export function MiddlewareMethodHandler(middlewares: MiddlewareType) {
+function MethodMiddleware(middlewares: MiddlewareType) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-        const originalMethod = descriptor.value;
+        const originalFunction = descriptor.value;
         descriptor.value = async function (...args: any[]) {
-            // Fetch function context
-            const { request, server, response } = Object.getOwnPropertyDescriptors(this);
-
+            const { request, response } = Object.getOwnPropertyDescriptors(this);
             // Execute before_request Middleware if exist
             if (middlewares.before_request != null) {
-                try {
-                    for (const fn of middlewares.before_request) {
-                        await fn(request.value, server.value, response.value);
-                    }
-                } catch (error) {
-                    throw error;
+                for (const middleware of middlewares.before_request) {
+                    await middleware(request.value, response.value);
                 }
             }
-            // Execute original function
-            const result = originalMethod.apply(this, args);
+
+            // Execute function
+            const result = originalFunction.apply(this, args);
 
             // Execute after_request Middleware if exist
             if (middlewares.after_request != null) {
-                try {
-                    for (const fn of middlewares.after_request) {
-                        await fn(request.value, server.value, response.value);
-                    }
-                } catch (error) {
-                    throw error;
+                for (const middleware of middlewares.after_request) {
+                    await middleware(request.value, result);
                 }
             }
             return result;
+        };
+
+        return descriptor;
+    };
+}
+
+/**
+ * Executes the middleware function before or after the request at class level
+ *
+ * @param middlewares Contains all middleware to be run
+ */
+function ClassMiddleware(middlewares: MiddlewareType) {
+    return function <T extends { new (...args: any[]): {} }>(constr: T) {
+        return class extends constr {
+            constructor(...args: any[]) {
+                const request = args[0];
+                const response = args[1];
+                // Execute before_request Middleware if exist
+                if (middlewares.before_request != null) {
+                    for (const middleware of middlewares.before_request) {
+                        middleware(request, response);
+                    }
+                }
+                super(...args);
+                // Execute after_request Middleware if exist
+                if (middlewares.after_request != null) {
+                    for (const middleware of middlewares.after_request) {
+                        middleware(request, response);
+                    }
+                }
+            }
         };
     };
 }
