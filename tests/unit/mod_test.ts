@@ -92,3 +92,8 @@ members.test("mod_test.ts | Drash.addLogger(): names must be unique", () => {
     'Loggers must be unique: "TestLogger" was already added.',
   );
 });
+
+members.test("mod_test.ts | Drash.version: must be current version", () => {
+  const version = members.Drash.version
+  members.assert.equals(version, "v0.41.0")
+})
