@@ -5,6 +5,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '"Please specify a coffee ID."');
@@ -12,6 +13,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '"Please specify a coffee ID."');
@@ -19,6 +21,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee//", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '"Not Found"');
@@ -26,6 +29,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/17", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '{"name":"Light"}');
@@ -33,6 +37,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/17/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '{"name":"Light"}');
@@ -40,6 +45,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/18", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '{"name":"Medium"}');
@@ -47,6 +53,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/18/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '{"name":"Medium"}');
@@ -54,6 +61,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/19", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '{"name":"Dark"}');
@@ -61,6 +69,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/19/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '{"name":"Dark"}');
@@ -68,6 +77,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.get("http://localhost:1667/coffee/20", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(
@@ -78,6 +88,7 @@ members.test("CoffeeResource", async () => {
   response = await members.fetch.post("http://localhost:1667/coffee/17/", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      token: "zeToken",
     },
   });
   members.assert.equals(await response.text(), '"Method Not Allowed"');
@@ -91,6 +102,7 @@ members.test("CoffeeResource", async () => {
       headers: {
         "Content-Type": "application/json",
         "Content-Length": JSON.stringify(data).length,
+        token: "zeToken",
       },
       body: data,
     },

@@ -4,6 +4,11 @@ members.test("TemplatEngineNullDataResource", async () => {
 
   response = await members.fetch.get(
     "http://localhost:1667/template-engine-null-data",
+    {
+      headers: {
+        token: "zeToken",
+      },
+    },
   );
   members.assert.equals(
     await response.text(),

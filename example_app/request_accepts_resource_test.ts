@@ -10,7 +10,8 @@ members.test("RequestAcceptsResource", async () => {
     "http://localhost:1667/request-accepts?typeToCheck=" + typeToCheck,
     {
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
+        token: "zeToken",
       },
     },
   );
@@ -23,7 +24,8 @@ members.test("RequestAcceptsResource", async () => {
     "http://localhost:1667/request-accepts?typeToCheck=" + typeToCheck,
     {
       headers: {
-        "Accept": "text/html",
+        Accept: "text/html",
+        token: "zeToken",
       },
     },
   );
@@ -34,7 +36,8 @@ members.test("RequestAcceptsResource", async () => {
   // Accepts the first content type - tests when calling the `accepts` method with an array and finds a match
   response = await members.fetch.get("http://localhost:1667/request-accepts", {
     headers: {
-      "Accept": "text/xml,text/html,application/json;0.5;something",
+      Accept: "text/xml,text/html,application/json;0.5;something",
+      token: "zeToken",
     },
   });
   json = JSON.parse(await response.json());
@@ -44,7 +47,8 @@ members.test("RequestAcceptsResource", async () => {
   // Accepts the first content type - tests when calling the `accepts` method with an array with no match
   response = await members.fetch.get("http://localhost:1667/request-accepts", {
     headers: {
-      "Accept": "text/js,text/php,text/python;0.5;something", // random stuff the resource isn't looking for
+      Accept: "text/js,text/php,text/python;0.5;something", // random stuff the resource isn't looking for
+      token: "zeToken",
     },
   });
   json = JSON.parse(await response.json());

@@ -6,7 +6,8 @@ members.test("RequestAcceptsTwoResource", async () => {
     "http://localhost:1667/request-accepts-two",
     {
       headers: {
-        "Accept": "text/html;application/json",
+        Accept: "text/html;application/json",
+        token: "zeToken",
       },
     },
   );
@@ -19,7 +20,8 @@ members.test("RequestAcceptsTwoResource", async () => {
     "http://localhost:1667/request-accepts-two",
     {
       headers: {
-        "Accept": "application/json;text/xml",
+        Accept: "application/json;text/xml",
+        token: "zeToken",
       },
     },
   );
@@ -32,7 +34,8 @@ members.test("RequestAcceptsTwoResource", async () => {
     "http://localhost:1667/request-accepts-two",
     {
       headers: {
-        "Accept": "text/xml",
+        Accept: "text/xml",
+        token: "zeToken",
       },
     },
   );

@@ -7,6 +7,9 @@ members.test("FilesResource", async () => {
 
   response = await fetch("http://localhost:1667/files", {
     method: "POST",
+    headers: {
+      token: "zeToken",
+    },
     body: formData,
   });
   members.assert.equals(await response.text(), '"John"');

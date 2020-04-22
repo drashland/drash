@@ -8,6 +8,9 @@ members.test("ViewResource - Basic HTML", async () => {
     "http://localhost:1667/view?data=false&file=/index.html",
     {
       method: "GET",
+      headers: {
+        token: "zeToken",
+      },
     },
   );
   members.assert.equals(

@@ -1,3 +1,6 @@
+// Decorators
+import "./unit/decorators/middleware_test.ts";
+
 // Dictionaries
 import "./unit/dictionaries/log_levels_test.ts";
 
