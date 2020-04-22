@@ -59,58 +59,64 @@ members.test("middleware_test.ts | server: wrong CSRF token", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server before_response: missing header", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      after_request: [AfterRequest],
-    },
-    resources: [ResourceWithMiddlewareHooked],
-  });
+members.test(
+  "middleware_test.ts | server before_response: missing header",
+  async () => {
+    let server = new members.MockServer({
+      middleware: {
+        after_request: [AfterRequest],
+      },
+      resources: [ResourceWithMiddlewareHooked],
+    });
 
-  server.run({
-    hostname: "localhost",
-    port: 1777,
-  });
+    server.run({
+      hostname: "localhost",
+      port: 1777,
+    });
 
-  let response = await members.fetch.get("http://localhost:1777/");
+    let response = await members.fetch.get("http://localhost:1777/");
 
-  members.assert.responseJsonEquals(
-    await response.text(),
-    "Missing header, guy.",
-  );
+    members.assert.responseJsonEquals(
+      await response.text(),
+      "Missing header, guy.",
+    );
 
-  server.close();
-});
+    server.close();
+  },
+);
 
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server before_response: wrong header", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      after_request: [AfterRequest],
-    },
-    resources: [ResourceWithMiddlewareHooked],
-  });
+members.test(
+  "middleware_test.ts | server before_response: wrong header",
+  async () => {
+    let server = new members.MockServer({
+      middleware: {
+        after_request: [AfterRequest],
+      },
+      resources: [ResourceWithMiddlewareHooked],
+    });
 
-  server.run({
-    hostname: "localhost",
-    port: 3000,
-  });
+    server.run({
+      hostname: "localhost",
+      port: 3000,
+    });
 
-  let response = await members.fetch.get("http://localhost:3000/", {
-    headers: {
-      send_response: "yes please",
-    },
-  });
+    let response = await members.fetch.get("http://localhost:3000/", {
+      headers: {
+        send_response: "yes please",
+      },
+    });
 
-  members.assert.responseJsonEquals(
-    await response.text(),
-    "Ha... try again. Close though.",
-  );
+    members.assert.responseJsonEquals(
+      await response.text(),
+      "Ha... try again. Close though.",
+    );
 
-  server.close();
-});
+    server.close();
+  },
+);
 
 /**
  * @covers Server.handleHttpRequest()
@@ -141,58 +147,64 @@ members.test("middleware_test.ts | server before_response: pass", async () => {
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server before_request: missing header", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      before_request: [BeforeRequest],
-    },
-    resources: [ResourceWithMiddlewareHooked],
-  });
+members.test(
+  "middleware_test.ts | server before_request: missing header",
+  async () => {
+    let server = new members.MockServer({
+      middleware: {
+        before_request: [BeforeRequest],
+      },
+      resources: [ResourceWithMiddlewareHooked],
+    });
 
-  server.run({
-    hostname: "localhost",
-    port: 5000,
-  });
+    server.run({
+      hostname: "localhost",
+      port: 5000,
+    });
 
-  let response = await members.fetch.get("http://localhost:5000/");
+    let response = await members.fetch.get("http://localhost:5000/");
 
-  members.assert.responseJsonEquals(
-    await response.text(),
-    "Missing header, guy.",
-  );
+    members.assert.responseJsonEquals(
+      await response.text(),
+      "Missing header, guy.",
+    );
 
-  server.close();
-});
+    server.close();
+  },
+);
 
 /**
  * @covers Server.handleHttpRequest()
  */
-members.test("middleware_test.ts | server before_request: wrong header", async () => {
-  let server = new members.MockServer({
-    middleware: {
-      before_request: [BeforeRequest],
-    },
-    resources: [ResourceWithMiddlewareHooked],
-  });
+members.test(
+  "middleware_test.ts | server before_request: wrong header",
+  async () => {
+    let server = new members.MockServer({
+      middleware: {
+        before_request: [BeforeRequest],
+      },
+      resources: [ResourceWithMiddlewareHooked],
+    });
 
-  server.run({
-    hostname: "localhost",
-    port: 6000,
-  });
+    server.run({
+      hostname: "localhost",
+      port: 6000,
+    });
 
-  let response = await members.fetch.get("http://localhost:6000/", {
-    headers: {
-      before: "yes",
-    },
-  });
+    let response = await members.fetch.get("http://localhost:6000/", {
+      headers: {
+        before: "yes",
+      },
+    });
 
-  members.assert.responseJsonEquals(
-    await response.text(),
-    "Ha... try again. Close though.",
-  );
+    members.assert.responseJsonEquals(
+      await response.text(),
+      "Ha... try again. Close though.",
+    );
 
-  server.close();
-});
+    server.close();
+  },
+);
 
 /**
  * @covers Server.handleHttpRequest()
