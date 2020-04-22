@@ -56,6 +56,15 @@ export namespace Drash {
     export const Exports = util_members;
   }
 
+  /**
+   * @description
+   *     Drash version. Also represents what Deno version is
+   *     supported.
+   *
+   * @property string version
+   */
+  export const version: string = "v0.41.0";
+
   export namespace Decorators {
     export type MiddlewareFunction = MiddlewareFunctionDefinition;
     export type MiddlewareType = MiddlewareTypeDefinition;
