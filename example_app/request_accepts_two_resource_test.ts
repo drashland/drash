@@ -10,7 +10,10 @@ members.test("RequestAcceptsTwoResource", async () => {
       },
     },
   );
-  members.assert.equals(await response.text(), `<div>response: text/html</div>`);
+  members.assert.equals(
+    await response.text(),
+    `<div>response: text/html</div>`,
+  );
 
   response = await members.fetch.get(
     "http://localhost:1667/request-accepts-two",
@@ -20,7 +23,10 @@ members.test("RequestAcceptsTwoResource", async () => {
       },
     },
   );
-  members.assert.equals(await response.text(), `{"response":"application/json"}`);
+  members.assert.equals(
+    await response.text(),
+    `{"response":"application/json"}`,
+  );
 
   response = await members.fetch.get(
     "http://localhost:1667/request-accepts-two",

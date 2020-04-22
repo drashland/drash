@@ -27,7 +27,7 @@ import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_conf
 import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
 import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
-import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts"
+import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
@@ -48,7 +48,7 @@ export namespace Drash {
   }
 
   export namespace Compilers {
-    export class TemplateEngine extends BaseTemplateEngine { }
+    export class TemplateEngine extends BaseTemplateEngine {}
   }
 
   export namespace Dictionaries {
@@ -57,37 +57,37 @@ export namespace Drash {
   }
 
   export namespace Exceptions {
-    export class HttpException extends BaseHttpException { }
-    export class HttpMiddlewareException extends BaseHttpMiddlewareException { }
-    export class HttpResponseException extends BaseHttpResponseException { }
-    export class NameCollisionException extends BaseNameCollisionException { }
+    export class HttpException extends BaseHttpException {}
+    export class HttpMiddlewareException extends BaseHttpMiddlewareException {}
+    export class HttpResponseException extends BaseHttpResponseException {}
+    export class NameCollisionException extends BaseNameCollisionException {}
   }
 
   export namespace CoreLoggers {
-    export class ConsoleLogger extends BaseConsoleLogger { }
-    export class FileLogger extends BaseFileLogger { }
-    export abstract class Logger extends BaseLogger { }
+    export class ConsoleLogger extends BaseConsoleLogger {}
+    export class FileLogger extends BaseFileLogger {}
+    export abstract class Logger extends BaseLogger {}
   }
 
   export namespace Http {
-    export abstract class Middleware extends BaseMiddleware { }
-    export class Resource extends BaseResource { }
-    export class Response extends BaseResponse { }
-    export class Server extends BaseServer { }
+    export abstract class Middleware extends BaseMiddleware {}
+    export class Resource extends BaseResource {}
+    export class Response extends BaseResponse {}
+    export class Server extends BaseServer {}
   }
 
   export namespace Interfaces {
-    export interface LogLevelStructure extends BaseLogLevelStructure { }
-    export interface LoggerConfigs extends BaseLoggerConfigs { }
-    export interface ParsedRequestBody extends BaseParsedRequestBody { }
-    export interface ServerConfigs extends BaseServerConfigs { }
-    export interface ResponseOptions extends BaseResponseOptions { }
+    export interface LogLevelStructure extends BaseLogLevelStructure {}
+    export interface LoggerConfigs extends BaseLoggerConfigs {}
+    export interface ParsedRequestBody extends BaseParsedRequestBody {}
+    export interface ServerConfigs extends BaseServerConfigs {}
+    export interface ResponseOptions extends BaseResponseOptions {}
   }
 
   export namespace Services {
-    export class HttpService extends BaseHttpService { }
-    export class HttpRequestService extends BaseHttpRequestService { }
-    export class StringService extends BaseStringService { }
+    export class HttpService extends BaseHttpService {}
+    export class HttpRequestService extends BaseHttpRequestService {}
+    export class StringService extends BaseStringService {}
   }
 
   /**
