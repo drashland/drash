@@ -6,6 +6,15 @@
 // Compilers
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
+// Decorators
+import {
+  Middleware as MiddlewareHandler,
+  MiddlewareFunction as MiddlewareFunctionDefinition,
+  MiddlewareType as MiddlewareTypeDefinition,
+  MethodMiddleware as MethodMiddlewareHandler,
+  ClassMiddleware as ClassMiddlewareHandler,
+} from "./src/decorators/middleware.ts";
+
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
 import mime_db from "./src/dictionaries/mime_db.json";
@@ -45,6 +54,14 @@ export namespace Drash {
   // TODO: Remove this when the docs don't need it
   export namespace Util {
     export const Exports = util_members;
+  }
+
+  export namespace Decorators {
+    export type MiddlewareFunction = MiddlewareFunctionDefinition;
+    export type MiddlewareType = MiddlewareTypeDefinition;
+    export const Middleware = MiddlewareHandler;
+    export const MethodMiddleware = MethodMiddlewareHandler;
+    export const ClassMiddleware = ClassMiddlewareHandler;
   }
 
   export namespace Compilers {
@@ -91,34 +108,34 @@ export namespace Drash {
   }
 
   /**
-   * A property to hold all loggers added via Drash.addLogger(). This property
-   * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
-   * a namespace for loggers.
-   *
-   * @property Drash.Loggers Loggers
-   */
+     * A property to hold all loggers added via Drash.addLogger(). This property
+     * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
+     * a namespace for loggers.
+     *
+     * @property Drash.Loggers Loggers
+     */
   export const Loggers: any = {};
   export type Loggers = {};
 
   /**
-   * A property to hold all members added via Drash.addMember(). This property
-   * allows users to access members via Drash.Members.SomeMember and acts like
-   * a namespace for members that are external to Drash.
-   *
-   * @property Drash.Members Members
-   */
+     * A property to hold all members added via Drash.addMember(). This property
+     * allows users to access members via Drash.Members.SomeMember and acts like
+     * a namespace for members that are external to Drash.
+     *
+     * @property Drash.Members Members
+     */
   export const Members: any = {};
   export type Members = {};
 
   /**
-   * Add a member to the Members namespace. After adding a member, you can use
-   * the member via Drash.Members.YourMember.doSomething().
-   *
-   * @param string name
-   *     The member's name which can be accessed via Drash.Members[name].
-   * @param any member
-   *     The member.
-   */
+     * Add a member to the Members namespace. After adding a member, you can use
+     * the member via Drash.Members.YourMember.doSomething().
+     *
+     * @param string name
+     *     The member's name which can be accessed via Drash.Members[name].
+     * @param any member
+     *     The member.
+     */
   export function addMember(name: string, member: any) {
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
@@ -129,14 +146,14 @@ export namespace Drash {
   }
 
   /**
-   * Add a logger to the Loggers namespace. After adding a logger, you can use
-   * the logger via Drash.Loggers.YourLogger.doSomething().
-   *
-   * @param string name
-   *     The logger's name which can be accessed via Drash.Members[name].
-   * @param any logger
-   *     The logger.
-   */
+     * Add a logger to the Loggers namespace. After adding a logger, you can use
+     * the logger via Drash.Loggers.YourLogger.doSomething().
+     *
+     * @param string name
+     *     The logger's name which can be accessed via Drash.Members[name].
+     * @param any logger
+     *     The logger.
+     */
   export function addLogger(name: string, logger: any) {
     if (Loggers[name]) {
       throw new Exceptions.NameCollisionException(
