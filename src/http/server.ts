@@ -490,6 +490,7 @@ export class Server {
       options.port = this.port;
     }
     this.hostname = options.hostname;
+    this.port = options.port;
     this.deno_server = serve(options);
     for await (const request of this.deno_server) {
       try {
@@ -522,6 +523,7 @@ export class Server {
       options.port = this.port;
     }
     this.hostname = options.hostname;
+    this.port = options.port;
     this.deno_server = serveTLS(options);
     for await (const request of this.deno_server) {
       try {
