@@ -58,7 +58,7 @@ export function Middleware(middlewares: MiddlewareType) {
  *
  * @param middlewares Contains all middleware to be run
  */
-function MethodMiddleware(middlewares: MiddlewareType) {
+export function MethodMiddleware(middlewares: MiddlewareType) {
   return function (
     target: any,
     propertyKey: string,
@@ -95,7 +95,7 @@ function MethodMiddleware(middlewares: MiddlewareType) {
  *
  * @param middlewares Contains all middleware to be run
  */
-function ClassMiddleware(middlewares: MiddlewareType) {
+export function ClassMiddleware(middlewares: MiddlewareType) {
   return function <T extends { new (...args: any[]): {} }>(constr: T) {
     return class extends constr {
       constructor(...args: any[]) {

@@ -11,6 +11,8 @@ import {
   Middleware as MiddlewareHandler,
   MiddlewareFunction as MiddlewareFunctionDefinition,
   MiddlewareType as MiddlewareTypeDefinition,
+  MethodMiddleware as MethodMiddlewareHandler,
+  ClassMiddleware as ClassMiddlewareHandler,
 } from "./src/decorators/middleware.ts";
 
 // Dictionaries
@@ -58,6 +60,8 @@ export namespace Drash {
     export type MiddlewareFunction = MiddlewareFunctionDefinition;
     export type MiddlewareType = MiddlewareTypeDefinition;
     export const Middleware = MiddlewareHandler;
+    export const MethodMiddleware = MethodMiddlewareHandler;
+    export const ClassMiddleware = ClassMiddlewareHandler;
   }
 
   export namespace Compilers {
