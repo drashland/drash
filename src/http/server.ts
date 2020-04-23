@@ -3,6 +3,7 @@ import {
   HTTPOptions,
   HTTPSOptions,
   STATUS_TEXT,
+  Server as DenoServer,
   Status,
   serve,
   serveTLS,
@@ -34,7 +35,7 @@ export class Server {
    *
    *     serve() is imported from https://deno.land/x/http/server.ts.
    *
-   * @property any deno_server
+   * @property DenoServer deno_server
    */
   public deno_server: any;
 
@@ -471,11 +472,10 @@ export class Server {
    * @param HTTPOptions options
    *     The HTTPOptions interface from https://deno.land/std/http/server.ts.
    *
-   * @return Promise<void>
-   *     This method just listens for requests at the hostname you provide in the
-   *     configs.
+   * @return Promise<DenoServer>
+   *     Returns the Deno server from the serve() call.
    */
-  public async run(options: HTTPOptions): Promise<void> {
+  public async run(options: HTTPOptions): Promise<DenoServer> {
     if (!options.hostname) {
       options.hostname = this.hostname;
     }
@@ -485,13 +485,16 @@ export class Server {
     this.hostname = options.hostname;
     this.port = options.port;
     this.deno_server = serve(options);
-    for await (const request of this.deno_server) {
-      try {
-        this.handleHttpRequest(request);
-      } catch (error) {
-        this.handleHttpRequestError(request, this.httpErrorResponse(500));
+    (async () => {
+      for await (const request of this.deno_server) {
+        try {
+          this.handleHttpRequest(request);
+        } catch (error) {
+          this.handleHttpRequestError(request, this.httpErrorResponse(500));
+        }
       }
-    }
+    })();
+    return this.deno_server;
   }
 
   /**
@@ -504,11 +507,10 @@ export class Server {
    * @param HTTPSOptions options
    *     The HTTPSOptions interface from https://deno.land/std/http/server.ts.
    *
-   * @return Promise<void>
-   *     This method just listens for requests at the hostname you provide in
-   *     the configs.
+   * @return Promise<DenoServer>
+   *     Returns the Deno server from the serveTLS() call.
    */
-  public async runTLS(options: HTTPSOptions): Promise<void> {
+  public async runTLS(options: HTTPSOptions): Promise<DenoServer> {
     if (!options.hostname) {
       options.hostname = this.hostname;
     }
@@ -518,13 +520,16 @@ export class Server {
     this.hostname = options.hostname;
     this.port = options.port;
     this.deno_server = serveTLS(options);
-    for await (const request of this.deno_server) {
-      try {
-        this.handleHttpRequest(request);
-      } catch (error) {
-        this.handleHttpRequestError(request, this.httpErrorResponse(500));
+    (async () => {
+      for await (const request of this.deno_server) {
+        try {
+          this.handleHttpRequest(request);
+        } catch (error) {
+          this.handleHttpRequestError(request, this.httpErrorResponse(500));
+        }
       }
-    }
+    })();
+    return this.deno_server;
   }
 
   /**
