@@ -61,9 +61,7 @@ export class Server {
    *
    * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
    */
-  public logger:
-    | Drash.CoreLoggers.ConsoleLogger
-    | Drash.CoreLoggers.FileLogger;
+  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
 
   /**
    * @description
@@ -89,8 +87,13 @@ export class Server {
    * @property any middleware
    */
   protected middleware: {
-    before_request?: Drash.Http.Middleware[];
-    after_request?: Drash.Http.Middleware[];
+    before_request?: Array<
+      ((request: any) => Promise<void>) | ((request: any) => void)
+    >;
+    after_request?: Array<
+        | ((request: any, response: Drash.Http.Response) => Promise<void>)
+        | ((request: any, response: Drash.Http.Response) => void)
+    >;
   } = {};
 
   /**
@@ -194,8 +197,8 @@ export class Server {
     };
     const config: any = this.configs.memory_allocation;
     if (config && config.multipart_form_data) {
-      options.memory_allocation.multipart_form_data = config
-        .multipart_form_data;
+      options.memory_allocation.multipart_form_data =
+        config.multipart_form_data;
     }
     request = await new Drash.Services.HttpRequestService().hydrate(
       request,
@@ -236,7 +239,7 @@ export class Server {
 
       let resourceClass = this.getResourceClass(request);
 
-      this.executeMiddlewareServerLevelBeforeRequest(request);
+      await this.executeMiddlewareServerLevelBeforeRequest(request);
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
@@ -259,8 +262,7 @@ export class Server {
       resource = this.getResourceObject(resourceClass, request);
       request.resource = resource;
       this.logDebug(
-        "Using `" +
-          resource.constructor.name +
+        "Using `" + resource.constructor.name +
           "` resource class to handle the request.",
       );
 
@@ -271,7 +273,7 @@ export class Server {
       }
       response = await resource[request.method.toUpperCase()]();
 
-      this.executeMiddlewareServerLevelAfterRequest(
+      await this.executeMiddlewareServerLevelAfterRequest(
         request,
         resource,
         response,
@@ -306,12 +308,12 @@ export class Server {
    * @return any
    *     See `Drash.Http.Response.send()`.
    */
-  public handleHttpRequestError(
+  public async handleHttpRequestError(
     request: any,
     error: any,
     resource: Drash.Http.Resource | any = {},
     response: Drash.Http.Response | any = {},
-  ): any {
+  ): Promise<any> {
     this.logDebug(
       `Error occurred while handling request: ${request.method} ${request.url}`,
     );
@@ -338,9 +340,7 @@ export class Server {
       template_engine: this.configs.template_engine,
     });
     response.status_code = error.code ? error.code : null;
-    response.body = error.message
-      ? error.message
-      : response.getStatusMessage();
+    response.body = error.message ? error.message : response.getStatusMessage();
 
     this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
@@ -349,7 +349,11 @@ export class Server {
     );
 
     try {
-      this.executeMiddlewareServerLevelAfterRequest(request, null, response);
+      await this.executeMiddlewareServerLevelAfterRequest(
+        request,
+        null,
+        response,
+      );
     } catch (error) {
       // Do nothing. The `executeMiddlewareServerLevelAfterRequest()` method is
       // run once in `handleHttpRequest()`. We run this method a second time
@@ -379,8 +383,7 @@ export class Server {
     let body: any;
     try {
       body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
-    } catch (error) {
-    }
+    } catch (error) {}
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logDebug("/favicon.ico requested.");
@@ -435,10 +438,10 @@ export class Server {
   }
 
   /**
-   * 
-   * @param resourceClass 
-   * @param request 
-   * 
+   *
+   * @param resourceClass
+   * @param request
+   *
    * @return resourceClass
    *     Returns an instance of the resourceClass passed in, and setting the
    *     `paths` and `middleware` properties
@@ -573,14 +576,10 @@ export class Server {
             path.replace(
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT,
-            ) +
-            "/?$",
+            ) + "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
             (path: string) => {
-              return path
-                .replace(":", "")
-                .replace("{", "")
-                .replace("}", "");
+              return path.replace(":", "").replace("{", "").replace("}", "");
             },
           ),
         };
@@ -593,14 +592,10 @@ export class Server {
             path.replace(
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT,
-            ) +
-            "/?$",
+            ) + "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
             (path: string) => {
-              return path
-                .replace(":", "")
-                .replace("{", "")
-                .replace("}", "");
+              return path.replace(":", "").replace("{", "").replace("}", "");
             },
           ),
         };
@@ -620,18 +615,18 @@ export class Server {
    *
    * @return void
    */
-  protected addMiddleware(middleware: any): void {
+  protected addMiddleware(middlewares: any): void {
     // Add server-level middleware
-    if (middleware.before_request != null) {
+    if (middlewares.before_request != null) {
       this.middleware.before_request = [];
-      for (const middlewareClass of middleware.before_request) {
-        this.middleware.before_request.push(middlewareClass);
+      for (const middleware of middlewares.before_request) {
+        this.middleware.before_request.push(middleware);
       }
     }
-    if (middleware.after_request != null) {
+    if (middlewares.after_request != null) {
       this.middleware.after_request = [];
-      for (const middlewareClass of middleware.after_request) {
-        this.middleware.after_request.push(middlewareClass);
+      for (const middleware of middlewares.after_request) {
+        this.middleware.after_request.push(middleware);
       }
     }
   }
@@ -662,16 +657,14 @@ export class Server {
    *
    * @return void
    */
-  protected executeMiddlewareServerLevelBeforeRequest(
+  protected async executeMiddlewareServerLevelBeforeRequest(
     request: any,
-  ): void {
+  ): Promise<void> {
     // Execute server-level middleware
-    if (this.middleware.before_request) {
-      this.middleware.before_request
-        .forEach((middlewareClass: any) => {
-          let middleware = new middlewareClass(request, this);
-          middleware.run();
-        });
+    if (this.middleware.before_request != null) {
+      for (const middleware of this.middleware.before_request) {
+        await middleware(request);
+      }
     }
   }
 
@@ -686,22 +679,15 @@ export class Server {
    *
    * @return void
    */
-  protected executeMiddlewareServerLevelAfterRequest(
+  protected async executeMiddlewareServerLevelAfterRequest(
     request: any,
     resource: Drash.Http.Resource | null,
     response: Drash.Http.Response | null,
-  ): void {
-    if (this.middleware.after_request) {
-      this.middleware.after_request
-        .forEach((middlewareClass: any) => {
-          let middleware = new middlewareClass(
-            request,
-            this,
-            resource,
-            response,
-          );
-          middleware.run();
-        });
+  ): Promise<void> {
+    if (this.middleware.after_request != null) {
+      for (const middleware of this.middleware.after_request) {
+        await middleware(request, response!);
+      }
     }
   }
 
@@ -818,10 +804,10 @@ export class Server {
   /**
    * @description
    *     Log a debug message
-   * 
+   *
    * @param string message
    *     Message to log
-   * 
+   *
    * @return void
    */
   protected logDebug(message: string): void {
