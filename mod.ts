@@ -13,7 +13,7 @@ import {
   MiddlewareType as MiddlewareTypeDefinition,
   MethodMiddleware as MethodMiddlewareHandler,
   ClassMiddleware as ClassMiddlewareHandler,
-} from "./src/decorators/middleware.ts";
+} from "./src/http/middleware.ts";
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
@@ -57,11 +57,6 @@ export namespace Drash {
   }
 
   export namespace Decorators {
-    export type MiddlewareFunction = MiddlewareFunctionDefinition;
-    export type MiddlewareType = MiddlewareTypeDefinition;
-    export const Middleware = MiddlewareHandler;
-    export const MethodMiddleware = MethodMiddlewareHandler;
-    export const ClassMiddleware = ClassMiddlewareHandler;
   }
 
   export namespace Compilers {
@@ -87,7 +82,11 @@ export namespace Drash {
   }
 
   export namespace Http {
-    export abstract class Middleware extends BaseMiddleware {}
+    export type MiddlewareFunction = MiddlewareFunctionDefinition;
+    export type MiddlewareType = MiddlewareTypeDefinition;
+    export const Middleware = MiddlewareHandler;
+    export const MethodMiddleware = MethodMiddlewareHandler;
+    export const ClassMiddleware = ClassMiddlewareHandler;
     export class Resource extends BaseResource {}
     export class Response extends BaseResponse {}
     export class Server extends BaseServer {}

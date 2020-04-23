@@ -1,91 +1,120 @@
 import { Drash } from "../../mod.ts";
 
 /**
- * @memberof Drash.Http
- * @class Middleware
- *
- * @description
- *     This is the base middleware class for all middleware classes.
+ * @type MiddlewareFunction
+ * @param request Contains the instance of the request.
+ * @param server Contains the instance of the server.
+ * @param response Contains the instance of the response.
  */
-export abstract class Middleware {
-  /**
-   * @description
-   *     A property to hold the name of this middleware class. This property is
-   *     used by Drash.Http.Server to help it store middleware in the correct
-   *     middleware_* property.
-   *
-   * @property string name
-   */
-  public name: string = "";
+export type MiddlewareFunction =
+  | ((request: any, response: Drash.Http.Response) => Promise<void>)
+  | ((request: any, response: Drash.Http.Response) => void);
 
-  /**
-   * @description
-   *     A property to hold the request object.
-   *
-   * @property any request
-   */
-  protected request: any;
+/**
+ * @type MiddlewareType
+ * @description
+ *     before_request?: MiddlewareFunction[]
+ *
+ *         An array that contains all the functions that will be run before a Drash.Http.Request is handled.
+ *
+ *     after_request: MiddlewareFunction[]
+ *
+ *         An array that contains all the functions that will be run after a Drash.Http.Request is handled.
+ *
+ */
+export type MiddlewareType = {
+  before_request?: MiddlewareFunction[];
+  after_request?: MiddlewareFunction[];
+};
 
-  /**
-   * @description
-   *     A property to hold the resource object. This property will only contain
-   *     the resource object if this middleware is a resource-level middleware.
-   *
-   * @property Drash.Http.Resource|null resource
-   */
-  protected resource: Drash.Http.Resource | null;
+/**
+ * Executes the middleware
+ * 
+ * @param middlewares Contains middlewares to be executed
+ */
+export function Middleware(middlewares: MiddlewareType) {
+  return function (this: any, ...args: any) {
+    switch (args.length) {
+      case 1:
+        // Class decorator
+        return ClassMiddleware(middlewares).apply(this, args);
+      case 2:
+        // Property decorator
+        break;
+      case 3:
+        if (typeof args[2] == "number") {
+          // Parameter decorator
+          break;
+        }
+        return MethodMiddleware(middlewares).apply(this, args);
+      default:
+        throw new Error("Not a valid decorator");
+    }
+  };
+}
 
-  /**
-   * @description
-   *     A property to hold the response object. This property will only contain
-   *     the response object if the server was able to get a response from the
-   *     resource.
-   *
-   * @property Drash.Http.Resource|null resource
-   */
-  protected response: Drash.Http.Response | null;
-
-  /**
-   * @description
-   *     A property to hold the server object handling this middleware.
-   *
-   * @property Drash.Http.Server server
-   */
-  protected server: Drash.Http.Server;
-
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
-
-  /**
-   * @param any request
-   *     The request object.
-   * @param Drash.Http.Server server
-   *     The server object handling this middleware.
-   * @param Drash.Http.Resource|null resource
-   *     (optional) If this is a resource-level middleware, then it will have
-   *     access to the resource that uses it.
-   * @param Drash.Http.Response|null response
-   *     (optional) The response object from the resource. This is only set if
-   *     this middleware is a resource-level middleware and the resource
-   *     successfully returned a response. That response will be passed as the
-   *     argument here.
-   */
-  constructor(
-    request: any,
-    server: Drash.Http.Server,
-    resource?: Drash.Http.Resource | null,
-    response?: Drash.Http.Response | null,
+/**
+ * Executes the middleware function before or after the request at method level
+ *
+ * @param middlewares Contains all middleware to be run
+ */
+export function MethodMiddleware(middlewares: MiddlewareType) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
   ) {
-    this.request = request;
-    this.server = server;
-    this.resource = resource ? resource : null;
-    this.response = response ? response : null;
-  }
+    const originalFunction = descriptor.value;
+    descriptor.value = async function (...args: any[]) {
+      const { request, response } = Object.getOwnPropertyDescriptors(this);
+      // Execute before_request Middleware if exist
+      if (middlewares.before_request != null) {
+        for (const middleware of middlewares.before_request) {
+          await middleware(request.value, response.value);
+        }
+      }
 
-  // FILE MARKER: METHODS - ABSTRACT ///////////////////////////////////////////
+      // Execute function
+      const result = originalFunction.apply(this, args);
 
-  /**
-   * @description
-   *     Run this middleware.
-   */
-  abstract run(): any | void;
+      // Execute after_request Middleware if exist
+      if (middlewares.after_request != null) {
+        for (const middleware of middlewares.after_request) {
+          await middleware(request.value, result);
+        }
+      }
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+/**
+ * Executes the middleware function before or after the request at class level
+ *
+ * @param middlewares Contains all middleware to be run
+ */
+export function ClassMiddleware(middlewares: MiddlewareType) {
+  return function <T extends { new (...args: any[]): {} }>(constr: T) {
+    return class extends constr {
+      constructor(...args: any[]) {
+        const request = args[0];
+        const response = args[1];
+        // Execute before_request Middleware if exist
+        if (middlewares.before_request != null) {
+          for (const middleware of middlewares.before_request) {
+            middleware(request, response);
+          }
+        }
+        super(...args);
+        // Execute after_request Middleware if exist
+        if (middlewares.after_request != null) {
+          for (const middleware of middlewares.after_request) {
+            middleware(request, response);
+          }
+        }
+      }
+    };
+  };
 }

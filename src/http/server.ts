@@ -27,91 +27,94 @@ export class Server {
   };
 
   /**
-   * @description
-   *     A property to hold the Deno server. This property is set in
-   *     this.run() like so:
-   *
-   *         this.deno_server = serve(HTTPOptions);
-   *
-   *     serve() is imported from https://deno.land/x/http/server.ts.
-   *
-   * @property DenoServer deno_server
-   */
+     * @description
+     *     A property to hold the Deno server. This property is set in
+     *     this.run() like so:
+     *
+     *         this.deno_server = serve(HTTPOptions);
+     *
+     *     serve() is imported from https://deno.land/x/http/server.ts.
+     *
+     * @property DenoServer deno_server
+     */
   public deno_server: any;
 
   /**
-   * @description
-   *     The hostname of the Deno server.
-   *
-   * @property string hostname
-   */
+     * @description
+     *     The hostname of the Deno server.
+     *
+     * @property string hostname
+     */
   public hostname: string = "localhost";
 
   /**
-   * @description
-   *     The port of the Deno server.
-   *
-   * @property number port
-   */
+     * @description
+     *     The port of the Deno server.
+     *
+     * @property number port
+     */
   public port: number = 1447;
 
   /**
-   * @description
-   *     A property to hold this server's logger.
-   *
-   * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
-   */
-  public logger:
-    | Drash.CoreLoggers.ConsoleLogger
-    | Drash.CoreLoggers.FileLogger;
+     * @description
+     *     A property to hold this server's logger.
+     *
+     * @property Drash.Loggers.ConsoleLogger|Drash.Loggers.FileLogger logger
+     */
+  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
 
   /**
-   * @description
-   *     A property to hold this server's configs.
-   *
-   * @property any configs
-   */
+     * @description
+     *     A property to hold this server's configs.
+     *
+     * @property any configs
+     */
   protected configs: Drash.Interfaces.ServerConfigs;
 
   /**
-   * @description
-   *     A property to hold the location of this server on the filesystem. This
-   *     property is used when resolving static paths.
-   *
-   * @property string|undefined directory
-   */
+     * @description
+     *     A property to hold the location of this server on the filesystem. This
+     *     property is used when resolving static paths.
+     *
+     * @property string|undefined directory
+     */
   protected directory: string | undefined = undefined;
 
   /**
-   * @description
-   *     A property to hold middleware.
-   *
-   * @property any middleware
-   */
+     * @description
+     *     A property to hold middleware.
+     *
+     * @property any middleware
+     */
   protected middleware: {
-    before_request?: Drash.Http.Middleware[];
-    after_request?: Drash.Http.Middleware[];
+    before_request?: Array<
+      ((request: any) => Promise<void>) | ((request: any) => void)
+    >;
+    after_request?: Array<
+        | ((request: any, response: Drash.Http.Response) => Promise<void>)
+        | ((request: any, response: Drash.Http.Response) => void)
+    >;
   } = {};
 
   /**
-   * @description
-   *     A property to hold the resources passed in from the configs.
-   *
-   * @property any[] resources
-   */
+     * @description
+     *     A property to hold the resources passed in from the configs.
+     *
+     * @property any[] resources
+     */
   protected resources: { [key: string]: Drash.Http.Resource } = {};
 
   /**
-   * @description
-   *     This server's list of static paths. HTTP requests to a static path are
-   *     usually intended to retrieve some type of concrete resource (e.g., a
-   *     CSS file or a JS file). If an HTTP request is matched to a static path
-   *     and the resource the HTTP request is trying to get is found, then
-   *     Drash.Http.Response will use its sendStatic() method to send the
-   *     static asset back to the client.
-   *
-   * @property string[] static_paths
-   */
+     * @description
+     *     This server's list of static paths. HTTP requests to a static path are
+     *     usually intended to retrieve some type of concrete resource (e.g., a
+     *     CSS file or a JS file). If an HTTP request is matched to a static path
+     *     and the resource the HTTP request is trying to get is found, then
+     *     Drash.Http.Response will use its sendStatic() method to send the
+     *     static asset back to the client.
+     *
+     * @property string[] static_paths
+     */
   protected static_paths: string[] = [];
 
   //////////////////////////////////////////////////////////////////////////////
@@ -119,12 +122,12 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Construct an object of this class.
-   *
-   * @param Drash.Interfaces.ServerConfigs configs
-   *     See Drash.Interfaces.ServerConfigs
-   */
+     * @description
+     *     Construct an object of this class.
+     *
+     * @param Drash.Interfaces.ServerConfigs configs
+     *     See Drash.Interfaces.ServerConfigs
+     */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
@@ -170,18 +173,18 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Get the request object with more properties and methods.
-   *
-   * @param any request
-   *     The request object.
-   *
-   * @return any
-   *     Returns any "request" object with more properties and methods that
-   *     Drash uses. For example, deno uses the `ServerRequest` object; and this
-   *     method takes that object and hydrates it with more properties and
-   *     methods.
-   */
+     * @description
+     *     Get the request object with more properties and methods.
+     *
+     * @param any request
+     *     The request object.
+     *
+     * @return any
+     *     Returns any "request" object with more properties and methods that
+     *     Drash uses. For example, deno uses the `ServerRequest` object; and this
+     *     method takes that object and hydrates it with more properties and
+     *     methods.
+     */
   public async getRequest(request: any): Promise<any> {
     let options: any = {
       default_response_content_type: this.configs.response_output,
@@ -194,8 +197,8 @@ export class Server {
     };
     const config: any = this.configs.memory_allocation;
     if (config && config.multipart_form_data) {
-      options.memory_allocation.multipart_form_data = config
-        .multipart_form_data;
+      options.memory_allocation.multipart_form_data =
+        config.multipart_form_data;
     }
     request = await new Drash.Services.HttpRequestService().hydrate(
       request,
@@ -205,15 +208,15 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Handle an HTTP request from the Deno server.
-   *
-   * @param any request
-   *     The request object.
-   *
-   * @return Promise<any>
-   *    See `Drash.Http.Response.send()`.
-   */
+     * @description
+     *     Handle an HTTP request from the Deno server.
+     *
+     * @param any request
+     *     The request object.
+     *
+     * @return Promise<any>
+     *    See `Drash.Http.Response.send()`.
+     */
   public async handleHttpRequest(request: any): Promise<any> {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(request)) {
@@ -236,7 +239,7 @@ export class Server {
 
       let resourceClass = this.getResourceClass(request);
 
-      this.executeMiddlewareServerLevelBeforeRequest(request);
+      await this.executeMiddlewareServerLevelBeforeRequest(request);
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
@@ -259,8 +262,7 @@ export class Server {
       resource = this.getResourceObject(resourceClass, request);
       request.resource = resource;
       this.logDebug(
-        "Using `" +
-          resource.constructor.name +
+        "Using `" + resource.constructor.name +
           "` resource class to handle the request.",
       );
 
@@ -271,7 +273,7 @@ export class Server {
       }
       response = await resource[request.method.toUpperCase()]();
 
-      this.executeMiddlewareServerLevelAfterRequest(
+      await this.executeMiddlewareServerLevelAfterRequest(
         request,
         resource,
         response,
@@ -287,31 +289,31 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Handle cases when an error is thrown when handling an HTTP request.
-   *
-   * @param any request
-   *     The request object.
-   * @param any error
-   *     The error object.
-   * @param Drash.Http.Resource|any resource
-   *     (optional) Pass in the resource that threw the error. If a resource
-   *     wasn't created, then default to an empty object, which is why any is
-   *     the assigned type.
-   * @param Drash.Http.Response|any response
-   *     (optional) Pass in the resource that threw the error. If a resource
-   *     wasn't created, then default to an empty object, which is why any is
-   *     the assigned type.
-   *
-   * @return any
-   *     See `Drash.Http.Response.send()`.
-   */
-  public handleHttpRequestError(
+     * @description
+     *     Handle cases when an error is thrown when handling an HTTP request.
+     *
+     * @param any request
+     *     The request object.
+     * @param any error
+     *     The error object.
+     * @param Drash.Http.Resource|any resource
+     *     (optional) Pass in the resource that threw the error. If a resource
+     *     wasn't created, then default to an empty object, which is why any is
+     *     the assigned type.
+     * @param Drash.Http.Response|any response
+     *     (optional) Pass in the resource that threw the error. If a resource
+     *     wasn't created, then default to an empty object, which is why any is
+     *     the assigned type.
+     *
+     * @return any
+     *     See `Drash.Http.Response.send()`.
+     */
+  public async handleHttpRequestError(
     request: any,
     error: any,
     resource: Drash.Http.Resource | any = {},
     response: Drash.Http.Response | any = {},
-  ): any {
+  ): Promise<any> {
     this.logDebug(
       `Error occurred while handling request: ${request.method} ${request.url}`,
     );
@@ -338,9 +340,7 @@ export class Server {
       template_engine: this.configs.template_engine,
     });
     response.status_code = error.code ? error.code : null;
-    response.body = error.message
-      ? error.message
-      : response.getStatusMessage();
+    response.body = error.message ? error.message : response.getStatusMessage();
 
     this.logDebug(
       `Sending response. Content-Type: ${response.headers.get(
@@ -349,7 +349,11 @@ export class Server {
     );
 
     try {
-      this.executeMiddlewareServerLevelAfterRequest(request, null, response);
+      await this.executeMiddlewareServerLevelAfterRequest(
+        request,
+        null,
+        response,
+      );
     } catch (error) {
       // Do nothing. The `executeMiddlewareServerLevelAfterRequest()` method is
       // run once in `handleHttpRequest()`. We run this method a second time
@@ -362,25 +366,24 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Handle HTTP requests for the favicon. This method only exists to
-   *     short-circuit favicon requests--preventing the requests from clogging
-   *     the logs.
-   *
-   * @param any request
-   *
-   * @return string
-   *     Returns the response as stringified JSON. This is only used for unit
-   *     testing purposes.
-   */
+     * @description
+     *     Handle HTTP requests for the favicon. This method only exists to
+     *     short-circuit favicon requests--preventing the requests from clogging
+     *     the logs.
+     *
+     * @param any request
+     *
+     * @return string
+     *     Returns the response as stringified JSON. This is only used for unit
+     *     testing purposes.
+     */
   public handleHttpRequestForFavicon(request: any): string {
     let headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
     let body: any;
     try {
       body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
-    } catch (error) {
-    }
+    } catch (error) {}
     if (!this.trackers.requested_favicon) {
       this.trackers.requested_favicon = true;
       this.logDebug("/favicon.ico requested.");
@@ -401,15 +404,15 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Handle HTTP requests for static path assets.
-   *
-   * @param any request
-   *
-   * @return any
-   *     Returns the response as stringified JSON. This is only used for unit
-   *     testing purposes.
-   */
+     * @description
+     *     Handle HTTP requests for static path assets.
+     *
+     * @param any request
+     *
+     * @return any
+     *     Returns the response as stringified JSON. This is only used for unit
+     *     testing purposes.
+     */
   public handleHttpRequestForStaticPathAsset(request: any): any {
     try {
       let response = new Drash.Http.Response(request, {
@@ -435,14 +438,14 @@ export class Server {
   }
 
   /**
-   * 
-   * @param resourceClass 
-   * @param request 
-   * 
-   * @return resourceClass
-   *     Returns an instance of the resourceClass passed in, and setting the
-   *     `paths` and `middleware` properties
-   */
+     *
+     * @param resourceClass
+     * @param request
+     *
+     * @return resourceClass
+     *     Returns an instance of the resourceClass passed in, and setting the
+     *     `paths` and `middleware` properties
+     */
   public getResourceObject(
     resourceClass: any,
     request: any,
@@ -463,18 +466,18 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Run the Deno server at the hostname specified in the configs. This
-   *     method takes each HTTP request and creates a new and more workable
-   *     request object and passes it to
-   *     `Drash.Http.Server.handleHttpRequest()`.
-   *
-   * @param HTTPOptions options
-   *     The HTTPOptions interface from https://deno.land/std/http/server.ts.
-   *
-   * @return Promise<DenoServer>
-   *     Returns the Deno server from the serve() call.
-   */
+     * @description
+     *     Run the Deno server at the hostname specified in the configs. This
+     *     method takes each HTTP request and creates a new and more workable
+     *     request object and passes it to
+     *     `Drash.Http.Server.handleHttpRequest()`.
+     *
+     * @param HTTPOptions options
+     *     The HTTPOptions interface from https://deno.land/std/http/server.ts.
+     *
+     * @return Promise<DenoServer>
+     *     Returns the Deno server from the serve() call.
+     */
   public async run(options: HTTPOptions): Promise<DenoServer> {
     if (!options.hostname) {
       options.hostname = this.hostname;
@@ -498,18 +501,18 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Run the Deno server at the hostname specified in the configs as an
-   *     HTTPS Server. This method takes each HTTP request and creates a new and
-   *     more workable request object and passes it to
-   *     `Drash.Http.Server.handleHttpRequest()`.
-   *
-   * @param HTTPSOptions options
-   *     The HTTPSOptions interface from https://deno.land/std/http/server.ts.
-   *
-   * @return Promise<DenoServer>
-   *     Returns the Deno server from the serveTLS() call.
-   */
+     * @description
+     *     Run the Deno server at the hostname specified in the configs as an
+     *     HTTPS Server. This method takes each HTTP request and creates a new and
+     *     more workable request object and passes it to
+     *     `Drash.Http.Server.handleHttpRequest()`.
+     *
+     * @param HTTPSOptions options
+     *     The HTTPSOptions interface from https://deno.land/std/http/server.ts.
+     *
+     * @return Promise<DenoServer>
+     *     Returns the Deno server from the serveTLS() call.
+     */
   public async runTLS(options: HTTPSOptions): Promise<DenoServer> {
     if (!options.hostname) {
       options.hostname = this.hostname;
@@ -533,9 +536,9 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Close the server.
-   */
+     * @description
+     *     Close the server.
+     */
   public close(): void {
     this.deno_server.close();
   }
@@ -545,20 +548,20 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Add an HTTP resource to the server which can be retrieved at specific
-   *     URIs.
-   *
-   *     Drash defines an HTTP resource according to the MDN Web docs
-   *     [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
-   *
-   * @param Drash.Http.Resource resourceClass
-   *     A child object of the `Drash.Http.Resource` class.
-   *
-   * @return void
-   *     This method just adds `resourceClass` to `this.resources` so it can be
-   *     used (if matched) during an HTTP request.
-   */
+     * @description
+     *     Add an HTTP resource to the server which can be retrieved at specific
+     *     URIs.
+     *
+     *     Drash defines an HTTP resource according to the MDN Web docs
+     *     [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
+     *
+     * @param Drash.Http.Resource resourceClass
+     *     A child object of the `Drash.Http.Resource` class.
+     *
+     * @return void
+     *     This method just adds `resourceClass` to `this.resources` so it can be
+     *     used (if matched) during an HTTP request.
+     */
   protected addHttpResource(resourceClass: Drash.Http.Resource): void {
     resourceClass.paths.forEach((path: string, index: number) => {
       let pathObj;
@@ -573,14 +576,10 @@ export class Server {
             path.replace(
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT,
-            ) +
-            "/?$",
+            ) + "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
             (path: string) => {
-              return path
-                .replace(":", "")
-                .replace("{", "")
-                .replace("}", "");
+              return path.replace(":", "").replace("{", "").replace("}", "");
             },
           ),
         };
@@ -593,14 +592,10 @@ export class Server {
             path.replace(
               Server.REGEX_URI_MATCHES,
               Server.REGEX_URI_REPLACEMENT,
-            ) +
-            "/?$",
+            ) + "/?$",
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
             (path: string) => {
-              return path
-                .replace(":", "")
-                .replace("{", "")
-                .replace("}", "");
+              return path.replace(":", "").replace("{", "").replace("}", "");
             },
           ),
         };
@@ -613,122 +608,113 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Add server-level and resource-level middleware.
-   *
-   * @param any middleware
-   *
-   * @return void
-   */
-  protected addMiddleware(middleware: any): void {
+     * @description
+     *     Add server-level and resource-level middleware.
+     *
+     * @param any middleware
+     *
+     * @return void
+     */
+  protected addMiddleware(middlewares: any): void {
     // Add server-level middleware
-    if (middleware.before_request != null) {
+    if (middlewares.before_request != null) {
       this.middleware.before_request = [];
-      for (const middlewareClass of middleware.before_request) {
-        this.middleware.before_request.push(middlewareClass);
+      for (const middleware of middlewares.before_request) {
+        this.middleware.before_request.push(middleware);
       }
     }
-    if (middleware.after_request != null) {
+    if (middlewares.after_request != null) {
       this.middleware.after_request = [];
-      for (const middlewareClass of middleware.after_request) {
-        this.middleware.after_request.push(middlewareClass);
+      for (const middleware of middlewares.after_request) {
+        this.middleware.after_request.push(middleware);
       }
     }
   }
 
   /**
-   * @description
-   *     Add a static path for serving static assets like CSS files, JS files,
-   *     PDF files, etc.
-   *
-   * @param string path
-   *
-   * @return void
-   *     This method just adds `path` to `this.static_paths` so it can be used (if
-   *     matched) during an HTTP request.
-   */
+     * @description
+     *     Add a static path for serving static assets like CSS files, JS files,
+     *     PDF files, etc.
+     *
+     * @param string path
+     *
+     * @return void
+     *     This method just adds `path` to `this.static_paths` so it can be used (if
+     *     matched) during an HTTP request.
+     */
   protected addStaticPath(path: string): void {
     this.static_paths.push(path);
   }
 
   /**
-   * @description
-   *     Execute server-level middleware before the request.
-   *
-   * @param any request
-   *     The request object.
-   * @param Drash.Http.Resource resource
-   *     The resource object.
-   *
-   * @return void
-   */
-  protected executeMiddlewareServerLevelBeforeRequest(
+     * @description
+     *     Execute server-level middleware before the request.
+     *
+     * @param any request
+     *     The request object.
+     * @param Drash.Http.Resource resource
+     *     The resource object.
+     *
+     * @return void
+     */
+  protected async executeMiddlewareServerLevelBeforeRequest(
     request: any,
-  ): void {
+  ): Promise<void> {
     // Execute server-level middleware
-    if (this.middleware.before_request) {
-      this.middleware.before_request
-        .forEach((middlewareClass: any) => {
-          let middleware = new middlewareClass(request, this);
-          middleware.run();
-        });
+    if (this.middleware.before_request != null) {
+      for (const middleware of this.middleware.before_request) {
+        await middleware(request);
+      }
     }
   }
 
   /**
-   * @description
-   *     Execute server-level middleware after the request.
-   *
-   * @param any request
-   *     The request object.
-   * @param Drash.Http.Resource resource
-   *     The resource object.
-   *
-   * @return void
-   */
-  protected executeMiddlewareServerLevelAfterRequest(
+     * @description
+     *     Execute server-level middleware after the request.
+     *
+     * @param any request
+     *     The request object.
+     * @param Drash.Http.Resource resource
+     *     The resource object.
+     *
+     * @return void
+     */
+  protected async executeMiddlewareServerLevelAfterRequest(
     request: any,
     resource: Drash.Http.Resource | null,
     response: Drash.Http.Response | null,
-  ): void {
-    if (this.middleware.after_request) {
-      this.middleware.after_request
-        .forEach((middlewareClass: any) => {
-          let middleware = new middlewareClass(
-            request,
-            this,
-            resource,
-            response,
-          );
-          middleware.run();
-        });
+  ): Promise<void> {
+    if (this.middleware.after_request != null) {
+      for (const middleware of this.middleware.after_request) {
+        await middleware(request, response!);
+      }
     }
   }
 
   /**
-   * Get an HTTP error response exception object.
-   *
-   * @param number code
-   *
-   * @return Drash.Exceptions.HttpException
-   */
+     * Get an HTTP error response exception object.
+     *
+     * @param number code
+     *
+     * @return Drash.Exceptions.HttpException
+     */
   protected httpErrorResponse(code: number): Drash.Exceptions.HttpException {
     return new Drash.Exceptions.HttpException(code);
   }
 
   /**
-   * @description
-   *     Get the resource class.
-   *
-   * @param any request
-   *     The request object.
-   *
-   * @return Drash.Http.Resource|undefined
-   *     Returns a `Drash.Http.Resource` object if the URL path of the request
-   *     can be matched to a `Drash.Http.Resource` object's paths.
-   *
-   *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
-   */
+     * @description
+     *     Get the resource class.
+     *
+     * @param any request
+     *     The request object.
+     *
+     * @return Drash.Http.Resource|undefined
+     *     Returns a `Drash.Http.Resource` object if the URL path of the request
+     *     can be matched to a `Drash.Http.Resource` object's paths.
+     *
+     *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
+     */
   protected getResourceClass(request: any): Drash.Http.Resource | undefined {
     let matchedResourceClass: any = undefined;
 
@@ -782,14 +768,14 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Is the request targeting a static path?
-   *
-   * @param any request
-   *
-   * @return boolean
-   *     Returns true if the request targets a static path.
-   */
+     * @description
+     *     Is the request targeting a static path?
+     *
+     * @param any request
+     *
+     * @return boolean
+     *     Returns true if the request targets a static path.
+     */
   protected requestTargetsStaticPath(request: any): boolean {
     if (this.static_paths.length <= 0) {
       return false;
@@ -816,14 +802,14 @@ export class Server {
   }
 
   /**
-   * @description
-   *     Log a debug message
-   * 
-   * @param string message
-   *     Message to log
-   * 
-   * @return void
-   */
+     * @description
+     *     Log a debug message
+     *
+     * @param string message
+     *     Message to log
+     *
+     * @return void
+     */
   protected logDebug(message: string): void {
     this.logger.debug("[syslog] " + message);
   }

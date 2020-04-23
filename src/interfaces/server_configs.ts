@@ -102,7 +102,15 @@ export interface ServerConfigs {
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
-  middleware?: any;
+  middleware?: {
+    before_request?: Array<
+      ((request: any) => Promise<void>) | ((request: any) => void)
+    >;
+    after_request?: Array<
+        | ((request: any, response: Drash.Http.Response) => Promise<void>)
+        | ((request: any, response: Drash.Http.Response) => void)
+    >;
+  };
   pretty_links?: boolean;
   resources?: any;
   response_output?: string;
