@@ -1,6 +1,7 @@
 export {
   HTTPOptions,
   HTTPSOptions,
+  Server,
   ServerRequest,
   serve,
   serveTLS,
