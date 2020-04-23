@@ -13,7 +13,7 @@ import UsersResource from "./users_resource.ts";
 import ViewResource from "./view_resource.ts";
 
 // Middleware
-import Middleware from "./middleware.ts";
+import { Middleware } from "./middleware.ts";
 
 let server = new Drash.Http.Server({
   directory: Deno.realpathSync("./"),

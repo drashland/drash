@@ -253,7 +253,7 @@ function ResponseCustomHeaderAdded(
   response.headers.set("MYCUSTOM", "hey");
 }
 
-@Drash.Decorators.Middleware({ before_request: [CustomHeader] })
+@Drash.Http.Middleware({ before_request: [CustomHeader] })
 class ResourceWithMiddlewareBeforeClass extends members.Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
@@ -270,7 +270,7 @@ class ResourceWithMiddlewareBeforeClass extends members.Drash.Http.Resource {
   }
 }
 
-@Drash.Decorators.Middleware(
+@Drash.Http.Middleware(
   { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
 )
 class ResourceWithMultipleMiddlewareBeforeClass
@@ -290,7 +290,7 @@ class ResourceWithMultipleMiddlewareBeforeClass
   }
 }
 
-@Drash.Decorators.Middleware(
+@Drash.Http.Middleware(
   { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
 )
 class ResourceWithMultipleMiddlewareAfterClass
@@ -309,7 +309,7 @@ class ResourceWithMultipleMiddlewareAfterClass
   }
 }
 
-@Drash.Decorators.Middleware(
+@Drash.Http.Middleware(
   {
     before_request: [SwapResponseToHtml],
     after_request: [ResponseCustomHeaderAdded],
@@ -340,7 +340,7 @@ class ResourceWithMiddlewareBeforeMethod extends members.Drash.Http.Resource {
       name: "Hulk",
     },
   };
-  @Drash.Decorators.Middleware({ before_request: [CustomHeader] })
+  @Drash.Http.Middleware({ before_request: [CustomHeader] })
   public GET() {
     this.response.body = this.users[this.request.getPathParam("id")];
     return this.response;
@@ -357,7 +357,7 @@ class ResourceWithMiddlewareAfterMethod extends members.Drash.Http.Resource {
       name: "Hulk",
     },
   };
-  @Drash.Decorators.Middleware({ after_request: [SwapResponseToHtml] })
+  @Drash.Http.Middleware({ after_request: [SwapResponseToHtml] })
   public GET() {
     return this.response;
   }
@@ -374,7 +374,7 @@ class ResourceWithMultipleMiddlewareBeforeMethod
       name: "Hulk",
     },
   };
-  @Drash.Decorators.Middleware(
+  @Drash.Http.Middleware(
     { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
   )
   public GET() {
@@ -394,7 +394,7 @@ class ResourceWithMultipleMiddlewareAfterMethod
       name: "Hulk",
     },
   };
-  @Drash.Decorators.Middleware(
+  @Drash.Http.Middleware(
     { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
   )
   public GET() {
