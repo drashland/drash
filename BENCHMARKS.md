@@ -10,6 +10,7 @@ The results below are the top-performing results out of three benchmark runs. Ea
     * Express
 * MacBook Pro Results
     * Alosaur
+    * Dinatra
     * Drash
     * Express
     * Oak
@@ -106,6 +107,30 @@ Running 10s test @ http://localhost:8000/home/html
 Req/Bytes counts sampled once per second.
 
 234k requests in 10.06s, 21.1 MB read
+```
+
+__Dinatra__
+
+```
+Running 10s test @ http://localhost:1447
+40 connections
+
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬──────────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max      │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼──────────┤
+│ Latency │ 1 ms │ 2 ms │ 3 ms  │ 4 ms │ 2.03 ms │ 0.51 ms │ 30.43 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴──────────┘
+┌───────────┬────────┬────────┬────────┬────────┬─────────┬─────────┬────────┐
+│ Stat      │ 1%     │ 2.5%   │ 50%    │ 97.5%  │ Avg     │ Stdev   │ Min    │
+├───────────┼────────┼────────┼────────┼────────┼─────────┼─────────┼────────┤
+│ Req/Sec   │ 17679  │ 17679  │ 18511  │ 18847  │ 18372.8 │ 358.48  │ 17664  │
+├───────────┼────────┼────────┼────────┼────────┼─────────┼─────────┼────────┤
+│ Bytes/Sec │ 884 kB │ 884 kB │ 925 kB │ 942 kB │ 919 kB  │ 17.9 kB │ 883 kB │
+└───────────┴────────┴────────┴────────┴────────┴─────────┴─────────┴────────┘
+
+Req/Bytes counts sampled once per second.
+
+184k requests in 10.05s, 9.19 MB read
 ```
 
 __Drash__
