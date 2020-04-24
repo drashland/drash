@@ -63,7 +63,7 @@ export namespace Drash {
    *
    * @property string version
    */
-  export const version: string = "v0.41.0";
+  export const version: string = "v0.41.1";
 
   export namespace Decorators {
     export type MiddlewareFunction = MiddlewareFunctionDefinition;
