@@ -34,7 +34,7 @@ git checkout upgrade-deno
 git pull
 ```
 
-Update the `deps.ts` file automaticlaly by updating line the `bumpVersions()` call in `console/typescript/bump_versions.ts`. This call should reflect which version to update from and which version to update to. See below as an example.
+Update the `deps.ts` file automatically by updating line the `bumpVersions()` call in `console/typescript/bump_versions.ts`. This call should reflect which version to update from and which version to update to. See below as an example.
 
 ```typescript
 let result = await bumpVersions(fromVersion, toVersion);
@@ -44,6 +44,11 @@ Run the following command.
 
 ```
 console/bump_verisons
+```
+
+Update the version property in `mod.ts`:
+```typescript
+export const version: string = "the new version here"; // "v0.41.1"
 ```
 
 Update `README.md`.
