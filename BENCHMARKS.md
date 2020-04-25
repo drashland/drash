@@ -16,12 +16,19 @@ The results below are the top-performing results out of three benchmark runs. Ea
     * Express
     * Oak
     * Pogo
+* MacBook Pro Results: Apache Reverse Proxy
+    * Deno Raw
+    * Dinatra
+    * Drash
+    * Express
+    * Oak
+    * Pogo
 
 ## DigitalOcean Results
 
 __Configuration:__ DigitalOcean Droplet ($40/mo), Ubuntu 18.04.3 (LTS) x64, 2 vPCUs, 4GB Memory / 25GB SSD
 
-__Command used:__
+__Command Used:__
 
 ```
 autocannon -c 1024 -t30 drash.io
@@ -80,7 +87,7 @@ Req/Bytes counts sampled once per second.
 
 __Configuration:__ MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD
 
-__Command used:__
+__Command Used:__
 
 ```
 autocannon -c40 -t30 localhost:1447
@@ -252,4 +259,37 @@ Running 10s test @ http://localhost:1447
 Req/Bytes counts sampled once per second.
 
 218k requests in 10.06s, 20.1 MB read
+```
+
+## MacBook Pro Results: Apache Reverse Proxy
+
+__Configuration:__ MacBook Pro (Retina, 15-inch, Mid 2015), 2.5 GHz Quad-Core Intel Core i7, 16 GB 1600 MHz DDR Memory, 500GB SSD
+
+__Command Used:__
+
+```
+ab -n 250000 -c 100 -k http://denobenching.com/
+```
+
+__Apache Virtual Host Configuration:__
+
+```
+<VirtualHost *:80>
+    DocumentRoot "/usr/local/var/www/benchmarks"
+    ServerName denobenching.com
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:1447
+    ProxyPassReverse / http://localhost:1447
+</VirtualHost>
+```
+
+__Results:__
+
+```
+Deno Raw: Requests per second:    20316.51 [#/sec] (mean)
+Dinatra:  Requests per second:    13824.89 [#/sec] (mean)
+Drash:    Requests per second:    17145.15 [#/sec] (mean)
+Express:  Requests per second:    14255.08 [#/sec] (mean)
+Oak:      Requests per second:    12896.96 [#/sec] (mean)
+Pogo:     Requests per second:    15688.14 [#/sec] (mean)
 ```
