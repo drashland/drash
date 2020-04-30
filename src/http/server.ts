@@ -383,19 +383,25 @@ export class Server {
     response.status_code = 200;
     response.headers = headers;
 
-    const body = Deno.readFile(`${Deno.realpathSync(".")}/favicon.ico`);
-    response.body = body;
-
-    if (!this.trackers.requested_favicon) {
-      this.trackers.requested_favicon = true;
-      this.logDebug("/favicon.ico requested.");
-      if (!body) {
-        this.logDebug("/favicon.ico was not found.");
-      } else {
-        this.logDebug("/favicon.ico was found.");
+    try {
+      const body = Deno.readFile(`${Deno.realpathSync(".")}/favicon.ico`);
+      response.body = body;
+      if (!this.trackers.requested_favicon) {
+        this.trackers.requested_favicon = true;
+        this.logDebug("/favicon.ico requested.");
+        if (!body) {
+          this.logDebug("/favicon.ico was not found.");
+        } else {
+          this.logDebug("/favicon.ico was found.");
+        }
+        this.logDebug(
+          "All future log messages for /favicon.ico will be muted.",
+        );
       }
-      this.logDebug("All future log messages for /favicon.ico will be muted.");
+    } catch (error) {
+      response.body = "";
     }
+
     request.respond(response);
     return JSON.stringify(response);
   }
