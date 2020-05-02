@@ -384,7 +384,7 @@ export class Server {
     response.headers = headers;
 
     try {
-      const body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
+      const body = Deno.readFileSync(`${Deno.realPathSync(".")}/favicon.ico`);
       response.body = body;
       if (!this.trackers.requested_favicon) {
         this.trackers.requested_favicon = true;

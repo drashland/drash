@@ -1,4 +1,5 @@
 import { Drash } from "../mod.ts";
+
 // Resources
 import CoffeeResource from "./coffee_resource.ts";
 import CookieResource from "./cookie_resource.ts";
@@ -16,7 +17,7 @@ import ViewResource from "./view_resource.ts";
 import { Middleware } from "./middleware.ts";
 
 let server = new Drash.Http.Server({
-  directory: Deno.realpathSync("./"),
+  directory: Deno.realPathSync("./"),
   response_output: "application/json",
   logger: new Drash.CoreLoggers.ConsoleLogger({
     enabled: false,
@@ -46,4 +47,9 @@ let server = new Drash.Http.Server({
   views_path: "./public/views",
 });
 
-export default server;
+await server.run({
+  hostname: "localhost",
+  port: 1667,
+});
+
+console.log(`Server listening: http://${server.hostname}:${server.port}`);
