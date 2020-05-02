@@ -275,7 +275,6 @@ export class Server {
 
       await this.executeMiddlewareServerLevelAfterRequest(
         request,
-        resource,
         response,
       );
 
@@ -351,7 +350,6 @@ export class Server {
     try {
       await this.executeMiddlewareServerLevelAfterRequest(
         request,
-        null,
         response,
       );
     } catch (error) {
@@ -378,27 +376,32 @@ export class Server {
    *     testing purposes.
    */
   public handleHttpRequestForFavicon(request: any): string {
-    let headers = new Headers();
+    const headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
-    let body: any;
+
+    const response = new Drash.Http.Response(request);
+    response.status_code = 200;
+    response.headers = headers;
+
     try {
-      body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
-    } catch (error) {}
-    if (!this.trackers.requested_favicon) {
-      this.trackers.requested_favicon = true;
-      this.logDebug("/favicon.ico requested.");
-      if (!body) {
-        this.logDebug("/favicon.ico was not found.");
-      } else {
-        this.logDebug("/favicon.ico was found.");
+      const body = Deno.readFileSync(`${Deno.realpathSync(".")}/favicon.ico`);
+      response.body = body;
+      if (!this.trackers.requested_favicon) {
+        this.trackers.requested_favicon = true;
+        this.logDebug("/favicon.ico requested.");
+        if (!body) {
+          this.logDebug("/favicon.ico was not found.");
+        } else {
+          this.logDebug("/favicon.ico was found.");
+        }
+        this.logDebug(
+          "All future log messages for /favicon.ico will be muted.",
+        );
       }
-      this.logDebug("All future log messages for /favicon.ico will be muted.");
+    } catch (error) {
+      response.body = "";
     }
-    let response = {
-      status: 200,
-      headers: headers,
-      body: body ? body : "",
-    };
+
     request.respond(response);
     return JSON.stringify(response);
   }
@@ -415,23 +418,29 @@ export class Server {
    */
   public handleHttpRequestForStaticPathAsset(request: any): any {
     try {
-      let response = new Drash.Http.Response(request, {
+      const response = new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
         template_engine: this.configs.template_engine,
       });
-      if (this.configs.pretty_links) {
-        let extension = request.url_path.split(".")[1];
-        if (!extension) {
-          let contents = Deno.readFileSync(
-            this.directory + "/" + request.url_path + "/index.html",
-          );
-          if (contents) {
-            response.headers.set("Content-Type", "text/html");
-            return response.sendStatic(null, contents);
-          }
-        }
+
+      if (this.configs.pretty_links == null) {
+        return response.sendStatic(`${this.directory}/${request.url_path}`);
       }
-      return response.sendStatic(this.directory + "/" + request.url_path);
+
+      const extension = request.url_path.split(".")[1];
+      if (extension != null) {
+        return response.sendStatic(`${this.directory}/${request.url_path}`);
+      }
+
+      const contents = Deno.readFileSync(
+        `${this.directory}/${request.url_path}/index.html`,
+      );
+      if (contents == null) {
+        return response.sendStatic(`${this.directory}/${request.url_path}`);
+      }
+
+      response.headers.set("Content-Type", "text/html");
+      return response.sendStatic(null, contents);
     } catch (error) {
       return this.handleHttpRequestError(request, this.httpErrorResponse(404));
     }
@@ -450,7 +459,7 @@ export class Server {
     resourceClass: any,
     request: any,
   ): Drash.Http.Resource {
-    let resourceObj: Drash.Http.Resource = new resourceClass(
+    const resourceObj: Drash.Http.Resource = new resourceClass(
       request,
       new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
@@ -563,45 +572,47 @@ export class Server {
    *     used (if matched) during an HTTP request.
    */
   protected addHttpResource(resourceClass: Drash.Http.Resource): void {
-    resourceClass.paths.forEach((path: string, index: number) => {
-      let pathObj;
-      let pathIsWildCard = false;
-      try {
-        pathIsWildCard = path == "*" || path.includes("*");
-      } catch (error) {}
-      if (pathIsWildCard) {
-        pathObj = {
-          og_path: path,
-          regex_path: "^." +
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT,
-            ) + "/?$",
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-            (path: string) => {
-              return path.replace(":", "").replace("{", "").replace("}", "");
-            },
-          ),
-        };
-        return;
+    const newPaths = [];
+    for (const path of resourceClass.paths) {
+      if (typeof path != "string") {
+        newPaths.push(path);
+        continue;
       }
-      try {
-        pathObj = {
+
+      if (path.includes("*") == true) {
+        // Wildcard
+        const pathObj = {
           og_path: path,
-          regex_path: "^" +
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT,
-            ) + "/?$",
+          regex_path: `^.${path.replace(
+            Server.REGEX_URI_MATCHES,
+            Server.REGEX_URI_REPLACEMENT,
+          )}/?$`,
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-            (path: string) => {
-              return path.replace(":", "").replace("{", "").replace("}", "");
+            (element: string) => {
+              return element.replace(/:|{|}/g, "");
             },
           ),
         };
-        resourceClass.paths[index] = pathObj;
-      } catch (error) {}
-    });
+
+        newPaths.push(pathObj);
+      } else {
+        const pathObj = {
+          og_path: path,
+          regex_path: `^${path.replace(
+            Server.REGEX_URI_MATCHES,
+            Server.REGEX_URI_REPLACEMENT,
+          )}/?$`,
+          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+            (element: string) => {
+              return element.replace(/:|{|}/g, "");
+            },
+          ),
+        };
+        newPaths.push(pathObj);
+      }
+    }
+
+    resourceClass.paths = newPaths;
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
@@ -681,7 +692,6 @@ export class Server {
    */
   protected async executeMiddlewareServerLevelAfterRequest(
     request: any,
-    resource: Drash.Http.Resource | null,
     response: Drash.Http.Response | null,
   ): Promise<void> {
     if (this.middleware.after_request != null) {
@@ -716,55 +726,32 @@ export class Server {
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
   protected getResourceClass(request: any): Drash.Http.Resource | undefined {
-    let matchedResourceClass: any = undefined;
+    for (const resourceName in this.resources) {
+      const resource = this.resources[resourceName];
 
-    for (let className in this.resources) {
-      // Break out if a resource was matched with the
-      // request.parsed_url.pathname variable
-      if (matchedResourceClass) {
-        break;
-      }
-
-      let resource = this.resources[className];
-
-      resource.paths.forEach((pathObj, index) => {
-        if (!matchedResourceClass) {
-          let thisPathMatchesRequestPathname = null;
-          if (pathObj.og_path === "/" && request.url_path === "/") {
-            matchedResourceClass = resource;
-            return;
-          }
-
-          // Check if the current path we're working on matches the request's
-          // pathname
-          thisPathMatchesRequestPathname = request.url_path.match(
-            pathObj.regex_path,
-          );
-          if (!thisPathMatchesRequestPathname) {
-            return;
-          }
-
-          // Create the path params
-          // TODO(crookse) Put in HttpRequestService
-          let requestPathnameParams = request.url_path.match(
-            pathObj.regex_path,
-          );
-          let pathParamsInKvpForm: any = {};
-          try {
-            requestPathnameParams.shift();
-            pathObj.params.forEach((paramName: string, index: number) => {
-              pathParamsInKvpForm[paramName] = requestPathnameParams[index];
-            });
-          } catch (error) {}
-          request.path_params = pathParamsInKvpForm;
-
-          // Store the matched resource
-          matchedResourceClass = resource;
+      for (const pathObj of resource.paths) {
+        if (pathObj.og_path === "/" && request.url_path === "/") {
+          return resource;
         }
-      });
-    }
 
-    return matchedResourceClass;
+        const pathMatchesRequestPathname = request.url_path.match(
+          pathObj.regex_path,
+        );
+        if (pathMatchesRequestPathname == null) {
+          continue;
+        }
+
+        pathMatchesRequestPathname.shift();
+        const pathParamsInKvpForm: any = {};
+        pathObj.params.forEach((paramName: string, index: number) => {
+          pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
+        });
+
+        request.path_params = pathParamsInKvpForm;
+        return resource;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -782,23 +769,23 @@ export class Server {
     }
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
-    let staticPath = request.url.split("/")[1];
+    const staticPath = request.url.split("/")[1];
     // Prefix with a leading slash, so it can be matched properly
-    let requestUrl = "/" + staticPath;
+    const requestUrl = `/${staticPath}`;
 
-    if (this.static_paths.indexOf(requestUrl) != -1) {
-      request = new Drash.Services.HttpRequestService().hydrate(request, {
-        headers: {
-          "Response-Content-Type": new Drash.Services.HttpService().getMimeType(
-            request.url,
-            true,
-          ),
-        },
-      });
-      return true;
+    if (this.static_paths.indexOf(requestUrl) == -1) {
+      return false;
     }
 
-    return false;
+    request = new Drash.Services.HttpRequestService().hydrate(request, {
+      headers: {
+        "Response-Content-Type": new Drash.Services.HttpService().getMimeType(
+          request.url,
+          true,
+        ),
+      },
+    });
+    return true;
   }
 
   /**
