@@ -35,16 +35,4 @@ jobs:
     - name: example app fetch tests
       run: |
         export PATH=$DENO_INSTALL/bin:$PATH
-        console/app_test
-
-    - name: update long-running branches
-      if: github.event_name == 'push'
-      run: |
-        git remote rm origin
-        git remote add origin https://$CI_USER_PAT@github.com/drashland/deno-drash.git
-        git config user.email $CI_USER_EMAIL
-        git config user.name $CI_USER_NAME
-        git pull origin master
-        git pull origin upgrade-deno
-        git checkout upgrade-deno && git merge origin/master
-        git push
+        console/tests
