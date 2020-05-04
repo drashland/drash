@@ -54,7 +54,7 @@ export default class ClassCompiler {
       let line: any = await br.readLine();
 
       // Yay! We made it! (maybe)...
-      if (line === Deno.EOF) {
+      if (line === null) {
         break;
       }
 
