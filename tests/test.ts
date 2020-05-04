@@ -26,5 +26,3 @@ import "./unit/mod_test.ts";
 import "./unit_minimal/server_test.ts";
 
 import members from "./members.ts";
-
-Deno.runTests();

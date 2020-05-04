@@ -6,8 +6,8 @@
 import { Drash } from "../mod.ts";
 import ViewResource from "./view_resource.ts";
 
-const serverTwo = new Drash.Http.Server({
-  directory: Deno.realpathSync("./"),
+const server = new Drash.Http.Server({
+  directory: Deno.realPathSync("./"),
   resources: [
     ViewResource,
   ],
@@ -16,4 +16,9 @@ const serverTwo = new Drash.Http.Server({
   template_engine: true,
 });
 
-export default serverTwo;
+await server.run({
+  hostname: "localhost",
+  port: 1667,
+});
+
+console.log(`Server listening: http://${server.hostname}:${server.port}`);
