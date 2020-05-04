@@ -24,7 +24,7 @@ export function getFileSystemStructure(dir: string): any {
   let files = [];
 
   for (const fileInfo of walkSync(dir)) {
-    let filename = fileInfo.filename;
+    let filename = fileInfo.path;
     let path = filename;
     let filenameSplit = filename.split("/");
     filename = filenameSplit[filenameSplit.length - 1];

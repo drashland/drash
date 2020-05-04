@@ -4,11 +4,6 @@
  */
 
 import members from "../tests/members.ts";
-import serverTwo from "./app_server_two.ts";
-serverTwo.run({
-  hostname: "localhost",
-  port: 1667,
-});
 
 members.test("ViewResource - Template Engine", async () => {
   let response = await members.fetch.get(
@@ -19,7 +14,3 @@ members.test("ViewResource - Template Engine", async () => {
     "<body>     <h1>Hello Drash</h1> </body>",
   );
 });
-
-await Deno.runTests();
-
-serverTwo.close();

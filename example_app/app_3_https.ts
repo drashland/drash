@@ -7,3 +7,5 @@ server.runTLS({
   certFile: "./tls/server.crt",
   keyFile: "./tls/server.key",
 });
+
+console.log(`Server listening: https://${server.hostname}:${server.port}`);
