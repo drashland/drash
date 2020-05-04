@@ -29,14 +29,15 @@ export type MiddlewareType = {
 
 /**
  * Executes the middleware
- * 
+ *
  * @param middlewares Contains middlewares to be executed
  */
 export function Middleware(middlewares: MiddlewareType) {
-  return function (this: any, ...args: any) {
+  return function (...args: any[]) {
     switch (args.length) {
       case 1:
         // Class decorator
+        // @ts-ignore
         return ClassMiddleware(middlewares).apply(this, args);
       case 2:
         // Property decorator
@@ -46,6 +47,7 @@ export function Middleware(middlewares: MiddlewareType) {
           // Parameter decorator
           break;
         }
+        // @ts-ignore
         return MethodMiddleware(middlewares).apply(this, args);
       default:
         throw new Error("Not a valid decorator");
@@ -58,7 +60,7 @@ export function Middleware(middlewares: MiddlewareType) {
  *
  * @param middlewares Contains all middleware to be run
  */
-export function MethodMiddleware(middlewares: MiddlewareType) {
+function MethodMiddleware(middlewares: MiddlewareType) {
   return function (
     target: any,
     propertyKey: string,
@@ -95,7 +97,7 @@ export function MethodMiddleware(middlewares: MiddlewareType) {
  *
  * @param middlewares Contains all middleware to be run
  */
-export function ClassMiddleware(middlewares: MiddlewareType) {
+function ClassMiddleware(middlewares: MiddlewareType) {
   return function <T extends { new (...args: any[]): {} }>(constr: T) {
     return class extends constr {
       constructor(...args: any[]) {
