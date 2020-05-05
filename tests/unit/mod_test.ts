@@ -95,5 +95,5 @@ members.test("mod_test.ts | Drash.addLogger(): names must be unique", () => {
 
 members.test("mod_test.ts | Drash.version: must be current version", () => {
   const version = members.Drash.version;
-  members.assert.equals(version, "v0.42.0");
+  members.assert.equals(version, "v1.0.0-rc1");
 });

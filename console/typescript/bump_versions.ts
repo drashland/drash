@@ -3,6 +3,7 @@
  *
  * Other places to bump versions:
  * - mod.ts
+ * - mod_test.ts
  * - README.md
  * - REQUIREMENTS.md
  */
