@@ -1,3 +1,11 @@
+/**
+ * Bump versions in the deps file.
+ *
+ * Other places to bump versions:
+ * - mod.ts
+ * - README.md
+ * - REQUIREMENTS.md
+ */
 async function bumpVersions(fromV: string, toV: string) {
   // deps.ts
   let depData = new TextDecoder().decode(
@@ -9,6 +17,6 @@ async function bumpVersions(fromV: string, toV: string) {
   return depData;
 }
 
-let result = await bumpVersions("v0.41.0", "v0.42.0");
+let result = await bumpVersions("v0.42.0", "v1.0.0-rc1");
 
 console.log(result);
