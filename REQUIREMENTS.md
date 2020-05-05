@@ -1,10 +1,14 @@
 # Requirements
 
+* v0.42.0
+
+    * Deno v0.42.0
+
 * v0.41.1
 * v0.41.0
 
     * Deno v0.41.0
-    
+
 * _Drash and Deno v0.40.0 skipped_
 
 * v0.39.6

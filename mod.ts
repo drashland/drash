@@ -11,8 +11,6 @@ import {
   Middleware as MiddlewareHandler,
   MiddlewareFunction as MiddlewareFunctionDefinition,
   MiddlewareType as MiddlewareTypeDefinition,
-  MethodMiddleware as MethodMiddlewareHandler,
-  ClassMiddleware as ClassMiddlewareHandler,
 } from "./src/http/middleware.ts";
 
 // Dictionaries
@@ -63,10 +61,7 @@ export namespace Drash {
    *
    * @property string version
    */
-  export const version: string = "v0.41.1";
-
-  export namespace Decorators {
-  }
+  export const version: string = "v0.42.0";
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine {}
@@ -94,8 +89,6 @@ export namespace Drash {
     export type MiddlewareFunction = MiddlewareFunctionDefinition;
     export type MiddlewareType = MiddlewareTypeDefinition;
     export const Middleware = MiddlewareHandler;
-    export const MethodMiddleware = MethodMiddlewareHandler;
-    export const ClassMiddleware = ClassMiddlewareHandler;
     export class Resource extends BaseResource {}
     export class Response extends BaseResponse {}
     export class Server extends BaseServer {}
