@@ -15,7 +15,7 @@ import {
 
 // Dictionaries
 import * as log_levels from "./src/dictionaries/log_levels.ts";
-import mime_db from "./src/dictionaries/mime_db.json";
+import { mime_db } from "./src/dictionaries/mime_db.ts";
 
 // Exceptions
 import { HttpException as BaseHttpException } from "./src/exceptions/http_exception.ts";
@@ -46,14 +46,7 @@ import { HttpService as BaseHttpService } from "./src/services/http_service.ts";
 import { HttpRequestService as BaseHttpRequestService } from "./src/services/http_request_service.ts";
 import { StringService as BaseStringService } from "./src/services/string_service.ts";
 
-import * as util_members from "./src/util/members.ts";
-
 export namespace Drash {
-  // TODO: Remove this when the docs don't need it
-  export namespace Util {
-    export const Exports = util_members;
-  }
-
   /**
    * @description
    *     Drash version. Also represents what Deno version is
@@ -61,7 +54,7 @@ export namespace Drash {
    *
    * @property string version
    */
-  export const version: string = "v0.42.0";
+  export const version: string = "v1.0.0-rc1";
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine {}

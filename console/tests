@@ -2,12 +2,12 @@
 
 (
   cd example_app
-  deno --allow-net --allow-read app_1.ts &
+  deno run --allow-net --allow-read app_1.ts &
   server_pid=$!
   deno test --allow-net app_1_test.ts
   kill $server_pid
 
-  deno --allow-net --allow-read app_2.ts &
+  deno run --allow-net --allow-read app_2.ts &
   server_pid=$!
   deno test --allow-net app_2_test.ts
   kill $server_pid

@@ -1,4 +1,4 @@
-{
+export const mime_db = {
   "application/1d-interleaved-parityfec": {
     "source": "iana"
   },
@@ -8131,4 +8131,4 @@
   "x-shader/x-vertex": {
     "compressible": true
   }
-}
+};
