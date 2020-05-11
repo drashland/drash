@@ -47,7 +47,7 @@ console.log("Server listening: http://localhost:1447");
 ```
 
 ```
-$ deno --allow-net app.ts
+$ deno run --allow-net app.ts
 Server listening: http://localhost:1447
 ```
 
@@ -111,7 +111,7 @@ curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.0.0-rc1
 2. Run the Drash application using `deno`.
 
 ```
-deno --allow-net --allow-env https://deno.land/x/drash@v1.0.0-rc1/example_app/app.ts
+deno run --allow-net --allow-env https://deno.land/x/drash@v1.0.0-rc1/example_app/app.ts
 ```
 
 2. Make the following request: `GET /`.

@@ -1,5 +1,5 @@
 #!/bin/bash
 
 (
-  deno --allow-read --allow-write --allow-env console/typescript/docs_compiler_app.ts
+  deno run --allow-read --allow-write --allow-env console/typescript/docs_compiler_app.ts
 )
