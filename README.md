@@ -111,7 +111,7 @@ curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.0.0-rc1
 2. Run the Drash application using `deno`.
 
 ```
-deno --allow-net --allow-env https://deno.land/x/drash@v1.0.0-rc1/example_app/app.ts
+deno --allow-net --allow-read --allow-env https://deno.land/x/drash@v1.0.0-rc1/example_app/app_1.ts
 ```
 
 2. Make the following request: `GET /`.
