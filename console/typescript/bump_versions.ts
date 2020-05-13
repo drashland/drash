@@ -18,6 +18,6 @@ async function bumpVersions(fromV: string, toV: string) {
   return depData;
 }
 
-let result = await bumpVersions("v1.0.0-rc1", "v1.0.0");
+let result = await bumpVersions("v1.0.0", "v0.50.0");
 
 console.log(result);

@@ -5,35 +5,35 @@ export {
   ServerRequest,
   serve,
   serveTLS,
-} from "https://deno.land/std@v1.0.0-rc3/http/server.ts";
+} from "https://deno.land/std@v0.50.0/http/server.ts";
 
 export {
   STATUS_TEXT,
   Status,
-} from "https://deno.land/std@v1.0.0-rc3/http/http_status.ts";
+} from "https://deno.land/std@v0.50.0/http/http_status.ts";
 
 export {
   assertEquals,
   assertThrows,
-} from "https://deno.land/std@v1.0.0-rc3/testing/asserts.ts";
+} from "https://deno.land/std@v0.50.0/testing/asserts.ts";
 
 export {
   BufReader,
   ReadLineResult,
-} from "https://deno.land/std@v1.0.0-rc3/io/bufio.ts";
+} from "https://deno.land/std@v0.50.0/io/bufio.ts";
 
 export {
   StringReader,
-} from "https://deno.land/std@v1.0.0-rc3/io/readers.ts";
+} from "https://deno.land/std@v0.50.0/io/readers.ts";
 
 export {
   FormFile,
   MultipartReader,
-} from "https://deno.land/std@v1.0.0-rc3/mime/multipart.ts";
+} from "https://deno.land/std@v0.50.0/mime/multipart.ts";
 
 export {
   Cookie,
   delCookie,
   getCookies,
   setCookie,
-} from "https://deno.land/std@v1.0.0-rc3/http/cookie.ts";
+} from "https://deno.land/std@v0.50.0/http/cookie.ts";
