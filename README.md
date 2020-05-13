@@ -20,6 +20,16 @@
 
 ---
 
+## Table of Contents
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Features](#features)
+- [Why use Drash?](#why-use-drash)
+- [Example Drash App](#example-drash-app)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Quick Start
 ```typescript
 // File: app.ts
 
@@ -162,3 +172,8 @@ curl --request PATCH --verbose localhost:1447
 ## Contributing
 
 Contributors are welcomed!
+
+Please read through our [contributing guidelines](./.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
+
+## License
+By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
