@@ -9,7 +9,7 @@ import "./unit/exceptions/http_exception_test.ts";
 import "./unit/exceptions/name_collision_test.ts";
 
 // Http
-import "./unit/http/middleware_test.ts";
+// import "./unit/http/middleware_test.ts";
 import "./unit/http/server_test.ts";
 
 // Loggers
