@@ -1,8 +1,3 @@
-// Version bumps:
-// console/install.deno
-// README.md
-// REQUIREMENTS.md
-
 // Compilers
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
@@ -54,7 +49,7 @@ export namespace Drash {
    *
    * @property string version
    */
-  export const version: string = "v1.0.0-rc1";
+  export const version: string = "v1.0.0";
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine {}
