@@ -20,6 +20,16 @@
 
 ---
 
+## Table of Contents
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Features](#features)
+- [Why use Drash?](#why-use-drash)
+- [Example Drash App](#example-drash-app)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Quick Start
 ```typescript
 // File: app.ts
 
@@ -111,7 +121,7 @@ curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.0.0
 2. Run the Drash application using `deno`.
 
 ```
-deno run --allow-net --allow-env https://deno.land/x/drash@v1.0.0/example_app/app.ts
+deno run --allow-net --allow-read --allow-env https://deno.land/x/drash@v1.0.0/example_app/app_1.ts
 ```
 
 2. Make the following request: `GET /`.
@@ -162,3 +172,8 @@ curl --request PATCH --verbose localhost:1447
 ## Contributing
 
 Contributors are welcomed!
+
+Please read through our [contributing guidelines](./.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
+
+## License
+By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
