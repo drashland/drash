@@ -62,7 +62,7 @@ Server listening: http://localhost:1447
 ```
 
 ```
-$ curl localhost:1337
+$ curl localhost:1447
 Hello World! deno + Drash is cool!
 ```
 
