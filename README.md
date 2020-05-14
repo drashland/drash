@@ -127,7 +127,7 @@ deno run --allow-net --allow-read --allow-env https://deno.land/x/drash@v1.0.0/e
 2. Make the following request: `GET /`.
 
 ```
-curl --request GET localhost:1447
+curl --request GET localhost:1667
 
 "GET request received!"
 ```
@@ -135,7 +135,7 @@ curl --request GET localhost:1447
 3. Make the following request `GET /coffee/17`.
 
 ```
-curl --request GET localhost:1447/coffee/17
+curl --request GET localhost:1667/coffee/17
 
 {"name":"Light"}
 ```
@@ -143,7 +143,7 @@ curl --request GET localhost:1447/coffee/17
 4. Make the following request `POST /`.
 
 ```
-curl --request POST localhost:1447
+curl --request POST localhost:1667
 
 "POST request received!"
 ```
@@ -151,13 +151,13 @@ curl --request POST localhost:1447
 5. Make the following request `PATCH /` (with verbose flag). This method is not defined in the [`HomeResource`](https://github.com/drashland/deno-drash/blob/master/example_app/home_resource.ts) class, so you should receive a `405` response.
 
 ```
-curl --request PATCH --verbose localhost:1447
+curl --request PATCH --verbose localhost:1667
 
 *   Trying ::1...
 * TCP_NODELAY set
-* Connected to localhost (::1) port 1447 (#0)
+* Connected to localhost (::1) port 1667 (#0)
 > PATCH / HTTP/1.1
-> Host: localhost:1447
+> Host: localhost:1667
 > User-Agent: curl/7.64.1
 > Accept: */*
 >
