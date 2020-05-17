@@ -34,11 +34,7 @@ export type MiddlewareType = {
  */
 export function Middleware(middlewares: MiddlewareType) {
   return function (
-    ...args:
-      | ClassDecorator[]
-      | PropertyDecorator[]
-      | MethodDecorator[]
-      | ParameterDecorator[]
+    ...args: any[]
   ) {
     switch (args.length) {
       case 1:
@@ -53,7 +49,6 @@ export function Middleware(middlewares: MiddlewareType) {
           // Parameter decorator
           break;
         }
-        console.log(args);
         // @ts-ignore
         return MethodMiddleware(middlewares).apply(this, args);
       default:
@@ -67,7 +62,7 @@ export function Middleware(middlewares: MiddlewareType) {
  *
  * @param middlewares Contains all middleware to be run
  */
-function MethodMiddleware(middlewares: MiddlewareType) {
+function MethodMiddleware(middlewares: MiddlewareType): any {
   return function (
     target: any,
     propertyKey: string,
