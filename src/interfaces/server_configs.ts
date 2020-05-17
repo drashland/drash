@@ -107,8 +107,8 @@ export interface ServerConfigs {
       ((request: any) => Promise<void>) | ((request: any) => void)
     >;
     after_request?: Array<
-        | ((request: any, response: Drash.Http.Response) => Promise<void>)
-        | ((request: any, response: Drash.Http.Response) => void)
+      | ((request: any, response: Drash.Http.Response) => Promise<void>)
+      | ((request: any, response: Drash.Http.Response) => void)
     >;
   };
   pretty_links?: boolean;

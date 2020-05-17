@@ -7,8 +7,8 @@ import { Drash } from "../../mod.ts";
  * @param response Contains the instance of the response.
  */
 export type MiddlewareFunction =
-  | ((request: any, response: Drash.Http.Response) => Promise<void>)
-  | ((request: any, response: Drash.Http.Response) => void);
+  | ((request: any, response?: Drash.Http.Response) => Promise<void>)
+  | ((request: any, response?: Drash.Http.Response) => void);
 
 /**
  * @type MiddlewareType
@@ -33,7 +33,13 @@ export type MiddlewareType = {
  * @param middlewares Contains middlewares to be executed
  */
 export function Middleware(middlewares: MiddlewareType) {
-  return function (...args: any[]) {
+  return function (
+    ...args:
+      | ClassDecorator[]
+      | PropertyDecorator[]
+      | MethodDecorator[]
+      | ParameterDecorator[]
+  ) {
     switch (args.length) {
       case 1:
         // Class decorator
@@ -47,6 +53,7 @@ export function Middleware(middlewares: MiddlewareType) {
           // Parameter decorator
           break;
         }
+        console.log(args);
         // @ts-ignore
         return MethodMiddleware(middlewares).apply(this, args);
       default:
@@ -99,24 +106,38 @@ function MethodMiddleware(middlewares: MiddlewareType) {
  */
 function ClassMiddleware(middlewares: MiddlewareType) {
   return function <T extends { new (...args: any[]): {} }>(constr: T) {
-    return class extends constr {
-      constructor(...args: any[]) {
-        const request = args[0];
-        const response = args[1];
+    const classFunctions = Object.getOwnPropertyDescriptors(constr.prototype);
+
+    for (const key in classFunctions) {
+      if (key == "constructor") {
+        continue;
+      }
+
+      const originalFunction = classFunctions[key].value;
+      classFunctions[key].value = async function (...args: any[]) {
+        const { request, response } = Object.getOwnPropertyDescriptors(this);
         // Execute before_request Middleware if exist
         if (middlewares.before_request != null) {
           for (const middleware of middlewares.before_request) {
-            middleware(request, response);
+            await middleware(request.value);
           }
         }
-        super(...args);
+
+        // Execute function
+        const result = originalFunction.apply(this, args);
+
         // Execute after_request Middleware if exist
         if (middlewares.after_request != null) {
           for (const middleware of middlewares.after_request) {
-            middleware(request, response);
+            await middleware(request.value, result);
           }
         }
-      }
-    };
+        return result;
+      };
+
+      Object.defineProperty(constr.prototype, key, classFunctions[key]);
+    }
+
+    return constr;
   };
 }
