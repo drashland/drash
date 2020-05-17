@@ -1,30 +1,40 @@
 import { Drash } from "../../mod.ts";
 
 /**
- * @type MiddlewareFunction
+ * @type MiddlewareBeforeFunction
  * @param request Contains the instance of the request.
  * @param server Contains the instance of the server.
  * @param response Contains the instance of the response.
  */
-export type MiddlewareFunction =
-  | ((request: any, response?: Drash.Http.Response) => Promise<void>)
-  | ((request: any, response?: Drash.Http.Response) => void);
+export type MiddlewareBeforeFunction =
+  | ((request: any) => Promise<void>)
+  | ((request: any) => void);
+
+/**
+ * @type MiddlewareAfterFunction
+ * @param request Contains the instance of the request.
+ * @param server Contains the instance of the server.
+ * @param response Contains the instance of the response.
+ */
+export type MiddlewareAfterFunction =
+  | ((request: any, response: Drash.Http.Response) => Promise<void>)
+  | ((request: any, response: Drash.Http.Response) => void);
 
 /**
  * @type MiddlewareType
  * @description
- *     before_request?: MiddlewareFunction[]
+ *     before_request?: MiddlewareBeforeFunction[]
  *
  *         An array that contains all the functions that will be run before a Drash.Http.Request is handled.
  *
- *     after_request: MiddlewareFunction[]
+ *     after_request: MiddlewareAfterFunction[]
  *
  *         An array that contains all the functions that will be run after a Drash.Http.Request is handled.
  *
  */
 export type MiddlewareType = {
-  before_request?: MiddlewareFunction[];
-  after_request?: MiddlewareFunction[];
+  before_request?: MiddlewareBeforeFunction[];
+  after_request?: MiddlewareAfterFunction[];
 };
 
 /**
@@ -74,7 +84,7 @@ function MethodMiddleware(middlewares: MiddlewareType): any {
       // Execute before_request Middleware if exist
       if (middlewares.before_request != null) {
         for (const middleware of middlewares.before_request) {
-          await middleware(request.value, response.value);
+          await middleware(request.value);
         }
       }
 

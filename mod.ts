@@ -4,7 +4,8 @@ import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_e
 // Decorators
 import {
   Middleware as MiddlewareHandler,
-  MiddlewareFunction as MiddlewareFunctionDefinition,
+  MiddlewareBeforeFunction as MiddlewareBeforeFunctionDefinition,
+  MiddlewareAfterFunction as MiddlewareAfterFunctionDefinition,
   MiddlewareType as MiddlewareTypeDefinition,
 } from "./src/http/middleware.ts";
 
@@ -74,7 +75,8 @@ export namespace Drash {
   }
 
   export namespace Http {
-    export type MiddlewareFunction = MiddlewareFunctionDefinition;
+    export type MiddlewareBeforeFunction = MiddlewareBeforeFunctionDefinition;
+    export type MiddlewareAfterFunction = MiddlewareAfterFunctionDefinition;
     export type MiddlewareType = MiddlewareTypeDefinition;
     export const Middleware = MiddlewareHandler;
     export class Resource extends BaseResource {}
