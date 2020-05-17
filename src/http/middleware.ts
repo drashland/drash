@@ -1,40 +1,29 @@
 import { Drash } from "../../mod.ts";
-
 /**
- * @type MiddlewareBeforeFunction
+ * @type MiddlewareFunction
  * @param request Contains the instance of the request.
  * @param server Contains the instance of the server.
  * @param response Contains the instance of the response.
  */
-export type MiddlewareBeforeFunction =
-  | ((request: any) => Promise<void>)
-  | ((request: any) => void);
-
-/**
- * @type MiddlewareAfterFunction
- * @param request Contains the instance of the request.
- * @param server Contains the instance of the server.
- * @param response Contains the instance of the response.
- */
-export type MiddlewareAfterFunction =
+export type MiddlewareFunction =
   | ((request: any, response: Drash.Http.Response) => Promise<void>)
   | ((request: any, response: Drash.Http.Response) => void);
 
 /**
  * @type MiddlewareType
  * @description
- *     before_request?: MiddlewareBeforeFunction[]
+ *     before_request?: MiddlewareFunction[]
  *
  *         An array that contains all the functions that will be run before a Drash.Http.Request is handled.
  *
- *     after_request: MiddlewareAfterFunction[]
+ *     after_request: MiddlewareFunction[]
  *
  *         An array that contains all the functions that will be run after a Drash.Http.Request is handled.
  *
  */
 export type MiddlewareType = {
-  before_request?: MiddlewareBeforeFunction[];
-  after_request?: MiddlewareAfterFunction[];
+  before_request?: MiddlewareFunction[];
+  after_request?: MiddlewareFunction[];
 };
 
 /**
@@ -84,7 +73,7 @@ function MethodMiddleware(middlewares: MiddlewareType): any {
       // Execute before_request Middleware if exist
       if (middlewares.before_request != null) {
         for (const middleware of middlewares.before_request) {
-          await middleware(request.value);
+          await middleware(request.value, response.value);
         }
       }
 
@@ -124,7 +113,7 @@ function ClassMiddleware(middlewares: MiddlewareType) {
         // Execute before_request Middleware if exist
         if (middlewares.before_request != null) {
           for (const middleware of middlewares.before_request) {
-            await middleware(request.value);
+            await middleware(request.value, response.value);
           }
         }
 
