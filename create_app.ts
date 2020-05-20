@@ -6,12 +6,15 @@ const tooManyArgs = [wantsHelp, wantsApi, wantsWebApp].filter(arg => arg).length
 
 function showHelp () {
     const helpMessage =
+        '\n' +
         'A create app script for Drash' +
         '\n' +
         '\n' +
         'USAGE:' +
         '\n' +
         '    deno run --allow-read --allow-run create_app.ts [OPTIONS]' +
+        '\n' +
+        '    deno run --allow-read --allow-run https://deno.land/x/drash/create_app.ts [OPTIONS]' +
         '\n' +
         '\n' +
         'OPTIONS:' +
@@ -26,11 +29,29 @@ function showHelp () {
         '\n' +
         '    --web-app' +
         '\n' +
-        '        Creates the file structure and content for a Web App using Drash'
+        '        Creates the file structure and content for a Web App using Drash' +
+        '\n' +
+        '\n' +
+        'EXAMPLE:' +
+        '\n' +
+        '    mkdir my-drash-api' +
+        '\n' +
+        '    cd my-drash-api' +
+        '\n' +
+        '    deno run --allow-read --allow-run https://deno.land/x/drash/create_app.ts --api' +
+        '\n'
     Deno.run({
         cmd: ['echo', helpMessage]
     })
     Deno.exit()
+}
+
+function buildForWebApp () {
+
+}
+
+function buildForAPI () {
+
 }
 
 if (tooManyArgs) {
