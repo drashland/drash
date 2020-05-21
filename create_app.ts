@@ -1,10 +1,13 @@
+import { green, red } from "./deps.ts";
 const { args } = Deno
 const wantsHelp = (args.find(arg => arg === '--help') !== undefined)
 const wantsWebApp = (args.find(arg => arg === '--web-app') !== undefined)
 const wantsApi = (args.find(arg => arg === '--api') !== undefined)
 const wantsVue = (args.find(arg => arg === '--with-vue') !== undefined)
+const cwd = Deno.cwd()
 
-// TODO :: Boiler plate directory to copy?
+// TODO :: Maybe move all the string cat stuff into /console/create_app/cli_messages/? And move the boilerplate code into /console/create_app/boilerplate
+// TODO :: Move functions into objects? eg const console/output = { sendThankYou: function () { ... } }
 
 //////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS ///////////////////////////////////////////////////
@@ -36,16 +39,11 @@ function showHelp () {
         '        Creates the file structure and content for a Drash API' +
         '\n' +
         '\n' +
-        '    --web-app' +
+        '    --web-app, --web-app --with-vue' +
         '\n' +
-        '        Creates the file structure and content for a Web App using Drash' +
+        '        Creates the file structure and content for a Web App using Drash.' +
         '\n' +
-        '\n' +
-        '    --with-vue' +
-        '\n' +
-        '        Adds support right off the bat for Vue to be used in your web app.' +
-        '\n' +
-        '        Can only be used with the --web-app option' +
+        '        Will add a Vue foundation if the --with-vue option is passed in' +
         '\n' +
         '\n' +
         'EXAMPLE:' +
@@ -59,24 +57,39 @@ function showHelp () {
     Deno.run({
         cmd: ['echo', helpMessage]
     })
-    Deno.exit()
 }
 
 /**
  * On writing to and creating files, we send a message to stdout to let the user know something
  * is happening
  *
- * @param {string} message Message to show in the console
- *
- * @example
- * writeFileWrittenOrCreatedMessage('Created deps.ts') // "Created deps.ts" in green
+ * @param {string} message Message to show in the console. Required.
  */
 function writeFileWrittenOrCreatedMessage (message: string) {
-    // TODO
+    Deno.run({
+        cmd: ['echo', green(message)]
+    })
+}
+
+/**
+ * Send our thank you message for using it
+ */
+function sendThankYouMessage () {
+    const whatUserWanted = wantsApi ? 'Your API ' : wantsWebApp && !wantsVue ? 'Your web app ' : wantsWebApp && wantsVue ? 'Your web app with Vue ' : ''
+    Deno.run({
+        cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '. Thank you for using Drash\'s create app script, we hope you enjoy your newly built project!']
+    })
 }
 
 function buildTheBaseline () {
-    // TODO :: Should create the following: app.ts, deps.ts, resources/home_resource.ts, config.ts, tests/resources/home_resource_test.ts, middleware/
+    const boilerPlateDir = './console/create_app'
+    Deno.copyFileSync(`${boilerPlateDir}/console/create_app/deps.ts`, cwd + 'deps.ts')
+    Deno.mkdirSync(cwd + 'resources')
+    Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource.ts`, cwd + 'resources/home_resource.ts')
+    Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + 'config.ts')
+    Deno.mkdirSync(cwd + 'middleware')
+    Deno.mkdirSync(cwd + 'tests')
+    Deno.copyFileSync(`${boilerPlateDir}/tests/home_resource_test.ts`, cwd + 'tests/home_resource_test.ts')
 }
 
 /**
@@ -84,14 +97,23 @@ function buildTheBaseline () {
  */
 function buildForWebApp () {
     // TODO :: Main logic
-    // TODO :: Account for if user wants vue
+    // ...
+
+    if (wantsVue) {
+        // TODO :: Copy vue related files
+        // ...
+    } else {
+        // TODO :: Copy normal files without vue
+        // ...
+    }
 }
 
 /**
- * Responsible for all the logic around creating an api
+ * Responsible for all the logic around creating an api - eg omits views, js files
  */
 function buildForAPI () {
     // TODO :: Main logic
+    // ...
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -101,7 +123,7 @@ function buildForAPI () {
 // Requirement: Now allowed to ask for an API AND Web App
 if (wantsApi && wantsWebApp) {
     Deno.run({
-        cmd: ['echo', '--web-app and --api options are now allowed to be used together. Use the --help option on how to run this script']
+        cmd: ['echo', red('--web-app and --api options are now allowed to be used together. Use the --help option on how to run this script')]
     })
     Deno.exit(1)
 }
@@ -110,15 +132,15 @@ if (wantsApi && wantsWebApp) {
 const tooFewArgs = !wantsHelp && !wantsWebApp && !wantsApi
 if (tooFewArgs) {
     Deno.run({
-        cmd: ['echo', 'Too few options were given. Use the --help option on how to run this script']
+        cmd: ['echo', red('Too few options were given. Use the --help option on how to run this script')]
     })
     Deno.exit(1)
 }
 
-// Requirement: --with-vue is only allowed to be used with --web-app
+// Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
 if (wantsVue && !wantsWebApp) {
     Deno.run({
-        cmd: ['echo', 'The --with-vue option is only allowed for use with a web app. Use the --help option on how to run this script']
+        cmd: ['echo', red('The --with-vue option is only allowed for use with a web app. Use the --help option on how to run this script')]
     })
     Deno.exit(1)
 }
@@ -126,16 +148,21 @@ if (wantsVue && !wantsWebApp) {
 // Requirement: Add a --help option
 if (wantsHelp) {
     showHelp()
+    Deno.exit()
 }
 
 // Requirement: Add support for building a Drash API (--api)
 if (wantsApi) {
     buildTheBaseline()
     buildForWebApp()
+    sendThankYouMessage()
+    Deno.exit()
 }
 
-// Requirement: Add support for building a web app (--web-app)
+// Requirement: Add support for building a web app (--web-app [--with-vue])
 if (wantsWebApp) {
     buildTheBaseline()
     buildForAPI()
+    sendThankYouMessage()
+    Deno.exit()
 }
