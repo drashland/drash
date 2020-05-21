@@ -91,8 +91,8 @@ function buildTheBaseline () {
     Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource.ts`, cwd + '/resources/home_resource.ts')
     Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + '/config.ts')
     Deno.mkdirSync(cwd + '/middleware')
-    Deno.mkdirSync(cwd + '/tests')
-    Deno.copyFileSync(`${boilerPlateDir}/tests/home_resource_test.ts`, cwd + '/tests/home_resource_test.ts')
+    Deno.mkdirSync(cwd + '/tests/resources', { recursive: true })
+    Deno.copyFileSync(`${boilerPlateDir}/tests/resources/home_resource_test.ts`, cwd + '/tests/resources/home_resource_test.ts')
 }
 
 /**
