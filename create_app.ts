@@ -5,6 +5,10 @@ const wantsWebApp = (args.find(arg => arg === '--web-app') !== undefined)
 const wantsApi = (args.find(arg => arg === '--api') !== undefined)
 const wantsVue = (args.find(arg => arg === '--with-vue') !== undefined)
 const cwd = Deno.cwd()
+// strip this file name from the path and add the link to the boilerplate dir
+const boilerPlateDir = (import.meta.url.slice(0, -13)).substring(5) + 'console/create_app'
+//                                  ^^^^^^^^              ^^^^            ^^^^^^^
+//                Remove the file name from the path   Strip "file://"  Add boiler plate dir
 
 // TODO :: Maybe move all the string cat stuff into /console/create_app/cli_messages/? And move the boilerplate code into /console/create_app/boilerplate
 // TODO :: Move functions into objects? eg const console/output = { sendThankYou: function () { ... } }
@@ -82,29 +86,32 @@ function sendThankYouMessage () {
 }
 
 function buildTheBaseline () {
-    const boilerPlateDir = './console/create_app'
-    Deno.copyFileSync(`${boilerPlateDir}/console/create_app/deps.ts`, cwd + 'deps.ts')
-    Deno.mkdirSync(cwd + 'resources')
-    Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource.ts`, cwd + 'resources/home_resource.ts')
-    Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + 'config.ts')
-    Deno.mkdirSync(cwd + 'middleware')
-    Deno.mkdirSync(cwd + 'tests')
-    Deno.copyFileSync(`${boilerPlateDir}/tests/home_resource_test.ts`, cwd + 'tests/home_resource_test.ts')
+    Deno.copyFileSync(`${boilerPlateDir}/deps.ts`, cwd + '/deps.ts')
+    Deno.mkdirSync(cwd + '/resources')
+    Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource.ts`, cwd + '/resources/home_resource.ts')
+    Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + '/config.ts')
+    Deno.mkdirSync(cwd + '/middleware')
+    Deno.mkdirSync(cwd + '/tests')
+    Deno.copyFileSync(`${boilerPlateDir}/tests/home_resource_test.ts`, cwd + '/tests/home_resource_test.ts')
 }
 
 /**
  * Responsible for all the logic around creating a web app
  */
 function buildForWebApp () {
-    // TODO :: Main logic
-    // ...
+    Deno.copyFileSync(`${boilerPlateDir}/app_web_app.ts`, cwd + '/app.ts')
+    Deno.mkdirSync(cwd + '/public/views', { recursive: true })
+    Deno.mkdirSync(cwd + '/public/css', { recursive: true })
+    Deno.mkdirSync(cwd + '/public/js', { recursive: true })
+    Deno.mkdirSync(cwd + '/public/img', { recursive: true })
 
     if (wantsVue) {
         // TODO :: Copy vue related files
         // ...
     } else {
-        // TODO :: Copy normal files without vue
-        // ...
+        Deno.copyFileSync(`${boilerPlateDir}/public/views/index.html`, cwd + '/public/views/index.html')
+        Deno.copyFileSync(`${boilerPlateDir}/public/css/index.css`, cwd + '/public/css/index.css')
+        Deno.copyFileSync(`${boilerPlateDir}/public/js/index.js`, cwd + '/public/js/index.js')
     }
 }
 
@@ -112,8 +119,7 @@ function buildForWebApp () {
  * Responsible for all the logic around creating an api - eg omits views, js files
  */
 function buildForAPI () {
-    // TODO :: Main logic
-    // ...
+    Deno.copyFileSync(`${boilerPlateDir}/app_api.ts`, cwd + '/app.ts')
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -154,7 +160,7 @@ if (wantsHelp) {
 // Requirement: Add support for building a Drash API (--api)
 if (wantsApi) {
     buildTheBaseline()
-    buildForWebApp()
+    buildForAPI()
     sendThankYouMessage()
     Deno.exit()
 }
@@ -162,7 +168,7 @@ if (wantsApi) {
 // Requirement: Add support for building a web app (--web-app [--with-vue])
 if (wantsWebApp) {
     buildTheBaseline()
-    buildForAPI()
+    buildForWebApp()
     sendThankYouMessage()
     Deno.exit()
 }
