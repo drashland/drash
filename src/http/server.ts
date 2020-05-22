@@ -91,8 +91,8 @@ export class Server {
       ((request: any) => Promise<void>) | ((request: any) => void)
     >;
     after_request?: Array<
-        | ((request: any, response: Drash.Http.Response) => Promise<void>)
-        | ((request: any, response: Drash.Http.Response) => void)
+      | ((request: any, response: Drash.Http.Response) => Promise<void>)
+      | ((request: any, response: Drash.Http.Response) => void)
     >;
   } = {};
 
@@ -342,9 +342,11 @@ export class Server {
     response.body = error.message ? error.message : response.getStatusMessage();
 
     this.logDebug(
-      `Sending response. Content-Type: ${response.headers.get(
-        "Content-Type",
-      )}. Status: ${response.getStatusMessageFull()}.`,
+      `Sending response. Content-Type: ${
+        response.headers.get(
+          "Content-Type",
+        )
+      }. Status: ${response.getStatusMessageFull()}.`,
     );
 
     try {
@@ -583,10 +585,12 @@ export class Server {
         // Wildcard
         const pathObj = {
           og_path: path,
-          regex_path: `^.${path.replace(
-            Server.REGEX_URI_MATCHES,
-            Server.REGEX_URI_REPLACEMENT,
-          )}/?$`,
+          regex_path: `^.${
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT,
+            )
+          }/?$`,
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
             (element: string) => {
               return element.replace(/:|{|}/g, "");
@@ -598,10 +602,12 @@ export class Server {
       } else {
         const pathObj = {
           og_path: path,
-          regex_path: `^${path.replace(
-            Server.REGEX_URI_MATCHES,
-            Server.REGEX_URI_REPLACEMENT,
-          )}/?$`,
+          regex_path: `^${
+            path.replace(
+              Server.REGEX_URI_MATCHES,
+              Server.REGEX_URI_REPLACEMENT,
+            )
+          }/?$`,
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
             (element: string) => {
               return element.replace(/:|{|}/g, "");

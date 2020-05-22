@@ -7,6 +7,7 @@
 * v1.0.0
 
     * Deno v1.0.0
+    * Deno Standard Modules v0.50.0
 
 * v1.0.0-rc1
 
