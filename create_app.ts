@@ -10,9 +10,6 @@ const boilerPlateDir = (import.meta.url.slice(0, -13)).substring(5) + 'console/c
 //                                  ^^^^^^^^              ^^^^            ^^^^^^^
 //                Remove the file name from the path   Strip "file://"  Add boiler plate dir
 
-// TODO :: Maybe move all the string cat stuff into /console/create_app/cli_messages/? And move the boilerplate code into /console/create_app/boilerplate
-// TODO :: Move functions into objects? eg const console/output = { sendThankYou: function () { ... } }
-
 //////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS ///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -106,8 +103,12 @@ function buildForWebApp () {
     Deno.mkdirSync(cwd + '/public/img', { recursive: true })
 
     if (wantsVue) {
-        // TODO :: Copy vue related files
-        // ...
+        Deno.copyFileSync(`${boilerPlateDir}/package_vue.json`, cwd + '/package.json')
+        Deno.copyFileSync(`${boilerPlateDir}/webpack_vue.config.js`, cwd + '/webpack.config.js')
+        Deno.mkdirSync(cwd + '/vue')
+        Deno.copyFileSync(`${boilerPlateDir}/vue/app.js`, cwd + '/vue/app.js')
+        Deno.copyFileSync(`${boilerPlateDir}/vue/app.vue`, cwd + '/vue/app.vue')
+        Deno.copyFileSync(`${boilerPlateDir}/public/views/index_vue.html`, cwd + '/public/views/index.html')
     } else {
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index.html`, cwd + '/public/views/index.html')
         Deno.copyFileSync(`${boilerPlateDir}/public/css/index.css`, cwd + '/public/css/index.css')
