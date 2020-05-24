@@ -22,6 +22,7 @@
 
 ## Table of Contents
 - [Quick Start](#quick-start)
+- [Create Drash App](#create-drash-app)
 - [Documentation](#documentation)
 - [Features](#features)
 - [Why use Drash?](#why-use-drash)
@@ -63,6 +64,24 @@ Server listening: http://localhost:1447
 ```
 $ curl localhost:1447
 Hello World! deno + Drash is cool!
+```
+
+## Create Drash App
+
+Drash provides a basic tool to quickly create a Drash skeleton, with everything working out of the box, ready for you to build something great with it.
+
+This doesn't require you to install any Drash scripts or modules, and will create the skeleton inside the directory you are within - whether it's an API, a full Web Application with or without Vue.
+
+```
+$ mkdir my-drash-project
+$ cd my-drash-project
+$ deno run --allow-run --allow-read --allow-write https://deno.land/x/drash@v1.0.0/create_app.ts [OPTIONS]
+```
+
+Display the options with `--help`:
+
+```
+$ deno run --allow-run https://deno.land/x/drash@v1.0.0/create_app.ts --help
 ```
 
 ## Documentation
