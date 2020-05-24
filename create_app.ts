@@ -33,22 +33,25 @@ function showHelp () {
         '\n' +
         'OPTIONS:' +
         '\n' +
-        'The --api and --web-app options cannot be used together' +
+        'The --api and --web-app options cannot be used together.' +
         '\n' +
         '\n' +
         '    --api' +
         '\n' +
-        '        Creates the file structure and content for a Drash API' +
+        '        Creates the file structure and content for a Drash API.' +
         '\n' +
         '\n' +
-        '    --web-app, --web-app --with-vue' +
+        '    --web-app' +
         '\n' +
-        '        Creates the file structure and content for a Web App using Drash.' +
-        '\n' +
-        '        Will add a Vue foundation if the --with-vue option is passed in' +
+        '        Creates the file structure and content for a Drash Web App.' +
         '\n' +
         '\n' +
-        'EXAMPLE:' +
+        '    --web-app --with-vue' +
+        '\n' +
+        '        Creates the file structure and content for a Drash Web App with Vue.' +
+        '\n' +
+        '\n' +
+        'EXAMPLE USAGE:' +
         '\n' +
         '    mkdir my-drash-api' +
         '\n' +
