@@ -23,7 +23,7 @@
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        color: $vue-blue;
+        color: blue;
     }
     h1 {
         text-align: center;

@@ -1,10 +1,12 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader')
 module.exports = {
   entry: {
-    app: './vue/app.vue'
+    app: './vue/app.js'
   },
   output: {
     filename: "[name].js",
-    path: './public/js/'
+    path: __dirname + '/public/js/'
   },
   module: {
     rules: [
@@ -23,10 +25,20 @@ module.exports = {
             loader: 'babel-loader'
           }
         ]
-      }
+      },
+      {
+        test: /\.(css|sass|scss)$/,
+        use: ["vue-style-loader", "css-loader"]
+      },
     ]
   },
   resolve: {
     extensions: ['.vue', '.js']
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/views/index.html',
+    }),
+    new VueLoaderPlugin(),
+  ]
 }

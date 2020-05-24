@@ -3,17 +3,24 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "buildVue": "node_modules/.bin/webpack-cli --config webpack.config.js",
+    "buildVue": "node_modules/.bin/webpack-cli --config webpack.config.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "babel-core": "^7.0.0-bridge.0",
-    "core-js": "^3.6.4",
+    "core-js": "^3.6.4"
   },
   "devDependencies": {
     "babel-loader": "^8.0.6",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "vue-loader": "^15.9.2",
+    "html-webpack-plugin": "^4.3.0",
+    "vue-template-compiler": "^2.6.11",
+    "@babel/core": "^7.9.6",
+    "css-loader": "^3.5.3",
+    "vue": "^2.6.11",
+    "vue-style-loader": "^4.1.2"
   }
 }

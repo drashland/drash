@@ -1,5 +1,5 @@
 import { Drash } from "./deps.ts"
-import HomeResource from "./resources//home_resource.ts";
+import HomeResource from "./resources/home_resource.ts";
 
 const server = new Drash.Http.Server({
     directory: Deno.realPathSync("./"),

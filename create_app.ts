@@ -78,7 +78,7 @@ function writeFileWrittenOrCreatedMessage (message: string) {
 function sendThankYouMessage () {
     const whatUserWanted = wantsApi ? 'Your API ' : wantsWebApp && !wantsVue ? 'Your web app ' : wantsWebApp && wantsVue ? 'Your web app with Vue ' : ''
     Deno.run({
-        cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '. Thank you for using Drash\'s create app script, we hope you enjoy your newly built project!']
+        cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '.\nThank you for using Drash\'s create app script, we hope you enjoy your newly built project!']
     })
 }
 
@@ -107,7 +107,7 @@ function buildForWebApp () {
         Deno.copyFileSync(`${boilerPlateDir}/webpack_vue.config.js`, cwd + '/webpack.config.js')
         Deno.mkdirSync(cwd + '/vue')
         Deno.copyFileSync(`${boilerPlateDir}/vue/app.js`, cwd + '/vue/app.js')
-        Deno.copyFileSync(`${boilerPlateDir}/vue/app.vue`, cwd + '/vue/app.vue')
+        Deno.copyFileSync(`${boilerPlateDir}/vue/App.vue`, cwd + '/vue/App.vue')
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index_vue.html`, cwd + '/public/views/index.html')
     } else {
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index.html`, cwd + '/public/views/index.html')
