@@ -1,3 +1,7 @@
+/**
+ * Test needs the following flags: --allow-read --allow-run --allow-write
+ */
+
 import members from "./members.ts";
 const tmpDirName = 'tmp-dir-for-testing-create-app'
 const originalCWD = Deno.cwd()
@@ -187,8 +191,28 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
     members.assert.equal(boilerPlateFile, copiedFile)
     // public/img.ts
     members.assert.equal(await fileExists('public/img'), true)
-    // TODO :: Assert the vue specific files (needs to include the js, css and html files)
-    // ...
+    // webpack.config.js
+    members.assert.equal(await fileExists('webpack.config.js'), true)
+    boilerPlateFile = decoder.decode(Deno.readFileSync(originalCWD + '/console/create_app/webpack_vue.config.js'));
+    copiedFile = decoder.decode(Deno.readFileSync('webpack.config.js'));
+    members.assert.equal(boilerPlateFile, copiedFile)
+    // package.json
+    members.assert.equal(await fileExists('package.json'), true)
+    boilerPlateFile = decoder.decode(Deno.readFileSync(originalCWD + '/console/create_app/package_vue.json'));
+    copiedFile = decoder.decode(Deno.readFileSync('package.json'));
+    members.assert.equal(boilerPlateFile, copiedFile)
+    // vue/App.vue
+    members.assert.equal(await fileExists('vue'), true)
+    members.assert.equal(await fileExists('vue/App.vue'), true)
+    boilerPlateFile = decoder.decode(Deno.readFileSync(originalCWD + '/console/create_app/vue/App.vue'));
+    copiedFile = decoder.decode(Deno.readFileSync('vue/App.vue'));
+    members.assert.equal(boilerPlateFile, copiedFile)
+    // vue/app.js
+    members.assert.equal(await fileExists('vue/app.js'), true)
+    boilerPlateFile = decoder.decode(Deno.readFileSync(originalCWD + '/console/create_app/vue/app.js'));
+    copiedFile = decoder.decode(Deno.readFileSync('vue/app.js'));
+    members.assert.equal(boilerPlateFile, copiedFile)
+
     Deno.chdir(originalCWD)
     Deno.removeSync(tmpDirName, { recursive: true })
 })
