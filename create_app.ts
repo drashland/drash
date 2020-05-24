@@ -77,7 +77,7 @@ function writeFileWrittenOrCreatedMessage (message: string) {
  * Send our thank you message for using it
  */
 function sendThankYouMessage () {
-    notesForUser.push('Run your application: deno run --allow-run --allow-read app.ts')
+    notesForUser.push('Run your application: deno run --allow-run --allow-net --allow-read app.ts')
     const whatUserWanted = wantsApi ? 'Your API ' : wantsWebApp && !wantsVue ? 'Your web app ' : wantsWebApp && wantsVue ? 'Your web app with Vue ' : ''
     Deno.run({
         cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '.\nThank you for using Drash\'s create app script, we hope you enjoy your newly built project!\n' + notesForUser.join('\n')]

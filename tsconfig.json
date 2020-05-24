@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "experimentalDecorators": true,
-        "module": "ESNext"
+        "experimentalDecorators": true
     }
 }

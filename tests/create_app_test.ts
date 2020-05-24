@@ -1,5 +1,8 @@
 /**
  * Test needs the following flags: --allow-read --allow-run --allow-write
+ *
+ * Will make a tmp directory in the root of this project, cd into it and create files there.
+ * This is only for some tests
  */
 
 import members from "./members.ts";

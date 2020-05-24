@@ -14,4 +14,6 @@
 
   cd -
   deno test tests/test.ts --config tsconfig.json --allow-net
+
+  deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
 )
