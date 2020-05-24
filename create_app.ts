@@ -139,7 +139,7 @@ function buildForAPI () {
 // Requirement: Now allowed to ask for an API AND Web App
 if (wantsApi && wantsWebApp) {
     Deno.run({
-        cmd: ['echo', red('--web-app and --api options are now allowed to be used together. Use the --help option on how to run this script')]
+        cmd: ['echo', red('--web-app and --api options are now allowed to be used together. Use the --help option for more information.')]
     })
     Deno.exit(1)
 }
@@ -148,7 +148,7 @@ if (wantsApi && wantsWebApp) {
 const tooFewArgs = !wantsHelp && !wantsWebApp && !wantsApi
 if (tooFewArgs) {
     Deno.run({
-        cmd: ['echo', red('Too few options were given. Use the --help option on how to run this script')]
+        cmd: ['echo', red('Too few options were given. Use the --help option for more information.')]
     })
     Deno.exit(1)
 }
@@ -156,7 +156,7 @@ if (tooFewArgs) {
 // Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
 if (wantsVue && !wantsWebApp) {
     Deno.run({
-        cmd: ['echo', red('The --with-vue option is only allowed for use with a web app. Use the --help option on how to run this script')]
+        cmd: ['echo', red('The --with-vue option is only allowed for use with a web app. Use the --help option for more information.')]
     })
     Deno.exit(1)
 }
