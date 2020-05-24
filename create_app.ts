@@ -48,7 +48,9 @@ function showHelp () {
         '\n' +
         '    --web-app --with-vue' +
         '\n' +
-        '        Creates the file structure and content for a Drash Web App with Vue.' +
+        '        Creates the file structure and content for a Drash Web App.' +
+        '\n' +
+        '        This options requires Node and npm because it uses Vue and webpack.' +
         '\n' +
         '\n' +
         'EXAMPLE USAGE:' +
