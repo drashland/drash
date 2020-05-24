@@ -117,7 +117,7 @@ function buildForWebApp () {
         Deno.copyFileSync(`${boilerPlateDir}/vue/App.vue`, cwd + '/vue/App.vue')
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index_vue.html`, cwd + '/public/views/index.html')
         notesForUser.push('Install NPM dependencies: npm install')
-        notesForUser.push('Build your Vue component: npm run buildVue')
+        notesForUser.push('Build your Vue component with webpack: npm run buildVue')
     } else {
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index.html`, cwd + '/public/views/index.html')
         Deno.copyFileSync(`${boilerPlateDir}/public/css/index.css`, cwd + '/public/css/index.css')
