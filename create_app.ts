@@ -9,6 +9,7 @@ const cwd = Deno.cwd()
 const boilerPlateDir = (import.meta.url.slice(0, -13)).substring(5) + 'console/create_app'
 //                                  ^^^^^^^^              ^^^^            ^^^^^^^
 //                Remove the file name from the path   Strip "file://"  Add boiler plate dir
+const notesForUser: string[] = []
 
 //////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS ///////////////////////////////////////////////////
@@ -76,9 +77,10 @@ function writeFileWrittenOrCreatedMessage (message: string) {
  * Send our thank you message for using it
  */
 function sendThankYouMessage () {
+    notesForUser.push('Run your application: deno run --allow-run --allow-read app.ts')
     const whatUserWanted = wantsApi ? 'Your API ' : wantsWebApp && !wantsVue ? 'Your web app ' : wantsWebApp && wantsVue ? 'Your web app with Vue ' : ''
     Deno.run({
-        cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '.\nThank you for using Drash\'s create app script, we hope you enjoy your newly built project!']
+        cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '.\nThank you for using Drash\'s create app script, we hope you enjoy your newly built project!\n' + notesForUser.join('\n')]
     })
 }
 
@@ -109,6 +111,8 @@ function buildForWebApp () {
         Deno.copyFileSync(`${boilerPlateDir}/vue/app.js`, cwd + '/vue/app.js')
         Deno.copyFileSync(`${boilerPlateDir}/vue/App.vue`, cwd + '/vue/App.vue')
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index_vue.html`, cwd + '/public/views/index.html')
+        notesForUser.push('Install NPM dependencies: npm install')
+        notesForUser.push('Build your Vue component: npm run buildVue')
     } else {
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index.html`, cwd + '/public/views/index.html')
         Deno.copyFileSync(`${boilerPlateDir}/public/css/index.css`, cwd + '/public/css/index.css')
