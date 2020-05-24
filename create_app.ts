@@ -33,22 +33,27 @@ function showHelp () {
         '\n' +
         'OPTIONS:' +
         '\n' +
-        'The --api and --web-app options cannot be used together' +
+        'The --api and --web-app options cannot be used together.' +
         '\n' +
         '\n' +
         '    --api' +
         '\n' +
-        '        Creates the file structure and content for a Drash API' +
+        '        Creates the file structure and content for a Drash API.' +
         '\n' +
         '\n' +
-        '    --web-app, --web-app --with-vue' +
+        '    --web-app' +
         '\n' +
-        '        Creates the file structure and content for a Web App using Drash.' +
-        '\n' +
-        '        Will add a Vue foundation if the --with-vue option is passed in' +
+        '        Creates the file structure and content for a Drash Web App.' +
         '\n' +
         '\n' +
-        'EXAMPLE:' +
+        '    --web-app --with-vue' +
+        '\n' +
+        '        Creates the file structure and content for a Drash Web App.' +
+        '\n' +
+        '        This options requires Node and npm because it uses Vue and webpack.' +
+        '\n' +
+        '\n' +
+        'EXAMPLE USAGE:' +
         '\n' +
         '    mkdir my-drash-api' +
         '\n' +
@@ -112,7 +117,7 @@ function buildForWebApp () {
         Deno.copyFileSync(`${boilerPlateDir}/vue/App.vue`, cwd + '/vue/App.vue')
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index_vue.html`, cwd + '/public/views/index.html')
         notesForUser.push('Install NPM dependencies: npm install')
-        notesForUser.push('Build your Vue component: npm run buildVue')
+        notesForUser.push('Build your Vue component with webpack: npm run buildVue')
     } else {
         Deno.copyFileSync(`${boilerPlateDir}/public/views/index.html`, cwd + '/public/views/index.html')
         Deno.copyFileSync(`${boilerPlateDir}/public/css/index.css`, cwd + '/public/css/index.css')
@@ -134,7 +139,7 @@ function buildForAPI () {
 // Requirement: Now allowed to ask for an API AND Web App
 if (wantsApi && wantsWebApp) {
     Deno.run({
-        cmd: ['echo', red('--web-app and --api options are now allowed to be used together. Use the --help option on how to run this script')]
+        cmd: ['echo', red('--web-app and --api options are now allowed to be used together. Use the --help option for more information.')]
     })
     Deno.exit(1)
 }
@@ -143,7 +148,7 @@ if (wantsApi && wantsWebApp) {
 const tooFewArgs = !wantsHelp && !wantsWebApp && !wantsApi
 if (tooFewArgs) {
     Deno.run({
-        cmd: ['echo', red('Too few options were given. Use the --help option on how to run this script')]
+        cmd: ['echo', red('Too few options were given. Use the --help option for more information.')]
     })
     Deno.exit(1)
 }
@@ -151,7 +156,7 @@ if (tooFewArgs) {
 // Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
 if (wantsVue && !wantsWebApp) {
     Deno.run({
-        cmd: ['echo', red('The --with-vue option is only allowed for use with a web app. Use the --help option on how to run this script')]
+        cmd: ['echo', red('The --with-vue option is only allowed for use with a web app. Use the --help option for more information.')]
     })
     Deno.exit(1)
 }
