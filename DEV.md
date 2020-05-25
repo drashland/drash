@@ -46,7 +46,7 @@ Run the following command.
 console/bump_verisons
 ```
 
-Update the version property in `mod.ts`:
+Update the version property in `mod.ts` to Deno's (as shown in their releases):
 ```typescript
 export const version: string = "the new version here"; // "v0.41.1"
 ```
