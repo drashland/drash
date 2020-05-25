@@ -83,7 +83,7 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
     members.assert.equal(boilerPlateFile, copiedFile)
     // home_resource.ts
     members.assert.equal(await fileExists('resources/home_resource.ts'), true)
-    boilerPlateFile = decoder.decode(Deno.readFileSync(originalCWD + '/console/create_app/resources/home_resource.ts'));
+    boilerPlateFile = decoder.decode(Deno.readFileSync(originalCWD + '/console/create_app/resources/home_resource_api.ts'));
     copiedFile = decoder.decode(Deno.readFileSync('resources/home_resource.ts'));
     members.assert.equal(boilerPlateFile, copiedFile)
     // home_resource_test.ts

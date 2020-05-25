@@ -82,7 +82,7 @@ function writeFileWrittenOrCreatedMessage (message: string) {
  * Send our thank you message for using it
  */
 function sendThankYouMessage () {
-    notesForUser.push('Run your application: deno run --allow-run --allow-net --allow-read app.ts')
+    notesForUser.push('Run your application: deno run --allow-net --allow-read app.ts')
     const whatUserWanted = wantsApi ? 'Your API ' : wantsWebApp && !wantsVue ? 'Your web app ' : wantsWebApp && wantsVue ? 'Your web app with Vue ' : ''
     Deno.run({
         cmd: ['echo', whatUserWanted + 'has been created at ' + cwd + '.\nThank you for using Drash\'s create app script, we hope you enjoy your newly built project!\n' + notesForUser.join('\n')]
@@ -91,8 +91,6 @@ function sendThankYouMessage () {
 
 function buildTheBaseline () {
     Deno.copyFileSync(`${boilerPlateDir}/deps.ts`, cwd + '/deps.ts')
-    Deno.mkdirSync(cwd + '/resources')
-    Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource.ts`, cwd + '/resources/home_resource.ts')
     Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + '/config.ts')
     Deno.mkdirSync(cwd + '/middleware')
     Deno.mkdirSync(cwd + '/tests/resources', { recursive: true })
@@ -108,6 +106,8 @@ function buildForWebApp () {
     Deno.mkdirSync(cwd + '/public/css', { recursive: true })
     Deno.mkdirSync(cwd + '/public/js', { recursive: true })
     Deno.mkdirSync(cwd + '/public/img', { recursive: true })
+    Deno.mkdirSync(cwd + '/resources')
+    Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource.ts`, cwd + '/resources/home_resource.ts')
 
     if (wantsVue) {
         Deno.copyFileSync(`${boilerPlateDir}/package_vue.json`, cwd + '/package.json')
@@ -130,6 +130,8 @@ function buildForWebApp () {
  */
 function buildForAPI () {
     Deno.copyFileSync(`${boilerPlateDir}/app_api.ts`, cwd + '/app.ts')
+    Deno.mkdirSync(cwd + '/resources')
+    Deno.copyFileSync(`${boilerPlateDir}/resources/home_resource_api.ts`, cwd + '/resources/home_resource.ts')
 }
 
 //////////////////////////////////////////////////////////////////////////////
