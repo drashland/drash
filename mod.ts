@@ -44,12 +44,11 @@ import { StringService as BaseStringService } from "./src/services/string_servic
 export namespace Drash {
   /**
    * @description
-   *     Drash version. Also represents what Deno version is
-   *     supported.
+   *     Drash version. Also represents what Deno version is supported.
    *
    * @property string version
    */
-  export const version: string = "v1.0.1";
+  export const version: string = "v1.0.2";
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine {}
