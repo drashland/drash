@@ -70,7 +70,7 @@ Hello World! deno + Drash is cool!
 
 Drash provides a basic tool to quickly create a Drash skeleton, with everything working out of the box, ready for you to build something great with it.
 
-This doesn't require you to install any Drash scripts or modules, and will create the skeleton inside the directory you are within - whether it's an API, a full Web Application with or without Vue.
+This doesn't require you to install any Drash scripts or modules, and will create the skeleton inside the directory you are within - whether it's an API or a full Web Application, with or without Vue.
 
 ```
 $ mkdir my-drash-project
