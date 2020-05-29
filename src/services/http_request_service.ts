@@ -403,8 +403,7 @@ export class HttpRequestService {
         throw new Error(
           `Error reading request body. No Content-Type header was specified. ` +
             `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
-            `by default and failed.\n` +
-            error.stack,
+            `by default and failed.`
         );
       }
     }
@@ -444,7 +443,7 @@ export class HttpRequestService {
         ret.content_type = "multipart/form-data";
       } catch (error) {
         throw new Error(
-          `Error reading request body as multipart/form-data.\n` + error.stack,
+          `Error reading request body as multipart/form-data.`,
         );
       }
     }
@@ -455,7 +454,7 @@ export class HttpRequestService {
         ret.content_type = "application/json";
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/json.\n` + error.stack,
+          `Error reading request body as application/json.`,
         );
       }
     }
@@ -469,8 +468,7 @@ export class HttpRequestService {
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/x-www-form-urlencoded.\n` +
-            error.stack,
+          `Error reading request body as application/x-www-form-urlencoded.`
         );
       }
     }
