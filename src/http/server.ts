@@ -230,7 +230,11 @@ export class Server {
 
     let response: any;
     let resource: any;
-    request = await this.getRequest(request);
+    try {
+      request = await this.getRequest(request);
+    } catch (error) {
+      return this.handleHttpRequestError(request, this.httpErrorResponse(400, error.message));
+    }
 
     try {
       this.logger.info(
@@ -711,11 +715,12 @@ export class Server {
    * Get an HTTP error response exception object.
    *
    * @param number code
+   * @param string message
    *
    * @return Drash.Exceptions.HttpException
    */
-  protected httpErrorResponse(code: number): Drash.Exceptions.HttpException {
-    return new Drash.Exceptions.HttpException(code);
+  protected httpErrorResponse(code: number, message?: string): Drash.Exceptions.HttpException {
+    return new Drash.Exceptions.HttpException(code, message);
   }
 
   /**
