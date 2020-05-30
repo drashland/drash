@@ -33,7 +33,7 @@
 ```typescript
 // File: app.ts
 
-import { Drash } from "https://deno.land/x/drash@v1.0.2/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.0.3/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -77,7 +77,7 @@ To get started with the Create Drash App tool, see the following commands:
 ```
 $ mkdir my-drash-project
 $ cd my-drash-project
-$ deno run --allow-run --allow-read --allow-write https://deno.land/x/drash@v1.0.2/create_app.ts [OPTIONS]
+$ deno run --allow-run --allow-read --allow-write https://deno.land/x/drash@v1.0.3/create_app.ts [OPTIONS]
 ```
 
 Display the options with `--help`:
