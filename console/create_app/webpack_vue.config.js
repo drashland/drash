@@ -1,12 +1,12 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { VueLoaderPlugin } = require('vue-loader')
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { VueLoaderPlugin } = require("vue-loader");
 module.exports = {
   entry: {
-    app: './vue/app.js'
+    app: "./vue/app.js",
   },
   output: {
     filename: "[name].js",
-    path: __dirname + '/public/js/'
+    path: __dirname + "/public/js/",
   },
   module: {
     rules: [
@@ -14,31 +14,31 @@ module.exports = {
         test: /\.vue$/,
         use: [
           {
-            loader: 'vue-loader'
-          }
-        ]
+            loader: "vue-loader",
+          },
+        ],
       },
       {
         test: /\.js$/,
         use: [
           {
-            loader: 'babel-loader'
-          }
-        ]
+            loader: "babel-loader",
+          },
+        ],
       },
       {
         test: /\.(css|sass|scss)$/,
-        use: ["vue-style-loader", "css-loader"]
+        use: ["vue-style-loader", "css-loader"],
       },
-    ]
+    ],
   },
   resolve: {
-    extensions: ['.vue', '.js']
+    extensions: [".vue", ".js"],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/views/index.html',
+      template: "./public/views/index.html",
     }),
     new VueLoaderPlugin(),
-  ]
-}
+  ],
+};

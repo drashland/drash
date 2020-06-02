@@ -403,7 +403,7 @@ export class HttpRequestService {
         throw new Error(
           `Error reading request body. No Content-Type header was specified. ` +
             `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
-            `by default and failed.`
+            `by default and failed.`,
         );
       }
     }
@@ -468,7 +468,7 @@ export class HttpRequestService {
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/x-www-form-urlencoded.`
+          `Error reading request body as application/x-www-form-urlencoded.`,
         );
       }
     }

@@ -233,7 +233,10 @@ export class Server {
     try {
       request = await this.getRequest(request);
     } catch (error) {
-      return this.handleHttpRequestError(request, this.httpErrorResponse(400, error.message));
+      return this.handleHttpRequestError(
+        request,
+        this.httpErrorResponse(400, error.message),
+      );
     }
 
     try {
@@ -719,7 +722,10 @@ export class Server {
    *
    * @return Drash.Exceptions.HttpException
    */
-  protected httpErrorResponse(code: number, message?: string): Drash.Exceptions.HttpException {
+  protected httpErrorResponse(
+    code: number,
+    message?: string,
+  ): Drash.Exceptions.HttpException {
     return new Drash.Exceptions.HttpException(code, message);
   }
 
