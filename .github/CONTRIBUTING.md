@@ -41,7 +41,7 @@ Please **ask first** before embarking on any significant pull request (e.g. impl
 ## Code Guidelines
 - Code should follow [Deno Style Guide](https://deno.land/std/style_guide.md).
 
-- As a rule of thumb, always format your code using `deno fmt` cli before opening your pull request. If you forgot to corectly format it, just add a commit with the message *deno fmt* (`git commit -m "deno fmt"`).
+- As a rule of thumb, always format your code using `deno fmt` before opening your pull request. Run this as your last single commit. If you forgot to correctly format it, just add a commit with the message *deno fmt* (`git commit -m "deno fmt"`).
 
 ## License
 By submitting a patch, you agree to allow the project owners to license your work under the terms of the [MIT License](../LICENSE).
