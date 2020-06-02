@@ -31,3 +31,7 @@ jobs:
       run: |
         export PATH=$DENO_INSTALL/bin:$PATH
         console/tests
+
+    - name: deno format check
+      run: |
+        deno fmt --check
