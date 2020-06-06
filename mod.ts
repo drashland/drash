@@ -48,7 +48,7 @@ export namespace Drash {
    *
    * @property string version
    */
-  export const version: string = "v1.0.3";
+  export const version: string = "v1.0.4";
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine {}

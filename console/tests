@@ -1,18 +1,18 @@
 #!/bin/bash
 
 (
-  cd example_app
-  deno run --allow-net --allow-read app_1.ts &
-  server_pid=$!
-  deno test --allow-net app_1_test.ts
-  kill $server_pid
+  # cd example_app
+  # deno run --allow-net --allow-read app_1.ts &
+  # server_pid=$!
+  # deno test --allow-net app_1_test.ts
+  # kill $server_pid
 
-  deno run --allow-net --allow-read app_2.ts &
-  server_pid=$!
-  deno test --allow-net app_2_test.ts
-  kill $server_pid
+  # deno run --allow-net --allow-read app_2.ts &
+  # server_pid=$!
+  # deno test --allow-net app_2_test.ts
+  # kill $server_pid
 
-  cd -
+  # cd -
   deno test tests/test.ts --config tsconfig.json --allow-net
 
   deno test tests/create_app_test.ts --allow-read --allow-write --allow-run

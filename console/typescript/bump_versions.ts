@@ -6,6 +6,7 @@
  * - mod_test.ts
  * - README.md
  * - REQUIREMENTS.md
+ * - console/install_deno
  */
 async function bumpVersions(fromV: string, toV: string) {
   // deps.ts
@@ -18,6 +19,6 @@ async function bumpVersions(fromV: string, toV: string) {
   return depData;
 }
 
-let result = await bumpVersions("v0.53.0", "v0.54.0");
+let result = await bumpVersions("v0.54.0", "v0.55.0");
 
 console.log(result);
