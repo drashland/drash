@@ -83,7 +83,7 @@ $ deno run --allow-run --allow-read --allow-write https://deno.land/x/drash@v1.0
 Display the options with `--help`:
 
 ```
-$ deno run --allow-run https://deno.land/x/drash@v1.0.4/create_app.ts --help
+$ deno run --allow-run --allow-read https://deno.land/x/drash@v1.0.4/create_app.ts --help
 ```
 
 ## Documentation
