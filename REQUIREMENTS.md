@@ -1,5 +1,10 @@
 # Requirements
 
+* v1.0.5
+
+    * Deno v1.0.5
+    * Deno Standard Modules v0.56.0
+
 * v1.0.4
 
     * Deno v1.0.4

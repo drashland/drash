@@ -1,5 +1,10 @@
 import members from "../members.ts";
 
+members.test("mod_test.ts | Drash.version: must be current version", () => {
+  const version = members.Drash.version;
+  members.assert.equals(version, "v1.0.5");
+});
+
 members.test("mod_test.ts | Drash.addMember(): class", () => {
   class SomeCoolService {
     public coolify() {
@@ -91,9 +96,4 @@ members.test("mod_test.ts | Drash.addLogger(): names must be unique", () => {
     members.Drash.Exceptions.NameCollisionException,
     'Loggers must be unique: "TestLogger" was already added.',
   );
-});
-
-members.test("mod_test.ts | Drash.version: must be current version", () => {
-  const version = members.Drash.version;
-  members.assert.equals(version, "v1.0.4");
 });
