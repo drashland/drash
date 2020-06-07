@@ -1,0 +1,26 @@
+name: deno_bumper
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  update-dep:
+    env:
+      DENO_VERSION: 1.0.5
+      DMM_VERSION: 1.0.3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Deno
+        run: curl -fsSL https://deno.land/x/install/install.sh | sh -s v$DENO_VERSION
+      - name: update dependencies
+        run: echo "##[set-output name=updated_dependencies;]$($HOME/.deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v$DMM_VERSION/mod.ts update)"
+      - name: Create Pull Request
+        if: contains(${{ updated_dependencies }}, "Everything is already up to date") == false
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+          commit-message: Update dependencies
+          title: Update dependencies
+          body: ${{ updated_dependencies }}
+          branch: master
