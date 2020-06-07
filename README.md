@@ -15,7 +15,7 @@
 - [License](#license)
 
 ## Introduction
-`deno-drash-middleware` contains a list of middleware you can use with or without your Drash app. Be aware that these middlewares differ a lot - some may use 3rd party dependencies whilst some won't. Here is the current list of middlewares:
+`deno-drash-middleware` contains a list of middleware you can use with your Drash application. Be aware that these middlewares differ a lot - some may use 3rd party dependencies whilst some won't. Here is the current list of middlewares:
 
 * Empty
 
