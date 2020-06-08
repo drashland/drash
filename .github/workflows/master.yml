@@ -18,8 +18,8 @@ jobs:
         run: curl -fsSL https://deno.land/x/install/install.sh | sh
       - name: Unit
         run: $HOME/.deno/bin/deno test tests/test.ts --config tsconfig.json --allow-net
-      - name: Install Deno
-        run: curl -fsSL https://deno.land/x/install/install.sh | sh
+      - name: Deno Version
+        run: deno --version
       - name: Create APP
         run: $HOME/.deno/bin/deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
   linter:

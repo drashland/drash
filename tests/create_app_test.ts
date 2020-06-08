@@ -72,7 +72,7 @@ members.test("[DEBUGGING] deno --version", async () => {
   const p = await Deno.run({
     cmd: [
       "deno",
-      "--version"
+      "--version",
     ],
     stdout: "piped",
   });
