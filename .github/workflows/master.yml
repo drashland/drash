@@ -9,30 +9,23 @@ on:
       - master
 
 jobs:
-  build:
-
-    env:
-      CI: true
-      CI_USER_EMAIL: ${{ secrets.CI_USER_EMAIL }}
-      CI_USER_NAME: ${{ secrets.CI_USER_NAME }}
-      CI_USER_PAT: ${{ secrets.CI_USER_PAT }}
-      DENO_INSTALL: "/Users/runner/.local"
-
-    runs-on: macOS-latest
+  tests:
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - name: Install Deno
+        run: curl -fsSL https://deno.land/x/install/install.sh | sh
+      - name: Unit
+        run: $HOME/.deno/bin/deno test tests/test.ts --config tsconfig.json --allow-net
+      - name: Create APP
+        run: $HOME/.deno/bin/deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
+  linter:
+    runs-on: ubuntu-latest
 
-    - name: install deno
-      run: |
-        console/install_deno
-
-    - name: unit tests
-      run: |
-        export PATH=$DENO_INSTALL/bin:$PATH
-        console/tests
-
-    - name: deno format check
-      run: |
-        export PATH=$DENO_INSTALL/bin:$PATH
-        deno fmt --check
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Deno
+        run: curl -fsSL https://deno.land/x/install/install.sh | sh
+      - name: Formatter
+        run: $HOME/.deno/bin/deno fmt --check
