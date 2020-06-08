@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Deno
-        run: curl -fsSL https://deno.land/x/install/install.sh | sh
+        run: |
+        curl -fsSL https://deno.land/x/install/install.sh | sh
+        export PATH=$HOME/.deno/bin:$PATH
       - name: Unit
         run: $HOME/.deno/bin/deno test tests/test.ts --config tsconfig.json --allow-net
       - name: Deno Version
