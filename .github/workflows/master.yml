@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: "Set up Deno v${{ matrix.deno }}"
+      - name: Install Deno v${{ matrix.deno }}
         uses: denolib/setup-deno@master
         with:
           deno-version: ${{ matrix.deno }}
