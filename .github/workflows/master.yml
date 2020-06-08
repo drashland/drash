@@ -17,7 +17,9 @@ jobs:
       - name: Install Deno
         run: console/install_deno
       - name: Unit
-        run: deno test tests/test.ts --config tsconfig.json --allow-net
+        run: |
+          export PATH=$DENO_INSTALL/bin:$PATH
+          deno test tests/test.ts --config tsconfig.json --allow-net
       - name: Create APP
         run: |
           export PATH=$DENO_INSTALL/bin:$PATH
