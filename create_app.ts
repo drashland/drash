@@ -139,7 +139,7 @@ function buildForWebApp() {
     );
     Deno.mkdirSync(cwd + "/vue");
     Deno.copyFileSync(`${boilerPlateDir}/vue/app.js`, cwd + "/vue/app.js");
-    Deno.copyFileSync(`${boilerPlateDir}/vue/App.vue`, cwd + "/vue/App.vue");
+    Deno.copyFileSync(`${boilerPlateDir}/vue/app.vue`, cwd + "/vue/App.vue");
     Deno.copyFileSync(
       `${boilerPlateDir}/public/views/index_vue.html`,
       cwd + "/public/views/index.html",
