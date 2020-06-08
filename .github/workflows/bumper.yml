@@ -1,4 +1,4 @@
-name: deno_bumper
+name: bumper
 on:
   schedule:
     - cron: '0 0 * * *'
