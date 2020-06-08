@@ -10,26 +10,37 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        deno: ["1.0.5"]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install Deno
-        run: |
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          sudo mv $HOME/.deno/bin/deno /usr/bin
+
+      - name: "Set up Deno v${{ matrix.deno }}"
+        uses: denolib/setup-deno@master
+        with:
+          deno-version: ${{ matrix.deno }}
+
       - name: Unit
         run: deno test tests/test.ts --config tsconfig.json --allow-net
+
       - name: Create APP
         run: deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
+
   linter:
+    # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install Deno
-        run: |
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          sudo mv $HOME/.deno/bin/deno /usr/bin
+
+      - name: "Set up Deno v${{ matrix.deno }}"
+        uses: denolib/setup-deno@master
+        with:
+          deno-version: ${{ matrix.deno }}
+
       - name: Formatter
         run: deno fmt --check

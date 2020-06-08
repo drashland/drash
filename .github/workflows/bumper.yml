@@ -11,12 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Install Deno
-        run: |
-          curl -fsSL https://deno.land/x/install/install.sh | sh -s v$DENO_VERSION
-          sudo mv $HOME/.deno/bin/deno /usr/bin
-      - name: update dependencies
+        uses: denolib/setup-deno@master
+        with:
+          deno-version: $DENO_VERSION
+
+      - name: Update Dependencies
         run: deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v$DMM_VERSION/mod.ts update
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
         with:
