@@ -33,11 +33,13 @@ Please **ask first** before embarking on any significant pull request (e.g. impl
 4. Create the directories and files to hold your middleware. Your middleware should be exported from it's own `mod.ts`:
     ```bash
     mkdir tests/<middleware>
-    mkdir src/<middleware>
-    touch src/<middleware>/mod.ts
-    touch src/<middleware>/related_files.ts
+    mkdir <middleware>
+    touch <middleware>/mod.ts
+    touch <middleware>/related_files.ts
+    touch README.md
     ```   
-    You should write extensive tests for your middleware
+    You should write extensive tests for your middleware.
+    A README.md is required to document the middleware.
 5. Push your topic branch up to your fork:
     ```bash
     git push origin <topic-branch-name>

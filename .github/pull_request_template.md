@@ -1,4 +1,4 @@
-Fixes {issue number}
+Addresses #{issue number}
 
 **Description**
 
