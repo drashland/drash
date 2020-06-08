@@ -319,7 +319,7 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   members.assert.equal(await fileExists("vue"), true);
   members.assert.equal(await fileExists("vue/App.vue"), true);
   boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/vue/App.vue"),
+    Deno.readFileSync(originalCWD + "/console/create_app/vue/app.vue"),
   );
   copiedFile = decoder.decode(Deno.readFileSync("vue/App.vue"));
   members.assert.equal(boilerPlateFile, copiedFile);
