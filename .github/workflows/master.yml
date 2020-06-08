@@ -28,6 +28,7 @@ jobs:
         run: deno test tests/test.ts --config tsconfig.json --allow-net
 
       - name: Create APP
+        if: ${{ startsWith(matrix.config.os, 'ubuntu') || startsWith(matrix.config.os, 'macos') }}
         run: deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
