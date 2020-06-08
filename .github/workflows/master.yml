@@ -17,13 +17,15 @@ jobs:
       - name: Install Deno
         run: |
           console/install_deno
-          export DENO_INSTALL="/home/runner/.deno"
-          export PATH="$DENO_INSTALL/bin:$PATH"
+      - name: Move Deno Installation
+        run: sudo mv $HOME/.deno/bin/deno /usr/bin/
       - name: Unit
         run: |
+          export PATH=$DENO_INSTALL/bin:$PATH
           deno test tests/test.ts --config tsconfig.json --allow-net
       - name: Create APP
         run: |
+          export PATH=$DENO_INSTALL/bin:$PATH
           deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
   linter:
     runs-on: ubuntu-latest
