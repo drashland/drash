@@ -182,6 +182,7 @@ function buildForAPI() {
 
 // Requirement: Now allowed to ask for an API AND Web App
 if (wantsApi && wantsWebApp) {
+  console.log('Wants API and wants web app')
   Deno.run({
     cmd: [
       "echo",
@@ -196,6 +197,7 @@ if (wantsApi && wantsWebApp) {
 // Requirement: One main argument is required
 const tooFewArgs = !wantsHelp && !wantsWebApp && !wantsApi;
 if (tooFewArgs) {
+  console.log('Too few args')
   Deno.run({
     cmd: [
       "echo",
@@ -209,6 +211,7 @@ if (tooFewArgs) {
 
 // Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
 if (wantsVue && !wantsWebApp) {
+  console.log('Wants vue and doesnt want web app')
   Deno.run({
     cmd: [
       "echo",
@@ -222,12 +225,14 @@ if (wantsVue && !wantsWebApp) {
 
 // Requirement: Add a --help option
 if (wantsHelp) {
+  console.log('Wants help')
   showHelp();
   Deno.exit();
 }
 
 // Requirement: Add support for building a Drash API (--api)
 if (wantsApi) {
+  console.log('Wants API')
   buildTheBaseline();
   buildForAPI();
   sendThankYouMessage();
@@ -236,6 +241,7 @@ if (wantsApi) {
 
 // Requirement: Add support for building a web app (--web-app [--with-vue])
 if (wantsWebApp) {
+  console.log('Wants Web app')
   buildTheBaseline();
   buildForWebApp();
   sendThankYouMessage();
