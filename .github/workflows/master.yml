@@ -15,17 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Deno
-        run: curl -fsSL https://deno.land/x/install/install.sh | sh
+        run: |
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          sudo mv $HOME/.deno/bin/deno /usr/bin
       - name: Unit
-        run: $HOME/.deno/bin/deno test tests/test.ts --config tsconfig.json --allow-net
+        run: deno test tests/test.ts --config tsconfig.json --allow-net
       - name: Create APP
-        run: $HOME/.deno/bin/deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
+        run: deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
   linter:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
       - name: Install Deno
-        run: curl -fsSL https://deno.land/x/install/install.sh | sh
+        run: |
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          sudo mv $HOME/.deno/bin/deno /usr/bin
       - name: Formatter
-        run: $HOME/.deno/bin/deno fmt --check
+        run: deno fmt --check
