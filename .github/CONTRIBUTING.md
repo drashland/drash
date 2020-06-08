@@ -32,14 +32,17 @@ Please **ask first** before embarking on any significant pull request (e.g. impl
     ```
 4. Create the directories and files to hold your middleware. Your middleware should be exported from it's own `mod.ts`:
     ```bash
-    mkdir tests/<middleware>
     mkdir <middleware>
+    mkdir <middleware>/tests
     touch <middleware>/mod.ts
     touch <middleware>/related_files.ts
     touch README.md
     ```   
-    You should write extensive tests for your middleware.
+    You should write extensive tests for your middleware and these tests are held within your middleware directory.
+    
     A README.md is required to document the middleware.
+    
+    Place Deno std modules in the root `deps.ts` and 3rd party modules you need in your own `deps.ts`
 5. Push your topic branch up to your fork:
     ```bash
     git push origin <topic-branch-name>
