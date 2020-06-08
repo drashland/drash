@@ -32,6 +32,42 @@ const fileExists = async (filename: string): Promise<boolean> => {
  * File requires the following flags: --allow-read, --allow-write, --allow-run
  */
 
+members.test("[DEBUGGING] pwd", async () => {
+  const p = await Deno.run({
+    cmd: [
+      "pwd"
+    ],
+    stdout: "piped"
+  });
+  const status = await p.status();
+  await p.close();
+  members.assert.equal(status.code, 0);
+  members.assert.equal(status.success, true);
+  const output = await p.output()
+  const outputString = new TextDecoder('utf-8').decode(output)
+  console.log('START OF CONSOLE.LOG')
+  console.log(outputString)
+  console.log('END OF OUTPUT STRING')
+});
+
+members.test("[DEBUGGING] ls", async () => {
+  const p = await Deno.run({
+    cmd: [
+      "ls"
+    ],
+    stdout: "piped"
+  });
+  const status = await p.status();
+  await p.close();
+  members.assert.equal(status.code, 0);
+  members.assert.equal(status.success, true);
+  const output = await p.output()
+  const outputString = new TextDecoder('utf-8').decode(output)
+  console.log('START OF CONSOLE.LOG')
+  console.log(outputString)
+  console.log('END OF OUTPUT STRING')
+});
+
 members.test("create_app_test.ts | Script fails with no argument", async () => {
   const p = await Deno.run({
     cmd: [
