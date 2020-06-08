@@ -15,14 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Deno
-        run: console/install_deno
+        run: |
+        console/install_deno
+        export DENO_INSTALL="/home/runner/.deno"
+        export PATH="$DENO_INSTALL/bin:$PATH"
       - name: Unit
         run: |
-          export PATH=$DENO_INSTALL/bin:$PATH
           deno test tests/test.ts --config tsconfig.json --allow-net
       - name: Create APP
         run: |
-          export PATH=$DENO_INSTALL/bin:$PATH
           deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
   linter:
     runs-on: ubuntu-latest
