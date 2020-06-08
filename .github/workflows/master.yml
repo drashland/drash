@@ -15,11 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Deno
-        run: |
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          export PATH=$HOME/.deno/bin:$PATH
+        run: curl -fsSL https://deno.land/x/install/install.sh | sh
       - name: Unit
         run: $HOME/.deno/bin/deno test tests/test.ts --config tsconfig.json --allow-net
+      - name: Add Deno to Path
+        run: export PATH=$HOME/.deno/bin:$PATH
       - name: Deno Version
         run: $HOME/.deno/bin/deno --version
       - name: Create APP
