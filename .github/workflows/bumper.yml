@@ -12,9 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Echo env Vars
-        run: echo $DENO_VERSION $DMM_VERSION
-
       - name: Install Deno
         uses: denolib/setup-deno@master
         with:
