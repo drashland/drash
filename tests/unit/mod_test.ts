@@ -1,35 +1,36 @@
 import members from "../members.ts";
+import { Drash } from "../../mod.ts";
 
 members.testSuite("mod_test.ts", async () => {
 
   members.test("Drash.version is correct", () => {
-    const version = members.Drash.version;
+    const version = Drash.version;
     members.assertEquals(version, `v${Deno.version.deno}`);
   });
 
   members.test("Drash.addLogger(): class can be added", () => {
-    const testLogger = new members.Drash.CoreLoggers.FileLogger({
+    const testLogger = new Drash.CoreLoggers.FileLogger({
       enabled: true,
       level: "debug",
     });
-    members.Drash.addLogger("TestLogger", testLogger);
+    Drash.addLogger("TestLogger", testLogger);
     let expected = {
       "TestLogger": testLogger,
     };
-    members.assertEquals(members.Drash.Loggers, expected);
+    members.assertEquals(Drash.Loggers, expected);
   });
 
   members.test("Drash.addLogger(): names must be unique", () => {
-    const testLogger = new members.Drash.CoreLoggers.FileLogger({
+    const testLogger = new Drash.CoreLoggers.FileLogger({
       enabled: true,
       level: "debug",
     });
     members.assertThrows(
       (): void => {
-        members.Drash.addLogger("TestLogger", testLogger);
-        members.Drash.addLogger("TestLogger", testLogger);
+        Drash.addLogger("TestLogger", testLogger);
+        Drash.addLogger("TestLogger", testLogger);
       },
-      members.Drash.Exceptions.NameCollisionException,
+      Drash.Exceptions.NameCollisionException,
       'Loggers must be unique: "TestLogger" was already added.',
     );
   });
@@ -40,9 +41,9 @@ members.testSuite("mod_test.ts", async () => {
         return "OK!";
       }
     }
-    members.Drash.addMember("SomeCoolService", SomeCoolService);
+    Drash.addMember("SomeCoolService", SomeCoolService);
     let expected = "OK!";
-    let service = new members.Drash.Members.SomeCoolService();
+    let service = new Drash.Members.SomeCoolService();
     members.assertEquals(service.coolify(), expected);
   });
 
@@ -50,10 +51,10 @@ members.testSuite("mod_test.ts", async () => {
     let SomeCoolServiceFunction = function (arg: string): string {
       return `You specified the following arg: ${arg}`;
     };
-    members.Drash.addMember("SomeCoolServiceFunction", SomeCoolServiceFunction);
+    Drash.addMember("SomeCoolServiceFunction", SomeCoolServiceFunction);
     let expected =
       "You specified the following arg: All your base are belong to us!";
-    let actual = members.Drash.Members.SomeCoolServiceFunction(
+    let actual = Drash.Members.SomeCoolServiceFunction(
       "All your base are belong to us!",
     );
     members.assertEquals(actual, expected);
@@ -68,7 +69,7 @@ members.testSuite("mod_test.ts", async () => {
         definition: "This is Item 2. It is super cool.",
       },
     };
-    members.Drash.addMember("SomeCoolDictionary", SomeCoolDictionary);
+    Drash.addMember("SomeCoolDictionary", SomeCoolDictionary);
     let expected = {
       "Item 1": {
         definition: "This is Item 1. It is cool.",
@@ -77,7 +78,7 @@ members.testSuite("mod_test.ts", async () => {
         definition: "This is Item 2. It is super cool.",
       },
     };
-    let actual = members.Drash.Members.SomeCoolDictionary;
+    let actual = Drash.Members.SomeCoolDictionary;
     members.assertEquals(actual, expected);
   });
 
@@ -92,11 +93,11 @@ members.testSuite("mod_test.ts", async () => {
     };
 
     for (let key in data) {
-      members.Drash.addMember(key, data[key]);
+      Drash.addMember(key, data[key]);
     }
 
     for (let key in data) {
-      members.assertEquals(members.Drash.Members[key], data[key]);
+      members.assertEquals(Drash.Members[key], data[key]);
     }
   });
 });
