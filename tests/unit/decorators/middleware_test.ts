@@ -16,41 +16,30 @@ members.testSuite("middleware_test.ts", () => {
     let server = new members.Drash.Http.Server({
       resources: [ResourceWithMiddlewareBeforeClass],
     });
-
     const request = members.mockRequest("/users/1", "get", {
       headers: {
         csrf_token: "all your base"
       }
     });
     const response = await server.handleHttpRequest(request);
-
     members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
   });
 
+  members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
+    let server = new members.Drash.Http.Server({
+      resources: [ResourceWithMultipleMiddlewareBeforeClass],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base"
+      }
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
+    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+  });
+
 });
-
-// members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
-//   let server = new members.MockServer({
-//     resources: [ResourceWithMultipleMiddlewareBeforeClass],
-//   });
-
-//   const port = 10002;
-//   server.run({
-//     hostname: "localhost",
-//     port: port,
-//   });
-
-//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-//     headers: {
-//       csrf_token: "all your base",
-//     },
-//   });
-
-//   members.assert.equals(await response.json(), { name: "Thor" });
-//   members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
-
-//   server.close();
-// });
 
 // members.test("ResourceWithMultipleMiddlewareAfterClass: response is html, custom header and value", async () => {
 //   let server = new members.MockServer({
