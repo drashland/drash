@@ -5,26 +5,33 @@ import {
   assertThrows,
 } from "../deps.ts";
 const decoder = new TextDecoder("utf-8");
+const testSuiteOutputLength = 20;
 
 /**
  * Get a mocked request object.
+ *
+ * @param string url
+ * @param string method
+ * @param any
+ *     {
+ *       headers: { [key: string]: string }
+ *     }
  */
-function mockRequest(url = "/", method = "get", headers?: any): any {
+function mockRequest(url = "/", method = "get", options?: any): any {
   let request: any = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
-  request = new Drash.Services.HttpRequestService().hydrate(request, {
-    headers: headers,
-  });
+  if (options && options.headers) {
+    for (let key in options.headers) {
+      request.headers.set(key, options.headers[key]);
+    }
+  }
 
   //
   // Stub `respond()` so we don't run into the following error:
   //
   //   TypeError: Cannot read property 'write' of undefined
-  //   at BufWriter.flush (bufio.ts:446:25)
-  //   at writeResponse (server.ts:97:16)
-  //   at async Request.respond (server.ts:197:5)
   //
   request.respond = function respond(output: any) {
     return output;
@@ -33,13 +40,14 @@ function mockRequest(url = "/", method = "get", headers?: any): any {
   return request;
 }
 
-/**
- * Get a mocked server object.
- */
-class MockServer extends Drash.Http.Server {}
-
-function responseJsonEquals(actual: any, expected: any) {
-  return assertEquals(JSON.parse(actual), expected);
+function assertResponseJsonEquals(actual: any, expected: any) {
+  let response;
+  try {
+    response = assertEquals(JSON.parse(actual), expected);
+  } catch (error) {
+    response = assertEquals(actual, expected);
+  }
+  return response;
 }
 
 const makeRequest = {
@@ -83,15 +91,25 @@ const makeRequest = {
 export default {
   Drash,
   ServerRequest,
-  assert: {
-    equal: assertEquals,
-    equals: assertEquals,
-    throws: assertThrows,
-    responseJsonEquals: responseJsonEquals,
-  },
+  assertEquals,
+  assertResponseJsonEquals,
+  assertThrows,
+  currentTestSuite: "",
   decoder,
   fetch: makeRequest,
   mockRequest,
-  MockServer,
-  test: Deno.test,
+  responseBody: async function(response: any) {
+    return decoder.decode(response.body);
+  },
+  test: function(name: string, testFn: any) {
+    const numSpaces = testSuiteOutputLength - this.currentTestSuite.length;
+    for ( let i = numSpaces; i >= 0; i-- ) {
+      this.currentTestSuite += " ";
+    }
+    Deno.test(`${this.currentTestSuite} | Asserting: ${name}`, testFn);
+  },
+  testSuite: function(name: string, testFns: any) {
+    this.currentTestSuite = name;
+    testFns();
+  },
 };
