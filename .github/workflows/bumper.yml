@@ -1,12 +1,12 @@
 name: bumper
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '45 0 * * *'
 
 jobs:
   update-dep:
     env:
-      DENO_VERSION: 1.0.5
+      DENO_VERSION: v1.0.5
       DMM_VERSION: 1.0.3
     runs-on: ubuntu-latest
     steps:
