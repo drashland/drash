@@ -59,7 +59,7 @@ function showHelp() {
     "\n" +
     "    cd my-drash-api" +
     "\n" +
-    "    deno run --allow-read --allow-run https://deno.land/x/drash/create_app.ts --api" +
+    "    deno run --allow-read --allow-run --allow-write https://deno.land/x/drash/create_app.ts --api" +
     "\n";
   Deno.run({
     cmd: ["echo", helpMessage],
