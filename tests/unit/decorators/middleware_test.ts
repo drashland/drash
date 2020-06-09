@@ -1,232 +1,199 @@
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareBeforeClass: header not specified", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareBeforeClass],
+members.testSuite("middleware_test.ts", () => {
+
+  members.test("ResourceWithMiddlewareBeforeClass: header not specified", async () => {
+    const server = new members.Drash.Http.Server({
+      resources: [ResourceWithMiddlewareBeforeClass],
+    });
+    const request = members.mockRequest("/users/1");
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(await members.responseBody(response), "'header' not specified.");
   });
 
-  const port = 10000;
-  server.run({
-    hostname: "localhost",
-    port: port,
+  members.test("ResourceWithMiddlewareBeforeClass: valid", async () => {
+    let server = new members.Drash.Http.Server({
+      resources: [ResourceWithMiddlewareBeforeClass],
+    });
+
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base"
+      }
+    });
+    const response = await server.handleHttpRequest(request);
+
+    members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`);
-
-  members.assert.equals(await response.json(), "'header' not specified.");
-
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareBeforeClass: valid", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareBeforeClass],
-  });
-
-  const port = 10001;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.json(), { name: "Thor" });
-
-  server.close();
 });
 
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareBeforeClass],
-  });
+// members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMultipleMiddlewareBeforeClass],
+//   });
 
-  const port = 10002;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+//   const port = 10002;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
 
-  members.assert.equals(await response.json(), { name: "Thor" });
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
+//   members.assert.equals(await response.json(), { name: "Thor" });
+//   members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
 
-  server.close();
-});
+//   server.close();
+// });
 
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareAfterClass: response is html, custom header and value", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareAfterClass],
-  });
+// members.test("ResourceWithMultipleMiddlewareAfterClass: response is html, custom header and value", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMultipleMiddlewareAfterClass],
+//   });
 
-  const port = 10003;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+//   const port = 10003;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
 
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
+//   members.assert.equals(await response.text(), "<h1>hey</h1>");
+//   members.assert.equals(response.headers.get("Content-Type"), "text/html");
+//   members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
 
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareClass: custom header and swap to html", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareClass],
-  });
+//   server.close();
+// });
 
-  const port = 10004;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+// members.test("ResourceWithMiddlewareClass: custom header and swap to html", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMiddlewareClass],
+//   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+//   const port = 10004;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
 
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
 
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareBeforeMethod: custom header", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareBeforeMethod],
-  });
+//   members.assert.equals(await response.text(), "<h1>hey</h1>");
+//   members.assert.equals(response.headers.get("Content-Type"), "text/html");
+//   members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
 
-  const port = 10005;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+//   server.close();
+// });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+// members.test("ResourceWithMiddlewareBeforeMethod: custom header", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMiddlewareBeforeMethod],
+//   });
 
-  members.assert.equals(await response.json(), { name: "Thor" });
+//   const port = 10005;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
 
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareBeforeMethod],
-  });
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
 
-  const port = 10006;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+//   members.assert.equals(await response.json(), { name: "Thor" });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+//   server.close();
+// });
 
-  members.assert.equals(await response.json(), { name: "Thor" });
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
+// members.test("ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMultipleMiddlewareBeforeMethod],
+//   });
 
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareAfterMethod: swap to html", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareAfterMethod],
-  });
+//   const port = 10006;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
 
-  const port = 10007;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+//   members.assert.equals(await response.json(), { name: "Thor" });
+//   members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
 
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
+//   server.close();
+// });
 
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareAfterMethod: custom header and swap to html", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareAfterMethod],
-  });
+// members.test("ResourceWithMiddlewareAfterMethod: swap to html", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMiddlewareAfterMethod],
+//   });
 
-  const port = 10008;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
+//   const port = 10007;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
 
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
+//   members.assert.equals(await response.text(), "<h1>hey</h1>");
+//   members.assert.equals(response.headers.get("Content-Type"), "text/html");
 
-  server.close();
-});
-////////////////////////////////////////////////////////////////////////////////
-// DATA ////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+//   server.close();
+// });
+
+// members.test("ResourceWithMultipleMiddlewareAfterMethod: custom header and swap to html", async () => {
+//   let server = new members.MockServer({
+//     resources: [ResourceWithMultipleMiddlewareAfterMethod],
+//   });
+
+//   const port = 10008;
+//   server.run({
+//     hostname: "localhost",
+//     port: port,
+//   });
+
+//   let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
+//     headers: {
+//       csrf_token: "all your base",
+//     },
+//   });
+
+//   members.assert.equals(await response.text(), "<h1>hey</h1>");
+//   members.assert.equals(response.headers.get("Content-Type"), "text/html");
+//   members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
+
+//   server.close();
+// });
+// ////////////////////////////////////////////////////////////////////////////////
+// // DATA ////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////
 
 function CustomHeader(
   request: any,
