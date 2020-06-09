@@ -1,7 +1,7 @@
 name: bumper
 on:
   schedule:
-    - cron: '5 1 * * *'
+    - cron: '0 0 * * *'
 
 jobs:
   update-dep:
@@ -21,7 +21,7 @@ jobs:
           deno-version: v1.0.5
 
       - name: Update Dependencies
-        run: deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v1.0.3/mod.ts update
+        run: deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v1.0.4/mod.ts update
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
