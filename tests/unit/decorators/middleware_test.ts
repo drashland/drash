@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
-members.testSuite("middleware_test.ts", () => {
+members.testSuite("decorators/middleware_test.ts", () => {
 
   members.test("ResourceWithMiddlewareBeforeClass: header not specified", async () => {
     const server = new Drash.Http.Server({
@@ -9,7 +9,7 @@ members.testSuite("middleware_test.ts", () => {
     });
     const request = members.mockRequest("/users/1");
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(await members.responseBody(response), "'header' not specified.");
+    members.assertResponseJsonEquals(members.responseBody(response), "'header' not specified.");
   });
 
   members.test("ResourceWithMiddlewareBeforeClass: valid", async () => {
@@ -22,7 +22,7 @@ members.testSuite("middleware_test.ts", () => {
       }
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
   });
 
   members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
@@ -35,7 +35,7 @@ members.testSuite("middleware_test.ts", () => {
       }
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
@@ -49,7 +49,7 @@ members.testSuite("middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertEquals(await members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
     members.assertEquals(response.headers.get("Content-Type"), "text/html");
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
@@ -64,7 +64,7 @@ members.testSuite("middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertEquals(await members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
     members.assertEquals(response.headers.get("Content-Type"), "text/html");
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
@@ -79,7 +79,7 @@ members.testSuite("middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
   });
 
   members.test("ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
@@ -92,7 +92,7 @@ members.testSuite("middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(await members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
@@ -106,7 +106,7 @@ members.testSuite("middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertEquals(await members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
     members.assertEquals(response.headers.get("Content-Type"), "text/html");
   });
 
@@ -120,7 +120,7 @@ members.testSuite("middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertEquals(await members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
     members.assertEquals(response.headers.get("Content-Type"), "text/html");
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
