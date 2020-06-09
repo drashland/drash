@@ -89,7 +89,6 @@ const makeRequest = {
 };
 
 export default {
-  Drash,
   ServerRequest,
   assertEquals,
   assertResponseJsonEquals,
