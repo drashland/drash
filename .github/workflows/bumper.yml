@@ -5,9 +5,10 @@ on:
 
 jobs:
   update-dep:
-    env:
-      DENO_VERSION: v1.0.5
-      DMM_VERSION: 1.0.3
+    strategy:
+      matrix:
+        deno: ["1.0.5"]
+        dmm: ["1.0.3"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,10 +16,10 @@ jobs:
       - name: Install Deno
         uses: denolib/setup-deno@master
         with:
-          deno-version: v1.0.5
+          deno-version: ${{ matrix.deno }}
 
       - name: Update Dependencies
-        run: deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v1.0.4/mod.ts update
+        run: deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v${{ matrix.dmm }}/mod.ts update
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
