@@ -5,7 +5,7 @@
  * This is only for some tests
  */
 
-import members from "./members.ts";
+import members from "../members.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
