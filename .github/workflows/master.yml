@@ -25,7 +25,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Unit
-        run: deno test tests/test.ts --config tsconfig.json --allow-net
+        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net
 
       - name: Integration
         run: |
@@ -37,7 +37,7 @@ jobs:
 
       - name: Create APP
         if: ${{ startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos') }}
-        run: deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
+        run: deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
     strategy:
