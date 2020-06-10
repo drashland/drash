@@ -6,7 +6,6 @@ const ANIMALS = {
 };
 
 members.testSuite("loggers/console_logger.ts", () => {
-
   members.test("ConsoleLogger", () => {
     let logger = new Drash.CoreLoggers.ConsoleLogger({
       test: true,
@@ -25,5 +24,4 @@ members.testSuite("loggers/console_logger.ts", () => {
     const actual = logger.info("This is cool!");
     members.assertEquals(actual, expected);
   });
-
 });

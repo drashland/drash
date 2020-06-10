@@ -2,7 +2,6 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 members.testSuite("services/http_service_test.ts", () => {
-
   members.test("getMimeType(): file is not a URL", () => {
     let actual;
     actual = new Drash.Services.HttpService().getMimeType(
@@ -42,5 +41,4 @@ members.testSuite("services/http_service_test.ts", () => {
     );
     members.assertEquals(actual, "application/pdf");
   });
-
 });

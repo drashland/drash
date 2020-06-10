@@ -2,7 +2,6 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 members.testSuite("http/middleware_test.ts", () => {
-
   members.test("before_request: missing CSRF token", async () => {
     const server = new Drash.Http.Server({
       middleware: {
@@ -81,7 +80,7 @@ members.testSuite("http/middleware_test.ts", () => {
     const request = members.mockRequest("/", "get", {
       headers: {
         send_response: "yes do it",
-      }
+      },
     });
     const response = await server.handleHttpRequest(request);
     members.assertResponseJsonEquals(members.responseBody(response), "got");
@@ -94,7 +93,7 @@ members.testSuite("http/middleware_test.ts", () => {
       },
       resources: [ResourceWithMiddlewareHooked],
     });
-    const request = members.mockRequest("/"); 
+    const request = members.mockRequest("/");
     const response = await server.handleHttpRequest(request);
     members.assertResponseJsonEquals(
       members.responseBody(response),
@@ -137,7 +136,6 @@ members.testSuite("http/middleware_test.ts", () => {
     const response = await server.handleHttpRequest(request);
     members.assertResponseJsonEquals(members.responseBody(response), "got");
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////

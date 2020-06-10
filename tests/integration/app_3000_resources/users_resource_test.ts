@@ -1,7 +1,6 @@
 import members from "../../members.ts";
 
 members.testSuite("UsersResource", () => {
-
   members.test("user data can be retrieved", async () => {
     let response;
 
@@ -26,5 +25,4 @@ members.testSuite("UsersResource", () => {
       `\"User with ID \\\"18\\\" not found.\"`,
     );
   });
-
 });

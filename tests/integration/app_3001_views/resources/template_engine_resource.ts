@@ -5,7 +5,7 @@ export default class TemplateEngineResource extends Drash.Http.Resource {
   public GET() {
     this.response.headers.set("Content-Type", "text/html");
     const engine = new Drash.Compilers.TemplateEngine(
-      Deno.realPathSync(".") + "/tests/integration/app_3001_views/templates"
+      Deno.realPathSync(".") + "/tests/integration/app_3001_views/templates",
     );
     this.response.body = engine.render(
       "/user.html",

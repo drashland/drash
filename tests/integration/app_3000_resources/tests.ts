@@ -29,7 +29,9 @@ server.run({
   port: 3000,
 });
 console.log(`Server listening: http://${server.hostname}:${server.port}`);
-console.log("\nIntegration tests: testing different resources can be made and targeted.\n");
+console.log(
+  "\nIntegration tests: testing different resources can be made and targeted.\n",
+);
 
 import "./coffee_resource_test.ts";
 import "./cookie_resource_test.ts";

@@ -3,15 +3,16 @@ import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 members.testSuite("http/server_test.ts", () => {
-
   members.test("handleHttpRequest(): GET", async () => {
     const server = new Drash.Http.Server({
       resources: [HomeResource],
     });
     const request = members.mockRequest("/");
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), { body: "got" });
-
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { body: "got" },
+    );
   });
 
   members.test("handleHttpRequest(): POST", async () => {
@@ -29,7 +30,10 @@ members.testSuite("http/server_test.ts", () => {
       body: reader,
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), { body: "hello" });
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { body: "hello" },
+    );
   });
 
   members.test("handleHttpRequest(): getPathParam() for :id", async () => {
@@ -41,14 +45,13 @@ members.testSuite("http/server_test.ts", () => {
     request = members.mockRequest("/users/1");
     response = await server.handleHttpRequest(request);
     members.assertResponseJsonEquals(members.responseBody(response), {
-      user_id: "1"
+      user_id: "1",
     });
     request = members.mockRequest("/notes/1557");
     response = await server.handleHttpRequest(request);
     members.assertResponseJsonEquals(members.responseBody(response), {
       note_id: "1557",
     });
-
   });
 
   members.test("handleHttpRequest(): getHeaderParam()", async () => {
@@ -64,7 +67,6 @@ members.testSuite("http/server_test.ts", () => {
     members.assertResponseJsonEquals(members.responseBody(response), {
       header_param: "12345",
     });
-
   });
 
   members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
@@ -85,19 +87,18 @@ members.testSuite("http/server_test.ts", () => {
     let request;
     let response;
     request = members.mockRequest("/notes/123", "get", {
-      server: server
+      server: server,
     });
     response = await server.handleHttpRequest(request);
     members.assertEquals(response.status, 302);
     members.assertEquals(response.headers.get("location"), "/notes/1557");
     request = members.mockRequest("/notes/1234", "get", {
-      server: server
+      server: server,
     });
     response = await server.handleHttpRequest(request);
     members.assertEquals(response.status, 301);
     members.assertEquals(response.headers.get("location"), "/notes/1667");
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////

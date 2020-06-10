@@ -2,14 +2,16 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 members.testSuite("decorators/middleware_test.ts", () => {
-
   members.test("ResourceWithMiddlewareBeforeClass: header not specified", async () => {
     const server = new Drash.Http.Server({
       resources: [ResourceWithMiddlewareBeforeClass],
     });
     const request = members.mockRequest("/users/1");
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), "'header' not specified.");
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      "'header' not specified.",
+    );
   });
 
   members.test("ResourceWithMiddlewareBeforeClass: valid", async () => {
@@ -18,11 +20,14 @@ members.testSuite("decorators/middleware_test.ts", () => {
     });
     const request = members.mockRequest("/users/1", "get", {
       headers: {
-        csrf_token: "all your base"
-      }
+        csrf_token: "all your base",
+      },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
   });
 
   members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
@@ -31,11 +36,14 @@ members.testSuite("decorators/middleware_test.ts", () => {
     });
     const request = members.mockRequest("/users/1", "get", {
       headers: {
-        csrf_token: "all your base"
-      }
+        csrf_token: "all your base",
+      },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
@@ -79,7 +87,10 @@ members.testSuite("decorators/middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
   });
 
   members.test("ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
@@ -92,7 +103,10 @@ members.testSuite("decorators/middleware_test.ts", () => {
       },
     });
     const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), { name: "Thor" });
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
@@ -124,7 +138,6 @@ members.testSuite("decorators/middleware_test.ts", () => {
     members.assertEquals(response.headers.get("Content-Type"), "text/html");
     members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -176,8 +189,7 @@ class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
 @Drash.Http.Middleware(
   { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
 )
-class ResourceWithMultipleMiddlewareBeforeClass
-  extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -196,8 +208,7 @@ class ResourceWithMultipleMiddlewareBeforeClass
 @Drash.Http.Middleware(
   { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
 )
-class ResourceWithMultipleMiddlewareAfterClass
-  extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareAfterClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -266,8 +277,7 @@ class ResourceWithMiddlewareAfterMethod extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithMultipleMiddlewareBeforeMethod
-  extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -286,8 +296,7 @@ class ResourceWithMultipleMiddlewareBeforeMethod
   }
 }
 
-class ResourceWithMultipleMiddlewareAfterMethod
-  extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareAfterMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {

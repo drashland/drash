@@ -1,7 +1,6 @@
 import members from "../../members.ts";
 
 members.testSuite("Accept header (Test suite 2)", () => {
-
   members.test("accepts one and multiple types", async () => {
     let response;
 
@@ -39,7 +38,9 @@ members.testSuite("Accept header (Test suite 2)", () => {
         },
       },
     );
-    members.assertEquals(await response.text(), `<response>text/xml</response>`);
+    members.assertEquals(
+      await response.text(),
+      `<response>text/xml</response>`,
+    );
   });
-
 });

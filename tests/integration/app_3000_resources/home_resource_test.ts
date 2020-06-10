@@ -1,7 +1,6 @@
 import members from "../../members.ts";
 
 members.testSuite("HomeResource", () => {
-
   members.test("only defined methods are accessible", async () => {
     let response;
 
@@ -29,5 +28,4 @@ members.testSuite("HomeResource", () => {
     response = await members.fetch.patch("http://localhost:3000");
     members.assertEquals(await response.text(), '"Method Not Allowed"');
   });
-
 });

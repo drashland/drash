@@ -27,7 +27,9 @@ server.run({
   port: 3001,
 });
 console.log(`Server listening: http://${server.hostname}:${server.port}`);
-console.log("\nIntegration tests: testing template engine serves text/html responses\n");
+console.log(
+  "\nIntegration tests: testing template engine serves text/html responses\n",
+);
 
 import "./template_engine_null_data_resource_test.ts";
 import "./template_engine_resource_test.ts";

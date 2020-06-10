@@ -1,7 +1,6 @@
 import members from "../../members.ts";
 
 members.testSuite("CookieResource", () => {
-
   members.test("cookie can be created, retrieved, and deleted", async () => {
     let response;
     let cookies;
@@ -30,8 +29,7 @@ members.testSuite("CookieResource", () => {
 
     // Remove - Dependent on the above post request saving a cookie
     response = await members.fetch.delete("http://localhost:3000/cookie", {
-      headers: {
-      },
+      headers: {},
     });
     cookies = response.headers.get("set-cookie") || "";
     cookieVal = cookies.split(";")[0].split("=")[1];
@@ -39,5 +37,4 @@ members.testSuite("CookieResource", () => {
     await response.arrayBuffer();
     //await response.body.close()
   });
-
 });

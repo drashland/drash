@@ -33,9 +33,9 @@ function mockRequest(url = "/", method = "get", options?: any): any {
       request._body = options.body;
     }
     if (options.server) {
-      request.server = options.server
+      request.server = options.server;
     }
-  } 
+  }
 
   //
   // Stub `respond()` so we don't run into the following error:
@@ -45,8 +45,8 @@ function mockRequest(url = "/", method = "get", options?: any): any {
   request.respond = function respond(output: any) {
     output.send = function () {
       if (
-        output.status === 301
-        || output.status === 302
+        output.status === 301 ||
+        output.status === 302
       ) {
         return output;
       }
@@ -114,10 +114,10 @@ export default {
   decoder,
   fetch: makeRequest,
   mockRequest,
-  responseBody: function(response: any) {
+  responseBody: function (response: any) {
     return decoder.decode(response.body);
   },
-  test: function(name: string, testFn: any) {
+  test: function (name: string, testFn: any) {
     const numSpaces = testSuiteOutputLength - this.currentTestSuite.length;
     let spaces = "";
     if (numSpaces >= 0) {
@@ -126,7 +126,7 @@ export default {
     this.currentTestSuite += spaces;
     Deno.test(`${this.currentTestSuite} | Asserting: ${name}`, testFn);
   },
-  testSuite: function(name: string, testFns: any) {
+  testSuite: function (name: string, testFns: any) {
     this.currentTestSuite = name;
     testFns();
   },

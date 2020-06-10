@@ -10,8 +10,8 @@ export const server = new Drash.Http.Server({
   response_output: "application/json",
   middleware: {
     before_request: [
-      HeaderTokenMiddleware
-    ]
+      HeaderTokenMiddleware,
+    ],
   },
   resources: [
     HeaderTokenMiddlewareResource,
@@ -20,7 +20,7 @@ export const server = new Drash.Http.Server({
 
 server.run({
   hostname: "localhost",
-  port: 3003
+  port: 3003,
 });
 
 console.log(`Server listening: http://${server.hostname}:${server.port}`);

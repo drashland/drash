@@ -5,10 +5,16 @@ members.testSuite("CoffeeResource", () => {
     let response;
 
     response = await members.fetch.get("http://localhost:3000/coffee");
-    members.assertEquals(await response.text(), '"Please specify a coffee ID."');
+    members.assertEquals(
+      await response.text(),
+      '"Please specify a coffee ID."',
+    );
 
     response = await members.fetch.get("http://localhost:3000/coffee/");
-    members.assertEquals(await response.text(), '"Please specify a coffee ID."');
+    members.assertEquals(
+      await response.text(),
+      '"Please specify a coffee ID."',
+    );
 
     response = await members.fetch.get("http://localhost:3000/coffee//");
     members.assertEquals(await response.text(), '"Not Found"');

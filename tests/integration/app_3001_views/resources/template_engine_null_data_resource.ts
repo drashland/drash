@@ -6,7 +6,7 @@ export default class TemplateEngineNullDataResource
   public GET() {
     this.response.headers.set("Content-Type", "text/html");
     const engine = new Drash.Compilers.TemplateEngine(
-      Deno.realPathSync(".") + "/tests/integration/app_3001_views/templates"
+      Deno.realPathSync(".") + "/tests/integration/app_3001_views/templates",
     );
     this.response.body = engine.render("/user_null_data.html", null);
     return this.response;

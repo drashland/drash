@@ -2,7 +2,6 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 members.testSuite("dictionaries/log_levels_test.ts", () => {
-
   let expected = {
     all: {
       rank: 7,
@@ -47,5 +46,4 @@ members.testSuite("dictionaries/log_levels_test.ts", () => {
   members.test("LogLevels", () => {
     members.assertEquals(actual, expected);
   });
-
 });
