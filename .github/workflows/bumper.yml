@@ -1,7 +1,7 @@
 name: bumper
 on:
   schedule:
-    - cron: '*/1 * * * *'
+    - cron: '0 0 * * *'
 
 jobs:
   update-dep:
