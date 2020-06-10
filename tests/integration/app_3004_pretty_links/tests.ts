@@ -20,7 +20,7 @@ function getExpected() {
   if (Deno.build.os == "windows") {
     return `"Pretty links!
 
-    `;
+`;
   }
   return "Pretty links!\n";
 }
