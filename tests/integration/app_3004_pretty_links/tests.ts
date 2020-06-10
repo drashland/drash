@@ -16,20 +16,12 @@ server.run({
 console.log(`Server listening: http://${server.hostname}:${server.port}`);
 console.log("\nIntegration tests: testing server with pretty links.\n");
 
-function getExpected() {
-  if (Deno.build.os == "windows") {
-    return `Pretty links!
-`;
-  }
-  return "Pretty links!\n";
-}
-
 members.testSuite("pretty links", () => {
   members.test("/pretty/index.html converts to /pretty", async () => {
     const response = await members.fetch.get(
       "http://localhost:3004/public/pretty",
     );
-    members.assertEquals(await response.text(), getExpected());
+    members.assertEquals(await response.text().trim(), "Pretty links!");
   });
 });
 
