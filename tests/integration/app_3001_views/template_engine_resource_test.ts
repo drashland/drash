@@ -14,7 +14,7 @@ members.testSuite("TemplatEngineResource", () => {
     response = await members.fetch.get("http://localhost:3001/template-engine");
     members.assertEquals(
       await response.text(),
-      getOsExpected(),
+      getExpected(),
     );
   });
 });

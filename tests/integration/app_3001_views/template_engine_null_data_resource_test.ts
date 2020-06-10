@@ -16,7 +16,7 @@ members.testSuite("TemplatEngineNullDataResource", () => {
     );
     members.assertEquals(
       await response.text(),
-      getOsExpected(),
+      getExpected(),
     );
   });
 });
