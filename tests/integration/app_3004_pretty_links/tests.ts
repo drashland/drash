@@ -18,8 +18,7 @@ console.log("\nIntegration tests: testing server with pretty links.\n");
 
 function getExpected() {
   if (Deno.build.os == "windows") {
-    return `"Pretty links!
-
+    return `Pretty links!
 `;
   }
   return "Pretty links!\n";
