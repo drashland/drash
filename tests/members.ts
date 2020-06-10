@@ -4,8 +4,8 @@ import {
   assertEquals,
   assertThrows,
 } from "../deps.ts";
+const testSuiteOutputLength = 0;
 const decoder = new TextDecoder("utf-8");
-const testSuiteOutputLength = 20;
 
 /**
  * Get a mocked request object.
@@ -22,11 +22,20 @@ function mockRequest(url = "/", method = "get", options?: any): any {
   request.url = url;
   request.method = method;
   request.headers = new Headers();
-  if (options && options.headers) {
-    for (let key in options.headers) {
-      request.headers.set(key, options.headers[key]);
+  if (options) {
+    if (options.headers) {
+      for (let key in options.headers) {
+        request.headers.set(key, options.headers[key]);
+      }
     }
-  }
+    if (options.body) {
+      request._contentLength = options.body.length;
+      request._body = options.body;
+    }
+    if (options.server) {
+      request.server = options.server
+    }
+  } 
 
   //
   // Stub `respond()` so we don't run into the following error:
@@ -34,6 +43,14 @@ function mockRequest(url = "/", method = "get", options?: any): any {
   //   TypeError: Cannot read property 'write' of undefined
   //
   request.respond = function respond(output: any) {
+    output.send = function () {
+      if (
+        output.status === 301
+        || output.status === 302
+      ) {
+        return output;
+      }
+    };
     return output;
   };
 
@@ -97,14 +114,16 @@ export default {
   decoder,
   fetch: makeRequest,
   mockRequest,
-  responseBody: async function(response: any) {
+  responseBody: function(response: any) {
     return decoder.decode(response.body);
   },
   test: function(name: string, testFn: any) {
     const numSpaces = testSuiteOutputLength - this.currentTestSuite.length;
-    for ( let i = numSpaces; i >= 0; i-- ) {
-      this.currentTestSuite += " ";
+    let spaces = "";
+    if (numSpaces >= 0) {
+      spaces = " ".repeat(numSpaces);
     }
+    this.currentTestSuite += spaces;
     Deno.test(`${this.currentTestSuite} | Asserting: ${name}`, testFn);
   },
   testSuite: function(name: string, testFns: any) {
