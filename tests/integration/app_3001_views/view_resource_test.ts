@@ -1,5 +1,12 @@
 import members from "../../members.ts";
 
+function getExpected() {
+  if (Deno.build.os == "windows") {
+    return "<body>      <h1>Hello Drash</h1>  </body>";
+  }
+  return "<body>     <h1>Hello Drash</h1> </body>";
+}
+
 members.testSuite("ViewResource", () => {
   members.test("basic HTML can be served", async () => {
     const response = await fetch(
@@ -10,7 +17,7 @@ members.testSuite("ViewResource", () => {
     );
     members.assertEquals(
       await response.text(),
-      "<body>     <h1>Hello Drash</h1> </body>",
+      getExpected(),
     );
   });
 });
