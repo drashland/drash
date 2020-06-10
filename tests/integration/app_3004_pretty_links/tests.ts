@@ -28,7 +28,7 @@ members.testSuite("pretty links", () => {
     const response = await members.fetch.get(
       "http://localhost:3004/public/pretty",
     );
-    members.assertEquals(await response.text(), );
+    members.assertEquals(await response.text());
   });
 });
 
