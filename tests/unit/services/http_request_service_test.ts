@@ -65,6 +65,15 @@ members.testSuite("services/http_request_service_test.ts", () => {
     members.assertEquals("world", actual);
   });
 
+  members.test("hydrate()", async () => {
+    let request = members.mockRequest();
+    request = await service.hydrate(request);
+    members.assertEquals("function", typeof request.getBodyFile);
+    members.assertEquals("function", typeof request.getBodyParam);
+    members.assertEquals("function", typeof request.getHeaderParam);
+    members.assertEquals("function", typeof request.getUrlQueryParam);
+  });
+
   members.test("parseBodyAsFormUrlEncoded() can parse hello=world into an object", async () => {
     const body = encoder.encode("hello=world");
     const reader = new Deno.Buffer(body as ArrayBuffer);
