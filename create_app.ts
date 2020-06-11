@@ -4,12 +4,13 @@ const wantsHelp = (args.find((arg) => arg === "--help") !== undefined);
 const wantsWebApp = (args.find((arg) => arg === "--web-app") !== undefined);
 const wantsApi = (args.find((arg) => arg === "--api") !== undefined);
 const wantsVue = (args.find((arg) => arg === "--with-vue") !== undefined);
-const cwd = Deno.cwd();
+const cwd = Deno.realPathSync(".");
 // strip this file name from the path and add the link to the boilerplate dir
-const boilerPlateDir = (import.meta.url.slice(0, -13)).substring(5) +
-  "console/create_app";
-//                                  ^^^^^^^^              ^^^^            ^^^^^^^
-//                Remove the file name from the path   Strip "file://"  Add boiler plate dir
+const pathToScriptRoot = import.meta.url.slice(0, -13) // Remove this script name: ".../deno-drash/"
+const boilerPlateDir = Deno.build.os === "windows" ?
+  pathToScriptRoot.substring(8) + "console/create_app" // Remove characters that would error, for example, removing "file:///" for windows
+  :
+  pathToScriptRoot.substring(5) + "console/create_app"
 const notesForUser: string[] = [];
 
 //////////////////////////////////////////////////////////////////////////////
