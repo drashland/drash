@@ -13,8 +13,8 @@ import "./http/middleware_test.ts";
 import "./http/server_test.ts";
 
 // Loggers
-import "./loggers/console_logger_test.ts";
-// import "./unit/loggers/file_logger_test.ts";
+import "./core_loggers/console_logger_test.ts";
+import "./core_loggers/file_logger_test.ts";
 
 // Services
 import "./services/http_service_test.ts";

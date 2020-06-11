@@ -5,7 +5,7 @@ const ANIMALS = {
   "#1235": "tiger",
 };
 
-members.testSuite("loggers/console_logger.ts", () => {
+members.testSuite("core_loggers/console_logger.ts", () => {
   members.test("ConsoleLogger", () => {
     let logger = new Drash.CoreLoggers.ConsoleLogger({
       test: true,
