@@ -61,9 +61,7 @@ function showHelp() {
     "\n" +
     "    deno run --allow-read --allow-run --allow-write https://deno.land/x/drash/create_app.ts --api" +
     "\n";
-  Deno.run({
-    cmd: ["echo", helpMessage],
-  });
+  console.info(helpMessage)
 }
 
 /**
@@ -73,9 +71,7 @@ function showHelp() {
  * @param {string} message Message to show in the console. Required.
  */
 function writeFileWrittenOrCreatedMessage(message: string) {
-  Deno.run({
-    cmd: ["echo", green(message)],
-  });
+  console.info(green(message))
 }
 
 /**
@@ -92,14 +88,11 @@ function sendThankYouMessage() {
     : wantsWebApp && wantsVue
     ? "Your web app with Vue "
     : "";
-  Deno.run({
-    cmd: [
-      "echo",
-      whatUserWanted + "has been created at " + cwd +
-      ".\nThank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-      notesForUser.join("\n"),
-    ],
-  });
+  console.info(
+    whatUserWanted + "has been created at " + cwd +
+    ".\nThank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
+    notesForUser.join("\n")
+  )  
 }
 
 function buildTheBaseline() {
@@ -182,41 +175,20 @@ function buildForAPI() {
 
 // Requirement: Now allowed to ask for an API AND Web App
 if (wantsApi && wantsWebApp) {
-  Deno.run({
-    cmd: [
-      "echo",
-      red(
-        "--web-app and --api options are now allowed to be used together. Use the --help option for more information.",
-      ),
-    ],
-  });
+  console.error(red("--web-app and --api options are now allowed to be used together. Use the --help option for more information."))
   Deno.exit(1);
 }
 
 // Requirement: One main argument is required
 const tooFewArgs = !wantsHelp && !wantsWebApp && !wantsApi;
 if (tooFewArgs) {
-  Deno.run({
-    cmd: [
-      "echo",
-      red(
-        "Too few options were given. Use the --help option for more information.",
-      ),
-    ],
-  });
+  console.error(red("Too few options were given. Use the --help option for more information."))
   Deno.exit(1);
 }
 
 // Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
 if (wantsVue && !wantsWebApp) {
-  Deno.run({
-    cmd: [
-      "echo",
-      red(
-        "The --with-vue option is only allowed for use with a web app. Use the --help option for more information.",
-      ),
-    ],
-  });
+  console.error(red("The --with-vue option is only allowed for use with a web app. Use the --help option for more information."))
   Deno.exit(1);
 }
 
