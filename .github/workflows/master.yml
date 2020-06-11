@@ -25,11 +25,19 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Unit
-        run: deno test tests/test.ts --config tsconfig.json --allow-net
+        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net
+
+      - name: Integration
+        run: |
+          deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/tests.ts
+          deno test --allow-all --config tsconfig.json tests/integration/app_3001_views/tests.ts
+          # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
+          deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/tests.ts
+          deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
 
       - name: Create APP
         if: ${{ startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos') }}
-        run: deno test tests/create_app_test.ts --allow-read --allow-write --allow-run
+        run: deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
     strategy:
