@@ -1,229 +1,145 @@
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareBeforeClass: header not specified", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareBeforeClass],
+members.testSuite("decorators/middleware_test.ts", () => {
+  members.test("ResourceWithMiddlewareBeforeClass: header not specified", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMiddlewareBeforeClass],
+    });
+    const request = members.mockRequest("/users/1");
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      "'header' not specified.",
+    );
   });
 
-  const port = 10000;
-  server.run({
-    hostname: "localhost",
-    port: port,
+  members.test("ResourceWithMiddlewareBeforeClass: valid", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMiddlewareBeforeClass],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
   });
 
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`);
+  members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMultipleMiddlewareBeforeClass],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
+    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+  });
 
-  members.assert.equals(await response.json(), "'header' not specified.");
+  members.test("ResourceWithMultipleMiddlewareAfterClass: response is html, custom header and value", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMultipleMiddlewareAfterClass],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(response.headers.get("Content-Type"), "text/html");
+    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+  });
 
-  server.close();
+  members.test("ResourceWithMiddlewareClass: custom header and swap to html", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMiddlewareClass],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(response.headers.get("Content-Type"), "text/html");
+    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+  });
+
+  members.test("ResourceWithMiddlewareBeforeMethod: custom header", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMiddlewareBeforeMethod],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
+  });
+
+  members.test("ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMultipleMiddlewareBeforeMethod],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { name: "Thor" },
+    );
+    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+  });
+
+  members.test("ResourceWithMiddlewareAfterMethod: swap to html", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMiddlewareAfterMethod],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(response.headers.get("Content-Type"), "text/html");
+  });
+
+  members.test("ResourceWithMultipleMiddlewareAfterMethod: custom header and swap to html", async () => {
+    const server = new Drash.Http.Server({
+      resources: [ResourceWithMultipleMiddlewareAfterMethod],
+    });
+    const request = members.mockRequest("/users/1", "get", {
+      headers: {
+        csrf_token: "all your base",
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+    members.assertEquals(response.headers.get("Content-Type"), "text/html");
+    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+  });
 });
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareBeforeClass: valid", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareBeforeClass],
-  });
 
-  const port = 10001;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.json(), { name: "Thor" });
-
-  server.close();
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareBeforeClass],
-  });
-
-  const port = 10002;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.json(), { name: "Thor" });
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
-
-  server.close();
-});
-
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareAfterClass: response is html, custom header and value", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareAfterClass],
-  });
-
-  const port = 10003;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
-
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareClass: custom header and swap to html", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareClass],
-  });
-
-  const port = 10004;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
-
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareBeforeMethod: custom header", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareBeforeMethod],
-  });
-
-  const port = 10005;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.json(), { name: "Thor" });
-
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareBeforeMethod],
-  });
-
-  const port = 10006;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.json(), { name: "Thor" });
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
-
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMiddlewareAfterMethod: swap to html", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMiddlewareAfterMethod],
-  });
-
-  const port = 10007;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-
-  server.close();
-});
-/**
- * @covers Server.handleHttpRequest()
- */
-members.test("middleware_test.ts | ResourceWithMultipleMiddlewareAfterMethod: custom header and swap to html", async () => {
-  let server = new members.MockServer({
-    resources: [ResourceWithMultipleMiddlewareAfterMethod],
-  });
-
-  const port = 10008;
-  server.run({
-    hostname: "localhost",
-    port: port,
-  });
-
-  let response = await members.fetch.get(`http://localhost:${port}/users/1`, {
-    headers: {
-      csrf_token: "all your base",
-    },
-  });
-
-  members.assert.equals(await response.text(), "<h1>hey</h1>");
-  members.assert.equals(response.headers.get("Content-Type"), "text/html");
-  members.assert.equals(response.headers.get("MYCUSTOM"), "hey");
-
-  server.close();
-});
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +170,7 @@ function ResponseCustomHeaderAdded(
 }
 
 @Drash.Http.Middleware({ before_request: [CustomHeader] })
-class ResourceWithMiddlewareBeforeClass extends members.Drash.Http.Resource {
+class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -273,8 +189,7 @@ class ResourceWithMiddlewareBeforeClass extends members.Drash.Http.Resource {
 @Drash.Http.Middleware(
   { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
 )
-class ResourceWithMultipleMiddlewareBeforeClass
-  extends members.Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -293,8 +208,7 @@ class ResourceWithMultipleMiddlewareBeforeClass
 @Drash.Http.Middleware(
   { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
 )
-class ResourceWithMultipleMiddlewareAfterClass
-  extends members.Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareAfterClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -315,7 +229,7 @@ class ResourceWithMultipleMiddlewareAfterClass
     after_request: [ResponseCustomHeaderAdded],
   },
 )
-class ResourceWithMiddlewareClass extends members.Drash.Http.Resource {
+class ResourceWithMiddlewareClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -330,7 +244,7 @@ class ResourceWithMiddlewareClass extends members.Drash.Http.Resource {
   }
 }
 
-class ResourceWithMiddlewareBeforeMethod extends members.Drash.Http.Resource {
+class ResourceWithMiddlewareBeforeMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -347,7 +261,7 @@ class ResourceWithMiddlewareBeforeMethod extends members.Drash.Http.Resource {
   }
 }
 
-class ResourceWithMiddlewareAfterMethod extends members.Drash.Http.Resource {
+class ResourceWithMiddlewareAfterMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -363,8 +277,7 @@ class ResourceWithMiddlewareAfterMethod extends members.Drash.Http.Resource {
   }
 }
 
-class ResourceWithMultipleMiddlewareBeforeMethod
-  extends members.Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {
@@ -383,8 +296,7 @@ class ResourceWithMultipleMiddlewareBeforeMethod
   }
 }
 
-class ResourceWithMultipleMiddlewareAfterMethod
-  extends members.Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareAfterMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users: any = {
     1: {

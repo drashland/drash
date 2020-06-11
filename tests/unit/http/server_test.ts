@@ -1,142 +1,111 @@
 import members from "../../members.ts";
+import { Drash } from "../../../mod.ts";
+const encoder = new TextEncoder();
 
-members.test("server_test.ts | handleHttpRequest(): GET", async () => {
-  let server = new members.MockServer({
-    resources: [HomeResource],
+members.testSuite("http/server_test.ts", () => {
+  members.test("handleHttpRequest(): GET", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    const request = members.mockRequest("/");
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { body: "got" },
+    );
   });
 
-  server.run({
-    hostname: "localhost",
-    port: 1557,
-  });
-
-  let response = await members.fetch.get("http://localhost:1557");
-
-  members.assert.responseJsonEquals(await response.text(), { body: "got" });
-
-  server.close();
-});
-
-members.test("server_test.ts | handleHttpRequest(): POST", async () => {
-  let server = new members.MockServer({
-    resources: [HomeResource],
-  });
-
-  server.run({
-    hostname: "localhost",
-    port: 1557,
-  });
-
-  const response = await members.fetch.post("http://localhost:1557", {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: {
+  members.test("handleHttpRequest(): POST", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    const body = encoder.encode(JSON.stringify({
       body_param: "hello",
-    },
+    }));
+    const reader = new Deno.Buffer(body as ArrayBuffer);
+    const request = members.mockRequest("/", "post", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: reader,
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(
+      members.responseBody(response),
+      { body: "hello" },
+    );
   });
 
-  members.assert.responseJsonEquals(await response.text(), { body: "hello" });
-
-  server.close();
-});
-
-members.test(
-  "server_test.ts | handleHttpRequest(): getPathParam() for :id and {id}",
-  async () => {
-    let server = new members.MockServer({
+  members.test("handleHttpRequest(): getPathParam() for :id", async () => {
+    const server = new Drash.Http.Server({
       resources: [NotesResource, UsersResource],
     });
-
-    server.run({
-      hostname: "localhost",
-      port: 1557,
-    });
-
+    let request;
     let response;
-
-    response = await members.fetch.get("http://localhost:1557/users/1");
-
-    members.assert.responseJsonEquals(await response.text(), { user_id: "1" });
-
-    response = await members.fetch.get("http://localhost:1557/notes/1557");
-
-    members.assert.responseJsonEquals(await response.text(), {
+    request = members.mockRequest("/users/1");
+    response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(members.responseBody(response), {
+      user_id: "1",
+    });
+    request = members.mockRequest("/notes/1557");
+    response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(members.responseBody(response), {
       note_id: "1557",
     });
-
-    server.close();
-  },
-);
-
-members.test("server_test.ts | handleHttpRequest(): getHeaderParam()", async () => {
-  let server = new members.MockServer({
-    resources: [GetHeaderParam],
   });
 
-  server.run({
-    hostname: "localhost",
-    port: 1557,
-  });
-  let response = await members.fetch.get("http://localhost:1557", {
-    headers: {
-      id: 12345,
-    },
-  });
-
-  members.assert.responseJsonEquals(await response.text(), {
-    header_param: "12345",
-  });
-
-  server.close();
-});
-
-members.test("server_test.ts | handleHttpRequest(): getUrlQueryParam()", async () => {
-  let server = new members.MockServer({
-    resources: [GetUrlQueryParam],
+  members.test("handleHttpRequest(): getHeaderParam()", async () => {
+    const server = new Drash.Http.Server({
+      resources: [GetHeaderParam],
+    });
+    const request = members.mockRequest("/", "get", {
+      headers: {
+        id: 12345,
+      },
+    });
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(members.responseBody(response), {
+      header_param: "12345",
+    });
   });
 
-  server.run({
-    hostname: "localhost",
-    port: 1557,
+  members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
+    const server = new Drash.Http.Server({
+      resources: [GetUrlQueryParam],
+    });
+    const request = members.mockRequest("/?id=123459");
+    const response = await server.handleHttpRequest(request);
+    members.assertResponseJsonEquals(members.responseBody(response), {
+      query_param: "123459",
+    });
   });
-  let response = await members.fetch.get("http://localhost:1557?id=123459");
 
-  members.assert.responseJsonEquals(await response.text(), {
-    query_param: "123459",
-  });
-
-  server.close();
-});
-
-members.test(
-  "server_test.ts | handleHttpRequest(): response.redirect()",
-  async () => {
-    let server = new members.MockServer({
+  members.test("handleHttpRequest(): response.redirect()", async () => {
+    const server = new Drash.Http.Server({
       resources: [NotesResource],
     });
-
-    server.run({
-      hostname: "localhost",
-      port: 1557,
-    });
+    let request;
     let response;
-
-    response = await members.fetch.get("http://localhost:1557/notes/123");
-
-    members.assert.responseJsonEquals(await response.text(), {
-      note_id: "1557",
+    request = members.mockRequest("/notes/123", "get", {
+      server: server,
     });
-
-    server.close();
-  },
-);
+    response = await server.handleHttpRequest(request);
+    members.assertEquals(response.status, 302);
+    members.assertEquals(response.headers.get("location"), "/notes/1557");
+    request = members.mockRequest("/notes/1234", "get", {
+      server: server,
+    });
+    response = await server.handleHttpRequest(request);
+    members.assertEquals(response.status, 301);
+    members.assertEquals(response.headers.get("location"), "/notes/1667");
+  });
+});
 
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class MultipartFormData extends members.Drash.Http.Resource {
+class MultipartFormData extends Drash.Http.Resource {
   static paths = ["/"];
   public POST() {
     this.response.body = {
@@ -146,7 +115,7 @@ class MultipartFormData extends members.Drash.Http.Resource {
   }
 }
 
-class HomeResource extends members.Drash.Http.Resource {
+class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
     this.response.body = { body: "got" };
@@ -158,7 +127,7 @@ class HomeResource extends members.Drash.Http.Resource {
   }
 }
 
-class UsersResource extends members.Drash.Http.Resource {
+class UsersResource extends Drash.Http.Resource {
   static paths = ["/users/:id"];
   public GET() {
     this.response.body = { user_id: this.request.getPathParam("id") };
@@ -166,19 +135,22 @@ class UsersResource extends members.Drash.Http.Resource {
   }
 }
 
-class NotesResource extends members.Drash.Http.Resource {
+class NotesResource extends Drash.Http.Resource {
   static paths = ["/notes/{id}"];
   public GET() {
     const noteId = this.request.getPathParam("id");
     if (noteId === "123") {
       return this.response.redirect(302, "/notes/1557");
     }
+    if (noteId === "1234") {
+      return this.response.redirect(301, "/notes/1667");
+    }
     this.response.body = { note_id: noteId };
     return this.response;
   }
 }
 
-class GetHeaderParam extends members.Drash.Http.Resource {
+class GetHeaderParam extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
     this.response.body = { header_param: this.request.getHeaderParam("id") };
@@ -186,7 +158,7 @@ class GetHeaderParam extends members.Drash.Http.Resource {
   }
 }
 
-class GetUrlQueryParam extends members.Drash.Http.Resource {
+class GetUrlQueryParam extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {
     this.response.body = { query_param: this.request.getUrlQueryParam("id") };
