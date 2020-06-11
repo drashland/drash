@@ -36,7 +36,6 @@ jobs:
           deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
 
       - name: Create APP
-        if: ${{ startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos') }}
         run: deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
