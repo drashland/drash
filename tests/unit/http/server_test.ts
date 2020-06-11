@@ -3,6 +3,28 @@ import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 members.testSuite("http/server_test.ts", () => {
+
+  members.test("getRequest()", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource]
+    });
+    let request = members.mockRequest();
+    request = await server.getRequest(request);
+    members.assertEquals("function", typeof request.getBodyFile);
+    members.assertEquals("function", typeof request.getBodyParam);
+    members.assertEquals("function", typeof request.getHeaderParam);
+    members.assertEquals("function", typeof request.getUrlQueryParam);
+  });
+
+  members.test("handleHttpRequest(): GET", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    const request = members.mockRequest("/favicon.ico");
+    const response = await server.handleHttpRequest(request);
+    console.log(response);
+  });
+
   members.test("handleHttpRequest(): GET", async () => {
     const server = new Drash.Http.Server({
       resources: [HomeResource],
