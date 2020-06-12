@@ -3,6 +3,45 @@ import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 members.testSuite("http/server_test.ts", () => {
+  members.test("getRequest() gives get*Param/File methods", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    let request = members.mockRequest();
+    request = await server.getRequest(request);
+    members.assertEquals("function", typeof request.getBodyFile);
+    members.assertEquals("function", typeof request.getBodyParam);
+    members.assertEquals("function", typeof request.getHeaderParam);
+    members.assertEquals("function", typeof request.getUrlQueryParam);
+  });
+
+  members.test("getRequest() request.body takes in a reader", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    let request = new members.ServerRequest();
+    const body = encoder.encode(JSON.stringify({
+      hello: "world",
+    }));
+    request.url = "/";
+    request.headers = new Headers();
+    request.headers.set("Content-Length", body.length.toString());
+    request.headers.set("Content-Type", "application/json");
+    const reader = new Deno.Buffer(body as ArrayBuffer);
+    request.r = new members.BufReader(reader);
+    const newRequest = await server.getRequest(request);
+    members.assertEquals("world", newRequest.getBodyParam("hello"));
+  });
+
+  members.test("handleHttpRequest(): /favicon.ico", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    const request = members.mockRequest("/favicon.ico");
+    const response = JSON.parse(await server.handleHttpRequest(request));
+    members.assertEquals(200, response.status_code);
+  });
+
   members.test("handleHttpRequest(): GET", async () => {
     const server = new Drash.Http.Server({
       resources: [HomeResource],
