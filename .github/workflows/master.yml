@@ -25,7 +25,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Unit
-        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write
+        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read
 
       - name: Integration
         run: |
