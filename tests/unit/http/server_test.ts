@@ -4,7 +4,7 @@ const encoder = new TextEncoder();
 
 members.testSuite("http/server_test.ts", () => {
 
-  members.test("getRequest()", async () => {
+  members.test("getRequest() gives get*Param/File methods", async () => {
     const server = new Drash.Http.Server({
       resources: [HomeResource]
     });
@@ -16,13 +16,31 @@ members.testSuite("http/server_test.ts", () => {
     members.assertEquals("function", typeof request.getUrlQueryParam);
   });
 
-  members.test("handleHttpRequest(): GET", async () => {
+  members.test("getRequest() request.body takes in a reader", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource]
+    })
+    let request = new members.ServerRequest();
+    const body = encoder.encode(JSON.stringify({
+      hello: "world",
+    }));
+    request.url = "/";
+    request.headers = new Headers()
+    request.headers.set("Content-Length", body.length.toString());
+    request.headers.set("Content-Type", "application/json");
+    const reader = new Deno.Buffer(body as ArrayBuffer);
+    request.r = new members.BufReader(reader);
+    const newRequest = await server.getRequest(request);
+    members.assertEquals("world", newRequest.getBodyParam("hello"));
+  });
+
+  members.test("handleHttpRequest(): /favicon.ico", async () => {
     const server = new Drash.Http.Server({
       resources: [HomeResource],
     });
     const request = members.mockRequest("/favicon.ico");
-    const response = await server.handleHttpRequest(request);
-    console.log(response);
+    const response = JSON.parse(await server.handleHttpRequest(request));
+    members.assertEquals(200, response.status_code);
   });
 
   members.test("handleHttpRequest(): GET", async () => {
@@ -121,6 +139,16 @@ members.testSuite("http/server_test.ts", () => {
     members.assertEquals(response.status, 301);
     members.assertEquals(response.headers.get("location"), "/notes/1667");
   });
+
+  members.test("getResourceObject() returns the correct resource", async () => {
+    const server = new Drash.Http.Server({
+      resources: [HomeResource],
+    });
+    const request = members.mockRequest("/");
+    const actual = await server.getResourceClass(request);
+    members.assertEquals(HomeResource, actual);
+  });
+
 });
 
 ////////////////////////////////////////////////////////////////////////////////
