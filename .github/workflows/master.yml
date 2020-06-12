@@ -36,7 +36,9 @@ jobs:
           deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
 
       - name: Create APP
-        run: deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
+        run: |
+          deno cache mod.ts
+          deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
     strategy:
