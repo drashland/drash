@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         deno: ["1.0.5"]
-        dmm: ["1.0.3"]
+        dmm: ["1.0.5"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
