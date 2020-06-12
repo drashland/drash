@@ -37,7 +37,7 @@ jobs:
 
       - name: Create APP
         run: |
-          deno cache mod.ts
+          deno cache create_app.ts
           deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
