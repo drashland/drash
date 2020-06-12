@@ -1,5 +1,6 @@
 import { Drash } from "../mod.ts";
 import {
+  BufReader,
   ServerRequest,
   assertEquals,
   assertThrows,
@@ -29,8 +30,8 @@ function mockRequest(url = "/", method = "get", options?: any): any {
       }
     }
     if (options.body) {
-      request._contentLength = options.body.length;
-      request._body = options.body;
+      request.headers.set("Content-Length", options.body.length.toString());
+      request.r = new BufReader(options.body);
     }
     if (options.server) {
       request.server = options.server;
@@ -106,6 +107,7 @@ const makeRequest = {
 };
 
 export default {
+  BufReader,
   ServerRequest,
   assertEquals,
   assertResponseJsonEquals,
