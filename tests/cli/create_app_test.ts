@@ -5,7 +5,7 @@
  * This is only for some tests
  */
 
-import { red, green } from "../../deps.ts"
+import { red, green } from "../../deps.ts";
 import members from "../members.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 const originalCWD = Deno.cwd();
@@ -46,7 +46,12 @@ members.test("create_app_test.ts | Script fails with no argument", async () => {
   p.close();
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
-  members.assertEquals(stderr, red("Too few options were given. Use the --help option for more information.") + "\n");
+  members.assertEquals(
+    stderr,
+    red(
+      "Too few options were given. Use the --help option for more information.",
+    ) + "\n",
+  );
   members.assertEquals(stdout, "");
   members.assertEquals(status.code, 1);
   members.assertEquals(status.success, false);
@@ -71,8 +76,9 @@ members.test("create_app_test.ts | Script success with the --help argument", asy
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  members.assertEquals(stdout,
-      "\n" +
+  members.assertEquals(
+    stdout,
+    "\n" +
       "A create app script for Drash\n" +
       "\n" +
       "USAGE:\n" +
@@ -96,7 +102,7 @@ members.test("create_app_test.ts | Script success with the --help argument", asy
       "    mkdir my-drash-api\n" +
       "    cd my-drash-api\n" +
       "    deno run --allow-read --allow-run --allow-write https://deno.land/x/drash/create_app.ts --api\n" +
-      "\n"
+      "\n",
   );
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
@@ -124,11 +130,10 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  const assertedStdout =
-      "Your Drash API project has been created.\n" +
-      "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-      "To run your application:\n" +
-      "    deno run --allow-net --allow-read app.ts\n";
+  const assertedStdout = "Your Drash API project has been created.\n" +
+    "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
+    "To run your application:\n" +
+    "    deno run --allow-net --allow-read app.ts\n";
   members.assertEquals(stdout, assertedStdout);
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
@@ -205,11 +210,12 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  members.assertEquals(stdout,
-      "Your Drash web app project has been created.\n" +
+  members.assertEquals(
+    stdout,
+    "Your Drash web app project has been created.\n" +
       "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
       "To run your application:\n" +
-      "    deno run --allow-net --allow-read app.ts\n"
+      "    deno run --allow-net --allow-read app.ts\n",
   );
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
@@ -311,15 +317,16 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  members.assertEquals(stdout,
-      "Your Drash web app project with Vue has been created.\n" +
+  members.assertEquals(
+    stdout,
+    "Your Drash web app project with Vue has been created.\n" +
       "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
       "Install NPM dependencies:\n" +
       "    npm install\n" +
       "Build your Vue component with Webpack:\n" +
       "    npm run buildVue\n" +
       "To run your application:\n" +
-      "    deno run --allow-net --allow-read app.ts\n"
+      "    deno run --allow-net --allow-read app.ts\n",
   );
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
@@ -427,7 +434,12 @@ members.test("create_app_test.ts | Script fails if --api and --web-app are speci
   p.close();
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
-  members.assertEquals(stderr, red("--web-app and --api options are now allowed to be used together. Use the --help option for more information.") + "\n");
+  members.assertEquals(
+    stderr,
+    red(
+      "--web-app and --api options are now allowed to be used together. Use the --help option for more information.",
+    ) + "\n",
+  );
   members.assertEquals(stdout, "");
   members.assertEquals(status.code, 1);
   members.assertEquals(status.success, false);

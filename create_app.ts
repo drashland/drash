@@ -79,8 +79,8 @@ function writeFileWrittenOrCreatedMessage(message: string) {
  */
 function sendThankYouMessage() {
   notesForUser.push(
-      "To run your application:",
-      "    deno run --allow-net --allow-read app.ts",
+    "To run your application:",
+    "    deno run --allow-net --allow-read app.ts",
   );
   const whatUserWanted = wantsApi
     ? "Your Drash API project "
