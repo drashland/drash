@@ -36,7 +36,7 @@ Please **ask first** before embarking on any significant pull request (e.g. impl
     mkdir <middleware>/tests
     touch <middleware>/mod.ts
     touch <middleware>/related_files.ts
-    touch README.md
+    touch <middleware>/README.md
     ```   
     You should write extensive tests for your middleware and these tests are held within your middleware directory.
     
