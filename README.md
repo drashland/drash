@@ -9,12 +9,11 @@
 ---
 
 ## Table of Contents
-- [Introduction](#introduction)
-- [Example](#example)
+- [Overview](#overview)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Introduction
+## Overview
 `deno-drash-middleware` contains a list of Drash-approved middleware you can use with your Drash application. Be aware that these middlewares differ a lot - some may use 3rd party dependencies whilst some won't. Here is the current list of middlewares:
 
 * (in progress)
