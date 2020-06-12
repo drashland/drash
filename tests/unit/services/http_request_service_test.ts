@@ -3,14 +3,13 @@ import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 members.testSuite("services/http_request_service_test.ts", () => {
-
   const service = new Drash.Services.HttpRequestService();
 
   members.test("accepts() correctly parses the Accept header", () => {
     const request = members.mockRequest("/", "get", {
       headers: {
-        Accept: "application/json;text/html"
-      }
+        Accept: "application/json;text/html",
+      },
     });
     let actual;
     actual = service.accepts(request, "application/json");
@@ -30,29 +29,29 @@ members.testSuite("services/http_request_service_test.ts", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: reader
+      body: reader,
     });
-    request = await service.hydrate(request)
-    const actual = request.getBodyParam("hello")
+    request = await service.hydrate(request);
+    const actual = request.getBodyParam("hello");
     members.assertEquals("world", actual);
   });
 
   members.test("getHeaderParam() gets the header param", async () => {
     let request = members.mockRequest("/", "get", {
       headers: {
-        hello: "world"
+        hello: "world",
       },
     });
-    request = await service.hydrate(request)
-    const actual = request.getHeaderParam("hello")
+    request = await service.hydrate(request);
+    const actual = request.getHeaderParam("hello");
     members.assertEquals("world", actual);
   });
 
   members.test("getPathParam() gets the URL query param", async () => {
     let request = members.mockRequest();
-    request = await service.hydrate(request)
+    request = await service.hydrate(request);
     request.path_params = {
-      hello: "world"
+      hello: "world",
     };
     const actual = request.getPathParam("hello");
     members.assertEquals("world", actual);
@@ -60,8 +59,8 @@ members.testSuite("services/http_request_service_test.ts", () => {
 
   members.test("getUrlQueryParam() gets the URL query param", async () => {
     let request = members.mockRequest("/?hello=world");
-    request = await service.hydrate(request)
-    const actual = request.getUrlQueryParam("hello")
+    request = await service.hydrate(request);
+    const actual = request.getUrlQueryParam("hello");
     members.assertEquals("world", actual);
   });
 
@@ -78,10 +77,10 @@ members.testSuite("services/http_request_service_test.ts", () => {
     const body = encoder.encode("hello=world");
     const reader = new Deno.Buffer(body as ArrayBuffer);
     const request = members.mockRequest("/", "get", {
-      body: reader
+      body: reader,
     });
     const actual = await service.parseBodyAsFormUrlEncoded(request);
-    members.assertEquals(actual, {hello: "world"});
+    members.assertEquals(actual, { hello: "world" });
   });
 
   members.test("parseBodyAsFormUrlEncoded() can parse hello=world into an object", async () => {
@@ -89,12 +88,12 @@ members.testSuite("services/http_request_service_test.ts", () => {
     const reader = new Deno.Buffer(body as ArrayBuffer);
     const request = members.mockRequest("/", "get", {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: reader
+      body: reader,
     });
     const actual = await service.parseBodyAsFormUrlEncoded(request);
-    members.assertEquals(actual, {hello: "world"});
+    members.assertEquals(actual, { hello: "world" });
   });
 
   members.test(`parseBodyAsJson() can parse '{"hello":"world"}' into an object`, async () => {
@@ -106,10 +105,10 @@ members.testSuite("services/http_request_service_test.ts", () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: reader
+      body: reader,
     });
     const actual = await service.parseBodyAsJson(request);
-    members.assertEquals(actual, {hello: "world"});
+    members.assertEquals(actual, { hello: "world" });
   });
 
   // members.test("parseBodyAsMultipartFormData() can parse files", async () => {
@@ -125,9 +124,8 @@ members.testSuite("services/http_request_service_test.ts", () => {
   members.test("setHeaders() sets headers on the specified request", () => {
     const request = members.mockRequest();
     service.setHeaders(request, {
-      hello: "world"
+      hello: "world",
     });
     members.assertEquals(request.headers.get("hello"), "world");
   });
-
 });

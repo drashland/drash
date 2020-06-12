@@ -3,10 +3,9 @@ import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 members.testSuite("http/server_test.ts", () => {
-
   members.test("getRequest() gives get*Param/File methods", async () => {
     const server = new Drash.Http.Server({
-      resources: [HomeResource]
+      resources: [HomeResource],
     });
     let request = members.mockRequest();
     request = await server.getRequest(request);
@@ -18,14 +17,14 @@ members.testSuite("http/server_test.ts", () => {
 
   members.test("getRequest() request.body takes in a reader", async () => {
     const server = new Drash.Http.Server({
-      resources: [HomeResource]
-    })
+      resources: [HomeResource],
+    });
     let request = new members.ServerRequest();
     const body = encoder.encode(JSON.stringify({
       hello: "world",
     }));
     request.url = "/";
-    request.headers = new Headers()
+    request.headers = new Headers();
     request.headers.set("Content-Length", body.length.toString());
     request.headers.set("Content-Type", "application/json");
     const reader = new Deno.Buffer(body as ArrayBuffer);
@@ -139,16 +138,6 @@ members.testSuite("http/server_test.ts", () => {
     members.assertEquals(response.status, 301);
     members.assertEquals(response.headers.get("location"), "/notes/1667");
   });
-
-  members.test("getResourceObject() returns the correct resource", async () => {
-    const server = new Drash.Http.Server({
-      resources: [HomeResource],
-    });
-    const request = members.mockRequest("/");
-    const actual = await server.getResourceClass(request);
-    members.assertEquals(HomeResource, actual);
-  });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
