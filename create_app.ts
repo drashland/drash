@@ -79,18 +79,19 @@ function writeFileWrittenOrCreatedMessage(message: string) {
  */
 function sendThankYouMessage() {
   notesForUser.push(
-    "Run your application: deno run --allow-net --allow-read app.ts",
+    "To run your application:",
+    "    deno run --allow-net --allow-read app.ts",
   );
   const whatUserWanted = wantsApi
-    ? "Your API "
+    ? "Your Drash API project "
     : wantsWebApp && !wantsVue
-    ? "Your web app "
+    ? "Your Drash web app project "
     : wantsWebApp && wantsVue
-    ? "Your web app with Vue "
+    ? "Your Drash web app project with Vue "
     : "";
   console.info(
-    whatUserWanted + "has been created at " + cwd +
-      ".\nThank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
+    whatUserWanted + "has been created.\n" +
+      "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
       notesForUser.join("\n"),
   );
 }
@@ -137,9 +138,9 @@ function buildForWebApp() {
       `${boilerPlateDir}/public/views/index_vue.html`,
       cwd + "/public/views/index.html",
     );
-    notesForUser.push("Install NPM dependencies: npm install");
+    notesForUser.push("Install NPM dependencies:\n    npm install");
     notesForUser.push(
-      "Build your Vue component with webpack: npm run buildVue",
+      "Build your Vue component with Webpack:\n    npm run buildVue",
     );
   } else {
     Deno.copyFileSync(
@@ -189,16 +190,6 @@ if (tooFewArgs) {
   console.error(
     red(
       "Too few options were given. Use the --help option for more information.",
-    ),
-  );
-  Deno.exit(1);
-}
-
-// Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
-if (wantsVue && !wantsWebApp) {
-  console.error(
-    red(
-      "The --with-vue option is only allowed for use with a web app. Use the --help option for more information.",
     ),
   );
   Deno.exit(1);
