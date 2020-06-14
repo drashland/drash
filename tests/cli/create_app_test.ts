@@ -11,11 +11,18 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 
-function getOsDirPrefix() {
+function getOsCwd() {
   if (Deno.build.os === "windows") {
-    return "";
+    return `//${originalCWD}\console\create_app`;
   }
-  return "//";
+  return `//${originalCWD}/console/create_app`;
+}
+
+function getOsTmpDirName() {
+  if (Deno.build.os === "windows") {
+    return `${originalCWD}\${tmpDirName}`;
+  }
+  return `${originalCWD}/${tmpDirName}`;
 }
 
 // Need a way to check if a file exists
@@ -138,7 +145,7 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
   const assertedStdout =
-    `Downloading ${getOsDirPrefix()}${originalCWD}/console/create_app files to ${originalCWD}/${tmpDirName}.\n` +
+    `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
     "Creating your API project.\n" +
     "Your Drash API project has been created.\n" +
     "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
@@ -222,7 +229,7 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   members.assertEquals(stderr, "");
   members.assertEquals(
     stdout,
-    `Downloading ${getOsDirPrefix()}${originalCWD}/console/create_app files to ${originalCWD}/${tmpDirName}.\n` +
+    `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
       "Creating your web app project.\n" +
       "Your Drash web app project has been created.\n" +
       "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
@@ -331,7 +338,7 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   members.assertEquals(stderr, "");
   members.assertEquals(
     stdout,
-    `Downloading ${getOsDirPrefix()}${originalCWD}/console/create_app files to ${originalCWD}/${tmpDirName}.\n` +
+    `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
       "Creating your web app project.\n" +
       "Creating Vue files.\n" +
       "Your Drash web app project with Vue has been created.\n" +
