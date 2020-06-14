@@ -97,6 +97,7 @@ function sendThankYouMessage() {
 }
 
 function buildTheBaseline() {
+  console.info(`Downloading ${boilerPlateDir} files to ${cwd}.`);
   Deno.copyFileSync(`${boilerPlateDir}/deps.ts`, cwd + "/deps.ts");
   Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + "/config.ts");
   Deno.mkdirSync(cwd + "/middleware");
@@ -111,6 +112,7 @@ function buildTheBaseline() {
  * Responsible for all the logic around creating a web app
  */
 function buildForWebApp() {
+  console.info("Creating your web app project.");
   Deno.copyFileSync(`${boilerPlateDir}/app_web_app.ts`, cwd + "/app.ts");
   Deno.mkdirSync(cwd + "/public/views", { recursive: true });
   Deno.mkdirSync(cwd + "/public/css", { recursive: true });
@@ -123,6 +125,7 @@ function buildForWebApp() {
   );
 
   if (wantsVue) {
+    console.info("Creating Vue files.");
     Deno.copyFileSync(
       `${boilerPlateDir}/package_vue.json`,
       cwd + "/package.json",
@@ -162,6 +165,7 @@ function buildForWebApp() {
  * Responsible for all the logic around creating an api - eg omits views, js files
  */
 function buildForAPI() {
+  console.info("Creating your API project.");
   Deno.copyFileSync(`${boilerPlateDir}/app_api.ts`, cwd + "/app.ts");
   Deno.mkdirSync(cwd + "/resources");
   Deno.copyFileSync(

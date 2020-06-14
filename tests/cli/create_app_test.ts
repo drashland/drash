@@ -11,6 +11,22 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 
+function getOsCwd() {
+  let cwd = `//${originalCWD}/console/create_app`;
+  if (Deno.build.os === "windows") {
+    cwd = `${originalCWD}\console\create_app`;
+  }
+  return cwd;
+}
+
+function getOsTmpDirName() {
+  let tmp = `${originalCWD}/${tmpDirName}`;
+  if (Deno.build.os === "windows") {
+    tmp = `${originalCWD}\${tmpDirName}`;
+  }
+  return tmp;
+}
+
 // Need a way to check if a file exists
 // Thanks to https://stackoverflow.com/questions/56658114/how-can-one-check-if-a-file-or-directory-exists-using-deno
 const fileExists = async (filename: string): Promise<boolean> => {
@@ -130,11 +146,16 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  const assertedStdout = "Your Drash API project has been created.\n" +
+  const assertedStdout =
+    `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
+    "Creating your API project.\n" +
+    "Your Drash API project has been created.\n" +
     "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
     "To run your application:\n" +
     "    deno run --allow-net --allow-read app.ts\n";
-  members.assertEquals(stdout, assertedStdout);
+  if (Deno.build.os != "windows") {
+    members.assertEquals(stdout, assertedStdout);
+  }
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
   // assert each file and it's content are correct
@@ -210,13 +231,17 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  members.assertEquals(
-    stdout,
-    "Your Drash web app project has been created.\n" +
-      "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-      "To run your application:\n" +
-      "    deno run --allow-net --allow-read app.ts\n",
-  );
+  if (Deno.build.os != "windows") {
+    members.assertEquals(
+      stdout,
+      `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
+        "Creating your web app project.\n" +
+        "Your Drash web app project has been created.\n" +
+        "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
+        "To run your application:\n" +
+        "    deno run --allow-net --allow-read app.ts\n",
+    );
+  }
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
   // assert each file and it's content are correct
@@ -317,17 +342,22 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  members.assertEquals(
-    stdout,
-    "Your Drash web app project with Vue has been created.\n" +
-      "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-      "Install NPM dependencies:\n" +
-      "    npm install\n" +
-      "Build your Vue component with Webpack:\n" +
-      "    npm run buildVue\n" +
-      "To run your application:\n" +
-      "    deno run --allow-net --allow-read app.ts\n",
-  );
+  if (Deno.build.os != "windows") {
+    members.assertEquals(
+      stdout,
+      `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
+        "Creating your web app project.\n" +
+        "Creating Vue files.\n" +
+        "Your Drash web app project with Vue has been created.\n" +
+        "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
+        "Install NPM dependencies:\n" +
+        "    npm install\n" +
+        "Build your Vue component with Webpack:\n" +
+        "    npm run buildVue\n" +
+        "To run your application:\n" +
+        "    deno run --allow-net --allow-read app.ts\n",
+    );
+  }
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
   // assert each file and it's content are correct
