@@ -13,14 +13,14 @@ const decoder = new TextDecoder("utf-8");
 
 function getOsCwd() {
   if (Deno.build.os === "windows") {
-    return `//${originalCWD}\console\create_app`;
+    return `${originalCWD}\console\create_app`.replace("\\", "/");;
   }
   return `//${originalCWD}/console/create_app`;
 }
 
 function getOsTmpDirName() {
   if (Deno.build.os === "windows") {
-    return `${originalCWD}\${tmpDirName}`;
+    return `${originalCWD}\${tmpDirName}`.replace("\\", "/");;
   }
   return `${originalCWD}/${tmpDirName}`;
 }
