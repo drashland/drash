@@ -97,7 +97,7 @@ function sendThankYouMessage() {
 }
 
 function buildTheBaseline() {
-  console.info(`Downloading ${boilerPlatDir} files to ${cwd}`);
+  console.info(`Downloading ${boilerPlateDir} files to ${cwd}`);
   Deno.copyFileSync(`${boilerPlateDir}/deps.ts`, cwd + "/deps.ts");
   Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + "/config.ts");
   Deno.mkdirSync(cwd + "/middleware");
