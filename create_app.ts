@@ -11,7 +11,8 @@ const encoder = new TextEncoder();
 // FILE MARKER - FUNCTIONS ///////////////////////////////////////////////////
 
 /**
- * Fetch files and copy their contents to the specified output file.
+ * Fetch a file from the create_app directory and copy its contents to the
+ * specified output file.
  *
  * @param string filePath
  * @param string outputFile
