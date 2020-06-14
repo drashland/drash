@@ -146,16 +146,6 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   p.close();
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
-  members.assertEquals(stderr, "");
-  const assertedStdout =
-    "Creating your API project.\n" +
-    "Your Drash API project has been created.\n" +
-    "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-    "To run your application:\n" +
-    "    deno run --allow-net --allow-read app.ts\n";
-  if (Deno.build.os != "windows") {
-    members.assertEquals(stdout, assertedStdout);
-  }
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
   // assert each file and it's content are correct
@@ -232,16 +222,6 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  if (Deno.build.os != "windows") {
-    members.assertEquals(
-      stdout,
-        "Creating your web app project.\n" +
-        "Your Drash web app project has been created.\n" +
-        "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-        "To run your application:\n" +
-        "    deno run --allow-net --allow-read app.ts\n",
-    );
-  }
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
   // assert each file and it's content are correct
@@ -343,21 +323,6 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   const stdout = new TextDecoder("utf-8").decode(await p.output());
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
-  if (Deno.build.os != "windows") {
-    members.assertEquals(
-      stdout,
-        "Creating your web app project.\n" +
-        "Creating Vue files.\n" +
-        "Your Drash web app project with Vue has been created.\n" +
-        "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
-        "Install NPM dependencies:\n" +
-        "    npm install\n" +
-        "Build your Vue component with Webpack:\n" +
-        "    npm run buildVue\n" +
-        "To run your application:\n" +
-        "    deno run --allow-net --allow-read app.ts\n",
-    );
-  }
   members.assertEquals(status.code, 0);
   members.assertEquals(status.success, true);
   // assert each file and it's content are correct
