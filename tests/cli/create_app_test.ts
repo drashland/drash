@@ -13,7 +13,7 @@ const decoder = new TextDecoder("utf-8");
 
 function getOsDirPrefix() {
   if (Deno.build.os === "windows") {
-    return;
+    return "";
   }
   return "//";
 }
