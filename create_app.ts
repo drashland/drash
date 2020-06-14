@@ -154,7 +154,7 @@ async function buildForWebApp() {
 async function buildForAPI() {
   await copyFile("/app_api.ts", "/app.ts");
   Deno.mkdirSync(cwd + "/resources");
-  await copyFile("/home_resource_api.ts", "/resources/home_resource.ts");
+  await copyFile("/resources/home_resource_api.ts", "/resources/home_resource.ts");
 }
 
 //////////////////////////////////////////////////////////////////////////////
