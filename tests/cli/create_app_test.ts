@@ -134,6 +134,7 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
       "run",
       "--allow-read",
       "--allow-write",
+      "--allow-net",
       "--allow-run",
       "../create_app.ts",
       "--api",
@@ -147,7 +148,6 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
   members.assertEquals(stderr, "");
   const assertedStdout =
-    `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
     "Creating your API project.\n" +
     "Your Drash API project has been created.\n" +
     "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
@@ -219,6 +219,7 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
       "run",
       "--allow-read",
       "--allow-write",
+      "--allow-net",
       "--allow-run",
       "../create_app.ts",
       "--web-app",
@@ -234,7 +235,6 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   if (Deno.build.os != "windows") {
     members.assertEquals(
       stdout,
-      `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
         "Creating your web app project.\n" +
         "Your Drash web app project has been created.\n" +
         "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
@@ -329,6 +329,7 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
       "run",
       "--allow-read",
       "--allow-write",
+      "--allow-net",
       "--allow-run",
       "../create_app.ts",
       "--web-app",
@@ -345,7 +346,6 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   if (Deno.build.os != "windows") {
     members.assertEquals(
       stdout,
-      `Downloading ${getOsCwd()} files to ${getOsTmpDirName()}.\n` +
         "Creating your web app project.\n" +
         "Creating Vue files.\n" +
         "Your Drash web app project with Vue has been created.\n" +
