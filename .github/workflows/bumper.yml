@@ -8,7 +8,6 @@ jobs:
     strategy:
       matrix:
         deno: ["1.0.5"]
-        dmm: ["1.0.5"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,7 +18,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Update Dependencies
-        run: deno run --allow-net --allow-read=deps.ts --allow-write=deps.ts https://deno.land/x/dmm@v${{ matrix.dmm }}/mod.ts update
+        run: deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
