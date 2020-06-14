@@ -33,7 +33,7 @@ export {
 
 export {
   Cookie,
-  delCookie,
+  deleteCookie,
   getCookies,
   setCookie,
 } from "https://deno.land/std@v0.57.0/http/cookie.ts";
