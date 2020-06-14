@@ -145,7 +145,7 @@ export class Response {
    * 
    * @return void
    */
-  public deleteCookie(cookieName: string): void {
+  public delCookie(cookieName: string): void {
     deleteCookie(this, cookieName);
   }
 

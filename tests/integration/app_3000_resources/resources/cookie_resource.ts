@@ -17,7 +17,7 @@ export default class CookieResource extends Drash.Http.Resource {
 
   public DELETE() {
     this.response.body = "DELETE request received!";
-    this.response.deleteCookie("testCookie");
+    this.response.delCookie("testCookie");
     return this.response;
   }
 }
