@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.0.5"]
+        deno: ["1.1.0"]
     runs-on: ${{ matrix.os }}
 
     steps:

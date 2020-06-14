@@ -1,6 +1,6 @@
 import { Drash } from "../../mod.ts";
 import { STATUS_TEXT, Status } from "../../deps.ts";
-import { setCookie, delCookie, Cookie } from "../../deps.ts";
+import { setCookie, deleteCookie, Cookie } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -146,7 +146,7 @@ export class Response {
    * @return void
    */
   public delCookie(cookieName: string): void {
-    delCookie(this, cookieName);
+    deleteCookie(this, cookieName);
   }
 
   /**

@@ -2,11 +2,6 @@ import members from "../members.ts";
 import { Drash } from "../../mod.ts";
 
 members.testSuite("mod_test.ts", async () => {
-  members.test("Drash.version is correct", () => {
-    const version = Drash.version;
-    members.assertEquals(version, `v${Deno.version.deno}`);
-  });
-
   members.test("Drash.addLogger(): class can be added", () => {
     const testLogger = new Drash.CoreLoggers.FileLogger({
       enabled: true,
