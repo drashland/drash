@@ -18,7 +18,8 @@ const encoder = new TextEncoder();
  * @param string outputFile
  */
 async function copyFile(filePath: string, outputFile: string): Promise<void> {
-  const fullFilePath = `https://deno.land/x/drash@master/console/create_app${filePath}`;
+  const fullFilePath =
+    `https://deno.land/x/drash@master/console/create_app${filePath}`;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
   const response = await fetch(fullFilePath);
@@ -114,7 +115,7 @@ async function buildTheBaseline() {
   Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
   await copyFile(
     "/tests/resources/home_resource_test.ts",
-    "/tests/resources/home_resource_test.ts"
+    "/tests/resources/home_resource_test.ts",
   );
 }
 
@@ -154,7 +155,10 @@ async function buildForWebApp() {
 async function buildForAPI() {
   await copyFile("/app_api.ts", "/app.ts");
   Deno.mkdirSync(cwd + "/resources");
-  await copyFile("/resources/home_resource_api.ts", "/resources/home_resource.ts");
+  await copyFile(
+    "/resources/home_resource_api.ts",
+    "/resources/home_resource.ts",
+  );
 }
 
 //////////////////////////////////////////////////////////////////////////////
