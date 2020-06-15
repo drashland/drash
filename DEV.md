@@ -6,6 +6,7 @@
 * [Building the API Reference pages JSON data](#building-the-api-reference-pages-json-data)
 * [Upgrading Deno](#upgrading-deno)
 * [Upgrading mime-db](#upgrading-mime-db)
+* [Running Create App Tests on Windows](#running-create-app-tests-on-windows)
 
 ## Copy git hook for standardized commit messages
 
@@ -85,3 +86,11 @@ git commit -m "upgrade mime-db to {version}"
 ```
 
 Make a pull request to `master`.
+
+## Running Create App Tests on Windows
+
+There are a couple known issues discovered when running these tests on windows.
+
+* If a test case fails but the expected and actual output looks exactly the same, check the line endings of the related files, for examaple if comparing the contents of `/console/create_app/app.ts` and `tmp-dir/app.ts` but one has `LF` whilst the other has `CRLF`, then this will cause the mentioned error
+
+* To ease in debugging, if you get a `PermissionDenied`, but specifically on ` Deno.mkdir[Sync]`, try run the following to open a new shell and re-run the tests: `PS> Start-Process powershell -Verb runAs`
