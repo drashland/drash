@@ -27,6 +27,19 @@ function getOsTmpDirName() {
   return tmp;
 }
 
+/**
+ * To keep line endings consistent all on operating systems.
+ * Requires both the boilerplate and newly created files to get passed through this to ensure they are the same
+ * 
+ * @param {string} filename eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts"
+ */
+function getFileContent(filePathAndName: string): string {
+  const fileContent = decoder.decode(
+    Deno.readFileSync(filePathAndName)
+  ).replace(/\r\n/g, "\n")
+  return fileContent
+}
+
 // Need a way to check if a file exists
 // Thanks to https://stackoverflow.com/questions/56658114/how-can-one-check-if-a-file-or-directory-exists-using-deno
 const fileExists = async (filename: string): Promise<boolean> => {
@@ -153,47 +166,35 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   let copiedFile;
   // app.ts
   members.assertEquals(await fileExists(tmpDirName + "/app.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/app_api.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/app.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/app_api.ts")
+  copiedFile = getFileContent(tmpDirName + "/app.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // deps.ts
   members.assertEquals(await fileExists("deps.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/deps.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/deps.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts")
+  copiedFile = getFileContent(tmpDirName + "/deps.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // config.ts
   members.assertEquals(await fileExists(tmpDirName + "/config.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/config.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/config.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/config.ts")
+  copiedFile = getFileContent(tmpDirName + "/config.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource.ts
   members.assertEquals(await fileExists(tmpDirName + "/resources/home_resource.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
-      originalCWD + "/console/create_app/resources/home_resource_api.ts",
-    ),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/resources/home_resource.ts"));
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/resources/home_resource_api.ts"
+  )
+  copiedFile = getFileContent(tmpDirName + "/resources/home_resource.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource_test.ts
   members.assertEquals(
     await fileExists(tmpDirName + "/tests/resources/home_resource_test.ts"),
     true,
   );
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
-      originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
-    ),
-  );
-  copiedFile = decoder.decode(
-    Deno.readFileSync(tmpDirName + "/tests/resources/home_resource_test.ts"),
-  );
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/tests/resources/home_resource_test.ts"
+  )
+  copiedFile = getFileContent(tmpDirName + "/tests/resources/home_resource_test.ts")
   members.assertEquals(boilerPlateFile, copiedFile);
   // Remove the created directory
   Deno.removeSync(tmpDirName, { recursive: true });
@@ -228,74 +229,52 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   let copiedFile;
   // app.ts
   members.assertEquals(await fileExists(tmpDirName + "/app.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/app_web_app.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/app.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/app_web_app.ts")
+  copiedFile = getFileContent(tmpDirName + "/app.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // deps.ts
   members.assertEquals(await fileExists(tmpDirName + "/deps.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/deps.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/deps.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts")
+  copiedFile = getFileContent(tmpDirName + "/deps.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // config.ts
   members.assertEquals(await fileExists(tmpDirName + "/config.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/config.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/config.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/config.ts")
+  copiedFile = getFileContent(tmpDirName + "/config.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource.ts
   members.assertEquals(await fileExists(tmpDirName + "/resources/home_resource.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
+  boilerPlateFile = getFileContent(
       originalCWD + "/console/create_app/resources/home_resource.ts",
-    ),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/resources/home_resource.ts"));
+    )
+  copiedFile = getFileContent(tmpDirName + "/resources/home_resource.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource_test.ts
   members.assertEquals(
     await fileExists(tmpDirName + "/tests/resources/home_resource_test.ts"),
     true,
   );
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
+  boilerPlateFile = getFileContent(
       originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
-    ),
-  );
-  copiedFile = decoder.decode(
-    Deno
-      .readFileSync(tmpDirName + "/tests/resources/home_resource_test.ts")
-      .filter((byte) => {
-        return byte != 10
-      }),
-  );
+    )
+  copiedFile = getFileContent(tmpDirName + "/tests/resources/home_resource_test.ts")
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/views/js/index.js
   members.assertEquals(await fileExists(tmpDirName + "/public/js/index.js"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/public/js/index.js"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/public/js/index.js"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/public/js/index.js"),
+  copiedFile = getFileContent(tmpDirName + "/public/js/index.js");
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/css/index.css.ts
   members.assertEquals(await fileExists(tmpDirName + "/public/css/index.css"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/public/css/index.css"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/public/css/index.css"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/public/css/index.css"),
+  copiedFile = getFileContent(tmpDirName + "/public/css/index.css");
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/views/index.html.ts
   members.assertEquals(await fileExists(tmpDirName + "/public/views/index.html"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
+  boilerPlateFile = getFileContent(
       originalCWD + "/console/create_app/public/views/index.html",
-    ),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/public/views/index.html"));
+    )
+  copiedFile = getFileContent(tmpDirName + "/public/views/index.html");
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/img.ts
   members.assertEquals(await fileExists(tmpDirName + "/public/img"), true);
@@ -332,83 +311,60 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   let copiedFile;
   // app.ts
   members.assertEquals(await fileExists(tmpDirName + "/app.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/app_web_app.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/app.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/app_web_app.ts")
+  copiedFile = getFileContent(tmpDirName + "/app.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // deps.ts
   members.assertEquals(await fileExists(tmpDirName + "/deps.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/deps.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/deps.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts"),
+  copiedFile = getFileContent(tmpDirName + "/deps.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // config.ts
   members.assertEquals(await fileExists(tmpDirName + "/config.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/config.ts"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/config.ts"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/config.ts")
+  copiedFile = getFileContent(tmpDirName + "/config.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource.ts
   members.assertEquals(await fileExists(tmpDirName + "/resources/home_resource.ts"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
+  boilerPlateFile = getFileContent(
       originalCWD + "/console/create_app/resources/home_resource.ts",
-    )
-    .filter((byte) => {
-      return byte != 10
-    }),
   );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/resources/home_resource.ts"));
+  copiedFile = getFileContent(tmpDirName + "/resources/home_resource.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource_test.ts
   members.assertEquals(
     await fileExists(tmpDirName + "/tests/resources/home_resource_test.ts"),
     true,
   );
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
+  boilerPlateFile = getFileContent(
       originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
-    ),
-  );
-  copiedFile = decoder.decode(
-    Deno.readFileSync(tmpDirName + "/tests/resources/home_resource_test.ts"),
-  );
+    )
+  copiedFile = getFileContent(tmpDirName + "/tests/resources/home_resource_test.ts")
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/img.ts
   members.assertEquals(await fileExists(tmpDirName + "/public/img"), true);
   // webpack.config.js
   members.assertEquals(await fileExists(tmpDirName + "/webpack.config.js"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(
-      originalCWD + "/console/create_app/webpack_vue.config.js",
-    ),
+  boilerPlateFile = getFileContent(
+      originalCWD + "/console/create_app/webpack_vue.config.js"
   );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/webpack.config.js"));
+  copiedFile = getFileContent(tmpDirName + "/webpack.config.js");
   members.assertEquals(boilerPlateFile, copiedFile);
   // package.json
   members.assertEquals(await fileExists(tmpDirName + "/package.json"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/package_vue.json"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/package.json"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/package_vue.json")
+  copiedFile = getFileContent(tmpDirName + "/package.json");
   members.assertEquals(boilerPlateFile, copiedFile);
   // vue/App.vue
   members.assertEquals(await fileExists(tmpDirName + "/vue"), true);
   members.assertEquals(await fileExists(tmpDirName + "/vue/App.vue"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/vue/app.vue"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/vue/App.vue"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/vue/app.vue")
+  copiedFile = getFileContent(tmpDirName + "/vue/App.vue");
   members.assertEquals(boilerPlateFile, copiedFile);
   // vue/app.js
   members.assertEquals(await fileExists(tmpDirName + "/vue/app.js"), true);
-  boilerPlateFile = decoder.decode(
-    Deno.readFileSync(originalCWD + "/console/create_app/vue/app.js"),
-  );
-  copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/vue/app.js"));
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/vue/app.js")
+  copiedFile = getFileContent(tmpDirName + "/vue/app.js");
   members.assertEquals(boilerPlateFile, copiedFile);
 
   Deno.removeSync(tmpDirName, { recursive: true });
