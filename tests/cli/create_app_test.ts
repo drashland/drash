@@ -125,6 +125,9 @@ members.test("create_app_test.ts | Script success with the --help argument", asy
 });
 
 members.test("create_app_test.ts | Script creates an API project with the --api argument", async () => {
+  if (Deno.build.os === "windows") {
+    return;
+  }
   // Create new tmp directory and create project files
   Deno.mkdirSync(tmpDirName);
   Deno.chdir(tmpDirName);
@@ -201,6 +204,9 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
 });
 
 members.test("create_app_test.ts | Script creates a web app with the --web-app argument", async () => {
+  if (Deno.build.os === "windows") {
+    return;
+  }
   Deno.mkdirSync(tmpDirName);
   Deno.chdir(tmpDirName);
   const p = await Deno.run({
@@ -301,6 +307,9 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
 });
 
 members.test("create_app_test.ts | Script creates a web app with vue with the --web-app and --with-vue arguments", async () => {
+  if (Deno.build.os === "windows") {
+    return;
+  }
   Deno.mkdirSync(tmpDirName);
   Deno.chdir(tmpDirName);
   const p = await Deno.run({
@@ -411,6 +420,9 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
 });
 
 members.test("create_app_test.ts | Script fails if --api and --web-app are specified", async () => {
+  if (Deno.build.os === "windows") {
+    return;
+  }
   const p = await Deno.run({
     cmd: [
       "deno",
