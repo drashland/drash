@@ -267,7 +267,11 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
     ),
   );
   copiedFile = decoder.decode(
-    Deno.readFileSync(tmpDirName + "/tests/resources/home_resource_test.ts"),
+    Deno
+      .readFileSync(tmpDirName + "/tests/resources/home_resource_test.ts")
+      .filter((byte) => {
+        return byte != 10
+      }),
   );
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/views/js/index.js
@@ -352,7 +356,10 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   boilerPlateFile = decoder.decode(
     Deno.readFileSync(
       originalCWD + "/console/create_app/resources/home_resource.ts",
-    ),
+    )
+    .filter((byte) => {
+      return byte != 10
+    }),
   );
   copiedFile = decoder.decode(Deno.readFileSync(tmpDirName + "/resources/home_resource.ts"));
   members.assertEquals(boilerPlateFile, copiedFile);
