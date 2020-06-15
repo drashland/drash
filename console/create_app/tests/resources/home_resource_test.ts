@@ -16,13 +16,16 @@ server.run({
 console.log(`Server listening: http://${server.hostname}:${server.port}`);
 
 Deno.test("HomeResource - GET /", async () => {
-    const response = await fetch("http://localhost:1557", {
-      method: "POST"
-    });
-    assertEquals(response.status, 200);
-    assertEquals(await response.json(), JSON.stringify({
-      message: "Not implemented"
-    }));
+  const response = await fetch("http://localhost:1557", {
+    method: "POST",
+  });
+  assertEquals(response.status, 200);
+  assertEquals(
+    await response.json(),
+    JSON.stringify({
+      message: "Not implemented",
+    }),
+  );
 });
 
 Deno.test({
