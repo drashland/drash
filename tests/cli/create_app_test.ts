@@ -98,8 +98,8 @@ members.test("create_app_test.ts | Script success with the --help argument", asy
       "A create app script for Drash\n" +
       "\n" +
       "USAGE:\n" +
-      "    deno run --allow-read --allow-run create_app.ts [OPTIONS]\n" +
-      "    deno run --allow-read --allow-run https://deno.land/x/drash/create_app.ts [OPTIONS]\n" +
+      "    deno run --allow-read --allow-run [--allow-write --allow-net] create_app.ts [OPTIONS]\n" +
+      "    deno run --allow-read --allow-run [--allow-write --allow-net] https://deno.land/x/drash/create_app.ts [OPTIONS]\n" +
       "\n" +
       "OPTIONS:\n" +
       "The --api and --web-app options cannot be used together.\n" +
@@ -117,7 +117,7 @@ members.test("create_app_test.ts | Script success with the --help argument", asy
       "EXAMPLE USAGE:\n" +
       "    mkdir my-drash-api\n" +
       "    cd my-drash-api\n" +
-      "    deno run --allow-read --allow-run --allow-write https://deno.land/x/drash/create_app.ts --api\n" +
+      "    deno run --allow-read --allow-run --allow-write --allow-net https://deno.land/x/drash/create_app.ts --api\n" +
       "\n",
   );
   members.assertEquals(status.code, 0);
