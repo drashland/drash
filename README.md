@@ -2,7 +2,7 @@
   <img height="200" src="https://drash.land/public/assets/img/drash.svg" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
-<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a> with zero dependencies.</p>
+<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno's HTTP server</a> with zero dependencies.</p>
 <p align="center">
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
