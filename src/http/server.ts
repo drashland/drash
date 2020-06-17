@@ -307,7 +307,7 @@ export class Server {
    *     wasn't created, then default to an empty object, which is why any is
    *     the assigned type.
    * @param Drash.Http.Response|any response
-   *     (optional) Pass in the resource that threw the error. If a resource
+   *     (optional) Pass in the response that threw the error. If a response
    *     wasn't created, then default to an empty object, which is why any is
    *     the assigned type.
    *

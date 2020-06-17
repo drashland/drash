@@ -3,6 +3,17 @@ import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 members.testSuite("http/server_test.ts", () => {
+  members.test("constructor() Throw error when incorrect template engine configs", () => {
+    try {
+      new Drash.Http.Server({
+        template_engine: true
+      })
+      members.assertEquals(true, false)
+    } catch (err) {
+      members.assertEquals(err.message, "Property missing. The views_path must be defined if template_engine is true")
+    }
+  })
+
   members.test("getRequest() gives get*Param/File methods", async () => {
     const server = new Drash.Http.Server({
       resources: [HomeResource],
@@ -139,6 +150,96 @@ members.testSuite("http/server_test.ts", () => {
     members.assertEquals(response.headers.get("location"), "/notes/1667");
   });
 });
+
+members.testSuite("http/server_test.ts | handleHttpRequestError()", () => {
+  members.test("Returns the correct response", async () => {
+    const request = members.mockRequest("/", "get")
+    const server = new Drash.Http.Server({})
+    const error = {
+      code: 404,
+      message: "Some error message"
+    }
+    const response = await server.handleHttpRequestError(request, error)
+    members.assertEquals(response.status, 404)
+    members.assertEquals(new TextDecoder().decode(response.body), "Some error message")
+  })
+})
+
+members.testSuite("http/server_test.ts | handleHttpRequestForFavicon", () => {
+  members.test("Returns the correct response", async () => {
+    const request = members.mockRequest("/favicon.ico", "get")
+    const server = new Drash.Http.Server({})
+    const response = await server.handleHttpRequestForFavicon(request)
+    members.assertEquals(JSON.parse(response), {
+      body: "",
+      status_code: 200,
+      request: {
+        done: {},
+        _body: null,
+        finalized: false,
+        url: "/favicon.ico",
+        method: "get",
+        headers: {}
+      },
+      headers: {}
+    })
+  })
+})
+
+members.testSuite("http/server_test.ts | handleHttpRequestForStaticPathAsset", () => {
+  // TODO(any) How do we test this?
+})
+
+members.testSuite("http/server_test.ts | getResourceObject()", () => {
+  members.test("Returns the correct data", () => {
+    class Resource extends Drash.Http.Resource {
+      static paths = ["/", "/home"]
+      public GET() {
+        this.response.body = "Hello world!"
+        return this.response
+      }
+    }
+    const server = new Drash.Http.Server({
+      resources: [Resource]
+    })
+    const request = members.mockRequest("/")
+    const resourceObject = server.getResourceObject(Resource, request)
+    members.assertEquals(resourceObject.paths, [
+      {
+        og_path: "/", regex_path: "^//?$", params: []
+      },
+      {
+        og_path: "/home", regex_path: "^/home/?$", params: []
+      }
+    ])
+  })
+})
+
+members.testSuite("http/server_test.ts | run()", () => {
+  members.test("Runs the server and returns it", () => {
+    // TODO(ebebbington) How do we test this?
+  })
+})
+
+members.testSuite("http/server_test.ts | runTLS()", () => {
+  members.test("Runs the server and returns it", () => {
+    // TODO(ebebbington) How do we test this?
+  })
+})
+
+members.testSuite("http/server_test.ts | close()", () => {
+  members.test("Closes the server", async () => {
+    const server = new Drash.Http.Server({})
+    await server.run({
+      hostname: "localhost",
+      port: 1667
+    })
+    members.assertEquals(server.deno_server.closing, false)
+    server.close()
+    members.assertEquals(server.deno_server.closing, true)
+
+  })
+})
 
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
