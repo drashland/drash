@@ -508,27 +508,6 @@ members.testSuite("services/http_request_service_test.ts | parseBody()", () => {
     });
   })
 
-  // TODO(ebebbington) How can i make the related block of code fail? Trying to reach the catch in the try/catch of no
-  //  content type set
-  // members.test("Fails when error thrown whilst parsing as application/x-www-form-urlencoded", async () => {
-  //   try {
-  //     const body = encoder.encode();
-  //     const reader = new Deno.Buffer(body as ArrayBuffer);
-  //     const request = members.mockRequest("/", "get", {
-  //       body: "reader",
-  //     });
-  //     await service.parseBody(request);
-  //     // should not reach here and should be in the catch
-  //     members.assertEquals(true, false)
-  //   } catch (err) {
-  //     members.assertEquals(err.message,
-  //         `Error reading request body. No Content-Type header was specified. ` +
-  //         `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
-  //         `by default and failed.`
-  //     )
-  //   }
-  // })
-
 })
 
 members.testSuite("services/http_request_service_test.ts | parseBodyAsFormUrlEncoded()", () => {
@@ -572,7 +551,7 @@ members.testSuite("services/http_request_service_test.ts | parseBodyAsJson()", (
 
 members.testSuite("services/http_request_service_test.ts | parseBodyAsMultipartFormData()", async () => {
 
-  // TODO(ebebbington) Figure out how we can do this correctly 9as it currently fails)
+  // TODO(ebebbington) Figure out how we can do this correctly as it currently fails)
   // members.test("Can parse files", async () => {
   //   const o = await Deno.open("./tests/data/multipart_1.txt");
   //   const actual = await service.parseBodyAsMultipartFormData(
