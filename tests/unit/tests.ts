@@ -20,7 +20,7 @@ import "./core_loggers/file_logger_test.ts";
 // Services
 import "./services/http_service_test.ts";
 import "./services/http_request_service_test.ts";
-import "./services/string_service_test.ts"
+import "./services/string_service_test.ts";
 
 // Drash functions
 import "./mod_test.ts";

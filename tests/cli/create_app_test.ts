@@ -35,9 +35,9 @@ function getOsTmpDirName() {
  */
 function getFileContent(filePathAndName: string): string {
   const fileContent = decoder.decode(
-    Deno.readFileSync(filePathAndName)
-  ).replace(/\r\n/g, "\n")
-  return fileContent
+    Deno.readFileSync(filePathAndName),
+  ).replace(/\r\n/g, "\n");
+  return fileContent;
 }
 
 // Need a way to check if a file exists
@@ -153,7 +153,7 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
     ],
     stdout: "piped",
     stderr: "piped",
-    cwd: tmpDirName
+    cwd: tmpDirName,
   });
   const status = await p.status();
   p.close();
@@ -166,24 +166,31 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
   let copiedFile;
   // app.ts
   members.assertEquals(await fileExists(tmpDirName + "/app.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/app_api.ts")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/app_api.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/app.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // deps.ts
   members.assertEquals(await fileExists("deps.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts")
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts");
   copiedFile = getFileContent(tmpDirName + "/deps.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // config.ts
   members.assertEquals(await fileExists(tmpDirName + "/config.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/config.ts")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/config.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/config.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource.ts
-  members.assertEquals(await fileExists(tmpDirName + "/resources/home_resource.ts"), true);
+  members.assertEquals(
+    await fileExists(tmpDirName + "/resources/home_resource.ts"),
+    true,
+  );
   boilerPlateFile = getFileContent(
-    originalCWD + "/console/create_app/resources/home_resource_api.ts"
-  )
+    originalCWD + "/console/create_app/resources/home_resource_api.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/resources/home_resource.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource_test.ts
@@ -192,9 +199,11 @@ members.test("create_app_test.ts | Script creates an API project with the --api 
     true,
   );
   boilerPlateFile = getFileContent(
-    originalCWD + "/console/create_app/tests/resources/home_resource_test.ts"
-  )
-  copiedFile = getFileContent(tmpDirName + "/tests/resources/home_resource_test.ts")
+    originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
+  );
+  copiedFile = getFileContent(
+    tmpDirName + "/tests/resources/home_resource_test.ts",
+  );
   members.assertEquals(boilerPlateFile, copiedFile);
   // Remove the created directory
   Deno.removeSync(tmpDirName, { recursive: true });
@@ -215,7 +224,7 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
     ],
     stdout: "piped",
     stderr: "piped",
-    cwd: tmpDirName
+    cwd: tmpDirName,
   });
   const status = await p.status();
   p.close();
@@ -229,24 +238,31 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
   let copiedFile;
   // app.ts
   members.assertEquals(await fileExists(tmpDirName + "/app.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/app_web_app.ts")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/app_web_app.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/app.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // deps.ts
   members.assertEquals(await fileExists(tmpDirName + "/deps.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts")
+  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts");
   copiedFile = getFileContent(tmpDirName + "/deps.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // config.ts
   members.assertEquals(await fileExists(tmpDirName + "/config.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/config.ts")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/config.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/config.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource.ts
-  members.assertEquals(await fileExists(tmpDirName + "/resources/home_resource.ts"), true);
+  members.assertEquals(
+    await fileExists(tmpDirName + "/resources/home_resource.ts"),
+    true,
+  );
   boilerPlateFile = getFileContent(
-      originalCWD + "/console/create_app/resources/home_resource.ts",
-    )
+    originalCWD + "/console/create_app/resources/home_resource.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/resources/home_resource.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource_test.ts
@@ -255,25 +271,38 @@ members.test("create_app_test.ts | Script creates a web app with the --web-app a
     true,
   );
   boilerPlateFile = getFileContent(
-      originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
-    )
-  copiedFile = getFileContent(tmpDirName + "/tests/resources/home_resource_test.ts")
+    originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
+  );
+  copiedFile = getFileContent(
+    tmpDirName + "/tests/resources/home_resource_test.ts",
+  );
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/views/js/index.js
-  members.assertEquals(await fileExists(tmpDirName + "/public/js/index.js"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/public/js/index.js"),
-  copiedFile = getFileContent(tmpDirName + "/public/js/index.js");
+  members.assertEquals(
+    await fileExists(tmpDirName + "/public/js/index.js"),
+    true,
+  );
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/public/js/index.js",
+  ), copiedFile = getFileContent(tmpDirName + "/public/js/index.js");
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/css/index.css.ts
-  members.assertEquals(await fileExists(tmpDirName + "/public/css/index.css"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/public/css/index.css"),
-  copiedFile = getFileContent(tmpDirName + "/public/css/index.css");
+  members.assertEquals(
+    await fileExists(tmpDirName + "/public/css/index.css"),
+    true,
+  );
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/public/css/index.css",
+  ), copiedFile = getFileContent(tmpDirName + "/public/css/index.css");
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/views/index.html.ts
-  members.assertEquals(await fileExists(tmpDirName + "/public/views/index.html"), true);
+  members.assertEquals(
+    await fileExists(tmpDirName + "/public/views/index.html"),
+    true,
+  );
   boilerPlateFile = getFileContent(
-      originalCWD + "/console/create_app/public/views/index.html",
-    )
+    originalCWD + "/console/create_app/public/views/index.html",
+  );
   copiedFile = getFileContent(tmpDirName + "/public/views/index.html");
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/img.ts
@@ -297,7 +326,7 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
     ],
     stdout: "piped",
     stderr: "piped",
-    cwd: tmpDirName
+    cwd: tmpDirName,
   });
   const status = await p.status();
   p.close();
@@ -311,23 +340,30 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
   let copiedFile;
   // app.ts
   members.assertEquals(await fileExists(tmpDirName + "/app.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/app_web_app.ts")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/app_web_app.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/app.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // deps.ts
   members.assertEquals(await fileExists(tmpDirName + "/deps.ts"), true);
   boilerPlateFile = getFileContent(originalCWD + "/console/create_app/deps.ts"),
-  copiedFile = getFileContent(tmpDirName + "/deps.ts");
+    copiedFile = getFileContent(tmpDirName + "/deps.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // config.ts
   members.assertEquals(await fileExists(tmpDirName + "/config.ts"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/config.ts")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/config.ts",
+  );
   copiedFile = getFileContent(tmpDirName + "/config.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
   // home_resource.ts
-  members.assertEquals(await fileExists(tmpDirName + "/resources/home_resource.ts"), true);
+  members.assertEquals(
+    await fileExists(tmpDirName + "/resources/home_resource.ts"),
+    true,
+  );
   boilerPlateFile = getFileContent(
-      originalCWD + "/console/create_app/resources/home_resource.ts",
+    originalCWD + "/console/create_app/resources/home_resource.ts",
   );
   copiedFile = getFileContent(tmpDirName + "/resources/home_resource.ts");
   members.assertEquals(boilerPlateFile, copiedFile);
@@ -337,33 +373,44 @@ members.test("create_app_test.ts | Script creates a web app with vue with the --
     true,
   );
   boilerPlateFile = getFileContent(
-      originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
-    )
-  copiedFile = getFileContent(tmpDirName + "/tests/resources/home_resource_test.ts")
+    originalCWD + "/console/create_app/tests/resources/home_resource_test.ts",
+  );
+  copiedFile = getFileContent(
+    tmpDirName + "/tests/resources/home_resource_test.ts",
+  );
   members.assertEquals(boilerPlateFile, copiedFile);
   // public/img.ts
   members.assertEquals(await fileExists(tmpDirName + "/public/img"), true);
   // webpack.config.js
-  members.assertEquals(await fileExists(tmpDirName + "/webpack.config.js"), true);
+  members.assertEquals(
+    await fileExists(tmpDirName + "/webpack.config.js"),
+    true,
+  );
   boilerPlateFile = getFileContent(
-      originalCWD + "/console/create_app/webpack_vue.config.js"
+    originalCWD + "/console/create_app/webpack_vue.config.js",
   );
   copiedFile = getFileContent(tmpDirName + "/webpack.config.js");
   members.assertEquals(boilerPlateFile, copiedFile);
   // package.json
   members.assertEquals(await fileExists(tmpDirName + "/package.json"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/package_vue.json")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/package_vue.json",
+  );
   copiedFile = getFileContent(tmpDirName + "/package.json");
   members.assertEquals(boilerPlateFile, copiedFile);
   // vue/App.vue
   members.assertEquals(await fileExists(tmpDirName + "/vue"), true);
   members.assertEquals(await fileExists(tmpDirName + "/vue/App.vue"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/vue/app.vue")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/vue/app.vue",
+  );
   copiedFile = getFileContent(tmpDirName + "/vue/App.vue");
   members.assertEquals(boilerPlateFile, copiedFile);
   // vue/app.js
   members.assertEquals(await fileExists(tmpDirName + "/vue/app.js"), true);
-  boilerPlateFile = getFileContent(originalCWD + "/console/create_app/vue/app.js")
+  boilerPlateFile = getFileContent(
+    originalCWD + "/console/create_app/vue/app.js",
+  );
   copiedFile = getFileContent(tmpDirName + "/vue/app.js");
   members.assertEquals(boilerPlateFile, copiedFile);
 

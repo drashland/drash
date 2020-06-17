@@ -112,7 +112,7 @@ export class HttpRequestService {
   public getRequestBodyParam(
     parsedBody: Drash.Interfaces.ParsedRequestBody,
     input: string,
-  ): string|undefined {
+  ): string | undefined {
     return parsedBody.data[input];
   }
 
@@ -122,7 +122,7 @@ export class HttpRequestService {
    *
    * @return string|null
    */
-  public getRequestHeaderParam(request: any, input: string): string|null {
+  public getRequestHeaderParam(request: any, input: string): string | null {
     return request.headers.get(input);
   }
 
@@ -132,7 +132,7 @@ export class HttpRequestService {
    *
    * @return string|undefined
    */
-  public getRequestPathParam(request: any, input: string): string|undefined {
+  public getRequestPathParam(request: any, input: string): string | undefined {
     // request.path_params is set in Drash.Http.Server.getResourceClass()
     return request.path_params[input];
   }
@@ -143,7 +143,10 @@ export class HttpRequestService {
    *
    * @return string|undefined
    */
-  public getRequestUrlQueryParam(request: any, input: string): string|undefined {
+  public getRequestUrlQueryParam(
+    request: any,
+    input: string,
+  ): string | undefined {
     return request.url_query_params[input];
   }
 
@@ -188,9 +191,10 @@ export class HttpRequestService {
 
     // Check the request's URL query params to see if
     // ?response_content_type={content-type} has been specified
-    contentType = request.url_query_params && request.url_query_params.response_content_type
-      ? request.url_query_params.response_content_type
-      : contentType;
+    contentType =
+      request.url_query_params && request.url_query_params.response_content_type
+        ? request.url_query_params.response_content_type
+        : contentType;
 
     // Check the request's body to see if
     // {response_content_type: {content-type}} has been specified
@@ -243,7 +247,7 @@ export class HttpRequestService {
    * @return { {[key: string]: string} }
    *     Returns the URL query string in key-value pair format.
    */
-  public getUrlQueryParams(request: any): {[key: string]: string} {
+  public getUrlQueryParams(request: any): { [key: string]: string } {
     let queryParams: any = {};
 
     try {

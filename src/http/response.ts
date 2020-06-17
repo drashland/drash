@@ -264,7 +264,10 @@ export class Response {
    * 
    * @return {status: number, headers: Headers, body: any}
    */
-  public redirect(httpStatusCode: number, location: string): { status: number, headers: Headers, body: any} {
+  public redirect(
+    httpStatusCode: number,
+    location: string,
+  ): { status: number; headers: Headers; body: any } {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
