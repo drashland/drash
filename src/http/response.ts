@@ -60,7 +60,7 @@ export class Response {
    *
    * @property any views_renderer
    */
-  private template_engine: boolean | undefined = false;
+  private readonly template_engine: boolean | undefined = false;
 
   // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
 
@@ -168,11 +168,6 @@ export class Response {
       default:
         return this.body;
     }
-
-    this.body = `Response Content-Type "${contentType}" unknown.`;
-    this.status_code = 400;
-
-    return this.body;
   }
 
   /**
@@ -231,6 +226,8 @@ export class Response {
    *
    * @param null|string file
    *     The file that will be served to the client.
+   * @param null|Uint8Array contents
+   *     TODO Add description
    *
    * @return {status: number, headers: Headers, body: any}
    */
@@ -267,7 +264,7 @@ export class Response {
    * 
    * @return {status: number, headers: Headers, body: any}
    */
-  public redirect(httpStatusCode: number, location: string) {
+  public redirect(httpStatusCode: number, location: string): { status: number, headers: Headers, body: any} {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
