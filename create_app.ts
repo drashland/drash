@@ -4,17 +4,28 @@ const wantsHelp = (args.find((arg) => arg === "--help") !== undefined);
 const wantsWebApp = (args.find((arg) => arg === "--web-app") !== undefined);
 const wantsApi = (args.find((arg) => arg === "--api") !== undefined);
 const wantsVue = (args.find((arg) => arg === "--with-vue") !== undefined);
-const cwd = Deno.cwd();
-// strip this file name from the path and add the link to the boilerplate dir
-const boilerPlateDir = (import.meta.url.slice(0, -13)).substring(5) +
-  "console/create_app";
-//                                  ^^^^^^^^              ^^^^            ^^^^^^^
-//                Remove the file name from the path   Strip "file://"  Add boiler plate dir
+const cwd = Deno.realPathSync(".");
 const notesForUser: string[] = [];
+const encoder = new TextEncoder();
 
-//////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS ///////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Fetch a file from the create_app directory and copy its contents to the
+ * specified output file.
+ *
+ * @param string filePath
+ * @param string outputFile
+ */
+async function copyFile(filePath: string, outputFile: string): Promise<void> {
+  const fullFilePath =
+    `https://deno.land/x/drash@master/console/create_app${filePath}`;
+  console.info(`Copy ${fullFilePath} contents to:`);
+  console.info(`  ${cwd}${outputFile}`);
+  const response = await fetch(fullFilePath);
+  const contents = encoder.encode(await response.text());
+  Deno.writeFileSync(cwd + outputFile, contents);
+}
 
 /**
  * Responsible for showing the help message when a user uses `--help`
@@ -26,9 +37,9 @@ function showHelp() {
     "\n" +
     "USAGE:" +
     "\n" +
-    "    deno run --allow-read --allow-run create_app.ts [OPTIONS]" +
+    "    deno run --allow-read --allow-run [--allow-write --allow-net] create_app.ts [OPTIONS]" +
     "\n" +
-    "    deno run --allow-read --allow-run https://deno.land/x/drash/create_app.ts [OPTIONS]" +
+    "    deno run --allow-read --allow-run [--allow-write --allow-net] https://deno.land/x/drash/create_app.ts [OPTIONS]" +
     "\n" +
     "\n" +
     "OPTIONS:" +
@@ -59,11 +70,9 @@ function showHelp() {
     "\n" +
     "    cd my-drash-api" +
     "\n" +
-    "    deno run --allow-read --allow-run https://deno.land/x/drash/create_app.ts --api" +
+    "    deno run --allow-read --allow-run --allow-write --allow-net https://deno.land/x/drash/create_app.ts --api" +
     "\n";
-  Deno.run({
-    cmd: ["echo", helpMessage],
-  });
+  console.info(helpMessage);
 }
 
 /**
@@ -73,9 +82,7 @@ function showHelp() {
  * @param {string} message Message to show in the console. Required.
  */
 function writeFileWrittenOrCreatedMessage(message: string) {
-  Deno.run({
-    cmd: ["echo", green(message)],
-  });
+  console.info(green(message));
 }
 
 /**
@@ -83,96 +90,74 @@ function writeFileWrittenOrCreatedMessage(message: string) {
  */
 function sendThankYouMessage() {
   notesForUser.push(
-    "Run your application: deno run --allow-net --allow-read app.ts",
+    "To run your application:",
+    "    deno run --allow-net --allow-read app.ts",
   );
   const whatUserWanted = wantsApi
-    ? "Your API "
+    ? "Your Drash API project "
     : wantsWebApp && !wantsVue
-    ? "Your web app "
+    ? "Your Drash web app project "
     : wantsWebApp && wantsVue
-    ? "Your web app with Vue "
+    ? "Your Drash web app project with Vue "
     : "";
-  Deno.run({
-    cmd: [
-      "echo",
-      whatUserWanted + "has been created at " + cwd +
-      ".\nThank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
+  console.info(
+    whatUserWanted + "has been created.\n" +
+      "Thank you for using Drash's create app script, we hope you enjoy your newly built project!\n" +
       notesForUser.join("\n"),
-    ],
-  });
+  );
 }
 
-function buildTheBaseline() {
-  Deno.copyFileSync(`${boilerPlateDir}/deps.ts`, cwd + "/deps.ts");
-  Deno.copyFileSync(`${boilerPlateDir}/config.ts`, cwd + "/config.ts");
+async function buildTheBaseline() {
+  let contents;
+  await copyFile("/deps.ts", "/deps.ts");
+  await copyFile("/config.ts", "/config.ts");
   Deno.mkdirSync(cwd + "/middleware");
   Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
-  Deno.copyFileSync(
-    `${boilerPlateDir}/tests/resources/home_resource_test.ts`,
-    cwd + "/tests/resources/home_resource_test.ts",
+  await copyFile(
+    "/tests/resources/home_resource_test.ts",
+    "/tests/resources/home_resource_test.ts",
   );
 }
 
 /**
  * Responsible for all the logic around creating a web app
  */
-function buildForWebApp() {
-  Deno.copyFileSync(`${boilerPlateDir}/app_web_app.ts`, cwd + "/app.ts");
+async function buildForWebApp() {
+  await copyFile("/app_web_app.ts", "/app.ts");
   Deno.mkdirSync(cwd + "/public/views", { recursive: true });
   Deno.mkdirSync(cwd + "/public/css", { recursive: true });
   Deno.mkdirSync(cwd + "/public/js", { recursive: true });
   Deno.mkdirSync(cwd + "/public/img", { recursive: true });
   Deno.mkdirSync(cwd + "/resources");
-  Deno.copyFileSync(
-    `${boilerPlateDir}/resources/home_resource.ts`,
-    cwd + "/resources/home_resource.ts",
-  );
+  await copyFile("/resources/home_resource.ts", "/resources/home_resource.ts");
 
   if (wantsVue) {
-    Deno.copyFileSync(
-      `${boilerPlateDir}/package_vue.json`,
-      cwd + "/package.json",
-    );
-    Deno.copyFileSync(
-      `${boilerPlateDir}/webpack_vue.config.js`,
-      cwd + "/webpack.config.js",
-    );
+    await copyFile("/package_vue.json", "/package.json");
+    await copyFile("/webpack_vue.config.js", "/webpack.config.js");
     Deno.mkdirSync(cwd + "/vue");
-    Deno.copyFileSync(`${boilerPlateDir}/vue/app.js`, cwd + "/vue/app.js");
-    Deno.copyFileSync(`${boilerPlateDir}/vue/App.vue`, cwd + "/vue/App.vue");
-    Deno.copyFileSync(
-      `${boilerPlateDir}/public/views/index_vue.html`,
-      cwd + "/public/views/index.html",
-    );
-    notesForUser.push("Install NPM dependencies: npm install");
+    await copyFile("/vue/app.js", "/vue/app.js");
+    await copyFile("/vue/app.vue", "/vue/App.vue");
+    await copyFile("/public/views/index_vue.html", "/public/views/index.html");
+    notesForUser.push("Install NPM dependencies:\n    npm install");
     notesForUser.push(
-      "Build your Vue component with webpack: npm run buildVue",
+      "Build your Vue component with Webpack:\n    npm run buildVue",
     );
   } else {
-    Deno.copyFileSync(
-      `${boilerPlateDir}/public/views/index.html`,
-      cwd + "/public/views/index.html",
-    );
-    Deno.copyFileSync(
-      `${boilerPlateDir}/public/css/index.css`,
-      cwd + "/public/css/index.css",
-    );
-    Deno.copyFileSync(
-      `${boilerPlateDir}/public/js/index.js`,
-      cwd + "/public/js/index.js",
-    );
+    await copyFile("/public/views/index.html", "/public/views/index.html");
+    await copyFile("/public/css/index.css", "/public/css/index.css");
+    await copyFile("/public/js/index.js", "/public/js/index.js");
   }
 }
 
 /**
  * Responsible for all the logic around creating an api - eg omits views, js files
  */
-function buildForAPI() {
-  Deno.copyFileSync(`${boilerPlateDir}/app_api.ts`, cwd + "/app.ts");
+async function buildForAPI() {
+  await copyFile("/app_api.ts", "/app.ts");
   Deno.mkdirSync(cwd + "/resources");
-  Deno.copyFileSync(
-    `${boilerPlateDir}/resources/home_resource_api.ts`,
-    cwd + "/resources/home_resource.ts",
+  await copyFile(
+    "/resources/home_resource_api.ts",
+    "/resources/home_resource.ts",
   );
 }
 
@@ -182,41 +167,22 @@ function buildForAPI() {
 
 // Requirement: Now allowed to ask for an API AND Web App
 if (wantsApi && wantsWebApp) {
-  Deno.run({
-    cmd: [
-      "echo",
-      red(
-        "--web-app and --api options are now allowed to be used together. Use the --help option for more information.",
-      ),
-    ],
-  });
+  console.error(
+    red(
+      "--web-app and --api options are now allowed to be used together. Use the --help option for more information.",
+    ),
+  );
   Deno.exit(1);
 }
 
 // Requirement: One main argument is required
 const tooFewArgs = !wantsHelp && !wantsWebApp && !wantsApi;
 if (tooFewArgs) {
-  Deno.run({
-    cmd: [
-      "echo",
-      red(
-        "Too few options were given. Use the --help option for more information.",
-      ),
-    ],
-  });
-  Deno.exit(1);
-}
-
-// Requirement: --with-vue is only allowed to be used with --web-app. Helps for user error mainly
-if (wantsVue && !wantsWebApp) {
-  Deno.run({
-    cmd: [
-      "echo",
-      red(
-        "The --with-vue option is only allowed for use with a web app. Use the --help option for more information.",
-      ),
-    ],
-  });
+  console.error(
+    red(
+      "Too few options were given. Use the --help option for more information.",
+    ),
+  );
   Deno.exit(1);
 }
 
@@ -228,16 +194,16 @@ if (wantsHelp) {
 
 // Requirement: Add support for building a Drash API (--api)
 if (wantsApi) {
-  buildTheBaseline();
-  buildForAPI();
+  await buildTheBaseline();
+  await buildForAPI();
   sendThankYouMessage();
   Deno.exit();
 }
 
 // Requirement: Add support for building a web app (--web-app [--with-vue])
 if (wantsWebApp) {
-  buildTheBaseline();
-  buildForWebApp();
+  await buildTheBaseline();
+  await buildForWebApp();
   sendThankYouMessage();
   Deno.exit();
 }

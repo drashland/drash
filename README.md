@@ -2,7 +2,7 @@
   <img height="200" src="https://drash.land/public/assets/img/drash.svg" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
-<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a> with zero dependencies.</p>
+<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno's HTTP server</a> with zero dependencies.</p>
 <p align="center">
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
@@ -77,13 +77,30 @@ To get started with the Create Drash App tool, see the following commands:
 ```
 $ mkdir my-drash-project
 $ cd my-drash-project
-$ deno run --allow-run --allow-read --allow-write https://deno.land/x/drash@v1.0.5/create_app.ts [OPTIONS]
 ```
+
+* To make an API:
+
+    ```
+    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --api
+    ```
+    
+* To make a web app:
+
+    ```
+    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app
+    ```
+
+* To make a web app with Vue:
+
+    ```
+    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app --with-vue
+    ```
 
 Display the options with `--help`:
 
 ```
-$ deno run --allow-run --allow-read https://deno.land/x/drash@v1.0.5/create_app.ts --help
+$ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --help
 ```
 
 ## Documentation
