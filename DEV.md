@@ -90,5 +90,5 @@ Make a pull request to `master`.
 
 Check the following files for version numbers that need to be updated.
 
-* mod.ts - check Drash.version
+* mod.ts - Check Drash.version
 * README.md - Check the import statement in the Quick Start section
