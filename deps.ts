@@ -5,40 +5,40 @@ export {
   ServerRequest,
   serve,
   serveTLS,
-} from "https://deno.land/std@v0.56.0/http/server.ts";
+} from "https://deno.land/std@v0.58.0/http/server.ts";
 
 export {
   STATUS_TEXT,
   Status,
-} from "https://deno.land/std@v0.56.0/http/http_status.ts";
+} from "https://deno.land/std@v0.58.0/http/http_status.ts";
 
 export {
   assertEquals,
   assertThrows,
-} from "https://deno.land/std@v0.56.0/testing/asserts.ts";
+} from "https://deno.land/std@v0.58.0/testing/asserts.ts";
 
 export {
   BufReader,
   ReadLineResult,
-} from "https://deno.land/std@v0.56.0/io/bufio.ts";
+} from "https://deno.land/std@v0.58.0/io/bufio.ts";
 
 export {
   StringReader,
-} from "https://deno.land/std@v0.56.0/io/readers.ts";
+} from "https://deno.land/std@v0.58.0/io/readers.ts";
 
 export {
   FormFile,
   MultipartReader,
-} from "https://deno.land/std@v0.56.0/mime/multipart.ts";
+} from "https://deno.land/std@v0.58.0/mime/multipart.ts";
 
 export {
   Cookie,
-  delCookie,
+  deleteCookie,
   getCookies,
   setCookie,
-} from "https://deno.land/std@v0.56.0/http/cookie.ts";
+} from "https://deno.land/std@v0.58.0/http/cookie.ts";
 
 export {
   red,
   green,
-} from "https://deno.land/std@v0.56.0/fmt/colors.ts";
+} from "https://deno.land/std@v0.58.0/fmt/colors.ts";
