@@ -18,12 +18,12 @@ members.testSuite("http/response_test.ts | render()", () => {
     members.assertEquals(
       result,
       Deno.build.os == "windows"
-        ? `<body>\n` +
-          `    <h1>Hello Drash</h1>\n` +
-          `</body>`
-        : `<body>\n` +
-          `    <h1>Hello Drash</h1>\n` +
-          `</body>`,
+        ? "<body>\n" +
+          "\n    <h1>Hello Drash</h1>\n" +
+          "</body>"
+        : "<body>\n" +
+          "    <h1>Hello Drash</h1>\n" +
+          "</body>`,
     );
   });
 
