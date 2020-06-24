@@ -9,23 +9,22 @@ members.testSuite("http/response_test.ts | render()", () => {
     members.assertEquals(result, false);
   });
 
-  members.test("Returns the html content when not using the template engine", () => {
-    const request = members.mockRequest("/");
-    const Response = new Drash.Http.Response(request, {
-      views_path: "tests/integration/app_3001_views/public/views",
+  if (Deno.build.os != "windows") {
+    members.test("Returns the html content when not using the template engine", () => {
+      const request = members.mockRequest("/");
+      const Response = new Drash.Http.Response(request, {
+        views_path: "tests/integration/app_3001_views/public/views",
+      });
+      const result = Response.render("/index.html");
+      members.assertEquals(
+        result,
+        "<body>\n" +
+        "    <h1>Hello Drash</h1>\n" +
+        "</body>"
+      );
     });
-    const result = Response.render("/index.html");
-    members.assertEquals(
-      result,
-      Deno.build.os == "windows"
-        ? "<body>\n" +
-          "\n    <h1>Hello Drash</h1>\n" +
-          "</body>"
-        : "<body>\n" +
-          "    <h1>Hello Drash</h1>\n" +
-          "</body>",
-    );
-  });
+  }
+
 
   members.test("Returns the html content when using the template engine", () => {
     const request = members.mockRequest("/");
