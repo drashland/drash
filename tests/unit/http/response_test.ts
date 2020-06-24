@@ -23,7 +23,7 @@ members.testSuite("http/response_test.ts | render()", () => {
           "</body>"
         : "<body>\n" +
           "    <h1>Hello Drash</h1>\n" +
-          "</body>`,
+          "</body>",
     );
   });
 
