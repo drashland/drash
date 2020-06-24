@@ -17,9 +17,13 @@ members.testSuite("http/response_test.ts | render()", () => {
     const result = Response.render("/index.html");
     members.assertEquals(
       result,
-      `<body>\n` +
+      Deno.build.os == "windows"
+      ? `<body>\n\n` +
         `    <h1>Hello Drash</h1>\n` +
-        `</body>`,
+        `</body>`
+      : `<body>\n` +
+        `    <h1>Hello Drash</h1>\n` +
+        `</body>`;
     );
   });
 
@@ -34,7 +38,11 @@ members.testSuite("http/response_test.ts | render()", () => {
     });
     members.assertEquals(
       result,
-      "<body>" +
+      Deno.build.os == "windows"
+      ? "<body>" +
+        "      <h1>Hello Drash</h1>" +
+        "  </body>"
+      : "<body>" +
         "     <h1>Hello Drash</h1>" +
         " </body>",
     );
