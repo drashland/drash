@@ -11,7 +11,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddleware],
       });
-      const request = members.mockRequest("/users/1");
+      const request = Rhum.mocks.ServerRequest("/users/1");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -26,7 +26,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddleware],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "hehe",
         },
@@ -45,7 +45,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/");
+      const request = Rhum.mocks.ServerRequest("/");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -60,7 +60,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = Rhum.mocks.ServerRequest("/", "get", {
         headers: {
           send_response: "yes please",
         },
@@ -79,7 +79,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = Rhum.mocks.ServerRequest("/", "get", {
         headers: {
           send_response: "yes do it",
         },
@@ -95,7 +95,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/");
+      const request = Rhum.mocks.ServerRequest("/");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -110,7 +110,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = Rhum.mocks.ServerRequest("/", "get", {
         headers: {
           before: "yes",
         },
@@ -130,7 +130,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = Rhum.mocks.ServerRequest("/", "get", {
         headers: {
           before: "yesss",
         },

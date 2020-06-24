@@ -1,5 +1,4 @@
 import { Rhum } from "../../test_deps.ts";
-import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 const ANIMALS = {
@@ -28,7 +27,7 @@ Rhum.testPlan("core_loggers/file_logger.ts", () => {
       logger.info("This is cool!");
       const decoder = new TextDecoder();
       let actual = decoder.decode(Deno.readFileSync(file));
-      members.assertEquals(actual, expected);
+      Rhum.asserts.assertEquals(actual, expected);
       Deno.removeSync(file, { recursive: false });
     });
   });

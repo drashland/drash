@@ -1,5 +1,4 @@
 import { Rhum } from "../../test_deps.ts";
-import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 Rhum.testPlan("exceptions/http_exception_test.ts", () => {

@@ -8,7 +8,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareBeforeClass],
       });
-      const request = members.mockRequest("/users/1");
+      const request = Rhum.mocks.ServerRequest("/users/1");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -19,7 +19,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareBeforeClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -37,7 +37,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareBeforeClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -56,7 +56,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareAfterClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -76,7 +76,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -96,7 +96,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareBeforeMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -114,7 +114,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareBeforeMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -133,7 +133,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareAfterMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -152,7 +152,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareAfterMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },

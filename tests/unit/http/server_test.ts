@@ -36,7 +36,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      let request = new members.ServerRequest();
+      let request = new Rhum.mocks.ServerRequest();
       const body = encoder.encode(JSON.stringify({
         hello: "world",
       }));
