@@ -2,7 +2,6 @@ import { Rhum } from "../test_deps.ts";
 import { Drash } from "../../mod.ts";
 
 Rhum.testPlan("mod_test.ts", () => {
-
   Rhum.testSuite("addLogger()", async () => {
     Rhum.testCase("class can be added", () => {
       const testLogger = new Drash.CoreLoggers.FileLogger({
@@ -98,7 +97,6 @@ Rhum.testPlan("mod_test.ts", () => {
         Rhum.asserts.assertEquals(Drash.Members[key], data[key]);
       }
     });
-
   });
 });
 

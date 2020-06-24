@@ -1,144 +1,163 @@
+import { Rhum } from "../../test_deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
-members.testSuite("decorators/middleware_test.ts", () => {
-  members.test("ResourceWithMiddlewareBeforeClass: header not specified", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMiddlewareBeforeClass],
+Rhum.testPlan("decorators/middleware_test.ts", () => {
+  Rhum.testSuite("ResourceWithMiddlewareBeforeClass", () => {
+    Rhum.testCase("header not specified", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMiddlewareBeforeClass],
+      });
+      const request = members.mockRequest("/users/1");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "'header' not specified.",
+      );
     });
-    const request = members.mockRequest("/users/1");
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "'header' not specified.",
-    );
+    Rhum.testCase("valid", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMiddlewareBeforeClass],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        { name: "Thor" },
+      );
+    });
   });
 
-  members.test("ResourceWithMiddlewareBeforeClass: valid", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMiddlewareBeforeClass],
+
+  Rhum.testSuite("ResourceWithMultipleMiddlewareBeforeClass", () => {
+    Rhum.testCase("correct header, custom response and value", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMultipleMiddlewareBeforeClass],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        { name: "Thor" },
+      );
+      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      { name: "Thor" },
-    );
   });
 
-  members.test("ResourceWithMultipleMiddlewareBeforeClass: correct header, custom response and value", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMultipleMiddlewareBeforeClass],
+  Rhum.testSuite("ResourceWithMultipleMiddlewareAfterClass", () => {
+    Rhum.testCase("response is html, custom header and value", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMultipleMiddlewareAfterClass],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      { name: "Thor" },
-    );
-    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
-  members.test("ResourceWithMultipleMiddlewareAfterClass: response is html, custom header and value", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMultipleMiddlewareAfterClass],
+  Rhum.testSuite("ResourceWithMiddlewareClass", () => {
+    Rhum.testCase("custom header and swap to html", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMiddlewareClass],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-    members.assertEquals(response.headers.get("Content-Type"), "text/html");
-    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
-  members.test("ResourceWithMiddlewareClass: custom header and swap to html", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMiddlewareClass],
+  Rhum.testSuite("ResourceWithMiddlewareBeforeMethod", () => {
+    Rhum.testCase("custom header", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMiddlewareBeforeMethod],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        { name: "Thor" },
+      );
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-    members.assertEquals(response.headers.get("Content-Type"), "text/html");
-    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
-  members.test("ResourceWithMiddlewareBeforeMethod: custom header", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMiddlewareBeforeMethod],
+  Rhum.testSuite("ResourceWithMultipleMiddlewareBeforeMethod", () => {
+    Rhum.testCase("custom header", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMultipleMiddlewareBeforeMethod],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        { name: "Thor" },
+      );
+      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      { name: "Thor" },
-    );
   });
 
-  members.test("ResourceWithMultipleMiddlewareBeforeMethod: custom header", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMultipleMiddlewareBeforeMethod],
+  Rhum.testSuite("ResourceWithMiddlewareAfterMethod", () => {
+    Rhum.testCase("swap to html", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMiddlewareAfterMethod],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      { name: "Thor" },
-    );
-    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 
-  members.test("ResourceWithMiddlewareAfterMethod: swap to html", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMiddlewareAfterMethod],
+  Rhum.testSuite("ResourceWithMultipleMiddlewareAfterMethod", () => {
+    Rhum.testCase("custom header and swap to html", async () => {
+      const server = new Drash.Http.Server({
+        resources: [ResourceWithMultipleMiddlewareAfterMethod],
+      });
+      const request = members.mockRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "all your base",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-    members.assertEquals(response.headers.get("Content-Type"), "text/html");
-  });
-
-  members.test("ResourceWithMultipleMiddlewareAfterMethod: custom header and swap to html", async () => {
-    const server = new Drash.Http.Server({
-      resources: [ResourceWithMultipleMiddlewareAfterMethod],
-    });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "all your base",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-    members.assertEquals(response.headers.get("Content-Type"), "text/html");
-    members.assertEquals(response.headers.get("MYCUSTOM"), "hey");
   });
 });
+
+Rhum.run();
 
 ////////////////////////////////////////////////////////////////////////////////
 // DATA ////////////////////////////////////////////////////////////////////////
