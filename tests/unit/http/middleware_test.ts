@@ -3,7 +3,6 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
 Rhum.testPlan("http/middleware_test.ts", () => {
-
   Rhum.testSuite("http/middleware_test.ts", () => {
     Rhum.testCase("before_request: missing CSRF token", async () => {
       const server = new Drash.Http.Server({

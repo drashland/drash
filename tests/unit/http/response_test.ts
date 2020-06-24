@@ -10,36 +10,44 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.asserts.assertEquals(result, false);
     });
 
-    Rhum.testCase("Returns the html content when not using the template engine", () => {
-      const request = Rhum.mocks.ServerRequest("/");
-      const Response = new Drash.Http.Response(request, {
-        views_path: "tests/integration/app_3001_views/public/views",
-      });
-      const result = Response.render("/index.html");
-      Rhum.asserts.assertEquals(
-        result,
-        `<body>\n` +
-          `    <h1>Hello Drash</h1>\n` +
-          `</body>`,
+    if (Deno.build.os != "windows") {
+      Rhum.testCase(
+        "Returns the html content when not using the template engine",
+        () => {
+          const request = Rhum.mocks.ServerRequest("/");
+          const Response = new Drash.Http.Response(request, {
+            views_path: "tests/integration/app_3001_views/public/views",
+          });
+          const result = Response.render("/index.html");
+          Rhum.asserts.assertEquals(
+            result,
+            `<body>\n` +
+              `    <h1>Hello Drash</h1>\n` +
+              `</body>`,
+          );
+        },
       );
-    });
 
-    Rhum.testCase("Returns the html content when using the template engine", () => {
-      const request = Rhum.mocks.ServerRequest("/");
-      const Response = new Drash.Http.Response(request, {
-        views_path: "tests/integration/app_3001_views/public/views",
-        template_engine: true,
-      });
-      const result = Response.render("/template_engine.html", {
-        name: "Drash",
-      });
-      Rhum.asserts.assertEquals(
-        result,
-        "<body>" +
-          "     <h1>Hello Drash</h1>" +
-          " </body>",
+      Rhum.testCase(
+        "Returns the html content when using the template engine",
+        () => {
+          const request = Rhum.mocks.ServerRequest("/");
+          const Response = new Drash.Http.Response(request, {
+            views_path: "tests/integration/app_3001_views/public/views",
+            template_engine: true,
+          });
+          const result = Response.render("/template_engine.html", {
+            name: "Drash",
+          });
+          Rhum.asserts.assertEquals(
+            result,
+            "<body>" +
+              "     <h1>Hello Drash</h1>" +
+              " </body>",
+          );
+        },
       );
-    });
+    }
   });
 
   Rhum.testSuite("setCookie()", () => {
@@ -50,7 +58,10 @@ Rhum.testPlan("http/response_test.ts", () => {
         name: "Framework",
         value: "Drash",
       });
-      Rhum.asserts.assertEquals(Response.headers.get("set-cookie"), "Framework=Drash");
+      Rhum.asserts.assertEquals(
+        Response.headers.get("set-cookie"),
+        "Framework=Drash",
+      );
     });
   });
 
@@ -62,7 +73,10 @@ Rhum.testPlan("http/response_test.ts", () => {
         name: "Framework",
         value: "Drash",
       });
-      Rhum.asserts.assertEquals(Response.headers.get("set-cookie"), "Framework=Drash");
+      Rhum.asserts.assertEquals(
+        Response.headers.get("set-cookie"),
+        "Framework=Drash",
+      );
       Response.delCookie("Framework");
       Rhum.asserts.assertEquals(
         Response.headers.get("set-cookie"),
@@ -152,13 +166,16 @@ Rhum.testPlan("http/response_test.ts", () => {
   // the method gets the message from std/http - which would mean we are testing Deno's code
   // The only implementation we have is if there is no message then return null
   Rhum.testSuite("getStatusMessage()", () => {
-    Rhum.testCase("Returns null if there is no message for the status code", () => {
-      const request = Rhum.mocks.ServerRequest("/");
-      const Response = new Drash.Http.Response(request);
-      Response.status_code = 9999;
-      const statusMessage = Response.getStatusMessage();
-      Rhum.asserts.assertEquals(statusMessage, null);
-    });
+    Rhum.testCase(
+      "Returns null if there is no message for the status code",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/");
+        const Response = new Drash.Http.Response(request);
+        Response.status_code = 9999;
+        const statusMessage = Response.getStatusMessage();
+        Rhum.asserts.assertEquals(statusMessage, null);
+      },
+    );
 
     Rhum.testCase("Returns a valid message for a valid code", () => {
       const request = Rhum.mocks.ServerRequest("/");
@@ -173,13 +190,16 @@ Rhum.testPlan("http/response_test.ts", () => {
   // the method gets the message from std/http - which would mean we are testing Deno's code
   // The only implementation we have is if there is no message then return null
   Rhum.testSuite("getStatusMessageFull()", () => {
-    Rhum.testCase("Returns null if there is no message for the status code", () => {
-      const request = Rhum.mocks.ServerRequest("/");
-      const Response = new Drash.Http.Response(request);
-      Response.status_code = 9999;
-      const statusMessage = Response.getStatusMessageFull();
-      Rhum.asserts.assertEquals(statusMessage, null);
-    });
+    Rhum.testCase(
+      "Returns null if there is no message for the status code",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/");
+        const Response = new Drash.Http.Response(request);
+        Response.status_code = 9999;
+        const statusMessage = Response.getStatusMessageFull();
+        Rhum.asserts.assertEquals(statusMessage, null);
+      },
+    );
 
     Rhum.testCase("Returns a valid message for a valid code", () => {
       const request = Rhum.mocks.ServerRequest("/");

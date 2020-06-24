@@ -5,58 +5,73 @@ const service = new Drash.Services.HttpRequestService();
 
 Rhum.testPlan("services/http_request_service_test.ts", () => {
   Rhum.testSuite("accepts()", () => {
-    Rhum.testCase("accepts the single type if it is present in the header", () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          Accept: "application/json;text/html",
-        },
-      });
-      let actual;
-      actual = service.accepts(request, "application/json");
-      Rhum.asserts.assertEquals("application/json", actual);
-      actual = service.accepts(request, "text/html");
-      Rhum.asserts.assertEquals("text/html", actual);
-    });
-    Rhum.testCase("rejects the single type if it is not present in the header", () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          Accept: "application/json;text/html",
-        },
-      });
-      let actual;
-      actual = service.accepts(request, "text/xml");
-      Rhum.asserts.assertEquals(false, actual);
-    });
-    Rhum.testCase("accepts the first of multiple types if it is present in the header", () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          Accept: "application/json;text/html",
-        },
-      });
-      let actual;
-      actual = service.accepts(request, ["application/json", "text/xml"]);
-      Rhum.asserts.assertEquals("application/json", actual);
-    });
-    Rhum.testCase("accepts the second of multiple types if it is present in the header", () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          Accept: "application/json;text/html",
-        },
-      });
-      let actual;
-      actual = service.accepts(request, ["text/xml", "application/json"]);
-      Rhum.asserts.assertEquals("application/json", actual);
-    });
-    Rhum.testCase("rejects the multiple types if none are present in the header", () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          Accept: "application/json;text/html",
-        },
-      });
-      let actual;
-      actual = service.accepts(request, ["text/xml", "text/plain"]);
-      Rhum.asserts.assertEquals(false, actual);
-    });
+    Rhum.testCase(
+      "accepts the single type if it is present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        actual = service.accepts(request, "application/json");
+        Rhum.asserts.assertEquals("application/json", actual);
+        actual = service.accepts(request, "text/html");
+        Rhum.asserts.assertEquals("text/html", actual);
+      },
+    );
+    Rhum.testCase(
+      "rejects the single type if it is not present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        actual = service.accepts(request, "text/xml");
+        Rhum.asserts.assertEquals(false, actual);
+      },
+    );
+    Rhum.testCase(
+      "accepts the first of multiple types if it is present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        actual = service.accepts(request, ["application/json", "text/xml"]);
+        Rhum.asserts.assertEquals("application/json", actual);
+      },
+    );
+    Rhum.testCase(
+      "accepts the second of multiple types if it is present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        actual = service.accepts(request, ["text/xml", "application/json"]);
+        Rhum.asserts.assertEquals("application/json", actual);
+      },
+    );
+    Rhum.testCase(
+      "rejects the multiple types if none are present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        actual = service.accepts(request, ["text/xml", "text/plain"]);
+        Rhum.asserts.assertEquals(false, actual);
+      },
+    );
   });
 
   Rhum.testSuite("getCookie()", () => {
@@ -109,21 +124,24 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
   // });
 
   Rhum.testSuite("getRequestBodyParam()", () => {
-    Rhum.testCase("Returns the value for the parameter when the data exists", async () => {
-      const body = encoder.encode(JSON.stringify({
-        hello: "world",
-      }));
-      const reader = new Deno.Buffer(body as ArrayBuffer);
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: reader,
-      });
-      request = await service.hydrate(request);
-      const actual = request.getBodyParam("hello");
-      Rhum.asserts.assertEquals("world", actual);
-    });
+    Rhum.testCase(
+      "Returns the value for the parameter when the data exists",
+      async () => {
+        const body = encoder.encode(JSON.stringify({
+          hello: "world",
+        }));
+        const reader = new Deno.Buffer(body as ArrayBuffer);
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: reader,
+        });
+        request = await service.hydrate(request);
+        const actual = request.getBodyParam("hello");
+        Rhum.asserts.assertEquals("world", actual);
+      },
+    );
     Rhum.testCase("Returns undefined when the data doesn't exist", async () => {
       const body = encoder.encode(JSON.stringify({
         hello: "world",
@@ -142,91 +160,121 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
   });
 
   Rhum.testSuite("getRequestHeaderParam()", () => {
-    Rhum.testCase("Returns the value for the header param when it exists", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          hello: "world",
-        },
-      });
-      request = await service.hydrate(request);
-      const actual = request.getHeaderParam("hello");
-      Rhum.asserts.assertEquals("world", actual);
-    });
+    Rhum.testCase(
+      "Returns the value for the header param when it exists",
+      async () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            hello: "world",
+          },
+        });
+        request = await service.hydrate(request);
+        const actual = request.getHeaderParam("hello");
+        Rhum.asserts.assertEquals("world", actual);
+      },
+    );
 
-    Rhum.testCase("Returns null when the header data doesn't exist", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          hello: "world",
-        },
-      });
-      request = await service.hydrate(request);
-      const actual = request.getHeaderParam("dont-exist");
-      Rhum.asserts.assertEquals(null, actual);
-    });
+    Rhum.testCase(
+      "Returns null when the header data doesn't exist",
+      async () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            hello: "world",
+          },
+        });
+        request = await service.hydrate(request);
+        const actual = request.getHeaderParam("dont-exist");
+        Rhum.asserts.assertEquals(null, actual);
+      },
+    );
   });
 
   Rhum.testSuite("getRequestPathParam()", () => {
-    Rhum.testCase("Returns the value for the header param when it exists", async () => {
-      let request = Rhum.mocks.ServerRequest();
-      request = await service.hydrate(request);
-      request.path_params = {
-        hello: "world",
-      };
-      const actual = request.getPathParam("hello");
-      Rhum.asserts.assertEquals("world", actual);
-    });
+    Rhum.testCase(
+      "Returns the value for the header param when it exists",
+      async () => {
+        let request = Rhum.mocks.ServerRequest();
+        request = await service.hydrate(request);
+        request.path_params = {
+          hello: "world",
+        };
+        const actual = request.getPathParam("hello");
+        Rhum.asserts.assertEquals("world", actual);
+      },
+    );
 
-    Rhum.testCase("Returns null when the header data doesn't exist", async () => {
-      let request = Rhum.mocks.ServerRequest();
-      request = await service.hydrate(request);
-      request.path_params = {
-        hello: "world",
-      };
-      const actual = request.getPathParam("dont-exist");
-      Rhum.asserts.assertEquals(undefined, actual);
-    });
+    Rhum.testCase(
+      "Returns null when the header data doesn't exist",
+      async () => {
+        let request = Rhum.mocks.ServerRequest();
+        request = await service.hydrate(request);
+        request.path_params = {
+          hello: "world",
+        };
+        const actual = request.getPathParam("dont-exist");
+        Rhum.asserts.assertEquals(undefined, actual);
+      },
+    );
   });
 
   Rhum.testSuite("getRequestUrlQueryParam()", () => {
-    Rhum.testCase("Returns the value for the query param when it exists", async () => {
-      let request = Rhum.mocks.ServerRequest("/?hello=world");
-      request = await service.hydrate(request);
-      const actual = request.getUrlQueryParam("hello");
-      Rhum.asserts.assertEquals("world", actual);
-    });
+    Rhum.testCase(
+      "Returns the value for the query param when it exists",
+      async () => {
+        let request = Rhum.mocks.ServerRequest("/?hello=world");
+        request = await service.hydrate(request);
+        const actual = request.getUrlQueryParam("hello");
+        Rhum.asserts.assertEquals("world", actual);
+      },
+    );
 
-    Rhum.testCase("Returns undefined when the query data doesn't exist", async () => {
-      let request = Rhum.mocks.ServerRequest("/?hello=world");
-      request = await service.hydrate(request);
-      const actual = request.getUrlQueryParam("dont_exist");
-      Rhum.asserts.assertEquals(undefined, actual);
-    });
+    Rhum.testCase(
+      "Returns undefined when the query data doesn't exist",
+      async () => {
+        let request = Rhum.mocks.ServerRequest("/?hello=world");
+        request = await service.hydrate(request);
+        const actual = request.getUrlQueryParam("dont_exist");
+        Rhum.asserts.assertEquals(undefined, actual);
+      },
+    );
   });
 
   Rhum.testSuite("getResponseContentType()", () => {
-    Rhum.testCase("Returns application/json with no content type set", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get");
-      const contentType = service.getResponseContentType(request);
-      Rhum.asserts.assertEquals(contentType, "application/json");
-    });
+    Rhum.testCase(
+      "Returns application/json with no content type set",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get");
+        const contentType = service.getResponseContentType(request);
+        Rhum.asserts.assertEquals(contentType, "application/json");
+      },
+    );
 
-    Rhum.testCase("Returns text/plain when specified in the default content type", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get");
-      const contentType = service.getResponseContentType(request, "text/plain");
-      Rhum.asserts.assertEquals(contentType, "text/plain");
-    });
+    Rhum.testCase(
+      "Returns text/plain when specified in the default content type",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get");
+        const contentType = service.getResponseContentType(
+          request,
+          "text/plain",
+        );
+        Rhum.asserts.assertEquals(contentType, "text/plain");
+      },
+    );
 
-    Rhum.testCase("Returns text/plain when specified in the headers", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Response-Content-Type": "text/plain",
-        },
-      });
-      const parsedBody = await service.parseBody(request);
-      request.parsed_body = parsedBody;
-      const contentType = service.getResponseContentType(request);
-      Rhum.asserts.assertEquals(contentType, "text/plain");
-    });
+    Rhum.testCase(
+      "Returns text/plain when specified in the headers",
+      async () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Response-Content-Type": "text/plain",
+          },
+        });
+        const parsedBody = await service.parseBody(request);
+        request.parsed_body = parsedBody;
+        const contentType = service.getResponseContentType(request);
+        Rhum.asserts.assertEquals(contentType, "text/plain");
+      },
+    );
 
     Rhum.testCase("Returns text/plain when specified in the body", async () => {
       let request = Rhum.mocks.ServerRequest("/", "post", {
@@ -241,14 +289,17 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
       Rhum.asserts.assertEquals(contentType, "text/plain");
     });
 
-    Rhum.testCase("Returns text/plain when specified in the query", async () => {
-      let request = Rhum.mocks.ServerRequest(
-        "/something?response_content_type=text/plain",
-      );
-      request = await service.hydrate(request);
-      const contentType = service.getResponseContentType(request);
-      Rhum.asserts.assertEquals(contentType, "text/plain");
-    });
+    Rhum.testCase(
+      "Returns text/plain when specified in the query",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/something?response_content_type=text/plain",
+        );
+        request = await service.hydrate(request);
+        const contentType = service.getResponseContentType(request);
+        Rhum.asserts.assertEquals(contentType, "text/plain");
+      },
+    );
   });
 
   Rhum.testSuite("getUrlPath()", () => {
@@ -264,11 +315,16 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
       Rhum.asserts.assertEquals("/api/v2/users", url);
     });
 
-    Rhum.testCase("Returns the path before the querystring when the Url contains queries", async () => {
-      const request = Rhum.mocks.ServerRequest("/company/users?name=John&age=44");
-      const url = service.getUrlPath(request);
-      Rhum.asserts.assertEquals("/company/users", url);
-    });
+    Rhum.testCase(
+      "Returns the path before the querystring when the Url contains queries",
+      async () => {
+        const request = Rhum.mocks.ServerRequest(
+          "/company/users?name=John&age=44",
+        );
+        const url = service.getUrlPath(request);
+        Rhum.asserts.assertEquals("/company/users", url);
+      },
+    );
   });
 
   Rhum.testSuite("getUrlQueryParams()", () => {
@@ -278,14 +334,19 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
       Rhum.asserts.assertEquals(queryParams, {});
     });
 
-    Rhum.testCase("Returns the querystring as an object when they exist", async () => {
-      const request = Rhum.mocks.ServerRequest("/api/v2/users?name=John&age=44");
-      const queryParams = service.getUrlQueryParams(request);
-      Rhum.asserts.assertEquals(queryParams, {
-        name: "John",
-        age: "44",
-      });
-    });
+    Rhum.testCase(
+      "Returns the querystring as an object when they exist",
+      async () => {
+        const request = Rhum.mocks.ServerRequest(
+          "/api/v2/users?name=John&age=44",
+        );
+        const queryParams = service.getUrlQueryParams(request);
+        Rhum.asserts.assertEquals(queryParams, {
+          name: "John",
+          age: "44",
+        });
+      },
+    );
   });
 
   Rhum.testSuite("getUrlQueryString()", () => {
@@ -296,72 +357,92 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
     });
 
     Rhum.testCase("Returns the querystring when it exists", async () => {
-      const request = Rhum.mocks.ServerRequest("/api/v2/users?name=John&age=44");
+      const request = Rhum.mocks.ServerRequest(
+        "/api/v2/users?name=John&age=44",
+      );
       const queryString = service.getUrlQueryString(request);
       Rhum.asserts.assertEquals(queryString, "name=John&age=44");
     });
 
-    Rhum.testCase("Returns nothing when failure to get the querystring", async () => {
-      const request = Rhum.mocks.ServerRequest("/api/v2/users?");
-      const queryString = service.getUrlQueryString(request);
-      Rhum.asserts.assertEquals(queryString, "");
-    });
+    Rhum.testCase(
+      "Returns nothing when failure to get the querystring",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/api/v2/users?");
+        const queryString = service.getUrlQueryString(request);
+        Rhum.asserts.assertEquals(queryString, "");
+      },
+    );
   });
 
   Rhum.testSuite("hasBody()", () => {
-    Rhum.testCase("Returns true when content-length is in the header as an int", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "content-length": 52,
-        },
-      });
-      const hasBody = await service.hasBody(request);
-      Rhum.asserts.assertEquals(hasBody, true);
-    });
+    Rhum.testCase(
+      "Returns true when content-length is in the header as an int",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "content-length": 52,
+          },
+        });
+        const hasBody = await service.hasBody(request);
+        Rhum.asserts.assertEquals(hasBody, true);
+      },
+    );
 
-    Rhum.testCase("Returns true when Content-Length is in the header as an int", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Length": 52,
-        },
-      });
-      const hasBody = await service.hasBody(request);
-      Rhum.asserts.assertEquals(hasBody, true);
-    });
+    Rhum.testCase(
+      "Returns true when Content-Length is in the header as an int",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Length": 52,
+          },
+        });
+        const hasBody = await service.hasBody(request);
+        Rhum.asserts.assertEquals(hasBody, true);
+      },
+    );
 
-    Rhum.testCase("Returns false when content-length is not in the header", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get");
-      const hasBody = await service.hasBody(request);
-      Rhum.asserts.assertEquals(hasBody, false);
-    });
+    Rhum.testCase(
+      "Returns false when content-length is not in the header",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get");
+        const hasBody = await service.hasBody(request);
+        Rhum.asserts.assertEquals(hasBody, false);
+      },
+    );
 
-    Rhum.testCase("Returns false when content-length is in the header but not as an int", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "content-length": "yes",
-        },
-      });
-      const hasBody = await service.hasBody(request);
-      Rhum.asserts.assertEquals(hasBody, false);
-    });
+    Rhum.testCase(
+      "Returns false when content-length is in the header but not as an int",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "content-length": "yes",
+          },
+        });
+        const hasBody = await service.hasBody(request);
+        Rhum.asserts.assertEquals(hasBody, false);
+      },
+    );
   });
 
   Rhum.testSuite("hydrate()", () => {
-    Rhum.testCase("Sets the headers on the request when passed in", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "get");
-      const options = {
-        headers: {
-          "Content-Type": 32,
-          "Cookie": "test_cookie=test_cookie_val",
-        },
-      };
-      request = await service.hydrate(request, options);
-      Rhum.asserts.assertEquals(request.headers.get("content-type"), "32");
-      Rhum.asserts.assertEquals(
-        request.headers.get("cookie"),
-        "test_cookie=test_cookie_val",
-      );
-    });
+    Rhum.testCase(
+      "Sets the headers on the request when passed in",
+      async () => {
+        let request = Rhum.mocks.ServerRequest("/", "get");
+        const options = {
+          headers: {
+            "Content-Type": 32,
+            "Cookie": "test_cookie=test_cookie_val",
+          },
+        };
+        request = await service.hydrate(request, options);
+        Rhum.asserts.assertEquals(request.headers.get("content-type"), "32");
+        Rhum.asserts.assertEquals(
+          request.headers.get("cookie"),
+          "test_cookie=test_cookie_val",
+        );
+      },
+    );
 
     Rhum.testCase("Attaches the url path", async () => {
       let request = Rhum.mocks.ServerRequest("/users");
@@ -405,29 +486,35 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
   });
 
   Rhum.testSuite("parseBody()", () => {
-    Rhum.testCase("Returns the default object when request has no body", async () => {
-      const request = Rhum.mocks.ServerRequest("/");
-      const ret = await service.parseBody(request);
-      Rhum.asserts.assertEquals(ret, {
-        content_type: "",
-        data: undefined,
-      });
-    });
+    Rhum.testCase(
+      "Returns the default object when request has no body",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/");
+        const ret = await service.parseBody(request);
+        Rhum.asserts.assertEquals(ret, {
+          content_type: "",
+          data: undefined,
+        });
+      },
+    );
 
-    Rhum.testCase("Defaults to application/x-www-form-urlencoded when header contains no content type", async () => {
-      const body = encoder.encode("hello=world");
-      const reader = new Deno.Buffer(body as ArrayBuffer);
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        body: reader,
-      });
-      const ret = await service.parseBody(request);
-      Rhum.asserts.assertEquals(ret, {
-        content_type: "application/x-www-form-urlencoded",
-        data: {
-          hello: "world",
-        },
-      });
-    });
+    Rhum.testCase(
+      "Defaults to application/x-www-form-urlencoded when header contains no content type",
+      async () => {
+        const body = encoder.encode("hello=world");
+        const reader = new Deno.Buffer(body as ArrayBuffer);
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          body: reader,
+        });
+        const ret = await service.parseBody(request);
+        Rhum.asserts.assertEquals(ret, {
+          content_type: "application/x-www-form-urlencoded",
+          data: {
+            hello: "world",
+          },
+        });
+      },
+    );
 
     // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
     // Rhum.testCase("Correctly parses multipart/form-data", async () => {
@@ -466,45 +553,51 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
     //   })
     // })
 
-    Rhum.testCase("Fails when error thrown whilst parsing as application/json", async () => {
-      let errorThrown = false;
-      try {
-        const request = Rhum.mocks.ServerRequest("/", "post", {
+    Rhum.testCase(
+      "Fails when error thrown whilst parsing as application/json",
+      async () => {
+        let errorThrown = false;
+        try {
+          const request = Rhum.mocks.ServerRequest("/", "post", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: "John",
+            }),
+          });
+          const ret = await service.parseBody(request);
+          Rhum.asserts.assertEquals(ret, {
+            content_type: "application/json",
+            data: { name: "John" },
+          });
+        } catch (err) {
+          errorThrown = true;
+        }
+        Rhum.asserts.assertEquals(errorThrown, true);
+      },
+    );
+
+    Rhum.testCase(
+      "Can correctly parse as application/x-www-form-urlencoded",
+      async () => {
+        const body = encoder.encode("hello=world");
+        const reader = new Deno.Buffer(body as ArrayBuffer);
+        const request = Rhum.mocks.ServerRequest("/", "get", {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: JSON.stringify({
-            name: "John",
-          }),
+          body: reader,
         });
         const ret = await service.parseBody(request);
         Rhum.asserts.assertEquals(ret, {
-          content_type: "application/json",
-          data: { name: "John" },
+          content_type: "application/x-www-form-urlencoded",
+          data: {
+            hello: "world",
+          },
         });
-      } catch (err) {
-        errorThrown = true;
-      }
-      Rhum.asserts.assertEquals(errorThrown, true);
-    });
-
-    Rhum.testCase("Can correctly parse as application/x-www-form-urlencoded", async () => {
-      const body = encoder.encode("hello=world");
-      const reader = new Deno.Buffer(body as ArrayBuffer);
-      const request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: reader,
-      });
-      const ret = await service.parseBody(request);
-      Rhum.asserts.assertEquals(ret, {
-        content_type: "application/x-www-form-urlencoded",
-        data: {
-          hello: "world",
-        },
-      });
-    });
+      },
+    );
   });
 
   Rhum.testSuite("parseBodyAsFormUrlEncoded()", () => {
@@ -518,11 +611,14 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
       Rhum.asserts.assertEquals(actual, { hello: "world" });
     });
 
-    Rhum.testCase("Returns an empty object if request has no body", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get");
-      const actual = await service.parseBodyAsFormUrlEncoded(request);
-      Rhum.asserts.assertEquals(actual, {});
-    });
+    Rhum.testCase(
+      "Returns an empty object if request has no body",
+      async () => {
+        const request = Rhum.mocks.ServerRequest("/", "get");
+        const actual = await service.parseBodyAsFormUrlEncoded(request);
+        Rhum.asserts.assertEquals(actual, {});
+      },
+    );
   });
 
   Rhum.testSuite("parseBodyAsJson()", () => {

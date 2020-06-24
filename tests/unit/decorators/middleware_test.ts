@@ -32,7 +32,6 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
     });
   });
 
-
   Rhum.testSuite("ResourceWithMultipleMiddlewareBeforeClass", () => {
     Rhum.testCase("correct header, custom response and value", async () => {
       const server = new Drash.Http.Server({
@@ -64,7 +63,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(
+        response.headers.get("Content-Type"),
+        "text/html",
+      );
       Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
   });
@@ -81,7 +83,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(
+        response.headers.get("Content-Type"),
+        "text/html",
+      );
       Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
   });
@@ -135,7 +140,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(
+        response.headers.get("Content-Type"),
+        "text/html",
+      );
     });
   });
 
@@ -151,7 +159,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
-      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "text/html");
+      Rhum.asserts.assertEquals(
+        response.headers.get("Content-Type"),
+        "text/html",
+      );
       Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
     });
   });

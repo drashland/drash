@@ -2,7 +2,6 @@ import { Rhum } from "../../test_deps.ts";
 import { Drash } from "../../../mod.ts";
 
 Rhum.testPlan("services/http_service_test.ts", () => {
-
   Rhum.testSuite("getMimeType()", () => {
     Rhum.testCase("file is not a URL", () => {
       let actual;
@@ -44,7 +43,6 @@ Rhum.testPlan("services/http_service_test.ts", () => {
       Rhum.asserts.assertEquals(actual, "application/pdf");
     });
   });
-
 });
 
 Rhum.run();

@@ -51,7 +51,6 @@ Rhum.testPlan("http/server_test.ts", () => {
     });
   });
 
-
   Rhum.testSuite("handleHttpRequest()", () => {
     Rhum.testCase("/favicon.ico", async () => {
       const server = new Drash.Http.Server({
@@ -150,13 +149,19 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(response.status, 302);
-      Rhum.asserts.assertEquals(response.headers.get("location"), "/notes/1557");
+      Rhum.asserts.assertEquals(
+        response.headers.get("location"),
+        "/notes/1557",
+      );
       request = Rhum.mocks.ServerRequest("/notes/1234", "get", {
         server: server,
       });
       response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(response.status, 301);
-      Rhum.asserts.assertEquals(response.headers.get("location"), "/notes/1667");
+      Rhum.asserts.assertEquals(
+        response.headers.get("location"),
+        "/notes/1667",
+      );
     });
   });
 
@@ -199,7 +204,7 @@ Rhum.testPlan("http/server_test.ts", () => {
   });
 
   Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
-      // TODO(any) How do we test this?
+    // TODO(any) How do we test this?
   });
 
   Rhum.testSuite("getResourceObject()", () => {
@@ -255,7 +260,6 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assertEquals(server.deno_server.closing, true);
     });
   });
-
 });
 
 Rhum.run();
