@@ -19,12 +19,11 @@ members.testSuite("http/response_test.ts | render()", () => {
       members.assertEquals(
         result,
         "<body>\n" +
-        "    <h1>Hello Drash</h1>\n" +
-        "</body>"
+          "    <h1>Hello Drash</h1>\n" +
+          "</body>",
       );
     });
   }
-
 
   members.test("Returns the html content when using the template engine", () => {
     const request = members.mockRequest("/");
