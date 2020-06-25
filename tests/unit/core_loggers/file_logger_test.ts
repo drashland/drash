@@ -8,7 +8,6 @@ const ANIMALS = {
 const file = "./tmp/file_logger_test.log";
 
 Rhum.testPlan("core_loggers/file_logger.ts", () => {
-
   Rhum.testSuite("FileLogger", () => {
     Rhum.testCase(`writes file: ${file}`, () => {
       let expected = "some_date | hello | tiger | This is cool!\n";
@@ -42,11 +41,11 @@ Rhum.testPlan("core_loggers/file_logger.ts", () => {
       });
       const actual = logger.write(
         Drash.Dictionaries.LogLevels.get("debug"),
-        "This is cool!"
+        "This is cool!",
       );
       Rhum.asserts.assertEquals(
         actual,
-        "This is cool!"
+        "This is cool!",
       );
     });
   });
