@@ -1,3 +1,7 @@
+// Core Loggers
+import "./core_loggers/console_logger_test.ts";
+import "./core_loggers/file_logger_test.ts";
+
 // Decorators
 import "./decorators/middleware_test.ts";
 
@@ -12,10 +16,6 @@ import "./exceptions/name_collision_test.ts";
 import "./http/middleware_test.ts";
 import "./http/server_test.ts";
 import "./http/response_test.ts";
-
-// Loggers
-import "./core_loggers/console_logger_test.ts";
-import "./core_loggers/file_logger_test.ts";
 
 // Services
 import "./services/http_service_test.ts";

@@ -6,6 +6,7 @@ const ANIMALS = {
 };
 
 Rhum.testPlan("core_loggers/console_logger.ts", () => {
+
   Rhum.testSuite("ConsoleLogger", () => {
     Rhum.testCase("logs correctly", () => {
       let logger = new Drash.CoreLoggers.ConsoleLogger({
@@ -24,6 +25,20 @@ Rhum.testPlan("core_loggers/console_logger.ts", () => {
       const expected = "some_date | hello | tiger | This is cool!";
       const actual = logger.info("This is cool!");
       Rhum.asserts.assertEquals(actual, expected);
+    });
+  });
+
+  Rhum.testSuite("write()", () => {
+    Rhum.testCase("logs correctly", () => {
+      let logger = new Drash.CoreLoggers.ConsoleLogger({
+        test: true,
+        enabled: true,
+      });
+      const actual = logger.write(
+        Drash.Dictionaries.LogLevels.get("debug"),
+        "This is cool!"
+      );
+      Rhum.asserts.assertEquals(actual, "This is cool!");
     });
   });
 });
