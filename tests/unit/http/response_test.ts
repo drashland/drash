@@ -216,7 +216,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const mock = Rhum.mocks.ServerRequest("/", "get", {
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       });
       const request = await new Drash.Services.HttpRequestService()
         .hydrate(mock);
@@ -229,7 +229,10 @@ Rhum.testPlan("http/response_test.ts", () => {
         new TextDecoder().decode(response.body),
         '\"Drash\"',
       );
-      Rhum.asserts.assertEquals(response.headers.get("content-type"), "application/json")
+      Rhum.asserts.assertEquals(
+        response.headers.get("content-type"),
+        "application/json",
+      );
     });
   });
 
