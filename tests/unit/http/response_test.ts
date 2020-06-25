@@ -213,34 +213,30 @@ Rhum.testPlan("http/response_test.ts", () => {
   Rhum.testSuite("send()", () => {
     Rhum.testCase("Contains the correct data for the request", async () => {
       // Checks: status code, body and headers
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const mock = Rhum.mocks.ServerRequest("/", "get", {
         headers: {
           "Content-Type": "application/json",
-          "Accepts": "application/json",
-        },
-        body: JSON.stringify({
-          name: "Drash",
-        }),
+        }
       });
-      //request.response_content_type = "application/json"
-      const Response = new Drash.Http.Response(request);
-      Response.body = JSON.stringify({ name: "Drash" });
-      const response = await Response.send();
+      const request = await new Drash.Services.HttpRequestService()
+        .hydrate(mock);
+      const responseObj = new Drash.Http.Response(request);
+      responseObj.body = "Drash";
+      const response = await responseObj.send();
       Rhum.asserts.assertEquals(response.status, 200);
       Rhum.asserts.assertEquals(typeof response.send, "function");
       Rhum.asserts.assertEquals(
         new TextDecoder().decode(response.body),
-        '{"name":"Drash"}',
+        '\"Drash\"',
       );
-      // FIXME(ebebbington) Why is the content type undefined?
-      //Rhum.asserts.assertEquals(response.headers.get("content-type"), "application/json")
+      Rhum.asserts.assertEquals(response.headers.get("content-type"), "application/json")
     });
   });
 
   Rhum.testSuite("sendStatic()", () => {
     Rhum.testCase("Returns the contents if a file is passed in", async () => {
       const request = Rhum.mocks.ServerRequest("/");
-      const response = new Drash.Http.Response(request)
+      const response = new Drash.Http.Response(request);
       const actual = response.sendStatic("./tests/data/static_file.txt");
       const headers = new Headers();
       headers.set("content-type", "undefined");
@@ -252,7 +248,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.asserts.assertEquals(actual.status, expected.status);
       Rhum.asserts.assertEquals(actual.headers, expected.headers);
       Rhum.asserts.assertEquals(actual.body, expected.body);
-    })
+    });
   });
 
   Rhum.testSuite("redirect()", () => {
