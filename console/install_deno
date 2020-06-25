@@ -1,6 +1,0 @@
-#!/bin/bash
-
-(
-  export DENO_LATEST_VERSION="v1.0.5"
-  curl -fsSL https://deno.land/x/install/install.sh | sh -s $DENO_LATEST_VERSION
-)

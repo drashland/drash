@@ -1,4 +1,4 @@
-import ClassCompiler from "./docs_compiler.ts";
+import ClassCompiler from "./compiler.ts";
 
 let c = new ClassCompiler();
 let result = {
@@ -30,6 +30,8 @@ let result = {
     HttpRequestService: {},
   },
 };
+
+console.info("Building API Reference as JSON output");
 
 c.setPath("./src/exceptions/http_exception.ts");
 result.Exceptions.HttpException = await c.compileLazy();
@@ -79,7 +81,11 @@ result.Services.HttpService = await c.compileLazy();
 c.setPath("./src/services/http_request_service.ts");
 result.Services.HttpRequestService = await c.compileLazy();
 
+console.info("Writing api_reference.json file");
+
 Deno.writeFileSync(
   "./api_reference.json",
   new TextEncoder().encode(JSON.stringify(result, null, 4)),
 );
+
+console.info("Done");
