@@ -238,13 +238,21 @@ Rhum.testPlan("http/response_test.ts", () => {
   });
 
   Rhum.testSuite("sendStatic()", () => {
-    // TODO(ebebbington) Not entirely sure how to test this method... come back to it
-    // Rhum.testCase("Returns the correct data that was sent across", async () => {
-    //   const request = Rhum.mocks.ServerRequest("/");
-    //   const Response = new Drash.Http.Response(request)
-    //   const response = Response.sendStatic()
-    //   // Assert:
-    // })
+    Rhum.testCase("Returns the contents if a file is passed in", async () => {
+      const request = Rhum.mocks.ServerRequest("/");
+      const response = new Drash.Http.Response(request)
+      const actual = response.sendStatic("./tests/data/static_file.txt");
+      const headers = new Headers();
+      headers.set("content-type", "undefined");
+      const expected = {
+        status: 200,
+        headers: headers,
+        body: new TextEncoder().encode("test\n"),
+      };
+      Rhum.asserts.assertEquals(actual.status, expected.status);
+      Rhum.asserts.assertEquals(actual.headers, expected.headers);
+      Rhum.asserts.assertEquals(actual.body, expected.body);
+    })
   });
 
   Rhum.testSuite("redirect()", () => {
