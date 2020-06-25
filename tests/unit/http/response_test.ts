@@ -248,7 +248,7 @@ Rhum.testPlan("http/response_test.ts", () => {
         headers: headers,
         body: Deno.build.os === "windows"
           ? new TextEncoder().encode("test\r\n")
-          : new TextEncoder().encode("test\n")
+          : new TextEncoder().encode("test\n"),
       };
       Rhum.asserts.assertEquals(actual.status, expected.status);
       Rhum.asserts.assertEquals(actual.headers, expected.headers);
