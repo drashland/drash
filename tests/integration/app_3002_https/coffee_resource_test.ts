@@ -62,13 +62,16 @@ members.testSuite("CoffeeResource", () => {
     members.assertEquals(await response.text(), '{"name":"Medium"}');
 
     data = "id=19";
-    response = await members.fetch.get("https://localhost:1667/coffee/19/?location=from_body", {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-        "Content-Length": data.length + 1
+    response = await members.fetch.get(
+      "https://localhost:1667/coffee/19/?location=from_body",
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          "Content-Length": data.length + 1,
+        },
+        body: data,
       },
-      body: data
-    });
-    members.assertEquals(await response.text(), "{\"name\":\"Dark\"}");
+    );
+    members.assertEquals(await response.text(), '{"name":"Dark"}');
   });
 });

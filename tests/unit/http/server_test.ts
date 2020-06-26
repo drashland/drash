@@ -205,7 +205,10 @@ Rhum.testPlan("http/server_test.ts", () => {
 
   Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
     Rhum.testCase("Should respond with a 200 on a valid request", async () => {
-      let request = Rhum.mocks.ServerRequest("/tests/data/static_file.txt", "get");
+      let request = Rhum.mocks.ServerRequest(
+        "/tests/data/static_file.txt",
+        "get",
+      );
       request = await new Drash.Services.HttpRequestService().hydrate(request);
       // Setup so we can make requests to a static file. This example will try get the `./tests/data/static_file.txt` file served
       const server = new Drash.Http.Server({
@@ -215,12 +218,12 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       await server.run({
         hostname: "localhost",
-        port: 1667
+        port: 1667,
       });
-      const res = await server.handleHttpRequestForStaticPathAsset(request)
+      const res = await server.handleHttpRequestForStaticPathAsset(request);
       await server.close();
-      Rhum.asserts.assertEquals(res.status, 200)
-    })
+      Rhum.asserts.assertEquals(res.status, 200);
+    });
   });
 
   Rhum.testSuite("getResourceObject()", () => {
@@ -262,17 +265,17 @@ Rhum.testPlan("http/server_test.ts", () => {
         }
       }
       const server = new Drash.Http.Server({
-        resources: [Resource]
+        resources: [Resource],
       });
       await server.run({
         hostname: "localhost",
-        port: 1667
-      })
+        port: 1667,
+      });
       const res = await fetch("http://localhost:1667");
       const text = await res.text();
       await server.close();
       Rhum.asserts.assertEquals(res.status, 200);
-      Rhum.asserts.assertEquals(text, "\"Hello world!\"")
+      Rhum.asserts.assertEquals(text, '"Hello world!"');
     });
   });
 
