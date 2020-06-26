@@ -99,23 +99,25 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
     });
   });
 
-  // TODO(ebebbington|any) Look into how we can properly test multipart form data. Also address the doc block when we know what data is returned, and assert the correct responses below
+  // TODO(ebebbington) Look into how we can properly test multipart form data. Also address the doc block when we know what data is returned, and assert the correct responses below
   //  @crookse has said it's been difficult to test and Deno's way of testing it has been troublesome to understand
   //  Maybe look into Deno's way to see if I can get anything from it
-  // Rhum.testSuite("services/http_request_service_test.ts | getRequestBodyFile()", () => {
+  // Rhum.testSuite("getRequestBodyFile()", () => {
   //   Rhum.testCase("Returns the file object if the file exists", async () => {
   //     const formData = new FormData();
-  //     formData.append("file_1", "John");
-  //     let request = Rhum.mocks.ServerRequest("/", "POST", {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //       body: formData,
-  //     });
-  //     request = await service.hydrate(request);
-  //     console.log(request)
-  //     const fileObj = service.getRequestBodyFile(request, "file_1");
-  //     Rhum.asserts.assertEquals(true, true)
+  //     formData.append('blob', "hello");
+  //     formData.append("blob2", "goodbye")
+  //     const returnedFileString = service.getRequestBodyFile(
+  //         {
+  //           content_type: "multipart/form-data",
+  //           data: formData
+  //         },
+  //         "blob"
+  //     );
+  //     console.log(returnedFileString);
+  //     const returnedFileObj = JSON.parse(returnedFileString);
+  //     Rhum.asserts.assert(!!returnedFileObj.blob)
+  //     Rhum.asserts.assertEquals(returnedFileObj.blob.name, "test");
   //   });
   //
   //   Rhum.testCase("Returns ??? if the file does not exist", () => {
@@ -538,20 +540,21 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
 
     // TODO(ebebbington) Fails, cannot parse as JSON. Find out how to send the correct data
     // Rhum.testCase("Can correctly parse as application/json", async () => {
-    //   const request = Rhum.mocks.ServerRequest("/", "post", {
+    //   const data = { name: "John" };
+    //   let request = Rhum.mocks.ServerRequest("/", "post", {
     //     headers: {
-    //       "Content-Type": "application/json"
+    //       "Content-Type": "application/json",
+    //       "Content-Length": JSON.stringify(data).length
     //     },
-    //     body: JSON.stringify({
-    //       name: "John"
-    //     })
+    //     body: JSON.stringify(data)
     //   });
+    //   request = await service.hydrate(request)
     //   const ret = await service.parseBody(request);
     //   Rhum.asserts.assertEquals(ret, {
     //     content_type: "application/json",
     //     data: { name: "John" }
     //   })
-    // })
+    // });
 
     Rhum.testCase(
       "Fails when error thrown whilst parsing as application/json",
@@ -639,9 +642,11 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
   });
 
   Rhum.testSuite("parseBodyAsMultipartFormData()", async () => {
-    // TODO(ebebbington) Figure out how we can do this correctly as it currently fails)
+    // TODO(crookse) Written by @ebebbington but I believe @crookse was the author of the below code.
+    //  Original notes: Figure out how we can do this correctly as it currently fails
     // Rhum.testCase("Can parse files", async () => {
-    //   const o = await Deno.open("./tests/data/multipart_1.txt");
+    //   const o: Deno.Reader = await Deno.open("./tests/data/multipart_1.txt");
+    //   console.log(o)
     //   const actual = await service.parseBodyAsMultipartFormData(
     //     o,
     //     "----------------------------434049563556637648550474",
