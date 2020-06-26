@@ -3,7 +3,7 @@ import { Drash } from "../../../../mod.ts";
 export default class CoffeeResource extends Drash.Http.Resource {
   static paths = ["/coffee", "/coffee/:id"];
 
-  protected coffee: any = {
+  protected coffee = {
     17: {
       name: "Light",
     },

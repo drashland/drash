@@ -1,10 +1,12 @@
 import { Rhum } from "../../test_deps.ts";
+import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
+const decoder = new TextDecoder();
 
 Rhum.testPlan("http/response_test.ts", () => {
   Rhum.testSuite("render()", () => {
     Rhum.testCase("Returns false is `views_path` is falsy", () => {
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const Response = new Drash.Http.Response(request);
       const result = Response.render("/users/index.html");
       Rhum.asserts.assertEquals(result, false);
@@ -14,7 +16,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.testCase(
         "Returns the html content when not using the template engine",
         () => {
-          const request = Rhum.mocks.ServerRequest("/");
+          const request = members.mockRequest("/");
           const Response = new Drash.Http.Response(request, {
             views_path: "tests/integration/app_3001_views/public/views",
           });
@@ -31,7 +33,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.testCase(
         "Returns the html content when using the template engine",
         () => {
-          const request = Rhum.mocks.ServerRequest("/");
+          const request = members.mockRequest("/");
           const Response = new Drash.Http.Response(request, {
             views_path: "tests/integration/app_3001_views/public/views",
             template_engine: true,
@@ -52,14 +54,14 @@ Rhum.testPlan("http/response_test.ts", () => {
 
   Rhum.testSuite("setCookie()", () => {
     Rhum.testCase("Successfully sets a cookie", () => {
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const Response = new Drash.Http.Response(request);
       Response.setCookie({
         name: "Framework",
         value: "Drash",
       });
       Rhum.asserts.assertEquals(
-        Response.headers.get("set-cookie"),
+        Response.headers!.get("set-cookie"),
         "Framework=Drash",
       );
     });
@@ -67,19 +69,19 @@ Rhum.testPlan("http/response_test.ts", () => {
 
   Rhum.testSuite("delCookie()", () => {
     Rhum.testCase("Successfully deletes a cookie", () => {
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const Response = new Drash.Http.Response(request);
       Response.setCookie({
         name: "Framework",
         value: "Drash",
       });
       Rhum.asserts.assertEquals(
-        Response.headers.get("set-cookie"),
+        Response.headers!.get("set-cookie"),
         "Framework=Drash",
       );
       Response.delCookie("Framework");
       Rhum.asserts.assertEquals(
-        Response.headers.get("set-cookie"),
+        Response.headers!.get("set-cookie"),
         "Framework=; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
       );
     });
@@ -87,7 +89,7 @@ Rhum.testPlan("http/response_test.ts", () => {
 
   Rhum.testSuite("generateResponse()", () => {
     Rhum.testCase("Responds with a JSON string with application/json", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
+      let request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -102,7 +104,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     });
 
     Rhum.testCase("Responds with the same body for text/html", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
+      let request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "text/html",
         },
@@ -114,7 +116,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     });
 
     Rhum.testCase("Responds with the same body for application/xml", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
+      let request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "application/xml",
         },
@@ -126,7 +128,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     });
 
     Rhum.testCase("Responds with the same body for text/plain", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
+      let request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "text/plain",
         },
@@ -138,7 +140,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     });
 
     Rhum.testCase("Responds with the same body for text/xml", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
+      let request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "text/xml",
         },
@@ -150,7 +152,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     });
 
     Rhum.testCase("Responds with the same body for any other types", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
+      let request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "something/orOther",
         },
@@ -169,7 +171,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       "Returns null if there is no message for the status code",
       () => {
-        const request = Rhum.mocks.ServerRequest("/");
+        const request = members.mockRequest("/");
         const Response = new Drash.Http.Response(request);
         Response.status_code = 9999;
         const statusMessage = Response.getStatusMessage();
@@ -178,7 +180,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     );
 
     Rhum.testCase("Returns a valid message for a valid code", () => {
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const Response = new Drash.Http.Response(request);
       Response.status_code = 404;
       const statusMessage = Response.getStatusMessage();
@@ -193,7 +195,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       "Returns null if there is no message for the status code",
       () => {
-        const request = Rhum.mocks.ServerRequest("/");
+        const request = members.mockRequest("/");
         const Response = new Drash.Http.Response(request);
         Response.status_code = 9999;
         const statusMessage = Response.getStatusMessageFull();
@@ -202,7 +204,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     );
 
     Rhum.testCase("Returns a valid message for a valid code", () => {
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const Response = new Drash.Http.Response(request);
       Response.status_code = 404;
       const statusMessage = Response.getStatusMessageFull();
@@ -213,24 +215,22 @@ Rhum.testPlan("http/response_test.ts", () => {
   Rhum.testSuite("send()", () => {
     Rhum.testCase("Contains the correct data for the request", async () => {
       // Checks: status code, body and headers
-      const mock = Rhum.mocks.ServerRequest("/", "get", {
+      const mock = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const request = await new Drash.Services.HttpRequestService()
-        .hydrate(mock);
+      const request = new Drash.Http.Request(mock);
       const responseObj = new Drash.Http.Response(request);
       responseObj.body = "Drash";
       const response = await responseObj.send();
       Rhum.asserts.assertEquals(response.status, 200);
-      Rhum.asserts.assertEquals(typeof response.send, "function");
       Rhum.asserts.assertEquals(
-        new TextDecoder().decode(response.body),
+        decoder.decode(response.body as ArrayBuffer),
         '\"Drash\"',
       );
       Rhum.asserts.assertEquals(
-        response.headers.get("content-type"),
+        response.headers!.get("content-type"),
         "application/json",
       );
     });
@@ -238,7 +238,7 @@ Rhum.testPlan("http/response_test.ts", () => {
 
   Rhum.testSuite("sendStatic()", () => {
     Rhum.testCase("Returns the contents if a file is passed in", async () => {
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const response = new Drash.Http.Response(request);
       const actual = response.sendStatic("./tests/data/static_file.txt");
       const headers = new Headers();
@@ -258,7 +258,7 @@ Rhum.testPlan("http/response_test.ts", () => {
 
   Rhum.testSuite("redirect()", () => {
     Rhum.testCase("Returns the correct data that was sent across", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
@@ -266,7 +266,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const Response = new Drash.Http.Response(request);
       const response = Response.redirect(302, "/users/1");
       Rhum.asserts.assertEquals(response.status, 302);
-      Rhum.asserts.assertEquals(response.headers.get("location"), "/users/1");
+      Rhum.asserts.assertEquals(response.headers!.get("location"), "/users/1");
     });
   });
 });

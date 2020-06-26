@@ -1,31 +1,45 @@
-import { Drash } from "../../mod.ts";
 import {
+  Cookie,
   FormFile,
   MultipartReader,
+  Response,
   ServerRequest,
+  getCookies,
 } from "../../deps.ts";
-import { getCookies, Cookie } from "../../deps.ts";
 type Reader = Deno.Reader;
+import { Drash } from "../../mod.ts";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 interface OptionsConfig {
-  default_response_content_type?: string;
-  memory_allocation?: { multipart_form_data?: number };
-  headers?: any;
+  default_response_content_type: string | undefined;
+  headers?: Headers;
+  memory_allocation: {
+    multipart_form_data: number;
+  };
 }
 
-/**
- * @memberof Drash.Services
- * @class HttpRequestService
- *
- * @description
- *     This class helps perform HTTP request related processes.
- */
-export class HttpRequestService {
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - PUBLIC //////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
+export class Request extends ServerRequest {
+  public parsed_body: Drash.Interfaces.ParsedRequestBody = {
+    content_type: "",
+    data: undefined,
+  };
+  public path_params: { [key: string]: string } = {};
+  public url_query_params: { [key: string]: string } = {};
+  public url_path: string;
+  public resource: Drash.Http.Resource | null = null;
+  public response_content_type: string = "application/json";
+  protected original_request: ServerRequest;
+
+  constructor(originalRequest: ServerRequest, options?: OptionsConfig) {
+    super();
+    this.headers = originalRequest.headers;
+    this.method = originalRequest.method;
+    this.original_request = originalRequest;
+    this.url = originalRequest.url;
+    this.url_path = this.getUrlPath(originalRequest);
+    this.url_query_params = this.getUrlQueryParams(originalRequest);
+  }
 
   /**
    * @description
@@ -48,8 +62,12 @@ export class HttpRequestService {
    *     False if the request doesn't accept any of the passed in types,
    *     or the content type that was matches
    */
-  public accepts(request: any, type: string | string[]): boolean | string {
-    const acceptHeader = request.headers.get("Accept");
+  public accepts(type: string | string[]): boolean | string {
+    const acceptHeader = this.headers.get("Accept");
+
+    if (!acceptHeader) {
+      return false;
+    }
 
     // for when `type` is a string
     if (typeof type === "string") {
@@ -72,8 +90,10 @@ export class HttpRequestService {
    *     The cookie value associated with the cookie name or undefined
    *     if a cookie with that name doesn't exist
    */
-  public getCookie(request: any, name: string): string {
-    const cookies: { [key: string]: string } = getCookies(request);
+  public getCookie(name: string): string {
+    const cookies: { [key: string]: string } = getCookies(
+      this.original_request,
+    );
     return cookies[name];
   }
 
@@ -82,22 +102,13 @@ export class HttpRequestService {
    *     Parse this request's body as `multipart/form-data` and get the
    *     requested input.
    *
-   * @param Drash.Interfaces.ParsedRequestBody parsedBody
-   *     The parsed body.
    * @param string input
    *     The filename of the file to get ??? (clarify).
    *
-   * @return any
-   *     Returns a body as a parsable JSON object where the first level of keys
-   *     are the names of the parts. For example, if the name of the first part
-   *     is `file_number_one`, then it will be accessible in the returned object
-   *     as `{returned_object}.file_number_one`.
+   * @return unknown
    */
-  public getRequestBodyFile(
-    parsedBody: Drash.Interfaces.ParsedRequestBody,
-    input: string,
-  ): any {
-    return parsedBody.data.value(input);
+  public getBodyFile(input: string): unknown {
+    return this.parsed_body.data.value(input);
   }
 
   /**
@@ -109,11 +120,8 @@ export class HttpRequestService {
    *
    * @return string|undefined
    */
-  public getRequestBodyParam(
-    parsedBody: Drash.Interfaces.ParsedRequestBody,
-    input: string,
-  ): string | undefined {
-    return parsedBody.data[input];
+  public getBodyParam(input: string): string | undefined {
+    return this.parsed_body.data[input];
   }
 
   /**
@@ -122,8 +130,8 @@ export class HttpRequestService {
    *
    * @return string|null
    */
-  public getRequestHeaderParam(request: any, input: string): string | null {
-    return request.headers.get(input);
+  public getHeaderParam(input: string): string | null {
+    return this.headers.get(input);
   }
 
   /**
@@ -132,9 +140,9 @@ export class HttpRequestService {
    *
    * @return string|undefined
    */
-  public getRequestPathParam(request: any, input: string): string | undefined {
+  public getPathParam(input: string): string | undefined {
     // request.path_params is set in Drash.Http.Server.getResourceClass()
-    return request.path_params[input];
+    return this.path_params[input];
   }
 
   /**
@@ -143,71 +151,8 @@ export class HttpRequestService {
    *
    * @return string|undefined
    */
-  public getRequestUrlQueryParam(
-    request: any,
-    input: string,
-  ): string | undefined {
-    return request.url_query_params[input];
-  }
-
-  /**
-   * @description
-   *     Get the request's requested content type.
-   *
-   *     There are three ways to get this value: (1) the request's headers by
-   *     setting `Response-Content-Type: "type"`, (2) the request's URL query
-   *     params by setting `?response_content_type=type`, and the request's body
-   *     by setting `{response_content_type: "type"}`.
-   *
-   *     The request's body takes precedence over all other settings.
-   *
-   *     The request's URL query params takes precedence over the header setting
-   *     and the default setting.
-   *
-   *     The request's header setting takes precedence over the default setting.
-   *
-   *     If no content type is specified by the request's body, URL query
-   *     params, or header, then the default content type will be used. The
-   *     default content type is the content type defined in the
-   *     `Drash.Http.Server` object's `response_output` config. If a default is
-   *     not specified, then "application/json" will be used.
-   */
-  public getResponseContentType(
-    request: any,
-    defaultContentType: string = "application/json",
-  ): string {
-    // application/json will be used for any falsy defaultContentType argument
-    defaultContentType = defaultContentType
-      ? defaultContentType
-      : "application/json";
-
-    let contentType: null | string = null;
-
-    // Check the request's headers to see if `response-content-type:
-    // {content-type}` has been specified
-    contentType = request.headers.get("Response-Content-Type")
-      ? request.headers.get("Response-Content-Type")
-      : contentType;
-
-    // Check the request's URL query params to see if
-    // ?response_content_type={content-type} has been specified
-    contentType =
-      request.url_query_params && request.url_query_params.response_content_type
-        ? request.url_query_params.response_content_type
-        : contentType;
-
-    // Check the request's body to see if
-    // {response_content_type: {content-type}} has been specified
-    contentType =
-      request.parsed_body && request.parsed_body.response_content_type
-        ? request.parsed_body.response_content_type
-        : contentType;
-
-    if (!contentType) {
-      contentType = defaultContentType;
-    }
-
-    return contentType;
+  public getUrlQueryParam(input: string): string | undefined {
+    return this.url_query_params[input];
   }
 
   /**
@@ -217,19 +162,19 @@ export class HttpRequestService {
    * @return string
    *     Returns the URL path.
    */
-  public getUrlPath(request: any): string {
-    let path = request.url;
+  public getUrlPath(serverRequest: ServerRequest): string {
+    let path = serverRequest.url;
 
     if (path == "/") {
       return path;
     }
 
-    if (request.url.indexOf("?") == -1) {
+    if (path.indexOf("?") == -1) {
       return path;
     }
 
     try {
-      path = request.url.split("?")[0];
+      path = path.split("?")[0];
     } catch (error) {
       // ha.. do nothing
     }
@@ -241,24 +186,25 @@ export class HttpRequestService {
    * @description
    *     Get the request's URL query params by parsing its URL query string.
    *
-   * @param any request
-   *     The request object.
-   *
    * @return { {[key: string]: string} }
    *     Returns the URL query string in key-value pair format.
    */
-  public getUrlQueryParams(request: any): { [key: string]: string } {
-    let queryParams: any = {};
+  public getUrlQueryParams(
+    serverRequest: ServerRequest,
+  ): { [key: string]: string } {
+    let queryParams: { [key: string]: string } = {};
 
     try {
-      let queryParamsString: null | string = this.getUrlQueryString(request);
+      let queryParamsString = this.getUrlQueryString();
       if (!queryParamsString) {
         queryParamsString = "";
       }
       queryParams = Drash.Services.StringService.parseQueryParamsString(
         queryParamsString,
       );
-    } catch (error) {}
+    } catch (error) {
+      // Do absofruitly nothing
+    }
 
     return queryParams;
   }
@@ -271,15 +217,15 @@ export class HttpRequestService {
    *     Returns the URL query string (e.g., key1=value1&key2=value2) without
    *     the leading "?" character.
    */
-  public getUrlQueryString(request: any): null | string {
+  public getUrlQueryString(): null | string {
     let queryString = null;
 
-    if (request.url.indexOf("?") == -1) {
+    if (this.url.indexOf("?") == -1) {
       return queryString;
     }
 
     try {
-      queryString = request.url.split("?")[1];
+      queryString = this.url.split("?")[1];
     } catch (error) {
       // ha.. do nothing
     }
@@ -294,114 +240,49 @@ export class HttpRequestService {
    * @return Promise<boolean>
    *     Returns `true` if the request has a body. Returns `false` if not.
    */
-  public async hasBody(request: any): Promise<boolean> {
-    let ret = parseInt(request.headers.get("content-length")) > 0;
-    if (!ret) {
-      ret = parseInt(request.headers.get("Content-Length")) > 0;
-    }
-    return ret;
-  }
+  public async hasBody(): Promise<boolean> {
+    let contentLength = this.headers.get("content-length");
 
-  /**
-   * @description
-   *     Hydrate the specified request object.
-   *
-   * @return Promise<any>
-   *     Returns a hydrated request object. For example, deno uses the
-   *     `ServerRequest` object. This method takes that object and adds more
-   *     porperties and methods to it. This makes it easier for Drash to process
-   *     the object for its own purposes.
-   */
-  public async hydrate(
-    request: any,
-    options?: OptionsConfig,
-  ): Promise<any> {
-    if (options && options.headers) {
-      this.setHeaders(request, options.headers);
+    if (!contentLength) {
+      contentLength = this.headers.get("Content-Length");
     }
 
-    const contentType = options && options.default_response_content_type
-      ? options.default_response_content_type
-      : "application/json";
+    if (!contentLength) {
+      return false;
+    }
 
-    // Attach properties
-    request.url_path = this.getUrlPath(request);
-    request.url_query_params = this.getUrlQueryParams(request);
-    request.response_content_type = this.getResponseContentType(
-      request,
-      contentType,
-    );
-
-    // Parse the body now so that callers don't have to use async-await when
-    // trying to get the body at a later time. We're sacrificing performance for
-    // convenience here.
-    const pb: Drash.Interfaces.ParsedRequestBody = await this.parseBody(
-      request,
-      options,
-    );
-
-    // Attach methods
-    const t = this;
-    request.getBodyFile = function getRequestBodyFile(input: string) {
-      return t.getRequestBodyFile(pb, input);
-    };
-    request.getBodyParam = function getRequestBodyParam(input: string) {
-      return t.getRequestBodyParam(pb, input);
-    };
-    request.getHeaderParam = function getRequestHeaderParam(input: string) {
-      return t.getRequestHeaderParam(request, input);
-    };
-    request.getPathParam = function getRequestPathParam(input: string) {
-      return t.getRequestPathParam(request, input);
-    };
-    request.getUrlQueryParam = function getRequestUrlQueryParam(
-      input: string,
-    ) {
-      return t.getRequestUrlQueryParam(request, input);
-    };
-    request.getCookie = function getCookie(name: string) {
-      return t.getCookie(request, name);
-    };
-    request.accepts = function accepts(
-      type: string | string[],
-    ): boolean | string {
-      return t.accepts(request, type);
-    };
-
-    return request;
+    return parseInt(contentLength) > 0;
   }
 
   /**
    * @description
    *     Parse the specified request's body.
    * 
-   * @param any request
    * @param OptionsConfig options
    * 
-   * @returns {content_type: string, data: any}
+   * @returns {content_type: string, data: unknown}
    *     Returns the content type of the body, and based on this
    *     the body itself in that format. If there is no body, it
    *     returns an empty properties
    */
   public async parseBody(
-    request: any,
-    options: OptionsConfig = {},
+    options?: OptionsConfig,
   ): Promise<Drash.Interfaces.ParsedRequestBody> {
-    let ret: { content_type: string; data: any } = {
+    let ret: { content_type: string; data: unknown } = {
       content_type: "",
       data: undefined,
     };
 
-    if (await this.hasBody(request) === false) {
+    if (await this.hasBody() === false) {
       return ret;
     }
 
-    const contentType: string = request.headers.get("Content-Type");
+    const contentType = this.headers.get("Content-Type");
 
     // No Content-Type header? Default to this.
     if (!contentType) {
       try {
-        ret.data = await this.parseBodyAsFormUrlEncoded(request);
+        ret.data = await this.parseBodyAsFormUrlEncoded();
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
@@ -432,15 +313,15 @@ export class HttpRequestService {
       }
       try {
         let maxMemory: number = 10;
-        const config = options.memory_allocation;
         if (
-          config && config.multipart_form_data &&
-          config.multipart_form_data > 10
+          options && options.memory_allocation &&
+          options.memory_allocation.multipart_form_data &&
+          options.memory_allocation.multipart_form_data > 10
         ) {
-          maxMemory = config.multipart_form_data;
+          maxMemory = options.memory_allocation.multipart_form_data;
         }
         ret.data = await this.parseBodyAsMultipartFormData(
-          request.body,
+          this.original_request.body,
           boundary,
           maxMemory,
         );
@@ -454,7 +335,7 @@ export class HttpRequestService {
 
     if (contentType && contentType.includes("application/json")) {
       try {
-        ret.data = await this.parseBodyAsJson(request);
+        ret.data = await this.parseBodyAsJson();
         ret.content_type = "application/json";
       } catch (error) {
         throw new Error(
@@ -468,7 +349,7 @@ export class HttpRequestService {
       contentType.includes("application/x-www-form-urlencoded")
     ) {
       try {
-        ret.data = await this.parseBodyAsFormUrlEncoded(request);
+        ret.data = await this.parseBodyAsFormUrlEncoded();
         ret.content_type = "application/x-www-form-urlencoded";
       } catch (error) {
         throw new Error(
@@ -477,7 +358,8 @@ export class HttpRequestService {
       }
     }
 
-    return ret;
+    this.parsed_body = ret;
+    return this.parsed_body;
   }
 
   /**
@@ -488,10 +370,8 @@ export class HttpRequestService {
    *    Returns an empty object if no body exists, else a key/value pair
    *    array e.g. returnValue['someKey']
    */
-  public async parseBodyAsFormUrlEncoded(
-    request: any,
-  ): Promise<object | Array<any>> {
-    let body = decoder.decode(await Deno.readAll(request.body));
+  public async parseBodyAsFormUrlEncoded(): Promise<object | Array<unknown>> {
+    let body = decoder.decode(await Deno.readAll(this.original_request.body));
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
     }
@@ -506,8 +386,8 @@ export class HttpRequestService {
    * @return Promise<object>
    *    JSON object - the decoded request body
    */
-  public async parseBodyAsJson(request: any): Promise<object> {
-    const data = decoder.decode(await Deno.readAll(request.body));
+  public async parseBodyAsJson(): Promise<object> {
+    const data = decoder.decode(await Deno.readAll(this.original_request.body));
     return JSON.parse(data);
   }
 
@@ -530,7 +410,7 @@ export class HttpRequestService {
     body: Reader,
     boundary: string,
     maxMemory: number,
-  ): Promise<any> {
+  ): Promise<unknown> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -548,16 +428,19 @@ export class HttpRequestService {
    * @description
    *     Set headers on the request.
    *
-   * @param any request
-   * @param any headers
+   * @param {[key: string]: string }  headers
    * 
    * @return void
    */
-  public setHeaders(request: any, headers: any): void {
+  public setHeaders(headers: { [key: string]: string }): void {
     if (headers) {
       for (let key in headers) {
-        request.headers.set(key, headers[key]);
+        this.headers.set(key, headers[key]);
       }
     }
+  }
+
+  public async respond(r: Response): Promise<void> {
+    this.original_request.respond(r);
   }
 }

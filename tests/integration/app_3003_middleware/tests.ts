@@ -29,7 +29,7 @@ console.log("\nIntegration tests: testing server with middleware.\n");
 import "./header_token_middleware_resource_test.ts";
 
 Deno.test({
-  name: "Stop the server",
+  name: "\b\b\b\b\b     \nStop the server",
   async fn() {
     await server.close();
   },

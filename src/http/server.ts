@@ -3,11 +3,21 @@ import {
   HTTPOptions,
   HTTPSOptions,
   STATUS_TEXT,
+  Response,
+  ServerRequest,
   Server as DenoServer,
   Status,
   serve,
   serveTLS,
 } from "../../deps.ts";
+
+interface IRequestOptions {
+  default_response_content_type: string | undefined;
+  headers?: Headers;
+  memory_allocation: {
+    multipart_form_data: number;
+  };
+}
 
 /**
  * @memberof Drash.Http
@@ -37,7 +47,7 @@ export class Server {
    *
    * @property DenoServer deno_server
    */
-  public deno_server: any;
+  public deno_server: DenoServer | null = null;
 
   /**
    * @description
@@ -88,11 +98,15 @@ export class Server {
    */
   protected middleware: {
     before_request?: Array<
-      ((request: any) => Promise<void>) | ((request: any) => void)
+      | ((request: Drash.Http.Request) => Promise<void>)
+      | ((request: Drash.Http.Request) => void)
     >;
     after_request?: Array<
-      | ((request: any, response: Drash.Http.Response) => Promise<void>)
-      | ((request: any, response: Drash.Http.Response) => void)
+      | ((
+        request: Drash.Http.Request,
+        response: Drash.Http.Response,
+      ) => Promise<void>)
+      | ((request: Drash.Http.Request, response: Drash.Http.Response) => void)
     >;
   } = {};
 
@@ -139,7 +153,7 @@ export class Server {
 
     this.configs = configs;
 
-    if (configs.hasOwnProperty("middleware")) {
+    if (configs.middleware) {
       this.addMiddleware(configs.middleware);
     }
 
@@ -185,25 +199,22 @@ export class Server {
    *     method takes that object and hydrates it with more properties and
    *     methods.
    */
-  public async getRequest(request: any): Promise<any> {
-    let options: any = {
+  public async getRequest(
+    serverRequest: ServerRequest,
+  ): Promise<Drash.Http.Request> {
+    let options: IRequestOptions = {
       default_response_content_type: this.configs.response_output,
-      headers: {
-        base_url: this.hostname,
-      },
       memory_allocation: {
         multipart_form_data: 10,
       },
     };
-    const config: any = this.configs.memory_allocation;
+    const config = this.configs.memory_allocation;
     if (config && config.multipart_form_data) {
       options.memory_allocation.multipart_form_data =
         config.multipart_form_data;
     }
-    request = await new Drash.Services.HttpRequestService().hydrate(
-      request,
-      options,
-    );
+    const request = new Drash.Http.Request(serverRequest, options);
+    await request.parseBody();
     return request;
   }
 
@@ -217,24 +228,28 @@ export class Server {
    * @return Promise<any>
    *    See `Drash.Http.Response.send()`.
    */
-  public async handleHttpRequest(request: any): Promise<any> {
+  public async handleHttpRequest(
+    serverRequest: Drash.Http.Request,
+  ): Promise<Drash.Interfaces.ResponseOutput> {
     // Handle a request to a static path
-    if (this.requestTargetsStaticPath(request)) {
-      return this.handleHttpRequestForStaticPathAsset(request);
+    if (this.requestTargetsStaticPath(serverRequest)) {
+      return await this.handleHttpRequestForStaticPathAsset(serverRequest);
     }
 
     // Handle a request to the favicon
-    if (request.url == "/favicon.ico") {
-      return this.handleHttpRequestForFavicon(request);
+    if (serverRequest.url == "/favicon.ico") {
+      return this.handleHttpRequestForFavicon(serverRequest);
     }
 
-    let response: any;
-    let resource: any;
+    let response;
+    let resource;
+    let request;
+
     try {
-      request = await this.getRequest(request);
+      request = await this.getRequest(serverRequest);
     } catch (error) {
-      return this.handleHttpRequestError(
-        request,
+      return await this.handleHttpRequestError(
+        serverRequest,
         this.httpErrorResponse(400, error.message),
       );
     }
@@ -250,12 +265,13 @@ export class Server {
 
       // No resource? Send a 404 (Not Found) response.
       if (!resourceClass) {
-        return this.handleHttpRequestError(
+        return await this.handleHttpRequestError(
           request,
           this.httpErrorResponse(404),
         );
       }
 
+      // deno-lint-ignore ban-ts-comment
       // @ts-ignore
       // (crookse)
       //
@@ -266,7 +282,19 @@ export class Server {
       // TS2351: Cannot use 'new' with an expression whose type lacks a call or
       // construct signature.
       //
-      resource = this.getResourceObject(resourceClass, request);
+      resource = new (resourceClass as Drash.Http.Resource)(
+        request,
+        new Drash.Http.Response(request, {
+          views_path: this.configs.views_path,
+          template_engine: this.configs.template_engine,
+        }),
+        this,
+      );
+      // We have to add the static properties back because they get blown away
+      // when the resource object is created
+      resource.paths = resourceClass.paths;
+      resource.middleware = resourceClass.middleware;
+
       request.resource = resource;
       this.logDebug(
         "Using `" + resource.constructor.name +
@@ -290,7 +318,12 @@ export class Server {
       return response.send();
     } catch (error) {
       this.logDebug(error.stack);
-      return this.handleHttpRequestError(request, error, resource, response);
+      return await this.handleHttpRequestError(
+        request,
+        error,
+        resource,
+        response,
+      );
     }
   }
 
@@ -315,17 +348,19 @@ export class Server {
    *     See `Drash.Http.Response.send()`.
    */
   public async handleHttpRequestError(
-    request: any,
-    error: any,
-    resource: Drash.Http.Resource | any = {},
-    response: Drash.Http.Response | any = {},
-  ): Promise<any> {
+    request: Drash.Http.Request,
+    error: Drash.Exceptions.HttpException,
+    resource: Drash.Http.Resource | null = null,
+    response: Drash.Http.Response | null = null,
+  ): Promise<Drash.Interfaces.ResponseOutput> {
     this.logDebug(
       `Error occurred while handling request: ${request.method} ${request.url}`,
     );
     this.logDebug(error.message);
-    this.logDebug("Stack trace below:");
-    this.logDebug(error.stack);
+    if (error.stack) {
+      this.logDebug("Stack trace below:");
+      this.logDebug(error.stack);
+    }
 
     this.logDebug("Generating generic error response object.");
 
@@ -335,7 +370,10 @@ export class Server {
     // (Method Not Allowed) response.
     if (resource) {
       if (!response) {
-        if (typeof resource[request.method.toUpperCase()] !== "function") {
+        const resourceObj =
+          (resource as unknown as { [key: string]: Function });
+        const method = request.method.toUpperCase();
+        if (typeof resourceObj[method] !== "function") {
           error = new Drash.Exceptions.HttpException(405);
         }
       }
@@ -345,7 +383,7 @@ export class Server {
       views_path: this.configs.views_path,
       template_engine: this.configs.template_engine,
     });
-    response.status_code = error.code ? error.code : null;
+    response.status_code = error.code ? error.code : 500;
     response.body = error.message ? error.message : response.getStatusMessage();
 
     this.logDebug(
@@ -384,7 +422,9 @@ export class Server {
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForFavicon(request: any): string {
+  public handleHttpRequestForFavicon(
+    request: Drash.Http.Request,
+  ): Drash.Interfaces.ResponseOutput {
     const headers = new Headers();
     headers.set("Content-Type", "image/x-icon");
 
@@ -412,7 +452,11 @@ export class Server {
     }
 
     request.respond(response);
-    return JSON.stringify(response);
+    return {
+      body: response.body,
+      headers: headers,
+      status_code: response.status_code,
+    };
   }
 
   /**
@@ -425,7 +469,9 @@ export class Server {
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
-  public handleHttpRequestForStaticPathAsset(request: any): any {
+  public async handleHttpRequestForStaticPathAsset(
+    request: Drash.Http.Request,
+  ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
       const response = new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
@@ -433,25 +479,28 @@ export class Server {
       });
 
       if (this.configs.pretty_links == null) {
-        return response.sendStatic(`${this.directory}/${request.url_path}`);
+        return response.sendStatic(`${this.directory}/${request.url}`);
       }
 
-      const extension = request.url_path.split(".")[1];
+      const extension = request.url.split(".")[1];
       if (extension != null) {
-        return response.sendStatic(`${this.directory}/${request.url_path}`);
+        return response.sendStatic(`${this.directory}/${request.url}`);
       }
 
       const contents = Deno.readFileSync(
-        `${this.directory}/${request.url_path}/index.html`,
+        `${this.directory}/${request.url}/index.html`,
       );
       if (contents == null) {
-        return response.sendStatic(`${this.directory}/${request.url_path}`);
+        return response.sendStatic(`${this.directory}/${request.url}`);
       }
 
       response.headers.set("Content-Type", "text/html");
       return response.sendStatic(null, contents);
     } catch (error) {
-      return this.handleHttpRequestError(request, this.httpErrorResponse(404));
+      return await this.handleHttpRequestError(
+        request,
+        this.httpErrorResponse(404),
+      );
     }
   }
 
@@ -464,24 +513,24 @@ export class Server {
    *     Returns an instance of the resourceClass passed in, and setting the
    *     `paths` and `middleware` properties
    */
-  public getResourceObject(
-    resourceClass: any,
-    request: any,
-  ): Drash.Http.Resource {
-    const resourceObj: Drash.Http.Resource = new resourceClass(
-      request,
-      new Drash.Http.Response(request, {
-        views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine,
-      }),
-      this,
-    );
-    // We have to add the static properties back because they get blown away
-    // when the resource object is created
-    resourceObj.paths = resourceClass.paths;
-    resourceObj.middleware = resourceClass.middleware;
-    return resourceObj;
-  }
+  // public getResourceObject(
+  //   resourceClass: Drash.Http.Resource,
+  //   request: Drash.Http.Request,
+  // ): Drash.Http.Resource {
+  //   const resourceObj: Drash.Http.Resource = new resourceClass(
+  //     request,
+  //     new Drash.Http.Response(request, {
+  //       views_path: this.configs.views_path,
+  //       template_engine: this.configs.template_engine,
+  //     }),
+  //     this,
+  //   );
+  //   // We have to add the static properties back because they get blown away
+  //   // when the resource object is created
+  //   resourceObj.paths = resourceClass.paths;
+  //   resourceObj.middleware = resourceClass.middleware;
+  //   return resourceObj;
+  // }
 
   /**
    * @description
@@ -507,11 +556,14 @@ export class Server {
     this.port = options.port;
     this.deno_server = serve(options);
     (async () => {
-      for await (const request of this.deno_server) {
+      for await (const request of this.deno_server!) {
         try {
-          this.handleHttpRequest(request);
+          this.handleHttpRequest(request as Drash.Http.Request);
         } catch (error) {
-          this.handleHttpRequestError(request, this.httpErrorResponse(500));
+          this.handleHttpRequestError(
+            request as Drash.Http.Request,
+            this.httpErrorResponse(500),
+          );
         }
       }
     })();
@@ -542,11 +594,14 @@ export class Server {
     this.port = options.port;
     this.deno_server = serveTLS(options);
     (async () => {
-      for await (const request of this.deno_server) {
+      for await (const request of this.deno_server!) {
         try {
-          this.handleHttpRequest(request);
+          this.handleHttpRequest(request as Drash.Http.Request);
         } catch (error) {
-          this.handleHttpRequestError(request, this.httpErrorResponse(500));
+          this.handleHttpRequestError(
+            request as Drash.Http.Request,
+            this.httpErrorResponse(500),
+          );
         }
       }
     })();
@@ -558,7 +613,8 @@ export class Server {
    *     Close the server.
    */
   public close(): void {
-    this.deno_server.close();
+    this.deno_server!.close();
+    this.deno_server = null;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -639,7 +695,10 @@ export class Server {
    *
    * @return void
    */
-  protected addMiddleware(middlewares: any): void {
+  protected addMiddleware(
+    // deno-lint-ignore no-explicit-any
+    middlewares: any,
+  ): void {
     // Add server-level middleware
     if (middlewares.before_request != null) {
       this.middleware.before_request = [];
@@ -682,7 +741,7 @@ export class Server {
    * @return void
    */
   protected async executeMiddlewareServerLevelBeforeRequest(
-    request: any,
+    request: Drash.Http.Request,
   ): Promise<void> {
     // Execute server-level middleware
     if (this.middleware.before_request != null) {
@@ -704,7 +763,7 @@ export class Server {
    * @return void
    */
   protected async executeMiddlewareServerLevelAfterRequest(
-    request: any,
+    request: Drash.Http.Request,
     response: Drash.Http.Response | null,
   ): Promise<void> {
     if (this.middleware.after_request != null) {
@@ -742,7 +801,9 @@ export class Server {
    *
    *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(request: any): Drash.Http.Resource | undefined {
+  protected getResourceClass(
+    request: Drash.Http.Request,
+  ): Drash.Http.Resource | undefined {
     for (const resourceName in this.resources) {
       const resource = this.resources[resourceName];
 
@@ -759,7 +820,7 @@ export class Server {
         }
 
         pathMatchesRequestPathname.shift();
-        const pathParamsInKvpForm: any = {};
+        const pathParamsInKvpForm: { [key: string]: string } = {};
         pathObj.params.forEach((paramName: string, index: number) => {
           pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
         });
@@ -780,13 +841,13 @@ export class Server {
    * @return boolean
    *     Returns true if the request targets a static path.
    */
-  protected requestTargetsStaticPath(request: any): boolean {
+  protected requestTargetsStaticPath(serverRequest: ServerRequest): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
-    const staticPath = request.url.split("/")[1];
+    const staticPath = serverRequest.url.split("/")[1];
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${staticPath}`;
 
@@ -794,14 +855,18 @@ export class Server {
       return false;
     }
 
-    request = new Drash.Services.HttpRequestService().hydrate(request, {
-      headers: {
-        "Response-Content-Type": new Drash.Services.HttpService().getMimeType(
-          request.url,
-          true,
-        ),
-      },
-    });
+    const mimeType = new Drash.Services.HttpService().getMimeType(
+      serverRequest.url,
+      true,
+    );
+
+    const request = new Drash.Http.Request(serverRequest);
+    if (mimeType) {
+      request.headers.set(
+        "Response-Content-Type",
+        mimeType,
+      );
+    }
     return true;
   }
 

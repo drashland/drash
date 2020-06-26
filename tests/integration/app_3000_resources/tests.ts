@@ -1,4 +1,5 @@
 import { Drash } from "../../../mod.ts";
+import { Rhum } from "../../test_deps.ts";
 
 import CoffeeResource from "./resources/coffee_resource.ts";
 import CookieResource from "./resources/cookie_resource.ts";
@@ -33,16 +34,16 @@ console.log(
   "\nIntegration tests: testing different resources can be made and targeted.\n",
 );
 
-import "./coffee_resource_test.ts";
-import "./cookie_resource_test.ts";
-import "./files_resource_test.ts";
 import "./home_resource_test.ts";
 import "./request_accepts_resource_test.ts";
 import "./request_accepts_two_resource_test.ts";
+import "./coffee_resource_test.ts";
+import "./cookie_resource_test.ts";
+import "./files_resource_test.ts";
 import "./users_resource_test.ts";
 
 Deno.test({
-  name: "Stop the server",
+  name: "\b\b\b\b\b     \nStop the server",
   async fn() {
     await server.close();
   },

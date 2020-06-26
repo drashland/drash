@@ -20,6 +20,7 @@ import { NameCollisionException as BaseNameCollisionException } from "./src/exce
 
 // Http
 import { Middleware as BaseMiddleware } from "./src/http/middleware.ts";
+import { Request as BaseRequest } from "./src/http/request.ts";
 import { Resource as BaseResource } from "./src/http/resource.ts";
 import { Response as BaseResponse } from "./src/http/response.ts";
 import { Server as BaseServer } from "./src/http/server.ts";
@@ -30,6 +31,7 @@ import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log
 import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
 import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts";
+import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
@@ -38,7 +40,6 @@ import { FileLogger as BaseFileLogger } from "./src/core_loggers/file_logger.ts"
 
 // Services
 import { HttpService as BaseHttpService } from "./src/services/http_service.ts";
-import { HttpRequestService as BaseHttpRequestService } from "./src/services/http_request_service.ts";
 import { StringService as BaseStringService } from "./src/services/string_service.ts";
 
 export namespace Drash {
@@ -77,6 +78,7 @@ export namespace Drash {
     export type MiddlewareType = MiddlewareTypeDefinition;
     export const Middleware = MiddlewareHandler;
     export class Resource extends BaseResource {}
+    export class Request extends BaseRequest {}
     export class Response extends BaseResponse {}
     export class Server extends BaseServer {}
   }
@@ -87,11 +89,11 @@ export namespace Drash {
     export interface ParsedRequestBody extends BaseParsedRequestBody {}
     export interface ServerConfigs extends BaseServerConfigs {}
     export interface ResponseOptions extends BaseResponseOptions {}
+    export interface ResponseOutput extends BaseResponseOutput {}
   }
 
   export namespace Services {
     export class HttpService extends BaseHttpService {}
-    export class HttpRequestService extends BaseHttpRequestService {}
     export class StringService extends BaseStringService {}
   }
 

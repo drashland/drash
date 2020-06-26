@@ -41,6 +41,7 @@ export class HttpService {
       let fileParts = filePath.split(".");
       filePath = fileParts.pop();
 
+      // deno-lint-ignore no-explicit-any
       const database: any = Drash.Dictionaries.MimeDb;
 
       for (let key in database) {

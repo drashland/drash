@@ -203,20 +203,22 @@ export class Response {
    * @description
    *     Send the response to the client making the request.
    *
-   * @return Promise<any>
+   * @return Promise<Drash.Interfaces.ResponseOutput>
    *     Returns the output which is passed to `request.respond()`. The output
    *     is only returned for unit testing purposes. It is not intended to be
    *     used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
-  public async send(): Promise<any> {
+  public async send(): Promise<Drash.Interfaces.ResponseOutput> {
     let body = await this.generateResponse();
-    let output = {
+    let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: new TextEncoder().encode(body),
     };
-    return this.request.respond(output);
+    this.request.respond(output);
+    output.status_code = this.status_code;
+    return output;
   }
 
   /**
@@ -229,14 +231,13 @@ export class Response {
    * @param null|Uint8Array contents
    *     TODO Add description
    *
-   * @return {status: number, headers: Headers, body: any}
+   * @return Drash.Interfaces.ResponseOutput
    */
-  public sendStatic(file: null | string, contents: null | Uint8Array = null): {
-    status: number;
-    headers: Headers;
-    body: any;
-  } {
-    let output = {
+  public sendStatic(
+    file: null | string,
+    contents: Uint8Array | null = null,
+  ): Drash.Interfaces.ResponseOutput {
+    let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: file ? Deno.readFileSync(file) : contents,
@@ -244,6 +245,7 @@ export class Response {
 
     this.request.respond(output);
 
+    output.status_code = this.status_code;
     return output;
   }
 
@@ -267,14 +269,17 @@ export class Response {
   public redirect(
     httpStatusCode: number,
     location: string,
-  ): { status: number; headers: Headers; body: any } {
+  ): Drash.Interfaces.ResponseOutput {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
-    let output = {
+    let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
     };
-    return this.request.respond(output);
+    this.request.respond(output);
+
+    output.status_code = this.status_code;
+    return output;
   }
 }

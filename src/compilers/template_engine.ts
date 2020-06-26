@@ -80,6 +80,7 @@ export class TemplateEngine {
           : "");
       return add;
     }
+    // deno-lint-ignore no-cond-assign
     while (match = re.exec(html)) {
       add(html.slice(cursor, match.index));
       add(match[1], true);

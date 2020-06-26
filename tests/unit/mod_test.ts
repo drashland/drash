@@ -80,6 +80,7 @@ Rhum.testPlan("mod_test.ts", () => {
     });
 
     Rhum.testCase("different data members can be added", () => {
+      // deno-lint-ignore no-explicit-any
       let data: any = {
         myBooleanTrue: true,
         myBooleanFalse: false,

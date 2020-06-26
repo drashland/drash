@@ -2,6 +2,7 @@ import { Rhum } from "../../test_deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 Rhum.testPlan("http/server_test.ts", () => {
   Rhum.testSuite("constrcutor()", () => {
@@ -25,7 +26,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      let request = Rhum.mocks.ServerRequest();
+      let request = members.mockRequest();
       request = await server.getRequest(request);
       Rhum.asserts.assertEquals("function", typeof request.getBodyFile);
       Rhum.asserts.assertEquals("function", typeof request.getBodyParam);
@@ -36,7 +37,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      let request = new Rhum.mocks.ServerRequest();
+      let request = members.mockRequest();
       const body = encoder.encode(JSON.stringify({
         hello: "world",
       }));
@@ -52,12 +53,12 @@ Rhum.testPlan("http/server_test.ts", () => {
   });
 
   Rhum.testSuite("handleHttpRequest()", () => {
-    Rhum.testCase("/favicon.ico", async () => {
+    Rhum.testCase("request.url == /favicon.ico", async () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      const request = Rhum.mocks.ServerRequest("/favicon.ico");
-      const response = JSON.parse(await server.handleHttpRequest(request));
+      const request = members.mockRequest("/favicon.ico");
+      const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(200, response.status_code);
     });
 
@@ -65,10 +66,10 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
-        members.responseBody(response),
+        decoder.decode(response.body as ArrayBuffer),
         { body: "got" },
       );
     });
@@ -81,7 +82,7 @@ Rhum.testPlan("http/server_test.ts", () => {
         body_param: "hello",
       }));
       const reader = new Deno.Buffer(body as ArrayBuffer);
-      const request = Rhum.mocks.ServerRequest("/", "post", {
+      const request = members.mockRequest("/", "post", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -89,7 +90,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
-        members.responseBody(response),
+        decoder.decode(response.body as ArrayBuffer),
         { body: "hello" },
       );
     });
@@ -100,83 +101,94 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       let request;
       let response;
-      request = Rhum.mocks.ServerRequest("/users/1");
+      request = members.mockRequest("/users/1");
       response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(members.responseBody(response), {
         user_id: "1",
       });
-      request = Rhum.mocks.ServerRequest("/notes/1557");
+      request = members.mockRequest("/notes/1557");
       response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(members.responseBody(response), {
-        note_id: "1557",
-      });
+      members.assertResponseJsonEquals(
+        decoder.decode(response.body as ArrayBuffer),
+        { note_id: "1557" },
+      );
     });
 
     Rhum.testCase("getHeaderParam()", async () => {
       const server = new Drash.Http.Server({
         resources: [GetHeaderParam],
       });
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           id: 12345,
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(members.responseBody(response), {
-        header_param: "12345",
-      });
+      members.assertResponseJsonEquals(
+        decoder.decode(response.body as ArrayBuffer),
+        { header_param: "12345" },
+      );
     });
 
     Rhum.testCase("getUrlQueryParam()", async () => {
       const server = new Drash.Http.Server({
         resources: [GetUrlQueryParam],
       });
-      const request = Rhum.mocks.ServerRequest("/?id=123459");
+      const request = members.mockRequest("/?id=123459");
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(members.responseBody(response), {
-        query_param: "123459",
-      });
+      members.assertResponseJsonEquals(
+        decoder.decode(response.body as ArrayBuffer),
+        { query_param: "123459" },
+      );
     });
 
-    Rhum.testCase("response.redirect()", async () => {
+    Rhum.testCase("response.redirect() with 301", async () => {
       const server = new Drash.Http.Server({
         resources: [NotesResource],
       });
       let request;
       let response;
-      request = Rhum.mocks.ServerRequest("/notes/123", "get", {
-        server: server,
-      });
-      response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(response.status, 302);
-      Rhum.asserts.assertEquals(
-        response.headers.get("location"),
-        "/notes/1557",
-      );
-      request = Rhum.mocks.ServerRequest("/notes/1234", "get", {
+      request = members.mockRequest("/notes/1234", "get", {
         server: server,
       });
       response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(response.status, 301);
       Rhum.asserts.assertEquals(
-        response.headers.get("location"),
+        response.headers!.get("location"),
         "/notes/1667",
+      );
+    });
+
+    Rhum.testCase("response.redirect() with 302", async () => {
+      const server = new Drash.Http.Server({
+        resources: [NotesResource],
+      });
+      let request;
+      let response;
+      request = members.mockRequest("/notes/123", "get", {
+        server: server,
+      });
+      response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(response.status, 302);
+      Rhum.asserts.assertEquals(
+        response.headers!.get("location"),
+        "/notes/1557",
       );
     });
   });
 
   Rhum.testSuite("handleHttpRequestError()", () => {
     Rhum.testCase("Returns the correct response", async () => {
-      const request = Rhum.mocks.ServerRequest("/", "get");
+      const request = members.mockRequest("/", "get");
       const server = new Drash.Http.Server({});
       const error = {
         code: 404,
         message: "Some error message",
-      };
+      } as Drash.Exceptions.HttpException;
       const response = await server.handleHttpRequestError(request, error);
       Rhum.asserts.assertEquals(response.status, 404);
       Rhum.asserts.assertEquals(
-        new TextDecoder().decode(response.body),
+        decoder.decode(response.body as ArrayBuffer),
         "Some error message",
       );
     });
@@ -184,20 +196,12 @@ Rhum.testPlan("http/server_test.ts", () => {
 
   Rhum.testSuite("handleHttpRequestForFavicon", () => {
     Rhum.testCase("Returns the correct response", async () => {
-      const request = Rhum.mocks.ServerRequest("/favicon.ico", "get");
+      const request = members.mockRequest("/favicon.ico", "get");
       const server = new Drash.Http.Server({});
       const response = await server.handleHttpRequestForFavicon(request);
-      Rhum.asserts.assertEquals(JSON.parse(response), {
+      Rhum.asserts.assertEquals(response, {
         body: "",
         status_code: 200,
-        request: {
-          done: {},
-          _body: null,
-          finalized: false,
-          url: "/favicon.ico",
-          method: "get",
-          headers: {},
-        },
         headers: {},
       });
     });
@@ -205,35 +209,6 @@ Rhum.testPlan("http/server_test.ts", () => {
 
   Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
     // TODO(any) How do we test this?
-  });
-
-  Rhum.testSuite("getResourceObject()", () => {
-    Rhum.testCase("Returns the correct data", () => {
-      class Resource extends Drash.Http.Resource {
-        static paths = ["/", "/home"];
-        public GET() {
-          this.response.body = "Hello world!";
-          return this.response;
-        }
-      }
-      const server = new Drash.Http.Server({
-        resources: [Resource],
-      });
-      const request = Rhum.mocks.ServerRequest("/");
-      const resourceObject = server.getResourceObject(Resource, request);
-      Rhum.asserts.assertEquals(resourceObject.paths, [
-        {
-          og_path: "/",
-          regex_path: "^//?$",
-          params: [],
-        },
-        {
-          og_path: "/home",
-          regex_path: "^/home/?$",
-          params: [],
-        },
-      ]);
-    });
   });
 
   Rhum.testSuite("run()", () => {
@@ -255,9 +230,9 @@ Rhum.testPlan("http/server_test.ts", () => {
         hostname: "localhost",
         port: 1667,
       });
-      Rhum.asserts.assertEquals(server.deno_server.closing, false);
+      Rhum.asserts.assert(server.deno_server);
       server.close();
-      Rhum.asserts.assertEquals(server.deno_server.closing, true);
+      Rhum.asserts.assert(!server.deno_server);
     });
   });
 });

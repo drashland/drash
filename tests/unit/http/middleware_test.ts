@@ -11,7 +11,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddleware],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1");
+      const request = members.mockRequest("/users/1");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -26,7 +26,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddleware],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "hehe",
         },
@@ -45,7 +45,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -60,7 +60,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           send_response: "yes please",
         },
@@ -79,7 +79,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           send_response: "yes do it",
         },
@@ -95,7 +95,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = Rhum.mocks.ServerRequest("/");
+      const request = members.mockRequest("/");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -110,7 +110,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           before: "yes",
         },
@@ -130,7 +130,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = Rhum.mocks.ServerRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           before: "yesss",
         },
@@ -143,20 +143,22 @@ Rhum.testPlan("http/middleware_test.ts", () => {
 
 Rhum.run();
 
+////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - DATA //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+interface IUser {
+  name: string;
+}
 
 class ResourceWithMiddleware extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   public GET() {
-    this.response.body = this.users[this.request.getPathParam("id")];
+    this.response.body = this.users.get(this.request.getPathParam("id"));
     return this.response;
   }
 }
@@ -169,7 +171,7 @@ class ResourceWithMiddlewareHooked extends Drash.Http.Resource {
   }
 }
 
-function BeforeRequest(req: any) {
+function BeforeRequest(req: Drash.Http.Request) {
   if (!req.getHeaderParam("before")) {
     throw new Drash.Exceptions.HttpException(
       400,
@@ -182,11 +184,9 @@ function BeforeRequest(req: any) {
       "Ha... try again. Close though.",
     );
   }
-
-  req.hello = "changed_before_request";
 }
 
-function AfterRequest(req: any, res: Drash.Http.Response) {
+function AfterRequest(req: Drash.Http.Request, res: Drash.Http.Response) {
   if (!req.getHeaderParam("send_response")) {
     throw new Drash.Exceptions.HttpException(
       400,
@@ -201,7 +201,7 @@ function AfterRequest(req: any, res: Drash.Http.Response) {
   }
 }
 
-function VerifyCsrfToken(req: any) {
+function VerifyCsrfToken(req: Drash.Http.Request) {
   if (!req.getHeaderParam("csrf_token")) {
     throw new Drash.Exceptions.HttpException(
       400,

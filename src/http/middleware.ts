@@ -6,8 +6,11 @@ import { Drash } from "../../mod.ts";
  * @param response Contains the instance of the response.
  */
 export type MiddlewareFunction =
-  | ((request: any, response: Drash.Http.Response) => Promise<void>)
-  | ((request: any, response: Drash.Http.Response) => void);
+  | ((
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ) => Promise<void>)
+  | ((request: Drash.Http.Request, response: Drash.Http.Response) => void);
 
 /**
  * @type MiddlewareType
@@ -33,7 +36,7 @@ export type MiddlewareType = {
  */
 export function Middleware(middlewares: MiddlewareType) {
   return function (
-    ...args: any[]
+    ...args: unknown[]
   ) {
     switch (args.length) {
       case 1:
@@ -108,7 +111,7 @@ function ClassMiddleware(middlewares: MiddlewareType) {
       }
 
       const originalFunction = classFunctions[key].value;
-      classFunctions[key].value = async function (...args: any[]) {
+      classFunctions[key].value = async function (...args: unknown[]) {
         const { request, response } = Object.getOwnPropertyDescriptors(this);
         // Execute before_request Middleware if exist
         if (middlewares.before_request != null) {
