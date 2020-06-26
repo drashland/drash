@@ -204,7 +204,23 @@ Rhum.testPlan("http/server_test.ts", () => {
   });
 
   Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
-    // TODO(any) How do we test this?
+    Rhum.testCase("Should respond with a 200 on a valid request", async () => {
+      let request = Rhum.mocks.ServerRequest("/tests/data/static_file.txt", "get");
+      request = await new Drash.Services.HttpRequestService().hydrate(request);
+      // Setup so we can make requests to a static file. This example will try get the `./tests/data/static_file.txt` file served
+      const server = new Drash.Http.Server({
+        directory: ".",
+        static_paths: ["/tests/data"],
+        response_output: "text/html",
+      });
+      await server.run({
+        hostname: "localhost",
+        port: 1667
+      });
+      const res = await server.handleHttpRequestForStaticPathAsset(request)
+      await server.close();
+      Rhum.asserts.assertEquals(res.status, 200)
+    })
   });
 
   Rhum.testSuite("getResourceObject()", () => {
@@ -237,15 +253,55 @@ Rhum.testPlan("http/server_test.ts", () => {
   });
 
   Rhum.testSuite("run()", () => {
-    Rhum.testCase("Runs the server and returns it", () => {
-      // TODO(ebebbington) How do we test this?
+    Rhum.testCase("Runs a server", async () => {
+      class Resource extends Drash.Http.Resource {
+        static paths = ["/"];
+        public GET() {
+          this.response.body = "Hello world!";
+          return this.response;
+        }
+      }
+      const server = new Drash.Http.Server({
+        resources: [Resource]
+      });
+      await server.run({
+        hostname: "localhost",
+        port: 1667
+      })
+      const res = await fetch("http://localhost:1667");
+      const text = await res.text();
+      await server.close();
+      Rhum.asserts.assertEquals(res.status, 200);
+      Rhum.asserts.assertEquals(text, "\"Hello world!\"")
     });
   });
 
   Rhum.testSuite("runTLS()", () => {
-    Rhum.testCase("Runs the server and returns it", () => {
-      // TODO(ebebbington) How do we test this?
-    });
+    // TODO(ebebbington) TLS doesn't work with fetch atm. See: https://github.com/denoland/deno/issues/2301
+    //  and: https://github.com/denoland/deno/issues/1371. Might need to update the certs.
+    // Rhum.testCase("Runs a server", async  () => {
+    //   class Resource extends Drash.Http.Resource {
+    //     static paths = ["/"];
+    //     public GET() {
+    //       this.response.body = "Hello world!";
+    //       return this.response;
+    //     }
+    //   }
+    //   const server = new Drash.Http.Server({
+    //     resources: [Resource]
+    //   });
+    //   await server.runTLS({
+    //     hostname: "localhost",
+    //     port: 1667,
+    //     certFile: "./tests/integration/app_3002_https/server.crt",
+    //     keyFile: "./tests/integration/app_3002_https/server.key"
+    //   });
+    //   const res = await fetch("https://localhost:1667");
+    //   const text = await res.text();
+    //   await server.close();
+    //   Rhum.asserts.assertEquals(res.status, 200);
+    //   Rhum.asserts.assertEquals(text, "\"Hello world!\"")
+    // });
   });
 
   Rhum.testSuite("close()", () => {
