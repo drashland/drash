@@ -69,10 +69,10 @@ export class TemplateEngine {
     // The following code was taken from (and modified):
     // https://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
     // Thanks, Krasimir!
-    let re: any = /<%(.+?)\%>/g;
-    let reExp: any = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
-    let result: any;
-    function add(line: any, js: any = null) {
+    let re = /<%(.+?)\%>/g;
+    let reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
+    let result;
+    function add(line: string, js: unknown | null = null) {
       js
         ? (code += line.match(reExp) ? line + "\n" : "r.push(" + line + ");\n")
         : (code += line != ""
