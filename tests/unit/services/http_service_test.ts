@@ -2,6 +2,80 @@ import { Rhum } from "../../test_deps.ts";
 import { Drash } from "../../../mod.ts";
 
 Rhum.testPlan("services/http_service_test.ts", () => {
+  Rhum.testSuite("accepts()", () => {
+    Rhum.testCase(
+      "accepts the single type if it is present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        const service = new Drash.Services.HttpService();
+        actual = service.accepts(request, "application/json");
+        Rhum.asserts.assertEquals("application/json", actual);
+        actual = service.accepts(request, "text/html");
+        Rhum.asserts.assertEquals("text/html", actual);
+      },
+    );
+    Rhum.testCase(
+      "rejects the single type if it is not present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        const service = new Drash.Services.HttpService();
+        actual = service.accepts(request, "text/xml");
+        Rhum.asserts.assertEquals(false, actual);
+      },
+    );
+    Rhum.testCase(
+      "accepts the first of multiple types if it is present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        const service = new Drash.Services.HttpService();
+        actual = service.accepts(request, ["application/json", "text/xml"]);
+        Rhum.asserts.assertEquals("application/json", actual);
+      },
+    );
+    Rhum.testCase(
+      "accepts the second of multiple types if it is present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        const service = new Drash.Services.HttpService();
+        actual = service.accepts(request, ["text/xml", "application/json"]);
+        Rhum.asserts.assertEquals("application/json", actual);
+      },
+    );
+    Rhum.testCase(
+      "rejects the multiple types if none are present in the header",
+      () => {
+        const request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            Accept: "application/json;text/html",
+          },
+        });
+        let actual;
+        const service = new Drash.Services.HttpService();
+        actual = service.accepts(request, ["text/xml", "text/plain"]);
+        Rhum.asserts.assertEquals(false, actual);
+      },
+    );
+  });
   Rhum.testSuite("getMimeType()", () => {
     Rhum.testCase("file is not a URL", () => {
       let actual;
