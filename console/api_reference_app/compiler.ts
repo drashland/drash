@@ -57,7 +57,7 @@ export default class ClassCompiler {
     let signature = "";
 
     for (;;) {
-      let readLine  = await br.readLine();
+      let readLine = await br.readLine();
 
       // Yay! We made it! (maybe)...
       if (readLine === null) {
