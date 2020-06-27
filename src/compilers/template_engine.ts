@@ -56,6 +56,7 @@ export class TemplateEngine {
     }
     // Check for partials
     let partials;
+    // deno-lint-ignore no-cond-assign
     while (partials = html.match(/<% include_partial.* %>/g)) {
       partials.forEach((m: string, i: number) => {
         let template = m.replace('<% include_partial("', "")
