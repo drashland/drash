@@ -1,146 +1,149 @@
+import { Rhum } from "../../test_deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 
-members.testSuite("http/middleware_test.ts", () => {
-  members.test("before_request: missing CSRF token", async () => {
-    const server = new Drash.Http.Server({
-      middleware: {
-        before_request: [VerifyCsrfToken],
-      },
-      resources: [ResourceWithMiddleware],
+Rhum.testPlan("http/middleware_test.ts", () => {
+  Rhum.testSuite("http/middleware_test.ts", () => {
+    Rhum.testCase("before_request: missing CSRF token", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          before_request: [VerifyCsrfToken],
+        },
+        resources: [ResourceWithMiddleware],
+      });
+      const request = Rhum.mocks.ServerRequest("/users/1");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "No CSRF token, dude.",
+      );
     });
-    const request = members.mockRequest("/users/1");
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "No CSRF token, dude.",
-    );
-  });
 
-  members.test("before_request: wrong CSRF token", async () => {
-    const server = new Drash.Http.Server({
-      middleware: {
-        before_request: [VerifyCsrfToken],
-      },
-      resources: [ResourceWithMiddleware],
+    Rhum.testCase("before_request: wrong CSRF token", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          before_request: [VerifyCsrfToken],
+        },
+        resources: [ResourceWithMiddleware],
+      });
+      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+        headers: {
+          csrf_token: "hehe",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "Wrong CSRF token, dude.",
+      );
     });
-    const request = members.mockRequest("/users/1", "get", {
-      headers: {
-        csrf_token: "hehe",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "Wrong CSRF token, dude.",
-    );
-  });
 
-  members.test("before_response: missing header", async () => {
-    const server = new Drash.Http.Server({
-      middleware: {
-        after_request: [AfterRequest],
-      },
-      resources: [ResourceWithMiddlewareHooked],
+    Rhum.testCase("before_response: missing header", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          after_request: [AfterRequest],
+        },
+        resources: [ResourceWithMiddlewareHooked],
+      });
+      const request = Rhum.mocks.ServerRequest("/");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "Missing header, guy.",
+      );
     });
-    const request = members.mockRequest("/");
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "Missing header, guy.",
-    );
-  });
 
-  members.test("after_request: wrong header", async () => {
-    let server = new Drash.Http.Server({
-      middleware: {
-        after_request: [AfterRequest],
-      },
-      resources: [ResourceWithMiddlewareHooked],
+    Rhum.testCase("after_request: wrong header", async () => {
+      let server = new Drash.Http.Server({
+        middleware: {
+          after_request: [AfterRequest],
+        },
+        resources: [ResourceWithMiddlewareHooked],
+      });
+      const request = Rhum.mocks.ServerRequest("/", "get", {
+        headers: {
+          send_response: "yes please",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "Ha... try again. Close though.",
+      );
     });
-    const request = members.mockRequest("/", "get", {
-      headers: {
-        send_response: "yes please",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "Ha... try again. Close though.",
-    );
-  });
 
-  members.test("after_request: pass", async () => {
-    const server = new Drash.Http.Server({
-      middleware: {
-        after_request: [AfterRequest],
-      },
-      resources: [ResourceWithMiddlewareHooked],
+    Rhum.testCase("after_request: pass", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          after_request: [AfterRequest],
+        },
+        resources: [ResourceWithMiddlewareHooked],
+      });
+      const request = Rhum.mocks.ServerRequest("/", "get", {
+        headers: {
+          send_response: "yes do it",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), "got");
     });
-    const request = members.mockRequest("/", "get", {
-      headers: {
-        send_response: "yes do it",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), "got");
-  });
 
-  members.test("before_request: missing header", async () => {
-    const server = new Drash.Http.Server({
-      middleware: {
-        before_request: [BeforeRequest],
-      },
-      resources: [ResourceWithMiddlewareHooked],
+    Rhum.testCase("before_request: missing header", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          before_request: [BeforeRequest],
+        },
+        resources: [ResourceWithMiddlewareHooked],
+      });
+      const request = Rhum.mocks.ServerRequest("/");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "Missing header, guy.",
+      );
     });
-    const request = members.mockRequest("/");
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "Missing header, guy.",
-    );
-  });
 
-  members.test("before_request: wrong header", async () => {
-    const server = new Drash.Http.Server({
-      middleware: {
-        before_request: [BeforeRequest],
-      },
-      resources: [ResourceWithMiddlewareHooked],
-    });
-    const request = members.mockRequest("/", "get", {
-      headers: {
-        before: "yes",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
+    Rhum.testCase("before_request: wrong header", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          before_request: [BeforeRequest],
+        },
+        resources: [ResourceWithMiddlewareHooked],
+      });
+      const request = Rhum.mocks.ServerRequest("/", "get", {
+        headers: {
+          before: "yes",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
 
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      "Ha... try again. Close though.",
-    );
-  });
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "Ha... try again. Close though.",
+      );
+    });
 
-  members.test("before_request: pass", async () => {
-    let server = new Drash.Http.Server({
-      middleware: {
-        before_request: [BeforeRequest],
-      },
-      resources: [ResourceWithMiddlewareHooked],
+    Rhum.testCase("before_request: pass", async () => {
+      let server = new Drash.Http.Server({
+        middleware: {
+          before_request: [BeforeRequest],
+        },
+        resources: [ResourceWithMiddlewareHooked],
+      });
+      const request = Rhum.mocks.ServerRequest("/", "get", {
+        headers: {
+          before: "yesss",
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), "got");
     });
-    const request = members.mockRequest("/", "get", {
-      headers: {
-        before: "yesss",
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), "got");
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// DATA ////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+Rhum.run();
+
+// FILE MARKER - DATA //////////////////////////////////////////////////////////
 
 class ResourceWithMiddleware extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];

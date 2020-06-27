@@ -1,148 +1,329 @@
+import { Rhum } from "../../test_deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
-members.testSuite("http/server_test.ts", () => {
-  members.test("getRequest() gives get*Param/File methods", async () => {
-    const server = new Drash.Http.Server({
-      resources: [HomeResource],
-    });
-    let request = members.mockRequest();
-    request = await server.getRequest(request);
-    members.assertEquals("function", typeof request.getBodyFile);
-    members.assertEquals("function", typeof request.getBodyParam);
-    members.assertEquals("function", typeof request.getHeaderParam);
-    members.assertEquals("function", typeof request.getUrlQueryParam);
-  });
-
-  members.test("getRequest() request.body takes in a reader", async () => {
-    const server = new Drash.Http.Server({
-      resources: [HomeResource],
-    });
-    let request = new members.ServerRequest();
-    const body = encoder.encode(JSON.stringify({
-      hello: "world",
-    }));
-    request.url = "/";
-    request.headers = new Headers();
-    request.headers.set("Content-Length", body.length.toString());
-    request.headers.set("Content-Type", "application/json");
-    const reader = new Deno.Buffer(body as ArrayBuffer);
-    request.r = new members.BufReader(reader);
-    const newRequest = await server.getRequest(request);
-    members.assertEquals("world", newRequest.getBodyParam("hello"));
-  });
-
-  members.test("handleHttpRequest(): /favicon.ico", async () => {
-    const server = new Drash.Http.Server({
-      resources: [HomeResource],
-    });
-    const request = members.mockRequest("/favicon.ico");
-    const response = JSON.parse(await server.handleHttpRequest(request));
-    members.assertEquals(200, response.status_code);
-  });
-
-  members.test("handleHttpRequest(): GET", async () => {
-    const server = new Drash.Http.Server({
-      resources: [HomeResource],
-    });
-    const request = members.mockRequest("/");
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      { body: "got" },
-    );
-  });
-
-  members.test("handleHttpRequest(): POST", async () => {
-    const server = new Drash.Http.Server({
-      resources: [HomeResource],
-    });
-    const body = encoder.encode(JSON.stringify({
-      body_param: "hello",
-    }));
-    const reader = new Deno.Buffer(body as ArrayBuffer);
-    const request = members.mockRequest("/", "post", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: reader,
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(
-      members.responseBody(response),
-      { body: "hello" },
-    );
-  });
-
-  members.test("handleHttpRequest(): getPathParam() for :id", async () => {
-    const server = new Drash.Http.Server({
-      resources: [NotesResource, UsersResource],
-    });
-    let request;
-    let response;
-    request = members.mockRequest("/users/1");
-    response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), {
-      user_id: "1",
-    });
-    request = members.mockRequest("/notes/1557");
-    response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), {
-      note_id: "1557",
+Rhum.testPlan("http/server_test.ts", () => {
+  Rhum.testSuite("constrcutor()", () => {
+    Rhum.testCase("Throw error when incorrect template engine configs", () => {
+      try {
+        new Drash.Http.Server({
+          template_engine: true,
+        });
+        Rhum.asserts.assertEquals(true, false);
+      } catch (err) {
+        Rhum.asserts.assertEquals(
+          err.message,
+          "Property missing. The views_path must be defined if template_engine is true",
+        );
+      }
     });
   });
 
-  members.test("handleHttpRequest(): getHeaderParam()", async () => {
-    const server = new Drash.Http.Server({
-      resources: [GetHeaderParam],
+  Rhum.testSuite("getRequest()", () => {
+    Rhum.testCase("gives get*Param/File methods", async () => {
+      const server = new Drash.Http.Server({
+        resources: [HomeResource],
+      });
+      let request = Rhum.mocks.ServerRequest();
+      request = await server.getRequest(request);
+      Rhum.asserts.assertEquals("function", typeof request.getBodyFile);
+      Rhum.asserts.assertEquals("function", typeof request.getBodyParam);
+      Rhum.asserts.assertEquals("function", typeof request.getHeaderParam);
+      Rhum.asserts.assertEquals("function", typeof request.getUrlQueryParam);
     });
-    const request = members.mockRequest("/", "get", {
-      headers: {
-        id: 12345,
-      },
-    });
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), {
-      header_param: "12345",
+    Rhum.testCase("request.body takes in a reader", async () => {
+      const server = new Drash.Http.Server({
+        resources: [HomeResource],
+      });
+      let request = new Rhum.mocks.ServerRequest();
+      const body = encoder.encode(JSON.stringify({
+        hello: "world",
+      }));
+      request.url = "/";
+      request.headers = new Headers();
+      request.headers.set("Content-Length", body.length.toString());
+      request.headers.set("Content-Type", "application/json");
+      const reader = new Deno.Buffer(body as ArrayBuffer);
+      request.r = new members.BufReader(reader);
+      const newRequest = await server.getRequest(request);
+      Rhum.asserts.assertEquals("world", newRequest.getBodyParam("hello"));
     });
   });
 
-  members.test("handleHttpRequest(): getUrlQueryParam()", async () => {
-    const server = new Drash.Http.Server({
-      resources: [GetUrlQueryParam],
+  Rhum.testSuite("handleHttpRequest()", () => {
+    Rhum.testCase("/favicon.ico", async () => {
+      const server = new Drash.Http.Server({
+        resources: [HomeResource],
+      });
+      const request = Rhum.mocks.ServerRequest("/favicon.ico");
+      const response = JSON.parse(await server.handleHttpRequest(request));
+      Rhum.asserts.assertEquals(200, response.status_code);
     });
-    const request = members.mockRequest("/?id=123459");
-    const response = await server.handleHttpRequest(request);
-    members.assertResponseJsonEquals(members.responseBody(response), {
-      query_param: "123459",
+
+    Rhum.testCase("GET", async () => {
+      const server = new Drash.Http.Server({
+        resources: [HomeResource],
+      });
+      const request = Rhum.mocks.ServerRequest("/");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        { body: "got" },
+      );
+    });
+
+    Rhum.testCase("POST", async () => {
+      const server = new Drash.Http.Server({
+        resources: [HomeResource],
+      });
+      const body = encoder.encode(JSON.stringify({
+        body_param: "hello",
+      }));
+      const reader = new Deno.Buffer(body as ArrayBuffer);
+      const request = Rhum.mocks.ServerRequest("/", "post", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: reader,
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        { body: "hello" },
+      );
+    });
+
+    Rhum.testCase("getPathParam() for :id", async () => {
+      const server = new Drash.Http.Server({
+        resources: [NotesResource, UsersResource],
+      });
+      let request;
+      let response;
+      request = Rhum.mocks.ServerRequest("/users/1");
+      response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), {
+        user_id: "1",
+      });
+      request = Rhum.mocks.ServerRequest("/notes/1557");
+      response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), {
+        note_id: "1557",
+      });
+    });
+
+    Rhum.testCase("getHeaderParam()", async () => {
+      const server = new Drash.Http.Server({
+        resources: [GetHeaderParam],
+      });
+      const request = Rhum.mocks.ServerRequest("/", "get", {
+        headers: {
+          id: 12345,
+        },
+      });
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), {
+        header_param: "12345",
+      });
+    });
+
+    Rhum.testCase("getUrlQueryParam()", async () => {
+      const server = new Drash.Http.Server({
+        resources: [GetUrlQueryParam],
+      });
+      const request = Rhum.mocks.ServerRequest("/?id=123459");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), {
+        query_param: "123459",
+      });
+    });
+
+    Rhum.testCase("response.redirect()", async () => {
+      const server = new Drash.Http.Server({
+        resources: [NotesResource],
+      });
+      let request;
+      let response;
+      request = Rhum.mocks.ServerRequest("/notes/123", "get", {
+        server: server,
+      });
+      response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(response.status, 302);
+      Rhum.asserts.assertEquals(
+        response.headers.get("location"),
+        "/notes/1557",
+      );
+      request = Rhum.mocks.ServerRequest("/notes/1234", "get", {
+        server: server,
+      });
+      response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(response.status, 301);
+      Rhum.asserts.assertEquals(
+        response.headers.get("location"),
+        "/notes/1667",
+      );
     });
   });
 
-  members.test("handleHttpRequest(): response.redirect()", async () => {
-    const server = new Drash.Http.Server({
-      resources: [NotesResource],
+  Rhum.testSuite("handleHttpRequestError()", () => {
+    Rhum.testCase("Returns the correct response", async () => {
+      const request = Rhum.mocks.ServerRequest("/", "get");
+      const server = new Drash.Http.Server({});
+      const error = {
+        code: 404,
+        message: "Some error message",
+      };
+      const response = await server.handleHttpRequestError(request, error);
+      Rhum.asserts.assertEquals(response.status, 404);
+      Rhum.asserts.assertEquals(
+        new TextDecoder().decode(response.body),
+        "Some error message",
+      );
     });
-    let request;
-    let response;
-    request = members.mockRequest("/notes/123", "get", {
-      server: server,
+  });
+
+  Rhum.testSuite("handleHttpRequestForFavicon", () => {
+    Rhum.testCase("Returns the correct response", async () => {
+      const request = Rhum.mocks.ServerRequest("/favicon.ico", "get");
+      const server = new Drash.Http.Server({});
+      const response = await server.handleHttpRequestForFavicon(request);
+      Rhum.asserts.assertEquals(JSON.parse(response), {
+        body: "",
+        status_code: 200,
+        request: {
+          done: {},
+          _body: null,
+          finalized: false,
+          url: "/favicon.ico",
+          method: "get",
+          headers: {},
+        },
+        headers: {},
+      });
     });
-    response = await server.handleHttpRequest(request);
-    members.assertEquals(response.status, 302);
-    members.assertEquals(response.headers.get("location"), "/notes/1557");
-    request = members.mockRequest("/notes/1234", "get", {
-      server: server,
+  });
+
+  Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
+    Rhum.testCase("Should respond with a 200 on a valid request", async () => {
+      let request = Rhum.mocks.ServerRequest(
+        "/tests/data/static_file.txt",
+        "get",
+      );
+      request = await new Drash.Services.HttpRequestService().hydrate(request);
+      // Setup so we can make requests to a static file. This example will try get the `./tests/data/static_file.txt` file served
+      const server = new Drash.Http.Server({
+        directory: ".",
+        static_paths: ["/tests/data"],
+        response_output: "text/html",
+      });
+      await server.run({
+        hostname: "localhost",
+        port: 1667,
+      });
+      const res = await server.handleHttpRequestForStaticPathAsset(request);
+      await server.close();
+      Rhum.asserts.assertEquals(res.status, 200);
     });
-    response = await server.handleHttpRequest(request);
-    members.assertEquals(response.status, 301);
-    members.assertEquals(response.headers.get("location"), "/notes/1667");
+  });
+
+  Rhum.testSuite("getResourceObject()", () => {
+    Rhum.testCase("Returns the correct data", () => {
+      class Resource extends Drash.Http.Resource {
+        static paths = ["/", "/home"];
+        public GET() {
+          this.response.body = "Hello world!";
+          return this.response;
+        }
+      }
+      const server = new Drash.Http.Server({
+        resources: [Resource],
+      });
+      const request = Rhum.mocks.ServerRequest("/");
+      const resourceObject = server.getResourceObject(Resource, request);
+      Rhum.asserts.assertEquals(resourceObject.paths, [
+        {
+          og_path: "/",
+          regex_path: "^//?$",
+          params: [],
+        },
+        {
+          og_path: "/home",
+          regex_path: "^/home/?$",
+          params: [],
+        },
+      ]);
+    });
+  });
+
+  Rhum.testSuite("run()", () => {
+    Rhum.testCase("Runs a server", async () => {
+      class Resource extends Drash.Http.Resource {
+        static paths = ["/"];
+        public GET() {
+          this.response.body = "Hello world!";
+          return this.response;
+        }
+      }
+      const server = new Drash.Http.Server({
+        resources: [Resource],
+      });
+      await server.run({
+        hostname: "localhost",
+        port: 1667,
+      });
+      const res = await fetch("http://localhost:1667");
+      const text = await res.text();
+      await server.close();
+      Rhum.asserts.assertEquals(res.status, 200);
+      Rhum.asserts.assertEquals(text, '"Hello world!"');
+    });
+  });
+
+  Rhum.testSuite("runTLS()", () => {
+    // TODO(ebebbington) TLS doesn't work with fetch atm. See: https://github.com/denoland/deno/issues/2301
+    //  and: https://github.com/denoland/deno/issues/1371. Might need to update the certs.
+    // Rhum.testCase("Runs a server", async  () => {
+    //   class Resource extends Drash.Http.Resource {
+    //     static paths = ["/"];
+    //     public GET() {
+    //       this.response.body = "Hello world!";
+    //       return this.response;
+    //     }
+    //   }
+    //   const server = new Drash.Http.Server({
+    //     resources: [Resource]
+    //   });
+    //   await server.runTLS({
+    //     hostname: "localhost",
+    //     port: 1667,
+    //     certFile: "./tests/integration/app_3002_https/server.crt",
+    //     keyFile: "./tests/integration/app_3002_https/server.key"
+    //   });
+    //   const res = await fetch("https://localhost:1667");
+    //   const text = await res.text();
+    //   await server.close();
+    //   Rhum.asserts.assertEquals(res.status, 200);
+    //   Rhum.asserts.assertEquals(text, "\"Hello world!\"")
+    // });
+  });
+
+  Rhum.testSuite("close()", () => {
+    Rhum.testCase("Closes the server", async () => {
+      const server = new Drash.Http.Server({});
+      await server.run({
+        hostname: "localhost",
+        port: 1667,
+      });
+      Rhum.asserts.assertEquals(server.deno_server.closing, false);
+      server.close();
+      Rhum.asserts.assertEquals(server.deno_server.closing, true);
+    });
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// DATA ////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+Rhum.run();
+
+// FILE MARKER - DATA //////////////////////////////////////////////////////////
 
 class MultipartFormData extends Drash.Http.Resource {
   static paths = ["/"];

@@ -61,15 +61,17 @@ members.testSuite("CoffeeResource", () => {
     );
     members.assertEquals(await response.text(), '{"name":"Medium"}');
 
-    // TODO(crookse) application/x-www-form-urlencoded works, but this test keeps failing. Fix.
-    // data = { id: 18 };
-    // response = await members.fetch.get("http://localhost:3000/coffee/19/?location=from_body", {
-    //   headers: {
-    //     "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-    //     "Content-Length": JSON.stringify(data).length
-    //   },
-    //   body: JSON.stringify(data)
-    // });
-    // members.assertEquals(await response.text(), "{\"name\":\"Medium\"}");
+    data = "id=19";
+    response = await members.fetch.get(
+      "http://localhost:3000/coffee/19/?location=from_body",
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          "Content-Length": data.length + 1,
+        },
+        body: data,
+      },
+    );
+    members.assertEquals(await response.text(), '{"name":"Dark"}');
   });
 });

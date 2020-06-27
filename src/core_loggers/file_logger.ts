@@ -42,13 +42,15 @@ export class FileLogger extends Logger {
    * @param any logMethodLevelDefinition
    * @param string message
    *
-   * @return string
+   * @return string|void
    *     Returns the log message which is used for unit testing purposes.
    */
-  public write(logMethodLevelDefinition: any, message: string): string {
+  public write(logMethodLevelDefinition: any, message: string): string | void {
     const encoder = new TextEncoder();
     let encoded = encoder.encode(message + "\n");
+    if (this.test) {
+      return message;
+    }
     Deno.writeFileSync(this.file, encoded, { append: true });
-    return message;
   }
 }

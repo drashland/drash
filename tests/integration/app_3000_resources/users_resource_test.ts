@@ -3,7 +3,7 @@ import members from "../../members.ts";
 members.testSuite("UsersResource", () => {
   members.test("user data can be retrieved", async () => {
     let response;
-
+    Deno.chdir("./tests/integration/app_3000_resources/resources");
     response = await members.fetch.get("http://localhost:3000/users");
     members.assertEquals(await response.text(), '"Please specify a user ID."');
 

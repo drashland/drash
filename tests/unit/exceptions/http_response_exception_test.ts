@@ -1,10 +1,10 @@
 import { Rhum } from "../../test_deps.ts";
 import { Drash } from "../../../mod.ts";
 
-Rhum.testPlan("exceptions/http_exception_test.ts", () => {
-  Rhum.testSuite("Exceptions.HttpException(405) ", () => {
+Rhum.testPlan("exceptions/http_response_exception_test.ts", () => {
+  Rhum.testSuite("Exceptions.HttpResponseException(405)", () => {
     Rhum.testCase("shows correct code and message", () => {
-      const actual = new Drash.Exceptions.HttpException(
+      const actual = new Drash.Exceptions.HttpResponseException(
         405,
         "HAAAAAA. Not allowed.",
       );
@@ -13,9 +13,12 @@ Rhum.testPlan("exceptions/http_exception_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("Exceptions.HttpException(418) ", () => {
+  Rhum.testSuite("Exceptions.HttpResponseException(418)", () => {
     Rhum.testCase("shows correct code and message", () => {
-      const actual = new Drash.Exceptions.HttpException(418, "Yo... 418, bro.");
+      const actual = new Drash.Exceptions.HttpResponseException(
+        418,
+        "Yo... 418, bro.",
+      );
       Rhum.asserts.assertEquals(actual.code, 418);
       Rhum.asserts.assertEquals(actual.message, "Yo... 418, bro.");
     });
