@@ -29,40 +29,6 @@ export class HttpRequestService {
 
   /**
    * @description
-   *     Checks if the incoming request accepts the type(s) in the parameter.
-   *     This method will check if the requests `Accept` header contains
-   *     the passed in types
-   *
-   * @param string|string[] type
-   *     The content-type/mime-type(s) to check if the request accepts it
-   *
-   * @example
-   *     // YourResource.ts - assume the request accepts "text/html"
-   *     const isAccepted = this.request.accepts("text/html"); // "text/html"
-   *     // or can also pass in an array and will match on the first one found
-   *     const isAccepted = this.request.accepts(["text/html", "text/xml"]); // "text/html"
-   *     // and will return false if not found
-   *     const isAccepted = this.request.accepts("text/xml"); // false
-   *
-   * @return boolean|string
-   *     False if the request doesn't accept any of the passed in types,
-   *     or the content type that was matches
-   */
-  public accepts(request: any, type: string | string[]): boolean | string {
-    const acceptHeader = request.headers.get("Accept");
-
-    // for when `type` is a string
-    if (typeof type === "string") {
-      return acceptHeader.indexOf(type) >= 0 ? type : false;
-    }
-
-    // for when `type` is an array
-    const matches = type.filter((t) => acceptHeader.indexOf(t) >= 0);
-    return matches.length ? matches[0] : false; // return first match
-  }
-
-  /**
-   * @description
    *     Get a cookie value by the name that is sent in with the request
    * 
    * @param string cookie
