@@ -113,7 +113,7 @@ export class Response {
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", this.getContentType(request, options));
+    this.headers.set("Content-Type", this.getContentType(options));
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,6 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
 
   protected getContentType(
-    request: Drash.Http.Request,
     options: IResponseOptions,
   ): string {
     const accept = this.request.headers.get("Accept") ||
