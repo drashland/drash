@@ -34,17 +34,17 @@ export class TemplateEngine {
    * @param any data
    *     The data that should be rendered with the template.
    */
-  public render(template: string, data: any): string {
-    let code: any = "with(obj) { var r=[];\n";
-    let cursor: any = 0;
+  public render(template: string, data: unknown): string {
+    let code = "with(obj) { var r=[];\n";
+    let cursor = 0;
     let html: string = decoder.decode(
       Deno.readFileSync(this.views_path + template),
     );
-    let match: any;
+    let match;
     // Check if the template extends another template
     let extended = html.match(/<% extends.* %>/g);
     if (extended) {
-      extended.forEach((m: any, i: number) => {
+      extended.forEach((m: string, i: number) => {
         html = html.replace(m, "");
         let template = m.replace('<% extends("', "")
           .replace('") %>', "");
@@ -55,9 +55,9 @@ export class TemplateEngine {
       });
     }
     // Check for partials
-    let partials: any;
+    let partials;
     while (partials = html.match(/<% include_partial.* %>/g)) {
-      partials.forEach((m: any, i: number) => {
+      partials.forEach((m: string, i: number) => {
         let template = m.replace('<% include_partial("', "")
           .replace('") %>', "");
         template = decoder.decode(
