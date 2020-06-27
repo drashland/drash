@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.1.0"]
+        deno: ["1.1.1"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -41,9 +41,6 @@ jobs:
           deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
 
   linter:
-    strategy:
-      matrix:
-        deno: ["1.0.5"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
@@ -52,8 +49,6 @@ jobs:
 
       - name: Install Deno v${{ matrix.deno }}
         uses: denolib/setup-deno@master
-        with:
-          deno-version: ${{ matrix.deno }}
 
       - name: Formatter
         run: deno fmt --check
