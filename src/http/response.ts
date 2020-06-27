@@ -15,7 +15,7 @@ export class Response {
    * @description
    *     A property to hold the body of this response.
    *
-   * @property any body
+   * @property string body
    */
   public body: any = "";
 
@@ -31,9 +31,9 @@ export class Response {
    * @description
    *     The request object.
    *
-   * @property ServerRequest request
+   * @property Drash.Http.Request request
    */
-  public request: any;
+  public request: Drash.Http.Request;
 
   /**
    * @description
