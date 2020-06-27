@@ -35,6 +35,18 @@ export class Request extends ServerRequest {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Construct an object of this class.
+   *
+   * @param ServerRequest originalRequest
+   *     The original Deno ServerRequest object that's used to help create this
+   *     Drash.Http.Request object. There are some data members that the
+   *     original request has that can't be attached to this object. Therefore,
+   *     we keep track of the original request if we ever want to access data
+   *     members from it. An example of a data member that we want to access is
+   *     the original request's body.
+   * @param IOptionsConfig options
+   */
   constructor(originalRequest: ServerRequest, options?: IOptionsConfig) {
     super();
     this.headers = originalRequest.headers;
@@ -417,6 +429,14 @@ export class Request extends ServerRequest {
     return ret;
   }
 
+  /**
+   * @description
+   *    Respond the the client's request by using the original request's
+   *    respond() method.
+   *
+   * @param Drash.Interfaces.ResponseOutput output
+   *     The data to respond with.
+   */
   public async respond(output: Drash.Interfaces.ResponseOutput): Promise<void> {
     this.original_request.respond(output);
   }
