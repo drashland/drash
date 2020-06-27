@@ -120,7 +120,10 @@ export namespace Drash {
    *
    * @property Drash.Members Members
    */
-  export const Members: {[key: string]: any} = {}; // deno-lint-ignore no-explicity-any
+  export const Members: {
+    // deno-lint-ignore no-explicity-any
+    [key: string]: any
+  } = {};
   export type Members = {};
 
   /**
@@ -132,7 +135,7 @@ export namespace Drash {
      * @param any member
      *     The member.
      */
-  export function addMember(name: string, member: any) {
+  export function addMember(name: string, member: unknown) {
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
         `Members must be unique: "${name}" was already added.`,
