@@ -41,7 +41,7 @@ export class StringService {
     keyFormat: string = "normal",
     keyCase: string = "normal",
   ): { [key: string]: string } {
-    let queryParams: any = {};
+    let queryParams: { [key: string]: string } = {};
 
     if (!queryParamsString) {
       return queryParams;

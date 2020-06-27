@@ -118,10 +118,14 @@ export class Request extends ServerRequest {
    *     parse the body. Then parse the body accordingly and retrieve the
    *     requested value.
    *
-   * @return string|undefined
+   * @return string|null
    */
-  public getBodyParam(input: string): string | undefined {
-    return this.parsed_body.data[input];
+  public getBodyParam(input: string): string | null {
+    const param = this.parsed_body.data[input];
+    if (param) {
+      return param;
+    }
+    return null;
   }
 
   /**
@@ -140,9 +144,13 @@ export class Request extends ServerRequest {
    *
    * @return string|undefined
    */
-  public getPathParam(input: string): string | undefined {
+  public getPathParam(input: string): string | null {
     // request.path_params is set in Drash.Http.Server.getResourceClass()
-    return this.path_params[input];
+    let param = this.path_params[input];
+    if (param) {
+      return param;
+    }
+    return null;
   }
 
   /**
@@ -151,8 +159,12 @@ export class Request extends ServerRequest {
    *
    * @return string|undefined
    */
-  public getUrlQueryParam(input: string): string | undefined {
-    return this.url_query_params[input];
+  public getUrlQueryParam(input: string): string | null {
+    const param = this.url_query_params[input];
+    if (param) {
+      return param;
+    }
+    return null;
   }
 
   /**

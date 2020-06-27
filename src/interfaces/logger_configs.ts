@@ -55,6 +55,7 @@ export interface LoggerConfigs {
   file?: string;
   level?: string;
   tag_string?: string;
+  // deno-lint-ignore no-explicit-any
   tag_string_fns?: any;
   test?: boolean;
 }

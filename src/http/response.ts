@@ -58,7 +58,7 @@ export class Response {
    * @description
    *     The render method extracted from dejs
    *
-   * @property any views_renderer
+   * @property boolean | undefined views_renderer
    */
   private readonly template_engine: boolean | undefined = false;
 
@@ -68,12 +68,15 @@ export class Response {
    * @description
    *     Construct an object of this class.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *
    * @param ResponseOptions options
    *     See Drash.Interfaces.ResponseOptions
    */
-  constructor(request: any, options: Drash.Interfaces.ResponseOptions = {}) {
+  constructor(
+    request: Drash.Http.Request,
+    options: Drash.Interfaces.ResponseOptions = {},
+  ) {
     this.request = request;
     this.headers = new Headers();
     this.template_engine = options.template_engine;
@@ -90,7 +93,7 @@ export class Response {
    *     and filename passed in. When called, will set the response content
    *     type to "text/html"
    *
-   * @param any args
+   * @param unknown args
    *
    * @example
    *     // if `views_path` is "/public/views",
@@ -102,7 +105,10 @@ export class Response {
    * @return string|boolean
    *     The html content of the view, or false if the `views_path` is not set.
    */
-  public render(...args: any): string | boolean {
+  public render(
+    // deno-lint-ignore no-explicit-any
+    ...args: any
+  ): string | boolean {
     if (!this.views_path) {
       return false;
     }
@@ -153,9 +159,9 @@ export class Response {
    * @description
    *     Generate a response.
    *
-   * @return any
+   * @return string
    */
-  public generateResponse(): any {
+  public generateResponse(): string {
     let contentType = this.headers.get("Content-Type");
 
     switch (contentType) {
@@ -278,7 +284,7 @@ export class Response {
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: ""
+      body: "",
     };
 
     this.request.respond(output);

@@ -241,16 +241,6 @@ Rhum.run();
 
 // FILE MARKER - DATA //////////////////////////////////////////////////////////
 
-class MultipartFormData extends Drash.Http.Resource {
-  static paths = ["/"];
-  public POST() {
-    this.response.body = {
-      body: this.request.getBodyMultipartForm("body_param"),
-    };
-    return this.response;
-  }
-}
-
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
   public GET() {

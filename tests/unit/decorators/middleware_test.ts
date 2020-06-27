@@ -211,7 +211,12 @@ class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
     [2, { name: "Hulk" }],
   ]);
   public GET() {
-    this.response.body = this.users.get(parseInt(this.request.getPathParam("id")));
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
@@ -226,7 +231,12 @@ class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
     [2, { name: "Hulk" }],
   ]);
   public GET() {
-    this.response.body = this.users.get(parseInt(this.request.getPathParam("id")));
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
@@ -270,7 +280,12 @@ class ResourceWithMiddlewareBeforeMethod extends Drash.Http.Resource {
   ]);
   @Drash.Http.Middleware({ before_request: [CustomHeader] })
   public GET() {
-    this.response.body = this.users.get(parseInt(this.request.getPathParam("id")));
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
@@ -297,7 +312,12 @@ class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Http.Resource {
     { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
   )
   public GET() {
-    this.response.body = this.users.get(parseInt(this.request.getPathParam("id")));
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }

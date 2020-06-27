@@ -158,7 +158,10 @@ class ResourceWithMiddleware extends Drash.Http.Resource {
     [2, { name: "Hulk" }],
   ]);
   public GET() {
-    this.response.body = this.users.get(this.request.getPathParam("id"));
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(parseInt(param));
+    }
     return this.response;
   }
 }

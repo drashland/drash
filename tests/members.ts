@@ -119,17 +119,4 @@ export default {
   responseBody: function (response: any) {
     return decoder.decode(response.body);
   },
-  test: function (name: string, testFn: any) {
-    const numSpaces = testSuiteOutputLength - this.currentTestSuite.length;
-    let spaces = "";
-    if (numSpaces >= 0) {
-      spaces = " ".repeat(numSpaces);
-    }
-    this.currentTestSuite += spaces;
-    Deno.test(`${this.currentTestSuite} | Asserting: ${name}`, testFn);
-  },
-  testSuite: function (name: string, testFns: any) {
-    this.currentTestSuite = name;
-    testFns();
-  },
 };

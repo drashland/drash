@@ -13,6 +13,7 @@
  *         The data passed in the body of the request.
  */
 export interface ParsedRequestBody {
-  content_type: any | undefined;
+  content_type: string;
+  // deno-lint-ignore no-explicit-any
   data: any | undefined;
 }

@@ -32,6 +32,7 @@ import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/par
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
 import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts";
 import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
+import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
@@ -96,6 +97,8 @@ export namespace Drash {
     export interface ResponseOptions extends BaseResponseOptions {}
     // deno-lint-ignore no-empty-interface
     export interface ResponseOutput extends BaseResponseOutput {}
+    // deno-lint-ignore no-empty-interface
+    export interface ResourcePaths extends BaseResourcePaths {}
   }
 
   export namespace Services {
@@ -110,7 +113,7 @@ export namespace Drash {
    *
    * @property Drash.Loggers Loggers
    */
-  export const Loggers: {[key: string]: Drash.CoreLoggers.Logger} = {};
+  export const Loggers: { [key: string]: Drash.CoreLoggers.Logger } = {};
   export type Loggers = {};
 
   /**
@@ -120,10 +123,7 @@ export namespace Drash {
    *
    * @property Drash.Members Members
    */
-  export const Members: {
-    // deno-lint-ignore no-explicity-any
-    [key: string]: any
-  } = {};
+  export const Members: {[key: string]: any} = {};
   export type Members = {};
 
   /**
@@ -153,7 +153,10 @@ export namespace Drash {
      * @param any logger
      *     The logger.
      */
-  export function addLogger(name: string, logger: any) {
+  export function addLogger(
+    name: string,
+    logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger,
+  ) {
     if (Loggers[name]) {
       throw new Exceptions.NameCollisionException(
         `Loggers must be unique: "${name}" was already added.`,

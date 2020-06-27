@@ -221,7 +221,7 @@ function getBodyParamTests() {
       Rhum.asserts.assertEquals("world", actual);
     },
   );
-  Rhum.testCase("Returns undefined when the data doesn't exist", async () => {
+  Rhum.testCase("Returns null when the data doesn't exist", async () => {
     const body = encoder.encode(JSON.stringify({
       hello: "world",
     }));
@@ -235,7 +235,7 @@ function getBodyParamTests() {
     const request = new Drash.Http.Request(serverRequest);
     await request.parseBody();
     const actual = request.getBodyParam("dont_exist");
-    Rhum.asserts.assertEquals(undefined, actual);
+    Rhum.asserts.assertEquals(null, actual);
   });
 }
 
@@ -296,7 +296,7 @@ function getPathParamTests() {
         hello: "world",
       };
       const actual = request.getPathParam("dont-exist");
-      Rhum.asserts.assertEquals(undefined, actual);
+      Rhum.asserts.assertEquals(null, actual);
     },
   );
 }
@@ -314,13 +314,13 @@ function getUrlQueryParamTests() {
   );
 
   Rhum.testCase(
-    "Returns undefined when the query data doesn't exist",
+    "Returns null when the query data doesn't exist",
     async () => {
       const serverRequest = members.mockRequest("/?hello=world");
       const request = new Drash.Http.Request(serverRequest);
       await request.parseBody();
       const actual = request.getUrlQueryParam("dont_exist");
-      Rhum.asserts.assertEquals(undefined, actual);
+      Rhum.asserts.assertEquals(null, actual);
     },
   );
 }

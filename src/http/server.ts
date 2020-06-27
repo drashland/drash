@@ -684,7 +684,7 @@ export class Server {
       }
     }
 
-    resourceClass.paths = newPaths;
+    resourceClass.paths_parsed = newPaths;
 
     // Store the resource so it can be retrieved when requested
     this.resources[resourceClass.name] = resourceClass;
@@ -809,8 +809,8 @@ export class Server {
   ): Drash.Http.Resource | undefined {
     for (const resourceName in this.resources) {
       const resource = this.resources[resourceName];
-
-      for (const pathObj of resource.paths) {
+      const pathObjs = resource.paths_parsed;
+      for (const pathObj of pathObjs) {
         if (pathObj.og_path === "/" && request.url_path === "/") {
           return resource;
         }
