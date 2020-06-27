@@ -331,7 +331,7 @@ export class HttpRequestService {
     request.accepts = function accepts(
       type: string | string[],
     ): boolean | string {
-      return t.accepts(request, type);
+      return new Drash.Services.HttpService().accepts(request, type);
     };
 
     return request;
