@@ -78,10 +78,14 @@ export class Response {
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", request.response_content_type);
+    this.headers.set("Content-Type", this.getContentType());
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  protected getContentType() {
+    
+  }
 
   /**
    * @description
