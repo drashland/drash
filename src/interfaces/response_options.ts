@@ -27,4 +27,5 @@
 export interface ResponseOptions {
   views_path?: string;
   template_engine?: boolean;
+  default_response_content_type?: string;
 }

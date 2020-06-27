@@ -249,7 +249,7 @@ export class Server {
       request = await this.getRequest(serverRequest);
     } catch (error) {
       return await this.handleHttpRequestError(
-        serverRequest,
+        serverRequest as Drash.Http.Request,
         this.httpErrorResponse(400, error.message),
       );
     }
@@ -371,7 +371,8 @@ export class Server {
     if (resource) {
       if (!response) {
         const resourceObj =
-          (resource as unknown as { [key: string]: Function });
+          // TODO(crookse) Might need to look over this typing again
+          (resource as unknown as { [key: string]: Drash.Interfaces.Resource });
         const method = request.method.toUpperCase();
         if (typeof resourceObj[method] !== "function") {
           error = new Drash.Exceptions.HttpException(405);
@@ -382,6 +383,7 @@ export class Server {
     response = new Drash.Http.Response(request, {
       views_path: this.configs.views_path,
       template_engine: this.configs.template_engine,
+      default_response_content_type: this.configs.response_output,
     });
     response.status_code = error.code ? error.code : 500;
     response.body = error.message ? error.message : response.getStatusMessage();

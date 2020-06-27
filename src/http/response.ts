@@ -81,10 +81,28 @@ export class Response {
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", request.response_content_type);
+    this.headers.set("Content-Type", this.getContentType(request, options));
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+
+  protected getContentType(request: Drash.Http.Request, options: Drash.Interfaces.ResponseOptions): string {
+    const accepts = this.headers.get("Accepts");
+    if (accepts) {
+      try {
+        return accepts.split(";")[0];
+      } catch (error) {
+      }
+    }
+
+    let contentType = "application/json";
+    if (options) {
+      contentType = options.default_response_content_type
+        ?? contentType;
+    }
+
+    return contentType;
+  }
 
   /**
    * @description
