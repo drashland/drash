@@ -84,11 +84,17 @@ export namespace Drash {
   }
 
   export namespace Interfaces {
+    // deno-lint-ignore no-empty-interface
     export interface LogLevelStructure extends BaseLogLevelStructure {}
+    // deno-lint-ignore no-empty-interface
     export interface LoggerConfigs extends BaseLoggerConfigs {}
+    // deno-lint-ignore no-empty-interface
     export interface ParsedRequestBody extends BaseParsedRequestBody {}
+    // deno-lint-ignore no-empty-interface
     export interface ServerConfigs extends BaseServerConfigs {}
+    // deno-lint-ignore no-empty-interface
     export interface ResponseOptions extends BaseResponseOptions {}
+    // deno-lint-ignore no-empty-interface
     export interface ResponseOutput extends BaseResponseOutput {}
   }
 
@@ -98,23 +104,23 @@ export namespace Drash {
   }
 
   /**
-     * A property to hold all loggers added via Drash.addLogger(). This property
-     * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
-     * a namespace for loggers.
-     *
-     * @property Drash.Loggers Loggers
-     */
-  export const Loggers: any = {};
+   * A property to hold all loggers added via Drash.addLogger(). This property
+   * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
+   * a namespace for loggers.
+   *
+   * @property Drash.Loggers Loggers
+   */
+  export const Loggers: {[key: string]: Drash.CoreLoggers.Logger} = {};
   export type Loggers = {};
 
   /**
-     * A property to hold all members added via Drash.addMember(). This property
-     * allows users to access members via Drash.Members.SomeMember and acts like
-     * a namespace for members that are external to Drash.
-     *
-     * @property Drash.Members Members
-     */
-  export const Members: any = {};
+   * A property to hold all members added via Drash.addMember(). This property
+   * allows users to access members via Drash.Members.SomeMember and acts like
+   * a namespace for members that are external to Drash.
+   *
+   * @property Drash.Members Members
+   */
+  export const Members: {[key: string]: any} = {}; // deno-lint-ignore no-explicity-any
   export type Members = {};
 
   /**
