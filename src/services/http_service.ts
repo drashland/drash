@@ -35,6 +35,10 @@ export class HttpService {
   public accepts(request: any, type: string | string[]): boolean | string {
     const acceptHeader = request.headers.get("Accept");
 
+    if (!acceptHeader) {
+      return false;
+    }
+
     // for when `type` is a string
     if (typeof type === "string") {
       return acceptHeader.indexOf(type) >= 0 ? type : false;
