@@ -104,10 +104,14 @@ export interface ServerConfigs {
   memory_allocation?: { multipart_form_data?: number };
   middleware?: {
     before_request?: Array<
-      ((request: Drash.Http.Request) => Promise<void>) | ((request: Drash.Http.Request) => void)
+      | ((request: Drash.Http.Request) => Promise<void>)
+      | ((request: Drash.Http.Request) => void)
     >;
     after_request?: Array<
-      | ((request: Drash.Http.Request, response: Drash.Http.Response) => Promise<void>)
+      | ((
+        request: Drash.Http.Request,
+        response: Drash.Http.Response,
+      ) => Promise<void>)
       | ((request: Drash.Http.Request, response: Drash.Http.Response) => void)
     >;
   };

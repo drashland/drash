@@ -520,17 +520,17 @@ function parseBodyTests() {
     const body = new Deno.Buffer(encodedBody as ArrayBuffer);
     const serverRequest = members.mockRequest("/", "post", {
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: body
+      body: body,
     });
     const request = new Drash.Http.Request(serverRequest);
     const ret = await request.parseBody();
     Rhum.asserts.assertEquals(ret, {
       content_type: "application/json",
-      data: { name: "John" }
-    })
-  })
+      data: { name: "John" },
+    });
+  });
 
   Rhum.testCase(
     "Fails when error thrown whilst parsing as application/json",

@@ -32,7 +32,10 @@ export class HttpService {
    *     False if the request doesn't accept any of the passed in types,
    *     or the content type that was matches
    */
-  public accepts(request: Drash.Http.Request, type: string | string[]): boolean | string {
+  public accepts(
+    request: Drash.Http.Request,
+    type: string | string[],
+  ): boolean | string {
     const acceptHeader = request.headers.get("Accept");
 
     if (!acceptHeader) {

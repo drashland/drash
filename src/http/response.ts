@@ -86,8 +86,12 @@ export class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
-  protected getContentType(request: Drash.Http.Request, options: Drash.Interfaces.ResponseOptions): string {
-    const accept = this.request.headers.get("Accept") || this.request.headers.get("accept")
+  protected getContentType(
+    request: Drash.Http.Request,
+    options: Drash.Interfaces.ResponseOptions,
+  ): string {
+    const accept = this.request.headers.get("Accept") ||
+      this.request.headers.get("accept");
     if (accept) {
       try {
         return accept.split(";")[0].trim();
@@ -98,8 +102,8 @@ export class Response {
 
     let contentType = "application/json";
     if (options) {
-      contentType = options.default_response_content_type
-        ?? contentType;
+      contentType = options.default_response_content_type ??
+        contentType;
     }
 
     return contentType;

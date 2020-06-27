@@ -189,7 +189,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assertEquals(response.status, 404);
       Rhum.asserts.assertEquals(
         decoder.decode(response.body as ArrayBuffer),
-        "\"Some error message\"",
+        '"Some error message"',
       );
     });
   });

@@ -20,7 +20,7 @@ const decoder = new TextDecoder("utf-8");
  */
 // deno-lint-ignore no-explicit-any
 function mockRequest(url = "/", method = "get", options?: any): any {
-// deno-lint-ignore no-explicit-any
+  // deno-lint-ignore no-explicit-any
   let request: any = new ServerRequest();
   request.url = url;
   request.method = method;

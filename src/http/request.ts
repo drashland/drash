@@ -40,11 +40,14 @@ export class Request extends ServerRequest {
     this.url_path = this.getUrlPath(originalRequest);
     this.url_query_params = this.getUrlQueryParams(originalRequest);
     if (options) {
-      this.response_content_type = options.default_response_content_type
-        ?? this.response_content_type;
+      this.response_content_type = options.default_response_content_type ??
+        this.response_content_type;
     }
   }
 
+  /**
+   * @see Drash.Services.Http.Service.accepts()
+   */
   public accepts(type: string | string[]): boolean | string {
     return new Drash.Services.HttpService().accepts(this, type);
   }
