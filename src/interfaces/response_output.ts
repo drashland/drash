@@ -3,4 +3,5 @@ export interface ResponseOutput {
   headers: Headers;
   status: number;
   status_code?: number;
+  send?: () => ResponseOutput | undefined;
 }
