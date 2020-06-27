@@ -28,10 +28,10 @@ import { Response as BaseResponse } from "./src/http/response.ts";
 import { Server as BaseServer } from "./src/http/server.ts";
 
 // Interfaces
-import { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
 import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
 import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
 import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
+import { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
 import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
 import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
@@ -87,13 +87,13 @@ export namespace Drash {
   }
 
   export namespace Interfaces {
-    export interface Resource extends BaseHttpResource {}
     export interface LogLevelStructure extends BaseLogLevelStructure {}
     export interface LoggerConfigs extends BaseLoggerConfigs {}
     export interface ParsedRequestBody extends BaseParsedRequestBody {}
-    export interface ServerConfigs extends BaseServerConfigs {}
-    export interface ResponseOutput extends BaseResponseOutput {}
+    export interface Resource extends BaseHttpResource {}
     export interface ResourcePaths extends BaseResourcePaths {}
+    export interface ResponseOutput extends BaseResponseOutput {}
+    export interface ServerConfigs extends BaseServerConfigs {}
   }
 
   export namespace Services {
