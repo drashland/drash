@@ -8,6 +8,35 @@ If you want to report a bug, click [here](https://github.com/drashland/deno-dras
 ## Feature Requests
 Feature requests are welcome. But take a moment to find out whether your idea fits with the scope and aims of the project. It's up to *you* to make a strong case to convince the project developer of the merits of this feature. Please provide as much detail and context as possible. If you want to request a feature, click [here](https://github.com/drashland/deno-drash-middleware/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=).
 
+## Getting Started
+
+On creating a new middleware, use the below as guidelines on how to get started.
+
+* The file structure for the specific middleware would be structured like so:
+    ```
+    deno-drash-middleware/
+      <name>/ <-- middleware code sits here
+        tests/ <-- Should mimic source code structure
+        deps.ts <-- Contains 3rd party modules you need
+        some_related_file.ts
+        another_related_file.ts
+        mod.ts <-- Middleware should be exported from here
+        README.md <-- Full documentation on the middleware
+      ...
+    ```
+
+* Users would import the middleware like so:
+
+    ```
+    import { <name> } from "https://deno.land/x/drash-middleware@v{version}/<name>/mod.ts";
+    ```
+
+* Any Deno std modules that are required by your package can be exported from the repo's root `deps.ts` file so that all middleware can import std modules from that single file.
+
+* `README.md` file showing how to use the middleware. Drash is a documentation-driven codebase, so the documentation is very important.
+
+* Tests.
+
 ## Pull Requests
 
 Please **ask first** before embarking on any significant pull request (e.g. implementing features, refactoring code), otherwise you risk spending a lot of time working on something that the project's developers might not want to merge into the project.
