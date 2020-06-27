@@ -92,7 +92,6 @@ Rhum.testPlan("http/response_test.ts", () => {
           "Content-Type": "application/json",
         },
       });
-      request.response_content_type = "application/json";
       const Response = new Drash.Http.Response(request);
       Response.body = {
         name: "Drash",
@@ -110,7 +109,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const Response = new Drash.Http.Response(request);
       Response.body = "Hello world!";
       const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "Hello world!");
+      Rhum.asserts.assertEquals(body, "\"Hello world!\"");
     });
 
     Rhum.testCase("Responds with the same body for application/xml", () => {
@@ -122,7 +121,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const Response = new Drash.Http.Response(request);
       Response.body = "Hello world!";
       const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "Hello world!");
+      Rhum.asserts.assertEquals(body, "\"Hello world!\"");
     });
 
     Rhum.testCase("Responds with the same body for text/plain", () => {
@@ -134,7 +133,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const Response = new Drash.Http.Response(request);
       Response.body = "Hello world!";
       const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "Hello world!");
+      Rhum.asserts.assertEquals(body, "\"Hello world!\"");
     });
 
     Rhum.testCase("Responds with the same body for text/xml", () => {
@@ -146,7 +145,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const Response = new Drash.Http.Response(request);
       Response.body = "Hello world!";
       const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "Hello world!");
+      Rhum.asserts.assertEquals(body, "\"Hello world!\"");
     });
 
     Rhum.testCase("Responds with the same body for any other types", () => {
@@ -158,7 +157,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const Response = new Drash.Http.Response(request);
       Response.body = "Hello world!";
       const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "Hello world!");
+      Rhum.asserts.assertEquals(body, "\"Hello world!\"");
     });
   });
 

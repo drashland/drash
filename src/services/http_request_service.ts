@@ -118,66 +118,6 @@ export class HttpRequestService {
 
   /**
    * @description
-   *     Get the request's requested content type.
-   *
-   *     There are three ways to get this value: (1) the request's headers by
-   *     setting `Response-Content-Type: "type"`, (2) the request's URL query
-   *     params by setting `?response_content_type=type`, and the request's body
-   *     by setting `{response_content_type: "type"}`.
-   *
-   *     The request's body takes precedence over all other settings.
-   *
-   *     The request's URL query params takes precedence over the header setting
-   *     and the default setting.
-   *
-   *     The request's header setting takes precedence over the default setting.
-   *
-   *     If no content type is specified by the request's body, URL query
-   *     params, or header, then the default content type will be used. The
-   *     default content type is the content type defined in the
-   *     `Drash.Http.Server` object's `response_output` config. If a default is
-   *     not specified, then "application/json" will be used.
-   */
-  public getResponseContentType(
-    request: any,
-    defaultContentType: string = "application/json",
-  ): string {
-    // application/json will be used for any falsy defaultContentType argument
-    defaultContentType = defaultContentType
-      ? defaultContentType
-      : "application/json";
-
-    let contentType: null | string = null;
-
-    // Check the request's headers to see if `response-content-type:
-    // {content-type}` has been specified
-    contentType = request.headers.get("Response-Content-Type")
-      ? request.headers.get("Response-Content-Type")
-      : contentType;
-
-    // Check the request's URL query params to see if
-    // ?response_content_type={content-type} has been specified
-    contentType =
-      request.url_query_params && request.url_query_params.response_content_type
-        ? request.url_query_params.response_content_type
-        : contentType;
-
-    // Check the request's body to see if
-    // {response_content_type: {content-type}} has been specified
-    contentType =
-      request.parsed_body && request.parsed_body.response_content_type
-        ? request.parsed_body.response_content_type
-        : contentType;
-
-    if (!contentType) {
-      contentType = defaultContentType;
-    }
-
-    return contentType;
-  }
-
-  /**
-   * @description
    *     Get this request's URL path.
    *
    * @return string
@@ -293,10 +233,6 @@ export class HttpRequestService {
     // Attach properties
     request.url_path = this.getUrlPath(request);
     request.url_query_params = this.getUrlQueryParams(request);
-    request.response_content_type = this.getResponseContentType(
-      request,
-      contentType,
-    );
 
     // Parse the body now so that callers don't have to use async-await when
     // trying to get the body at a later time. We're sacrificing performance for

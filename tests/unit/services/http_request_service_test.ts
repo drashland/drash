@@ -171,69 +171,6 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
     );
   });
 
-  Rhum.testSuite("getResponseContentType()", () => {
-    Rhum.testCase(
-      "Returns application/json with no content type set",
-      async () => {
-        const request = Rhum.mocks.ServerRequest("/", "get");
-        const contentType = service.getResponseContentType(request);
-        Rhum.asserts.assertEquals(contentType, "application/json");
-      },
-    );
-
-    Rhum.testCase(
-      "Returns text/plain when specified in the default content type",
-      async () => {
-        const request = Rhum.mocks.ServerRequest("/", "get");
-        const contentType = service.getResponseContentType(
-          request,
-          "text/plain",
-        );
-        Rhum.asserts.assertEquals(contentType, "text/plain");
-      },
-    );
-
-    Rhum.testCase(
-      "Returns text/plain when specified in the headers",
-      async () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            "Response-Content-Type": "text/plain",
-          },
-        });
-        const parsedBody = await service.parseBody(request);
-        request.parsed_body = parsedBody;
-        const contentType = service.getResponseContentType(request);
-        Rhum.asserts.assertEquals(contentType, "text/plain");
-      },
-    );
-
-    Rhum.testCase("Returns text/plain when specified in the body", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "post", {
-        body: JSON.stringify({
-          "response_content_type": "text/plain",
-        }),
-      });
-      request.parsed_body = {
-        response_content_type: "text/plain",
-      };
-      const contentType = service.getResponseContentType(request);
-      Rhum.asserts.assertEquals(contentType, "text/plain");
-    });
-
-    Rhum.testCase(
-      "Returns text/plain when specified in the query",
-      async () => {
-        let request = Rhum.mocks.ServerRequest(
-          "/something?response_content_type=text/plain",
-        );
-        request = await service.hydrate(request);
-        const contentType = service.getResponseContentType(request);
-        Rhum.asserts.assertEquals(contentType, "text/plain");
-      },
-    );
-  });
-
   Rhum.testSuite("getUrlPath()", () => {
     Rhum.testCase("Returns / when Url is /", async () => {
       const request = Rhum.mocks.ServerRequest("/");
@@ -392,16 +329,6 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
         name: "Edward",
         age: "not_telling",
       });
-    });
-
-    Rhum.testCase("Attaches the response content type", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Response-Content-Type": "text/plain",
-        },
-      });
-      request = await service.hydrate(request);
-      Rhum.asserts.assertEquals(request.response_content_type, "text/plain");
     });
 
     Rhum.testCase("Attaches all the required methods", async () => {

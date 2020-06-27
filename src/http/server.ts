@@ -344,7 +344,7 @@ export class Server {
     response = new Drash.Http.Response(request, {
       views_path: this.configs.views_path,
       template_engine: this.configs.template_engine,
-      content_type: this.cofnigs.default_response_content_type;
+      default_response_content_type: this.configs.response_output
     });
     response.status_code = error.code ? error.code : null;
     response.body = error.message ? error.message : response.getStatusMessage();
@@ -474,7 +474,7 @@ export class Server {
       new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
         template_engine: this.configs.template_engine,
-        content_type: this.configs.default_response_content_type,
+        default_response_content_type: this.configs.response_output,
       }),
       this,
     );

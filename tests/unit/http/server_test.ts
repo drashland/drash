@@ -177,7 +177,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assertEquals(response.status, 404);
       Rhum.asserts.assertEquals(
         new TextDecoder().decode(response.body),
-        "Some error message",
+        "\"Some error message\"",
       );
     });
   });
@@ -190,6 +190,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assertEquals(JSON.parse(response), {
         body: "",
         status_code: 200,
+        options: {},
         request: {
           done: {},
           _body: null,
@@ -275,7 +276,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const text = await res.text();
       await server.close();
       Rhum.asserts.assertEquals(res.status, 200);
-      Rhum.asserts.assertEquals(text, '"Hello world!"');
+      Rhum.asserts.assertEquals(text, "Hello world!");
     });
   });
 

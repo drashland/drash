@@ -47,6 +47,14 @@ export class Response {
 
   /**
    * @description
+   *     An object of options to help determine how this object should behave.
+   *
+   * @property Drash.Interfaces.ResponseOptions options
+   */
+  private options: Drash.Interfaces.ResponseOptions;
+
+  /**
+   * @description
    *     A property to hold the path to the users views directory
    *     from their project root
    *
@@ -74,6 +82,7 @@ export class Response {
    *     See Drash.Interfaces.ResponseOptions
    */
   constructor(request: any, options: Drash.Interfaces.ResponseOptions = {}) {
+    this.options = options;
     this.request = request;
     this.headers = new Headers();
     this.template_engine = options.template_engine;
@@ -83,8 +92,24 @@ export class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
-  protected getContentType() {
-    
+  protected getContentType(): string {
+    const accept = this.request.headers.get("Accept") ||
+      this.request.headers.get("accept");
+    if (accept) {
+      try {
+        return accept.split(";")[0].trim();
+      } catch (error) {
+        // Do nothing... fall through down to the contentType stuff below
+      }
+    }
+
+    let contentType = "application/json"; // default to application/json
+    if (this.options) {
+      contentType = this.options.default_response_content_type ??
+        contentType;
+    }
+
+    return contentType;
   }
 
   /**
