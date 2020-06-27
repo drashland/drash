@@ -34,7 +34,7 @@ Rhum.testPlan("core_loggers/console_logger.ts", () => {
         enabled: true,
       });
       const actual = logger.write(
-        Drash.Dictionaries.LogLevels.get("debug"),
+        Drash.Dictionaries.LogLevels.get("debug")!,
         "This is cool!",
       );
       Rhum.asserts.assertEquals(actual, "This is cool!");

@@ -9,6 +9,10 @@ import { Logger } from "./logger.ts";
  *     This logger allows you to log messages to the console.
  */
 export class ConsoleLogger extends Logger {
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
    * @description
    *     Construct an object of this class.
@@ -19,6 +23,10 @@ export class ConsoleLogger extends Logger {
   constructor(configs: Drash.Interfaces.LoggerConfigs) {
     super(configs);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -33,7 +41,10 @@ export class ConsoleLogger extends Logger {
    * @return string
    *     Returns the log message which is used for unit testing purposes.
    */
-  public write(logMethodLevelDefinition: any, message: string): string | void {
+  public write(
+    logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,
+    message: string
+  ): string | void {
     if (this.test) {
       return message;
     }
