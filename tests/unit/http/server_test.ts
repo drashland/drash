@@ -199,11 +199,11 @@ Rhum.testPlan("http/server_test.ts", () => {
       const request = members.mockRequest("/favicon.ico", "get");
       const server = new Drash.Http.Server({});
       const response = await server.handleHttpRequestForFavicon(request);
-      Rhum.asserts.assertEquals(response, {
-        body: "",
-        status_code: 200,
-        headers: {},
-      });
+      Rhum.asserts.assertEquals(response.body, "");
+      Rhum.asserts.assertEquals(response.status_code, 200);
+      let expectedHeaders = new Headers();
+      expectedHeaders.set("content-type", "image/x-icon");
+      Rhum.asserts.assertEquals(response.headers, expectedHeaders);
     });
   });
 

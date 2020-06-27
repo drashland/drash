@@ -424,6 +424,10 @@ export class Request extends ServerRequest {
     return ret;
   }
 
+  public async respond(output: Drash.Interfaces.ResponseOutput): Promise<void> {
+    this.original_request.respond(output);
+  }
+
   /**
    * @description
    *     Set headers on the request.
@@ -438,9 +442,5 @@ export class Request extends ServerRequest {
         this.headers.set(key, headers[key]);
       }
     }
-  }
-
-  public async respond(r: Response): Promise<void> {
-    this.original_request.respond(r);
   }
 }

@@ -216,7 +216,9 @@ export class Response {
       headers: this.headers,
       body: new TextEncoder().encode(body),
     };
+
     this.request.respond(output);
+
     output.status_code = this.status_code;
     return output;
   }
@@ -235,7 +237,7 @@ export class Response {
    */
   public sendStatic(
     file: null | string,
-    contents: Uint8Array | null = null,
+    contents: Uint8Array | string = "",
   ): Drash.Interfaces.ResponseOutput {
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
@@ -276,7 +278,9 @@ export class Response {
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
+      body: ""
     };
+
     this.request.respond(output);
 
     output.status_code = this.status_code;

@@ -451,12 +451,15 @@ export class Server {
       response.body = "";
     }
 
-    request.respond(response);
-    return {
+    let output: Drash.Interfaces.ResponseOutput = {
       body: response.body,
       headers: headers,
-      status_code: response.status_code,
+      status: response.status_code,
     };
+
+    request.respond(output);
+    output.status_code = response.status_code;
+    return output;
   }
 
   /**
