@@ -17,7 +17,6 @@ let result = {
     LoggerConfigs: {},
     ParsedRequestBody: {},
     ServerConfigs: {},
-    ResponseOptions: {},
   },
   Loggers: {
     ConsoleLogger: {},
@@ -62,9 +61,6 @@ result.Interfaces.ServerConfigs = await c.compileLazy();
 
 c.setPath("./src/interfaces/parsed_request_body.ts");
 result.Interfaces.ParsedRequestBody = await c.compileLazy();
-
-c.setPath("./src/interfaces/response_options.ts");
-result.Interfaces.ResponseOptions = await c.compileLazy();
 
 c.setPath("./src/core_loggers/console_logger.ts");
 result.Loggers.ConsoleLogger = await c.compileLazy();

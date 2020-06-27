@@ -4,6 +4,37 @@ import { setCookie, deleteCookie, Cookie } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
+ * @interface ResponseOptions
+ *
+ * @description
+ *     views_path?: string
+ *
+ *         A string that contains the path to the views directory from
+ *         your project directory. This must exist if the `views_renderer` property
+ *         is set by you. Only needs to be set if you plan to return HTML
+ *
+ *           const server = new Drash.Http.Server({
+ *             ...,
+ *             views_path: "/public/views"
+ *           })
+ *
+ *     template_engine?: boolean
+ *
+ *         True if you wish to use Drash's own template engine to render html files.
+ *         The `views_path` property must be set if this is set to true
+ *
+ *             const server = new Drash.Http.Server({
+ *               ...
+ *               template_engine: true
+ *             })
+ */
+export interface IResponseOptions {
+  views_path?: string;
+  template_engine?: boolean;
+  default_response_content_type?: string;
+}
+
+/**
  * @memberof Drash.Http
  * @class Response
  *
@@ -71,12 +102,12 @@ export class Response {
    *
    * @param Drash.Http.Request request
    *
-   * @param ResponseOptions options
-   *     See Drash.Interfaces.ResponseOptions
+   * @param IResponseOptions options
+   *     See Drash.Interfaces.IResponseOptions
    */
   constructor(
     request: Drash.Http.Request,
-    options: Drash.Interfaces.ResponseOptions = {},
+    options: IResponseOptions = {},
   ) {
     this.request = request;
     this.headers = new Headers();
@@ -91,7 +122,7 @@ export class Response {
 
   protected getContentType(
     request: Drash.Http.Request,
-    options: Drash.Interfaces.ResponseOptions,
+    options: IResponseOptions,
   ): string {
     const accept = this.request.headers.get("Accept") ||
       this.request.headers.get("accept");

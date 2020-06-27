@@ -33,7 +33,6 @@ import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log
 import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
 import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
 import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
-import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts";
 import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
 
@@ -93,7 +92,6 @@ export namespace Drash {
     export interface LoggerConfigs extends BaseLoggerConfigs {}
     export interface ParsedRequestBody extends BaseParsedRequestBody {}
     export interface ServerConfigs extends BaseServerConfigs {}
-    export interface ResponseOptions extends BaseResponseOptions {}
     export interface ResponseOutput extends BaseResponseOutput {}
     export interface ResourcePaths extends BaseResourcePaths {}
   }

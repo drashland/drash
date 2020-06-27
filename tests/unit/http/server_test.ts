@@ -213,7 +213,6 @@ Rhum.testPlan("http/server_test.ts", () => {
         "/tests/data/static_file.txt",
         "get",
       );
-      request = await new Drash.Services.HttpRequestService().hydrate(request);
       // Setup so we can make requests to a static file. This example will try get the `./tests/data/static_file.txt` file served
       const server = new Drash.Http.Server({
         directory: ".",
@@ -250,7 +249,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const text = await res.text();
       await server.close();
       Rhum.asserts.assertEquals(res.status, 200);
-      Rhum.asserts.assertEquals(text, '"Hello world!"');
+      Rhum.asserts.assertEquals(text, "Hello world!");
     });
   });
 

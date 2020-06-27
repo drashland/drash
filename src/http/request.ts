@@ -11,7 +11,7 @@ import { Drash } from "../../mod.ts";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-interface OptionsConfig {
+interface IOptionsConfig {
   default_response_content_type: string | undefined;
   headers?: Headers;
   memory_allocation: {
@@ -35,7 +35,7 @@ export class Request extends ServerRequest {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(originalRequest: ServerRequest, options?: OptionsConfig) {
+  constructor(originalRequest: ServerRequest, options?: IOptionsConfig) {
     super();
     this.headers = originalRequest.headers;
     this.method = originalRequest.method;
@@ -251,7 +251,7 @@ export class Request extends ServerRequest {
    * @description
    *     Parse the specified request's body.
    * 
-   * @param OptionsConfig options
+   * @param IOptionsConfig options
    * 
    * @returns {content_type: string, data: unknown}
    *     Returns the content type of the body, and based on this
@@ -259,7 +259,7 @@ export class Request extends ServerRequest {
    *     returns an empty properties
    */
   public async parseBody(
-    options?: OptionsConfig,
+    options?: IOptionsConfig,
   ): Promise<Drash.Interfaces.ParsedRequestBody> {
     let ret: { content_type: string; data: unknown } = {
       content_type: "",
