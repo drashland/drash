@@ -5,7 +5,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
   Rhum.testSuite("/users", () => {
     Rhum.testCase("user data can be retrieved", async () => {
       let response;
-
+      Deno.chdir("./tests/integration/app_3000_resources/resources");
       response = await members.fetch.get("http://localhost:3000/users");
       members.assertEquals(
         await response.text(),
