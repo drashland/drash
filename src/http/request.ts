@@ -45,10 +45,7 @@ export class Request extends ServerRequest {
     }
   }
 
-  public accepts(
-    request: Drash.Http.Request,
-    type: string | string[]
-  ): boolean | string {
+  public accepts(type: string | string[]): boolean | string {
     return new Drash.Services.HttpService().accepts(this, type);
   }
 

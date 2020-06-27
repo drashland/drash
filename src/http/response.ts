@@ -87,11 +87,12 @@ export class Response {
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
   protected getContentType(request: Drash.Http.Request, options: Drash.Interfaces.ResponseOptions): string {
-    const accepts = this.headers.get("Accepts");
-    if (accepts) {
+    const accept = this.request.headers.get("Accept") || this.request.headers.get("accept")
+    if (accept) {
       try {
-        return accepts.split(";")[0];
+        return accept.split(";")[0].trim();
       } catch (error) {
+        // Do nothing... fall through down to the contentType stuff below
       }
     }
 
