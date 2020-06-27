@@ -8,7 +8,7 @@ import { Drash } from "../../mod.ts";
  *     This is the base resource class for all resources. All resource classes
  *     must be derived from this class.
  */
-export class Resource {
+export class Resource implements Drash.Interfaces.Resource {
   /**
    * @description
    *     A property to hold the middleware this resource uses.

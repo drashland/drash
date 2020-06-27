@@ -77,7 +77,7 @@ export class Server {
    * @description
    *     A property to hold this server's configs.
    *
-   * @property any configs
+   * @property Drash.Interfaces.ServerConfigs configs
    */
   protected configs: Drash.Interfaces.ServerConfigs;
 
@@ -94,7 +94,7 @@ export class Server {
    * @description
    *     A property to hold middleware.
    *
-   * @property any middleware
+   * @property middleware
    */
   protected middleware: {
     before_request?: Array<
@@ -114,9 +114,9 @@ export class Server {
    * @description
    *     A property to hold the resources passed in from the configs.
    *
-   * @property any[] resources
+   * @property { [key: string]: Drash.Http.Resource } resources
    */
-  protected resources: { [key: string]: Drash.Http.Resource } = {};
+  protected resources: { [key: string]: Drash.Interfaces.Resource } = {};
 
   /**
    * @description
@@ -158,7 +158,7 @@ export class Server {
     }
 
     if (configs.resources) {
-      configs.resources.forEach((resourceClass: Drash.Http.Resource) => {
+      configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
         this.addHttpResource(resourceClass);
       });
       delete this.configs.resources;
@@ -639,7 +639,7 @@ export class Server {
    *     This method just adds `resourceClass` to `this.resources` so it can be
    *     used (if matched) during an HTTP request.
    */
-  protected addHttpResource(resourceClass: Drash.Http.Resource): void {
+  protected addHttpResource(resourceClass: Drash.Interfaces.Resource): void {
     const newPaths = [];
     for (const path of resourceClass.paths) {
       if (typeof path != "string") {
@@ -806,10 +806,10 @@ export class Server {
    */
   protected getResourceClass(
     request: Drash.Http.Request,
-  ): Drash.Http.Resource | undefined {
+  ): Drash.Interfaces.Resource | undefined {
     for (const resourceName in this.resources) {
       const resource = this.resources[resourceName];
-      const pathObjs = resource.paths_parsed;
+      const pathObjs = resource.paths_parsed!;
       for (const pathObj of pathObjs) {
         if (pathObj.og_path === "/" && request.url_path === "/") {
           return resource;

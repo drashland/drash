@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 // Compilers
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
@@ -26,13 +28,14 @@ import { Response as BaseResponse } from "./src/http/response.ts";
 import { Server as BaseServer } from "./src/http/server.ts";
 
 // Interfaces
-import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
+import { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
 import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
+import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
 import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
-import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
+import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
 import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts";
 import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
-import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
+import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
@@ -85,19 +88,13 @@ export namespace Drash {
   }
 
   export namespace Interfaces {
-    // deno-lint-ignore no-empty-interface
+    export interface Resource extends BaseHttpResource {}
     export interface LogLevelStructure extends BaseLogLevelStructure {}
-    // deno-lint-ignore no-empty-interface
     export interface LoggerConfigs extends BaseLoggerConfigs {}
-    // deno-lint-ignore no-empty-interface
     export interface ParsedRequestBody extends BaseParsedRequestBody {}
-    // deno-lint-ignore no-empty-interface
     export interface ServerConfigs extends BaseServerConfigs {}
-    // deno-lint-ignore no-empty-interface
     export interface ResponseOptions extends BaseResponseOptions {}
-    // deno-lint-ignore no-empty-interface
     export interface ResponseOutput extends BaseResponseOutput {}
-    // deno-lint-ignore no-empty-interface
     export interface ResourcePaths extends BaseResourcePaths {}
   }
 
@@ -123,7 +120,7 @@ export namespace Drash {
    *
    * @property Drash.Members Members
    */
-  export const Members: {[key: string]: any} = {};
+  export const Members: { [key: string]: any } = {};
   export type Members = {};
 
   /**

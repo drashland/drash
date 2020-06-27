@@ -112,7 +112,7 @@ export interface ServerConfigs {
     >;
   };
   pretty_links?: boolean;
-  resources?: any[];
+  resources?: Drash.Interfaces.Resource[];
   response_output?: string;
   static_paths?: string[];
   views_path?: string;
