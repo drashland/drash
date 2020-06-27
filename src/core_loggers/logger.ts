@@ -79,8 +79,8 @@ export abstract class Logger {
    */
   abstract write(
     logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,
-    message: string
-  ): | string | void;
+    message: string,
+  ): string | void;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////

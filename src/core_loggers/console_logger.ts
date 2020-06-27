@@ -43,7 +43,7 @@ export class ConsoleLogger extends Logger {
    */
   public write(
     logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,
-    message: string
+    message: string,
   ): string | void {
     if (this.test) {
       return message;
