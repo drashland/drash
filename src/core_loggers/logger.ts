@@ -95,7 +95,7 @@ export abstract class Logger {
    */
   public debug(message: string): string | void {
     return this.sendToWriteMethod(
-      Drash.Dictionaries.LogLevels.get("debug"),
+      Drash.Dictionaries.LogLevels.get("debug")!,
       message,
     );
   }
@@ -109,7 +109,7 @@ export abstract class Logger {
    */
   public error(message: string): string | void {
     return this.sendToWriteMethod(
-      Drash.Dictionaries.LogLevels.get("error"),
+      Drash.Dictionaries.LogLevels.get("error")!,
       message,
     );
   }
@@ -123,7 +123,7 @@ export abstract class Logger {
    */
   public fatal(message: string): string | void {
     return this.sendToWriteMethod(
-      Drash.Dictionaries.LogLevels.get("fatal"),
+      Drash.Dictionaries.LogLevels.get("fatal")!,
       message,
     );
   }
@@ -137,7 +137,7 @@ export abstract class Logger {
    */
   public info(message: string): string | void {
     return this.sendToWriteMethod(
-      Drash.Dictionaries.LogLevels.get("info"),
+      Drash.Dictionaries.LogLevels.get("info")!,
       message,
     );
   }
@@ -151,7 +151,7 @@ export abstract class Logger {
    */
   public trace(message: string): string | void {
     return this.sendToWriteMethod(
-      Drash.Dictionaries.LogLevels.get("trace"),
+      Drash.Dictionaries.LogLevels.get("trace")!,
       message,
     );
   }
@@ -165,7 +165,7 @@ export abstract class Logger {
    */
   public warn(message: string): string | void {
     return this.sendToWriteMethod(
-      Drash.Dictionaries.LogLevels.get("warn"),
+      Drash.Dictionaries.LogLevels.get("warn")!,
       message,
     );
   }
@@ -183,7 +183,11 @@ export abstract class Logger {
       return "";
     }
 
-    let tagString: any = this.configs.tag_string;
+    let tagString = this.configs.tag_string;
+
+    if (!tagString) {
+      return "";
+    }
 
     try {
       tagString = tagString.replace(
@@ -209,7 +213,7 @@ export abstract class Logger {
    *     class).  Also, do some prechecks before sending to see if the log
    *     message should be written.
    *
-   * @param any logMethodLevelDefinition
+   * @param Drash.Interfaces.LogLevelStructure logMethodLevelDefinition
    *     The dictionary definition of the log message's level.
    * @param string message
    *     The log message.
@@ -218,7 +222,7 @@ export abstract class Logger {
    *     Returns the log message which is used for unit testing purposes.
    */
   protected sendToWriteMethod(
-    logMethodLevelDefinition: any,
+    logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,
     message: string,
   ): string | void {
     // Logger not enabled? Womp womp...
