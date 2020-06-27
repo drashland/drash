@@ -82,10 +82,10 @@ export class HttpRequestService {
    *     Parse this request's body as `multipart/form-data` and get the
    *     requested input.
    *
-   * @param string file
-   *     The file to get by its name.
-   * @param number maxMemory
-   *     The max memory to allocate for this process. Defaults to 1MB.
+   * @param Drash.Interfaces.ParsedRequestBody parsedBody
+   *     The parsed body.
+   * @param string input
+   *     The filename of the file to get ??? (clarify).
    *
    * @return any
    *     Returns a body as a parsable JSON object where the first level of keys
@@ -107,12 +107,12 @@ export class HttpRequestService {
    *     parse the body. Then parse the body accordingly and retrieve the
    *     requested value.
    *
-   * @return any
+   * @return string|undefined
    */
   public getRequestBodyParam(
     parsedBody: Drash.Interfaces.ParsedRequestBody,
     input: string,
-  ): any {
+  ): string | undefined {
     return parsedBody.data[input];
   }
 
@@ -120,9 +120,9 @@ export class HttpRequestService {
    * @description
    *     Get the value of one of this request's headers by its input name.
    *
-   * @return string
+   * @return string|null
    */
-  public getRequestHeaderParam(request: any, input: string): string {
+  public getRequestHeaderParam(request: any, input: string): string | null {
     return request.headers.get(input);
   }
 
@@ -130,9 +130,9 @@ export class HttpRequestService {
    * @description
    *     Get the value of one of this request's path params by its input name.
    *
-   * @return string
+   * @return string|undefined
    */
-  public getRequestPathParam(request: any, input: string): string {
+  public getRequestPathParam(request: any, input: string): string | undefined {
     // request.path_params is set in Drash.Http.Server.getResourceClass()
     return request.path_params[input];
   }
@@ -141,9 +141,12 @@ export class HttpRequestService {
    * @description
    *     Get the value of one of this request's query params by its input name.
    *
-   * @return string
+   * @return string|undefined
    */
-  public getRequestUrlQueryParam(request: any, input: string): string {
+  public getRequestUrlQueryParam(
+    request: any,
+    input: string,
+  ): string | undefined {
     return request.url_query_params[input];
   }
 
@@ -188,9 +191,10 @@ export class HttpRequestService {
 
     // Check the request's URL query params to see if
     // ?response_content_type={content-type} has been specified
-    contentType = request.url_query_params.response_content_type
-      ? request.url_query_params.response_content_type
-      : contentType;
+    contentType =
+      request.url_query_params && request.url_query_params.response_content_type
+        ? request.url_query_params.response_content_type
+        : contentType;
 
     // Check the request's body to see if
     // {response_content_type: {content-type}} has been specified
@@ -240,10 +244,10 @@ export class HttpRequestService {
    * @param any request
    *     The request object.
    *
-   * @return any
+   * @return { {[key: string]: string} }
    *     Returns the URL query string in key-value pair format.
    */
-  public getUrlQueryParams(request: any): any {
+  public getUrlQueryParams(request: any): { [key: string]: string } {
     let queryParams: any = {};
 
     try {
@@ -302,7 +306,7 @@ export class HttpRequestService {
    * @description
    *     Hydrate the specified request object.
    *
-   * @return Promise<boolean>
+   * @return Promise<any>
    *     Returns a hydrated request object. For example, deno uses the
    *     `ServerRequest` object. This method takes that object and adds more
    *     porperties and methods to it. This makes it easier for Drash to process
@@ -311,7 +315,7 @@ export class HttpRequestService {
   public async hydrate(
     request: any,
     options?: OptionsConfig,
-  ): Promise<boolean> {
+  ): Promise<any> {
     if (options && options.headers) {
       this.setHeaders(request, options.headers);
     }
@@ -388,7 +392,7 @@ export class HttpRequestService {
       data: undefined,
     };
 
-    if (!this.hasBody(request)) {
+    if (await this.hasBody(request) === false) {
       return ret;
     }
 

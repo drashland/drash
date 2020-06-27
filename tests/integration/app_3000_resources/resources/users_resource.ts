@@ -24,12 +24,8 @@ export default class UsersResource extends Drash.Http.Resource {
     let user = null;
 
     try {
-      // TODO
-      // (crookse) This should be set to ../users.json, but it doesn't work
-      // because the current working directory when the tests run is
-      // /path/to/deno-drash
       let users = this.readFileContents(
-        "./tests/integration/app_3000_resources/users.json",
+        "../users.json",
       );
       users = JSON.parse(users);
       user = users[userId];
