@@ -33,7 +33,11 @@ export class HttpService {
    *     or the content type that was matches
    */
   public accepts(request: any, type: string | string[]): boolean | string {
-    const acceptHeader = request.headers.get("Accept");
+    let acceptHeader = request.headers.get("Accept");
+
+    if (!acceptHeader) {
+      acceptHeader = request.headers.get("accept");
+    }
 
     if (!acceptHeader) {
       return false;
