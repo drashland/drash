@@ -36,7 +36,14 @@ export class TemplateEngine {
    * @param string template
    *     The template to render.
    * @param any data
-   *     The data that should be rendered with the template.
+   *     The data that should be rendered with the template. For example, the
+   *     data could be...
+     *     {
+     *       name: "John"
+     *     }
+   *     ... and the template would render "John" in <% name %>.
+   *     This data can be anything and everything. It contains the data that the
+   *     template engine will use for template variable replacement.
    */
   public render(template: string, data: unknown): string {
     let code = "with(obj) { var r=[];\n";
