@@ -4,7 +4,7 @@ import { setCookie, deleteCookie, Cookie } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
- * @interface ResponseOptions
+ * @interface IResponseOptions
  *
  * @description
  *     views_path?: string
@@ -80,9 +80,9 @@ export class Response {
    * @description
    *     An object of options to help determine how this object should behave.
    *
-   * @property Drash.Interfaces.ResponseOptions options
+   * @property IResponseOptions options
    */
-  private options: Drash.Interfaces.ResponseOptions;
+  private options: IResponseOptions;
 
   /**
    * @description
@@ -111,7 +111,6 @@ export class Response {
    * @param Drash.Http.Request request
    *
    * @param IResponseOptions options
-   *     See Drash.Interfaces.IResponseOptions
    */
   constructor(
     request: Drash.Http.Request,
@@ -128,28 +127,6 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  protected getContentType(
-    options: IResponseOptions,
-  ): string {
-    const accept = this.request.headers.get("Accept") ||
-      this.request.headers.get("accept");
-    if (accept) {
-      try {
-        return accept.split(";")[0].trim();
-      } catch (error) {
-        // Do nothing... fall through down to the contentType stuff below
-      }
-    }
-
-    let contentType = "application/json";
-    if (options) {
-      contentType = options.default_response_content_type ??
-        contentType;
-    }
-
-    return contentType;
-  }
 
   protected getContentType(): string {
     const accept = this.request.headers.get("Accept") ||
