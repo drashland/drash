@@ -94,7 +94,6 @@ Rhum.testPlan("http/response_test.ts", () => {
           "Content-Type": "application/json",
         },
       });
-      request.response_content_type = "application/json";
       const Response = new Drash.Http.Response(request);
       Response.body = {
         name: "Drash",

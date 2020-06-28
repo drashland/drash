@@ -510,34 +510,6 @@ export class Server {
   }
 
   /**
-   *
-   * @param resourceClass
-   * @param request
-   *
-   * @return resourceClass
-   *     Returns an instance of the resourceClass passed in, and setting the
-   *     `paths` and `middleware` properties
-   */
-  // public getResourceObject(
-  //   resourceClass: Drash.Http.Resource,
-  //   request: Drash.Http.Request,
-  // ): Drash.Http.Resource {
-  //   const resourceObj: Drash.Http.Resource = new resourceClass(
-  //     request,
-  //     new Drash.Http.Response(request, {
-  //       views_path: this.configs.views_path,
-  //       template_engine: this.configs.template_engine,
-  //     }),
-  //     this,
-  //   );
-  //   // We have to add the static properties back because they get blown away
-  //   // when the resource object is created
-  //   resourceObj.paths = resourceClass.paths;
-  //   resourceObj.middleware = resourceClass.middleware;
-  //   return resourceObj;
-  // }
-
-  /**
    * @description
    *     Run the Deno server at the hostname specified in the configs. This
    *     method takes each HTTP request and creates a new and more workable

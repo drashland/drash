@@ -78,6 +78,14 @@ export class Response {
 
   /**
    * @description
+   *     An object of options to help determine how this object should behave.
+   *
+   * @property Drash.Interfaces.ResponseOptions options
+   */
+  private options: Drash.Interfaces.ResponseOptions;
+
+  /**
+   * @description
    *     A property to hold the path to the users views directory
    *     from their project root
    *
@@ -109,11 +117,12 @@ export class Response {
     request: Drash.Http.Request,
     options: IResponseOptions = {},
   ) {
+    this.options = options;
     this.request = request;
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", this.getContentType(options));
+    this.headers.set("Content-Type", this.getContentType());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -136,6 +145,36 @@ export class Response {
     let contentType = "application/json";
     if (options) {
       contentType = options.default_response_content_type ??
+        contentType;
+    }
+
+    return contentType;
+  }
+
+  protected getContentType(): string {
+    const accept = this.request.headers.get("Accept") ||
+      this.request.headers.get("accept");
+    if (accept) {
+      try {
+        let contentTypes = accept.split(";")[0].trim();
+        if (contentTypes && contentTypes == "*/*") {
+          return "application/json";
+        }
+        if (contentTypes.includes(",")) {
+          let firstType = contentTypes.split(",")[0].trim();
+          if (firstType == "*/*") {
+            return "application/json";
+          }
+          return firstType;
+        }
+      } catch (error) {
+        // Do nothing... fall through down to the contentType stuff below
+      }
+    }
+
+    let contentType = "application/json"; // default to application/json
+    if (this.options) {
+      contentType = this.options.default_response_content_type ??
         contentType;
     }
 

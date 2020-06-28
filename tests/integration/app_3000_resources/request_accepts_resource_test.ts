@@ -43,10 +43,11 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
             Accept: "text/xml,text/html,application/json;0.5;something",
           },
         },
-      );
-      json = JSON.parse(await response.json());
-      Rhum.asserts.assertEquals(json.success, true);
-      Rhum.asserts.assertEquals(json.message, "text/html");
+      },
+    );
+    json = await response.json();
+    members.assertEquals(json.success, true);
+    members.assertEquals(json.message, "text/html");
 
       // Accepts the first content type - tests when calling the `accepts` method with an array with no match
       response = await members.fetch.get(
@@ -56,11 +57,11 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
             Accept: "text/js,text/php,text/python;0.5;something", // random stuff the resource isn't looking for
           },
         },
-      );
-      json = JSON.parse(await response.json());
-      Rhum.asserts.assertEquals(json.success, false);
-      Rhum.asserts.assertEquals(json.message, undefined);
-    });
+      },
+    );
+    json = await response.json();
+    members.assertEquals(json.success, false);
+    members.assertEquals(json.message, undefined);
   });
 });
 
