@@ -6,6 +6,8 @@
   "repository": "https://github.com/drashland/deno-drash",
   "files": [
     "./mod.ts",
+    "./deps.ts",
+    "./create_app.ts",
     "./src/**/*",
     "./README.md"
   ]
