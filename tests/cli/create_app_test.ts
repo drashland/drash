@@ -61,7 +61,7 @@ const fileExists = async (filename: string): Promise<boolean> => {
 
 Rhum.testPlan("create_app_test.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
-    Rhum.testCase("script fails with no argument", () => {
+    Rhum.testCase("script fails with no argument", async () => {
       const p = await Deno.run({
         cmd: [
           "deno",
