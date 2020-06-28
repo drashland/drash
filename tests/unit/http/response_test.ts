@@ -162,70 +162,87 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.asserts.assertEquals(body, '"Hello world!"');
     });
 
-    Rhum.testCase("Responds with \"null\" when body is null with no content type", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "something/orOther",
-        },
-      });
-      const Response = new Drash.Http.Response(request);
-      Response.body = null;
-      Response.headers.set("Content-Type", "something/orOther")
-      const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "null");
-    });
+    Rhum.testCase(
+      'Responds with "null" when body is null with no content type',
+      () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Type": "something/orOther",
+          },
+        });
+        const Response = new Drash.Http.Response(request);
+        Response.body = null;
+        Response.headers.set("Content-Type", "something/orOther");
+        const body = Response.generateResponse();
+        Rhum.asserts.assertEquals(body, "null");
+      },
+    );
 
-    Rhum.testCase("Responds with \"undefined\" when body is undefined with no content type", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "something/orOther"
-        },
-      });
-      const Response = new Drash.Http.Response(request);
-      Response.headers.set("Content-Type", "something/orOther")
-      Response.body = undefined;
-      const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "undefined");
-    });
+    Rhum.testCase(
+      'Responds with "undefined" when body is undefined with no content type',
+      () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Type": "something/orOther",
+          },
+        });
+        const Response = new Drash.Http.Response(request);
+        Response.headers.set("Content-Type", "something/orOther");
+        Response.body = undefined;
+        const body = Response.generateResponse();
+        Rhum.asserts.assertEquals(body, "undefined");
+      },
+    );
 
-    Rhum.testCase("Responds with \"false\" when body is false with no content type", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "something/orOther",
-        },
-      });
-      const Response = new Drash.Http.Response(request);
-      Response.body = false;
-      Response.headers.set("Content-Type", "something/orOther")
-      const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "false");
-    });
+    Rhum.testCase(
+      'Responds with "false" when body is false with no content type',
+      () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Type": "something/orOther",
+          },
+        });
+        const Response = new Drash.Http.Response(request);
+        Response.body = false;
+        Response.headers.set("Content-Type", "something/orOther");
+        const body = Response.generateResponse();
+        Rhum.asserts.assertEquals(body, "false");
+      },
+    );
 
-    Rhum.testCase("Responds with \"true\" when body is true with no content type", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "something/orOther",
-        },
-      });
-      const Response = new Drash.Http.Response(request);
-      Response.body = true;
-      Response.headers.set("Content-Type", "something/orOther")
-      const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "true");
-    });
+    Rhum.testCase(
+      'Responds with "true" when body is true with no content type',
+      () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Type": "something/orOther",
+          },
+        });
+        const Response = new Drash.Http.Response(request);
+        Response.body = true;
+        Response.headers.set("Content-Type", "something/orOther");
+        const body = Response.generateResponse();
+        Rhum.asserts.assertEquals(body, "true");
+      },
+    );
 
-    Rhum.testCase("Responds with \"null\" when body is not a string/undefined/null/bool", () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Content-Type": "something/orOther",
-        },
-      });
-      const Response = new Drash.Http.Response(request);
-      Response.headers.set("Content-Type", "something/orOther")
-      Response.body = { name: "Tests are boring to write, but they are really good to have" };
-      const body = Response.generateResponse();
-      Rhum.asserts.assertEquals(body, "null");
-    });
+    Rhum.testCase(
+      'Responds with "null" when body is not a string/undefined/null/bool',
+      () => {
+        let request = Rhum.mocks.ServerRequest("/", "get", {
+          headers: {
+            "Content-Type": "something/orOther",
+          },
+        });
+        const Response = new Drash.Http.Response(request);
+        Response.headers.set("Content-Type", "something/orOther");
+        Response.body = {
+          name: "Tests are boring to write, but they are really good to have",
+        };
+        const body = Response.generateResponse();
+        Rhum.asserts.assertEquals(body, "null");
+      },
+    );
   });
 
   // NOTE: Ignoring assertions for the correct message on status codes, because
