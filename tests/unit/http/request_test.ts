@@ -512,7 +512,6 @@ function parseBodyTests() {
   //
   // })
 
-  // TODO(ebebbington) Fails, cannot parse as JSON. Find out how to send the correct data
   Rhum.testCase("Can correctly parse as application/json", async () => {
     const encodedBody = new TextEncoder().encode(JSON.stringify({
       name: "John",

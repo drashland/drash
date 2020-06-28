@@ -12,6 +12,7 @@ package-lock.json
 .sass-cache
 tmp/*
 node_modules
+.idea
 
 # exceptions
 !.gitkeep
