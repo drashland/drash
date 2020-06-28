@@ -1,4 +1,4 @@
-import { Rhum } from "../../test_deps.ts";
+import { Rhum, path, MultipartReader, isFormFile } from "../../test_deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
@@ -623,16 +623,26 @@ function parseBodyAsJsonTests() {
 }
 
 function parseBodyAsMultipartFormDataTests() {
-  // TODO(ebebbington) Figure out how we can do this correctly as it currently fails)
-  // Rhum.testCase("Can parse files", async () => {
-  //   const o = await Deno.open("./tests/data/multipart_1.txt");
-  //   const actual = await request.parseBodyAsMultipartFormData(
-  //     o,
-  //     "----------------------------434049563556637648550474",
-  //     128
-  //   );
-  //   Rhum.asserts.assertEquals(actual, {hello: "world"});
-  // });
+  Rhum.testCase("Can parse files", async () => {
+    const serverRequest = members.mockRequest();
+    const request = new Drash.Http.Request(serverRequest);
+    const o = await Deno.open(path.resolve("./tests/data/sample.txt"));
+    const form = await request.parseBodyAsMultipartFormData(
+      o,
+      "--------------------------434049563556637648550474",
+      128
+    );
+    Rhum.asserts.assertEquals(form.value("foo"), "foo");
+    Rhum.asserts.assertEquals(form.value("bar"), "bar");
+    const file = form.file("file");
+    Rhum.asserts.assert(isFormFile(file));
+    Rhum.asserts.assert(file.content !== void 0);
+    const file2 = form.file("file2");
+    Rhum.asserts.assert(isFormFile(file2));
+    Rhum.asserts.assert(file2.filename === "中文.json");
+    Rhum.asserts.assert(file2.content !== void 0);
+    o.close();
+  });
 }
 
 function setHeadersTests() {

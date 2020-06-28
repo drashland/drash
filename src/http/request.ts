@@ -415,7 +415,7 @@ export class Request extends ServerRequest {
     body: Reader,
     boundary: string,
     maxMemory: number,
-  ): Promise<unknown> {
+  ): Promise<any> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -423,7 +423,7 @@ export class Request extends ServerRequest {
     } else {
       maxMemory *= 1024 * 1024;
     }
-    const mr = await new MultipartReader(body, boundary);
+    const mr = new MultipartReader(body, boundary);
     const ret = await mr.readForm(maxMemory);
     // console.log(ret);
     return ret;
