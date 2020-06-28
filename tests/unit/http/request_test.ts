@@ -623,10 +623,10 @@ function parseBodyAsJsonTests() {
 }
 
 function parseBodyAsMultipartFormDataTests() {
-  Rhum.testCase("Can parse files", async () => {
+  Rhum.testCase("Can parse file sample_1.txt", async () => {
     const serverRequest = members.mockRequest();
     const request = new Drash.Http.Request(serverRequest);
-    const o = await Deno.open(path.resolve("./tests/data/sample.txt"));
+    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
     const form = await request.parseBodyAsMultipartFormData(
       o,
       "--------------------------434049563556637648550474",
@@ -641,6 +641,30 @@ function parseBodyAsMultipartFormDataTests() {
     Rhum.asserts.assert(isFormFile(file2));
     Rhum.asserts.assert(file2.filename === "中文.json");
     Rhum.asserts.assert(file2.content !== void 0);
+    o.close();
+  });
+  Rhum.testCase("Can parse file sample_2.txt", async () => {
+    const serverRequest = members.mockRequest();
+    const request = new Drash.Http.Request(serverRequest);
+    const o = await Deno.open(path.resolve("./tests/data/sample_2.txt"));
+    const form = await request.parseBodyAsMultipartFormData(
+      o,
+      "--------------------------434049563556637648550474",
+      128
+    );
+    Rhum.asserts.assertEquals(form.value("hello"), "world");
+    o.close();
+  });
+  Rhum.testCase("Can parse file sample_3.txt", async () => {
+    const serverRequest = members.mockRequest();
+    const request = new Drash.Http.Request(serverRequest);
+    const o = await Deno.open(path.resolve("./tests/data/sample_3.txt"));
+    const form = await request.parseBodyAsMultipartFormData(
+      o,
+      "--------------------------434049563556637648550474",
+      128
+    );
+    Rhum.asserts.assertEquals(form.value("foo"), "foo");
     o.close();
   });
 }
