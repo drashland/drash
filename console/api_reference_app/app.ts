@@ -26,7 +26,6 @@ let result = {
   },
   Services: {
     HttpService: {},
-    HttpRequestService: {},
   },
 };
 
@@ -73,9 +72,6 @@ result.Loggers.Logger = await c.compileLazy();
 
 c.setPath("./src/services/http_service.ts");
 result.Services.HttpService = await c.compileLazy();
-
-c.setPath("./src/services/http_request_service.ts");
-result.Services.HttpRequestService = await c.compileLazy();
 
 console.info("Writing api_reference.json file");
 
