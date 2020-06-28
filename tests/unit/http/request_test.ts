@@ -207,7 +207,7 @@ function getBodyFileTests() {
     await o.close();
   });
 
-  Rhum.testCase("Returns ??? if the file does not exist", async () => {
+  Rhum.testCase("Returns undefined if the file does not exist", async () => {
     const serverRequest = members.mockRequest();
     const request = new Drash.Http.Request(serverRequest);
     const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
