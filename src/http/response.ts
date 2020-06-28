@@ -396,7 +396,7 @@ export class Response {
    *     URL of desired redirection.
    *     Relative or external paths (e.g., "/users/1", https://drash.land)
    * 
-   * @return {status: number, headers: Headers, body: any}
+   * @return Drash.Interfaces.ResponseOutput
    */
   public redirect(
     httpStatusCode: number,
