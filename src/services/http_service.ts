@@ -36,7 +36,10 @@ export class HttpService {
    *     False if the request doesn't accept any of the passed in types,
    *     or the content type that was matches
    */
-  public accepts(request: any, type: string | string[]): boolean | string {
+  public accepts(
+    request: Drash.Http.Request,
+    type: string | string[],
+  ): boolean | string {
     let acceptHeader = request.headers.get("Accept");
 
     if (!acceptHeader) {
@@ -53,7 +56,7 @@ export class HttpService {
     }
 
     // for when `type` is an array
-    const matches = type.filter((t) => acceptHeader.indexOf(t) >= 0);
+    const matches = type.filter((t) => acceptHeader!.indexOf(t) >= 0);
     return matches.length ? matches[0] : false; // return first match
   }
 
