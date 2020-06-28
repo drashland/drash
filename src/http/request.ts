@@ -100,7 +100,7 @@ export class Request extends ServerRequest {
    *
    * @return FormFile|undefined
    */
-  public getBodyFile(input: string): FormFile|undefined {
+  public getBodyFile(input: string): FormFile | undefined {
     return this.parsed_body.data.file(input);
   }
 

@@ -194,10 +194,10 @@ function getBodyFileTests() {
     };
     request.parsed_body = pb;
     const file = request.getBodyFile("file");
-    Rhum.asserts.assertEquals(file.filename, "tsconfig.json");
-    Rhum.asserts.assertEquals(file.type, "application/octet-stream");
-    Rhum.asserts.assertEquals(file.size, 233);
-    const content = file.content;
+    Rhum.asserts.assertEquals(file!.filename, "tsconfig.json");
+    Rhum.asserts.assertEquals(file!.type, "application/octet-stream");
+    Rhum.asserts.assertEquals(file!.size, 233);
+    const content = file!.content;
     if (content !== undefined) {
       Rhum.asserts.assertEquals(content.constructor === Uint8Array, true);
     } else {
