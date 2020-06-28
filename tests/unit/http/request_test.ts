@@ -630,7 +630,7 @@ function parseBodyAsMultipartFormDataTests() {
     const form = await request.parseBodyAsMultipartFormData(
       o,
       "--------------------------434049563556637648550474",
-      128
+      128,
     );
     Rhum.asserts.assertEquals(form.value("foo"), "foo");
     Rhum.asserts.assertEquals(form.value("bar"), "bar");
@@ -650,7 +650,7 @@ function parseBodyAsMultipartFormDataTests() {
     const form = await request.parseBodyAsMultipartFormData(
       o,
       "--------------------------434049563556637648550474",
-      128
+      128,
     );
     Rhum.asserts.assertEquals(form.value("hello"), "world");
     o.close();
@@ -662,7 +662,7 @@ function parseBodyAsMultipartFormDataTests() {
     const form = await request.parseBodyAsMultipartFormData(
       o,
       "--------------------------434049563556637648550474",
-      128
+      128,
     );
     Rhum.asserts.assertEquals(form.value("foo"), "foo");
     o.close();
