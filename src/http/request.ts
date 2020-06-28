@@ -100,7 +100,7 @@ export class Request extends ServerRequest {
    *
    * @return unknown
    */
-  public getBodyFile(input: string): unknown {
+  public getBodyFile(input: string): string {
     return this.parsed_body.data.value(input);
   }
 
