@@ -15,11 +15,13 @@ export default class RequestAcceptsResource extends Drash.Http.Resource {
 
     if (!matchedType) {
       this.response.body = JSON.stringify({ success: false });
-    } else {
-      this.response.body = JSON.stringify(
-        { success: true, message: matchedType },
-      );
+      return this.response;
     }
+
+
+    this.response.body = JSON.stringify(
+      { success: true, message: matchedType },
+    );
 
     return this.response;
   }
