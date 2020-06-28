@@ -40,6 +40,7 @@ export class ConsoleLogger extends Logger {
    *
    * @return string
    *     Returns the log message which is used for unit testing purposes.
+   *     Returns void since the logger just logs to the console.
    */
   public write(
     logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,

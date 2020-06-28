@@ -44,6 +44,7 @@ export class FileLogger extends Logger {
    *
    * @return string|void
    *     Returns the log message which is used for unit testing purposes.
+   *     Returns void since this logger just writes to a file.
    */
   public write(
     logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,
