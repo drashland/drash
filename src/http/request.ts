@@ -98,9 +98,9 @@ export class Request extends ServerRequest {
    * @param string input
    *     The name of the file to get.
    *
-   * @return FormFile
+   * @return FormFile|undefined
    */
-  public getBodyFile(input: string): FormFile {
+  public getBodyFile(input: string): FormFile|undefined {
     return this.parsed_body.data.file(input);
   }
 
