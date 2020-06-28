@@ -2,7 +2,6 @@
 *conf.json
 .DS_Store
 .env
-api_reference.json
 bundle.js
 compiled_*.js
 compiled_*.json
