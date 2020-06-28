@@ -21,6 +21,8 @@ export class HttpService {
    *     This method will check if the requests `Accept` header contains
    *     the passed in types
    *
+   * @param Drash.Http.Request request
+   *     The request object containing the Accept header.
    * @param string|string[] type
    *     The content-type/mime-type(s) to check if the request accepts it
    *
