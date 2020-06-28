@@ -1,19 +1,17 @@
 import { Drash } from "../../../../mod.ts";
 
+interface ICoffee {
+  name: string;
+}
+
 export default class CoffeeResource extends Drash.Http.Resource {
   static paths = ["/coffee", "/coffee/:id"];
 
-  protected coffee = {
-    17: {
-      name: "Light",
-    },
-    18: {
-      name: "Medium",
-    },
-    19: {
-      name: "Dark",
-    },
-  };
+  protected coffee = new Map<number, ICoffee>([
+    [17, { name: "Light" }],
+    [18, { name: "Medium" }],
+    [19, { name: "Dark" }],
+  ]);
 
   public GET() {
     let coffeeId = this.request.getPathParam("id");
@@ -33,15 +31,15 @@ export default class CoffeeResource extends Drash.Http.Resource {
       return this.response.redirect(302, "/coffee/17");
     }
 
-    this.response.body = this.getCoffee(coffeeId);
+    this.response.body = this.getCoffee(parseInt(coffeeId));
     return this.response;
   }
 
-  protected getCoffee(coffeeId: string) {
+  protected getCoffee(coffeeId: number) {
     let coffee = null;
 
     try {
-      coffee = this.coffee[coffeeId];
+      coffee = this.coffee.get(coffeeId);
     } catch (error) {
       throw new Drash.Exceptions.HttpException(
         400,

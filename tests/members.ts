@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 import { Drash } from "../mod.ts";
 import {
   BufReader,
@@ -58,8 +59,9 @@ function mockRequest(url = "/", method = "get", options?: any): any {
 }
 
 interface IMakeRequestOptions {
-  // deno-lint-ignore no-explicit-any
   body?: any;
+  headers?: any;
+  credentials?: any;
 }
 
 // deno-lint-ignore no-explicit-any

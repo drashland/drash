@@ -4,7 +4,11 @@ export default class RequestAcceptsTwoResource extends Drash.Http.Resource {
   static paths = ["/request-accepts-two"];
 
   public GET() {
-    let contentTypes: string[] = this.request.headers.get("Accept").split(";");
+    const acceptHeader = this.request.headers.get("Accept");
+    if (!acceptHeader) {
+      return this.jsonResponse();
+    }
+    let contentTypes: string[] = acceptHeader.split(";");
     for (let content of contentTypes) {
       content = content.trim();
       if (content.indexOf("application/json") != -1) {
