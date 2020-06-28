@@ -178,27 +178,53 @@ function getCookieTests() {
 }
 
 function getBodyFileTests() {
-  // TODO(ebebbington|any) Look into how we can properly test multipart form data. Also address the doc block when we know what data is returned, and assert the correct responses below
-  //  @crookse has said it's been difficult to test and Deno's way of testing it has been troublesome to understand
-  //  Maybe look into Deno's way to see if I can get anything from it
-  // Rhum.testCase("Returns the file object if the file exists", async () => {
-  //   const formData = new FormData();
-  //   formData.append("file_1", "John");
-  //   const serverRequest = members.mockRequest("/", "POST", {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //     body: formData,
-  //   });
-  //   await request.parseBody();
-  //   console.log(request);
-  //   const fileObj = request.getBodyFile(request, "file_1");
-  //   Rhum.asserts.assertEquals(true, true);
-  // });
+  // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
+  Rhum.testCase("Returns the file object if the file exists", async () => {
+    const serverRequest = members.mockRequest();
+    const request = new Drash.Http.Request(serverRequest);
+    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+    const form = await request.parseBodyAsMultipartFormData(
+        o,
+        "--------------------------434049563556637648550474",
+        128
+    );
+    const pb: Drash.Interfaces.ParsedRequestBody = {
+      content_type: "multipart/form-data",
+      data: form
+    };
+    request.parsed_body = pb;
+    const file = request.getBodyFile("file")
+    Rhum.asserts.assertEquals(file.filename, "tsconfig.json");
+    Rhum.asserts.assertEquals(file.type, "application/octet-stream");
+    Rhum.asserts.assertEquals(file.size, 233);
+    const content = file.content;
+    if (content !== undefined) {
+      Rhum.asserts.assertEquals(content.constructor === Uint8Array, true);
+    } else {
+      // The content of the file should be set!
+      Rhum.asserts.assertEquals(true, false)
+    }
+    await o.close()
+  })
 
-  // Rhum.testCase("Returns ??? if the file does not exist", () => {
-  //   Rhum.asserts.assertEquals(true, true);
-  // });
+  Rhum.testCase("Returns ??? if the file does not exist", async () => {
+    const serverRequest = members.mockRequest();
+    const request = new Drash.Http.Request(serverRequest);
+    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+    const form = await request.parseBodyAsMultipartFormData(
+        o,
+        "--------------------------434049563556637648550474",
+        128
+    );
+    const pb: Drash.Interfaces.ParsedRequestBody = {
+      content_type: "multipart/form-data",
+      data: form
+    };
+    request.parsed_body = pb;
+    const file = request.getBodyFile("dontExist")
+    Rhum.asserts.assertEquals(file, undefined);
+    await o.close()
+  });
 }
 
 function getBodyParamTests() {
@@ -237,6 +263,25 @@ function getBodyParamTests() {
     const actual = request.getBodyParam("dont_exist");
     Rhum.asserts.assertEquals(null, actual);
   });
+
+  // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
+  Rhum.testCase("Returns the value for the parameter when it exists and request is multipart/form-data", async () => {
+    const serverRequest = members.mockRequest();
+    const request = new Drash.Http.Request(serverRequest);
+    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+    const form = await request.parseBodyAsMultipartFormData(
+        o,
+        "--------------------------434049563556637648550474",
+        128
+    );
+    const pb: Drash.Interfaces.ParsedRequestBody = {
+      content_type: "multipart/form-data",
+      data: form
+    }
+    request.parsed_body = pb;
+    Rhum.asserts.assertEquals(request.getBodyParam("foo"), "foo");
+    await o.close()
+  })
 }
 
 function getHeaderParamTests() {
