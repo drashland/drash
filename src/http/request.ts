@@ -113,7 +113,7 @@ export class Request extends ServerRequest {
   public getBodyParam(input: string): string | null {
     let param;
     if (typeof this.parsed_body.data.value === "function") { // For when multipart/form-data
-      param = this.parsed_body.data.value(input)
+      param = this.parsed_body.data.value(input);
     } else { // Anything else
       param = this.parsed_body.data[input];
     }
