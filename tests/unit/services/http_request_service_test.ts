@@ -4,76 +4,6 @@ const encoder = new TextEncoder();
 const service = new Drash.Services.HttpRequestService();
 
 Rhum.testPlan("services/http_request_service_test.ts", () => {
-  Rhum.testSuite("accepts()", () => {
-    Rhum.testCase(
-      "accepts the single type if it is present in the header",
-      () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            Accept: "application/json;text/html",
-          },
-        });
-        let actual;
-        actual = service.accepts(request, "application/json");
-        Rhum.asserts.assertEquals("application/json", actual);
-        actual = service.accepts(request, "text/html");
-        Rhum.asserts.assertEquals("text/html", actual);
-      },
-    );
-    Rhum.testCase(
-      "rejects the single type if it is not present in the header",
-      () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            Accept: "application/json;text/html",
-          },
-        });
-        let actual;
-        actual = service.accepts(request, "text/xml");
-        Rhum.asserts.assertEquals(false, actual);
-      },
-    );
-    Rhum.testCase(
-      "accepts the first of multiple types if it is present in the header",
-      () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            Accept: "application/json;text/html",
-          },
-        });
-        let actual;
-        actual = service.accepts(request, ["application/json", "text/xml"]);
-        Rhum.asserts.assertEquals("application/json", actual);
-      },
-    );
-    Rhum.testCase(
-      "accepts the second of multiple types if it is present in the header",
-      () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            Accept: "application/json;text/html",
-          },
-        });
-        let actual;
-        actual = service.accepts(request, ["text/xml", "application/json"]);
-        Rhum.asserts.assertEquals("application/json", actual);
-      },
-    );
-    Rhum.testCase(
-      "rejects the multiple types if none are present in the header",
-      () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            Accept: "application/json;text/html",
-          },
-        });
-        let actual;
-        actual = service.accepts(request, ["text/xml", "text/plain"]);
-        Rhum.asserts.assertEquals(false, actual);
-      },
-    );
-  });
-
   Rhum.testSuite("getCookie()", () => {
     Rhum.testCase("Returns the cookie value if it exists", () => {
       const request = Rhum.mocks.ServerRequest("/", "get", {
@@ -241,69 +171,6 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
     );
   });
 
-  Rhum.testSuite("getResponseContentType()", () => {
-    Rhum.testCase(
-      "Returns application/json with no content type set",
-      async () => {
-        const request = Rhum.mocks.ServerRequest("/", "get");
-        const contentType = service.getResponseContentType(request);
-        Rhum.asserts.assertEquals(contentType, "application/json");
-      },
-    );
-
-    Rhum.testCase(
-      "Returns text/plain when specified in the default content type",
-      async () => {
-        const request = Rhum.mocks.ServerRequest("/", "get");
-        const contentType = service.getResponseContentType(
-          request,
-          "text/plain",
-        );
-        Rhum.asserts.assertEquals(contentType, "text/plain");
-      },
-    );
-
-    Rhum.testCase(
-      "Returns text/plain when specified in the headers",
-      async () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
-          headers: {
-            "Response-Content-Type": "text/plain",
-          },
-        });
-        const parsedBody = await service.parseBody(request);
-        request.parsed_body = parsedBody;
-        const contentType = service.getResponseContentType(request);
-        Rhum.asserts.assertEquals(contentType, "text/plain");
-      },
-    );
-
-    Rhum.testCase("Returns text/plain when specified in the body", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "post", {
-        body: JSON.stringify({
-          "response_content_type": "text/plain",
-        }),
-      });
-      request.parsed_body = {
-        response_content_type: "text/plain",
-      };
-      const contentType = service.getResponseContentType(request);
-      Rhum.asserts.assertEquals(contentType, "text/plain");
-    });
-
-    Rhum.testCase(
-      "Returns text/plain when specified in the query",
-      async () => {
-        let request = Rhum.mocks.ServerRequest(
-          "/something?response_content_type=text/plain",
-        );
-        request = await service.hydrate(request);
-        const contentType = service.getResponseContentType(request);
-        Rhum.asserts.assertEquals(contentType, "text/plain");
-      },
-    );
-  });
-
   Rhum.testSuite("getUrlPath()", () => {
     Rhum.testCase("Returns / when Url is /", async () => {
       const request = Rhum.mocks.ServerRequest("/");
@@ -462,16 +329,6 @@ Rhum.testPlan("services/http_request_service_test.ts", () => {
         name: "Edward",
         age: "not_telling",
       });
-    });
-
-    Rhum.testCase("Attaches the response content type", async () => {
-      let request = Rhum.mocks.ServerRequest("/", "get", {
-        headers: {
-          "Response-Content-Type": "text/plain",
-        },
-      });
-      request = await service.hydrate(request);
-      Rhum.asserts.assertEquals(request.response_content_type, "text/plain");
     });
 
     Rhum.testCase("Attaches all the required methods", async () => {

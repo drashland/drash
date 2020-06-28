@@ -29,40 +29,6 @@ export class HttpRequestService {
 
   /**
    * @description
-   *     Checks if the incoming request accepts the type(s) in the parameter.
-   *     This method will check if the requests `Accept` header contains
-   *     the passed in types
-   *
-   * @param string|string[] type
-   *     The content-type/mime-type(s) to check if the request accepts it
-   *
-   * @example
-   *     // YourResource.ts - assume the request accepts "text/html"
-   *     const isAccepted = this.request.accepts("text/html"); // "text/html"
-   *     // or can also pass in an array and will match on the first one found
-   *     const isAccepted = this.request.accepts(["text/html", "text/xml"]); // "text/html"
-   *     // and will return false if not found
-   *     const isAccepted = this.request.accepts("text/xml"); // false
-   *
-   * @return boolean|string
-   *     False if the request doesn't accept any of the passed in types,
-   *     or the content type that was matches
-   */
-  public accepts(request: any, type: string | string[]): boolean | string {
-    const acceptHeader = request.headers.get("Accept");
-
-    // for when `type` is a string
-    if (typeof type === "string") {
-      return acceptHeader.indexOf(type) >= 0 ? type : false;
-    }
-
-    // for when `type` is an array
-    const matches = type.filter((t) => acceptHeader.indexOf(t) >= 0);
-    return matches.length ? matches[0] : false; // return first match
-  }
-
-  /**
-   * @description
    *     Get a cookie value by the name that is sent in with the request
    * 
    * @param string cookie
@@ -148,66 +114,6 @@ export class HttpRequestService {
     input: string,
   ): string | undefined {
     return request.url_query_params[input];
-  }
-
-  /**
-   * @description
-   *     Get the request's requested content type.
-   *
-   *     There are three ways to get this value: (1) the request's headers by
-   *     setting `Response-Content-Type: "type"`, (2) the request's URL query
-   *     params by setting `?response_content_type=type`, and the request's body
-   *     by setting `{response_content_type: "type"}`.
-   *
-   *     The request's body takes precedence over all other settings.
-   *
-   *     The request's URL query params takes precedence over the header setting
-   *     and the default setting.
-   *
-   *     The request's header setting takes precedence over the default setting.
-   *
-   *     If no content type is specified by the request's body, URL query
-   *     params, or header, then the default content type will be used. The
-   *     default content type is the content type defined in the
-   *     `Drash.Http.Server` object's `response_output` config. If a default is
-   *     not specified, then "application/json" will be used.
-   */
-  public getResponseContentType(
-    request: any,
-    defaultContentType: string = "application/json",
-  ): string {
-    // application/json will be used for any falsy defaultContentType argument
-    defaultContentType = defaultContentType
-      ? defaultContentType
-      : "application/json";
-
-    let contentType: null | string = null;
-
-    // Check the request's headers to see if `response-content-type:
-    // {content-type}` has been specified
-    contentType = request.headers.get("Response-Content-Type")
-      ? request.headers.get("Response-Content-Type")
-      : contentType;
-
-    // Check the request's URL query params to see if
-    // ?response_content_type={content-type} has been specified
-    contentType =
-      request.url_query_params && request.url_query_params.response_content_type
-        ? request.url_query_params.response_content_type
-        : contentType;
-
-    // Check the request's body to see if
-    // {response_content_type: {content-type}} has been specified
-    contentType =
-      request.parsed_body && request.parsed_body.response_content_type
-        ? request.parsed_body.response_content_type
-        : contentType;
-
-    if (!contentType) {
-      contentType = defaultContentType;
-    }
-
-    return contentType;
   }
 
   /**
@@ -327,10 +233,6 @@ export class HttpRequestService {
     // Attach properties
     request.url_path = this.getUrlPath(request);
     request.url_query_params = this.getUrlQueryParams(request);
-    request.response_content_type = this.getResponseContentType(
-      request,
-      contentType,
-    );
 
     // Parse the body now so that callers don't have to use async-await when
     // trying to get the body at a later time. We're sacrificing performance for
@@ -365,7 +267,7 @@ export class HttpRequestService {
     request.accepts = function accepts(
       type: string | string[],
     ): boolean | string {
-      return t.accepts(request, type);
+      return new Drash.Services.HttpService().accepts(request, type);
     };
 
     return request;

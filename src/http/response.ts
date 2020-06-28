@@ -47,6 +47,14 @@ export class Response {
 
   /**
    * @description
+   *     An object of options to help determine how this object should behave.
+   *
+   * @property Drash.Interfaces.ResponseOptions options
+   */
+  private options: Drash.Interfaces.ResponseOptions;
+
+  /**
+   * @description
    *     A property to hold the path to the users views directory
    *     from their project root
    *
@@ -74,11 +82,15 @@ export class Response {
    *     See Drash.Interfaces.ResponseOptions
    */
   constructor(request: any, options: Drash.Interfaces.ResponseOptions = {}) {
+    this.options = options;
     this.request = request;
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", request.response_content_type);
+    this.headers.set(
+      "Content-Type",
+      this.getContentTypeFromRequestAcceptHeader(),
+    );
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
@@ -248,6 +260,49 @@ export class Response {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get the content type from the request object's "Accept" header. Default
+   *     to the response_output config passed in when the server was created if
+   *     no accept header is specified. If no response_output config was passed
+   *     in during server creation, then default to application/json.
+   *
+   *
+   * @return string
+   *     Returns a content type to set as this object's content-type header. If
+   *     multiple content types are passed in, then return the first accepted
+   *     content type.
+   */
+  protected getContentTypeFromRequestAcceptHeader(): string {
+    const accept = this.request.headers.get("Accept") ||
+      this.request.headers.get("accept");
+    if (accept) {
+      try {
+        let contentTypes = accept.split(";")[0].trim();
+        if (contentTypes && contentTypes == "*/*") {
+          return "application/json";
+        }
+        if (contentTypes.includes(",")) {
+          let firstType = contentTypes.split(",")[0].trim();
+          if (firstType == "*/*") {
+            return "application/json";
+          }
+          return firstType;
+        }
+      } catch (error) {
+        // Do nothing... fall through down to the contentType stuff below
+      }
+    }
+
+    let contentType = "application/json"; // default to application/json
+    if (this.options) {
+      contentType = this.options.default_response_content_type ??
+        contentType;
+    }
+
+    return contentType;
+  }
 
   /**
    * @description

@@ -42,7 +42,7 @@ members.testSuite("Accept header (Test suite 1)", () => {
         },
       },
     );
-    json = JSON.parse(await response.json());
+    json = await response.json();
     members.assertEquals(json.success, true);
     members.assertEquals(json.message, "text/html");
 
@@ -55,7 +55,7 @@ members.testSuite("Accept header (Test suite 1)", () => {
         },
       },
     );
-    json = JSON.parse(await response.json());
+    json = await response.json();
     members.assertEquals(json.success, false);
     members.assertEquals(json.message, undefined);
   });
