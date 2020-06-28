@@ -48,7 +48,7 @@ export class Response {
    *
    * @property string body
    */
-  public body: any = "";
+  public body: boolean | null | object | string | undefined = "";
 
   /**
    * @description
@@ -184,7 +184,16 @@ export class Response {
    * @return void
    */
   public setCookie(cookie: Cookie): void {
-    setCookie(this, cookie);
+    let response = {
+      status: this.status_code,
+      // The setCookie() method doesn't care what the body is. It only cares
+      // about the response's headers. Our bodie is not assignable to the body
+      // that the deleteCookie() method expects. Therefore, we just send in a
+      // random body that matches the schema it expects.
+      body: "",
+      headers: this.headers,
+    };
+    setCookie(response, cookie);
   }
 
   /**
@@ -197,7 +206,16 @@ export class Response {
    * @return void
    */
   public delCookie(cookieName: string): void {
-    deleteCookie(this, cookieName);
+    let response = {
+      status: this.status_code,
+      // The deleteCookie() method doesn't care what the body is. It only cares
+      // about the response's headers. Our bodie is not assignable to the body
+      // that the deleteCookie() method expects. Therefore, we just send in a
+      // random body that matches the schema it expects.
+      body: "",
+      headers: this.headers,
+    };
+    deleteCookie(response, cookieName);
   }
 
   /**
@@ -217,6 +235,18 @@ export class Response {
       case "text/xml":
       case "text/plain":
       default:
+        if (this.body === null) {
+          return "null";
+        }
+        if (this.body === undefined) {
+          return "undefined";
+        }
+        if (typeof this.body === "boolean") {
+          return this.body.toString();
+        }
+        if (typeof this.body !== "string") { // final catch all, respond with a generic value
+          return "null";
+        }
         return this.body;
     }
   }

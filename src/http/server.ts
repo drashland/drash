@@ -455,7 +455,7 @@ export class Server {
     }
 
     let output: Drash.Interfaces.ResponseOutput = {
-      body: response.body,
+      body: response.body as string,
       headers: headers,
       status: response.status_code,
     };
