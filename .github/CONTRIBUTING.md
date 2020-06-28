@@ -35,7 +35,7 @@ On creating a new middleware, use the below as guidelines on how to get started.
 
 * `README.md` file showing how to use the middleware. Drash is a documentation-driven codebase, so the documentation is very important.
 
-* Tests.
+* Tests are required.
 
 ## Pull Requests
 
