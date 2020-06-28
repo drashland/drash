@@ -28,7 +28,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         {
           headers: {
             Accept: "text/html",
-          }
+          },
         },
       );
       json = JSON.parse(await response.json());
@@ -36,20 +36,23 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       Rhum.asserts.assertEquals(json.message, undefined);
     });
 
-    Rhum.testCase("request accepts multiple types: text/xml first", async () => {
-      // Accepts the first content type - tests when calling the `accepts` method with an array and finds a match
-      const response = await members.fetch.get(
-        "http://localhost:3000/request-accepts",
-        {
-          headers: {
-            Accept: "text/xml,text/html,application/json;0.5;something",
+    Rhum.testCase(
+      "request accepts multiple types: text/xml first",
+      async () => {
+        // Accepts the first content type - tests when calling the `accepts` method with an array and finds a match
+        const response = await members.fetch.get(
+          "http://localhost:3000/request-accepts",
+          {
+            headers: {
+              Accept: "text/xml,text/html,application/json;0.5;something",
+            },
           },
-        },
-      );
-      const json = await response.json();
-      members.assertEquals(json.success, true);
-      members.assertEquals(json.message, "text/html");
-    });
+        );
+        const json = await response.json();
+        members.assertEquals(json.success, true);
+        members.assertEquals(json.message, "text/html");
+      },
+    );
 
     Rhum.testCase("request accepts multiple types: text/js first", async () => {
       // Accepts the first content type - tests when calling the `accepts` method with an array with no match

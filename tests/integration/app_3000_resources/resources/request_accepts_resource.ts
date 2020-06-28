@@ -18,7 +18,6 @@ export default class RequestAcceptsResource extends Drash.Http.Resource {
       return this.response;
     }
 
-
     this.response.body = JSON.stringify(
       { success: true, message: matchedType },
     );
