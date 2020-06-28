@@ -97,7 +97,17 @@ export class Response {
       this.request.headers.get("accept");
     if (accept) {
       try {
-        return accept.split(";")[0].trim();
+        let contentTypes = accept.split(";")[0].trim();
+        if (contentTypes && contentTypes == "*/*") {
+          return "application/json";
+        }
+        if (contentTypes.includes(",")) {
+          let firstType = contentTypes.split(",")[0].trim();
+          if (firstType == "*/*") {
+            return "application/json";
+          }
+          return firstType;
+        }
       } catch (error) {
         // Do nothing... fall through down to the contentType stuff below
       }
