@@ -121,44 +121,15 @@ export class Response {
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", this.getContentType());
+    this.headers.set(
+      "Content-Type",
+      this.getContentTypeFromRequestAcceptHeader(),
+    );
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  protected getContentType(): string {
-    let contentType;
-    const accept = this.request.headers.get("Accept") ||
-      this.request.headers.get("accept");
-    if (accept) {
-      try {
-        let contentType = accept.split(";")[0].trim();
-        if (contentType && contentType == "*/*") {
-          return "application/json";
-        }
-        if (contentType.includes(",")) {
-          let firstType = contentType.split(",")[0].trim();
-          if (firstType == "*/*") {
-            return "application/json";
-          }
-          return firstType;
-        }
-        return contentType;
-      } catch (error) {
-        // Do nothing... fall through down to the contentType stuff below
-      }
-    }
-
-    contentType = "application/json";
-    if (this.options) {
-      contentType = this.options.default_response_content_type ??
-        contentType;
-    }
-
-    return contentType;
-  }
 
   /**
    * @description
@@ -334,6 +305,49 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get the content type from the request object's "Accept" header. Default
+   *     to the response_output config passed in when the server was created if
+   *     no accept header is specified. If no response_output config was passed
+   *     in during server creation, then default to application/json.
+   *
+   *
+   * @return string
+   *     Returns a content type to set as this object's content-type header. If
+   *     multiple content types are passed in, then return the first accepted
+   *     content type.
+   */
+  protected getContentTypeFromRequestAcceptHeader(): string {
+    const accept = this.request.headers.get("Accept") ||
+      this.request.headers.get("accept");
+    if (accept) {
+      try {
+        let contentTypes = accept.split(";")[0].trim();
+        if (contentTypes && contentTypes == "*/*") {
+          return "application/json";
+        }
+        if (contentTypes.includes(",")) {
+          let firstType = contentTypes.split(",")[0].trim();
+          if (firstType == "*/*") {
+            return "application/json";
+          }
+          return firstType;
+        }
+      } catch (error) {
+        // Do nothing... fall through down to the contentType stuff below
+      }
+    }
+
+    let contentType = "application/json"; // default to application/json
+    if (this.options) {
+      contentType = this.options.default_response_content_type ??
+        contentType;
+    }
+
+    return contentType;
+  }
 
   /**
    * @description
