@@ -260,13 +260,16 @@ export class Response {
 
   /**
    * @description
-   *     Get the content-type from the request object's "Accept" header. Default
+   *     Get the content type from the request object's "Accept" header. Default
    *     to the response_output config passed in when the server was created if
    *     no accept header is specified. If no response_output config was passed
    *     in during server creation, then default to application/json.
    *
+   *
    * @return string
-   *     Returns a content-type to set as this object's content-type header.
+   *     Returns a content type to set as this object's content-type header. If
+   *     multiple content types are passed in, then return the first accepted
+   *     content type.
    */
   protected getContentTypeFromRequestAcceptHeader(): string {
     const accept = this.request.headers.get("Accept") ||
