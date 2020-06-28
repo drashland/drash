@@ -249,7 +249,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const text = await res.text();
       await server.close();
       Rhum.asserts.assertEquals(res.status, 200);
-      Rhum.asserts.assertEquals(text, "\"Hello world!\"");
+      Rhum.asserts.assertEquals(text, '"Hello world!"');
     });
   });
 

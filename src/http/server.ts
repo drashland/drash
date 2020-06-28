@@ -287,6 +287,7 @@ export class Server {
         new Drash.Http.Response(request, {
           views_path: this.configs.views_path,
           template_engine: this.configs.template_engine,
+          default_response_content_type: this.configs.response_output,
         }),
         this,
       );

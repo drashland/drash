@@ -129,27 +129,29 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
 
   protected getContentType(): string {
+    let contentType;
     const accept = this.request.headers.get("Accept") ||
       this.request.headers.get("accept");
     if (accept) {
       try {
-        let contentTypes = accept.split(";")[0].trim();
-        if (contentTypes && contentTypes == "*/*") {
+        let contentType = accept.split(";")[0].trim();
+        if (contentType && contentType == "*/*") {
           return "application/json";
         }
-        if (contentTypes.includes(",")) {
-          let firstType = contentTypes.split(",")[0].trim();
+        if (contentType.includes(",")) {
+          let firstType = contentType.split(",")[0].trim();
           if (firstType == "*/*") {
             return "application/json";
           }
           return firstType;
         }
+        return contentType;
       } catch (error) {
         // Do nothing... fall through down to the contentType stuff below
       }
     }
 
-    let contentType = "application/json"; // default to application/json
+    contentType = "application/json";
     if (this.options) {
       contentType = this.options.default_response_content_type ??
         contentType;
