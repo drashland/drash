@@ -152,24 +152,28 @@ export class Response {
    */
   public render(
     // deno-lint-ignore no-explicit-any
-    ...args: any
+    ...args: unknown[]
   ): string | boolean {
     if (!this.views_path) {
       return false;
     }
 
-    const data = args.length >= 2 ? args[1] : null;
-    this.headers.set("Content-Type", "text/html");
+    if (Array.isArray(args)) {
+      const data = args.length >= 2 ? args[1] : null;
+      this.headers.set("Content-Type", "text/html");
 
-    if (this.template_engine) {
-      const engine = new Drash.Compilers.TemplateEngine(this.views_path);
-      return engine.render(args[0], data);
+      if (this.template_engine) {
+        const engine = new Drash.Compilers.TemplateEngine(this.views_path);
+        return engine.render(args[0], data);
+      }
+
+      const filename = this.views_path += args[0];
+      const fileContentsRaw = Deno.readFileSync(filename);
+      let decoded = decoder.decode(fileContentsRaw);
+      return decoded;
     }
 
-    const filename = this.views_path += args[0];
-    const fileContentsRaw = Deno.readFileSync(filename);
-    let decoded = decoder.decode(fileContentsRaw);
-    return decoded;
+    return false;
   }
 
   /**
