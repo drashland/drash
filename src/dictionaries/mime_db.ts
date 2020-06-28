@@ -1,4 +1,31 @@
-export const mime_db = {
+/**
+ * @description
+ *     [key: string]
+ *         The mime type.
+ *
+ *         charset?: string;
+ *             The character encoding of the MIME type.
+ *
+ *         compressible?: boolean;
+ *             Is this MIME type compressible?
+ *
+ *         extensions?: string[]
+ *             An array of extensions that match this MIME type.
+ *
+ *         source?: string;
+ *             TODO(crookse) Need to figure out what the source is and how it
+ *             applies to MIME types.
+ */
+interface IMime {
+  [key: string]: {
+    charset?: string;
+    compressible?: boolean;
+    extensions?: string[];
+    source?: string;
+  }
+}
+
+export const mime_db: IMime = {
   "application/1d-interleaved-parityfec": {
     "source": "iana",
   },

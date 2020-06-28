@@ -87,17 +87,17 @@ export class HttpService {
       let fileParts = filePath.split(".");
       filePath = fileParts.pop();
 
-      // deno-lint-ignore no-explicit-any
-      const database: any = Drash.Dictionaries.MimeDb;
+      const database = Drash.Dictionaries.MimeDb;
 
       for (let key in database) {
         if (!mimeType) {
-          if (database[key].extensions) {
-            for (let index in database[key].extensions) {
-              if (filePath == database[key].extensions[index]) {
+          const extensions = database[key].extensions;
+          if (extensions) {
+            extensions.forEach((extension: string) => {
+              if (filePath == extension) {
                 mimeType = key;
               }
-            }
+            });
           }
         }
       }
