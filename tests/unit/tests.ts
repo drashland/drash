@@ -15,11 +15,11 @@ import "./exceptions/name_collision_test.ts";
 // Http
 import "./http/middleware_test.ts";
 import "./http/server_test.ts";
+import "./http/request_test.ts";
 import "./http/response_test.ts";
 
 // Services
 import "./services/http_service_test.ts";
-import "./services/http_request_service_test.ts";
 import "./services/string_service_test.ts";
 
 // Drash functions

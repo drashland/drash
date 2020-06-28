@@ -40,7 +40,7 @@ Rhum.testPlan("core_loggers/file_logger.ts", () => {
         file: file,
       });
       const actual = logger.write(
-        Drash.Dictionaries.LogLevels.get("debug"),
+        Drash.Dictionaries.LogLevels.get("debug")!,
         "This is cool!",
       );
       Rhum.asserts.assertEquals(

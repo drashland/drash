@@ -5,6 +5,12 @@ import { BufReader } from "../../deps.ts";
 // @method compileJson
 //
 
+interface IResult {
+  doc_block: string;
+  signature: string;
+  member_type: string;
+}
+
 export default class ClassCompiler {
   protected path: string = "";
 
@@ -27,11 +33,11 @@ export default class ClassCompiler {
   protected re_namespace = new RegExp(/@memberof.+/);
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER: PUBLIC ///////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   public setPath(path: string): void {
@@ -41,24 +47,24 @@ export default class ClassCompiler {
     this.path = path;
   }
 
-  public async compileLazy(): Promise<any> {
+  public async compileLazy(): Promise<IResult[]> {
     const contents = await Deno.readAll(await Deno.open(this.path));
     const br = await this.getBufReader(contents);
     let docBlock: string = "";
     let docBlockFound: boolean = false;
     let lookForSignature: boolean = false;
-    let result: any[] = [];
+    let result: IResult[] = [];
     let signature = "";
 
     for (;;) {
-      let line: any = await br.readLine();
+      let readLine = await br.readLine();
 
       // Yay! We made it! (maybe)...
-      if (line === null) {
+      if (readLine === null) {
         break;
       }
 
-      line = line.line;
+      let line = readLine.line;
       const dLine = new TextDecoder().decode(line);
 
       // Are we looking for the data member's signature? If so, start adding
@@ -126,10 +132,10 @@ export default class ClassCompiler {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER: PROTECTED ////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  protected async getBufReader(contents: any): Promise<any> {
+  protected async getBufReader(contents: Uint8Array): Promise<BufReader> {
     const br = new BufReader(new Deno.Buffer(contents));
     return br;
   }

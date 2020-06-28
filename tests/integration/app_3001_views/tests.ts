@@ -36,7 +36,7 @@ import "./template_engine_resource_test.ts";
 import "./view_resource_test.ts";
 
 Deno.test({
-  name: "Stop the server",
+  name: "\b\b\b\b\b     \nStop the server",
   async fn() {
     await server.close();
   },

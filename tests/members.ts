@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 import { Drash } from "../mod.ts";
 import {
   BufReader,
@@ -18,7 +19,9 @@ const decoder = new TextDecoder("utf-8");
  *       headers: { [key: string]: string }
  *     }
  */
+// deno-lint-ignore no-explicit-any
 function mockRequest(url = "/", method = "get", options?: any): any {
+  // deno-lint-ignore no-explicit-any
   let request: any = new ServerRequest();
   request.url = url;
   request.method = method;
@@ -33,9 +36,6 @@ function mockRequest(url = "/", method = "get", options?: any): any {
       request.headers.set("Content-Length", options.body.length.toString());
       request.r = new BufReader(options.body);
     }
-    if (options.server) {
-      request.server = options.server;
-    }
   }
 
   //
@@ -43,7 +43,7 @@ function mockRequest(url = "/", method = "get", options?: any): any {
   //
   //   TypeError: Cannot read property 'write' of undefined
   //
-  request.respond = function respond(output: any) {
+  request.respond = function respond(output: Drash.Interfaces.ResponseOutput) {
     output.send = function () {
       if (
         output.status === 301 ||
@@ -58,6 +58,13 @@ function mockRequest(url = "/", method = "get", options?: any): any {
   return request;
 }
 
+interface IMakeRequestOptions {
+  body?: any;
+  headers?: any;
+  credentials?: any;
+}
+
+// deno-lint-ignore no-explicit-any
 function assertResponseJsonEquals(actual: any, expected: any) {
   let response;
   try {
@@ -69,35 +76,35 @@ function assertResponseJsonEquals(actual: any, expected: any) {
 }
 
 const makeRequest = {
-  get(url: string, options: any = {}) {
+  get(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "GET",
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
-  post(url: string, options: any = {}) {
+  post(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "POST",
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
-  put(url: string, options: any = {}) {
+  put(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "PUT",
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
-  delete(url: string, options: any = {}) {
+  delete(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "DELETE",
     });
     options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
-  patch(url: string, options: any = {}) {
+  patch(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "PATCH",
     });
@@ -116,20 +123,7 @@ export default {
   decoder,
   fetch: makeRequest,
   mockRequest,
-  responseBody: function (response: any) {
-    return decoder.decode(response.body);
-  },
-  test: function (name: string, testFn: any) {
-    const numSpaces = testSuiteOutputLength - this.currentTestSuite.length;
-    let spaces = "";
-    if (numSpaces >= 0) {
-      spaces = " ".repeat(numSpaces);
-    }
-    this.currentTestSuite += spaces;
-    Deno.test(`${this.currentTestSuite} | Asserting: ${name}`, testFn);
-  },
-  testSuite: function (name: string, testFns: any) {
-    this.currentTestSuite = name;
-    testFns();
+  responseBody: function (response: Drash.Interfaces.ResponseOutput) {
+    return decoder.decode(response.body as ArrayBuffer);
   },
 };

@@ -8,7 +8,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareBeforeClass],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1");
+      const request = members.mockRequest("/users/1");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         members.responseBody(response),
@@ -19,7 +19,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareBeforeClass],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -37,7 +37,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareBeforeClass],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -47,7 +47,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
         members.responseBody(response),
         { name: "Thor" },
       );
-      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
     });
   });
 
@@ -56,7 +56,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareAfterClass],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -64,10 +64,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
-        response.headers.get("Content-Type"),
+        response.headers!.get("Content-Type"),
         "text/html",
       );
-      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
     });
   });
 
@@ -76,7 +76,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareClass],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -84,10 +84,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
-        response.headers.get("Content-Type"),
+        response.headers!.get("Content-Type"),
         "text/html",
       );
-      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
     });
   });
 
@@ -96,7 +96,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareBeforeMethod],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -114,7 +114,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareBeforeMethod],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -124,7 +124,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
         members.responseBody(response),
         { name: "Thor" },
       );
-      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
     });
   });
 
@@ -133,7 +133,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMiddlewareAfterMethod],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -141,7 +141,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
-        response.headers.get("Content-Type"),
+        response.headers!.get("Content-Type"),
         "text/html",
       );
     });
@@ -152,7 +152,7 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [ResourceWithMultipleMiddlewareAfterMethod],
       });
-      const request = Rhum.mocks.ServerRequest("/users/1", "get", {
+      const request = members.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
@@ -160,10 +160,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
-        response.headers.get("Content-Type"),
+        response.headers!.get("Content-Type"),
         "text/html",
       );
-      Rhum.asserts.assertEquals(response.headers.get("MYCUSTOM"), "hey");
+      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
     });
   });
 });
@@ -171,11 +171,15 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 Rhum.run();
 
 ////////////////////////////////////////////////////////////////////////////////
-// DATA ////////////////////////////////////////////////////////////////////////
+// FILE MARKER - DATA //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+interface IUser {
+  name: string;
+}
+
 function CustomHeader(
-  request: any,
+  request: Drash.Http.Request,
   response: Drash.Http.Response,
 ) {
   if (request.getHeaderParam("csrf_token") == null) {
@@ -186,14 +190,14 @@ function CustomHeader(
   }
 }
 function SwapResponseToHtml(
-  request: any,
+  request: Drash.Http.Request,
   response: Drash.Http.Response,
 ) {
   response.headers.set("Content-Type", "text/html");
   response.body = "<h1>hey</h1>";
 }
 function ResponseCustomHeaderAdded(
-  request: any,
+  request: Drash.Http.Request,
   response: Drash.Http.Response,
 ) {
   response.headers.set("MYCUSTOM", "hey");
@@ -202,16 +206,17 @@ function ResponseCustomHeaderAdded(
 @Drash.Http.Middleware({ before_request: [CustomHeader] })
 class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   public GET() {
-    this.response.body = this.users[this.request.getPathParam("id")];
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
@@ -221,16 +226,17 @@ class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
 )
 class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   public GET() {
-    this.response.body = this.users[this.request.getPathParam("id")];
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
@@ -240,14 +246,10 @@ class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
 )
 class ResourceWithMultipleMiddlewareAfterClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   public GET() {
     return this.response;
   }
@@ -261,14 +263,10 @@ class ResourceWithMultipleMiddlewareAfterClass extends Drash.Http.Resource {
 )
 class ResourceWithMiddlewareClass extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   public GET() {
     return this.response;
   }
@@ -276,31 +274,28 @@ class ResourceWithMiddlewareClass extends Drash.Http.Resource {
 
 class ResourceWithMiddlewareBeforeMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   @Drash.Http.Middleware({ before_request: [CustomHeader] })
   public GET() {
-    this.response.body = this.users[this.request.getPathParam("id")];
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
 
 class ResourceWithMiddlewareAfterMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   @Drash.Http.Middleware({ after_request: [SwapResponseToHtml] })
   public GET() {
     return this.response;
@@ -309,33 +304,30 @@ class ResourceWithMiddlewareAfterMethod extends Drash.Http.Resource {
 
 class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   @Drash.Http.Middleware(
     { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
   )
   public GET() {
-    this.response.body = this.users[this.request.getPathParam("id")];
+    const param = this.request.getPathParam("id");
+    if (param) {
+      this.response.body = this.users.get(
+        parseInt(param),
+      );
+    }
     return this.response;
   }
 }
 
 class ResourceWithMultipleMiddlewareAfterMethod extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
-  public users: any = {
-    1: {
-      name: "Thor",
-    },
-    2: {
-      name: "Hulk",
-    },
-  };
+  public users = new Map<number, IUser>([
+    [1, { name: "Thor" }],
+    [2, { name: "Hulk" }],
+  ]);
   @Drash.Http.Middleware(
     { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
   )

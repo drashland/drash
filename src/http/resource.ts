@@ -8,7 +8,7 @@ import { Drash } from "../../mod.ts";
  *     This is the base resource class for all resources. All resource classes
  *     must be derived from this class.
  */
-export class Resource {
+export class Resource implements Drash.Interfaces.Resource {
   /**
    * @description
    *     A property to hold the middleware this resource uses.
@@ -37,17 +37,19 @@ export class Resource {
    *     All derived resource classes MUST define this property as static
    *     (e.g., static paths = ["path"];)
    *
-   * @property any[] paths
+   * @property string[] paths
    */
-  public paths: any[] = [];
+  public paths: string[] = [];
+
+  public paths_parsed: Drash.Interfaces.ResourcePaths[] = [];
 
   /**
    * @description
    *     The request object.
    *
-   * @property ServerRequest request
+   * @property Drash.Http.Request request
    */
-  protected request: any;
+  protected request: Drash.Http.Request;
 
   /**
    * @description
@@ -81,7 +83,7 @@ export class Resource {
    *     The server object.
    */
   constructor(
-    request: any,
+    request: Drash.Http.Request,
     response: Drash.Http.Response,
     server: Drash.Http.Server,
   ) {

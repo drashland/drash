@@ -1,4 +1,5 @@
 import members from "../../members.ts";
+import { Rhum } from "../../test_deps.ts";
 import { Drash } from "../../../mod.ts";
 
 export const server = new Drash.Http.Server({
@@ -16,20 +17,26 @@ server.run({
 console.log(`Server listening: http://${server.hostname}:${server.port}`);
 console.log("\nIntegration tests: testing server with pretty links.\n");
 
-members.testSuite("pretty links", () => {
-  members.test("/pretty/index.html converts to /pretty", async () => {
-    const response = await members.fetch.get(
-      "http://localhost:3004/public/pretty",
-    );
-    members.assertEquals(
-      true,
-      (await response.text()).includes("Pretty links!"),
-    );
+Rhum.testPlan("pretty_links", () => {
+  Rhum.testSuite("/pretty/index.html", () => {
+    Rhum.testCase("converts to /pretty", async () => {
+      const response = await members.fetch.get(
+        "http://localhost:3004/public/pretty",
+      );
+      let text = await response.text();
+      console.log(text);
+      Rhum.asserts.assertEquals(
+        true,
+        text.includes("Pretty links!"),
+      );
+    });
   });
 });
 
+Rhum.run();
+
 Deno.test({
-  name: "Stop the server",
+  name: "\b\b\b\b\b     \nStop the server",
   async fn() {
     await server.close();
   },

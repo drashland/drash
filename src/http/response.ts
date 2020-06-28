@@ -4,6 +4,37 @@ import { setCookie, deleteCookie, Cookie } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
+ * @interface IResponseOptions
+ *
+ * @description
+ *     views_path?: string
+ *
+ *         A string that contains the path to the views directory from
+ *         your project directory. This must exist if the `views_renderer` property
+ *         is set by you. Only needs to be set if you plan to return HTML
+ *
+ *           const server = new Drash.Http.Server({
+ *             ...,
+ *             views_path: "/public/views"
+ *           })
+ *
+ *     template_engine?: boolean
+ *
+ *         True if you wish to use Drash's own template engine to render html files.
+ *         The `views_path` property must be set if this is set to true
+ *
+ *             const server = new Drash.Http.Server({
+ *               ...
+ *               template_engine: true
+ *             })
+ */
+export interface IResponseOptions {
+  views_path?: string;
+  template_engine?: boolean;
+  default_response_content_type?: string;
+}
+
+/**
  * @memberof Drash.Http
  * @class Response
  *
@@ -15,9 +46,9 @@ export class Response {
    * @description
    *     A property to hold the body of this response.
    *
-   * @property any body
+   * @property string body
    */
-  public body: any = "";
+  public body: boolean | null | object | string | undefined = "";
 
   /**
    * @description
@@ -31,9 +62,9 @@ export class Response {
    * @description
    *     The request object.
    *
-   * @property ServerRequest request
+   * @property Drash.Http.Request request
    */
-  public request: any;
+  public request: Drash.Http.Request;
 
   /**
    * @description
@@ -49,9 +80,9 @@ export class Response {
    * @description
    *     An object of options to help determine how this object should behave.
    *
-   * @property Drash.Interfaces.ResponseOptions options
+   * @property IResponseOptions options
    */
-  private options: Drash.Interfaces.ResponseOptions;
+  private options: IResponseOptions;
 
   /**
    * @description
@@ -66,22 +97,25 @@ export class Response {
    * @description
    *     The render method extracted from dejs
    *
-   * @property any views_renderer
+   * @property boolean | undefined views_renderer
    */
   private readonly template_engine: boolean | undefined = false;
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
 
   /**
    * @description
    *     Construct an object of this class.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *
-   * @param ResponseOptions options
-   *     See Drash.Interfaces.ResponseOptions
+   * @param IResponseOptions options
    */
-  constructor(request: any, options: Drash.Interfaces.ResponseOptions = {}) {
+  constructor(
+    request: Drash.Http.Request,
+    options: IResponseOptions = {},
+  ) {
     this.options = options;
     this.request = request;
     this.headers = new Headers();
@@ -93,7 +127,9 @@ export class Response {
     );
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -102,7 +138,7 @@ export class Response {
    *     and filename passed in. When called, will set the response content
    *     type to "text/html"
    *
-   * @param any args
+   * @param unknown args
    *
    * @example
    *     // if `views_path` is "/public/views",
@@ -114,23 +150,30 @@ export class Response {
    * @return string|boolean
    *     The html content of the view, or false if the `views_path` is not set.
    */
-  public render(...args: any): string | boolean {
+  public render(
+    // deno-lint-ignore no-explicit-any
+    ...args: unknown[]
+  ): string | boolean {
     if (!this.views_path) {
       return false;
     }
 
-    const data = args.length >= 2 ? args[1] : null;
-    this.headers.set("Content-Type", "text/html");
+    if (Array.isArray(args)) {
+      const data = args.length >= 2 ? args[1] : null;
+      this.headers.set("Content-Type", "text/html");
 
-    if (this.template_engine) {
-      const engine = new Drash.Compilers.TemplateEngine(this.views_path);
-      return engine.render(args[0], data);
+      if (this.template_engine) {
+        const engine = new Drash.Compilers.TemplateEngine(this.views_path);
+        return engine.render(args[0], data);
+      }
+
+      const filename = this.views_path += args[0];
+      const fileContentsRaw = Deno.readFileSync(filename);
+      let decoded = decoder.decode(fileContentsRaw);
+      return decoded;
     }
 
-    const filename = this.views_path += args[0];
-    const fileContentsRaw = Deno.readFileSync(filename);
-    let decoded = decoder.decode(fileContentsRaw);
-    return decoded;
+    return false;
   }
 
   /**
@@ -145,7 +188,16 @@ export class Response {
    * @return void
    */
   public setCookie(cookie: Cookie): void {
-    setCookie(this, cookie);
+    let response = {
+      status: this.status_code,
+      // The setCookie() method doesn't care what the body is. It only cares
+      // about the response's headers. Our bodie is not assignable to the body
+      // that the deleteCookie() method expects. Therefore, we just send in a
+      // random body that matches the schema it expects.
+      body: "",
+      headers: this.headers,
+    };
+    setCookie(response, cookie);
   }
 
   /**
@@ -158,16 +210,25 @@ export class Response {
    * @return void
    */
   public delCookie(cookieName: string): void {
-    deleteCookie(this, cookieName);
+    let response = {
+      status: this.status_code,
+      // The deleteCookie() method doesn't care what the body is. It only cares
+      // about the response's headers. Our bodie is not assignable to the body
+      // that the deleteCookie() method expects. Therefore, we just send in a
+      // random body that matches the schema it expects.
+      body: "",
+      headers: this.headers,
+    };
+    deleteCookie(response, cookieName);
   }
 
   /**
    * @description
    *     Generate a response.
    *
-   * @return any
+   * @return string
    */
-  public generateResponse(): any {
+  public generateResponse(): string {
     let contentType = this.headers.get("Content-Type");
 
     switch (contentType) {
@@ -178,6 +239,18 @@ export class Response {
       case "text/xml":
       case "text/plain":
       default:
+        if (this.body === null) {
+          return "null";
+        }
+        if (this.body === undefined) {
+          return "undefined";
+        }
+        if (typeof this.body === "boolean") {
+          return this.body.toString();
+        }
+        if (typeof this.body !== "string") { // final catch all, respond with a generic value
+          return "null";
+        }
         return this.body;
     }
   }
@@ -215,20 +288,24 @@ export class Response {
    * @description
    *     Send the response to the client making the request.
    *
-   * @return Promise<any>
+   * @return Promise<Drash.Interfaces.ResponseOutput>
    *     Returns the output which is passed to `request.respond()`. The output
    *     is only returned for unit testing purposes. It is not intended to be
    *     used elsewhere as this call is the last call in the
    *     request-resource-response lifecycle.
    */
-  public async send(): Promise<any> {
+  public async send(): Promise<Drash.Interfaces.ResponseOutput> {
     let body = await this.generateResponse();
-    let output = {
+    let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: new TextEncoder().encode(body),
     };
-    return this.request.respond(output);
+
+    this.request.respond(output);
+
+    output.status_code = this.status_code;
+    return output;
   }
 
   /**
@@ -241,14 +318,13 @@ export class Response {
    * @param null|Uint8Array contents
    *     TODO Add description
    *
-   * @return {status: number, headers: Headers, body: any}
+   * @return Drash.Interfaces.ResponseOutput
    */
-  public sendStatic(file: null | string, contents: null | Uint8Array = null): {
-    status: number;
-    headers: Headers;
-    body: any;
-  } {
-    let output = {
+  public sendStatic(
+    file: null | string,
+    contents: Uint8Array | string = "",
+  ): Drash.Interfaces.ResponseOutput {
+    let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: file ? Deno.readFileSync(file) : contents,
@@ -256,10 +332,13 @@ export class Response {
 
     this.request.respond(output);
 
+    output.status_code = this.status_code;
     return output;
   }
 
-  // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -317,19 +396,24 @@ export class Response {
    *     URL of desired redirection.
    *     Relative or external paths (e.g., "/users/1", https://drash.land)
    * 
-   * @return {status: number, headers: Headers, body: any}
+   * @return Drash.Interfaces.ResponseOutput
    */
   public redirect(
     httpStatusCode: number,
     location: string,
-  ): { status: number; headers: Headers; body: any } {
+  ): Drash.Interfaces.ResponseOutput {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
-    let output = {
+    let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
+      body: "",
     };
-    return this.request.respond(output);
+
+    this.request.respond(output);
+
+    output.status_code = this.status_code;
+    return output;
   }
 }

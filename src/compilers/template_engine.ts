@@ -9,7 +9,9 @@ export class TemplateEngine {
    */
   public views_path: string = "";
 
-  // FILE MARKER: CONSTRUCTOR //////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @description
@@ -23,7 +25,9 @@ export class TemplateEngine {
     this.views_path = viewsPath;
   }
 
-  // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Render a template file and replace all template variables with the
@@ -32,19 +36,26 @@ export class TemplateEngine {
    * @param string template
    *     The template to render.
    * @param any data
-   *     The data that should be rendered with the template.
+   *     The data that should be rendered with the template. For example, the
+   *     data could be...
+     *     {
+     *       name: "John"
+     *     }
+   *     ... and the template would render "John" in <% name %>.
+   *     This data can be anything and everything. It contains the data that the
+   *     template engine will use for template variable replacement.
    */
-  public render(template: string, data: any): string {
-    let code: any = "with(obj) { var r=[];\n";
-    let cursor: any = 0;
+  public render(template: string, data: unknown): string {
+    let code = "with(obj) { var r=[];\n";
+    let cursor = 0;
     let html: string = decoder.decode(
       Deno.readFileSync(this.views_path + template),
     );
-    let match: any;
+    let match;
     // Check if the template extends another template
     let extended = html.match(/<% extends.* %>/g);
     if (extended) {
-      extended.forEach((m: any, i: number) => {
+      extended.forEach((m: string, i: number) => {
         html = html.replace(m, "");
         let template = m.replace('<% extends("', "")
           .replace('") %>', "");
@@ -55,9 +66,10 @@ export class TemplateEngine {
       });
     }
     // Check for partials
-    let partials: any;
+    let partials;
+    // deno-lint-ignore no-cond-assign
     while (partials = html.match(/<% include_partial.* %>/g)) {
-      partials.forEach((m: any, i: number) => {
+      partials.forEach((m: string, i: number) => {
         let template = m.replace('<% include_partial("', "")
           .replace('") %>', "");
         template = decoder.decode(
@@ -69,10 +81,10 @@ export class TemplateEngine {
     // The following code was taken from (and modified):
     // https://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
     // Thanks, Krasimir!
-    let re: any = /<%(.+?)\%>/g;
-    let reExp: any = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
-    let result: any;
-    function add(line: any, js: any = null) {
+    let re = /<%(.+?)\%>/g;
+    let reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
+    let result;
+    function add(line: string, js: unknown | null = null) {
       js
         ? (code += line.match(reExp) ? line + "\n" : "r.push(" + line + ");\n")
         : (code += line != ""
@@ -80,6 +92,7 @@ export class TemplateEngine {
           : "");
       return add;
     }
+    // deno-lint-ignore no-cond-assign
     while (match = re.exec(html)) {
       add(html.slice(cursor, match.index));
       add(match[1], true);

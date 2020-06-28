@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 // Compilers
 import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
 
@@ -20,16 +22,19 @@ import { NameCollisionException as BaseNameCollisionException } from "./src/exce
 
 // Http
 import { Middleware as BaseMiddleware } from "./src/http/middleware.ts";
+import { Request as BaseRequest } from "./src/http/request.ts";
 import { Resource as BaseResource } from "./src/http/resource.ts";
 import { Response as BaseResponse } from "./src/http/response.ts";
 import { Server as BaseServer } from "./src/http/server.ts";
 
 // Interfaces
-import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
 import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
+import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
 import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
+import { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
+import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
+import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
-import { ResponseOptions as BaseResponseOptions } from "./src/interfaces/response_options.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
@@ -38,7 +43,6 @@ import { FileLogger as BaseFileLogger } from "./src/core_loggers/file_logger.ts"
 
 // Services
 import { HttpService as BaseHttpService } from "./src/services/http_service.ts";
-import { HttpRequestService as BaseHttpRequestService } from "./src/services/http_request_service.ts";
 import { StringService as BaseStringService } from "./src/services/string_service.ts";
 
 export namespace Drash {
@@ -77,6 +81,7 @@ export namespace Drash {
     export type MiddlewareType = MiddlewareTypeDefinition;
     export const Middleware = MiddlewareHandler;
     export class Resource extends BaseResource {}
+    export class Request extends BaseRequest {}
     export class Response extends BaseResponse {}
     export class Server extends BaseServer {}
   }
@@ -85,34 +90,35 @@ export namespace Drash {
     export interface LogLevelStructure extends BaseLogLevelStructure {}
     export interface LoggerConfigs extends BaseLoggerConfigs {}
     export interface ParsedRequestBody extends BaseParsedRequestBody {}
+    export interface Resource extends BaseHttpResource {}
+    export interface ResourcePaths extends BaseResourcePaths {}
+    export interface ResponseOutput extends BaseResponseOutput {}
     export interface ServerConfigs extends BaseServerConfigs {}
-    export interface ResponseOptions extends BaseResponseOptions {}
   }
 
   export namespace Services {
     export class HttpService extends BaseHttpService {}
-    export class HttpRequestService extends BaseHttpRequestService {}
     export class StringService extends BaseStringService {}
   }
 
   /**
-     * A property to hold all loggers added via Drash.addLogger(). This property
-     * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
-     * a namespace for loggers.
-     *
-     * @property Drash.Loggers Loggers
-     */
-  export const Loggers: any = {};
+   * A property to hold all loggers added via Drash.addLogger(). This property
+   * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
+   * a namespace for loggers.
+   *
+   * @property Drash.Loggers Loggers
+   */
+  export const Loggers: { [key: string]: Drash.CoreLoggers.Logger } = {};
   export type Loggers = {};
 
   /**
-     * A property to hold all members added via Drash.addMember(). This property
-     * allows users to access members via Drash.Members.SomeMember and acts like
-     * a namespace for members that are external to Drash.
-     *
-     * @property Drash.Members Members
-     */
-  export const Members: any = {};
+   * A property to hold all members added via Drash.addMember(). This property
+   * allows users to access members via Drash.Members.SomeMember and acts like
+   * a namespace for members that are external to Drash.
+   *
+   * @property Drash.Members Members
+   */
+  export const Members: { [key: string]: any } = {};
   export type Members = {};
 
   /**
@@ -139,10 +145,13 @@ export namespace Drash {
      *
      * @param string name
      *     The logger's name which can be accessed via Drash.Members[name].
-     * @param any logger
+     * @param Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger logger
      *     The logger.
      */
-  export function addLogger(name: string, logger: any) {
+  export function addLogger(
+    name: string,
+    logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger,
+  ) {
     if (Loggers[name]) {
       throw new Exceptions.NameCollisionException(
         `Loggers must be unique: "${name}" was already added.`,

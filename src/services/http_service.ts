@@ -11,16 +11,25 @@ import {
  *     This class helps perform HTTP-related processes.
  */
 export class HttpService {
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
    * @description
    *     Checks if the incoming request accepts the type(s) in the parameter.
    *     This method will check if the requests `Accept` header contains
    *     the passed in types
    *
+   * @param Drash.Http.Request request
+   *     The request object containing the Accept header.
    * @param string|string[] type
    *     The content-type/mime-type(s) to check if the request accepts it
    *
    * @example
+   *     Below are examples of how this method is called from the request object
+   *     and used in resources:
+   *
    *     // YourResource.ts - assume the request accepts "text/html"
    *     const isAccepted = this.request.accepts("text/html"); // "text/html"
    *     // or can also pass in an array and will match on the first one found
@@ -32,7 +41,10 @@ export class HttpService {
    *     False if the request doesn't accept any of the passed in types,
    *     or the content type that was matches
    */
-  public accepts(request: any, type: string | string[]): boolean | string {
+  public accepts(
+    request: Drash.Http.Request,
+    type: string | string[],
+  ): boolean | string {
     let acceptHeader = request.headers.get("Accept");
 
     if (!acceptHeader) {
@@ -49,7 +61,7 @@ export class HttpService {
     }
 
     // for when `type` is an array
-    const matches = type.filter((t) => acceptHeader.indexOf(t) >= 0);
+    const matches = type.filter((t) => acceptHeader!.indexOf(t) >= 0);
     return matches.length ? matches[0] : false; // return first match
   }
 
@@ -83,16 +95,17 @@ export class HttpService {
       let fileParts = filePath.split(".");
       filePath = fileParts.pop();
 
-      const database: any = Drash.Dictionaries.MimeDb;
+      const database = Drash.Dictionaries.MimeDb;
 
       for (let key in database) {
         if (!mimeType) {
-          if (database[key].extensions) {
-            for (let index in database[key].extensions) {
-              if (filePath == database[key].extensions[index]) {
+          const extensions = database[key].extensions;
+          if (extensions) {
+            extensions.forEach((extension: string) => {
+              if (filePath == extension) {
                 mimeType = key;
               }
-            }
+            });
           }
         }
       }

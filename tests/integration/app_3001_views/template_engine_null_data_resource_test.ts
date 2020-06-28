@@ -1,4 +1,5 @@
 import members from "../../members.ts";
+import { Rhum } from "../../test_deps.ts";
 
 function getExpected() {
   if (Deno.build.os == "windows") {
@@ -7,16 +8,21 @@ function getExpected() {
   return `<!DOCTYPE html> <html class=\"h-full w-full\">   <head>     <meta charset=\"utf-8\"/>     <meta name=\"viewport\" content=\"width=device-width, minimum-scale=1.0, user-scalable=no\"/>     <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css\">     <title>Skills</title>   </head>   <body>       <div style=\"max-width: 640px; margin: 50px auto;\">   <h1 class=\"text-5xl\">Thor</h1> </div>    </body> </html> `;
 }
 
-members.testSuite("TemplatEngineNullDataResource", () => {
-  members.test("TemplatEngineNullDataResource", async () => {
-    let response;
+Rhum.testPlan("template_engine_null_data_resource_test.ts", () => {
+  Rhum.testSuite("/template-engine-null-data", () => {
+    Rhum.testCase("handles null data", async () => {
+      let response;
 
-    response = await members.fetch.get(
-      "http://localhost:3001/template-engine-null-data",
-    );
-    members.assertEquals(
-      await response.text(),
-      getExpected(),
-    );
+      response = await members.fetch.get(
+        "http://localhost:3001/template-engine-null-data",
+      );
+      const text = await response.text();
+      Rhum.asserts.assertEquals(
+        text,
+        getExpected(),
+      );
+    });
   });
 });
+
+Rhum.run();

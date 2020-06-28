@@ -11,7 +11,7 @@ export default class UsersResource extends Drash.Http.Resource {
       return this.response;
     }
 
-    this.response.body = this.getUser(userId);
+    this.response.body = this.getUser(parseInt(userId));
     return this.response;
   }
 

@@ -29,7 +29,7 @@ Deno.test("HomeResource - GET /", async () => {
 });
 
 Deno.test({
-  name: "Stop the server",
+  name: "\b\b\b\b\b     \nStop the server",
   async fn() {
     await server.close();
   },

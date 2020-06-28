@@ -8,6 +8,7 @@ let result = {
   },
   Http: {
     Middleware: {},
+    Request: {},
     Resource: {},
     Response: {},
     Server: {},
@@ -17,7 +18,6 @@ let result = {
     LoggerConfigs: {},
     ParsedRequestBody: {},
     ServerConfigs: {},
-    ResponseOptions: {},
   },
   Loggers: {
     ConsoleLogger: {},
@@ -27,7 +27,6 @@ let result = {
   },
   Services: {
     HttpService: {},
-    HttpRequestService: {},
   },
 };
 
@@ -41,6 +40,9 @@ result.Exceptions.HttpMiddlewareException = await c.compileLazy();
 
 c.setPath("./src/http/middleware.ts");
 result.Http.Middleware = await c.compileLazy();
+
+c.setPath("./src/http/request.ts");
+result.Http.Request = await c.compileLazy();
 
 c.setPath("./src/http/resource.ts");
 result.Http.Resource = await c.compileLazy();
@@ -63,9 +65,6 @@ result.Interfaces.ServerConfigs = await c.compileLazy();
 c.setPath("./src/interfaces/parsed_request_body.ts");
 result.Interfaces.ParsedRequestBody = await c.compileLazy();
 
-c.setPath("./src/interfaces/response_options.ts");
-result.Interfaces.ResponseOptions = await c.compileLazy();
-
 c.setPath("./src/core_loggers/console_logger.ts");
 result.Loggers.ConsoleLogger = await c.compileLazy();
 
@@ -77,9 +76,6 @@ result.Loggers.Logger = await c.compileLazy();
 
 c.setPath("./src/services/http_service.ts");
 result.Services.HttpService = await c.compileLazy();
-
-c.setPath("./src/services/http_request_service.ts");
-result.Services.HttpRequestService = await c.compileLazy();
 
 console.info("Writing api_reference.json file");
 

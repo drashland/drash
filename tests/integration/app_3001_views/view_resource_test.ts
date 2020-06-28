@@ -1,4 +1,5 @@
 import members from "../../members.ts";
+import { Rhum } from "../../test_deps.ts";
 
 function getExpected() {
   if (Deno.build.os == "windows") {
@@ -7,17 +8,21 @@ function getExpected() {
   return "<body>     <h1>Hello Drash</h1> </body>";
 }
 
-members.testSuite("ViewResource", () => {
-  members.test("basic HTML can be served", async () => {
-    const response = await fetch(
-      "http://localhost:3001/view?data=false&file=/index.html",
-      {
-        method: "GET",
-      },
-    );
-    members.assertEquals(
-      await response.text(),
-      getExpected(),
-    );
+Rhum.testPlan("view_resource_test.ts", () => {
+  Rhum.testSuite("/view", () => {
+    Rhum.testCase("serves basic HTML", async () => {
+      const response = await fetch(
+        "http://localhost:3001/view?data=false&file=/index.html",
+        {
+          method: "GET",
+        },
+      );
+      Rhum.asserts.assertEquals(
+        await response.text(),
+        getExpected(),
+      );
+    });
   });
 });
+
+Rhum.run();

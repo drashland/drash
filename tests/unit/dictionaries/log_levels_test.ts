@@ -38,6 +38,7 @@ Rhum.testPlan("dictionaries/log_levels_test.ts", () => {
       },
     };
 
+    // deno-lint-ignore no-explicit-any
     let actual: any = {};
 
     for (let logLevel in expected) {
