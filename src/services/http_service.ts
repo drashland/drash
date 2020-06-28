@@ -27,6 +27,9 @@ export class HttpService {
    *     The content-type/mime-type(s) to check if the request accepts it
    *
    * @example
+   *     Below are examples of how this method is called from the request object
+   *     and used in resources:
+   *
    *     // YourResource.ts - assume the request accepts "text/html"
    *     const isAccepted = this.request.accepts("text/html"); // "text/html"
    *     // or can also pass in an array and will match on the first one found
