@@ -26,7 +26,7 @@ interface IRequestOptions {
  * @description
  *     Server handles the entire request-resource-response lifecycle. It is in
  *     charge of handling HTTP requests to resources, static paths, sending
- *     appropriate responses, and handling any errors that bubble up within the
+ *     appropriate responses, and handling errors that bubble up within the
  *     request-resource-response lifecycle.
  */
 export class Server {
@@ -190,14 +190,13 @@ export class Server {
    * @description
    *     Get the request object with more properties and methods.
    *
-   * @param any request
+   * @param ServerRequest request
    *     The request object.
    *
-   * @return any
-   *     Returns any "request" object with more properties and methods that
-   *     Drash uses. For example, deno uses the `ServerRequest` object; and this
-   *     method takes that object and hydrates it with more properties and
-   *     methods.
+   * @return Drash.Http.Request
+   *     Returns a Drash request object--hydrated with more properties and
+   *     methods than the ServerRequest object. These properties and methods are
+   *     used throughout the Drash request-resource-response lifecycle.
    */
   public async getRequest(
     serverRequest: ServerRequest,
@@ -222,10 +221,10 @@ export class Server {
    * @description
    *     Handle an HTTP request from the Deno server.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *     The request object.
    *
-   * @return Promise<any>
+   * @return Promise<Drash.Interfaces.ResponseOutput>
    *    See `Drash.Http.Response.send()`.
    */
   public async handleHttpRequest(
@@ -332,20 +331,16 @@ export class Server {
    * @description
    *     Handle cases when an error is thrown when handling an HTTP request.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *     The request object.
-   * @param any error
+   * @param Drash.Exceptions.HttpException error
    *     The error object.
-   * @param Drash.Http.Resource|any resource
-   *     (optional) Pass in the resource that threw the error. If a resource
-   *     wasn't created, then default to an empty object, which is why any is
-   *     the assigned type.
-   * @param Drash.Http.Response|any response
-   *     (optional) Pass in the response that threw the error. If a response
-   *     wasn't created, then default to an empty object, which is why any is
-   *     the assigned type.
+   * @param Drash.Http.Resource|null resource
+   *     (optional) Pass in the resource that threw the error.
+   * @param Drash.Http.Response|null response
+   *     (optional) Pass in the response that threw the error.
    *
-   * @return any
+   * @return Drash.Interfaces.ResponseOutput
    *     See `Drash.Http.Response.send()`.
    */
   public async handleHttpRequestError(
@@ -419,9 +414,9 @@ export class Server {
    *     short-circuit favicon requests--preventing the requests from clogging
    *     the logs.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *
-   * @return string
+   * @return Drash.Interfaces.ResponseOutput
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
@@ -469,9 +464,9 @@ export class Server {
    * @description
    *     Handle HTTP requests for static path assets.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *
-   * @return any
+   * @return Drash.Interfaces.ResponseOutput
    *     Returns the response as stringified JSON. This is only used for unit
    *     testing purposes.
    */
@@ -708,7 +703,7 @@ export class Server {
    * @description
    *     Execute server-level middleware before the request.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *     The request object.
    * @param Drash.Http.Resource resource
    *     The resource object.
@@ -730,7 +725,7 @@ export class Server {
    * @description
    *     Execute server-level middleware after the request.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *     The request object.
    * @param Drash.Http.Resource resource
    *     The resource object.
@@ -767,7 +762,7 @@ export class Server {
    * @description
    *     Get the resource class.
    *
-   * @param any request
+   * @param Drash.Http.Request request
    *     The request object.
    *
    * @return Drash.Http.Resource|undefined
@@ -811,7 +806,7 @@ export class Server {
    * @description
    *     Is the request targeting a static path?
    *
-   * @param any request
+   * @param ServerRequest request
    *
    * @return boolean
    *     Returns true if the request targets a static path.
