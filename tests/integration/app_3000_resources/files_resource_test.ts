@@ -7,7 +7,7 @@ Rhum.testPlan("files_resource_test.ts", () => {
       let response;
 
       let formData = new FormData();
-      formData.append("file_1", "John");
+      formData.append("value_1", "John");
 
       response = await fetch("http://localhost:3000/files", {
         method: "POST",

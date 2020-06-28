@@ -4,7 +4,7 @@ export default class FilesResource extends Drash.Http.Resource {
   static paths = ["/files"];
 
   public async POST() {
-    this.response.body = this.request.getBodyFile("file_1") ?? null;
+    this.response.body = this.request.getBodyParam("value_1") ?? null;
     return this.response;
   }
 
