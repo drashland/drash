@@ -3,6 +3,29 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
+const files = [
+  {
+    // prettier-ignore
+    content: new Uint8Array([137,80,78,71,13,10,26,10, 137, 1, 25]),
+    type: "image/png",
+    name: "image",
+    fileName: "some-image.png",
+  },
+  {
+    // prettier-ignore
+    content: new Uint8Array([108,2,0,0,145,22,162,61,157,227,166,77,138,75,180,56,119,188,177,183]),
+    name: "file",
+    fileName: "file.bin",
+    expectedType: "application/octet-stream",
+  },
+  {
+    content: new TextEncoder().encode("deno land"),
+    type: "text/plain",
+    name: "text",
+    fileName: "deno.txt",
+  },
+];
+
 Rhum.testPlan("http/request_test.ts", () => {
   Rhum.testSuite("accepts()", () => {
     acceptsTests();
@@ -493,9 +516,37 @@ function parseBodyTests() {
   );
 
   // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
-  // Rhum.testCase("Correctly parses multipart/form-data", async () => {
-  //
-  // })
+  Rhum.testCase("Correctly parses multipart/form-data", async () => {
+    // Need to set the body of the original request for parseBody to work when it calls parseBodyAsMultipartFormData
+    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+    const boundary = "--------------------------434049563556637648550474";
+    const formOne = await new Drash.Http.Request(members.mockRequest()).parseBodyAsMultipartFormData( // method 1
+        o,
+        boundary,
+        128
+    );
+    const formTwo = new FormData(); // method 2
+    formTwo.append("field", "value");
+    for (const file of files) {
+      formTwo.append(
+          file.name,
+          new Blob([file.content], { type: file.type }),
+          file.fileName
+      );
+    }
+    let originalRequest = members.mockRequest("/orig", "post", {
+      body: formOne
+    });
+    // Create new request that is used to parse body (which really, the original requests body is parsed which is why we need a new one)
+    const newRequest = new Drash.Http.Request(originalRequest);
+    newRequest.headers.set("Content-Type", "multipart/form-data; boundary=" + boundary); // Needed since the method gets boundary from header
+    newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
+    // Send request
+    const parsedBodyResult = await newRequest.parseBody();
+    console.log(parsedBodyResult)
+    Rhum.asserts.assertEquals(true, false)
+    await o.close()
+  })
 
   // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
   // Rhum.testCase("Fails when getting the multipart/form-data boundary", async () => {

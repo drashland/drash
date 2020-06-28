@@ -33,7 +33,11 @@ function mockRequest(url = "/", method = "get", options?: any): any {
       }
     }
     if (options.body) {
-      request.headers.set("Content-Length", options.body.length.toString());
+      try {
+        request.headers.set("Content-Length", options.body.length.toString());
+      } catch (err) {
+        // ... you *shall* pass
+      }
       request.r = new BufReader(options.body);
     }
   }

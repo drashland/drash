@@ -325,6 +325,13 @@ export class Request extends ServerRequest {
         ) {
           maxMemory = options.memory_allocation.multipart_form_data;
         }
+        console.log("[parseBody]")
+        console.log("this.original_request.body:")
+        console.log(this.original_request.body)
+        console.log("boundary:")
+        console.log(boundary)
+        console.log("maxMemory:")
+        console.log(maxMemory)
         ret.data = await this.parseBodyAsMultipartFormData(
           this.original_request.body,
           boundary,
@@ -332,6 +339,8 @@ export class Request extends ServerRequest {
         );
         ret.content_type = "multipart/form-data";
       } catch (error) {
+        console.error("Error when parsing multipart data: ");
+        console.error(error);
         throw new Error(
           `Error reading request body as multipart/form-data.`,
         );
@@ -424,7 +433,9 @@ export class Request extends ServerRequest {
       maxMemory *= 1024 * 1024;
     }
     const mr = new MultipartReader(body, boundary);
+    console.log("100% the code below will fail...");
     const ret = await mr.readForm(maxMemory);
+    console.log("Omg it didnt fail!? WHAT?!?");
     // console.log(ret);
     return ret;
   }
