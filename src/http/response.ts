@@ -92,36 +92,6 @@ export class Response {
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
 
-  protected getContentType(): string {
-    const accept = this.request.headers.get("Accept") ||
-      this.request.headers.get("accept");
-    if (accept) {
-      try {
-        let contentTypes = accept.split(";")[0].trim();
-        if (contentTypes && contentTypes == "*/*") {
-          return "application/json";
-        }
-        if (contentTypes.includes(",")) {
-          let firstType = contentTypes.split(",")[0].trim();
-          if (firstType == "*/*") {
-            return "application/json";
-          }
-          return firstType;
-        }
-      } catch (error) {
-        // Do nothing... fall through down to the contentType stuff below
-      }
-    }
-
-    let contentType = "application/json"; // default to application/json
-    if (this.options) {
-      contentType = this.options.default_response_content_type ??
-        contentType;
-    }
-
-    return contentType;
-  }
-
   /**
    * @description
    *     Render html files. Can be used with Drash's template engine or basic
@@ -287,6 +257,45 @@ export class Response {
   }
 
   // FILE MARKER: METHODS - PROTECTED //////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get the content-type header for this response object. Default to the
+   *     response_output config passed in when the server was created if no
+   *     accept header is specified.
+   *
+   * @return string
+   *     Returns a content-type to set as this object's content-type header.
+   */
+  protected getContentType(): string {
+    const accept = this.request.headers.get("Accept") ||
+      this.request.headers.get("accept");
+    if (accept) {
+      try {
+        let contentTypes = accept.split(";")[0].trim();
+        if (contentTypes && contentTypes == "*/*") {
+          return "application/json";
+        }
+        if (contentTypes.includes(",")) {
+          let firstType = contentTypes.split(",")[0].trim();
+          if (firstType == "*/*") {
+            return "application/json";
+          }
+          return firstType;
+        }
+      } catch (error) {
+        // Do nothing... fall through down to the contentType stuff below
+      }
+    }
+
+    let contentType = "application/json"; // default to application/json
+    if (this.options) {
+      contentType = this.options.default_response_content_type ??
+        contentType;
+    }
+
+    return contentType;
+  }
 
   /**
    * @description
