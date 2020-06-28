@@ -673,10 +673,7 @@ export class Server {
    *
    * @return void
    */
-  protected addMiddleware(
-    // deno-lint-ignore no-explicit-any
-    middlewares: any,
-  ): void {
+  protected addMiddleware(middlewares: any): void {
     // Add server-level middleware
     if (middlewares.before_request != null) {
       this.middleware.before_request = [];
