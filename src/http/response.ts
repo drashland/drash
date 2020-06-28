@@ -87,7 +87,7 @@ export class Response {
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set("Content-Type", this.getContentType());
+    this.headers.set("Content-Type", this.getContentTypeFromRequestAcceptHeader());
   }
 
   // FILE MARKER: METHODS - PUBLIC /////////////////////////////////////////////
@@ -260,14 +260,15 @@ export class Response {
 
   /**
    * @description
-   *     Get the content-type header for this response object. Default to the
-   *     response_output config passed in when the server was created if no
-   *     accept header is specified.
+   *     Get the content-type from the request object's "Accept" header. Default
+   *     to the response_output config passed in when the server was created if
+   *     no accept header is specified. If no response_output config was passed
+   *     in during server creation, then default to application/json.
    *
    * @return string
    *     Returns a content-type to set as this object's content-type header.
    */
-  protected getContentType(): string {
+  protected getContentTypeFromRequestAcceptHeader(): string {
     const accept = this.request.headers.get("Accept") ||
       this.request.headers.get("accept");
     if (accept) {
