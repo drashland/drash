@@ -8,6 +8,7 @@ let result = {
   },
   Http: {
     Middleware: {},
+    Request: {},
     Resource: {},
     Response: {},
     Server: {},
@@ -39,6 +40,9 @@ result.Exceptions.HttpMiddlewareException = await c.compileLazy();
 
 c.setPath("./src/http/middleware.ts");
 result.Http.Middleware = await c.compileLazy();
+
+c.setPath("./src/http/request.ts");
+result.Http.Request = await c.compileLazy();
 
 c.setPath("./src/http/resource.ts");
 result.Http.Resource = await c.compileLazy();
