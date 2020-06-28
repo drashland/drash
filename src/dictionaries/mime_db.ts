@@ -22,7 +22,7 @@ interface IMime {
     compressible?: boolean;
     extensions?: string[];
     source?: string;
-  }
+  };
 }
 
 export const mime_db: IMime = {
