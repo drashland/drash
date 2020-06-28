@@ -130,7 +130,7 @@ export namespace Drash {
      * @param any member
      *     The member.
      */
-  export function addMember(name: string, member: unknown) {
+  export function addMember(name: string, member: any) {
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
         `Members must be unique: "${name}" was already added.`,
@@ -145,7 +145,7 @@ export namespace Drash {
      *
      * @param string name
      *     The logger's name which can be accessed via Drash.Members[name].
-     * @param any logger
+     * @param Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger logger
      *     The logger.
      */
   export function addLogger(
