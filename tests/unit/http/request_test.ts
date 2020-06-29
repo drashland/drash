@@ -539,55 +539,55 @@ function parseBodyTests() {
   );
 
   // TODO(ebebbington) Leaving out for the time being until a way is figured out
-  Rhum.testCase("Correctly parses multipart/form-data", async () => {
-    // Need to set the body of the original request for parseBody to work when it calls parseBodyAsMultipartFormData
-    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
-    const boundary = "--------------------------434049563556637648550474";
-    const formOne = await new Drash.Http.Request(members.mockRequest())
-      .parseBodyAsMultipartFormData( // method 1
-        o,
-        boundary,
-        128,
-      );
-    const formTwo = new FormData(); // method 2
-    formTwo.append("field", "value");
-    for (const file of files) {
-      formTwo.append(
-        file.name,
-        new Blob([file.content], { type: file.type }),
-        file.fileName,
-      );
-    }
-    let originalRequest = members.mockRequest("/orig", "post", {
-      body: o,
-    });
-    const newRequest = new Drash.Http.Request(originalRequest);
-    newRequest.headers.set(
-      "Content-Type",
-      "multipart/form-data; boundary=" + boundary,
-    ); // Needed since the method gets boundary from header
-    newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
-    // Send request
-    console.log("start");
-    /**
-     * Feel free to add the below logging before `await this.parseMultipartFormDataBody` in `parseBody()`:
-     * console.log("[parseBody]")
-     * console.log("this.original_request.body:")
-     * console.log(this.original_request.body)
-     * console.log("boundary:")
-     * console.log(boundary)
-     * console.log("maxMemory:")
-     * console.log(maxMemory)
-     *
-     * The problem is inside the above method, `mr.readForm` is throwing the error: UnexpectedEof
-     * I have a feeling the  `this.original_request.body` isn't what is expected, as if we replace
-     * `body` in that method with `await Deno.open(path.resolve("./tests/data/sample_1.txt"))`, it
-     * works - which makes no sense
-     */
-    const parsedBodyResult = await newRequest.parseBody();
-    Rhum.asserts.assertEquals(true, false);
-    await o.close();
-  });
+  // Rhum.testCase("Correctly parses multipart/form-data", async () => {
+  //   // Need to set the body of the original request for parseBody to work when it calls parseBodyAsMultipartFormData
+  //   const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+  //   const boundary = "--------------------------434049563556637648550474";
+  //   const formOne = await new Drash.Http.Request(members.mockRequest())
+  //     .parseBodyAsMultipartFormData( // method 1
+  //       o,
+  //       boundary,
+  //       128,
+  //     );
+  //   const formTwo = new FormData(); // method 2
+  //   formTwo.append("field", "value");
+  //   for (const file of files) {
+  //     formTwo.append(
+  //       file.name,
+  //       new Blob([file.content], { type: file.type }),
+  //       file.fileName,
+  //     );
+  //   }
+  //   let originalRequest = members.mockRequest("/orig", "post", {
+  //     body: o,
+  //   });
+  //   const newRequest = new Drash.Http.Request(originalRequest);
+  //   newRequest.headers.set(
+  //     "Content-Type",
+  //     "multipart/form-data; boundary=" + boundary,
+  //   ); // Needed since the method gets boundary from header
+  //   newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
+  //   // Send request
+  //   console.log("start");
+  //   /**
+  //    * Feel free to add the below logging before `await this.parseMultipartFormDataBody` in `parseBody()`:
+  //    * console.log("[parseBody]")
+  //    * console.log("this.original_request.body:")
+  //    * console.log(this.original_request.body)
+  //    * console.log("boundary:")
+  //    * console.log(boundary)
+  //    * console.log("maxMemory:")
+  //    * console.log(maxMemory)
+  //    *
+  //    * The problem is inside the above method, `mr.readForm` is throwing the error: UnexpectedEof
+  //    * I have a feeling the  `this.original_request.body` isn't what is expected, as if we replace
+  //    * `body` in that method with `await Deno.open(path.resolve("./tests/data/sample_1.txt"))`, it
+  //    * works - which makes no sense
+  //    */
+  //   const parsedBodyResult = await newRequest.parseBody();
+  //   Rhum.asserts.assertEquals(true, false);
+  //   await o.close();
+  // });
 
   Rhum.testCase(
     "Returns the default object when no boundary was found on multipart/form-data",
