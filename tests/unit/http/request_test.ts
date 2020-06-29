@@ -3,6 +3,8 @@ import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();
 
+// Taken  from https://github.com/denoland/deno/blob/2da084058397efd6f517ba98c9882760ec0a7bd6/cli/tests/unit/fetch_test.ts#L261
+// It's how Deno test their multipart tests
 const files = [
   {
     // prettier-ignore
