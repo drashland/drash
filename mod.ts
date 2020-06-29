@@ -35,6 +35,7 @@ import { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
 import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
 import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
 import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
+import { ServerMiddleware as BaseServerMiddleware } from "./src/interfaces/server_middleware.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";
@@ -94,6 +95,7 @@ export namespace Drash {
     export interface ResourcePaths extends BaseResourcePaths {}
     export interface ResponseOutput extends BaseResponseOutput {}
     export interface ServerConfigs extends BaseServerConfigs {}
+    export interface ServerMiddleware extends BaseServerMiddleware {}
   }
 
   export namespace Services {

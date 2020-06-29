@@ -10,6 +10,7 @@ import {
   serve,
   serveTLS,
 } from "../../deps.ts";
+import { ServerMiddleware } from "../interfaces/server_middleware.ts";
 
 interface IRequestOptions {
   default_response_content_type: string | undefined;
@@ -94,21 +95,9 @@ export class Server {
    * @description
    *     A property to hold middleware.
    *
-   * @property middleware
+   * @property ServerMiddleware middleware
    */
-  protected middleware: {
-    before_request?: Array<
-      | ((request: Drash.Http.Request) => Promise<void>)
-      | ((request: Drash.Http.Request) => void)
-    >;
-    after_request?: Array<
-      | ((
-        request: Drash.Http.Request,
-        response: Drash.Http.Response,
-      ) => Promise<void>)
-      | ((request: Drash.Http.Request, response: Drash.Http.Response) => void)
-    >;
-  } = {};
+  protected middleware: ServerMiddleware = {};
 
   /**
    * @description
