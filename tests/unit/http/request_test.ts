@@ -6,14 +6,37 @@ const encoder = new TextEncoder();
 const files = [
   {
     // prettier-ignore
-    content: new Uint8Array([137,80,78,71,13,10,26,10, 137, 1, 25]),
+    content: new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 137, 1, 25]),
     type: "image/png",
     name: "image",
     fileName: "some-image.png",
   },
   {
     // prettier-ignore
-    content: new Uint8Array([108,2,0,0,145,22,162,61,157,227,166,77,138,75,180,56,119,188,177,183]),
+    content: new Uint8Array(
+      [
+        108,
+        2,
+        0,
+        0,
+        145,
+        22,
+        162,
+        61,
+        157,
+        227,
+        166,
+        77,
+        138,
+        75,
+        180,
+        56,
+        119,
+        188,
+        177,
+        183,
+      ],
+    ),
     name: "file",
     fileName: "file.bin",
     expectedType: "application/octet-stream",
@@ -520,25 +543,29 @@ function parseBodyTests() {
     // Need to set the body of the original request for parseBody to work when it calls parseBodyAsMultipartFormData
     const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
     const boundary = "--------------------------434049563556637648550474";
-    const formOne = await new Drash.Http.Request(members.mockRequest()).parseBodyAsMultipartFormData( // method 1
+    const formOne = await new Drash.Http.Request(members.mockRequest())
+      .parseBodyAsMultipartFormData( // method 1
         o,
         boundary,
-        128
-    );
+        128,
+      );
     const formTwo = new FormData(); // method 2
     formTwo.append("field", "value");
     for (const file of files) {
       formTwo.append(
-          file.name,
-          new Blob([file.content], { type: file.type }),
-          file.fileName
+        file.name,
+        new Blob([file.content], { type: file.type }),
+        file.fileName,
       );
     }
     let originalRequest = members.mockRequest("/orig", "post", {
-      body: o
+      body: o,
     });
     const newRequest = new Drash.Http.Request(originalRequest);
-    newRequest.headers.set("Content-Type", "multipart/form-data; boundary=" + boundary); // Needed since the method gets boundary from header
+    newRequest.headers.set(
+      "Content-Type",
+      "multipart/form-data; boundary=" + boundary,
+    ); // Needed since the method gets boundary from header
     newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
     // Send request
     console.log("start");
@@ -558,40 +585,52 @@ function parseBodyTests() {
      * works - which makes no sense
      */
     const parsedBodyResult = await newRequest.parseBody();
-    Rhum.asserts.assertEquals(true, false)
-    await o.close()
-  })
+    Rhum.asserts.assertEquals(true, false);
+    await o.close();
+  });
 
-  Rhum.testCase("Returns the default object when no boundary was found on multipart/form-data", async () => {
-    const request = members.mockRequest("/orig", "post");
-    const newRequest = new Drash.Http.Request(request);
-    newRequest.headers.set("Content-Type", "multipart/form-data"); // Needed since the method gets boundary from header
-    newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
-    const result = await  newRequest.parseBody()
-    Rhum.asserts.assertEquals(result, {
-      content_type: "",
-      data: undefined
-    })
-  })
+  Rhum.testCase(
+    "Returns the default object when no boundary was found on multipart/form-data",
+    async () => {
+      const request = members.mockRequest("/orig", "post");
+      const newRequest = new Drash.Http.Request(request);
+      newRequest.headers.set("Content-Type", "multipart/form-data"); // Needed since the method gets boundary from header
+      newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
+      const result = await newRequest.parseBody();
+      Rhum.asserts.assertEquals(result, {
+        content_type: "",
+        data: undefined,
+      });
+    },
+  );
 
-  Rhum.testCase("Fails when cannot parse the body as multipart/form-data", async () => {
-    const request = members.mockRequest("/orig", "post", {
-      body: JSON.stringify({name: "John"})
-    });
-    const newRequest = new Drash.Http.Request(request);
-    newRequest.headers.set("Content-Type", "multipart/form-data; boundary=--------------------------434049563556637648550474"); // Needed since the method gets boundary from header
-    newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
-    let hasErrored = false
-    let errorMessage = ""
-    try  {
-      await newRequest.parseBody()
-    } catch  (err) {
-      hasErrored = true
-      errorMessage = err.message
-    }
-    Rhum.asserts.assertEquals(hasErrored, true)
-    Rhum.asserts.assertEquals(errorMessage, "Error reading request body as multipart/form-data.")
-  })
+  Rhum.testCase(
+    "Fails when cannot parse the body as multipart/form-data",
+    async () => {
+      const request = members.mockRequest("/orig", "post", {
+        body: JSON.stringify({ name: "John" }),
+      });
+      const newRequest = new Drash.Http.Request(request);
+      newRequest.headers.set(
+        "Content-Type",
+        "multipart/form-data; boundary=--------------------------434049563556637648550474",
+      ); // Needed since the method gets boundary from header
+      newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
+      let hasErrored = false;
+      let errorMessage = "";
+      try {
+        await newRequest.parseBody();
+      } catch (err) {
+        hasErrored = true;
+        errorMessage = err.message;
+      }
+      Rhum.asserts.assertEquals(hasErrored, true);
+      Rhum.asserts.assertEquals(
+        errorMessage,
+        "Error reading request body as multipart/form-data.",
+      );
+    },
+  );
 
   Rhum.testCase("Can correctly parse as application/json", async () => {
     const encodedBody = new TextEncoder().encode(JSON.stringify({
