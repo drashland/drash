@@ -515,7 +515,7 @@ function parseBodyTests() {
     },
   );
 
-  // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
+  // TODO(ebebbington) Leaving out for the time being until a way is figured out
   Rhum.testCase("Correctly parses multipart/form-data", async () => {
     // Need to set the body of the original request for parseBody to work when it calls parseBodyAsMultipartFormData
     const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
@@ -535,33 +535,63 @@ function parseBodyTests() {
       );
     }
     let originalRequest = members.mockRequest("/orig", "post", {
-      body: formOne
+      body: o
     });
-    // Create new request that is used to parse body (which really, the original requests body is parsed which is why we need a new one)
     const newRequest = new Drash.Http.Request(originalRequest);
     newRequest.headers.set("Content-Type", "multipart/form-data; boundary=" + boundary); // Needed since the method gets boundary from header
     newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
     // Send request
+    console.log("start");
+    /**
+     * Feel free to add the below logging before `await this.parseMultipartFormDataBody` in `parseBody()`:
+     * console.log("[parseBody]")
+     * console.log("this.original_request.body:")
+     * console.log(this.original_request.body)
+     * console.log("boundary:")
+     * console.log(boundary)
+     * console.log("maxMemory:")
+     * console.log(maxMemory)
+     *
+     * The problem is inside the above method, `mr.readForm` is throwing the error: UnexpectedEof
+     * I have a feeling the  `this.original_request.body` isn't what is expected, as if we replace
+     * `body` in that method with `await Deno.open(path.resolve("./tests/data/sample_1.txt"))`, it
+     * works - which makes no sense
+     */
     const parsedBodyResult = await newRequest.parseBody();
-    console.log(parsedBodyResult)
     Rhum.asserts.assertEquals(true, false)
     await o.close()
   })
 
-  // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
-  // Rhum.testCase("Fails when getting the multipart/form-data boundary", async () => {
-  //
-  // })
+  Rhum.testCase("Returns the default object when no boundary was found on multipart/form-data", async () => {
+    const request = members.mockRequest("/orig", "post");
+    const newRequest = new Drash.Http.Request(request);
+    newRequest.headers.set("Content-Type", "multipart/form-data"); // Needed since the method gets boundary from header
+    newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
+    const result = await  newRequest.parseBody()
+    Rhum.asserts.assertEquals(result, {
+      content_type: "",
+      data: undefined
+    })
+  })
 
-  // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
-  // Rhum.testCase("Returns the default object when no boundary was found on multipart/form-data", async () => {
-  //
-  // })
-
-  // TODO(ebebbington) Leaving out for the time being until a way is figured out (see other comments about form data)
-  // Rhum.testCase("Fails when cannot parse the body as multipart/form-data", async () => {
-  //
-  // })
+  Rhum.testCase("Fails when cannot parse the body as multipart/form-data", async () => {
+    const request = members.mockRequest("/orig", "post", {
+      body: JSON.stringify({name: "John"})
+    });
+    const newRequest = new Drash.Http.Request(request);
+    newRequest.headers.set("Content-Type", "multipart/form-data; boundary=--------------------------434049563556637648550474"); // Needed since the method gets boundary from header
+    newRequest.headers.set("Content-Length", "883"); // Tells parseBody that this request has a body
+    let hasErrored = false
+    let errorMessage = ""
+    try  {
+      await newRequest.parseBody()
+    } catch  (err) {
+      hasErrored = true
+      errorMessage = err.message
+    }
+    Rhum.asserts.assertEquals(hasErrored, true)
+    Rhum.asserts.assertEquals(errorMessage, "Error reading request body as multipart/form-data.")
+  })
 
   Rhum.testCase("Can correctly parse as application/json", async () => {
     const encodedBody = new TextEncoder().encode(JSON.stringify({
