@@ -92,29 +92,31 @@ export class Request extends ServerRequest {
 
   /**
    * @description
-   *     Parse this request's body as `multipart/form-data` and get the
-   *     requested input.
+   *     Get the requested file from the body of a multipart/form-data
+   *     request, by it's name.
    *
    * @param string input
-   *     The filename of the file to get ??? (clarify).
+   *     The name of the file to get.
    *
-   * @return unknown
+   * @return FormFile|undefined
    */
-  public getBodyFile(input: string): string {
-    return this.parsed_body.data.value(input);
+  public getBodyFile(input: string): FormFile | undefined {
+    return this.parsed_body.data.file(input);
   }
 
   /**
    * @description
    *     Get the value of one of this request's body params by its input name.
-   *     First, check the Content-Type of the request so that we know how to
-   *     parse the body. Then parse the body accordingly and retrieve the
-   *     requested value.
    *
    * @return string|null
    */
   public getBodyParam(input: string): string | null {
-    const param = this.parsed_body.data[input];
+    let param;
+    if (typeof this.parsed_body.data.value === "function") { // For when multipart/form-data
+      param = this.parsed_body.data.value(input);
+    } else { // Anything else
+      param = this.parsed_body.data[input];
+    }
     if (param) {
       return param;
     }
