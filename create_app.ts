@@ -81,7 +81,7 @@ function showHelp() {
  * On writing to and creating files, we send a message to stdout to let the user know something
  * is happening
  *
- * @param {string} message Message to show in the console. Required.
+ * @param string message Message to show in the console. Required.
  */
 function writeFileWrittenOrCreatedMessage(message: string) {
   console.info(green(message));
