@@ -15,5 +15,6 @@ jobs:
      - run: |
           cd eggs
           export PATH="/home/runner/.deno/bin:$PATH"
+          eggs upgrade
           eggs link --key ${{ secrets.CI_NESTLAND_API_KEY }}
           eggs publish
