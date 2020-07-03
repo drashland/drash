@@ -10,7 +10,6 @@ jobs:
      - uses: denolib/setup-deno@master
      - run: deno install -A -f --unstable -n eggs https://x.nest.land/eggs@0.1.5/mod.ts
      - run: |
-          cd eggs
           export PATH="/home/runner/.deno/bin:$PATH"
           eggs upgrade
           eggs link --key ${{ secrets.CI_NESTLAND_API_KEY }}
