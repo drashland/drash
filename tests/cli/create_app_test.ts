@@ -32,7 +32,7 @@ function getOsTmpDirName() {
  * To keep line endings consistent all on operating systems.
  * Requires both the boilerplate and newly created files to get passed through this to ensure they are the same
  * 
- * @param {string} filename eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts"
+ * @param string filename eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts"
  */
 function getFileContent(filePathAndName: string): string {
   const fileContent = decoder.decode(

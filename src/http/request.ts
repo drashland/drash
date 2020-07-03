@@ -193,7 +193,7 @@ export class Request extends ServerRequest {
    * @description
    *     Get the request's URL query params by parsing its URL query string.
    *
-   * @return { {[key: string]: string} }
+   * @return {[key: string]: string}
    *     Returns the URL query string in key-value pair format.
    */
   public getUrlQueryParams(
@@ -447,7 +447,7 @@ export class Request extends ServerRequest {
    * @description
    *     Set headers on the request.
    *
-   * @param {[key: string]: string }  headers
+   * @param {[key: string]: string}  headers
    * 
    * @return void
    */
