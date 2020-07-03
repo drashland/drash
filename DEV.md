@@ -50,3 +50,4 @@ Check the following files for version numbers that need to be updated.
 
 * mod.ts - Check Drash.version
 * README.md - Check the import statement in the Quick Start section
+* eggs.json - Update Drash version
