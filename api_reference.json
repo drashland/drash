@@ -70,12 +70,12 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Parse this request's body as `multipart/form-data` and get the\n*     requested input.\n*\n* @param string input\n*     The filename of the file to get ??? (clarify).\n*\n* @return unknown\n*/\n",
-                "signature": "public getBodyFile(input: string): unknown { }",
+                "doc_block": "/**\n* @description\n*     Get the requested file from the body of a multipart/form-data\n*     request, by it's name.\n*\n* @param string input\n*     The name of the file to get.\n*\n* @return FormFile|undefined\n*/\n",
+                "signature": "public getBodyFile(input: string): FormFile | undefined { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Get the value of one of this request's body params by its input name.\n*     First, check the Content-Type of the request so that we know how to\n*     parse the body. Then parse the body accordingly and retrieve the\n*     requested value.\n*\n* @return string|null\n*/\n",
+                "doc_block": "/**\n* @description\n*     Get the value of one of this request's body params by its input name.\n*\n* @return string|null\n*/\n",
                 "signature": "public getBodyParam(input: string): string | null { }",
                 "member_type": "method"
             },
@@ -100,7 +100,7 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Get the request's URL query params by parsing its URL query string.\n*\n* @return { {[key: string]: string} }\n*     Returns the URL query string in key-value pair format.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Get the request's URL query params by parsing its URL query string.\n*\n* @return {[key: string]: string}\n*     Returns the URL query string in key-value pair format.\n*/\n",
                 "signature": "public getUrlQueryParams(serverRequest: ServerRequest,): { } [key: string]: string } {",
                 "member_type": "method"
             },
@@ -131,7 +131,7 @@
             },
             {
                 "doc_block": "/**\n* @description\n*    Parse this request's body as multipart/form-data.\n*\n* @param Reader body\n*     The request's body.\n* @param string boundary\n*     The boundary of the part (e.g., `----------437192313`)\n* @param number maxMemory\n*     The maximum memory to allocate to this process in megabytes.\n*\n* @return Promise<{ [key: string]: string | FormFile }>\n*     Returned values can be seen here (look for `readForm`:\n*     https://deno.land/std@v0.32.0/mime/multipart.ts\n*/\n",
-                "signature": "public async parseBodyAsMultipartFormData(body: Reader,boundary: string,maxMemory: number,): Promise<unknown> { }",
+                "signature": "public async parseBodyAsMultipartFormData(body: Reader,boundary: string,maxMemory: number,): Promise<any> { }",
                 "member_type": "method"
             },
             {
@@ -140,7 +140,7 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Set headers on the request.\n*\n* @param {[key: string]: string }  headers\n* \n* @return void\n*/\n",
+                "doc_block": "/**\n* @description\n*     Set headers on the request.\n*\n* @param {[key: string]: string}  headers\n* \n* @return void\n*/\n",
                 "signature": "public setHeaders(headers: { } [key: string]: string }): void {",
                 "member_type": "method"
             }
@@ -200,7 +200,7 @@
             },
             {
                 "doc_block": "/**\n* @description\n*     A property to hold the body of this response.\n*\n* @property string body\n*/\n",
-                "signature": "public body: any = \"\";",
+                "signature": "public body: boolean | null | object | string | undefined = \"\";",
                 "member_type": "property"
             },
             {
@@ -240,7 +240,7 @@
             },
             {
                 "doc_block": "/**\n* @description\n*     Render html files. Can be used with Drash's template engine or basic\n*     HTML files. This method will read a file based on the `views_path`\n*     and filename passed in. When called, will set the response content\n*     type to \"text/html\"\n*\n* @param unknown args\n*\n* @example\n*     // if `views_path` is \"/public/views\",\n*     // file to read is \"/public/views/users/add.html\"\n*     const content = this.response.render('/users/add.html', { name: 'Drash' })\n*     if (!content) throw new Error(...)\n*     this.response.body = content\n*\n* @return string|boolean\n*     The html content of the view, or false if the `views_path` is not set.\n*/\n",
-                "signature": "public render(// deno-lint-ignore no-explicit-any...args: any): string | boolean { }",
+                "signature": "public render(// deno-lint-ignore no-explicit-any...args: unknown[]): string | boolean { }",
                 "member_type": "method"
             },
             {
@@ -294,14 +294,14 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Redirect the client to another URL.\n*\n* @param number httpStatusCode\n*     Response's status code.\n*     Permanent: (301 and 308)\n*     Temporary: (302, 303, and 307)\n*\n* @param string location\n*     URL of desired redirection.\n*     Relative or external paths (e.g., \"/users/1\", https://drash.land)\n* \n* @return {status: number, headers: Headers, body: any}\n*/\n",
+                "doc_block": "/**\n* @description\n*     Redirect the client to another URL.\n*\n* @param number httpStatusCode\n*     Response's status code.\n*     Permanent: (301 and 308)\n*     Temporary: (302, 303, and 307)\n*\n* @param string location\n*     URL of desired redirection.\n*     Relative or external paths (e.g., \"/users/1\", https://drash.land)\n* \n* @return Drash.Interfaces.ResponseOutput\n*/\n",
                 "signature": "public redirect(httpStatusCode: number,location: string,): Drash.Interfaces.ResponseOutput { }",
                 "member_type": "method"
             }
         ],
         "Server": [
             {
-                "doc_block": "/**\n* @memberof Drash.Http\n* @class Server\n*\n* @description\n*     Server handles the entire request-resource-response lifecycle. It is in\n*     charge of handling HTTP requests to resources, static paths, sending\n*     appropriate responses, and handling any errors that bubble up within the\n*     request-resource-response lifecycle.\n*/\n",
+                "doc_block": "/**\n* @memberof Drash.Http\n* @class Server\n*\n* @description\n*     Server handles the entire request-resource-response lifecycle. It is in\n*     charge of handling HTTP requests to resources, static paths, sending\n*     appropriate responses, and handling errors that bubble up within the\n*     request-resource-response lifecycle.\n*/\n",
                 "signature": "export class Server { }",
                 "member_type": "class"
             },
@@ -336,8 +336,8 @@
                 "member_type": "property"
             },
             {
-                "doc_block": "/**\n* @description\n*     A property to hold middleware.\n*\n* @property middleware\n*/\n",
-                "signature": "protected middleware: { }",
+                "doc_block": "/**\n* @description\n*     A property to hold middleware.\n*\n* @property ServerMiddleware middleware\n*/\n",
+                "signature": "protected middleware: ServerMiddleware = {};",
                 "member_type": "property"
             },
             {
@@ -356,27 +356,27 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Get the request object with more properties and methods.\n*\n* @param any request\n*     The request object.\n*\n* @return any\n*     Returns any \"request\" object with more properties and methods that\n*     Drash uses. For example, deno uses the `ServerRequest` object; and this\n*     method takes that object and hydrates it with more properties and\n*     methods.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Get the request object with more properties and methods.\n*\n* @param ServerRequest request\n*     The request object.\n*\n* @return Drash.Http.Request\n*     Returns a Drash request object--hydrated with more properties and\n*     methods than the ServerRequest object. These properties and methods are\n*     used throughout the Drash request-resource-response lifecycle.\n*/\n",
                 "signature": "public async getRequest(serverRequest: ServerRequest,): Promise<Drash.Http.Request> { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Handle an HTTP request from the Deno server.\n*\n* @param any request\n*     The request object.\n*\n* @return Promise<any>\n*    See `Drash.Http.Response.send()`.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Handle an HTTP request from the Deno server.\n*\n* @param Drash.Http.Request request\n*     The request object.\n*\n* @return Promise<Drash.Interfaces.ResponseOutput>\n*    See `Drash.Http.Response.send()`.\n*/\n",
                 "signature": "public async handleHttpRequest(serverRequest: Drash.Http.Request,): Promise<Drash.Interfaces.ResponseOutput> { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Handle cases when an error is thrown when handling an HTTP request.\n*\n* @param any request\n*     The request object.\n* @param any error\n*     The error object.\n* @param Drash.Http.Resource|any resource\n*     (optional) Pass in the resource that threw the error. If a resource\n*     wasn't created, then default to an empty object, which is why any is\n*     the assigned type.\n* @param Drash.Http.Response|any response\n*     (optional) Pass in the response that threw the error. If a response\n*     wasn't created, then default to an empty object, which is why any is\n*     the assigned type.\n*\n* @return any\n*     See `Drash.Http.Response.send()`.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Handle cases when an error is thrown when handling an HTTP request.\n*\n* @param Drash.Http.Request request\n*     The request object.\n* @param Drash.Exceptions.HttpException error\n*     The error object.\n* @param Drash.Http.Resource|null resource\n*     (optional) Pass in the resource that threw the error.\n* @param Drash.Http.Response|null response\n*     (optional) Pass in the response that threw the error.\n*\n* @return Drash.Interfaces.ResponseOutput\n*     See `Drash.Http.Response.send()`.\n*/\n",
                 "signature": "public async handleHttpRequestError(request: Drash.Http.Request,error: Drash.Exceptions.HttpException,resource: Drash.Http.Resource | null = null,response: Drash.Http.Response | null = null,): Promise<Drash.Interfaces.ResponseOutput> { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Handle HTTP requests for the favicon. This method only exists to\n*     short-circuit favicon requests--preventing the requests from clogging\n*     the logs.\n*\n* @param any request\n*\n* @return string\n*     Returns the response as stringified JSON. This is only used for unit\n*     testing purposes.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Handle HTTP requests for the favicon. This method only exists to\n*     short-circuit favicon requests--preventing the requests from clogging\n*     the logs.\n*\n* @param Drash.Http.Request request\n*\n* @return Drash.Interfaces.ResponseOutput\n*     Returns the response as stringified JSON. This is only used for unit\n*     testing purposes.\n*/\n",
                 "signature": "public handleHttpRequestForFavicon(request: Drash.Http.Request,): Drash.Interfaces.ResponseOutput { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Handle HTTP requests for static path assets.\n*\n* @param any request\n*\n* @return any\n*     Returns the response as stringified JSON. This is only used for unit\n*     testing purposes.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Handle HTTP requests for static path assets.\n*\n* @param Drash.Http.Request request\n*\n* @return Drash.Interfaces.ResponseOutput\n*     Returns the response as stringified JSON. This is only used for unit\n*     testing purposes.\n*/\n",
                 "signature": "public async handleHttpRequestForStaticPathAsset(request: Drash.Http.Request,): Promise<Drash.Interfaces.ResponseOutput> { }",
                 "member_type": "method"
             },
@@ -411,12 +411,12 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Execute server-level middleware before the request.\n*\n* @param any request\n*     The request object.\n* @param Drash.Http.Resource resource\n*     The resource object.\n*\n* @return void\n*/\n",
+                "doc_block": "/**\n* @description\n*     Execute server-level middleware before the request.\n*\n* @param Drash.Http.Request request\n*     The request object.\n* @param Drash.Http.Resource resource\n*     The resource object.\n*\n* @return void\n*/\n",
                 "signature": "protected async executeMiddlewareServerLevelBeforeRequest(request: Drash.Http.Request,): Promise<void> { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Execute server-level middleware after the request.\n*\n* @param any request\n*     The request object.\n* @param Drash.Http.Resource resource\n*     The resource object.\n*\n* @return void\n*/\n",
+                "doc_block": "/**\n* @description\n*     Execute server-level middleware after the request.\n*\n* @param Drash.Http.Request request\n*     The request object.\n* @param Drash.Http.Resource resource\n*     The resource object.\n*\n* @return void\n*/\n",
                 "signature": "protected async executeMiddlewareServerLevelAfterRequest(request: Drash.Http.Request,response: Drash.Http.Response | null,): Promise<void> { }",
                 "member_type": "method"
             },
@@ -426,12 +426,12 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Get the resource class.\n*\n* @param any request\n*     The request object.\n*\n* @return Drash.Http.Resource|undefined\n*     Returns a `Drash.Http.Resource` object if the URL path of the request\n*     can be matched to a `Drash.Http.Resource` object's paths.\n*\n*     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Get the resource class.\n*\n* @param Drash.Http.Request request\n*     The request object.\n*\n* @return Drash.Http.Resource|undefined\n*     Returns a `Drash.Http.Resource` object if the URL path of the request\n*     can be matched to a `Drash.Http.Resource` object's paths.\n*\n*     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.\n*/\n",
                 "signature": "protected getResourceClass(request: Drash.Http.Request,): Drash.Interfaces.Resource | undefined { }",
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Is the request targeting a static path?\n*\n* @param any request\n*\n* @return boolean\n*     Returns true if the request targets a static path.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Is the request targeting a static path?\n*\n* @param ServerRequest request\n*\n* @return boolean\n*     Returns true if the request targets a static path.\n*/\n",
                 "signature": "protected requestTargetsStaticPath(serverRequest: ServerRequest): boolean { }",
                 "member_type": "method"
             },
@@ -485,7 +485,7 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Write a log message to the console.\n*\n*     This method is not intended to be called directly. It is already used\n*     in the base class (Logger) and automatically called.\n*\n* @param any logMethodLevelDefinition\n* @param string message\n*\n* @return string\n*     Returns the log message which is used for unit testing purposes.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Write a log message to the console.\n*\n*     This method is not intended to be called directly. It is already used\n*     in the base class (Logger) and automatically called.\n*\n* @param any logMethodLevelDefinition\n* @param string message\n*\n* @return string\n*     Returns the log message which is used for unit testing purposes.\n*     Returns void since the logger just logs to the console.\n*/\n",
                 "signature": "public write(logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,message: string,): string | void { }",
                 "member_type": "method"
             }
@@ -507,7 +507,7 @@
                 "member_type": "method"
             },
             {
-                "doc_block": "/**\n* @description\n*     Write a log message to this.file.\n*\n*     This method is not intended to be called directly. It is already used\n*     in the base class (Logger) and automatically called.\n*\n* @param any logMethodLevelDefinition\n* @param string message\n*\n* @return string|void\n*     Returns the log message which is used for unit testing purposes.\n*/\n",
+                "doc_block": "/**\n* @description\n*     Write a log message to this.file.\n*\n*     This method is not intended to be called directly. It is already used\n*     in the base class (Logger) and automatically called.\n*\n* @param any logMethodLevelDefinition\n* @param string message\n*\n* @return string|void\n*     Returns the log message which is used for unit testing purposes.\n*     Returns void since this logger just writes to a file.\n*/\n",
                 "signature": "public write(logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,message: string,): string | void { }",
                 "member_type": "method"
             }
@@ -594,8 +594,8 @@
                 "member_type": "class"
             },
             {
-                "doc_block": "/**\n* @description\n*     Checks if the incoming request accepts the type(s) in the parameter.\n*     This method will check if the requests `Accept` header contains\n*     the passed in types\n*\n* @param string|string[] type\n*     The content-type/mime-type(s) to check if the request accepts it\n*\n* @example\n*     // YourResource.ts - assume the request accepts \"text/html\"\n*     const isAccepted = this.request.accepts(\"text/html\"); // \"text/html\"\n*     // or can also pass in an array and will match on the first one found\n*     const isAccepted = this.request.accepts([\"text/html\", \"text/xml\"]); // \"text/html\"\n*     // and will return false if not found\n*     const isAccepted = this.request.accepts(\"text/xml\"); // false\n*\n* @return boolean|string\n*     False if the request doesn't accept any of the passed in types,\n*     or the content type that was matches\n*/\n",
-                "signature": "public accepts(request: any, type: string | string[]): boolean | string { }",
+                "doc_block": "/**\n* @description\n*     Checks if the incoming request accepts the type(s) in the parameter.\n*     This method will check if the requests `Accept` header contains\n*     the passed in types\n*\n* @param Drash.Http.Request request\n*     The request object containing the Accept header.\n* @param string|string[] type\n*     The content-type/mime-type(s) to check if the request accepts it\n*\n* @example\n*     Below are examples of how this method is called from the request object\n*     and used in resources:\n*\n*     // YourResource.ts - assume the request accepts \"text/html\"\n*     const isAccepted = this.request.accepts(\"text/html\"); // \"text/html\"\n*     // or can also pass in an array and will match on the first one found\n*     const isAccepted = this.request.accepts([\"text/html\", \"text/xml\"]); // \"text/html\"\n*     // and will return false if not found\n*     const isAccepted = this.request.accepts(\"text/xml\"); // false\n*\n* @return boolean|string\n*     False if the request doesn't accept any of the passed in types,\n*     or the content type that was matches\n*/\n",
+                "signature": "public accepts(request: Drash.Http.Request,type: string | string[],): boolean | string { }",
                 "member_type": "method"
             },
             {
