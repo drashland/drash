@@ -1,16 +1,14 @@
 /**
- * @memberof Drash.Interfaces
- * @interface ParsedRequestBody
+ * Contains the type of ParsedRequestBody
+ * @remarks
+ * content_type: any|undefined
  *
- * @description
- *     content_type: any|undefined
+ *     The Content-Type of the request body. For example, if the body is
+ *     JSON, then the Content-Type should be application/json.
  *
- *         The Content-Type of the request body. For example, if the body is
- *         JSON, then the Content-Type should be application/json.
+ * data: any|undefined
  *
- *     data: any|undefined
- *
- *         The data passed in the body of the request.
+ *     The data passed in the body of the request.
  */
 export interface ParsedRequestBody {
   content_type: string;

@@ -2,10 +2,8 @@ const decoder = new TextDecoder();
 
 export class TemplateEngine {
   /**
-   * @description
-   *     A property to hold the base path to the template(s).
+   * A property to hold the base path to the template(s).
    *
-   * @property string views_path
    */
   public views_path: string = "";
 
@@ -14,11 +12,9 @@ export class TemplateEngine {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Construct an object of this class.
+   * Construct an object of this class.
    *
-   * @param string viewsPath
-   *     The base path to the template(s).
+   * @param viewsPath - The base path to the template(s).
    */
 
   constructor(viewsPath: string) {
@@ -33,17 +29,20 @@ export class TemplateEngine {
    * Render a template file and replace all template variables with the
    * specified data.
    *
-   * @param string template
-   *     The template to render.
-   * @param any data
-   *     The data that should be rendered with the template. For example, the
-   *     data could be...
-     *     {
-     *       name: "John"
-     *     }
-   *     ... and the template would render "John" in <% name %>.
-   *     This data can be anything and everything. It contains the data that the
-   *     template engine will use for template variable replacement.
+   * @param template - The template to render.
+   * @param data - The data that should be rendered with the template.
+   *
+   * @remarks
+   * For example, the data could be...
+   *     ```json
+   *     {
+   *       name: "John"
+   *     }
+   *     ```
+   * and the template would render "John" in <% name %>.
+   * This data can be anything and everything. It contains the data that the
+   * template engine will use for template variable replacement.
+   * @returns The html to be rendered
    */
   public render(template: string, data: unknown): string {
     let code = "with(obj) { var r=[];\n";
@@ -57,8 +56,7 @@ export class TemplateEngine {
     if (extended) {
       extended.forEach((m: string, i: number) => {
         html = html.replace(m, "");
-        let template = m.replace('<% extends("', "")
-          .replace('") %>', "");
+        let template = m.replace('<% extends("', "").replace('") %>', "");
         template = decoder.decode(
           Deno.readFileSync(this.views_path + template),
         );
@@ -68,9 +66,10 @@ export class TemplateEngine {
     // Check for partials
     let partials;
     // deno-lint-ignore no-cond-assign
-    while (partials = html.match(/<% include_partial.* %>/g)) {
+    while ((partials = html.match(/<% include_partial.* %>/g))) {
       partials.forEach((m: string, i: number) => {
-        let template = m.replace('<% include_partial("', "")
+        let template = m
+          .replace('<% include_partial("', "")
           .replace('") %>', "");
         template = decoder.decode(
           Deno.readFileSync(this.views_path + template),
@@ -93,7 +92,7 @@ export class TemplateEngine {
       return add;
     }
     // deno-lint-ignore no-cond-assign
-    while (match = re.exec(html)) {
+    while ((match = re.exec(html))) {
       add(html.slice(cursor, match.index));
       add(match[1], true);
       cursor = match.index + match[0].length;

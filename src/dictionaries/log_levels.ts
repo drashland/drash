@@ -1,12 +1,8 @@
 import { Drash } from "../../mod.ts";
 
 /**
- * @memberof Drash.Dictionaries
  *
- * @description
- *     The log levels which are organized by rank in ascending order.
- *
- * @enum LogLevel
+ * The log levels which are organized by rank in ascending order.
  */
 export enum LogLevel {
   Off,
@@ -20,11 +16,8 @@ export enum LogLevel {
 }
 
 /**
- * @memberof Drash.Dictionaries
- *
- * @description
- *     A dictionary of log levels used in the logger classes to properly
- *     display, rank, and prioritize log messages.
+ * A dictionary of log levels used in the logger classes to properly
+ * display, rank, and prioritize log messages.
  */
 export const LogLevels = new Map<string, Drash.Interfaces.LogLevelStructure>([
   ["off", { name: "Off", rank: LogLevel.Off }],

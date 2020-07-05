@@ -1,9 +1,8 @@
 import { Drash } from "../../mod.ts";
 /**
- * @type MiddlewareFunction
- * @param request Contains the instance of the request.
- * @param server Contains the instance of the server.
- * @param response Contains the instance of the response.
+ * @param request - Contains the instance of the request.
+ * @param server - Contains the instance of the server.
+ * @param response - Contains the instance of the response.
  */
 export type MiddlewareFunction =
   | ((
@@ -13,7 +12,6 @@ export type MiddlewareFunction =
   | ((request: Drash.Http.Request, response: Drash.Http.Response) => void);
 
 /**
- * @type MiddlewareType
  * @description
  *     before_request?: MiddlewareFunction[]
  *
@@ -30,14 +28,12 @@ export type MiddlewareType = {
 };
 
 /**
- * Executes the middleware
+ * Function associated to decorate the middleware decorators
  *
- * @param middlewares Contains middlewares to be executed
+ * @param middlewares - Contains middlewares to be executed
  */
 export function Middleware(middlewares: MiddlewareType) {
-  return function (
-    ...args: unknown[]
-  ) {
+  return function (...args: unknown[]) {
     switch (args.length) {
       case 1:
         // Class decorator
@@ -62,7 +58,7 @@ export function Middleware(middlewares: MiddlewareType) {
 /**
  * Executes the middleware function before or after the request at method level
  *
- * @param middlewares Contains all middleware to be run
+ * @param middlewares - Contains all middleware to be run
  */
 function MethodMiddleware(middlewares: MiddlewareType): any {
   return function (
@@ -99,7 +95,7 @@ function MethodMiddleware(middlewares: MiddlewareType): any {
 /**
  * Executes the middleware function before or after the request at class level
  *
- * @param middlewares Contains all middleware to be run
+ * @param middlewares - Contains all middleware to be run
  */
 function ClassMiddleware(middlewares: MiddlewareType) {
   return function <T extends { new (...args: any[]): {} }>(constr: T) {
