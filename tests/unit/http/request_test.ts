@@ -1,4 +1,4 @@
-import { Rhum, path, MultipartReader, isFormFile } from "../../test_deps.ts";
+import { Rhum, path, MultipartReader, isFormFile } from "../../deps.js";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const encoder = new TextEncoder();

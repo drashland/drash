@@ -1,4 +1,4 @@
-import { Rhum } from "../../test_deps.ts";
+import { Rhum } from "../../deps.js";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 

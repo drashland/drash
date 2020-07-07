@@ -1,5 +1,5 @@
 import members from "../../members.ts";
-import { Rhum } from "../../test_deps.ts";
+import { Rhum } from "../../deps.js";
 import { Drash } from "../../../mod.ts";
 
 export const server = new Drash.Http.Server({
