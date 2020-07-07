@@ -1,5 +1,5 @@
 import members from "../../members.ts";
-import { Rhum } from "../../deps.js";
+import { Rhum } from "../../deps.ts";
 
 Rhum.testPlan("users_resource_test.ts", () => {
   Rhum.testSuite("/users", () => {

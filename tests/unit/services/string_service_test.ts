@@ -1,4 +1,4 @@
-import { Rhum } from "../../deps.js";
+import { Rhum } from "../../deps.ts";
 import { Drash } from "../../../mod.ts";
 
 Rhum.testPlan("services/string_service_test.ts", () => {

@@ -1,5 +1,5 @@
 import { Drash } from "../../../mod.ts";
-import { Rhum } from "../../deps.js";
+import { Rhum } from "../../deps.ts";
 
 import CoffeeResource from "./resources/coffee_resource.ts";
 import CookieResource from "./resources/cookie_resource.ts";

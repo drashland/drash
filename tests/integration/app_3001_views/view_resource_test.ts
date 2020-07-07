@@ -1,5 +1,5 @@
 import members from "../../members.ts";
-import { Rhum } from "../../deps.js";
+import { Rhum } from "../../deps.ts";
 
 function getExpected() {
   if (Deno.build.os == "windows") {

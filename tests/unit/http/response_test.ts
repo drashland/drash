@@ -1,4 +1,4 @@
-import { Rhum } from "../../deps.js";
+import { Rhum } from "../../deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
 const decoder = new TextDecoder();
