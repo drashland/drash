@@ -7,9 +7,6 @@ import { Drash } from "../../mod.ts";
 export class Resource implements Drash.Interfaces.Resource {
   /**
    * A property to hold the middleware this resource uses.
-   *
-   * All derived middleware classes MUST define this property as static
-   * (e.g., static middleware = ["MiddlewareClass"];)
    */
   public middleware: { after_request?: []; before_request?: [] } = {};
 
