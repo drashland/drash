@@ -51,3 +51,11 @@ Check the following files for version numbers that need to be updated.
 * mod.ts - Check Drash.version
 * README.md - Check the import statement in the Quick Start section
 * eggs.json - Update Drash version
+
+## Upgrading Deno/Dependencies
+
+* Update root deps.ts (done by bumper)
+
+* Update test deps.ts (done by bumper)
+
+* Update Deno version in workflow scripts

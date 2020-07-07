@@ -7,7 +7,7 @@ jobs:
   update-dep:
     strategy:
       matrix:
-        deno: ["1.1.0"]
+        deno: ["1.1.3"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,6 +19,11 @@ jobs:
 
       - name: Update Dependencies
         run: deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
+
+      - name: Update Test Dependencies
+        run: |
+          cd tests
+          deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2

@@ -1,5 +1,5 @@
 import members from "../../members.ts";
-import { Rhum } from "../../test_deps.ts";
+import { Rhum } from "../../deps.ts";
 
 Rhum.testPlan("header_token_middleware_resource_test.ts", () => {
   Rhum.testSuite("/middleware", () => {
