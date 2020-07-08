@@ -108,23 +108,23 @@ $ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --he
 
 ## Documentation
 
-[Full Documentation](https://drash.land/docs)
+[Full Documentation](https://drash.land/drash)
 
-[Lifecycle Diagram](http://drash.land/docs/#/lifecycle-diagram)
+[Lifecycle Diagram](http://drash.land/drash/#/lifecycle-diagram)
 
 ## Features
 
-- [Content Negotiation](http://drash.land/docs/#/advanced-tutorials/content-negotiation/user-profiles)
-- [Static Path Routing](http://drash.land/docs/#/tutorials/servers/serving-static-paths)
-- [Regex Path Routing](http://drash.land/docs/#/tutorials/resources/creating-a-resource#regular-expression-uris)
-- [Middleware](http://drash.land/docs/#/tutorials/middleware/introduction)
-- [Body Handling: application/json](http://drash.land/docs/#/tutorials/requests/handling-application-json-bodies)
-- [Body Handling: application/x-www-form-urlencoded](http://drash.land/docs/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
-- [Body Handling: multipart/form-data](http://drash.land/docs/#/tutorials/requests/handling-multipart-form-data-bodies)
-- [Handling Path Params](http://drash.land/docs/#/tutorials/requests/handling-path-params)
-- [Handling URL Query Params](http://drash.land/docs/#/tutorials/requests/handling-url-query-params)
-- [Console Logging](http://drash.land/docs/#/tutorials/logging/logging-to-the-terminal)
-- [File Logging](http://drash.land/docs/#/tutorials/logging/logging-to-files)
+- [Content Negotiation](http://drash.land/drash/#/advanced-tutorials/content-negotiation/user-profiles)
+- [Static Path Routing](http://drash.land/drash/#/tutorials/servers/serving-static-paths)
+- [Regex Path Routing](http://drash.land/drash/#/tutorials/resources/creating-a-resource#regular-expression-uris)
+- [Middleware](http://drash.land/drash/#/tutorials/middleware/introduction)
+- [Body Handling: application/json](http://drash.land/drash/#/tutorials/requests/handling-application-json-bodies)
+- [Body Handling: application/x-www-form-urlencoded](http://drash.land/drash/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
+- [Body Handling: multipart/form-data](http://drash.land/drash/#/tutorials/requests/handling-multipart-form-data-bodies)
+- [Handling Path Params](http://drash.land/drash/#/tutorials/requests/handling-path-params)
+- [Handling URL Query Params](http://drash.land/drash/#/tutorials/requests/handling-url-query-params)
+- [Console Logging](http://drash.land/drash/#/tutorials/logging/logging-to-the-terminal)
+- [File Logging](http://drash.land/drash/#/tutorials/logging/logging-to-files)
 
 ## Why Use Drash?
 
