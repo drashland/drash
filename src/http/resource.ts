@@ -9,7 +9,6 @@ import { Drash } from "../../mod.ts";
  *     must be derived from this class.
  */
 export class Resource implements Drash.Interfaces.Resource {
-
   /**
    * @description
    *     A property to hold the name of this resource. This property is used by
