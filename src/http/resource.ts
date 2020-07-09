@@ -11,17 +11,6 @@ import { Drash } from "../../mod.ts";
 export class Resource implements Drash.Interfaces.Resource {
   /**
    * @description
-   *     A property to hold the middleware this resource uses.
-   *
-   *     All derived middleware classes MUST define this property as static
-   *     (e.g., static middleware = ["MiddlewareClass"];)
-   *
-   * @property string[] middleware
-   */
-  public middleware: { after_request?: []; before_request?: [] } = {};
-
-  /**
-   * @description
    *     A property to hold the name of this resource. This property is used by
    *     Drash.Http.Server to help it store resources in its resources property
    *     by name.
