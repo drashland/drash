@@ -1,17 +1,15 @@
 /**
- * @memberof Drash.Interfaces
- * @interface LogLevelStructure
+ * Contains the type of LogLevelStructure
+ * @remarks
+ * name: string
  *
- * @description
- *     name: string
+ *     The name of the log level (e.g., "debug").
  *
- *         The name of the log level (e.g., "debug").
+ * rank: number
  *
- *     rank: number
- *
- *         The rank of the log level. See the
- *         Drash.Dictionaries.LogLevels.LogLevel enum member to see the ranking
- *         structure of the log levels.
+ *     The rank of the log level. See the
+ *     Drash.Dictionaries.LogLevels.LogLevel enum member to see the ranking
+ *     structure of the log levels.
  */
 export interface LogLevelStructure {
   name: string;

@@ -1,22 +1,20 @@
 import { Drash } from "../../mod.ts";
 
 /**
- * @memberof Drash.Interfaces
- * @interface ServerMiddleware
+ * Contains the type of ServerMiddleware
+ * @remarks
+ * before_request: Array<Function>
  *
- * @description
- *     before_request: Array<Function>
+ *     An array of functions that take a Drash.Http.Request as a parameter.
+ *     Method can be async.
  *
- *         An array of functions that take a Drash.Http.Request as a parameter.
- *         Method can be async.
+ * after_request: Array<Function>
  *
- *     after_request: Array<Function>
+ *     An array of functions that take in a Drash.Http.Request as the first
+ *     parameter, and a Drash.Http.Response as the second parameter.
+ *     Method can be async.
  *
- *         An array of functions that take in a Drash.Http.Request as the first
- *         parameter, and a Drash.Http.Response as the second parameter.
- *         Method can be async.
- *
- * @example
+ * ```ts
  * function beforeRequestMiddleware (request: Drash.Http.Request): void {
  *   ...
  * }
@@ -32,6 +30,7 @@ import { Drash } from "../../mod.ts";
  *     afterRequest: [afterRequestMiddleware]
  *   }
  * }
+ * ```
  */
 export interface ServerMiddleware {
   before_request?: Array<

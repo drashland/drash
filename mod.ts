@@ -48,10 +48,7 @@ import { StringService as BaseStringService } from "./src/services/string_servic
 
 export namespace Drash {
   /**
-   * @description
-   *     Drash version. Also represents what Deno version is supported.
-   *
-   * @property string version
+   * Drash version.
    */
   export const version: string = "v1.0.7";
 
@@ -107,8 +104,6 @@ export namespace Drash {
    * A property to hold all loggers added via Drash.addLogger(). This property
    * allows users to access loggers via Drash.Loggers.SomeLogger and acts like
    * a namespace for loggers.
-   *
-   * @property Drash.Loggers Loggers
    */
   export const Loggers: { [key: string]: Drash.CoreLoggers.Logger } = {};
   export type Loggers = {};
@@ -117,21 +112,17 @@ export namespace Drash {
    * A property to hold all members added via Drash.addMember(). This property
    * allows users to access members via Drash.Members.SomeMember and acts like
    * a namespace for members that are external to Drash.
-   *
-   * @property Drash.Members Members
    */
   export const Members: { [key: string]: any } = {};
   export type Members = {};
 
   /**
-     * Add a member to the Members namespace. After adding a member, you can use
-     * the member via Drash.Members.YourMember.doSomething().
-     *
-     * @param string name
-     *     The member's name which can be accessed via Drash.Members[name].
-     * @param any member
-     *     The member.
-     */
+   * Add a member to the Members namespace. After adding a member, you can use
+   * the member via Drash.Members.YourMember.doSomething().
+   *
+   * @param name - The member's name which can be accessed via Drash.Members[name].
+   * @param member - The member.
+   */
   export function addMember(name: string, member: any) {
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
@@ -142,14 +133,12 @@ export namespace Drash {
   }
 
   /**
-     * Add a logger to the Loggers namespace. After adding a logger, you can use
-     * the logger via Drash.Loggers.YourLogger.doSomething().
-     *
-     * @param string name
-     *     The logger's name which can be accessed via Drash.Members[name].
-     * @param Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger logger
-     *     The logger.
-     */
+   * Add a logger to the Loggers namespace. After adding a logger, you can use
+   * the logger via Drash.Loggers.YourLogger.doSomething().
+   *
+   * @param name - The logger's name which can be accessed via Drash.Members[name].
+   * @param logger - The logger.
+   */
   export function addLogger(
     name: string,
     logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger,

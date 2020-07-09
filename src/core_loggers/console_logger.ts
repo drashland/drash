@@ -2,11 +2,7 @@ import { Drash } from "../../mod.ts";
 import { Logger } from "./logger.ts";
 
 /**
- * @memberof Drash.CoreLoggers
- * @class ConsoleLogger
- *
- * @description
- *     This logger allows you to log messages to the console.
+ * This logger allows you to log messages to the console.
  */
 export class ConsoleLogger extends Logger {
   //////////////////////////////////////////////////////////////////////////////
@@ -14,11 +10,9 @@ export class ConsoleLogger extends Logger {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Construct an object of this class.
+   * Construct an object of this class.
    *
-   * @param any configs
-   *     See Drash.Interfaces.LoggerConfigs.
+   * @param configs - Config used for Logging
    */
   constructor(configs: Drash.Interfaces.LoggerConfigs) {
     super(configs);
@@ -29,18 +23,15 @@ export class ConsoleLogger extends Logger {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Write a log message to the console.
+   * Write a log message to the console.
    *
-   *     This method is not intended to be called directly. It is already used
-   *     in the base class (Logger) and automatically called.
+   * This method is not intended to be called directly. It is already used
+   * in the base class (Logger) and automatically called.
    *
-   * @param any logMethodLevelDefinition
-   * @param string message
+   * @param logMethodLevelDefinition - Method to be Logged
+   * @param message - The message to be logged
    *
-   * @return string
-   *     Returns the log message which is used for unit testing purposes.
-   *     Returns void since the logger just logs to the console.
+   * @returns Returns the log message which is used for unit testing purposes. Returns void since the logger just logs to the console.
    */
   public write(
     logMethodLevelDefinition: Drash.Interfaces.LogLevelStructure,

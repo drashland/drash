@@ -1,39 +1,31 @@
 /**
- * @memberof Drash.Services
- * @class StringService
- *
- * @description
- *     This class helps perform string-related processes like string
- *     transformations, reading, and replacing.
+ * This class helps perform string-related processes like string
+ * transformations, reading, and replacing.
  */
 export class StringService {
   /**
-   * @description
-   *     Parse a URL query string in it's raw form.
+   * Parse a URL query string in it's raw form.
    *
-   *     If the request body's content type is application/json, then
-   *     {"username":"root","password":"alpine"} becomes
-   *     { username: "root", password: "alpine" }.
+   * If the request body's content type is application/json, then
+   * {"username":"root","password":"alpine"} becomes
+   * { username: "root", password: "alpine" }.
    *
-   *     If the request body's content type is
-   *     application/x-www-form-urlencoded, then username=root&password=alpine
-   *     becomes { username: "root", password: "alpine" }.
+   * If the request body's content type is
+   * application/x-www-form-urlencoded, then username=root&password=alpine
+   * becomes { username: "root", password: "alpine" }.
    *
-   * @param string queryParamsString
-   *     The query params string (e.g., hello=world&ok=then&git=hub)
-   * @param string keyFormat
-   *     (optional) The format the keys should be mutated to. For example, if
+   * @param queryParamsString - The query params string (e.g., hello=world&ok=then&git=hub)
+   * @param keyFormat - (optional) The format the keys should be mutated to. For example, if
    *     "underscore" is specified, then the keys will be converted from
    *     key-name to key_name. Defaults to "normal", which does not mutate the
    *     keys.
-   * @param string keyCase
-   *     (optional) The case the keys should be mutated to. For example, if
+   * @param keyCase - (optional) The case the keys should be mutated to. For example, if
    *     "lowercase" is specified, then the keys will be converted from Key-Name
    *     to key-name. Defaults to "normal", which does not mutate the keys.
-   * 
-   * @return { [key: string]: string }
-   *     Returns a key-value pair array.
    *
+   * @return 
+   *     Returns a key-value pair array.
+   *     `{ [key: string]: string }`
    *     Returns an empty object if the first argument is empty.
    */
   static parseQueryParamsString(
