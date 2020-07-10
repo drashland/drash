@@ -15,7 +15,7 @@ jobs:
           github-token: ${{ secrets.CI_USER_PAT }}
           script: |
             github.projects.createCard({
-              column_id: 9815446,
+              column_id: github.event_name == "issue" ? 9815446 : 9815447,
               content_id: github.event_name == "issue" ? github.issue.number : github.pull_request.number,
               content_type: github.event_name == "issue" ? "Issue" : "PullRequest"
             })
