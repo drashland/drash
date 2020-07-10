@@ -6,6 +6,7 @@ on:
   pull_request:
     types:
       - opened
+      - reopened
 jobs:
   add-to-project:
     runs-on: ubuntu-latest
