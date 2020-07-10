@@ -147,10 +147,9 @@ export class Server {
    *
    * @param request - The request object.
    *
-   * @return
-   *     Returns a Drash request object--hydrated with more properties and
-   *     methods than the ServerRequest object. These properties and methods are
-   *     used throughout the Drash request-resource-response lifecycle.
+   * @returns Returns a Drash request object--hydrated with more properties and
+   * methods than the ServerRequest object. These properties and methods are
+   * used throughout the Drash request-resource-response lifecycle.
    */
   public async getRequest(
     serverRequest: ServerRequest,
@@ -176,7 +175,7 @@ export class Server {
    *
    * @param request - The request object.
    *
-   * @return Returns a Promise of ResponseOutput
+   * @returns A Promise of ResponseOutput.
    */
   public async handleHttpRequest(
     serverRequest: Drash.Http.Request,
@@ -284,7 +283,7 @@ export class Server {
    * @param resource - (optional) Pass in the resource that threw the error.
    * @param response - (optional) Pass in the response that threw the error.
    *
-   * @return Returns a Promise of ResponseOutput
+   * @returns A Promise of ResponseOutput.
    */
   public async handleHttpRequestError(
     request: Drash.Http.Request,
@@ -355,9 +354,8 @@ export class Server {
    *
    * @param request - The request object
    *
-   * @return
-   *     Returns the response as stringified JSON. This is only used for unit
-   *     testing purposes.
+   * @returns The response as stringified JSON. This is only used for
+   * unit testing purposes.
    */
   public handleHttpRequestForFavicon(
     request: Drash.Http.Request,
@@ -404,9 +402,8 @@ export class Server {
    *
    * @param request - The request object
    *
-   * @return
-   *     Returns the response as stringified JSON. This is only used for unit
-   *     testing purposes.
+   * @returns The response as stringified JSON. This is only used for unit
+   * testing purposes.
    */
   public async handleHttpRequestForStaticPathAsset(
     request: Drash.Http.Request,
@@ -451,7 +448,7 @@ export class Server {
    *
    * @param options - The HTTPOptions interface from https://deno.land/std/http/server.ts.
    *
-   * @return Returns a Promise of the Deno server from the serve() call.
+   * @returns A Promise of the Deno server from the serve() call.
    */
   public async run(options: HTTPOptions): Promise<DenoServer> {
     if (!options.hostname) {
@@ -486,7 +483,7 @@ export class Server {
    *
    * @param options - The HTTPSOptions interface from https://deno.land/std/http/server.ts.
    *
-   * @return Returns a Promise of the Deno server from the serve() call.
+   * @returns A Promise of the Deno server from the serve() call.
    */
   public async runTLS(options: HTTPSOptions): Promise<DenoServer> {
     if (!options.hostname) {
@@ -656,7 +653,7 @@ export class Server {
    * @param code - The code that should be used
    * @param message - The message it should be displayed
    *
-   * @return A new http exception
+   * @returns A new http exception.
    */
   protected httpErrorResponse(
     code: number,
@@ -670,11 +667,9 @@ export class Server {
    *
    * @param request - The request object.
    *
-   * @return
-   *     Returns a `Drash.Http.Resource` object if the URL path of the request
-   *     can be matched to a `Drash.Http.Resource` object's paths.
-   *
-   *     Returns `undefined` if a `Drash.Http.Resource` object can't be matched.
+   * @returns A `Drash.Http.Resource` object if the URL path of the request can
+   * be matched to a `Drash.Http.Resource` object's paths. Otherwise, it returns
+   * `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
   protected getResourceClass(
     request: Drash.Http.Request,
@@ -712,8 +707,8 @@ export class Server {
    *
    * @param request - The request object
    *
-   * @return
-   *     Returns true if the request targets a static path.
+   * @returns Either true or false. If the request targets a static path then it
+   * returns true. Otherwise it returns false.
    */
   protected requestTargetsStaticPath(serverRequest: ServerRequest): boolean {
     if (this.static_paths.length <= 0) {
