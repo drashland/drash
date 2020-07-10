@@ -1,0 +1,21 @@
+name: project
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v2
+        with:
+          github-token: ${{ secrets.CI_USER_PAT }}
+          script: |
+            github.projects.createCard({
+              column_id: 9815446,
+              content_id: github.event_name == "issue" ? github.issue.number : github.pull_request.number,
+              content_type: github.event_name == "issue" ? "Issue" : "PullRequest"
+            })
