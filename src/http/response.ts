@@ -216,7 +216,7 @@ export class Response {
   /**
    * Get the status message based on the status code.
    *
-   * @return The status message associated with this.status_code. For example,
+   * @returns The status message associated with this.status_code. For example,
    * if the response's status_code is 200, then this method will return "OK" as
    * the status message.
    */
