@@ -5,6 +5,7 @@ import {
   Response,
   ServerRequest,
   getCookies,
+  MultipartFormData
 } from "../../deps.ts";
 type Reader = Deno.Reader;
 import { Drash } from "../../mod.ts";
@@ -100,7 +101,17 @@ export class Request extends ServerRequest {
    * @return The file requested or `undefined` if not available.
    */
   public getBodyFile(input: string): FormFile | undefined {
-    return this.parsed_body.data.file(input);
+    if (typeof this.parsed_body.data!.file  ===  "function") {
+      const file = this.parsed_body.data!.file(input);
+      // `file` can be of types: FormFile | FormFile[] | undefined.
+      // Below, we get pass the TSC error of this not being of
+      // type `FormFile | undefined`
+      if (Array.isArray(file)) {
+        return file[0]
+      }
+      return file
+    }
+    return undefined
   }
 
   /**
@@ -110,12 +121,14 @@ export class Request extends ServerRequest {
    */
   public getBodyParam(input: string): string | null {
     let param;
-    if (typeof this.parsed_body.data.value === "function") {
+    if (typeof this.parsed_body.data!.value === "function") {
       // For when multipart/form-data
-      param = this.parsed_body.data.value(input);
+      param = this.parsed_body.data!.value(input);
     } else {
-      // Anything else
-      param = this.parsed_body.data[input];
+      // Anything else. Note we need to use `as` here, to convert it
+      // to an object, otherwise it's type is `MultipartFormData | ...`,
+      // and typescript did not like us indexing.
+      param = (this.parsed_body.data as {[k: string]: unknown})[input];
     }
     if (param) {
       return param;
@@ -264,13 +277,11 @@ export class Request extends ServerRequest {
   public async parseBody(
     options?: IOptionsConfig,
   ): Promise<Drash.Interfaces.ParsedRequestBody> {
-    let ret: { content_type: string; data: unknown } = {
-      content_type: "",
-      data: undefined,
-    };
-
     if ((await this.hasBody()) === false) {
-      return ret;
+      return {
+        content_type: "",
+        data: undefined
+      };
     }
 
     const contentType = this.headers.get("Content-Type");
@@ -278,8 +289,12 @@ export class Request extends ServerRequest {
     // No Content-Type header? Default to this.
     if (!contentType) {
       try {
-        ret.data = await this.parseBodyAsFormUrlEncoded();
-        ret.content_type = "application/x-www-form-urlencoded";
+        const ret = {
+          data: await this.parseBodyAsFormUrlEncoded(),
+          content_type: "application/x-www-form-urlencoded"
+        };
+        this.parsed_body = ret;
+        return this.parsed_body;
       } catch (error) {
         throw new Error(
           `Error reading request body. No Content-Type header was specified. ` +
@@ -302,7 +317,10 @@ export class Request extends ServerRequest {
           boundary = match[1];
         }
         if (!boundary) {
-          return ret;
+          return {
+            content_type: "",
+            data: undefined
+          };
         }
       } catch (error) {
         throw new Error(
@@ -319,12 +337,16 @@ export class Request extends ServerRequest {
         ) {
           maxMemory = options.memory_allocation.multipart_form_data;
         }
-        ret.data = await this.parseBodyAsMultipartFormData(
-          this.original_request.body,
-          boundary,
-          maxMemory,
-        );
-        ret.content_type = "multipart/form-data";
+        const ret = {
+          data: await this.parseBodyAsMultipartFormData(
+              this.original_request.body,
+              boundary,
+              maxMemory,
+          ),
+          content_type: "multipart/form-data"
+        }
+        this.parsed_body = ret;
+        return this.parsed_body;
       } catch (error) {
         throw new Error(
           `Error reading request body as multipart/form-data.`,
@@ -334,8 +356,12 @@ export class Request extends ServerRequest {
 
     if (contentType && contentType.includes("application/json")) {
       try {
-        ret.data = await this.parseBodyAsJson();
-        ret.content_type = "application/json";
+        const ret = {
+          data: await this.parseBodyAsJson(),
+          content_type: "application/json"
+        };
+        this.parsed_body = ret;
+        return this.parsed_body;
       } catch (error) {
         throw new Error(
           `Error reading request body as application/json.`,
@@ -348,8 +374,12 @@ export class Request extends ServerRequest {
       contentType.includes("application/x-www-form-urlencoded")
     ) {
       try {
-        ret.data = await this.parseBodyAsFormUrlEncoded();
-        ret.content_type = "application/x-www-form-urlencoded";
+        const ret = {
+          data: await this.parseBodyAsFormUrlEncoded(),
+          content_type: "application/x-www-form-urlencoded"
+        };
+        this.parsed_body = ret;
+        return this.parsed_body;
       } catch (error) {
         throw new Error(
           `Error reading request body as application/x-www-form-urlencoded.`,
@@ -357,8 +387,10 @@ export class Request extends ServerRequest {
       }
     }
 
-    this.parsed_body = ret;
-    return this.parsed_body;
+    return {
+      content_type: "",
+      data: undefined
+    }
   }
 
   /**
@@ -367,7 +399,7 @@ export class Request extends ServerRequest {
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
    */
-  public async parseBodyAsFormUrlEncoded(): Promise<object | Array<unknown>> {
+  public async parseBodyAsFormUrlEncoded(): Promise<{ [key: string]: unknown }> {
     let body = decoder.decode(
       await Deno.readAll(this.original_request.body),
     );
@@ -383,7 +415,7 @@ export class Request extends ServerRequest {
    *
    * @returns A `Promise` of a JSON object decoded from request body.
    */
-  public async parseBodyAsJson(): Promise<object> {
+  public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
     const data = decoder.decode(
       await Deno.readAll(this.original_request.body),
     );
@@ -398,13 +430,13 @@ export class Request extends ServerRequest {
    * @param maxMemory - The maximum memory to allocate to this process in
    * megabytes.
    *
-   * @return A Promise<{ [key: string]: string | FormFile }>.
+   * @return A Promise<MultipartFormData>.
    */
   public async parseBodyAsMultipartFormData(
     body: Reader,
     boundary: string,
     maxMemory: number,
-  ): Promise<any> {
+  ): Promise<MultipartFormData> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -414,6 +446,7 @@ export class Request extends ServerRequest {
     }
     const mr = new MultipartReader(body, boundary);
     const ret = await mr.readForm(maxMemory);
+    console.log(ret)
     // console.log(ret);
     return ret;
   }
