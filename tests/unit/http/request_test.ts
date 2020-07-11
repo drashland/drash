@@ -805,13 +805,13 @@ function parseBodyAsMultipartFormDataTests() {
     Rhum.asserts.assertEquals(form.value("bar"), "bar");
     let file = form.file("file");
     if (Array.isArray(file)) {
-      file = file[0]
+      file = file[0];
     }
     Rhum.asserts.assert(isFormFile(file));
     Rhum.asserts.assert(file!.content !== void 0);
     let file2 = form.file("file2");
     if (Array.isArray(file2)) {
-      file2 = file2[0]
+      file2 = file2[0];
     }
     Rhum.asserts.assert(isFormFile(file2));
     Rhum.asserts.assert(file2!.filename === "中文.json");
