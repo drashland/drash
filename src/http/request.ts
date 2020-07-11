@@ -5,7 +5,7 @@ import {
   Response,
   ServerRequest,
   getCookies,
-  MultipartFormData
+  MultipartFormData,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
 import { Drash } from "../../mod.ts";
@@ -101,17 +101,17 @@ export class Request extends ServerRequest {
    * @return The file requested or `undefined` if not available.
    */
   public getBodyFile(input: string): FormFile | undefined {
-    if (typeof this.parsed_body.data!.file  ===  "function") {
+    if (typeof this.parsed_body.data!.file === "function") {
       const file = this.parsed_body.data!.file(input);
       // `file` can be of types: FormFile | FormFile[] | undefined.
       // Below, we get pass the TSC error of this not being of
       // type `FormFile | undefined`
       if (Array.isArray(file)) {
-        return file[0]
+        return file[0];
       }
-      return file
+      return file;
     }
-    return undefined
+    return undefined;
   }
 
   /**
@@ -128,7 +128,7 @@ export class Request extends ServerRequest {
       // Anything else. Note we need to use `as` here, to convert it
       // to an object, otherwise it's type is `MultipartFormData | ...`,
       // and typescript did not like us indexing.
-      param = (this.parsed_body.data as {[k: string]: unknown})[input];
+      param = (this.parsed_body.data as { [k: string]: unknown })[input];
     }
     if (param) {
       return param;
@@ -280,7 +280,7 @@ export class Request extends ServerRequest {
     if ((await this.hasBody()) === false) {
       return {
         content_type: "",
-        data: undefined
+        data: undefined,
       };
     }
 
@@ -291,7 +291,7 @@ export class Request extends ServerRequest {
       try {
         const ret = {
           data: await this.parseBodyAsFormUrlEncoded(),
-          content_type: "application/x-www-form-urlencoded"
+          content_type: "application/x-www-form-urlencoded",
         };
         this.parsed_body = ret;
         return this.parsed_body;
@@ -319,7 +319,7 @@ export class Request extends ServerRequest {
         if (!boundary) {
           return {
             content_type: "",
-            data: undefined
+            data: undefined,
           };
         }
       } catch (error) {
@@ -339,12 +339,12 @@ export class Request extends ServerRequest {
         }
         const ret = {
           data: await this.parseBodyAsMultipartFormData(
-              this.original_request.body,
-              boundary,
-              maxMemory,
+            this.original_request.body,
+            boundary,
+            maxMemory,
           ),
-          content_type: "multipart/form-data"
-        }
+          content_type: "multipart/form-data",
+        };
         this.parsed_body = ret;
         return this.parsed_body;
       } catch (error) {
@@ -358,7 +358,7 @@ export class Request extends ServerRequest {
       try {
         const ret = {
           data: await this.parseBodyAsJson(),
-          content_type: "application/json"
+          content_type: "application/json",
         };
         this.parsed_body = ret;
         return this.parsed_body;
@@ -376,7 +376,7 @@ export class Request extends ServerRequest {
       try {
         const ret = {
           data: await this.parseBodyAsFormUrlEncoded(),
-          content_type: "application/x-www-form-urlencoded"
+          content_type: "application/x-www-form-urlencoded",
         };
         this.parsed_body = ret;
         return this.parsed_body;
@@ -389,8 +389,8 @@ export class Request extends ServerRequest {
 
     return {
       content_type: "",
-      data: undefined
-    }
+      data: undefined,
+    };
   }
 
   /**
@@ -399,7 +399,9 @@ export class Request extends ServerRequest {
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
    */
-  public async parseBodyAsFormUrlEncoded(): Promise<{ [key: string]: unknown }> {
+  public async parseBodyAsFormUrlEncoded(): Promise<
+    { [key: string]: unknown }
+  > {
     let body = decoder.decode(
       await Deno.readAll(this.original_request.body),
     );
@@ -446,7 +448,7 @@ export class Request extends ServerRequest {
     }
     const mr = new MultipartReader(body, boundary);
     const ret = await mr.readForm(maxMemory);
-    console.log(ret)
+    console.log(ret);
     // console.log(ret);
     return ret;
   }

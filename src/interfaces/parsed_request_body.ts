@@ -10,10 +10,10 @@
  *
  *     The data passed in the body of the request.
  */
-import {MultipartFormData} from "../../deps.ts";
+import { MultipartFormData } from "../../deps.ts";
 
 interface KeyValuePairs {
- [key: string]: unknown
+  [key: string]: unknown;
 }
 
 export interface ParsedRequestBody {
