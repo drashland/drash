@@ -448,7 +448,6 @@ export class Request extends ServerRequest {
     }
     const mr = new MultipartReader(body, boundary);
     const ret = await mr.readForm(maxMemory);
-    console.log(ret);
     // console.log(ret);
     return ret;
   }
