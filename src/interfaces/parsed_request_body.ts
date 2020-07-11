@@ -10,8 +10,13 @@
  *
  *     The data passed in the body of the request.
  */
+import {MultipartFormData} from "../../deps.ts";
+
+interface KeyValuePairs {
+ [key: string]: unknown
+}
+
 export interface ParsedRequestBody {
   content_type: string;
-  // deno-lint-ignore no-explicit-any
-  data: any | undefined;
+  data: undefined | MultipartFormData | KeyValuePairs;
 }
