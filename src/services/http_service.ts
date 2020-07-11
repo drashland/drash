@@ -10,27 +10,30 @@ export class HttpService {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Checks if the incoming request accepts the type(s) in the parameter.
-   * This method will check if the requests `Accept` header contains
-   * the passed in types
+   * Checks if the incoming request accepts the type(s) in the parameter.  This
+   * method will check if the requests `Accept` header contains the passed in
+   * types
    *
-   * @param request - The request object containing the Accept header.
-   * @param type - The content-type/mime-type(s) to check if the request accepts it
+   * @param request - The request object containing the `Accept` header.
+   * @param type - The content-type/mime-type(s) to check if the request accepts
+   * it.
    *
    * @remarks
    * Below are examples of how this method is called from the request object
    * and used in resources:
    *
    * ```ts
-   * // YourResource.ts - assume the request accepts "text/html"
-   * const isAccepted = this.request.accepts("text/html"); // "text/html"
+   * // File: your_resource.ts // assumes the request accepts "text/html"
+   * const val = this.request.accepts("text/html"); // "text/html"
+   *
    * // or can also pass in an array and will match on the first one found
-   * const isAccepted = this.request.accepts(["text/html", "text/xml"]); // "text/html"
+   * const val = this.request.accepts(["text/html", "text/xml"]); // "text/html"
+   *
    * // and will return false if not found
-   * const isAccepted = this.request.accepts("text/xml"); // false
+   * const val = this.request.accepts("text/xml"); // false
    * ```
-   * @return False if the request doesn't accept any of the passed in types,
-   *     or the content type that was matches
+   * @returns False if the request doesn't accept any of the passed in types, or
+   * the content type that was matches
    */
   public accepts(
     request: Drash.Http.Request,
@@ -60,13 +63,13 @@ export class HttpService {
    * Get a MIME type for a file based on its extension.
    *
    * @param filePath - The file path in question.
-   * @param fileIsUrl - (optional) Is the file path  a URL to a file? Defaults to false.
-   *     If the file path is a URL, then this method will make sure the URL
-   *     query string is not included while doing a lookup of the file's
-   *     extension.
+   * @param fileIsUrl - (optional) Is the file path  a URL to a file? Defaults
+   * to false.  If the file path is a URL, then this method will make sure the
+   * URL query string is not included while doing a lookup of the file's
+   * extension.
    *
-   * @return Returns the name of the MIME type based on the extension of the
-   *     file path .
+   * @returns The name of the MIME type based on the extension of the file path
+   * .
    */
   public getMimeType(
     filePath: string | undefined,

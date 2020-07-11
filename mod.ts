@@ -120,7 +120,8 @@ export namespace Drash {
    * Add a member to the Members namespace. After adding a member, you can use
    * the member via Drash.Members.YourMember.doSomething().
    *
-   * @param name - The member's name which can be accessed via Drash.Members[name].
+   * @param name - The member's name which can be accessed via
+   * `Drash.Members[name]`.
    * @param member - The member.
    */
   export function addMember(name: string, member: any) {
@@ -136,7 +137,8 @@ export namespace Drash {
    * Add a logger to the Loggers namespace. After adding a logger, you can use
    * the logger via Drash.Loggers.YourLogger.doSomething().
    *
-   * @param name - The logger's name which can be accessed via Drash.Members[name].
+   * @param name - The logger's name which can be accessed via
+   * `Drash.Members[name]`.
    * @param logger - The logger.
    */
   export function addLogger(

@@ -101,12 +101,11 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Render html files. Can be used with Drash's template engine or basic
-   * HTML files. This method will read a file based on the `views_path`
-   * and filename passed in. When called, will set the response content
-   * type to "text/html"
+   * Render html files. Can be used with Drash's template engine or basic HTML
+   * files. This method will read a file based on the `views_path` and filename
+   * passed in. When called, will set the response content type to "text/html"
    *
-   * @param args - The arguments used to render
+   * @param args - The arguments used to render.
    *
    * @remarks
    *     // if `views_path` is "/public/views",
@@ -115,7 +114,8 @@ export class Response {
    *     if (!content) throw new Error(...)
    *     this.response.body = content
    *
-   * @return The html content of the view, or false if the `views_path` is not set.
+   * @returns The html content of the view, or false if the `views_path` is not
+   * set.
    */
   public render(
     // deno-lint-ignore no-explicit-any
@@ -144,9 +144,8 @@ export class Response {
   }
 
   /**
-   * Create a cookie to be sent in the response.
-   * Note: Once set, it cannot be read until the next
-   * request
+   * Create a cookie to be sent in the response. Note: Once set, it cannot be
+   * read until the next request
    *
    * @param cookie - Object holding all the properties for a cookie object
    */
@@ -184,7 +183,7 @@ export class Response {
   /**
    * Generate a response.
    *
-   * @return The response in string form
+   * @returns The response in string form.
    */
   public generateResponse(): string {
     let contentType = this.headers.get("Content-Type");
@@ -217,10 +216,9 @@ export class Response {
   /**
    * Get the status message based on the status code.
    *
-   * @return
-   *     Returns the status message associated with this.status_code. For
-   *     example, if the response's status_code is 200, then this method
-   *     will return "OK" as the status message.
+   * @returns The status message associated with this.status_code. For example,
+   * if the response's status_code is 200, then this method will return "OK" as
+   * the status message.
    */
   public getStatusMessage(): null | string {
     let message = STATUS_TEXT.get(this.status_code);
@@ -231,10 +229,10 @@ export class Response {
    * Get the full status message based on the status code. This is just the
    * status code and the status message together. For example:
    *
-   *     If the status code is 200, then this will return "200 (OK)"
-   *     If the status code is 404, then this will return "404 (Not Found)"
+   * - If the status code is 200, then this will return "200 (OK)"
+   * - If the status code is 404, then this will return "404 (Not Found)"
    *
-   * @return The status code
+   * @returns The status code
    */
   public getStatusMessageFull(): null | string {
     let message = STATUS_TEXT.get(this.status_code);
@@ -244,11 +242,10 @@ export class Response {
   /**
    * Send the response to the client making the request.
    *
-   * @return
-   *     Returns a Promise of the output which is passed to `request.respond()`. The output
-   *     is only returned for unit testing purposes. It is not intended to be
-   *     used elsewhere as this call is the last call in the
-   *     request-resource-response lifecycle.
+   * @returns A `Promise` of the output which is passed to `request.respond()`.
+   * The output is only returned for unit testing purposes. It is not intended
+   * to be used elsewhere as this call is the last call in the
+   * request-resource-response lifecycle.
    */
   public async send(): Promise<Drash.Interfaces.ResponseOutput> {
     let body = await this.generateResponse();
@@ -265,13 +262,13 @@ export class Response {
   }
 
   /**
-   * Send the response of a static asset (e.g., a CSS file, JS file, PDF
-   * file, etc.) to the client making the request.
+   * Send the response of a static asset (e.g., a CSS file, JS file, PDF file,
+   * etc.) to the client making the request.
    *
    * @param file - The file that will be served to the client.
-   * @param contents - The content in a Uint8Array
+   * @param contents - The content in a `Uint8Array`.
    *
-   * @return The final output to be sent
+   * @returns The final output to be sent.
    */
   public sendStatic(
     file: null | string,
@@ -294,16 +291,15 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get the content type from the request object's "Accept" header. Default
-   * to the response_output config passed in when the server was created if
-   * no accept header is specified. If no response_output config was passed
-   * in during server creation, then default to application/json.
+   * Get the content type from the request object's "Accept" header. Default to
+   * the response_output config passed in when the server was created if no
+   * accept header is specified. If no response_output config was passed in
+   * during server creation, then default to application/json.
    *
    *
-   * @return
-   *     Returns a content type to set as this object's content-type header. If
-   *     multiple content types are passed in, then return the first accepted
-   *     content type.
+   * @returns A content type to set as this object's content-type header. If
+   * multiple content types are passed in, then return the first accepted
+   * content type.
    */
   protected getContentTypeFromRequestAcceptHeader(): string {
     const accept = this.request.headers.get("Accept") ||
@@ -338,12 +334,12 @@ export class Response {
    * Redirect the client to another URL.
    *
    * @param httpStatusCode - Response's status code.
-   *     Permanent: (301 and 308)
-   *     Temporary: (302, 303, and 307)
+   * - Permanent: (301 and 308)
+   * - Temporary: (302, 303, and 307)
+   * @param location - URL of desired redirection. Relative or external paths
+   * (e.g., "/users/1", https://drash.land)
    *
-   * @param location - URL of desired redirection. Relative or external paths (e.g., "/users/1", https://drash.land)
-   *
-   * @return The final output to be sent
+   * @returns The final output to be sent.
    */
   public redirect(
     httpStatusCode: number,

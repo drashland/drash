@@ -453,7 +453,7 @@ function getUrlQueryParamsTests() {
   Rhum.testCase("Returns {} with no query strings", async () => {
     const serverRequest = members.mockRequest("/");
     const request = new Drash.Http.Request(serverRequest);
-    const queryParams = request.getUrlQueryParams(request);
+    const queryParams = request.getUrlQueryParams();
     Rhum.asserts.assertEquals(queryParams, {});
   });
 
@@ -464,7 +464,7 @@ function getUrlQueryParamsTests() {
         "/api/v2/users?name=John&age=44",
       );
       const request = new Drash.Http.Request(serverRequest);
-      const queryParams = request.getUrlQueryParams(request);
+      const queryParams = request.getUrlQueryParams();
       Rhum.asserts.assertEquals(queryParams, {
         name: "John",
         age: "44",
