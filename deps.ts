@@ -36,6 +36,7 @@ export {
 export {
   FormFile,
   MultipartReader,
+  MultipartFormData,
 } from "https://deno.land/std@v0.60.0/mime/multipart.ts";
 
 export {
