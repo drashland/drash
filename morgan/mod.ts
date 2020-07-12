@@ -1,5 +1,14 @@
 import { Drash } from "../deps.ts";
 
+/**
+ * See
+ * https://doc.deno.land/https/deno.land/x/drash/src/interfaces/logger_configs.ts
+ * for information on `Drash.Interfaces.LoggerConfigs`.
+ *
+ * response_time?: boolean
+ *
+ *     Are response times enabled?
+ */
 interface IMorganConfigs extends Drash.Interfaces.LoggerConfigs {
   response_time?: boolean;
 }
@@ -7,10 +16,10 @@ interface IMorganConfigs extends Drash.Interfaces.LoggerConfigs {
 /**
  * A logger middleware inspired by https://www.npmjs.com/package/morgan.
  *
- * @param configs - See https://doc.deno.land/https/deno.land/x/drash/src/interfaces/logger_configs.ts
+ * @param configs - See IMorganConfigs
  */
 export function Morgan(
-  configs?: IMorganConfigs
+  configs?: IMorganConfigs,
 ) {
   const defaultConfigs = {
     enabled: true,
@@ -44,19 +53,23 @@ export function Morgan(
     }
   }
 
-  configs = configs ?? defaultConfigs
+  configs = configs ?? defaultConfigs;
 
   const logger = new Drash.CoreLoggers.ConsoleLogger(configs);
 
-  Morgan.prototype.configs = configs;
-  Morgan.prototype.logger = logger;
   let timeStart: number;
   let timeEnd: number;
 
-  return (
+  /**
+   * The middleware function that's called by Drash.
+   *
+   * @param request - The request object.
+   * @param response - (optional) The response object.
+   */
+  function morgan(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
-  ) => {
+  ): void {
 
     // If there is no response, then we know this is occurring before the request
     if (!response) {
@@ -65,14 +78,17 @@ export function Morgan(
       if (configs!.tag_string) {
         let tagString = configs!.tag_string;
         if (tagString.includes("{request_method}")) {
-          tagString = tagString.replace("{request_method}", request.method.toUpperCase());
+          tagString = tagString.replace(
+            "{request_method}",
+            request.method.toUpperCase(),
+          );
         }
         if (tagString.includes("{request_url}")) {
           tagString = tagString.replace("{request_url}", request.url);
         }
         configs!.tag_string = tagString;
       }
-      logger.info(`Rquest received.`);
+      logger.info(`Request received.`);
     }
 
     // If there is a response, then we know this is occurring after the request
@@ -80,13 +96,31 @@ export function Morgan(
       timeEnd = new Date().getTime();
       let message = "Response sent.";
       if (configs!.response_time === true) {
-        message += ` ${getTime(timeEnd, timeStart)}`;
+        message += ` [${getTime(timeEnd, timeStart)}]`;
       }
       logger.info(message);
     }
-  };
+  }
+
+  // Expose the logger so that the logging functionality can be used freely by
+  // the user
+  morgan.logger = logger;
+
+  // Expose the configs in case the user wants to do anything with them
+  morgan.configs = configs;
+
+  return morgan;
 }
 
+/**
+ * Get the time it takes for the middleware to execute the
+ * request-resource-response lifecycle in ms.
+ *
+ * @param end - The time at the point the response was sent.
+ * @param start - The time at the point the request was received.
+ *
+ * @returns The time in ms as a string.
+ */
 function getTime(end: number, start: number): string {
   return `${end - start} ms`;
 }
