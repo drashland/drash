@@ -106,7 +106,7 @@ const morgan = Morgan({
 
 ### Reusing Morgan in resource classes (or other parts of your codebase)
 
-You can reuse Morgan in your codebase by accessing its `logger` from its prototypes. For example, if you want to use Morgan in one of your resources, then do the following:
+You can reuse Morgan in your codebase by accessing its `logger`. For example, if you want to use Morgan in one of your resources, then do the following:
 
 1. Create your `app.ts` file.
 
@@ -122,8 +122,8 @@ You can reuse Morgan in your codebase by accessing its `logger` from its prototy
       tag_string: "{request_method} {request_url} |",
     });
     
-    // Export Morgan after it has been instantiated with configurations
-    export { Morgan };
+    // Export morgan after calling it with your configurations
+    export { morgan };
     
     const server = new Drash.Http.Server({
       resources: [
@@ -151,7 +151,7 @@ You can reuse Morgan in your codebase by accessing its `logger` from its prototy
 
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.0.7/mod.ts";
-    import { Morgan } from "./app.ts";
+    import { morgan } from "./app.ts";
     
     export class HomeResource extends Drash.Http.Resource {
     
@@ -160,12 +160,12 @@ You can reuse Morgan in your codebase by accessing its `logger` from its prototy
       public GET() {
     
         // Access Morgan's logger from it's prototype and log some messages
-        Morgan.prototype.logger.debug("This is a log message.");
-        Morgan.prototype.logger.error("This is a log message.");
-        Morgan.prototype.logger.fatal("This is a log message.");
-        Morgan.prototype.logger.info("This is a log message.");
-        Morgan.prototype.logger.trace("This is a log message.");
-        Morgan.prototype.logger.warn("This is a log message.");
+        morgan.logger.debug("This is a log message.");
+        morgan.logger.error("This is a log message.");
+        morgan.logger.fatal("This is a log message.");
+        morgan.logger.info("This is a log message.");
+        morgan.logger.trace("This is a log message.");
+        morgan.logger.warn("This is a log message.");
     
         this.response.body = "GET request received!";
     
