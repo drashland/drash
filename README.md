@@ -29,6 +29,7 @@
 - [Documentation](#documentation)
 - [Features](#features)
 - [Why use Drash?](#why-use-drash)
+- [What Makes Drasg Different](#what-makes-drash-different)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -147,6 +148,10 @@ Thrown into the mix is Drash's own concepts such as:
 * Lowering barriers to usage
 
 Drash does not force you to use all of its code. You can pick and choose which data members you want/need and use them however you deem fit. For example, Drash comes with a console logger and a file logger. If you only want these, then you only import these into your non-Drash project. How you use it is really up to you.
+
+## What Makes Drash Different
+
+You may notice our syntax might be different than what you might be used to. Drash is very different to most Node frameworks (and Deno frameworks too), in terms of its syntax. Where Deno is different than Node, Drash aims to be different than Express or Koa, utilising resources and a full class based system, such as not using `app.get((req, res))`, and instead using `this.request` and `this.reponse` inside of the resource class, where your 'routes' (paths) are also defined. As a result, this follows the [MDN specs of HTTP Resources](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
 
 ## Contributing
 
