@@ -7,14 +7,16 @@
 ---
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Overview
-`deno-drash-middleware` contains a list of Drash-approved middleware you can use with your Drash application. Be aware that these middlewares differ a lot - some may use 3rd party dependencies whilst some won't. Here is the current list of middlewares:
 
-* (in progress)
+This repository contains Drash-approved middleware modules that you can use in your Drash application. Be aware that some modules may use third-party dependencies whilst some will not. Here is the current list of middleware modules:
+
+* [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
 
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
