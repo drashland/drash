@@ -55,9 +55,18 @@ Define what log statements should be written based on their log level definition
 ```typescript
 const dexter = Dexter({
   enabled: true,
-  level: "debug", // or all, trace, debug, info, warn, error, fatal, off
+  level: "debug", // or all, trace, debug, info, warn, error, fatal
 });
 ```
+
+* `all`: logs all messages below
+* `trace`: logs `.trace()` messages and the below
+* `debug`: logs `.debug()` messages and the below
+* `info`: logs `.info()` messages and the below
+* `warn`: logs `.warn()` messages and the below
+* `error`: logs `.error()` messages and the below
+* `fatal`: logs `.fatal()` messages only
+
 
 ### `tag_string`
 
