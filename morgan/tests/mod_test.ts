@@ -1,48 +1,48 @@
 import { Rhum } from "../../test_deps.ts";
-import { Morgan } from "../mod.ts";
+import { Dexter } from "../mod.ts";
 
-Rhum.testPlan("Morgan - mod_test.ts", () => {
-  Rhum.testSuite("Morgan", () => {
+Rhum.testPlan("Dexter - mod_test.ts", () => {
+  Rhum.testSuite("Dexter", () => {
     Rhum.testCase("is configurable", async () => {
-      let morgan = Morgan();
-      Rhum.asserts.assertEquals(morgan.configs.enabled, true);
-      morgan = Morgan({
+      let dexter = Dexter();
+      Rhum.asserts.assertEquals(dexter.configs.enabled, true);
+      dexter = Dexter({
         enabled: false,
       });
-      Rhum.asserts.assertEquals(morgan.configs.enabled, false);
+      Rhum.asserts.assertEquals(dexter.configs.enabled, false);
     });
     Rhum.testCase("logger and all of its log functions are exposed", () => {
-      let morgan = Morgan({
+      let dexter = Dexter({
         enabled: true,
         test: true,
         tag_string: "{level} |"
       });
-      Rhum.asserts.assertEquals(typeof morgan.logger.debug, "function");
-      Rhum.asserts.assertEquals(typeof morgan.logger.error, "function");
-      Rhum.asserts.assertEquals(typeof morgan.logger.fatal, "function");
-      Rhum.asserts.assertEquals(typeof morgan.logger.info, "function");
-      Rhum.asserts.assertEquals(typeof morgan.logger.trace, "function");
-      Rhum.asserts.assertEquals(typeof morgan.logger.warn, "function");
+      Rhum.asserts.assertEquals(typeof dexter.logger.debug, "function");
+      Rhum.asserts.assertEquals(typeof dexter.logger.error, "function");
+      Rhum.asserts.assertEquals(typeof dexter.logger.fatal, "function");
+      Rhum.asserts.assertEquals(typeof dexter.logger.info, "function");
+      Rhum.asserts.assertEquals(typeof dexter.logger.trace, "function");
+      Rhum.asserts.assertEquals(typeof dexter.logger.warn, "function");
     });
     Rhum.testCase("logger can be used to write messages", () => {
-      let morgan = Morgan({
+      let dexter = Dexter({
         enabled: true,
         level: "all",
         test: true,
         tag_string: "{level} |"
       });
       let actual;
-      actual = morgan.logger.debug("test");
+      actual = dexter.logger.debug("test");
       Rhum.asserts.assertEquals(actual, "DEBUG | test");
-      actual = morgan.logger.error("test");
+      actual = dexter.logger.error("test");
       Rhum.asserts.assertEquals(actual, "ERROR | test");
-      actual = morgan.logger.fatal("test");
+      actual = dexter.logger.fatal("test");
       Rhum.asserts.assertEquals(actual, "FATAL | test");
-      actual = morgan.logger.info("test");
+      actual = dexter.logger.info("test");
       Rhum.asserts.assertEquals(actual, "INFO | test");
-      actual = morgan.logger.trace("test");
+      actual = dexter.logger.trace("test");
       Rhum.asserts.assertEquals(actual, "TRACE | test");
-      actual = morgan.logger.warn("test");
+      actual = dexter.logger.warn("test");
       Rhum.asserts.assertEquals(actual, "WARN | test");
     });
   });

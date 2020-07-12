@@ -9,17 +9,17 @@ import { Drash } from "../deps.ts";
  *
  *     Are response times enabled?
  */
-interface IMorganConfigs extends Drash.Interfaces.LoggerConfigs {
+interface IDexterConfigs extends Drash.Interfaces.LoggerConfigs {
   response_time?: boolean;
 }
 
 /**
  * A logger middleware inspired by https://www.npmjs.com/package/morgan.
  *
- * @param configs - See IMorganConfigs
+ * @param configs - See IDexterConfigs
  */
-export function Morgan(
-  configs?: IMorganConfigs,
+export function Dexter(
+  configs?: IDexterConfigs,
 ) {
   const defaultConfigs = {
     enabled: true,
@@ -66,7 +66,7 @@ export function Morgan(
    * @param request - The request object.
    * @param response - (optional) The response object.
    */
-  function morgan(
+  function dexter(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ): void {
@@ -104,12 +104,12 @@ export function Morgan(
 
   // Expose the logger so that the logging functionality can be used freely by
   // the user
-  morgan.logger = logger;
+  dexter.logger = logger;
 
   // Expose the configs in case the user wants to do anything with them
-  morgan.configs = configs;
+  dexter.configs = configs;
 
-  return morgan;
+  return dexter;
 }
 
 /**
