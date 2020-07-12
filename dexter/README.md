@@ -11,16 +11,16 @@ import { Dexter } from "https://deno.land/x/drash-middleware@{version}/dexter/mo
 // Instantiate dexter
 const dexter = Dexter();
 
-The above will instantiate Dexter with default values: 
-{
-    enabled: true,
-    level: "info",
-    tag_string: "{datetime} | {level} |",
-    tag_string_fns: {
-      datetime() {
-        return new Date().toISOString().replace("T", " ").split(".")[0];
-    },
-};
+// The above will instantiate Dexter with default values: 
+// {
+//     enabled: true,
+//     level: "info",
+//     tag_string: "{datetime} | {level} |",
+//     tag_string_fns: {
+//       datetime() {
+//         return new Date().toISOString().replace("T", " ").split(".")[0];
+//     },
+// };
 
 // Create your server and plug in dexter to the middleware config
 const server = new Drash.Http.Server({
