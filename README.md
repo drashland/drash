@@ -29,7 +29,7 @@
 - [Documentation](#documentation)
 - [Features](#features)
 - [Why use Drash?](#why-use-drash)
-- [What Makes Drasg Different](#what-makes-drash-different)
+- [What Makes Drash Different](#what-makes-drash-different)
 - [Contributing](#contributing)
 - [License](#license)
 
