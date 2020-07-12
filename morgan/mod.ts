@@ -45,16 +45,27 @@ export function Morgan(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ) => {
+
+    if (configs && configs.tag_string) {
+      let tagString = configs!.tag_string;
+      if (tagString.includes("{request_method}")) {
+        tagString = tagString.replace("{request_method}", request.method.toUpperCase());
+      }
+      if (tagString.includes("{request_url}")) {
+        tagString = tagString.replace("{request_url}", request.url);
+      }
+      configs.tag_string = tagString;
+    }
+
     // If there is no response, then we know this is occurring before the request
     if (!response) {
-      logger.info(`Request received: ${request.method} ${request.url}`);
+      logger.info(`Rquest received.`);
     }
+
     // If there is a response, then we know this is occurring after the request
     if (response) {
-      logger.info(
-        `Response status: ${response.status_code} ${response.getStatusMessage()}`,
-      );
-      logger.debug(`Response body: \n${response.body as string}`);
+      logger.info(`Response sent.`);
+      logger.error(`Response body: \n${response.body as string}`);
       logger.debug(`Response `);
     }
   };
