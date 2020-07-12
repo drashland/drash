@@ -91,6 +91,17 @@ const morgan = Morgan({
 });
 ```
 
+### `response_time`
+
+If you want to see how fast your responses are taking, then use this config. This config will output something similar to `Response sent. 2 ms`.
+
+```typescript
+const morgan = Morgan({
+  enabled: true,
+  response_time: true, // or false
+});
+```
+
 ## Tutorials
 
 ### Reusing Morgan in resource classes (or other parts of your codebase)
