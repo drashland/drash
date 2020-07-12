@@ -6,7 +6,7 @@ Morgan is a logging middleware similar to [expressjs/morgan](https://github.com/
 import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
 
 // Import the Morgan middleware function
-import { Morgan } from "https://deno.land/x/drash-middleware@v0.1.0/morgan/mod.ts";
+import { Morgan } from "https://deno.land/x/drash-middleware@{version}/morgan/mod.ts";
 
 // Instantiate morgan
 const morgan = Morgan();
@@ -103,7 +103,7 @@ You can reuse Morgan in your codebase by accessing its `logger` from its prototy
     // File: app.ts
     import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Morgan } from "https://deno.land/x/drash-middleware@v1.0.0/morgan.ts";
+    import { Morgan } from "https://deno.land/x/drash-middleware@{version}/morgan.ts";
     
     const morgan = Morgan({
       enabled: true,
