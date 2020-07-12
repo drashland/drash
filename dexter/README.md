@@ -93,7 +93,7 @@ const dexter = Dexter({
 
 ### `response_time`
 
-If you want to see how fast your responses are taking, then use this config. This config will output something similar to `Response sent. 2 ms`.
+If you want to see how fast your responses are taking, then use this config. This config will output something similar to `Response sent. [2 ms]`.
 
 ```typescript
 const dexter = Dexter({
