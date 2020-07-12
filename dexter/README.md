@@ -70,7 +70,7 @@ const dexter = Dexter({
 
 ### `tag_string`
 
-Define the display of the log statements' tag string. The tag string is a concatenation of tokens preceding the log message. Avaiable, predefined tags:
+Define the display of the log messages' tag string. The tag string is a concatenation of tokens preceding the log message. Available, predefined tags:
 
 * `{level}`
 * `{request_method}`
