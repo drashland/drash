@@ -5,7 +5,9 @@ import { Drash } from "../deps.ts";
  *
  * @param configs - See https://doc.deno.land/https/deno.land/x/drash/src/interfaces/logger_configs.ts
  */
-export function MorganLogger(configs?: Drash.Interfaces.LoggerConfigs) {
+export function Morgan(
+  configs?: Drash.Interfaces.LoggerConfigs
+) {
   const defaultConfigs = {
     enabled: true,
     level: "info",
@@ -13,8 +15,8 @@ export function MorganLogger(configs?: Drash.Interfaces.LoggerConfigs) {
     tag_string_fns: {
       datetime() {
         return new Date().toISOString().replace("T", " ").split(".")[0];
-      }
-    }
+      },
+    },
   };
 
   if (configs) {
@@ -32,9 +34,12 @@ export function MorganLogger(configs?: Drash.Interfaces.LoggerConfigs) {
     }
   }
 
-  const logger = new Drash.CoreLoggers.ConsoleLogger(
-    configs ?? defaultConfigs
-  );
+  configs = configs ?? defaultConfigs
+
+  const logger = new Drash.CoreLoggers.ConsoleLogger(configs);
+
+  Morgan.prototype.configs = configs;
+  Morgan.prototype.logger = logger;
 
   return (
     request: Drash.Http.Request,
@@ -47,8 +52,10 @@ export function MorganLogger(configs?: Drash.Interfaces.LoggerConfigs) {
     // If there is a response, then we know this is occurring after the request
     if (response) {
       logger.info(
-        `Response: ${response.status_code} ${response.getStatusMessage()}`,
+        `Response status: ${response.status_code} ${response.getStatusMessage()}`,
       );
+      logger.debug(`Response body: \n${response.body as string}`);
+      logger.debug(`Response `);
     }
   };
 }
