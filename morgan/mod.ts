@@ -19,6 +19,12 @@ export function Morgan(
     },
   };
 
+  // If configs are passed in, make sure (at the very least) that the following
+  // configs are present:
+  // - enabled
+  // - level
+  // - tag_string
+  // - tag_string_fns
   if (configs) {
     if (!configs.hasOwnProperty("enabled")) {
       configs.enabled = defaultConfigs.enabled;
