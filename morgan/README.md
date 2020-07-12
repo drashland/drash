@@ -64,7 +64,7 @@ const morgan = Morgan({
 Define the display of the log statements' tag string. The tag string is a concatenation of tokens preceding the log message. Avaiable, predefined tags:
 
 * `{level}`
-* `{request_method}
+* `{request_method}`
 * `{request_url}`
 
 ```typescript
@@ -150,7 +150,7 @@ You can reuse Morgan in your codebase by accessing its `logger`. For example, if
 2. Create your `home_resource` file.
 
     ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.0.7/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
     import { morgan } from "./app.ts";
     
     export class HomeResource extends Drash.Http.Resource {
