@@ -1,6 +1,6 @@
 # Dexter
 
-Dexter is a logging middleware similar to [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
+Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
 
 ```typescript
 import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
