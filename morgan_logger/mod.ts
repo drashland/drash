@@ -3,7 +3,7 @@ import { Drash } from "../deps.ts";
 /**
  * A logger middleware inspired by https://www.npmjs.com/package/morgan.
  *
- * @param configs - See Drash.Interfaces.LoggerConfigs.
+ * @param configs - See https://deno.land/x/drash/src/interfaces/logger_configs.ts
  */
 export function MorganLogger(configs?: Drash.Interfaces.LoggerConfigs) {
   const defaultConfigs = {
