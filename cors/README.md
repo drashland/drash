@@ -59,4 +59,4 @@ You can use it as is without passing any option, or you can configure it as expl
 * `preflight`: if needed you can entirely disable preflight by passing `false` here (default: `true`).
 
 ## License
-By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
+By contributing your code, you agree to license your contribution under the [MIT License](./../LICENSE).
