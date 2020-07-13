@@ -31,6 +31,7 @@
 This repository contains Drash-approved middleware modules that you can use in your Drash application. Be aware that some modules may use third-party dependencies whilst some will not. You are still able to [**create your own**](https://drash.land/drash/#/tutorials/middleware/introduction) middleware within Drash, but this project supplies already developed middleware that can be plugged straight into your application. Here is the current list of middleware modules:
 
 * [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
+* [Cors](./cors) - enables the use of [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) in a drash application.
 
 * [Paladin](./paladin) - Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
 
