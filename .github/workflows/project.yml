@@ -20,6 +20,6 @@ jobs:
           script: |
             github.projects.createCard({
               column_id: github.event_name == "issue" ? 9815446 : 9815447,
-              content_id: github.issue.number,
+              content_id: context.issue.number,
               content_type: github.event_name == "issue" ? "Issue" : "PullRequest"
             })
