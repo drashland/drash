@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.1.3"]
+        deno: ["1.2.0"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -25,7 +25,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Unit
-        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read
+        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read --allow-env
 
       - name: Integration
         run: |
@@ -38,7 +38,7 @@ jobs:
       - name: Create APP
         run: |
           deno cache create_app.ts
-          deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run
+          deno test tests/cli/create_app_test.ts --allow-read --allow-write --allow-run --allow-env
 
   linter:
     # Only one OS is required since fmt is cross platform
