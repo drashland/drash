@@ -39,7 +39,7 @@ Please **ask first** before embarking on any significant pull request (e.g. impl
 ***Note:*** It is recommended that you *"clean up"* your commits before opening a pull request. Maybe take a look at `git rebase --interactive` to do this.
 
 ## Code Guidelines
-- Code should follow [Deno Style Guide](https://deno.land/std/style_guide.md).
+- Code should follow [Deno Style Guide](https://deno.land/manual/contributing/style_guide).
 
 - As a rule of thumb, always format your code using `deno fmt` before opening your pull request. Run this as your last single commit. If you forgot to correctly format it, just add a commit with the message *deno fmt* (`git commit -m "deno fmt"`).
 
