@@ -52,4 +52,21 @@ const armor = Armor({
 })
 ```
 
+### `Referrer-Policy`
+
+The Referrer-Policy header is usually set by browsers to tell a server where it's coming from.
+
+See here for more information: https://helmetjs.github.io/docs/referrer-policy/
+
+- [ ] Enabled by default?
+
+```typescript
+const armor = Armor() // Will not set the header
+const armor = Armor({
+  "Referrer-Policy": "no-origin" // Enable it, and set it to "no-origin"
+})
+```
+
+See [here](https://www.w3.org/TR/referrer-policy/#referrer-policies) for all possible policies.
+
 

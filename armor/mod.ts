@@ -1,7 +1,20 @@
 import { Drash } from "../deps.ts";
 
+enum ReferrerPolicy {
+  "",
+  "no-referrer",
+  "no-referrer-when-downgrade",
+  "same-origin",
+  "origin",
+  "strict-origin",
+  "origin-when-cross-origin",
+  "strict-origin-when-cross-origin",
+  "unsafe-url"
+};
+
 interface Configs {
-  "X-XSS-Protection": string|boolean
+  "X-XSS-Protection": boolean
+  "Referrer-Policy": ReferrerPolicy
 }
 
 /**
@@ -39,11 +52,14 @@ export function Armor(
     if (response) {
 
       // Set "X-XSS-Protection" header. See https://helmetjs.github.io/docs/xss-filter/
-      if (typeof configs["X-XSS-Protection"] !== false) {
+      if (configs["X-XSS-Protection"] !== false) {
         response.headers.set("X-XSS-Protection", defaultConfigs["X-XSS-Protection"])
       }
 
-      // Set
+      // Set "Referrer-Policy" header. See https://helmetjs.github.io/docs/referrer-policy/
+      if (configs["Referrer-Policy"]) {
+        response.headers.set("Referrer-Policy", configs["Referrer-Policy"])
+      }
 
     }
   }
