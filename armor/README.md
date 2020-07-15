@@ -1,0 +1,55 @@
+# Dexter
+
+Armor helps secure your Drash applications through headers. Inspired by [helmet](https://github.com/helmetjs/helmet). It is configurable and can be used throughout the request-resource-response lifecycle.
+
+Armor will set extra HTTP headers to the request response, to aid in securing your application. This does not make your application bulletproof, but adds extra security layers.
+
+```typescript
+import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
+
+// Import the Armor middleware function
+import { Armor } from "https://deno.land/x/drash-middleware@{version}/armor/mod.ts";
+
+// Instantiate armor
+const armor = Armor();
+
+// Create your server and plug in armor to the middleware config
+const server = new Drash.Http.Server({
+  resources: [
+    HomeResource,
+  ],
+  middleware: {
+    after_request: [
+      armor
+    ]
+  }
+});
+
+server.run({
+  hostname: "localhost",
+  port: 1447,
+});
+
+console.log(`Server running at ${server.hostname}:${server.port}`);
+```
+
+## Configuration
+
+Armor has a list of default headers it will set, when `Armor` is called with no arguments, but you can override these.
+
+### `X-XSS-Protection`
+
+This header does not protect against XSS attacks, but only protects against *one type* of XSS attack.
+
+See here for more information: https://helmetjs.github.io/docs/xss-filter/
+
+- [x] Enabled by default?
+
+```typescript
+const armor = Armor() // Set by default
+const armor = Armor({
+  "X-XSS-Protection": false // Disable it
+})
+```
+
+
