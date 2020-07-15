@@ -69,4 +69,18 @@ const armor = Armor({
 
 See [here](https://www.w3.org/TR/referrer-policy/#referrer-policies) for all possible policies.
 
+### `X-Content-Type-Options`
+
+The Referrer-Policy header is used to tell browsers not to sniff the mime type. Browsers will trust what the server says and block the resource if it’s wrong.
+
+See here for more information: https://helmetjs.github.io/docs/dont-sniff-mimetype/
+
+- [x] Enabled by default?
+
+```typescript
+const armor = Armor() // Set by default
+const armor = Armor({
+  "X-Content-Type-Options": false // Disable it
+})
+```
 

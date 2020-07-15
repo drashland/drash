@@ -14,7 +14,8 @@ enum ReferrerPolicy {
 
 interface Configs {
   "X-XSS-Protection": boolean
-  "Referrer-Policy": ReferrerPolicy
+  "Referrer-Policy": ReferrerPolicy,
+  "X-Content-Type-Options": boolean
 }
 
 /**
@@ -28,7 +29,8 @@ export function Armor(
 
   // Default configs when no `configs` param is passed in
   const defaultConfigs = {
-    "X-XSS-Protection": "1; mode=block"
+    "X-XSS-Protection": "1; mode=block",
+    "X-Content-Type-Options": "nosniff"
   };
 
   /**
@@ -56,9 +58,14 @@ export function Armor(
         response.headers.set("X-XSS-Protection", defaultConfigs["X-XSS-Protection"])
       }
 
-      // Set "Referrer-Policy" header. See https://helmetjs.github.io/docs/referrer-policy/
+      // Set "Referrer-Policy" header if passed in. See https://helmetjs.github.io/docs/referrer-policy/
       if (configs["Referrer-Policy"]) {
         response.headers.set("Referrer-Policy", configs["Referrer-Policy"])
+      }
+
+      // Set the "X-Content-Type-Options" header. See https://helmetjs.github.io/docs/dont-sniff-mimetype/
+      if (configs["X-Content-Type-Options"] !== false) {
+        response.headers.set("X-Content-Type-Options", defaultConfigs["X-Content-Type-Options"])
       }
 
     }
