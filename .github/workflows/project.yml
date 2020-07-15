@@ -26,5 +26,5 @@ jobs:
         uses: alex-page/github-project-automation-plus@v0.2.4
         with:
           project: The Omnipresent Drash Land Project
-          column: In Progress Pull Requests
+          column: In progress Pull Requests
           repo-token: ${{ secrets.CI_USER_PAT }}
