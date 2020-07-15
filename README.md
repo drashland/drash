@@ -18,6 +18,8 @@ This repository contains Drash-approved middleware modules that you can use in y
 
 * [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
 
+* [Armor](./armor) - Armor helps secure your Drash applications through headers. Inspired by [helmet](https://github.com/helmetjs/helmet)
+
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
 ## Contributing
