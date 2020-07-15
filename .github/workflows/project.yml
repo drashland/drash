@@ -3,13 +3,11 @@ on:
   issues:
     types:
       - opened
-      - reopened
   pull_request:
     branches: 
       - master
     types:
       - opened
-      - reopened
 jobs:
   add-to-project:
     runs-on: ubuntu-latest
