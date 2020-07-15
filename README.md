@@ -113,12 +113,15 @@ $ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --he
 
 [Lifecycle Diagram](http://drash.land/drash/#/lifecycle-diagram)
 
+[Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
+
 ## Features
 
 - [Content Negotiation](http://drash.land/drash/#/advanced-tutorials/content-negotiation/user-profiles)
 - [Static Path Routing](http://drash.land/drash/#/tutorials/servers/serving-static-paths)
 - [Regex Path Routing](http://drash.land/drash/#/tutorials/resources/creating-a-resource#regular-expression-uris)
 - [Middleware](http://drash.land/drash/#/tutorials/middleware/introduction)
+- [Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
 - [Body Handling: application/json](http://drash.land/drash/#/tutorials/requests/handling-application-json-bodies)
 - [Body Handling: application/x-www-form-urlencoded](http://drash.land/drash/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
 - [Body Handling: multipart/form-data](http://drash.land/drash/#/tutorials/requests/handling-multipart-form-data-bodies)
