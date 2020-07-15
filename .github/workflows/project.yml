@@ -14,12 +14,17 @@ jobs:
   add-to-project:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v2
+      - if: github.event_name == "issues"
+        name: Add issues to project
+        uses: alex-page/github-project-automation-plus@v0.2.4
         with:
-          github-token: ${{ secrets.CI_USER_PAT }}
-          script: |
-            github.projects.createCard({
-              column_id: context.eventName == "issues" ? 9815446 : 9815447,
-              content_id: context.issue.number,
-              content_type: context.eventName == "issues" ? "Issue" : "PullRequest"
-            })
+          project: The Omnipresent Drash Land Project
+          column: To Do
+          repo-token: ${{ secrets.CI_USER_PAT }}
+      - if: github.event_name == "pull_request"
+        name: Add pull requests to project
+        uses: alex-page/github-project-automation-plus@v0.2.4
+        with:
+          project: The Omnipresent Drash Land Project
+          column: In Progress Pull Requests
+          repo-token: ${{ secrets.CI_USER_PAT }}
