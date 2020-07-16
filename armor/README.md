@@ -121,4 +121,20 @@ const armor = Armor({
 })
 ```
 
+### `X-Powered-By`
 
+The X-Powered-By header is used to show which techonology powers the  server.  Removing this reduces vulnerabilities because a hacker won't be able to use this against you.
+
+See here for more information: https://helmetjs.github.io/docs/hide-powered-by/
+
+- [x] Enabled by default?
+
+```typescript
+const armor = Armor() // Removed the header by default
+const armor = Armor({
+  "X-Powered-By": false // Also removes it
+})
+const armor = Armor({
+  "X-Powered-By": true // Keeps the header
+})
+```

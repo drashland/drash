@@ -20,7 +20,8 @@ interface Configs {
     maxAge: boolean | number,
     includeSubDomains: boolean,
     preload: boolean
-  }
+  },
+  "X-Powered-By": boolean
 }
 
 /**
@@ -39,7 +40,8 @@ export function Armor(
     hsts: {
       maxAge: "5184000", // 60 days
       includeSubDomains: "includeSubDomains"
-    }
+    },
+    "X-Powered-By": false // False for removing the header
   };
 
   /**
@@ -95,6 +97,11 @@ export function Armor(
         hstsHeader += "; preload"
       }
       response.headers.set("Strict-Transport-Policy", hstsHeader)
+
+      // Delete the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
+      if (configs["X-Powered-By"] !== true && defaultConfigs["X-Powered-By"] === false) {
+        response.headers.delete("X-Powered-By")
+      }
 
     }
   }
