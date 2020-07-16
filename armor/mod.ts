@@ -16,6 +16,11 @@ interface Configs {
   "X-XSS-Protection": boolean
   "Referrer-Policy": ReferrerPolicy,
   "X-Content-Type-Options": boolean
+  hsts: {
+    maxAge: boolean | number,
+    includeSubDomains: boolean,
+    preload: boolean
+  }
 }
 
 /**
@@ -30,7 +35,11 @@ export function Armor(
   // Default configs when no `configs` param is passed in
   const defaultConfigs = {
     "X-XSS-Protection": "1; mode=block",
-    "X-Content-Type-Options": "nosniff"
+    "X-Content-Type-Options": "nosniff",
+    hsts: {
+      maxAge: "5184000", // 60 days
+      includeSubDomains: "includeSubDomains"
+    }
   };
 
   /**
@@ -67,6 +76,25 @@ export function Armor(
       if (configs["X-Content-Type-Options"] !== false) {
         response.headers.set("X-Content-Type-Options", defaultConfigs["X-Content-Type-Options"])
       }
+
+      // Set the "Strict-Transport-Security" header. See https://helmetjs.github.io/docs/hsts/
+      let hstsHeader = ""
+      if (configs.hsts.maxAge) { // if set to a number
+        hstsHeader += "max-age=" + configs.hsts.maxAge
+      } else if (configs.hsts.maxAge !== false) { // not disabled
+        hstsHeader += "max-age=" + defaultConfigs.hsts.maxAge
+      }
+      if (hstsHeader && configs.hsts.includeSubDomains === true) {
+        hstsHeader += "; includeSubDomains"
+      } else if (hstsHeader && configs.hsts.includeSubDomains  !== false) {
+        hstsHeader += "; includeSubDomains"
+      }
+      if (hstsHeader && configs.hsts.preload === true) {
+        hstsHeader += "; preload"
+      } else if (hstsHeader && configs.hsts.preload !== false) {
+        hstsHeader += "; preload"
+      }
+      response.headers.set("Strict-Transport-Policy", hstsHeader)
 
     }
   }

@@ -84,3 +84,41 @@ const armor = Armor({
 })
 ```
 
+### `Strict-Transport-Security`
+
+The Strict-Transport-Security (HSTS) header is used to tell browsers to stick with HTTPS and never visit the HTTP version.
+
+See here for more information: https://helmetjs.github.io/docs/hsts/
+
+- [x] Enabled by default?
+
+```typescript
+const armor = Armor() // Set by default to 60 days and include sub domains
+const armor = Armor({
+  hsts: {
+    maxAge: false // Disable the header altogether
+  }
+})
+const armor = Armor({
+  hsts: {
+    maxAge: 5184000 // Enable HSTS and set a max age
+  }
+})
+const armor = Armor({
+  hsts: {
+    includeSubDomains: false // Enable default max age but disable the inclusion of sub domains
+  }
+})
+const armor = Armor({
+  hsts: {
+    includeSubDomains: true // Can set to true, but it's set by default
+  }
+})
+const armor = Armor({
+  hsts: {
+    preload: true // Defaults to false
+  }
+})
+```
+
+
