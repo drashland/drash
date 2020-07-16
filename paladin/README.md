@@ -1,26 +1,26 @@
-# Dexter
+# Paladin
 
-Armor helps secure your Drash applications through headers. Inspired by [helmet](https://github.com/helmetjs/helmet). It is configurable and can be used throughout the request-resource-response lifecycle.
+Paladin helps secure your Drash applications through headers. Inspired by [helmet](https://github.com/helmetjs/helmet). It is configurable and can be used throughout the request-resource-response lifecycle.
 
-Armor will set extra HTTP headers to the request response, to aid in securing your application. This does not make your application bulletproof, but adds extra security layers.
+Paladin will set extra HTTP headers to the request response, to aid in securing your application. This does not make your application bulletproof, but adds extra security layers.
 
 ```typescript
 import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
 
-// Import the Armor middleware function
-import { Armor } from "https://deno.land/x/drash-middleware@{version}/armor/mod.ts";
+// Import the Paladin middleware function
+import { Paladin } from "https://deno.land/x/drash-middleware@{version}/paladin/mod.ts";
 
-// Instantiate armor
-const armor = Armor();
+// Instantiate paladin
+const paladin = Paladin();
 
-// Create your server and plug in armor to the middleware config
+// Create your server and plug in paladin to the middleware config
 const server = new Drash.Http.Server({
   resources: [
     HomeResource,
   ],
   middleware: {
     after_request: [
-      armor
+      paladin
     ]
   }
 });
@@ -35,7 +35,7 @@ console.log(`Server running at ${server.hostname}:${server.port}`);
 
 ## Configuration
 
-Armor has a list of default headers it will set, when `Armor` is called with no arguments, but you can override these.
+Paladin has a list of default headers it will set, when `Paladin` is called with no arguments, but you can override these.
 
 ### `X-XSS-Protection`
 
@@ -46,11 +46,11 @@ See here for more information: https://helmetjs.github.io/docs/xss-filter/
 - [x] Enabled by default?
 
 ```typescript
-const armor = Armor() // Set by default
-const armor = Armor({
+const paladin = Paladin() // Set by default
+const paladin = Paladin({
   "X-XSS-Protection": false // Disable it
 })
-const armor = Armor({
+const paladin = Paladin({
   "X-XSS-Protection": true // Explicitly enable it
 })
 ```
@@ -64,8 +64,8 @@ See here for more information: https://helmetjs.github.io/docs/referrer-policy/
 - [ ] Enabled by default?
 
 ```typescript
-const armor = Armor() // Will not set the header
-const armor = Armor({
+const paladin = Paladin() // Will not set the header
+const paladin = Paladin({
   "Referrer-Policy": "origin" // Enable it, and set it to "origin"
 })
 ```
@@ -81,11 +81,11 @@ See here for more information: https://helmetjs.github.io/docs/dont-sniff-mimety
 - [x] Enabled by default?
 
 ```typescript
-const armor = Armor() // Set by default
-const armor = Armor({
+const paladin = Paladin() // Set by default
+const paladin = Paladin({
   "X-Content-Type-Options": false // Disable it
 })
-const armor = Armor({
+const paladin = Paladin({
   "X-Content-Type-Options": true // Explicitly enable it
 })
 ```
@@ -99,28 +99,28 @@ See here for more information: https://helmetjs.github.io/docs/hsts/
 - [x] Enabled by default?
 
 ```typescript
-const armor = Armor() // Set by default to 60 days and include sub domains
-const armor = Armor({
+const paladin = Paladin() // Set by default to 60 days and include sub domains
+const paladin = Paladin({
   hsts: {
     maxAge: false // Disable the header altogether
   }
 })
-const armor = Armor({
+const paladin = Paladin({
   hsts: {
     maxAge: 5184000 // Enable HSTS and set a max age
   }
 })
-const armor = Armor({
+const paladin = Paladin({
   hsts: {
     includeSubDomains: false // Enable default max age but disable the inclusion of sub domains
   }
 })
-const armor = Armor({
+const paladin = Paladin({
   hsts: {
     includeSubDomains: true // Can set to true, but it's set by default
   }
 })
-const armor = Armor({
+const paladin = Paladin({
   hsts: {
     preload: true // Defaults to false
   }
@@ -136,14 +136,14 @@ See here for more information: https://helmetjs.github.io/docs/hide-powered-by/
 - [x] Removed by default?
 
 ```typescript
-const armor = Armor() // Removes the header by default
-const armor = Armor({
+const paladin = Paladin() // Removes the header by default
+const paladin = Paladin({
   "X-Powered-By": false // Also removes it
 })
-const armor = Armor({
+const paladin = Paladin({
   "X-Powered-By": true // Will not remove the header
 })
- const armor  = Armor({
+ const paladin  = Paladin({
   "X-Powered-By": "PHP 4.2.0" // Keep the header but lie, making it look your site is powered by PHP
 })
 ```
@@ -159,14 +159,14 @@ See here for more information: https://helmetjs.github.io/docs/hide-powered-by/
 - [x] Enabled by default?
 
 ```typescript
-const armor = Armor() // Defaults to "sameorigin". Allows you to put iFrames on your page.
-const armor = Armor({
+const paladin = Paladin() // Defaults to "sameorigin". Allows you to put iFrames on your page.
+const paladin = Paladin({
   "X-Frame-Options": false // Will not set the header
 })
-const armor = Armor({
+const paladin = Paladin({
   "X-Frame-Options": "DENY" // Sets the header to "DENY". Prevent any iFrames.
 })
-const armor = Armor({
+const paladin = Paladin({
   "X-Frame-Options": "ALLOW-FROM https://example.com" // Allows example.com to embed an iFrame on the page.
 })
 ```
@@ -180,19 +180,19 @@ See here for more information: https://helmetjs.github.io/docs/expect-ct/
 - [ ] Enabled by default?
 
 ```typescript
-const armor = Armor() // Does not set the header
-const armor = Armor({
+const paladin = Paladin() // Does not set the header
+const paladin = Paladin({
   expectCt: {
     maxAge: 30 // Sets the header and the age to 60 days
   }
 })
-const armor = Armor({
+const paladin = Paladin({
   expectCt: {
     maxAge: 30,
     enforce: true // Sets enforce: "Expect-CT: max-age=30; enforce"
   }
 })
-const armor = Armor({
+const paladin = Paladin({
   expectCt: {
     maxAge: 30,
     enforce: true,
@@ -210,11 +210,11 @@ See here for more information: https://helmetjs.github.io/docs/dns-prefetch-cont
 - [x] Enabled by default?
 
 ```typescript
-const armor = Armor() // off
-const armor = Armor({
+const paladin = Paladin() // off
+const paladin = Paladin({
   "X-DNS-Prefetch-Control": false // off
 })
-const armor = Armor({
+const paladin = Paladin({
   "X-DNS-Prefetch-Control": true // on
 })
 ```
@@ -228,11 +228,11 @@ See here for more information: https://helmetjs.github.io/docs/csp/
 - [ ] Enabled by default?
 
 ```typescript
-const armor = Armor() // Does not set the header
-const armor = Armor({
+const paladin = Paladin() // Does not set the header
+const paladin = Paladin({
   "Content-Security-Policy": "default-src 'self'"
 })
-const armor = Armor({
+const paladin = Paladin({
   "Content-Security-Policy": "default-src 'self'; style-src 'self' maxcdn.bootstrapcdn.com"
 })
 ```

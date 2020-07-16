@@ -36,7 +36,7 @@ interface Configs {
  *
  * @param configs - See IDexterConfigs
  */
-export function Armor(
+export function Paladin(
   configs?: Configs,
 ) {
 
@@ -69,7 +69,7 @@ export function Armor(
    * @param request - The request object.
    * @param response - (optional) The response object.
    */
-  function armor(
+  function paladin(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ): void {
@@ -180,7 +180,7 @@ export function Armor(
   }
 
   // Expose the configs in case the user wants to do anything with them
-  armor.configs = configs;
+  paladin.configs = configs;
 
-  return armor;
+  return paladin;
 }
