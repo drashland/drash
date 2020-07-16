@@ -25,7 +25,7 @@ interface Configs {
   "X-Frame-Options": "DENY" | "SAMEORIGIN" | boolean | string, // eg ALLOW-FROM www.example.com
   expectCt: {
     enforce: boolean,
-    maxAge: string,
+    maxAge: number,
     reportUri: string
   },
   "X-DNS-Prefetch-Control": boolean,
@@ -46,7 +46,7 @@ export function Armor(
     "X-XSS-Protection": "1; mode=block",
     "X-Content-Type-Options": "nosniff",
     hsts: {
-      maxAge: "5184000", // 60 days
+      maxAge: 5184000, // 60 days
       includeSubDomains: "includeSubDomains"
     },
     "X-Powered-By": false, // False for removing the header
@@ -77,6 +77,7 @@ export function Armor(
       // Set "X-XSS-Protection" header. See https://helmetjs.github.io/docs/xss-filter/
       if (configs["X-XSS-Protection"] !== false) {
         response.headers.set("X-XSS-Protection", defaultConfigs["X-XSS-Protection"])
+        configs["X-XSS-Protection"] = true
       }
 
       // Set "Referrer-Policy" header if passed in. See https://helmetjs.github.io/docs/referrer-policy/
@@ -87,6 +88,7 @@ export function Armor(
       // Set the "X-Content-Type-Options" header. See https://helmetjs.github.io/docs/dont-sniff-mimetype/
       if (configs["X-Content-Type-Options"] !== false) {
         response.headers.set("X-Content-Type-Options", defaultConfigs["X-Content-Type-Options"])
+        configs["X-Content-Type-Options"] = true
       }
 
       // Set the "Strict-Transport-Security" header. See https://helmetjs.github.io/docs/hsts/
@@ -107,10 +109,16 @@ export function Armor(
         hstsHeader += "; preload"
       }
       response.headers.set("Strict-Transport-Policy", hstsHeader)
+      configs.hsts = {
+        preload: configs.hsts.preload ?? false,
+        maxAge: configs.hsts.maxAge ?? defaultConfigs.hsts.maxAge,
+        includeSubDomains: !!configs.hsts.includeSubDomains ?? !!defaultConfigs.hsts.includeSubDomains
+      }
 
       // Delete the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
       if (configs["X-Powered-By"] !== true && defaultConfigs["X-Powered-By"] === false) {
         response.headers.delete("X-Powered-By")
+        configs["X-Powered-By"] = false
       }
 
       // Set the "X-Frame-Options" header. See https://helmetjs.github.io/docs/frameguard/
@@ -118,6 +126,7 @@ export function Armor(
         response.headers.set("X-Frame-Options", configs["X-Frame-Options"])
       } else {
         response.headers.set("X-Frame-Options", defaultConfigs["X-Frame-Options"])
+        configs["X-Frame-Options"] = defaultConfigs["X-Frame-Options"]
       }
 
       // Set the "Expect-CT" header. See https://helmetjs.github.io/docs/expect-ct/
@@ -131,12 +140,19 @@ export function Armor(
       if (expectCtHeader && configs.expectCt.reportUri) {
         expectCtHeader += "; " + configs.expectCt.reportUri
       }
+      response.headers.set("Expect-CT", expectCtHeader)
+      configs.expectCt = {
+        maxAge: configs.expectCt.maxAge ?? null,
+        enforce: configs.expectCt.enforce ?? false,
+        reportUri: configs.expectCt.reportUri ?? ''
+      }
 
       // Set the "X-DNS-Prefetch-Control" header. See https://helmetjs.github.io/docs/dns-prefetch-control/
       if (configs["X-DNS-Prefetch-Control"] === true) {
         response.headers.set("X-DNS-Prefetch-Control", "on")
       } else {
         response.headers.set("X-DNS-Prefetch-Control", "off")
+        configs["X-XSS-Protection"] = false
       }
 
       // Set the "Content-Security-Policy" header. See https://helmetjs.github.io/docs/csp/
