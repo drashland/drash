@@ -30,6 +30,7 @@
 - [Features](#features)
 - [Why use Drash?](#why-use-drash)
 - [Articles](#articles)
+- [Benchmarks](#benchmarks)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -153,6 +154,10 @@ Drash does not force you to use all of its code. You can pick and choose which d
 
 * [Why Was Drash built?](https://dev.to/drash_land/why-was-drash-built-4bob)
 * [What Makes Drash Different?](https://dev.to/drash_land/what-makes-drash-different-idd)
+
+## Benchmarks
+
+Check out our benchmarks [here](https://github.com/drashland/benchmarks).
 
 ## Contributing
 
