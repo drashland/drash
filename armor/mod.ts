@@ -28,7 +28,8 @@ interface Configs {
     maxAge: string,
     reportUri: string
   },
-  "X-DNS-Prefetch-Control": boolean
+  "X-DNS-Prefetch-Control": boolean,
+  "Content-Security-Policy": string
 }
 
 /**
@@ -136,6 +137,11 @@ export function Armor(
         response.headers.set("X-DNS-Prefetch-Control", "on")
       } else {
         response.headers.set("X-DNS-Prefetch-Control", "off")
+      }
+
+      // Set the "Content-Security-Policy" header. See https://helmetjs.github.io/docs/csp/
+      if (configs["Content-Security-Policy"]) {
+        response.headers.set("Content-Security-Policy", configs["Content-Security-Policy"])
       }
 
     }

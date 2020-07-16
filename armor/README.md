@@ -196,7 +196,7 @@ The X-DNS-Prefetch-Control header lets you disable browsers’ DNS prefetching
 
 See here for more information: https://helmetjs.github.io/docs/dns-prefetch-control/
 
-- [ ] Enabled by default?
+- [x] Enabled by default?
 
 ```typescript
 const armor = Armor() // off
@@ -205,5 +205,23 @@ const armor = Armor({
 })
 const armor = Armor({
   "X-DNS-Prefetch-Control": true // on
+})
+```
+
+### `Content-Security-Policy`
+
+The X-DNS-Prefetch-Control header can help protect against malicious injection of JavaScript, CSS, plugins, and more
+
+See here for more information: https://helmetjs.github.io/docs/csp/
+
+- [ ] Enabled by default?
+
+```typescript
+const armor = Armor() // Does not set the header
+const armor = Armor({
+  "Content-Security-Policy": "default-src 'self'"
+})
+const armor = Armor({
+  "Content-Security-Policy": "default-src 'self'; style-src 'self' maxcdn.bootstrapcdn.com"
 })
 ```
