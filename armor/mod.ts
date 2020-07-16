@@ -1,35 +1,34 @@
 import { Drash } from "../deps.ts";
 
-enum ReferrerPolicy {
-  "",
-  "no-referrer",
-  "no-referrer-when-downgrade",
-  "same-origin",
-  "origin",
-  "strict-origin",
-  "origin-when-cross-origin",
-  "strict-origin-when-cross-origin",
+type ReferrerPolicy =
+  "" |
+  "no-referrer" |
+  "no-referrer-when-downgrade" |
+  "same-origin" |
+  "origin" |
+  "strict-origin" |
+  "origin-when-cross-origin" |
+  "strict-origin-when-cross-origin" |
   "unsafe-url"
-};
 
 interface Configs {
-  "X-XSS-Protection": boolean
-  "Referrer-Policy": ReferrerPolicy,
-  "X-Content-Type-Options": boolean
-  hsts: {
-    maxAge: boolean | number,
-    includeSubDomains: boolean,
-    preload: boolean
+  "X-XSS-Protection"?: boolean
+  "Referrer-Policy"?: ReferrerPolicy,
+  "X-Content-Type-Options"?: boolean
+  hsts?: {
+    maxAge?: boolean | number,
+    includeSubDomains?: boolean,
+    preload?: boolean
   },
-  "X-Powered-By": boolean
-  "X-Frame-Options": "DENY" | "SAMEORIGIN" | boolean | string, // eg ALLOW-FROM www.example.com
-  expectCt: {
-    enforce: boolean,
-    maxAge: number,
-    reportUri: string
+  "X-Powered-By"?: boolean | string
+  "X-Frame-Options"?: "DENY" | "SAMEORIGIN" | boolean | string, // eg ALLOW-FROM www.example.com
+  expectCt?: {
+    enforce?: boolean,
+    maxAge?: number,
+    reportUri?: string
   },
-  "X-DNS-Prefetch-Control": boolean,
-  "Content-Security-Policy": string
+  "X-DNS-Prefetch-Control"?: boolean,
+  "Content-Security-Policy"?: string
 }
 
 /**
@@ -40,6 +39,16 @@ interface Configs {
 export function Armor(
   configs?: Configs,
 ) {
+
+  if (!configs) {
+    configs = {}
+  }
+  if (!configs.hsts) {
+    configs.hsts = {}
+  }
+  if (!configs.expectCt) {
+    configs.expectCt = {}
+  }
 
   // Default configs when no `configs` param is passed in
   const defaultConfigs = {
@@ -75,89 +84,96 @@ export function Armor(
     if (response) {
 
       // Set "X-XSS-Protection" header. See https://helmetjs.github.io/docs/xss-filter/
-      if (configs["X-XSS-Protection"] !== false) {
+      if (configs!["X-XSS-Protection"] !== false) {
         response.headers.set("X-XSS-Protection", defaultConfigs["X-XSS-Protection"])
-        configs["X-XSS-Protection"] = true
+        configs!["X-XSS-Protection"] = true
       }
 
       // Set "Referrer-Policy" header if passed in. See https://helmetjs.github.io/docs/referrer-policy/
-      if (configs["Referrer-Policy"]) {
-        response.headers.set("Referrer-Policy", configs["Referrer-Policy"])
+      if (configs!["Referrer-Policy"]) {
+        response.headers.set("Referrer-Policy", configs!["Referrer-Policy"].toString())
       }
 
       // Set the "X-Content-Type-Options" header. See https://helmetjs.github.io/docs/dont-sniff-mimetype/
-      if (configs["X-Content-Type-Options"] !== false) {
+      if (configs!["X-Content-Type-Options"] !== false) {
         response.headers.set("X-Content-Type-Options", defaultConfigs["X-Content-Type-Options"])
-        configs["X-Content-Type-Options"] = true
+        configs!["X-Content-Type-Options"] = true
       }
 
       // Set the "Strict-Transport-Security" header. See https://helmetjs.github.io/docs/hsts/
       let hstsHeader = ""
-      if (configs.hsts.maxAge) { // if set to a number
-        hstsHeader += "max-age=" + configs.hsts.maxAge
-      } else if (configs.hsts.maxAge !== false) { // not disabled
+      if (configs!.hsts!.maxAge) { // if set to a number
+        hstsHeader += "max-age=" + configs!.hsts!.maxAge
+      } else if (configs!.hsts!.maxAge !== false) { // not disabled
         hstsHeader += "max-age=" + defaultConfigs.hsts.maxAge
       }
-      if (hstsHeader && configs.hsts.includeSubDomains === true) {
+      if (hstsHeader && configs!.hsts!.includeSubDomains === true) {
         hstsHeader += "; includeSubDomains"
-      } else if (hstsHeader && configs.hsts.includeSubDomains  !== false) {
+      } else if (hstsHeader && configs!.hsts!.includeSubDomains  !== false) {
         hstsHeader += "; includeSubDomains"
       }
-      if (hstsHeader && configs.hsts.preload === true) {
-        hstsHeader += "; preload"
-      } else if (hstsHeader && configs.hsts.preload !== false) {
+      if (hstsHeader && configs!.hsts!.preload === true) {
         hstsHeader += "; preload"
       }
-      response.headers.set("Strict-Transport-Policy", hstsHeader)
-      configs.hsts = {
-        preload: configs.hsts.preload ?? false,
-        maxAge: configs.hsts.maxAge ?? defaultConfigs.hsts.maxAge,
-        includeSubDomains: !!configs.hsts.includeSubDomains ?? !!defaultConfigs.hsts.includeSubDomains
+      // } else if (hstsHeader && configs!.hsts!.preload !== false) {
+      //   hstsHeader += "; preload"
+      // }
+      if (hstsHeader) {
+        response.headers.set("Strict-Transport-Security", hstsHeader)
+      }
+      configs!.hsts = {
+        preload: configs!.hsts!.preload ?? false,
+        maxAge: configs!.hsts!.maxAge ?? defaultConfigs.hsts.maxAge,
+        includeSubDomains: !!configs!.hsts!.includeSubDomains ?? !!defaultConfigs.hsts.includeSubDomains
       }
 
-      // Delete the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
-      if (configs["X-Powered-By"] !== true && defaultConfigs["X-Powered-By"] === false) {
+      // Delete or modify the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
+      if (typeof configs!["X-Powered-By"] === "string") { // user wants to modify the header
+        response.headers.set("X-Powered-By", configs!["X-Powered-By"].toString())
+      } else if (configs!["X-Powered-By"] !== true && defaultConfigs["X-Powered-By"] === false) {
         response.headers.delete("X-Powered-By")
-        configs["X-Powered-By"] = false
+        configs!["X-Powered-By"] = false
       }
 
       // Set the "X-Frame-Options" header. See https://helmetjs.github.io/docs/frameguard/
-      if (configs["X-Frame-Options"]) {
-        response.headers.set("X-Frame-Options", configs["X-Frame-Options"])
-      } else {
+      if (configs!["X-Frame-Options"] && typeof configs!["X-Frame-Options"] === "string") {
+        response.headers.set("X-Frame-Options", configs!["X-Frame-Options"].toString())
+      } else if (configs!["X-Frame-Options"] !== false) {
         response.headers.set("X-Frame-Options", defaultConfigs["X-Frame-Options"])
-        configs["X-Frame-Options"] = defaultConfigs["X-Frame-Options"]
+        configs!["X-Frame-Options"] = defaultConfigs["X-Frame-Options"]
       }
 
       // Set the "Expect-CT" header. See https://helmetjs.github.io/docs/expect-ct/
       let expectCtHeader = ""
-      if (configs.expectCt.maxAge) {
-        expectCtHeader += "max-age=" + configs.expectCt.maxAge
+      if (configs!.expectCt!.maxAge) {
+        expectCtHeader += "max-age=" + configs!.expectCt!.maxAge
       }
-      if (expectCtHeader && configs.expectCt.enforce === true) {
+      if (expectCtHeader && configs!.expectCt!.enforce === true) {
         expectCtHeader += "; enforce"
       }
-      if (expectCtHeader && configs.expectCt.reportUri) {
-        expectCtHeader += "; " + configs.expectCt.reportUri
+      if (expectCtHeader && configs!.expectCt!.reportUri) {
+        expectCtHeader += "; " + configs!.expectCt!.reportUri
       }
-      response.headers.set("Expect-CT", expectCtHeader)
-      configs.expectCt = {
-        maxAge: configs.expectCt.maxAge ?? null,
-        enforce: configs.expectCt.enforce ?? false,
-        reportUri: configs.expectCt.reportUri ?? ''
+      if (expectCtHeader) {
+        response.headers.set("Expect-CT", expectCtHeader)
+      }
+      configs!.expectCt = {
+        maxAge: configs!.expectCt!.maxAge ?? 0,
+        enforce: configs!.expectCt!.enforce ?? false,
+        reportUri: configs!.expectCt!.reportUri ?? ''
       }
 
       // Set the "X-DNS-Prefetch-Control" header. See https://helmetjs.github.io/docs/dns-prefetch-control/
-      if (configs["X-DNS-Prefetch-Control"] === true) {
+      if (configs!["X-DNS-Prefetch-Control"] === true) {
         response.headers.set("X-DNS-Prefetch-Control", "on")
       } else {
         response.headers.set("X-DNS-Prefetch-Control", "off")
-        configs["X-XSS-Protection"] = false
+        configs!["X-XSS-Protection"] = false
       }
 
       // Set the "Content-Security-Policy" header. See https://helmetjs.github.io/docs/csp/
-      if (configs["Content-Security-Policy"]) {
-        response.headers.set("Content-Security-Policy", configs["Content-Security-Policy"])
+      if (configs!["Content-Security-Policy"]) {
+        response.headers.set("Content-Security-Policy", configs!["Content-Security-Policy"])
       }
 
     }

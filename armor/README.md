@@ -50,6 +50,9 @@ const armor = Armor() // Set by default
 const armor = Armor({
   "X-XSS-Protection": false // Disable it
 })
+const armor = Armor({
+  "X-XSS-Protection": true // Explicitly enable it
+})
 ```
 
 ### `Referrer-Policy`
@@ -63,7 +66,7 @@ See here for more information: https://helmetjs.github.io/docs/referrer-policy/
 ```typescript
 const armor = Armor() // Will not set the header
 const armor = Armor({
-  "Referrer-Policy": "no-origin" // Enable it, and set it to "no-origin"
+  "Referrer-Policy": "origin" // Enable it, and set it to "origin"
 })
 ```
 
@@ -81,6 +84,9 @@ See here for more information: https://helmetjs.github.io/docs/dont-sniff-mimety
 const armor = Armor() // Set by default
 const armor = Armor({
   "X-Content-Type-Options": false // Disable it
+})
+const armor = Armor({
+  "X-Content-Type-Options": true // Explicitly enable it
 })
 ```
 
@@ -127,17 +133,22 @@ The X-Powered-By header is used to show which techonology powers the  server.  R
 
 See here for more information: https://helmetjs.github.io/docs/hide-powered-by/
 
-- [x] Enabled by default?
+- [x] Removed by default?
 
 ```typescript
-const armor = Armor() // Removed the header by default
+const armor = Armor() // Removes the header by default
 const armor = Armor({
   "X-Powered-By": false // Also removes it
 })
 const armor = Armor({
-  "X-Powered-By": true // Keeps the header
+  "X-Powered-By": true // Will not remove the header
+})
+ const armor  = Armor({
+  "X-Powered-By": "PHP 4.2.0" // Keep the header but lie, making it look your site is powered by PHP
 })
 ```
+
+Note: Drash by default, does not set the header explicitly.
 
 ### `X-Frame-Options`
 
