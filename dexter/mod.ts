@@ -70,7 +70,6 @@ export function Dexter(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ): void {
-
     // If there is no response, then we know this is occurring before the request
     if (!response) {
       timeStart = new Date().getTime();

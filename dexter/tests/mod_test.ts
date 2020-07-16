@@ -15,7 +15,7 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
       let dexter = Dexter({
         enabled: true,
         test: true,
-        tag_string: "{level} |"
+        tag_string: "{level} |",
       });
       Rhum.asserts.assertEquals(typeof dexter.logger.debug, "function");
       Rhum.asserts.assertEquals(typeof dexter.logger.error, "function");
@@ -29,7 +29,7 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
         enabled: true,
         level: "all",
         test: true,
-        tag_string: "{level} |"
+        tag_string: "{level} |",
       });
       let actual;
       actual = dexter.logger.debug("test");
