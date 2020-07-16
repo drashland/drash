@@ -27,7 +27,8 @@ interface Configs {
     enforce: boolean,
     maxAge: string,
     reportUri: string
-  }
+  },
+  "X-DNS-Prefetch-Control": boolean
 }
 
 /**
@@ -48,7 +49,8 @@ export function Armor(
       includeSubDomains: "includeSubDomains"
     },
     "X-Powered-By": false, // False for removing the header
-    "X-Frame-Options": "SAMEORIGIN"
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-DNS-Prefetch-Control": false
   };
 
   /**
@@ -127,6 +129,13 @@ export function Armor(
       }
       if (expectCtHeader && configs.expectCt.reportUri) {
         expectCtHeader += "; " + configs.expectCt.reportUri
+      }
+
+      // Set the "X-DNS-Prefetch-Control" header. See https://helmetjs.github.io/docs/dns-prefetch-control/
+      if (configs["X-DNS-Prefetch-Control"] === true) {
+        response.headers.set("X-DNS-Prefetch-Control", "on")
+      } else {
+        response.headers.set("X-DNS-Prefetch-Control", "off")
       }
 
     }

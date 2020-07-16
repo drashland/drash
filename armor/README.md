@@ -189,3 +189,21 @@ const armor = Armor({
   }
 })
 ```
+
+### `X-DNS-Prefetch-Control`
+
+The X-DNS-Prefetch-Control header lets you disable browsers’ DNS prefetching
+
+See here for more information: https://helmetjs.github.io/docs/dns-prefetch-control/
+
+- [ ] Enabled by default?
+
+```typescript
+const armor = Armor() // off
+const armor = Armor({
+  "X-DNS-Prefetch-Control": false // off
+})
+const armor = Armor({
+  "X-DNS-Prefetch-Control": true // on
+})
+```
