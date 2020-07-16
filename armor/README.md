@@ -138,3 +138,24 @@ const armor = Armor({
   "X-Powered-By": true // Keeps the header
 })
 ```
+
+### `X-Frame-Options`
+
+The X-Frame-Options header is used to mitigate clickjacking attacks.
+
+See here for more information: https://helmetjs.github.io/docs/hide-powered-by/
+
+- [x] Enabled by default?
+
+```typescript
+const armor = Armor() // Defaults to "sameorigin". Allows you to put iFrames on your page.
+const armor = Armor({
+  "X-Frame-Options": false // Will not set the header
+})
+const armor = Armor({
+  "X-Frame-Options": "DENY" // Sets the header to "DENY". Prevent any iFrames.
+})
+const armor = Armor({
+  "X-Frame-Options": "ALLOW-FROM https://example.com" // Allows example.com to embed an iFrame on the page.
+})
+```

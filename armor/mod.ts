@@ -22,6 +22,7 @@ interface Configs {
     preload: boolean
   },
   "X-Powered-By": boolean
+  "X-Frame-Options": "DENY" | "SAMEORIGIN" | boolean | string // eg ALLOW-FROM www.example.com
 }
 
 /**
@@ -41,7 +42,8 @@ export function Armor(
       maxAge: "5184000", // 60 days
       includeSubDomains: "includeSubDomains"
     },
-    "X-Powered-By": false // False for removing the header
+    "X-Powered-By": false, // False for removing the header
+    "X-Frame-Options": "SAMEORIGIN"
   };
 
   /**
@@ -101,6 +103,13 @@ export function Armor(
       // Delete the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
       if (configs["X-Powered-By"] !== true && defaultConfigs["X-Powered-By"] === false) {
         response.headers.delete("X-Powered-By")
+      }
+
+      // Set the "X-Frame-Options" header. See https://helmetjs.github.io/docs/frameguard/
+      if (configs["X-Frame-Options"]) {
+        response.headers.set("X-Frame-Options", configs["X-Frame-Options"])
+      } else {
+        response.headers.set("X-Frame-Options", defaultConfigs["X-Frame-Options"])
       }
 
     }
