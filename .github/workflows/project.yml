@@ -1,0 +1,28 @@
+name: project
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    branches: 
+      - master
+    types:
+      - opened
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.event_name == 'issues'
+        name: Add issues to project
+        uses: alex-page/github-project-automation-plus@v0.2.4
+        with:
+          project: The Omnipresent Drash Land Project
+          column: To Do
+          repo-token: ${{ secrets.CI_USER_PAT }}
+      - if: github.event_name == 'pull_request'
+        name: Add pull requests to project
+        uses: alex-page/github-project-automation-plus@v0.2.4
+        with:
+          project: The Omnipresent Drash Land Project
+          column: In progress Pull Requests
+          repo-token: ${{ secrets.CI_USER_PAT }}
