@@ -1,8 +1,6 @@
 # Paladin
 
-Paladin helps secure your Drash applications through headers. Inspired by [helmet](https://github.com/helmetjs/helmet). It is configurable and can be used throughout the request-resource-response lifecycle.
-
-Paladin will set extra HTTP headers to the request response, to aid in securing your application. This does not make your application bulletproof, but adds extra security layers.
+Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet). It is configurable and can be used throughout the request-resource-response lifecycle. This does not make your application bulletproof, but adds extra security layers.
 
 ```typescript
 import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
@@ -74,7 +72,7 @@ See [here](https://www.w3.org/TR/referrer-policy/#referrer-policies) for all pos
 
 ### `X-Content-Type-Options`
 
-The Referrer-Policy header is used to tell browsers not to sniff the mime type. Browsers will trust what the server says and block the resource if it’s wrong.
+The Referrer-Policy header is used to tell browsers not to sniff the [MIME](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) type. Browsers will trust what the server says and block the resource if it’s wrong.
 
 See here for more information: https://helmetjs.github.io/docs/dont-sniff-mimetype/
 
@@ -102,22 +100,22 @@ See here for more information: https://helmetjs.github.io/docs/hsts/
 const paladin = Paladin() // Set by default to 60 days and include sub domains
 const paladin = Paladin({
   hsts: {
-    maxAge: false // Disable the header altogether
+    max_age: false // Disable the header altogether
   }
 })
 const paladin = Paladin({
   hsts: {
-    maxAge: 5184000 // Enable HSTS and set a max age
+    max_age: 5184000 // Enable HSTS and set a max age
   }
 })
 const paladin = Paladin({
   hsts: {
-    includeSubDomains: false // Enable default max age but disable the inclusion of sub domains
+    include_sub_domains: false // Enable default max age but disable the inclusion of sub domains
   }
 })
 const paladin = Paladin({
   hsts: {
-    includeSubDomains: true // Can set to true, but it's set by default
+    include_sub_domains: true // Can set to true, but it's set by default
   }
 })
 const paladin = Paladin({
@@ -182,21 +180,21 @@ See here for more information: https://helmetjs.github.io/docs/expect-ct/
 ```typescript
 const paladin = Paladin() // Does not set the header
 const paladin = Paladin({
-  expectCt: {
-    maxAge: 30 // Sets the header and the age to 60 days
+  expect_ct: {
+    max_age: 30 // Sets the header and the age to 60 days
   }
 })
 const paladin = Paladin({
-  expectCt: {
-    maxAge: 30,
+  expect_ct: {
+    max_age: 30,
     enforce: true // Sets enforce: "Expect-CT: max-age=30; enforce"
   }
 })
 const paladin = Paladin({
-  expectCt: {
-    maxAge: 30,
+  expect_ct: {
+    max_age: 30,
     enforce: true,
-    reportUri: "http://example.com/report" // Expect-CT: enforce; max-age=30; report-uri="http://example.com/report"
+    report_uri: "http://example.com/report" // Expect-CT: enforce; max-age=30; report-uri="http://example.com/report"
   }
 })
 ```

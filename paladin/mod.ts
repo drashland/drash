@@ -16,16 +16,16 @@ interface Configs {
   "Referrer-Policy"?: ReferrerPolicy,
   "X-Content-Type-Options"?: boolean
   hsts?: {
-    maxAge?: boolean | number,
-    includeSubDomains?: boolean,
+    max_age?: boolean | number,
+    include_sub_domains?: boolean,
     preload?: boolean
   },
   "X-Powered-By"?: boolean | string
   "X-Frame-Options"?: "DENY" | "SAMEORIGIN" | boolean | string, // eg ALLOW-FROM www.example.com
-  expectCt?: {
+  expect_ct?: {
     enforce?: boolean,
-    maxAge?: number,
-    reportUri?: string
+    max_age?: number,
+    report_uri?: string
   },
   "X-DNS-Prefetch-Control"?: boolean,
   "Content-Security-Policy"?: string
@@ -46,8 +46,8 @@ export function Paladin(
   if (!configs.hsts) {
     configs.hsts = {}
   }
-  if (!configs.expectCt) {
-    configs.expectCt = {}
+  if (!configs.expect_ct) {
+    configs.expect_ct = {}
   }
 
   // Default configs when no `configs` param is passed in
@@ -55,8 +55,8 @@ export function Paladin(
     "X-XSS-Protection": "1; mode=block",
     "X-Content-Type-Options": "nosniff",
     hsts: {
-      maxAge: 5184000, // 60 days
-      includeSubDomains: "includeSubDomains"
+      max_age: 5184000, // 60 days
+      include_sub_domains: "include_sub_domains"
     },
     "X-Powered-By": false, // False for removing the header
     "X-Frame-Options": "SAMEORIGIN",
@@ -73,12 +73,6 @@ export function Paladin(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ): void {
-
-    // If there is no response, then we know this is occurring before the request
-    if (!response) {
-      // But we don't care about this. We want to set the headers on the response
-      // So yeet this conditional
-    }
 
     // If there is a response, then we know this is occurring after the request
     if (response) {
@@ -102,15 +96,15 @@ export function Paladin(
 
       // Set the "Strict-Transport-Security" header. See https://helmetjs.github.io/docs/hsts/
       let hstsHeader = ""
-      if (configs!.hsts!.maxAge) { // if set to a number
-        hstsHeader += "max-age=" + configs!.hsts!.maxAge
-      } else if (configs!.hsts!.maxAge !== false) { // not disabled
-        hstsHeader += "max-age=" + defaultConfigs.hsts.maxAge
+      if (configs!.hsts!.max_age) { // if set to a number
+        hstsHeader += "max-age=" + configs!.hsts!.max_age
+      } else if (configs!.hsts!.max_age !== false) { // not disabled
+        hstsHeader += "max-age=" + defaultConfigs.hsts.max_age
       }
-      if (hstsHeader && configs!.hsts!.includeSubDomains === true) {
-        hstsHeader += "; includeSubDomains"
-      } else if (hstsHeader && configs!.hsts!.includeSubDomains  !== false) {
-        hstsHeader += "; includeSubDomains"
+      if (hstsHeader && configs!.hsts!.include_sub_domains === true) {
+        hstsHeader += "; include_sub_domains"
+      } else if (hstsHeader && configs!.hsts!.include_sub_domains  !== false) {
+        hstsHeader += "; include_sub_domains"
       }
       if (hstsHeader && configs!.hsts!.preload === true) {
         hstsHeader += "; preload"
@@ -123,8 +117,8 @@ export function Paladin(
       }
       configs!.hsts = {
         preload: configs!.hsts!.preload ?? false,
-        maxAge: configs!.hsts!.maxAge ?? defaultConfigs.hsts.maxAge,
-        includeSubDomains: !!configs!.hsts!.includeSubDomains ?? !!defaultConfigs.hsts.includeSubDomains
+        max_age: configs!.hsts!.max_age ?? defaultConfigs.hsts.max_age,
+        include_sub_domains: !!configs!.hsts!.include_sub_domains ?? !!defaultConfigs.hsts.include_sub_domains
       }
 
       // Delete or modify the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
@@ -144,23 +138,23 @@ export function Paladin(
       }
 
       // Set the "Expect-CT" header. See https://helmetjs.github.io/docs/expect-ct/
-      let expectCtHeader = ""
-      if (configs!.expectCt!.maxAge) {
-        expectCtHeader += "max-age=" + configs!.expectCt!.maxAge
+      let expect_ctHeader = ""
+      if (configs!.expect_ct!.max_age) {
+        expect_ctHeader += "max-age=" + configs!.expect_ct!.max_age
       }
-      if (expectCtHeader && configs!.expectCt!.enforce === true) {
-        expectCtHeader += "; enforce"
+      if (expect_ctHeader && configs!.expect_ct!.enforce === true) {
+        expect_ctHeader += "; enforce"
       }
-      if (expectCtHeader && configs!.expectCt!.reportUri) {
-        expectCtHeader += "; " + configs!.expectCt!.reportUri
+      if (expect_ctHeader && configs!.expect_ct!.report_uri) {
+        expect_ctHeader += "; " + configs!.expect_ct!.report_uri
       }
-      if (expectCtHeader) {
-        response.headers.set("Expect-CT", expectCtHeader)
+      if (expect_ctHeader) {
+        response.headers.set("Expect-CT", expect_ctHeader)
       }
-      configs!.expectCt = {
-        maxAge: configs!.expectCt!.maxAge ?? 0,
-        enforce: configs!.expectCt!.enforce ?? false,
-        reportUri: configs!.expectCt!.reportUri ?? ''
+      configs!.expect_ct = {
+        max_age: configs!.expect_ct!.max_age ?? 0,
+        enforce: configs!.expect_ct!.enforce ?? false,
+        report_uri: configs!.expect_ct!.report_uri ?? ''
       }
 
       // Set the "X-DNS-Prefetch-Control" header. See https://helmetjs.github.io/docs/dns-prefetch-control/

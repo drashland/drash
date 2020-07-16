@@ -123,26 +123,26 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       const res = await fetch("http://localhost:1671/");
       await res.arrayBuffer()
       const header = res.headers.get("Strict-Transport-Security")
-      Rhum.asserts.assertEquals(header, "max-age=5184000; includeSubDomains")
+      Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains")
       await server.close()
     })
-    Rhum.testCase("Is set when maxAge is set", async () => {
+    Rhum.testCase("Is set when max_age is set", async () => {
       const paladin = Paladin({
         hsts: {
-          maxAge: 101
+          max_age: 101
         }
       })
       const server = await runServer(paladin, 1671)
       const res = await fetch("http://localhost:1671/");
       await res.arrayBuffer()
       const header = res.headers.get("Strict-Transport-Security")
-      Rhum.asserts.assertEquals(header, "max-age=101; includeSubDomains")
+      Rhum.asserts.assertEquals(header, "max-age=101; include_sub_domains")
       await server.close()
     })
-    Rhum.testCase("Not set when maxAge is false", async () => {
+    Rhum.testCase("Not set when max_age is false", async () => {
       const paladin = Paladin({
         hsts: {
-          maxAge: false
+          max_age: false
         }
       })
       const server = await runServer(paladin, 1671)
@@ -152,10 +152,10 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       Rhum.asserts.assertEquals(header, null)
       await server.close()
     })
-    Rhum.testCase("Set header but disable includeSubDomains", async () => {
+    Rhum.testCase("Set header but disable include_sub_domains", async () => {
       const paladin = Paladin({
         hsts: {
-          includeSubDomains: false
+          include_sub_domains: false
         }
       })
       const server = await runServer(paladin, 1672)
@@ -165,17 +165,17 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       Rhum.asserts.assertEquals(header, "max-age=5184000")
       await server.close()
     })
-    Rhum.testCase("Set and explicitly enable includeSubDomains", async () => {
+    Rhum.testCase("Set and explicitly enable include_sub_domains", async () => {
       const paladin = Paladin({
         hsts: {
-          includeSubDomains: true
+          include_sub_domains: true
         }
       })
       const server = await runServer(paladin, 1673)
       const res = await fetch("http://localhost:1673/");
       await res.arrayBuffer()
       const header = res.headers.get("Strict-Transport-Security")
-      Rhum.asserts.assertEquals(header, "max-age=5184000; includeSubDomains")
+      Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains")
       await server.close()
     })
     Rhum.testCase("Set header and explicitly set preload to false", async () => {
@@ -188,7 +188,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       const res = await fetch("http://localhost:1674/");
       await res.arrayBuffer()
       const header = res.headers.get("Strict-Transport-Security")
-      Rhum.asserts.assertEquals(header, "max-age=5184000; includeSubDomains")
+      Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains")
       await server.close()
     })
     Rhum.testCase("Set header and set preload", async () => {
@@ -201,7 +201,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       const res = await fetch("http://localhost:1675/");
       await res.arrayBuffer()
       const header = res.headers.get("Strict-Transport-Security")
-      Rhum.asserts.assertEquals(header, "max-age=5184000; includeSubDomains; preload")
+      Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains; preload")
       await server.close()
     })
   })
@@ -296,8 +296,8 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     })
     Rhum.testCase("Set the header and set the max age", async () => {
       const paladin = Paladin({
-        expectCt: {
-          maxAge: 30
+        expect_ct: {
+          max_age: 30
         }
       })
       const server = await runServer(paladin, 1681)
@@ -309,8 +309,8 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     })
     Rhum.testCase("Set the header and set enforce", async () => {
       const paladin = Paladin({
-        expectCt: {
-          maxAge: 30,
+        expect_ct: {
+          max_age: 30,
           enforce: true
         }
       })
@@ -321,11 +321,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       Rhum.asserts.assertEquals(header, "max-age=30; enforce")
       await server.close()
     })
-    Rhum.testCase("set the header and set reportUri", async () => {
+    Rhum.testCase("set the header and set report_uri", async () => {
       const paladin = Paladin({
-        expectCt: {
-          maxAge: 30,
-          reportUri: "hello"
+        expect_ct: {
+          max_age: 30,
+          report_uri: "hello"
         }
       })
       const server = await runServer(paladin, 1683)
