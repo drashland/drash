@@ -159,3 +159,33 @@ const armor = Armor({
   "X-Frame-Options": "ALLOW-FROM https://example.com" // Allows example.com to embed an iFrame on the page.
 })
 ```
+
+### `Expect-CT`
+
+The Expect-CT header tells browsers to expect Certificate Transparency
+
+See here for more information: https://helmetjs.github.io/docs/expect-ct/
+
+- [ ] Enabled by default?
+
+```typescript
+const armor = Armor() // Does not set the header
+const armor = Armor({
+  expectCt: {
+    maxAge: 30 // Sets the header and the age to 60 days
+  }
+})
+const armor = Armor({
+  expectCt: {
+    maxAge: 30,
+    enforce: true // Sets enforce: "Expect-CT: max-age=30; enforce"
+  }
+})
+const armor = Armor({
+  expectCt: {
+    maxAge: 30,
+    enforce: true,
+    reportUri: "http://example.com/report" // Expect-CT: enforce; max-age=30; report-uri="http://example.com/report"
+  }
+})
+```

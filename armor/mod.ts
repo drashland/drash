@@ -22,7 +22,12 @@ interface Configs {
     preload: boolean
   },
   "X-Powered-By": boolean
-  "X-Frame-Options": "DENY" | "SAMEORIGIN" | boolean | string // eg ALLOW-FROM www.example.com
+  "X-Frame-Options": "DENY" | "SAMEORIGIN" | boolean | string, // eg ALLOW-FROM www.example.com
+  expectCt: {
+    enforce: boolean,
+    maxAge: string,
+    reportUri: string
+  }
 }
 
 /**
@@ -110,6 +115,18 @@ export function Armor(
         response.headers.set("X-Frame-Options", configs["X-Frame-Options"])
       } else {
         response.headers.set("X-Frame-Options", defaultConfigs["X-Frame-Options"])
+      }
+
+      // Set the "Expect-CT" header. See https://helmetjs.github.io/docs/expect-ct/
+      let expectCtHeader = ""
+      if (configs.expectCt.maxAge) {
+        expectCtHeader += "max-age=" + configs.expectCt.maxAge
+      }
+      if (expectCtHeader && configs.expectCt.enforce === true) {
+        expectCtHeader += "; enforce"
+      }
+      if (expectCtHeader && configs.expectCt.reportUri) {
+        expectCtHeader += "; " + configs.expectCt.reportUri
       }
 
     }
