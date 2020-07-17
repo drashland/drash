@@ -18,6 +18,8 @@ This repository contains Drash-approved middleware modules that you can use in y
 
 * [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
 
+* [Paladin](./paladin) - Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet)
+
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
 ## Contributing
