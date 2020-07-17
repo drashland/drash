@@ -270,14 +270,11 @@ export class Response {
    *
    * @returns The final output to be sent.
    */
-  public sendStatic(
-    file: null | string,
-    contents: Uint8Array | string = "",
-  ): Drash.Interfaces.ResponseOutput {
+  public sendStatic(): Drash.Interfaces.ResponseOutput {
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: file ? Deno.readFileSync(file) : contents,
+      body: this.body as Uint8Array
     };
 
     this.request.respond(output);
