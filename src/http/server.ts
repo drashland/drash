@@ -426,8 +426,8 @@ export class Server {
       const extension = request.url.split(".")[1];
 
       if (
-        this.configs.pretty_links == null
-        || extension != null
+        this.configs.pretty_links == null ||
+        extension != null
       ) {
         response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
         await this.executeMiddlewareServerLevelAfterRequest(request, response);

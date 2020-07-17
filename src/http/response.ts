@@ -274,7 +274,7 @@ export class Response {
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: this.body as Uint8Array
+      body: this.body as Uint8Array,
     };
 
     this.request.respond(output);
