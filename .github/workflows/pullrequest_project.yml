@@ -9,7 +9,7 @@ on:
             - reopened
             - review_requested
 jobs:
-    add-card-to-project:
+    manage-cards:
         runs-on: ubuntu-latest
         steps:
             - if: github.event.action == 'opened'
