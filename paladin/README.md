@@ -3,10 +3,10 @@
 Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet). It is configurable and can be used throughout the request-resource-response lifecycle. This does not make your application bulletproof, but adds extra security layers.
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.x/mod.ts";
 
 // Import the Paladin middleware function
-import { Paladin } from "https://deno.land/x/drash-middleware@{version}/paladin/mod.ts";
+import { Paladin } from "https://deno.land/x/drash-middleware@v0.x/paladin/mod.ts";
 
 // Instantiate paladin
 const paladin = Paladin();
