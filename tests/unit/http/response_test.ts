@@ -321,7 +321,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase("Returns the contents if a file is passed in", async () => {
       const request = members.mockRequest("/");
       const response = new Drash.Http.Response(request);
-      repsonse.body = Deno.readFileSync("./tests/data/static_file.txt");
+      response.body = Deno.readFileSync("./tests/data/static_file.txt");
       const actual = response.sendStatic();
       const headers = new Headers();
       headers.set("content-type", "undefined");
