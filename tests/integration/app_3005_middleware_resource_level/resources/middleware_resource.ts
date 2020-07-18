@@ -4,13 +4,13 @@ import ChangeResponseMiddleware from "../middleware/change_response_middleware.t
 
 @Drash.Http.Middleware({
   before_request: [HeaderTokenMiddleware],
-  after_request: []
+  after_request: [],
 })
 export default class MiddlewareResource extends Drash.Http.Resource {
   static paths = ["/middleware"];
 
   @Drash.Http.Middleware({
-    after_request: [ChangeResponseMiddleware]
+    after_request: [ChangeResponseMiddleware],
   })
   public GET() {
     this.response.body = "GET request received!";
