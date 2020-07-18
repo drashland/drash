@@ -444,7 +444,7 @@ export class Server {
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        this.httpErrorResponse(404),
+        this.httpErrorResponse(error.code ?? 404, error.message),
       );
     }
   }
