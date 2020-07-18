@@ -1,0 +1,43 @@
+name: issue_project
+on:
+    issues:
+        types:
+            - opened
+            - closed
+            - reopened
+            - assigned
+            - unassigned
+jobs:
+    manage-cards:
+        runs-on: ubuntu-latest
+        steps:
+            - if: github.event.action == 'opened'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: To Do
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'closed'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: Done
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'reopened'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: In Progress Issues
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'assigned'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: In Progress Issues
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'unassigned'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: To Do
+                  repo-token: ${{ secrets.CI_USER_PAT }}

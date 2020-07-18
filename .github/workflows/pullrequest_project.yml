@@ -1,0 +1,38 @@
+name: pullrequest_project
+on:
+    pull_request:
+        branches:
+            - master
+        types:
+            - opened
+            - closed
+            - reopened
+            - review_requested
+jobs:
+    manage-cards:
+        runs-on: ubuntu-latest
+        steps:
+            - if: github.event.action == 'opened'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: In Progress Pull Requests
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'closed'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: Done
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'reopened'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: In Progress Pull Requests
+                  repo-token: ${{ secrets.CI_USER_PAT }}
+            - if: github.event.action == 'review_requested'
+              uses: alex-page/github-project-automation-plus@v0.2.4
+              with:
+                  project: The Omnipresent Drash Land Project
+                  column: Review In Progress
+                  repo-token: ${{ secrets.CI_USER_PAT }}

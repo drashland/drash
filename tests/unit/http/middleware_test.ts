@@ -138,6 +138,36 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(members.responseBody(response), "got");
     });
+
+    Rhum.testCase("before_request: static path asset", async () => {
+      let server = new Drash.Http.Server({
+        static_paths: ["/assets"],
+        middleware: {
+          before_request: [BeforeRequestStaticPathAsset],
+        },
+      });
+      const request = members.mockRequest("/assets/test.js", "get");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "Hello, I'm a static path asset before request middleware.",
+      );
+    });
+
+    Rhum.testCase("after_request: static path asset", async () => {
+      let server = new Drash.Http.Server({
+        static_paths: ["/assets"],
+        middleware: {
+          after_request: [AfterRequestStaticPathAsset],
+        },
+      });
+      const request = members.mockRequest("/assets/test.js", "get");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "this static path asset's contents got changed",
+      );
+    });
   });
 });
 
@@ -216,5 +246,21 @@ function VerifyCsrfToken(req: Drash.Http.Request) {
       400,
       "Wrong CSRF token, dude.",
     );
+  }
+}
+
+function BeforeRequestStaticPathAsset(req: Drash.Http.Request) {
+  throw new Drash.Exceptions.HttpException(
+    418,
+    "Hello, I'm a static path asset before request middleware.",
+  );
+}
+
+function AfterRequestStaticPathAsset(
+  req: Drash.Http.Request,
+  res?: Drash.Http.Response,
+) {
+  if (res) {
+    res.body = "this static path asset's contents got changed";
   }
 }

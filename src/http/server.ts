@@ -409,33 +409,42 @@ export class Server {
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
+      await this.executeMiddlewareServerLevelBeforeRequest(request);
+
       const response = new Drash.Http.Response(request, {
         views_path: this.configs.views_path,
         template_engine: this.configs.template_engine,
       });
 
-      if (this.configs.pretty_links == null) {
-        return response.sendStatic(`${this.directory}/${request.url}`);
-      }
-
       const extension = request.url.split(".")[1];
-      if (extension != null) {
-        return response.sendStatic(`${this.directory}/${request.url}`);
+
+      if (
+        this.configs.pretty_links == null ||
+        extension != null
+      ) {
+        response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
+        await this.executeMiddlewareServerLevelAfterRequest(request, response);
+        return response.sendStatic();
       }
 
       const contents = Deno.readFileSync(
         `${this.directory}/${request.url}/index.html`,
       );
+
       if (contents == null) {
-        return response.sendStatic(`${this.directory}/${request.url}`);
+        response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
+        await this.executeMiddlewareServerLevelAfterRequest(request, response);
+        return response.sendStatic();
       }
 
       response.headers.set("Content-Type", "text/html");
-      return response.sendStatic(null, contents);
+      response.body = contents;
+      await this.executeMiddlewareServerLevelAfterRequest(request, response);
+      return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        this.httpErrorResponse(404),
+        this.httpErrorResponse(error.code ?? 404, error.message),
       );
     }
   }

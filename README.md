@@ -2,7 +2,7 @@
   <img height="200" src="https://drash.land/drash/assets/img/drash.svg" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
-<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno's HTTP server</a> with zero dependencies.</p>
+<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero dependencies.</p>
 <p align="center">
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
@@ -30,6 +30,7 @@
 - [Features](#features)
 - [Why use Drash?](#why-use-drash)
 - [Articles](#articles)
+- [Benchmarks](#benchmarks)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -37,7 +38,7 @@
 ```typescript
 // File: app.ts
 
-import { Drash } from "https://deno.land/x/drash@v1.0.7/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.x/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -113,12 +114,15 @@ $ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --he
 
 [Lifecycle Diagram](http://drash.land/drash/#/lifecycle-diagram)
 
+[Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
+
 ## Features
 
 - [Content Negotiation](http://drash.land/drash/#/advanced-tutorials/content-negotiation/user-profiles)
 - [Static Path Routing](http://drash.land/drash/#/tutorials/servers/serving-static-paths)
 - [Regex Path Routing](http://drash.land/drash/#/tutorials/resources/creating-a-resource#regular-expression-uris)
 - [Middleware](http://drash.land/drash/#/tutorials/middleware/introduction)
+- [Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
 - [Body Handling: application/json](http://drash.land/drash/#/tutorials/requests/handling-application-json-bodies)
 - [Body Handling: application/x-www-form-urlencoded](http://drash.land/drash/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
 - [Body Handling: multipart/form-data](http://drash.land/drash/#/tutorials/requests/handling-multipart-form-data-bodies)
@@ -153,6 +157,10 @@ Drash does not force you to use all of its code. You can pick and choose which d
 
 * [Why Was Drash built?](https://dev.to/drash_land/why-was-drash-built-4bob)
 * [What Makes Drash Different?](https://dev.to/drash_land/what-makes-drash-different-idd)
+
+## Benchmarks
+
+Check out our benchmarks [here](https://github.com/drashland/benchmarks).
 
 ## Contributing
 
