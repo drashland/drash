@@ -50,7 +50,7 @@ export namespace Drash {
   /**
    * Drash version.
    */
-  export const version: string = "v1.0.7";
+  export const version: string = "v1.1.0";
 
   export namespace Compilers {
     export class TemplateEngine extends BaseTemplateEngine {}
