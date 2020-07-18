@@ -8,6 +8,7 @@ import HomeResource from "./resources/home_resource.ts";
 import RequestAcceptsResource from "./resources/request_accepts_resource.ts";
 import RequestAcceptsTwoResource from "./resources/request_accepts_two_resource.ts";
 import UsersResource from "./resources/users_resource.ts";
+import OptionalPathParamsResource from "./resources/optional_path_params_resource.ts";
 
 export const server = new Drash.Http.Server({
   response_output: "application/json",
@@ -22,6 +23,7 @@ export const server = new Drash.Http.Server({
     RequestAcceptsResource,
     RequestAcceptsTwoResource,
     UsersResource,
+    OptionalPathParamsResource
   ],
 });
 
@@ -41,6 +43,7 @@ import "./coffee_resource_test.ts";
 import "./cookie_resource_test.ts";
 import "./files_resource_test.ts";
 import "./users_resource_test.ts";
+import "./optional_path_params_test.ts"
 
 Deno.test({
   name: "\b\b\b\b\b     \nStop the server",
