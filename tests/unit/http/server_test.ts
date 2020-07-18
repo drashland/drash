@@ -5,7 +5,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 Rhum.testPlan("http/server_test.ts", () => {
-  Rhum.testSuite("constrcutor()", () => {
+  Rhum.testSuite("constructor()", () => {
     Rhum.testCase("Throw error when incorrect template engine configs", () => {
       try {
         new Drash.Http.Server({

@@ -567,25 +567,29 @@ export class Server {
 
         newPaths.push(pathObj);
       } else if (path.includes("?") === true) { // optional params
-        // TODO :: Use  different regex, because the result regex path is looking for mutliple sets of /../..., but because it's optional, we don't want to check if the iru has those optional things
-        console.log(path + " Is a optional one :)")
-        const newPath = path.replace(/\?/g, "")
-        const maxOptionalParams = path.split("/").length - 1;
+        const tmpPath = path.replace(/\?/g, ""); // strip the `?`
+        const maxOptionalParams = path.split("/").filter(param => {
+          return param.includes(":") && param !== ""
+        }).length;
         const pathObj =  {
           og_path: path,
           regex_path: `^${
-            newPath.replace( // replace and GET once instance of a `/uri/:param/
-                /(:[^(/]+|{[^0-9][^}]*})/,
-                Server.REGEX_URI_REPLACEMENT// + `{${maxOptionalParams}}`
-            ).replace(Server.REGEX_URI_MATCHES, "") // remove all others
-          }{0,${maxOptionalParams}}.*?$`,
+            // We only want to have one bit of regex, instead of one for **each** path param
+            tmpPath.replace( // replace once instance
+                /\/(:[^(/]+|{[^0-9][^}]*})\//,
+                "(/[a-zA-Z]+)"
+            ).replace( // replace all other instances with nothing
+                Server.REGEX_URI_MATCHES, 
+                ""
+            )
+            }{1,${maxOptionalParams}}/?$`,
+          // Regex is same as other blocks, but we also strip the `?`.
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
               (element: string) => {
                 return element.replace(/:|{|}|\?/g, "")
               }
           )
         };
-        console.log("NEW REGEX PATH: " + pathObj.regex_path)
         newPaths.push(pathObj)
       } else {
         const pathObj = {
