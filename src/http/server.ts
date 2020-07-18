@@ -569,7 +569,7 @@ export class Server {
       } else if (path.includes("?") === true) { // optional params
         const tmpPath = path.replace(/\?/g, ""); // strip the `?`
         const maxOptionalParams = path.split("/").filter(param => {
-          return param.includes(":") && param !== ""
+          return param.includes("?")
         }).length;
         const pathObj =  {
           og_path: path,
@@ -577,9 +577,9 @@ export class Server {
             // We only want to have one bit of regex, instead of one for **each** path param
             tmpPath.replace( // replace once instance
                 /\/(:[^(/]+|{[^0-9][^}]*})\//,
-                "(/[a-zA-Z]+)"
+                "(/?[a-zA-Z]+)" // FIXME ITS THE /? BIT AT THE START HERE, WE NEED IT BUT IT MEANS THE SLASH IN INCLUDED WHEN WE GET THE PARAM USING THE REGEX
             ).replace( // replace all other instances with nothing
-                Server.REGEX_URI_MATCHES, 
+                /\/?(:[^(/]+|{[^0-9][^}]*})\/?/g, 
                 ""
             )
             }{1,${maxOptionalParams}}/?$`,
@@ -590,6 +590,7 @@ export class Server {
               }
           )
         };
+        console.log(pathObj)
         newPaths.push(pathObj)
       } else {
         const pathObj = {
@@ -719,22 +720,17 @@ export class Server {
         const pathMatchesRequestPathname = request.url_path.match(
           pathObj.regex_path,
         );
-        console.log("Path | url path | matches")
-        console.log(pathObj.regex_path, request.url_path, pathMatchesRequestPathname)
+        console.log(request.url_path, pathObj.regex_path)
         if (pathMatchesRequestPathname == null) {
           continue;
         }
-        // todo need to  make sure it passes here
 
         pathMatchesRequestPathname.shift();
         const pathParamsInKvpForm: { [key: string]: string } = {};
-        console.log("path obj:")
-        console.log(pathObj)
         pathObj.params.forEach((paramName: string, index: number) => {
           pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
         });
-        console.log("kvp  form:")
-        console.log(pathParamsInKvpForm)
+
 
         request.path_params = pathParamsInKvpForm;
         return resource;
