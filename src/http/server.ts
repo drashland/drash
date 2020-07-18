@@ -182,14 +182,7 @@ export class Server {
   ): Promise<Drash.Interfaces.ResponseOutput> {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(serverRequest)) {
-      try {
-        return await this.handleHttpRequestForStaticPathAsset(serverRequest);
-      } catch (error) {
-        return await this.handleHttpRequestError(
-          serverRequest as Drash.Http.Request,
-          this.httpErrorResponse(400, error.message),
-        );
-      }
+      return await this.handleHttpRequestForStaticPathAsset(serverRequest);
     }
 
     // Handle a request to the favicon
