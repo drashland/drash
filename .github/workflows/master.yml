@@ -34,6 +34,7 @@ jobs:
           # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
           deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/tests.ts
           deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
+          deno test --allow-all --config tsconfig.json tests/integration/app_3005_middleware_resource_level/tests.ts
 
       - name: Create APP
         run: |
