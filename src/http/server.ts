@@ -418,6 +418,14 @@ export class Server {
 
       const extension = request.url.split(".")[1];
 
+      const mimeType = new Drash.Services.HttpService().getMimeType(
+        request.url,
+        true,
+      );
+      if (mimeType) {
+        response.headers.set("Content-Type", mimeType);
+      }
+
       if (
         this.configs.pretty_links == null ||
         extension != null
@@ -733,15 +741,6 @@ export class Server {
       return false;
     }
 
-    const mimeType = new Drash.Services.HttpService().getMimeType(
-      serverRequest.url,
-      true,
-    );
-
-    const request = new Drash.Http.Request(serverRequest);
-    if (mimeType) {
-      request.headers.set("Response-Content-Type", mimeType);
-    }
     return true;
   }
 

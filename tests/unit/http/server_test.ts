@@ -224,8 +224,10 @@ Rhum.testPlan("http/server_test.ts", () => {
         port: 1667,
       });
       const res = await server.handleHttpRequestForStaticPathAsset(request);
+      const mimeType = res.headers.get("Content-Type");
       await server.close();
       Rhum.asserts.assertEquals(res.status, 200);
+      Rhum.asserts.assertEquals(mimeType, "text/plain");
     });
   });
 
