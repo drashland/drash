@@ -567,35 +567,35 @@ export class Server {
 
         newPaths.push(pathObj);
       } else if (path.includes("?") === true) { // optional params
-        const maxOptionalParams = path.split("/").filter(param => {
-          return param.includes("?")
+        const maxOptionalParams = path.split("/").filter((param) => {
+          return param.includes("?");
         }).length;
         let tmpPath = path.replace(/\?/g, ""); // strip the `?`
         for (let i = 0; i < maxOptionalParams; i++) {
           // TODO(edward) Is there a nicer way to make this look? I don't like it...
           if (i === 0) { // We need to mark the start for the first param
             tmpPath = tmpPath.replace(
-                /(:[^(/]+|{[^0-9][^}]*})\/?/,
-                "([a-zA-Z0-9]+)/?"
-            )
+              /(:[^(/]+|{[^0-9][^}]*})\/?/,
+              "([a-zA-Z0-9]+)/?",
+            );
           } else {
             tmpPath = tmpPath.replace(
-                /\/?(:[^(/]+|{[^0-9][^}]*})\/?/,
-                "([^/]+)?/?"
-            )
+              /\/?(:[^(/]+|{[^0-9][^}]*})\/?/,
+              "([^/]+)?/?",
+            );
           }
-        };
-        const pathObj =  {
+        }
+        const pathObj = {
           og_path: path,
           regex_path: `^${tmpPath}$`,
           // Regex is same as other blocks, but we also strip the `?`.
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-              (element: string) => {
-                return element.replace(/:|{|}|\?/g, "")
-              }
-          )
+            (element: string) => {
+              return element.replace(/:|{|}|\?/g, "");
+            },
+          ),
         };
-        newPaths.push(pathObj)
+        newPaths.push(pathObj);
       } else {
         const pathObj = {
           og_path: path,
@@ -733,7 +733,6 @@ export class Server {
         pathObj.params.forEach((paramName: string, index: number) => {
           pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
         });
-
 
         request.path_params = pathParamsInKvpForm;
         return resource;

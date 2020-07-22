@@ -2,7 +2,7 @@ import { Drash } from "../../../../mod.ts";
 
 export default class OptionalPathParamsResource extends Drash.Http.Resource {
   static paths = [
-      "/person/:name?/:age?/:city?"
+    "/person/:name?/:age?/:city?",
   ];
 
   public GET() {
@@ -15,9 +15,9 @@ export default class OptionalPathParamsResource extends Drash.Http.Resource {
       data: {
         name,
         age,
-        city
-      }
-    })
-    return this.response
+        city,
+      },
+    });
+    return this.response;
   }
 }

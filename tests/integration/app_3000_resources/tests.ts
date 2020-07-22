@@ -23,7 +23,7 @@ export const server = new Drash.Http.Server({
     RequestAcceptsResource,
     RequestAcceptsTwoResource,
     UsersResource,
-    OptionalPathParamsResource
+    OptionalPathParamsResource,
   ],
 });
 
@@ -43,7 +43,7 @@ import "./coffee_resource_test.ts";
 import "./cookie_resource_test.ts";
 import "./files_resource_test.ts";
 import "./users_resource_test.ts";
-import "./optional_path_params_test.ts"
+import "./optional_path_params_test.ts";
 
 Deno.test({
   name: "\b\b\b\b\b     \nStop the server",
