@@ -569,14 +569,15 @@ export class Server {
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
         // Replace required params
-        const numberOfRequiredParams = path.split("/").filter(param => {
-          return (param.includes(":") || param.includes("{")) && !param.includes("?")
-        }).length
+        const numberOfRequiredParams = path.split("/").filter((param) => {
+          return (param.includes(":") || param.includes("{")) &&
+            !param.includes("?");
+        }).length;
         for (let i = 0; i < numberOfRequiredParams; i++) {
           tmpPath = tmpPath.replace(
-              /(:[^(/]+|{[^0-9][^}]*})/, // same as REGEX_URI_MATCHES but not global
-              Server.REGEX_URI_REPLACEMENT
-          )
+            /(:[^(/]+|{[^0-9][^}]*})/, // same as REGEX_URI_MATCHES but not global
+            Server.REGEX_URI_REPLACEMENT,
+          );
         }
         // Replace optional path params
         const maxOptionalParams = path.split("/").filter((param) => {
@@ -586,7 +587,7 @@ export class Server {
           if (i === 0) { // We need to mark the start for the first optional param
             tmpPath = tmpPath.replace(
               /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
-                "/?([a-zA-Z0-9]+)?/?",
+              "/?([a-zA-Z0-9]+)?/?",
             );
           } else {
             tmpPath = tmpPath.replace(

@@ -3,7 +3,7 @@ import { Drash } from "../../../../mod.ts";
 export default class OptionalPathParamsResource extends Drash.Http.Resource {
   static paths = [
     "/oppWithoutRequired/:name?/:age?/:city?",
-    "/oppWithRequired/:name/:age?"
+    "/oppWithRequired/:name/:age?",
   ];
 
   public GET() {
