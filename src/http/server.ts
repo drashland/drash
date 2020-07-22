@@ -567,20 +567,30 @@ export class Server {
 
         newPaths.push(pathObj);
       } else if (path.includes("?") === true) { // optional params
+        let tmpPath = path;
+        // Replace required params
+        const numberOfRequiredParams = path.split("/").filter(param => {
+          return (param.includes(":") || param.includes("{")) && !param.includes("?")
+        }).length
+        for (let i = 0; i < numberOfRequiredParams; i++) {
+          tmpPath = tmpPath.replace(
+              /(:[^(/]+|{[^0-9][^}]*})/, // same as REGEX_URI_MATCHES but not global
+              Server.REGEX_URI_REPLACEMENT
+          )
+        }
+        // Replace optional path params
         const maxOptionalParams = path.split("/").filter((param) => {
           return param.includes("?");
         }).length;
-        let tmpPath = path.replace(/\?/g, ""); // strip the `?`
         for (let i = 0; i < maxOptionalParams; i++) {
-          // TODO(edward) Is there a nicer way to make this look? I don't like it...
-          if (i === 0) { // We need to mark the start for the first param
+          if (i === 0) { // We need to mark the start for the first optional param
             tmpPath = tmpPath.replace(
-              /(:[^(/]+|{[^0-9][^}]*})\/?/,
-              "([a-zA-Z0-9]+)/?",
+              /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
+                "/?([a-zA-Z0-9]+)?/?",
             );
           } else {
             tmpPath = tmpPath.replace(
-              /\/?(:[^(/]+|{[^0-9][^}]*})\/?/,
+              /\/?(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
               "([^/]+)?/?",
             );
           }
