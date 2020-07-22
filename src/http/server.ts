@@ -567,22 +567,27 @@ export class Server {
 
         newPaths.push(pathObj);
       } else if (path.includes("?") === true) { // optional params
-        const tmpPath = path.replace(/\?/g, ""); // strip the `?`
         const maxOptionalParams = path.split("/").filter(param => {
           return param.includes("?")
         }).length;
+        let tmpPath = path.replace(/\?/g, ""); // strip the `?`
+        for (let i = 0; i < maxOptionalParams; i++) {
+          // TODO(edward) Is there a nicer way to make this look? I don't like it...
+          if (i === 0) { // We need to mark the start for the first param
+            tmpPath = tmpPath.replace(
+                /(:[^(/]+|{[^0-9][^}]*})\/?/,
+                "([a-zA-Z0-9]+)/?"
+            )
+          } else {
+            tmpPath = tmpPath.replace(
+                /\/?(:[^(/]+|{[^0-9][^}]*})\/?/,
+                "([^/]+)?/?"
+            )
+          }
+        };
         const pathObj =  {
           og_path: path,
-          regex_path: `^${
-            // We only want to have one bit of regex, instead of one for **each** path param
-            tmpPath.replace( // replace once instance
-                /\/(:[^(/]+|{[^0-9][^}]*})\//,
-                "(/?[a-zA-Z]+)" // FIXME ITS THE /? BIT AT THE START HERE, WE NEED IT BUT IT MEANS THE SLASH IN INCLUDED WHEN WE GET THE PARAM USING THE REGEX
-            ).replace( // replace all other instances with nothing
-                /\/?(:[^(/]+|{[^0-9][^}]*})\/?/g, 
-                ""
-            )
-            }{1,${maxOptionalParams}}/?$`,
+          regex_path: `^${tmpPath}$`,
           // Regex is same as other blocks, but we also strip the `?`.
           params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
               (element: string) => {
@@ -590,7 +595,6 @@ export class Server {
               }
           )
         };
-        console.log(pathObj)
         newPaths.push(pathObj)
       } else {
         const pathObj = {
@@ -720,7 +724,6 @@ export class Server {
         const pathMatchesRequestPathname = request.url_path.match(
           pathObj.regex_path,
         );
-        console.log(request.url_path, pathObj.regex_path)
         if (pathMatchesRequestPathname == null) {
           continue;
         }
