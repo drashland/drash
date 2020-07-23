@@ -3,10 +3,11 @@ import { Drash } from "../mod.ts";
 import {
   BufReader,
   ServerRequest,
+} from "../deps.ts";
+import {
   assertEquals,
   assertThrows,
-} from "../deps.ts";
-const testSuiteOutputLength = 0;
+} from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 
 /**
