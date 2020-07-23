@@ -2,7 +2,6 @@
 
 ## Table of Contents
 
-* [Copy git hook for standardized commit messages](#copy-git-hook-for-standardized-commit-messages)
 * [Upgrading mime-db](#upgrading-mime-db)
 * [Running Create App Tests on Windows](#running-create-app-tests-on-windows)
 * [Releasing](#releasing)
