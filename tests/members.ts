@@ -4,10 +4,7 @@ import {
   BufReader,
   ServerRequest,
 } from "../deps.ts";
-import {
-  assertEquals,
-  assertThrows,
-} from "./deps.ts";
+import { Rhum } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 
 /**
@@ -73,9 +70,9 @@ interface IMakeRequestOptions {
 function assertResponseJsonEquals(actual: any, expected: any) {
   let response;
   try {
-    response = assertEquals(JSON.parse(actual), expected);
+    response = Rhum.asserts.assertEquals(JSON.parse(actual), expected);
   } catch (error) {
-    response = assertEquals(actual, expected);
+    response = Rhum.asserts.assertEquals(actual, expected);
   }
   return response;
 }
@@ -123,7 +120,6 @@ export default {
   ServerRequest,
   assertEquals,
   assertResponseJsonEquals,
-  assertThrows,
   currentTestSuite: "",
   decoder,
   fetch: makeRequest,
