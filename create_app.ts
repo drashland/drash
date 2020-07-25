@@ -1,6 +1,9 @@
 import { green, red } from "./deps.ts";
 const { args } = Deno;
-const drashDir = import.meta.url.replace("file://", "").replace("/create_app.ts", "");
+const drashDir = import.meta.url.replace("file://", "").replace(
+  "/create_app.ts",
+  "",
+);
 const wantsHelp = (args.find((arg) => arg === "--help") !== undefined);
 const wantsWebApp = (args.find((arg) => arg === "--web-app") !== undefined);
 const wantsApi = (args.find((arg) => arg === "--api") !== undefined);
