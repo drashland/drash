@@ -28,7 +28,7 @@ async function copyFile(filePath: string, outputFile: string): Promise<void> {
     : `${drashDir}/console/create_app${filePath}`;
   outputFile = Deno.build.os === "windows"
     ? outputFile.replace(/\//g, "\\")
-    : outputFile
+    : outputFile;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
   console.log(fullFilePath);
