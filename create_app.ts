@@ -28,6 +28,7 @@ async function copyFile(filePath: string, outputFile: string): Promise<void> {
     : `${drashDir}/console/create_app${filePath}`;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
+  console.log(fullFilePath);
   const contents = Deno.readFileSync(fullFilePath);
   Deno.writeFileSync(cwd + outputFile, contents);
 }
