@@ -21,11 +21,10 @@ const encoder = new TextEncoder();
  */
 async function copyFile(filePath: string, outputFile: string): Promise<void> {
   const fullFilePath =
-    `https://deno.land/x/drash@master/console/create_app${filePath}`;
+    `./console/create_app${filePath}`;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
-  const response = await fetch(fullFilePath);
-  const contents = encoder.encode(await response.text());
+  const contents = Deno.readFileSync(fullFilePath);
   Deno.writeFileSync(cwd + outputFile, contents);
 }
 
