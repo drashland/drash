@@ -10,6 +10,7 @@ package-lock.json
 
 # directories
 .sass-cache
+tmp*/*
 tmp/*
 node_modules
 .idea

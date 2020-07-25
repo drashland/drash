@@ -1,5 +1,6 @@
 import { green, red } from "./deps.ts";
 const { args } = Deno;
+const drashDir = import.meta.url.replace("file://", "").replace("/create_app.ts", "");
 const wantsHelp = (args.find((arg) => arg === "--help") !== undefined);
 const wantsWebApp = (args.find((arg) => arg === "--web-app") !== undefined);
 const wantsApi = (args.find((arg) => arg === "--api") !== undefined);
@@ -20,7 +21,7 @@ const encoder = new TextEncoder();
  * @param string outputFile
  */
 async function copyFile(filePath: string, outputFile: string): Promise<void> {
-  const fullFilePath = `./console/create_app${filePath}`;
+  const fullFilePath = `${drashDir}/console/create_app${filePath}`;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
   const contents = Deno.readFileSync(fullFilePath);
