@@ -22,10 +22,16 @@ Rhum.testPlan("users_resource_test.ts", () => {
       Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
 
       response = await members.fetch.get("http://localhost:3000/users/17");
-      Rhum.asserts.assertEquals(await response.text(), '{"id":17,"name":"Thor"}');
+      Rhum.asserts.assertEquals(
+        await response.text(),
+        '{"id":17,"name":"Thor"}',
+      );
 
       response = await members.fetch.get("http://localhost:3000/users/17/");
-      Rhum.asserts.assertEquals(await response.text(), '{"id":17,"name":"Thor"}');
+      Rhum.asserts.assertEquals(
+        await response.text(),
+        '{"id":17,"name":"Thor"}',
+      );
 
       response = await members.fetch.get("http://localhost:3000/users/18");
       Rhum.asserts.assertEquals(
