@@ -171,7 +171,7 @@ async function buildForAPI() {
 if (wantsApi && wantsWebApp) {
   console.error(
     red(
-      "--web-app and --api options are now allowed to be used together. Use the --help option for more information.",
+      "--web-app and --api options are not allowed to be used together. Use the --help option for more information.",
     ),
   );
   Deno.exit(1);
