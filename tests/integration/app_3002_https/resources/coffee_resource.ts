@@ -3,14 +3,14 @@ import { Drash } from "../../../../mod.ts";
 export default class CoffeeResource extends Drash.Http.Resource {
   static paths = ["/coffee", "/coffee/:id"];
 
-  protected coffee = {
-    17: {
+  protected coffee: {[key: string]: { name: string }} = {
+    "17": {
       name: "Light",
     },
-    18: {
+    "18": {
       name: "Medium",
     },
-    19: {
+    "19": {
       name: "Dark",
     },
   };
@@ -38,16 +38,7 @@ export default class CoffeeResource extends Drash.Http.Resource {
   }
 
   protected getCoffee(coffeeId: string) {
-    let coffee = null;
-
-    try {
-      coffee = this.coffee[coffeeId];
-    } catch (error) {
-      throw new Drash.Exceptions.HttpException(
-        400,
-        `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`,
-      );
-    }
+    const coffee = this.coffee[coffeeId];
 
     if (!coffee) {
       throw new Drash.Exceptions.HttpException(
