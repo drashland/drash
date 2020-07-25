@@ -20,8 +20,7 @@ const encoder = new TextEncoder();
  * @param string outputFile
  */
 async function copyFile(filePath: string, outputFile: string): Promise<void> {
-  const fullFilePath =
-    `./console/create_app${filePath}`;
+  const fullFilePath = `./console/create_app${filePath}`;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
   const contents = Deno.readFileSync(fullFilePath);
