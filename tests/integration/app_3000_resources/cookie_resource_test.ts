@@ -18,7 +18,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
         },
         body: cookie,
       });
-      members.assertEquals(await response.text(), '"Saved your cookie!"');
+      Rhum.asserts.assertEquals(await response.text(), '"Saved your cookie!"');
 
       // Get - Dependent on the above post request saving a cookie
       response = await members.fetch.get("http://localhost:3000/cookie", {
@@ -27,7 +27,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           Cookie: "testCookie=Drash",
         },
       });
-      await members.assertEquals(await response.text(), '"Drash"');
+      await Rhum.asserts.assertEquals(await response.text(), '"Drash"');
 
       // Remove - Dependent on the above post request saving a cookie
       response = await members.fetch.delete("http://localhost:3000/cookie", {
@@ -35,7 +35,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       });
       cookies = response.headers.get("set-cookie") || "";
       cookieVal = cookies.split(";")[0].split("=")[1];
-      members.assertEquals(cookieVal, "");
+      Rhum.asserts.assertEquals(cookieVal, "");
       await response.arrayBuffer();
       //await response.body.close()
     });
