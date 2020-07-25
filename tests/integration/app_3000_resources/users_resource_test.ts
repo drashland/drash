@@ -1,9 +1,20 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
+import {Drash} from "../../../mod.ts";
+import UsersResource from "./resources/users_resource.ts";
+import {runServer} from "../test_utils.ts";
+
+const server = new Drash.Http.Server({
+  resources: [
+    UsersResource,
+  ],
+});
 
 Rhum.testPlan("users_resource_test.ts", () => {
   Rhum.testSuite("/users", () => {
     Rhum.testCase("user data can be retrieved", async () => {
+      await runServer(server)
+
       let response;
       Deno.chdir("./tests/integration/app_3000_resources/resources");
       response = await members.fetch.get("http://localhost:3000/users");
@@ -32,6 +43,8 @@ Rhum.testPlan("users_resource_test.ts", () => {
         await response.text(),
         `\"User with ID \\\"18\\\" not found.\"`,
       );
+
+      await server.close()
     });
   });
 });

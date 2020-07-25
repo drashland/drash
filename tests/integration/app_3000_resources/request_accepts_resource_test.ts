@@ -1,9 +1,20 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
+import {Drash} from "../../../mod.ts";
+import RequestAcceptsResource from "./resources/request_accepts_resource.ts";
+import {runServer} from "../test_utils.ts";
+
+const server = new Drash.Http.Server({
+  resources: [
+    RequestAcceptsResource,
+  ],
+});
 
 Rhum.testPlan("request_accepts_resource_test.ts", () => {
   Rhum.testSuite("/request-accepts", () => {
     Rhum.testCase("request accepts one type", async () => {
+      await runServer(server);
+
       let response;
       let json;
       let typeToCheck;
@@ -34,11 +45,15 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       json = JSON.parse(await response.json());
       await Rhum.asserts.assertEquals(json.success, false);
       Rhum.asserts.assertEquals(json.message, undefined);
+
+      await server.close()
     });
 
     Rhum.testCase(
       "request accepts multiple types: text/xml first",
       async () => {
+        await runServer(server);
+
         // Accepts the first content type - tests when calling the `accepts` method with an array and finds a match
         const response = await members.fetch.get(
           "http://localhost:3000/request-accepts",
@@ -51,10 +66,14 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         const json = await response.json();
         members.assertEquals(json.success, true);
         members.assertEquals(json.message, "text/html");
+
+        await server.close();
       },
     );
 
     Rhum.testCase("request accepts multiple types: text/js first", async () => {
+      await runServer(server);
+
       // Accepts the first content type - tests when calling the `accepts` method with an array with no match
       const response = await members.fetch.get(
         "http://localhost:3000/request-accepts",
@@ -67,6 +86,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       const json = await response.json();
       members.assertEquals(json.success, false);
       members.assertEquals(json.message, undefined);
+
+      await server.close()
     });
   });
 });
