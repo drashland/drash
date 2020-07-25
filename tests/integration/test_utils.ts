@@ -1,11 +1,11 @@
-import {Drash} from "../../mod.ts";
+import { Drash } from "../../mod.ts";
 
-export async function runServer (server: Drash.Http.Server, configs: {
-  hostname?: string,
-  port: number
+export async function runServer(server: Drash.Http.Server, configs: {
+  hostname?: string;
+  port: number;
 } = {
   hostname: "localhost",
-  port: 3000
+  port: 3000,
 }) {
   await server.run({
     hostname: configs.hostname,
@@ -13,19 +13,19 @@ export async function runServer (server: Drash.Http.Server, configs: {
   });
 }
 
-export async function runServerTLS (server: Drash.Http.Server, configs: {
-  hostname?: string,
-  port: number,
-  certFile?: string,
-  keyFile?: string
+export async function runServerTLS(server: Drash.Http.Server, configs: {
+  hostname?: string;
+  port: number;
+  certFile?: string;
+  keyFile?: string;
 } = {
   hostname: "localhost",
   port: 3000,
 }) {
   await server.runTLS({
-     hostname: configs.hostname,
-     port: configs.port,
-     certFile: "./tests/integration/app_3002_https/server.crt",
-     keyFile: "./tests/integration/app_3002_https/server.key",
-   })
-};
+    hostname: configs.hostname,
+    port: configs.port,
+    certFile: "./tests/integration/app_3002_https/server.crt",
+    keyFile: "./tests/integration/app_3002_https/server.key",
+  });
+}

@@ -2,7 +2,7 @@ import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
 import { Drash } from "../../../mod.ts";
 import FilesResource from "./resources/files_resource.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 const server = new Drash.Http.Server({
   response_output: "application/json",
@@ -30,7 +30,7 @@ Rhum.testPlan("files_resource_test.ts", () => {
       });
       Rhum.asserts.assertEquals(await response.text(), '"John"');
 
-      await server.close()
+      await server.close();
     });
   });
 });

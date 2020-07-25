@@ -2,7 +2,7 @@ import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
 import { Drash } from "../../../mod.ts";
 import HomeResource from "./resources/home_resource.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 const server = new Drash.Http.Server({
   resources: [
@@ -59,7 +59,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
       response = await members.fetch.patch("http://localhost:3000");
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
 
-      await server.close()
+      await server.close();
     });
   });
 });

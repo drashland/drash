@@ -1,7 +1,7 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
 import { Drash } from "../../../mod.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 export const server = new Drash.Http.Server({
   directory: "./tests/integration/app_3004_pretty_links",
@@ -16,7 +16,7 @@ console.log("\nIntegration tests: testing server with pretty links.\n");
 Rhum.testPlan("pretty_links", () => {
   Rhum.testSuite("/pretty/index.html", () => {
     Rhum.testCase("converts to /pretty", async () => {
-      await runServer(server, { port: 3004  })
+      await runServer(server, { port: 3004 });
       const response = await members.fetch.get(
         "http://localhost:3004/public/pretty",
       );
@@ -27,7 +27,7 @@ Rhum.testPlan("pretty_links", () => {
         text.includes("Pretty links!"),
       );
 
-      await server.close()
+      await server.close();
     });
   });
 });

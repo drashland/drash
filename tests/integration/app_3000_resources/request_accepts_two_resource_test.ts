@@ -1,8 +1,8 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
-import {Drash} from "../../../mod.ts";
+import { Drash } from "../../../mod.ts";
 import RequestAcceptsTwoResource from "./resources/request_accepts_two_resource.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 const server = new Drash.Http.Server({
   resources: [
@@ -13,7 +13,7 @@ const server = new Drash.Http.Server({
 Rhum.testPlan("request_accepts_two_resource_test.ts", () => {
   Rhum.testSuite("/request-accepts-two", () => {
     Rhum.testCase("accepts one and multiple types", async () => {
-      await runServer(server)
+      await runServer(server);
 
       let response;
 
@@ -56,7 +56,7 @@ Rhum.testPlan("request_accepts_two_resource_test.ts", () => {
         `<response>text/xml</response>`,
       );
 
-      await server.close()
+      await server.close();
     });
   });
 });

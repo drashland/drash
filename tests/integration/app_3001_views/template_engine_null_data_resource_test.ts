@@ -1,8 +1,8 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
-import {Drash} from "../../../mod.ts";
+import { Drash } from "../../../mod.ts";
 import TemplateEngineNullDataResource from "./resources/template_engine_null_data_resource.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 function getExpected() {
   if (Deno.build.os == "windows") {
@@ -26,7 +26,7 @@ const server = new Drash.Http.Server({
 Rhum.testPlan("template_engine_null_data_resource_test.ts", () => {
   Rhum.testSuite("/template-engine-null-data", () => {
     Rhum.testCase("handles null data", async () => {
-      await runServer(server, { port: 3001 })
+      await runServer(server, { port: 3001 });
 
       let response;
 
@@ -39,7 +39,7 @@ Rhum.testPlan("template_engine_null_data_resource_test.ts", () => {
         getExpected(),
       );
 
-      await server.close()
+      await server.close();
     });
   });
 });

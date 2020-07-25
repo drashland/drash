@@ -1,8 +1,8 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
-import {Drash} from "../../../mod.ts";
+import { Drash } from "../../../mod.ts";
 import ViewResource from "./resources/view_resource.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 function getExpected() {
   if (Deno.build.os == "windows") {
@@ -26,7 +26,7 @@ const server = new Drash.Http.Server({
 Rhum.testPlan("view_resource_test.ts", () => {
   Rhum.testSuite("/view", () => {
     Rhum.testCase("serves basic HTML", async () => {
-      await runServer(server, { port: 3001 })
+      await runServer(server, { port: 3001 });
 
       const response = await fetch(
         "http://localhost:3001/view?data=false&file=/index.html",
@@ -39,7 +39,7 @@ Rhum.testPlan("view_resource_test.ts", () => {
         getExpected(),
       );
 
-      await server.close()
+      await server.close();
     });
   });
 });

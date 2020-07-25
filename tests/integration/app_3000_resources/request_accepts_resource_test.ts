@@ -1,8 +1,8 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
-import {Drash} from "../../../mod.ts";
+import { Drash } from "../../../mod.ts";
 import RequestAcceptsResource from "./resources/request_accepts_resource.ts";
-import {runServer} from "../test_utils.ts";
+import { runServer } from "../test_utils.ts";
 
 const server = new Drash.Http.Server({
   resources: [
@@ -46,7 +46,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       await Rhum.asserts.assertEquals(json.success, false);
       Rhum.asserts.assertEquals(json.message, undefined);
 
-      await server.close()
+      await server.close();
     });
 
     Rhum.testCase(
@@ -87,7 +87,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       members.assertEquals(json.success, false);
       members.assertEquals(json.message, undefined);
 
-      await server.close()
+      await server.close();
     });
   });
 });
