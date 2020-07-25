@@ -568,7 +568,8 @@ export class Server {
         newPaths.push(pathObj);
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
-        // Replace required params
+        // Replace required params, in preparation to create the `regex_path`, just like
+        // how we do in the below else block
         const numberOfRequiredParams = path.split("/").filter((param) => {
           return (param.includes(":") || param.includes("{")) &&
             !param.includes("?");
@@ -583,13 +584,27 @@ export class Server {
         const maxOptionalParams = path.split("/").filter((param) => {
           return param.includes("?");
         }).length;
+        // Description for the below for loop and why we use it to create the regex for
+        // optional parameters:
+        // For each optional parameter in the path, we replace it with custom regex.
+        // Similar to how other blocks construct the `regex_path`, but in this case,
+        // it isn't as easy as a simple `replace` one-liner, due to needing to account for
+        // optional parameters (:name?), and required parameters before optional params.
+        // This is what we do to construct the `regex_path`. I haven't been able to
+        // come up with a regex that would replace all instances and work, which is
+        // why a loop is being used here, to replace the first instance of an optional
+        // parameter (to account for a possible required parameter before), and then
+        // replace the rest of the occurrences. It's slightly tricky because the path
+        // `/users/:name?/:age?/:city?` should match  `/users`.
         for (let i = 0; i < maxOptionalParams; i++) {
           if (i === 0) { // We need to mark the start for the first optional param
+            // The below regex is very similar to `REGEX_URI_MATCHES` but this regex isn't
+            // global, and accounts for there being a required parameter before
             tmpPath = tmpPath.replace(
               /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
-              "/?([a-zA-Z0-9]+)?/?",
+              "/?([a-zA-Z0-9]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
             );
-          } else {
+          } else { // We can now create the replace regex for the rest taking into consideration the above replace regex
             tmpPath = tmpPath.replace(
               /\/?(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
               "([^/]+)?/?",
