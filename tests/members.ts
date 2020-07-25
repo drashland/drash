@@ -118,7 +118,6 @@ const makeRequest = {
 export default {
   BufReader,
   ServerRequest,
-  assertEquals,
   assertResponseJsonEquals,
   currentTestSuite: "",
   decoder,
