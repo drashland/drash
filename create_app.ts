@@ -24,8 +24,11 @@ const encoder = new TextEncoder();
  */
 async function copyFile(filePath: string, outputFile: string): Promise<void> {
   const fullFilePath = Deno.build.os === "windows"
-    ? `${drashDir.replace(/\//g, "\\")}\console\create_app${filePath.replace(/\//g, "\\")}`
+    ? `${drashDir}/console/create_app${filePath}`.replace(/\//g, "\\")
     : `${drashDir}/console/create_app${filePath}`;
+  outputFile = Deno.build.os === "windows"
+    ? outputFile.replace(/\//g, "\\")
+    : outputFile
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
   console.log(fullFilePath);
