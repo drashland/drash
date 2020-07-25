@@ -62,7 +62,7 @@ const fileExists = async (filename: string): Promise<boolean> => {
 Rhum.testPlan("create_app_test.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
     Rhum.testCase("script fails with no argument", async () => {
-      const p = await Deno.run({
+      const p = Deno.run({
         cmd: [
           "deno",
           "run",
@@ -92,7 +92,7 @@ Rhum.testPlan("create_app_test.ts", () => {
 
   Rhum.testSuite("--help", () => {
     Rhum.testCase("Script success with the --help argument", async () => {
-      const p = await Deno.run({
+      const p = Deno.run({
         cmd: [
           "deno",
           "run",
@@ -149,7 +149,7 @@ Rhum.testPlan("create_app_test.ts", () => {
       async () => {
         // Create new tmp directory and create project files
         Deno.mkdirSync(tmpDirName);
-        const p = await Deno.run({
+        const p = Deno.run({
           cmd: [
             "deno",
             "run",
@@ -157,7 +157,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-write",
             "--allow-net",
             "--allow-run",
-            "../create_app.ts",
+            "create_app.ts",
             "--api",
           ],
           stdout: "piped",
@@ -236,7 +236,7 @@ Rhum.testPlan("create_app_test.ts", () => {
       "Script creates a web app with the --web-app argument",
       async () => {
         Deno.mkdirSync(tmpDirName);
-        const p = await Deno.run({
+        const p = Deno.run({
           cmd: [
             "deno",
             "run",
@@ -244,7 +244,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-write",
             "--allow-net",
             "--allow-run",
-            "../create_app.ts",
+            "create_app.ts",
             "--web-app",
           ],
           stdout: "piped",
@@ -359,7 +359,7 @@ Rhum.testPlan("create_app_test.ts", () => {
       "Script creates a web app with vue with the --web-app and --with-vue arguments",
       async () => {
         Deno.mkdirSync(tmpDirName);
-        const p = await Deno.run({
+        const p = Deno.run({
           cmd: [
             "deno",
             "run",
@@ -367,7 +367,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-write",
             "--allow-net",
             "--allow-run",
-            "../create_app.ts",
+            "create_app.ts",
             "--web-app",
             "--with-vue",
           ],
@@ -495,7 +495,7 @@ Rhum.testPlan("create_app_test.ts", () => {
     Rhum.testCase(
       "Script fails if --api and --web-app are specified",
       async () => {
-        const p = await Deno.run({
+        const p = Deno.run({
           cmd: [
             "deno",
             "run",
