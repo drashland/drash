@@ -1,7 +1,7 @@
 import {Drash} from "../../mod.ts";
 
 export async function runServer (server: Drash.Http.Server, configs: {
-  hostname: string,
+  hostname?: string,
   port: number
 } = {
   hostname: "localhost",
