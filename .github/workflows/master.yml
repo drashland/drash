@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.2.0"]
+        deno: ["1.2.1"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -34,6 +34,7 @@ jobs:
           # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
           deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/tests.ts
           deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
+          deno test --allow-all --config tsconfig.json tests/integration/app_3005_middleware_resource_level/tests.ts
 
       - name: Create APP
         run: |

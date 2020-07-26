@@ -1,9 +1,20 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
+import { Drash } from "../../../mod.ts";
+import CoffeeResource from "./resources/coffee_resource.ts";
+import { runServer } from "../test_utils.ts";
+
+const server = new Drash.Http.Server({
+  resources: [
+    CoffeeResource,
+  ],
+});
 
 Rhum.testPlan("coffee_resource_test.ts", () => {
   Rhum.testSuite("/coffee", () => {
     Rhum.testCase("works as expected", async () => {
+      await runServer(server);
+
       let response;
 
       response = await members.fetch.get("http://localhost:3000/coffee");
@@ -75,6 +86,8 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         },
       );
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
+
+      await server.close();
     });
   });
 });
