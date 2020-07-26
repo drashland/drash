@@ -571,6 +571,10 @@ export class Server {
         // Replace required params, in preparation to create the `regex_path`, just like
         // how we do in the below else block
         const numberOfRequiredParams = path.split("/").filter((param) => {
+          // Ignores optional (`?`) params and only pulls how many required parameters
+          // the resource path contains, eg:
+          //   :age? --> ignore, :age --> dont ignore, {age} --> dont ignore
+          //   /users/:age/{name}/:city? --> returns 2 required params
           return (param.includes(":") || param.includes("{")) &&
             !param.includes("?");
         }).length;
