@@ -1,9 +1,20 @@
 import members from "../../members.ts";
 import { Rhum } from "../../deps.ts";
+import { Drash } from "../../../mod.ts";
+import CookieResource from "./resources/cookie_resource.ts";
+import { runServer } from "../test_utils.ts";
+
+const server = new Drash.Http.Server({
+  resources: [
+    CookieResource,
+  ],
+});
 
 Rhum.testPlan("cookie_resource_test.ts", () => {
   Rhum.testSuite("/cookie", () => {
     Rhum.testCase("cookie can be created, retrieved, and deleted", async () => {
+      await runServer(server);
+
       let response;
       let cookies;
       let cookieName;
@@ -38,6 +49,8 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       Rhum.asserts.assertEquals(cookieVal, "");
       await response.arrayBuffer();
       //await response.body.close()
+
+      await server.close();
     });
   });
 });
