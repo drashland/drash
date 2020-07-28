@@ -303,7 +303,9 @@ Rhum.testPlan("http/server_test.ts", () => {
         Rhum.asserts.assertEquals(mimeType, "text/html");
         Rhum.asserts.assertEquals(
           decoder.decode(res.body as ArrayBuffer),
-          "test\n",
+          Deno.build.os === "windows"
+            ? "test\r\n"
+            : "test\n"
         );
       },
     );
@@ -332,7 +334,9 @@ Rhum.testPlan("http/server_test.ts", () => {
         Rhum.asserts.assertEquals(mimeType, "text/html");
         Rhum.asserts.assertEquals(
           decoder.decode(res.body as ArrayBuffer),
-          "This is the index.html file for testing pretty links\n",
+          Deno.build.os === "windows"
+            ? "This is the index.html file for testing pretty links\r\n"
+            : "This is the index.html file for testing pretty links\n"
         );
       },
     );
@@ -361,7 +365,9 @@ Rhum.testPlan("http/server_test.ts", () => {
         Rhum.asserts.assertEquals(mimeType, "text/html");
         Rhum.asserts.assertEquals(
           decoder.decode(res.body as ArrayBuffer),
-          "test\n",
+          Deno.build.os === "windows"
+            ? "test\r\n"
+            : "test\n"
         );
       },
     );
