@@ -20,11 +20,6 @@ export {
 } from "https://deno.land/std@v0.62.0/http/http_status.ts";
 
 export {
-  assertEquals,
-  assertThrows,
-} from "https://deno.land/std@v0.62.0/testing/asserts.ts";
-
-export {
   BufReader,
   ReadLineResult,
 } from "https://deno.land/std@v0.62.0/io/bufio.ts";

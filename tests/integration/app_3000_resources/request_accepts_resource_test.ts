@@ -64,9 +64,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         );
         const json = await response.json();
-        members.assertEquals(json.success, true);
-        members.assertEquals(json.message, "text/html");
-
+        Rhum.asserts.assertEquals(json.success, true);
+        Rhum.asserts.assertEquals(json.message, "text/html");
         await server.close();
       },
     );
@@ -84,9 +83,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         },
       );
       const json = await response.json();
-      members.assertEquals(json.success, false);
-      members.assertEquals(json.message, undefined);
-
+      Rhum.asserts.assertEquals(json.success, false);
+      Rhum.asserts.assertEquals(json.message, undefined);
       await server.close();
     });
   });

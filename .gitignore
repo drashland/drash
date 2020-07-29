@@ -10,9 +10,11 @@ package-lock.json
 
 # directories
 .sass-cache
+tmp*/*
 tmp/*
 node_modules
 .idea
+tmp-dir-for-testing-create-app
 
 # exceptions
 !.gitkeep

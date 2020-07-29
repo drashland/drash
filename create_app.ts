@@ -1,5 +1,8 @@
 import { green, red } from "./deps.ts";
 const { args } = Deno;
+const drashDir = Deno.build.os === "windows"
+  ? import.meta.url.replace("file:///", "").replace("/create_app.ts", "")
+  : import.meta.url.replace("file://", "").replace("/create_app.ts", "");
 const wantsHelp = (args.find((arg) => arg === "--help") !== undefined);
 const wantsWebApp = (args.find((arg) => arg === "--web-app") !== undefined);
 const wantsApi = (args.find((arg) => arg === "--api") !== undefined);
@@ -20,12 +23,16 @@ const encoder = new TextEncoder();
  * @param string outputFile
  */
 async function copyFile(filePath: string, outputFile: string): Promise<void> {
-  const fullFilePath =
-    `https://deno.land/x/drash@master/console/create_app${filePath}`;
+  const fullFilePath = Deno.build.os === "windows"
+    ? `${drashDir}/console/create_app${filePath}`.replace(/\//g, "\\")
+    : `${drashDir}/console/create_app${filePath}`;
+  outputFile = Deno.build.os === "windows"
+    ? outputFile.replace(/\//g, "\\")
+    : outputFile;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
-  const response = await fetch(fullFilePath);
-  const contents = encoder.encode(await response.text());
+  console.log(fullFilePath);
+  const contents = Deno.readFileSync(fullFilePath);
   Deno.writeFileSync(cwd + outputFile, contents);
 }
 
@@ -171,7 +178,7 @@ async function buildForAPI() {
 if (wantsApi && wantsWebApp) {
   console.error(
     red(
-      "--web-app and --api options are now allowed to be used together. Use the --help option for more information.",
+      "--web-app and --api options are not allowed to be used together. Use the --help option for more information.",
     ),
   );
   Deno.exit(1);

@@ -25,7 +25,7 @@ Rhum.testPlan("request_accepts_two_resource_test.ts", () => {
           },
         },
       );
-      members.assertEquals(
+      Rhum.asserts.assertEquals(
         await response.text(),
         `<div>response: text/html</div>`,
       );
@@ -38,7 +38,7 @@ Rhum.testPlan("request_accepts_two_resource_test.ts", () => {
           },
         },
       );
-      members.assertEquals(
+      Rhum.asserts.assertEquals(
         await response.text(),
         `{"response":"application/json"}`,
       );
@@ -51,7 +51,7 @@ Rhum.testPlan("request_accepts_two_resource_test.ts", () => {
           },
         },
       );
-      members.assertEquals(
+      Rhum.asserts.assertEquals(
         await response.text(),
         `<response>text/xml</response>`,
       );
