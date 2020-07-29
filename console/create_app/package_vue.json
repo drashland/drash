@@ -1,6 +1,6 @@
 {
   "name": "",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "",
   "scripts": {
     "buildVue": "node_modules/.bin/webpack-cli --config webpack.config.js"
