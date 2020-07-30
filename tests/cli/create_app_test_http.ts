@@ -37,8 +37,9 @@ function getOsTmpDirName() {
  * @param string filename eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts"
  */
 function getFileContent(filePathAndName: string): string {
+  const fullFilepath = originalCWD + filePathAndName;
   const fileContent = decoder.decode(
-    Deno.readFileSync(originalCWD + filePathAndName),
+    Deno.readFileSync(fullFilepath),
   ).replace(/\r\n/g, "\n");
   return fileContent;
 }
@@ -94,14 +95,9 @@ Rhum.testPlan("create_app_test.ts", () => {
       const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
       Rhum.asserts.assertEquals(
         stderr,
-        "Download https://deno.land/x/drash@" + latestBranch +
-          "/create_app.ts\n" +
-          "Download https://deno.land/x/drash@" + latestBranch + "/deps.ts\n" +
-          "Check https://deno.land/x/drash@" + latestBranch +
-          "/create_app.ts\n" +
-          red(
-            "Too few options were given. Use the --help option for more information.",
-          ) + "\n",
+        red(
+          "Too few options were given. Use the --help option for more information.",
+        ) + "\n",
       );
       Rhum.asserts.assertEquals(stdout, "");
       Rhum.asserts.assertEquals(status.code, 1);
