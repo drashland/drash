@@ -8,10 +8,14 @@ import { Rhum } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 
 // deno-lint-ignore no-explicit-any
-function createDrashRequest(url: string,  method: string = "get", options?: any): Drash.Http.Request {
-  const request = mockRequest(url, method, options)
-  const drashRequest = new Drash.Http.Request(request)
-  return drashRequest
+function createDrashRequest(
+  url: string,
+  method: string = "get",
+  options?: any,
+): Drash.Http.Request {
+  const request = mockRequest(url, method, options);
+  const drashRequest = new Drash.Http.Request(request);
+  return drashRequest;
 }
 
 /**

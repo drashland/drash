@@ -428,7 +428,7 @@ Rhum.testPlan("http/server_test.ts", () => {
         hostname: "localhost",
         port: 1667,
       });
-      const denoServerExists: boolean = !!server.deno_server
+      const denoServerExists: boolean = !!server.deno_server;
       Rhum.asserts.assert(denoServerExists);
       server.close();
       Rhum.asserts.assert(!server.deno_server);
