@@ -209,7 +209,7 @@ Rhum.testPlan("http/server_test.ts", () => {
 
   Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
     Rhum.testCase("Should respond with a 200 on a valid request", async () => {
-      let request = Rhum.mocks.ServerRequest(
+      let request = members.createDrashRequest(
         "/tests/data/static_file.txt",
         "get",
       );
@@ -290,7 +290,8 @@ Rhum.testPlan("http/server_test.ts", () => {
         hostname: "localhost",
         port: 1667,
       });
-      Rhum.asserts.assert(server.deno_server);
+      const denoServerExists: boolean = !!server.deno_server
+      Rhum.asserts.assert(denoServerExists);
       server.close();
       Rhum.asserts.assert(!server.deno_server);
     });

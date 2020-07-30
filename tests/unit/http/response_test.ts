@@ -165,7 +165,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       'Responds with "null" when body is null with no content type',
       () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
+        let request = members.createDrashRequest("/", "get", {
           headers: {
             "Content-Type": "something/orOther",
           },
@@ -181,7 +181,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       'Responds with "undefined" when body is undefined with no content type',
       () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
+        let request = members.createDrashRequest("/", "get", {
           headers: {
             "Content-Type": "something/orOther",
           },
@@ -197,7 +197,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       'Responds with "false" when body is false with no content type',
       () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
+        let request = members.createDrashRequest("/", "get", {
           headers: {
             "Content-Type": "something/orOther",
           },
@@ -213,7 +213,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       'Responds with "true" when body is true with no content type',
       () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
+        let request = members.createDrashRequest("/", "get", {
           headers: {
             "Content-Type": "something/orOther",
           },
@@ -229,7 +229,7 @@ Rhum.testPlan("http/response_test.ts", () => {
     Rhum.testCase(
       'Responds with "null" when body is not a string/undefined/null/bool',
       () => {
-        let request = Rhum.mocks.ServerRequest("/", "get", {
+        let request = members.createDrashRequest("/", "get", {
           headers: {
             "Content-Type": "something/orOther",
           },

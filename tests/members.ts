@@ -7,6 +7,13 @@ import {
 import { Rhum } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 
+// deno-lint-ignore no-explicit-any
+function createDrashRequest(url: string,  method: string = "get", options?: any): Drash.Http.Request {
+  const request = mockRequest(url, method, options)
+  const drashRequest = new Drash.Http.Request(request)
+  return drashRequest
+}
+
 /**
  * Get a mocked request object.
  *
@@ -126,4 +133,5 @@ export default {
   responseBody: function (response: Drash.Interfaces.ResponseOutput) {
     return decoder.decode(response.body as ArrayBuffer);
   },
+  createDrashRequest,
 };

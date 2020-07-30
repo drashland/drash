@@ -1,12 +1,13 @@
 import { Rhum } from "../../deps.ts";
 import { Drash } from "../../../mod.ts";
+import members from "../../members.ts";
 
 Rhum.testPlan("services/http_service_test.ts", () => {
   Rhum.testSuite("accepts()", () => {
     Rhum.testCase(
       "accepts the single type if it is present in the header",
       () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
+        const request = members.createDrashRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -22,7 +23,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "rejects the single type if it is not present in the header",
       () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
+        const request = members.createDrashRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -36,7 +37,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "accepts the first of multiple types if it is present in the header",
       () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
+        const request = members.createDrashRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -50,7 +51,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "accepts the second of multiple types if it is present in the header",
       () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
+        const request = members.createDrashRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -64,7 +65,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "rejects the multiple types if none are present in the header",
       () => {
-        const request = Rhum.mocks.ServerRequest("/", "get", {
+        const request = members.createDrashRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
