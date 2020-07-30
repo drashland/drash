@@ -201,7 +201,10 @@ Rhum.testPlan("create_app_test.ts", () => {
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // deps.ts
-        Rhum.asserts.assertEquals(await fileExists(testCaseTmpDirName + "/deps.ts"), true);
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/deps.ts"),
+          true,
+        );
         boilerPlateFile = await fetchFileContent(
           "/console/create_app/deps.ts",
         );
