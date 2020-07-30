@@ -24,29 +24,29 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
-      - name: Unit
-        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read --allow-env
+      # - name: Unit
+      #   run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read --allow-env
 
-      - name: Integration
-        run: |
-          deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/tests.ts
-          deno test --allow-all --config tsconfig.json tests/integration/app_3001_views/tests.ts
-          # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
-          deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/tests.ts
-          deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
-          deno test --allow-all --config tsconfig.json tests/integration/app_3005_middleware_resource_level/tests.ts
+      # - name: Integration
+      #   run: |
+      #     deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/tests.ts
+      #     deno test --allow-all --config tsconfig.json tests/integration/app_3001_views/tests.ts
+      #     # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
+      #     deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/tests.ts
+      #     deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
+      #     deno test --allow-all --config tsconfig.json tests/integration/app_3005_middleware_resource_level/tests.ts
 
-      - name: Create App (local)
-        run: |
-          deno cache create_app.ts
-          deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
+      # - name: Create App (local)
+      #   run: |
+      #     deno cache create_app.ts
+      #     deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
 
-      - name: Create App (http nix)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-        run: |
-          export CURRENT_BRANCH=${GITHUB_HEAD_REF#refs/heads/}
-          deno cache https://deno.land/x/drash@$CURRENT_BRANCH/create_app.ts
-          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
+      # - name: Create App (http nix)
+      #   if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+      #   run: |
+      #     export CURRENT_BRANCH=${GITHUB_HEAD_REF#refs/heads/}
+      #     deno cache https://deno.land/x/drash@$CURRENT_BRANCH/create_app.ts
+      #     deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
       - name: Create App (http windows)
         if: startsWith(matrix.os, 'windows')
