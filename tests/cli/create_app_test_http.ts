@@ -37,7 +37,7 @@ function getOsTmpDirName() {
  * @param string filename eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts"
  */
 function getFileContent(filePathAndName: string): string {
-  const fullFilepath = originalCWD + filePathAndName;
+  const fullFilepath = originalCWD + "/" + filePathAndName;
   const fileContent = decoder.decode(
     Deno.readFileSync(fullFilepath),
   ).replace(/\r\n/g, "\n");
