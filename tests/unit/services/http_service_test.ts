@@ -7,7 +7,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "accepts the single type if it is present in the header",
       () => {
-        const request = members.createDrashRequest("/", "get", {
+        const request = members.mockRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -23,7 +23,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "rejects the single type if it is not present in the header",
       () => {
-        const request = members.createDrashRequest("/", "get", {
+        const request = members.mockRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -37,7 +37,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "accepts the first of multiple types if it is present in the header",
       () => {
-        const request = members.createDrashRequest("/", "get", {
+        const request = members.mockRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -51,7 +51,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "accepts the second of multiple types if it is present in the header",
       () => {
-        const request = members.createDrashRequest("/", "get", {
+        const request = members.mockRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
@@ -65,7 +65,7 @@ Rhum.testPlan("services/http_service_test.ts", () => {
     Rhum.testCase(
       "rejects the multiple types if none are present in the header",
       () => {
-        const request = members.createDrashRequest("/", "get", {
+        const request = members.mockRequest("/", "get", {
           headers: {
             Accept: "application/json;text/html",
           },
