@@ -8,7 +8,7 @@
 import { Rhum } from "../deps.ts";
 import { red, green } from "../../deps.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
-let tmpDirNameCount = 0;
+let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 const drashUrl = "https://deno.land/x/drash@v1.x";
