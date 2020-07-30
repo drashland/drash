@@ -44,8 +44,8 @@ jobs:
       - name: Create App (http windows)
         if: startsWith(matrix.os, 'windows')
         run: |
-          $Env:CURRENT_BRANCH = ${GITHUB_HEAD_REF#refs/heads/}
-          deno cache https://deno.land/x/drash@$Env:CURRENT_BRANCH/create_app.ts
+          $env:CURRENT_BRANCH = ${GITHUB_HEAD_REF#refs/heads/}
+          deno cache https://deno.land/x/drash@$env:CURRENT_BRANCH/create_app.ts
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
       - name: Create App (http nix)
