@@ -31,6 +31,7 @@ async function copyFile(filePath: string, outputFile: string): Promise<void> {
     : outputFile;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
+  console.log(import.meta.url);
   try {
     const response = await fetch(fullFilePath);
     const contents = encoder.encode(await response.text());
