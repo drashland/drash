@@ -51,6 +51,7 @@ function getFileContent(filePathAndName: string): string {
  * Returns the contents of the fetched URL.
  */
 async function fetchFileContent(url: string): Promise<string> {
+  console.log(url);
   const response = await fetch(url);
   return await response.text();
 }
