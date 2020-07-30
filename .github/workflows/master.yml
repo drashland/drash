@@ -18,8 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        env: |
-          CURRENT_BRANCH=${GITHUB_HEAD_REF#refs/heads/}
+        env:
+          CURRENT_BRANCH: ${GITHUB_HEAD_REF#refs/heads/}
 
       - name: Install Deno v${{ matrix.deno }}
         uses: denolib/setup-deno@master
