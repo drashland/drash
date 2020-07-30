@@ -40,7 +40,6 @@ jobs:
         run: |
           deno cache create_app.ts
           deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
-          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
       - name: Create APP (http)
         run: |
