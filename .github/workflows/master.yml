@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        env:
+          CURRENT_BRANCH=${GITHUB_HEAD_REF#refs/heads/}
 
       - name: Install Deno v${{ matrix.deno }}
         uses: denolib/setup-deno@master
@@ -41,17 +43,8 @@ jobs:
           deno cache create_app.ts
           deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
 
-      - name: Create App (http windows)
-        if: startsWith(matrix.os, 'windows')
+      - name: Create App (http)
         run: |
-          $CURRENT_BRANCH=${GITHUB_HEAD_REF#refs/heads/}
-          deno cache https://deno.land/x/drash@$CURRENT_BRANCH/create_app.ts
-          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
-
-      - name: Create App (http nix)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-        run: |
-          export CURRENT_BRANCH=${GITHUB_HEAD_REF#refs/heads/}
           deno cache https://deno.land/x/drash@$CURRENT_BRANCH/create_app.ts
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
