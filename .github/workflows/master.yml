@@ -43,6 +43,12 @@ jobs:
 
       - name: Create APP (http)
         run: |
+          # These tests will almost always fail when in a new branch in a new
+          # PR. They will pass when merged in though because say we make a fix
+          # to the create_app script, the fix will be in a new branch in a new
+          # PR and not yet merged into the latest version of Drash. The tests
+          # for the create_app script will fetch the latest version of Drash
+          # and not the new branch in the new PR--testing against old code.
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
   linter:
