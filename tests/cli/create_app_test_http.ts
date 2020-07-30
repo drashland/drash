@@ -194,14 +194,14 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/app.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/app_api.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // deps.ts
         Rhum.asserts.assertEquals(await fileExists("deps.ts"), true);
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/deps.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
@@ -211,7 +211,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/config.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/config.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
@@ -221,7 +221,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/resources/home_resource_api.ts",
         );
         copiedFile = getFileContent(
@@ -235,7 +235,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           ),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/tests/resources/home_resource_test.ts",
         );
         copiedFile = getFileContent(
@@ -285,7 +285,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/app.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/app_web_app.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
@@ -295,7 +295,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/deps.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/deps.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
@@ -305,7 +305,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/config.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/config.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
@@ -315,7 +315,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/resources/home_resource.ts",
         );
         copiedFile = getFileContent(
@@ -329,7 +329,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           ),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/tests/resources/home_resource_test.ts",
         );
         copiedFile = getFileContent(
@@ -341,7 +341,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/public/js/index.js"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/public/js/index.js",
         ),
           copiedFile = getFileContent(
@@ -353,7 +353,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/public/css/index.css"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/public/css/index.css",
         ),
           copiedFile = getFileContent(
@@ -365,7 +365,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/public/views/index.html"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/public/views/index.html",
         );
         copiedFile = getFileContent(
@@ -421,7 +421,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/app.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/app_web_app.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
@@ -431,7 +431,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/deps.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/deps.ts",
         ), copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -440,7 +440,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/config.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/config.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
@@ -450,7 +450,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/resources/home_resource.ts",
         );
         copiedFile = getFileContent(
@@ -464,7 +464,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           ),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/tests/resources/home_resource_test.ts",
         );
         copiedFile = getFileContent(
@@ -481,7 +481,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/webpack.config.js"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/webpack_vue.config.js",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/webpack.config.js");
@@ -491,7 +491,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/package.json"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/package_vue.json",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/package.json");
@@ -505,7 +505,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/vue/App.vue"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/vue/app.vue",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/vue/App.vue");
@@ -515,7 +515,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/vue/app.js"),
           true,
         );
-        boilerPlateFile = fetchFileContent(
+        boilerPlateFile = await fetchFileContent(
           "/console/create_app/vue/app.js",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/vue/app.js");
