@@ -416,8 +416,9 @@ export class Server {
         template_engine: this.configs.template_engine,
       });
 
-      const extension = request.url.split(".")[1];
-
+      // Set the response's Content-Type type header based on the request's URL.
+      // For example, if the request's URL is /public/style.css, then the
+      // Content-Type header should be set to text/css.
       const mimeType = new Drash.Services.HttpService().getMimeType(
         request.url,
         true,
@@ -426,26 +427,32 @@ export class Server {
         response.headers.set("Content-Type", mimeType);
       }
 
-      if (
-        this.configs.pretty_links == null ||
-        extension != null
-      ) {
+      // Two things are happening here:
+      // 1. If pretty_links is not enabled, then serve what was requested; or
+      // 2. If the request.url has an extension (e.g., .js), then serve the
+      // requested asset. Since this occurs after the MIME code above, the
+      // client should receive a proper response in the proper format.
+      if (!this.configs.pretty_links || request.url.split(".")[1]) {
         response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
         await this.executeMiddlewareServerLevelAfterRequest(request, response);
         return response.sendStatic();
       }
 
-      const contents = Deno.readFileSync(
-        `${this.directory}/${request.url}/index.html`,
-      );
-
-      if (contents == null) {
-        response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
-        await this.executeMiddlewareServerLevelAfterRequest(request, response);
-        return response.sendStatic();
-      }
-
+      // If pretty links are enabled (that is, the code above was not executed),
+      // then see if we can read an index.html based on the requested URL. For
+      // example, if the request URL is /hello, then we will check to see if
+      // /hello/index.html exists by trying to read /hello/index.html.
       response.headers.set("Content-Type", "text/html");
+      const path = `${this.directory}${request.url}`;
+      let contents = Deno.readFileSync(
+        `${path}/index.html`,
+      );
+      // If an index.html file does not exist, then maybe the client is trying
+      // to request a different HTML file, so let's try reading the requested
+      // URL instead.
+      if (!contents) {
+        contents = Deno.readFileSync(path);
+      }
       response.body = contents;
       await this.executeMiddlewareServerLevelAfterRequest(request, response);
       return response.sendStatic();

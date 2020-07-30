@@ -208,27 +208,165 @@ Rhum.testPlan("http/server_test.ts", () => {
   });
 
   Rhum.testSuite("handleHttpRequestForStaticPathAsset", () => {
-    Rhum.testCase("Should respond with a 200 on a valid request", async () => {
-      let request = members.createDrashRequest(
-        "/tests/data/static_file.txt",
-        "get",
-      );
-      // Setup so we can make requests to a static file. This example will try get the `./tests/data/static_file.txt` file served
-      const server = new Drash.Http.Server({
-        directory: ".",
-        static_paths: ["/tests/data"],
-        response_output: "text/html",
-      });
-      await server.run({
-        hostname: "localhost",
-        port: 1667,
-      });
-      const res = await server.handleHttpRequestForStaticPathAsset(request);
-      const mimeType = res.headers.get("Content-Type");
-      await server.close();
-      Rhum.asserts.assertEquals(res.status, 200);
-      Rhum.asserts.assertEquals(mimeType, "text/plain");
-    });
+    Rhum.testCase(
+      "Should send a response of Content-Type text/plain",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/tests/data/static_file.txt",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: ["/tests/data"],
+          response_output: "text/html",
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForStaticPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+        await server.close();
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/plain");
+      },
+    );
+
+    Rhum.testCase(
+      "Should send a response of Content-Type application/json",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/tests/data/static_file.json",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: ["/tests/data"],
+          response_output: "text/html",
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForStaticPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+        await server.close();
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "application/json");
+      },
+    );
+
+    Rhum.testCase(
+      "Should send a response of Content-Type text/html",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/tests/data/static_file.html",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: ["/tests/data"],
+          response_output: "application/json",
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForStaticPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+        await server.close();
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/html");
+      },
+    );
+
+    Rhum.testCase(
+      "Should not try to read an index.html file if pretty links are not enabled",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/tests/data/static_file.html",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: ["/tests/data"],
+          response_output: "application/json",
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForStaticPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+        await server.close();
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/html");
+        Rhum.asserts.assertEquals(
+          decoder.decode(res.body as ArrayBuffer),
+          Deno.build.os === "windows" ? "test\r\n" : "test\n",
+        );
+      },
+    );
+
+    Rhum.testCase(
+      "Should read an index.html file if pretty links are enabled",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/tests/data",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: ["/tests/data"],
+          response_output: "application/json",
+          pretty_links: true,
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForStaticPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+        await server.close();
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/html");
+        Rhum.asserts.assertEquals(
+          decoder.decode(res.body as ArrayBuffer),
+          Deno.build.os === "windows"
+            ? "This is the index.html file for testing pretty links\r\n"
+            : "This is the index.html file for testing pretty links\n",
+        );
+      },
+    );
+
+    Rhum.testCase(
+      "Should read an html file if requested even when pretty links are enabled",
+      async () => {
+        let request = Rhum.mocks.ServerRequest(
+          "/tests/data/static_file.html",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: ["/tests/data"],
+          response_output: "application/json",
+          pretty_links: true,
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForStaticPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+        await server.close();
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/html");
+        Rhum.asserts.assertEquals(
+          decoder.decode(res.body as ArrayBuffer),
+          Deno.build.os === "windows" ? "test\r\n" : "test\n",
+        );
+      },
+    );
   });
 
   Rhum.testSuite("run()", () => {
