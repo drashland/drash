@@ -242,7 +242,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
 
-        Deno.run({cmd: ["rm -rf " + testCaseTmpDirName]});
+        Deno.run({ cmd: ["rm -rf " + testCaseTmpDirName] });
       },
     );
   });
@@ -378,7 +378,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           true,
         );
 
-        Deno.run({cmd: ["rm -rf " + testCaseTmpDirName]});
+        Deno.run({ cmd: ["rm -rf " + testCaseTmpDirName] });
       },
     );
   });
@@ -522,7 +522,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         copiedFile = getFileContent(testCaseTmpDirName + "/vue/app.js");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
 
-        Deno.run({cmd: ["rm -rf " + testCaseTmpDirName]});
+        Deno.run({ cmd: ["rm -rf " + testCaseTmpDirName] });
       },
     );
   });
