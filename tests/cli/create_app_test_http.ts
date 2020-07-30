@@ -38,7 +38,7 @@ function getOsTmpDirName() {
  */
 function getFileContent(filePathAndName: string): string {
   const fileContent = decoder.decode(
-    Deno.readFileSync(filePathAndName),
+    Deno.readFileSync(originalCWD + filePathAndName),
   ).replace(/\r\n/g, "\n");
   return fileContent;
 }
@@ -51,7 +51,6 @@ function getFileContent(filePathAndName: string): string {
  * Returns the contents of the fetched URL.
  */
 async function fetchFileContent(url: string): Promise<string> {
-  console.log(url);
   const response = await fetch(drashUrl + url);
   return await response.text();
 }
