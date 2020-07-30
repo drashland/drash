@@ -59,8 +59,10 @@ async function fetchFileContent(url: string): Promise<string> {
 // Need a way to check if a file exists
 // Thanks to https://stackoverflow.com/questions/56658114/how-can-one-check-if-a-file-or-directory-exists-using-deno
 const fileExists = async (filename: string): Promise<boolean> => {
+  const fullFilepath = originalCWD + filename;
+  console.log(fullFilepath);
   try {
-    await Deno.stat(originalCWD + filename);
+    await Deno.stat(fullFilepath);
     // successful, file or directory must exist
     return true;
   } catch (error) {
@@ -200,7 +202,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // deps.ts
-        Rhum.asserts.assertEquals(await fileExists("deps.ts"), true);
+        Rhum.asserts.assertEquals(await fileExists("/deps.ts"), true);
         boilerPlateFile = await fetchFileContent(
           "/console/create_app/deps.ts",
         );
