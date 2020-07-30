@@ -31,10 +31,14 @@ async function copyFile(filePath: string, outputFile: string): Promise<void> {
     : outputFile;
   console.info(`Copy ${fullFilePath} contents to:`);
   console.info(`  ${cwd}${outputFile}`);
-  console.log(import.meta.url);
   try {
-    const response = await fetch(fullFilePath);
-    const contents = encoder.encode(await response.text());
+    let contents;
+    if (import.meta.url.includes("http")) {
+      const response = await fetch(fullFilePath);
+      contents = encoder.encode(await response.text());
+    } else {
+      contents = Deno.readFileSync(fullFilePath);
+    }
     Deno.writeFileSync(cwd + outputFile, contents);
   } catch (error) {
     console.error(error);
