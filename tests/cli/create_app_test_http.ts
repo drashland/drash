@@ -11,13 +11,7 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-const latestBranchP = Deno.run(
-  {
-    cmd: ["git", "branch", "--show-current"],
-    stdout: "piped"
-  }
-);
-const latestBranch = new TextDecoder("utf-8").decode(await latestBranchP.output());
+const latestBranch = Deno.env.get("CURRENT_BRANCH");
 const drashUrl = "https://deno.land/x/drash@" + latestBranch;
 
 function getOsCwd() {
