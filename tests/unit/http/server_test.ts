@@ -26,7 +26,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      let request = members.createDrashRequest();
+      let request = members.mockRequest();
       request = await server.getRequest(request);
       Rhum.asserts.assertEquals("function", typeof request.getBodyFile);
       Rhum.asserts.assertEquals("function", typeof request.getBodyParam);
@@ -37,7 +37,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      let request = members.createDrashRequest();
+      let request = members.mockRequest();
       const body = encoder.encode(JSON.stringify({
         hello: "world",
       }));
@@ -57,7 +57,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      const request = members.createDrashRequest("/favicon.ico");
+      const request = members.mockRequest("/favicon.ico");
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(200, response.status_code);
     });
@@ -66,7 +66,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      const request = members.createDrashRequest("/");
+      const request = members.mockRequest("/");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         decoder.decode(response.body as ArrayBuffer),
@@ -82,7 +82,7 @@ Rhum.testPlan("http/server_test.ts", () => {
         body_param: "hello",
       }));
       const reader = new Deno.Buffer(body as ArrayBuffer);
-      const request = members.createDrashRequest("/", "post", {
+      const request = members.mockRequest("/", "post", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -101,12 +101,12 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       let request;
       let response;
-      request = members.createDrashRequest("/users/1");
+      request = members.mockRequest("/users/1");
       response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(members.responseBody(response), {
         user_id: "1",
       });
-      request = members.createDrashRequest("/notes/1557");
+      request = members.mockRequest("/notes/1557");
       response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         decoder.decode(response.body as ArrayBuffer),
@@ -118,7 +118,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [GetHeaderParam],
       });
-      const request = members.createDrashRequest("/", "get", {
+      const request = members.mockRequest("/", "get", {
         headers: {
           id: 12345,
         },
@@ -134,7 +134,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [GetUrlQueryParam],
       });
-      const request = members.createDrashRequest("/?id=123459");
+      const request = members.mockRequest("/?id=123459");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         decoder.decode(response.body as ArrayBuffer),
@@ -148,7 +148,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       let request;
       let response;
-      request = members.createDrashRequest("/notes/1234", "get", {
+      request = members.mockRequest("/notes/1234", "get", {
         server: server,
       });
       response = await server.handleHttpRequest(request);
@@ -165,7 +165,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       let request;
       let response;
-      request = members.createDrashRequest("/notes/123", "get", {
+      request = members.mockRequest("/notes/123", "get", {
         server: server,
       });
       response = await server.handleHttpRequest(request);
@@ -179,7 +179,7 @@ Rhum.testPlan("http/server_test.ts", () => {
 
   Rhum.testSuite("handleHttpRequestError()", () => {
     Rhum.testCase("Returns the correct response", async () => {
-      const request = members.createDrashRequest("/", "get");
+      const request = members.mockRequest("/", "get");
       const server = new Drash.Http.Server({});
       const error = {
         code: 404,
@@ -196,7 +196,7 @@ Rhum.testPlan("http/server_test.ts", () => {
 
   Rhum.testSuite("handleHttpRequestForFavicon", () => {
     Rhum.testCase("Returns the correct response", async () => {
-      const request = members.createDrashRequest("/favicon.ico", "get");
+      const request = members.mockRequest("/favicon.ico", "get");
       const server = new Drash.Http.Server({});
       const response = await server.handleHttpRequestForFavicon(request);
       Rhum.asserts.assertEquals(response.body, "");
@@ -211,7 +211,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should send a response of Content-Type text/plain",
       async () => {
-        let request = members.createDrashRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.txt",
           "get",
         );
@@ -235,7 +235,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should send a response of Content-Type application/json",
       async () => {
-        let request = members.createDrashRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.json",
           "get",
         );
@@ -259,7 +259,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should send a response of Content-Type text/html",
       async () => {
-        let request = members.createDrashRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.html",
           "get",
         );
@@ -283,7 +283,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should not try to read an index.html file if pretty links are not enabled",
       async () => {
-        let request = members.createDrashRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.html",
           "get",
         );
@@ -311,7 +311,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should read an index.html file if pretty links are enabled",
       async () => {
-        let request = members.createDrashRequest(
+        let request = members.mockRequest(
           "/tests/data",
           "get",
         );
@@ -342,7 +342,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should read an html file if requested even when pretty links are enabled",
       async () => {
-        let request = members.createDrashRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.html",
           "get",
         );
