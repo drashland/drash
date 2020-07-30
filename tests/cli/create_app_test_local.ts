@@ -7,11 +7,11 @@
 
 import { Rhum } from "../deps.ts";
 import { red, green } from "../../deps.ts";
-import members from "../members.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 0;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
+const drashUrl = "https://deno.land/x/drash@v1.x";
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
@@ -70,7 +70,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           "--allow-read",
           "--allow-write",
           "--allow-run",
-          "create_app.ts",
+          drashUrl + "/create_app.ts",
         ],
         stdout: "piped",
         stderr: "piped",
@@ -100,7 +100,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           "--allow-read",
           "--allow-write",
           "--allow-run",
-          "create_app.ts",
+          drashUrl + "/create_app.ts",
           "--help",
         ],
         stdout: "piped",
@@ -159,7 +159,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-write",
             "--allow-net",
             "--allow-run",
-            "../create_app.ts",
+            drashUrl + "/create_app.ts",
             "--api",
           ],
           stdout: "piped",
@@ -248,7 +248,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-write",
             "--allow-net",
             "--allow-run",
-            "../create_app.ts",
+            drashUrl + "/create_app.ts",
             "--web-app",
           ],
           stdout: "piped",
@@ -382,7 +382,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-write",
             "--allow-net",
             "--allow-run",
-            "../create_app.ts",
+            drashUrl + "/create_app.ts",
             "--web-app",
             "--with-vue",
           ],
@@ -520,7 +520,7 @@ Rhum.testPlan("create_app_test.ts", () => {
             "--allow-read",
             "--allow-write",
             "--allow-run",
-            "create_app.ts",
+            drashUrl + "/create_app.ts",
             "--api",
             "--web-app",
           ],
