@@ -9,7 +9,7 @@ const decoder = new TextDecoder("utf-8");
 
 // deno-lint-ignore no-explicit-any
 function createDrashRequest(
-  url: string,
+  url: string = "/",
   method: string = "get",
   options?: any,
 ): Drash.Http.Request {
