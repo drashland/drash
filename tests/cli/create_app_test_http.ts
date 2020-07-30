@@ -95,10 +95,10 @@ Rhum.testPlan("create_app_test.ts", () => {
       const stdout = new TextDecoder("utf-8").decode(await p.output());
       const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
       Rhum.asserts.assertEquals(
-        stderr,
-        red(
+        stderr.includes(
           "Too few options were given. Use the --help option for more information.",
-        ) + "\n",
+        ),
+        true,
       );
       Rhum.asserts.assertEquals(stdout, "");
       Rhum.asserts.assertEquals(status.code, 1);
