@@ -211,7 +211,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should send a response of Content-Type text/plain",
       async () => {
-        let request = Rhum.mocks.ServerRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.txt",
           "get",
         );
@@ -235,7 +235,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should send a response of Content-Type application/json",
       async () => {
-        let request = Rhum.mocks.ServerRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.json",
           "get",
         );
@@ -259,7 +259,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should send a response of Content-Type text/html",
       async () => {
-        let request = Rhum.mocks.ServerRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.html",
           "get",
         );
@@ -283,7 +283,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should not try to read an index.html file if pretty links are not enabled",
       async () => {
-        let request = Rhum.mocks.ServerRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.html",
           "get",
         );
@@ -311,7 +311,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should read an index.html file if pretty links are enabled",
       async () => {
-        let request = Rhum.mocks.ServerRequest(
+        let request = members.mockRequest(
           "/tests/data",
           "get",
         );
@@ -342,7 +342,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase(
       "Should read an html file if requested even when pretty links are enabled",
       async () => {
-        let request = Rhum.mocks.ServerRequest(
+        let request = members.mockRequest(
           "/tests/data/static_file.html",
           "get",
         );
@@ -428,7 +428,8 @@ Rhum.testPlan("http/server_test.ts", () => {
         hostname: "localhost",
         port: 1667,
       });
-      Rhum.asserts.assert(server.deno_server);
+      const denoServerExists: boolean = !!server.deno_server;
+      Rhum.asserts.assert(denoServerExists);
       server.close();
       Rhum.asserts.assert(!server.deno_server);
     });
