@@ -11,9 +11,13 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-const latestBranch = Deno.run({
-  cmd: ["git branch --show-current"]
-});
+const latestBranchP = Deno.run(
+  {
+    cmd: ["git", "branch", "--show-current"],
+    stdout: "piped"
+  }
+);
+const latestBranch = new TextDecoder("utf-8").decode(await latestBranchP.output());
 const drashUrl = "https://deno.land/x/drash@" + latestBranch;
 
 function getOsCwd() {
@@ -35,7 +39,7 @@ function getOsTmpDirName() {
 /**
  * To keep line endings consistent all on operating systems.
  * Requires both the boilerplate and newly created files to get passed through this to ensure they are the same
- * 
+ *
  * @param string filename eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts"
  */
 function getFileContent(filePathAndName: string): string {
