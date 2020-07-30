@@ -60,7 +60,6 @@ async function fetchFileContent(url: string): Promise<string> {
 // Thanks to https://stackoverflow.com/questions/56658114/how-can-one-check-if-a-file-or-directory-exists-using-deno
 const fileExists = async (filename: string): Promise<boolean> => {
   const fullFilepath = originalCWD + "/" + filename;
-  console.log(fullFilepath);
   try {
     await Deno.stat(fullFilepath);
     // successful, file or directory must exist
