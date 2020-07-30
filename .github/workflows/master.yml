@@ -52,6 +52,7 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: |
           $CURRENT_BRANCH=$GITHUB_HEAD_REF
+          echo $GITHUB_HEAD_REF
           deno cache "https://deno.land/x/drash@$(git branch --show-current)/create_app.ts"
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
