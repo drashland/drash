@@ -24,6 +24,14 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Show branch name
+        run: echo ${{ steps.extract_branch.outputs.branch }}
+
       - name: Unit
         run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read --allow-env
 
