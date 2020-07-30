@@ -94,9 +94,14 @@ Rhum.testPlan("create_app_test.ts", () => {
       const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
       Rhum.asserts.assertEquals(
         stderr,
-        red(
-          "Too few options were given. Use the --help option for more information.",
-        ) + "\n",
+        "Download https://deno.land/x/drash@" + latestBranch +
+          "/create_app.ts\n" +
+          "Download https://deno.land/x/drash@" + latestBranch + "/deps.ts\n" +
+          "Check https://deno.land/x/drash@" + latestBranch +
+          "/create_app.ts\n" +
+          red(
+            "Too few options were given. Use the --help option for more information.",
+          ) + "\n",
       );
       Rhum.asserts.assertEquals(stdout, "");
       Rhum.asserts.assertEquals(status.code, 1);
@@ -241,8 +246,6 @@ Rhum.testPlan("create_app_test.ts", () => {
           testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-
-        Deno.run({ cmd: ["rm -rf " + testCaseTmpDirName] });
       },
     );
   });
@@ -376,8 +379,6 @@ Rhum.testPlan("create_app_test.ts", () => {
           await fileExists(testCaseTmpDirName + "/public/img"),
           true,
         );
-
-        Deno.run({ cmd: ["rm -rf " + testCaseTmpDirName] });
       },
     );
   });
@@ -519,8 +520,6 @@ Rhum.testPlan("create_app_test.ts", () => {
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/vue/app.js");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-
-        Deno.run({ cmd: ["rm -rf " + testCaseTmpDirName] });
       },
     );
   });
