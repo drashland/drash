@@ -50,6 +50,7 @@ jobs:
           # for the create_app script will fetch the latest version of Drash
           # and not the new branch in the new PR--testing against old code.
           export CURRENT_BRANCH=$(git branch --show-current)
+          echo $(git branch --show-current)
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
   linter:
