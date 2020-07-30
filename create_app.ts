@@ -34,7 +34,8 @@ async function copyFile(filePath: string, outputFile: string): Promise<void> {
   console.info(`  ${cwd}${outputFile}`);
   console.log("test");
   console.log(cwd + outputFile);
-  const contents = Deno.readFileSync(fullFilePath);
+  const response = await fetch(fullFilePath);
+  const contents = encoder.encode(await response.text());
   Deno.writeFileSync(cwd + outputFile, contents);
 }
 
