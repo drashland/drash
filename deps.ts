@@ -1,1 +1,1 @@
-export { Drash } from "https://deno.land/x/drash@v1.0.8/mod.ts";
+export { Drash } from "https://deno.land/x/drash@v1.2.1/mod.ts";
