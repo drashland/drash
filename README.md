@@ -4,10 +4,10 @@
 </p>
 <p align="center">A middleware library for <a href="https://github.com/drashland/deno-drash">Drash</a></p>
 <p align="center">
-  <a href="https://github.com/drashland/deno-drash/releases">
+  <a href="https://github.com/drashland/deno-drash-middleware/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash-middleware.svg?color=bright_green&label=latest">
   </a>
-  <a href="https://github.com/drashland/deno-drash/actions">
+  <a href="https://github.com/drashland/deno-drash-middleware/actions">
     <img src="https://img.shields.io/github/workflow/status/drashland/deno-drash-middleware/master?label=ci">
   </a>
   <a href="https://discord.gg/SgejNXq">

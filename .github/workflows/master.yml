@@ -31,6 +31,9 @@ jobs:
         run: deno test --allow-env --allow-net paladin/tests/
 
   linter:
+    strategy:
+      matrix:
+        deno: ["1.2.1"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
