@@ -1,0 +1,44 @@
+name: master
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        deno: ["1.2.1"]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno v${{ matrix.deno }}
+        uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Dexter
+        run: deno test --allow-env --allow-net dexter/tests/
+
+      - name: Paladin
+        run: deno test --allow-env --allow-net paladin/tests/
+
+  linter:
+    # Only one OS is required since fmt is cross platform
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno v${{ matrix.deno }}
+        uses: denolib/setup-deno@master
+
+      - name: Formatter
+        run: deno fmt --check
