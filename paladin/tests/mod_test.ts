@@ -11,7 +11,7 @@ class Resource extends Drash.Http.Resource {
 }
 
 async function runServer(
-  paladin: any,
+  paladin: Paladin,
   port: number,
 ): Promise<Drash.Http.Server> {
   const server = new Drash.Http.Server({

@@ -39,16 +39,16 @@ export function Dexter(
   // - tag_string
   // - tag_string_fns
   if (configs) {
-    if (!configs.hasOwnProperty("enabled")) {
+    if (!configs.enabled) {
       configs.enabled = defaultConfigs.enabled;
     }
-    if (!configs.hasOwnProperty("level")) {
+    if (!configs.level) {
       configs.level = defaultConfigs.level;
     }
-    if (!configs.hasOwnProperty("tag_string")) {
+    if (!configs.tag_string) {
       configs.tag_string = defaultConfigs.tag_string;
     }
-    if (!configs.hasOwnProperty("tag_string_fns")) {
+    if (!configs.tag_string_fns) {
       configs.tag_string_fns = defaultConfigs.tag_string_fns;
     }
   }
