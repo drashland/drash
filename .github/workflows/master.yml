@@ -39,6 +39,8 @@ jobs:
 
       - name: Install Deno v${{ matrix.deno }}
         uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno }}
 
       - name: Formatter
         run: deno fmt --check
