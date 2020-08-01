@@ -3,6 +3,20 @@
   <h1 align="center">Drash Middleware</h1>
 </p>
 <p align="center">A middleware library for <a href="https://github.com/drashland/deno-drash">Drash</a></p>
+<p align="center">
+  <a href="https://github.com/drashland/deno-drash-middleware/releases">
+    <img src="https://img.shields.io/github/release/drashland/deno-drash-middleware.svg?color=bright_green&label=latest">
+  </a>
+  <a href="https://github.com/drashland/deno-drash-middleware/actions">
+    <img src="https://img.shields.io/github/workflow/status/drashland/deno-drash-middleware/master?label=ci">
+  </a>
+  <a href="https://discord.gg/SgejNXq">
+    <img src="https://img.shields.io/badge/chat-on%20discord-blue">
+  </a>
+  <a href="https://twitter.com/drash_land">
+    <img src="https://img.shields.io/twitter/url?label=%40drash_land&style=social&url=https%3A%2F%2Ftwitter.com%2Fdrash_land">
+  </a>
+</p>
 
 ---
 

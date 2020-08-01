@@ -39,15 +39,19 @@ export function Dexter(
   // - tag_string
   // - tag_string_fns
   if (configs) {
+    // deno-lint-ignore no-prototype-builtins
     if (!configs.hasOwnProperty("enabled")) {
       configs.enabled = defaultConfigs.enabled;
     }
+    // deno-lint-ignore no-prototype-builtins
     if (!configs.hasOwnProperty("level")) {
       configs.level = defaultConfigs.level;
     }
+    // deno-lint-ignore no-prototype-builtins
     if (!configs.hasOwnProperty("tag_string")) {
       configs.tag_string = defaultConfigs.tag_string;
     }
+    // deno-lint-ignore no-prototype-builtins
     if (!configs.hasOwnProperty("tag_string_fns")) {
       configs.tag_string_fns = defaultConfigs.tag_string_fns;
     }

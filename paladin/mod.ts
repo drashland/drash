@@ -40,7 +40,6 @@ interface Configs {
 export function Paladin(
   configs: Configs = {},
 ) {
-
   if (!configs.hsts) {
     configs.hsts = {};
   }
