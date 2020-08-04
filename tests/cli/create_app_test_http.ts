@@ -15,7 +15,8 @@ let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
 if (!latestBranch) {
   latestBranch = "master";
 }
-const drashUrl = "https://deno.land/x/drash@" + latestBranch;
+const drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/" +
+  latestBranch;
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
