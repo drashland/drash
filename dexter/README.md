@@ -132,9 +132,9 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
 
     ```typescript
     // File: app.ts
-    import { Drash } from "https://deno.land/x/drash@v1.x/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v{latest}/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Dexter } from "https://deno.land/x/drash_middleware@v0.x/dexter.ts";
+    import { Dexter } from "https://deno.land/x/drash_middleware@v{latest}/dexter.ts";
 
     const dexter = Dexter({
       enabled: true,
