@@ -118,7 +118,6 @@ export class Response {
    * set.
    */
   public render(
-    // deno-lint-ignore no-explicit-any
     ...args: unknown[]
   ): string | boolean {
     if (!this.views_path) {

@@ -1,4 +1,5 @@
 import { Drash } from "../../mod.ts";
+import {ServerMiddleware} from "./server_middleware.ts";
 
 /**
  * Contains the type of ServerConfigs
@@ -38,7 +39,7 @@ import { Drash } from "../../mod.ts";
  *           multipart_form_data: 128 // This would be translated to 128MB
  *         }
  *
- * middleware?: any
+ * middleware?: ServerMiddleware
  *
  *     The middleware that the server should use. Server-level middleware
  *     should be placed in middleware.server_level. Resource-level
@@ -57,7 +58,7 @@ import { Drash } from "../../mod.ts";
  *     /public/app/index.html exists, then you can go to /public/app and it
  *     will serve the index.html in that static directory.
  *
- * resources?: any
+ * resources?: Drash.Interfaces.Resource[]
  *
  *     An array of resources that the server should register. Passing in 0
  *     resources means clients can't access anything on the server--because
@@ -100,19 +101,7 @@ export interface ServerConfigs {
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
-  middleware?: {
-    before_request?: Array<
-      | ((request: Drash.Http.Request) => Promise<void>)
-      | ((request: Drash.Http.Request) => void)
-    >;
-    after_request?: Array<
-      | ((
-        request: Drash.Http.Request,
-        response: Drash.Http.Response,
-      ) => Promise<void>)
-      | ((request: Drash.Http.Request, response: Drash.Http.Response) => void)
-    >;
-  };
+  middleware?:ServerMiddleware;
   pretty_links?: boolean;
   resources?: Drash.Interfaces.Resource[];
   response_output?: string;

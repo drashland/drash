@@ -60,14 +60,14 @@ export function Middleware(middlewares: MiddlewareType) {
  *
  * @param middlewares - Contains all middleware to be run
  */
-function MethodMiddleware(middlewares: MiddlewareType): any {
+function MethodMiddleware(middlewares: MiddlewareType): (target: Drash.Http.Resource, propertyKey: string, descriptor: PropertyDescriptor) => any { // The return type should be `PropertyDescriptor` as that is what is returned, but as we modify `descriptor.value`, the actual returned type is slightly different
   return function (
-    target: any,
+    target: Drash.Http.Resource,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
     const originalFunction = descriptor.value;
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) { // `args` seems to always be `[]`
       const { request, response } = Object.getOwnPropertyDescriptors(this);
       // Execute before_request Middleware if exist
       if (middlewares.before_request != null) {
@@ -98,7 +98,7 @@ function MethodMiddleware(middlewares: MiddlewareType): any {
  * @param middlewares - Contains all middleware to be run
  */
 function ClassMiddleware(middlewares: MiddlewareType) {
-  return function <T extends { new (...args: any[]): {} }>(constr: T) {
+  return function <T extends { new (...args: unknown[]): {} }>(constr: T) { // `args` seems to always be `[]`
     const classFunctions = Object.getOwnPropertyDescriptors(constr.prototype);
 
     for (const key in classFunctions) {

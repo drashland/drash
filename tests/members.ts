@@ -10,17 +10,24 @@ const decoder = new TextDecoder("utf-8");
 /**
  * Get a mocked request object.
  *
+ * The reason there's a lot of `any`'s in this method is because
+ * it's our own testing method, and we cannot compile if we use
+ * the ServerRequest types. It isn't a problem though as
+ * it's purely for testing
+ *
  * @param string url
  * @param string method
  * @param any
  *     {
  *       headers: { [key: string]: string }
  *     }
+ *
+ * @returns A server request object (ServerRequest)
  */
 // deno-lint-ignore no-explicit-any
 function mockRequest(url = "/", method = "get", options?: any): any {
   // deno-lint-ignore no-explicit-any
-  let request: any = new ServerRequest();
+  let request: any = new ServerRequest(); // Type: ServerRequest, but can't type it so as we modify the request object (thus deferring from the original type)
   request.url = url;
   request.method = method;
   request.headers = new Headers();
@@ -67,7 +74,7 @@ interface IMakeRequestOptions {
 }
 
 // deno-lint-ignore no-explicit-any
-function assertResponseJsonEquals(actual: any, expected: any) {
+function assertResponseJsonEquals(actual: any, expected: any) { // `any` because it's for testing, and the params could literally be anything
   let response;
   try {
     response = Rhum.asserts.assertEquals(JSON.parse(actual), expected);

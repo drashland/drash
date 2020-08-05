@@ -112,19 +112,30 @@ export namespace Drash {
    * A property to hold all members added via Drash.addMember(). This property
    * allows users to access members via Drash.Members.SomeMember and acts like
    * a namespace for members that are external to Drash.
+   *
+   *     Members.myFunction();
+   *     Members.myValue;
    */
-  export const Members: { [key: string]: any } = {};
+  // deno-lint-ignore no-explicit-any
+  export const Members: { [key: string]: any } = {}; // This is any because we get errors like "Drash.Members.MyFunction() is not callable"
   export type Members = {};
 
   /**
    * Add a member to the Members namespace. After adding a member, you can use
-   * the member via Drash.Members.YourMember.doSomething().
+   * the member via Drash.Members.YourMember.doSomething() or
+   * Drash.Members.YourMember().
+   *
+   *     addMember("hello");
+   *     addMember({ name: Drash });
+   *     addMember(class A {})
+   *     addMember(function () {})
    *
    * @param name - The member's name which can be accessed via
    * `Drash.Members[name]`.
-   * @param member - The member.
+   * @param member - The member to add. Can be a string, function, boolean, number, class or key value pair.
    */
-  export function addMember(name: string, member: any) {
+  // deno-lint-ignore no-explicit-any
+  export function addMember(name: string, member: Function|{[key: string]: unknown}|string|{new (): any}|boolean|number) { // Class type is any because any class could be passed in
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
         `Members must be unique: "${name}" was already added.`,
