@@ -35,7 +35,7 @@ On creating a new middleware, use the below as guidelines on how to get started.
 
 * `README.md` file showing how to use the middleware. Drash is a documentation-driven codebase, so the documentation is very important.
 
-* Tests are required.
+* Tests are required, and `/.github/workflows/master.yml` must be updated to include the running of your middleeware tests. When writing tests, you are free to use [Rhum](https://github.com/drashland/rhum).
 
 ## Pull Requests
 
