@@ -32,7 +32,7 @@
  *
  *         {some_tag} | {some_tag} * {some_tag} [{some_tag}]`.
  *
- * tag_string_fns?: any
+ * tag_string_fns?: {[key: string]: any}
  *
  *     This takes an object of key-value pairs where the key is the name of
  *     the tag defined in the `tag_string` config. This object is used to
@@ -53,7 +53,6 @@ export interface LoggerConfigs {
   file?: string;
   level?: string;
   tag_string?: string;
-  // deno-lint-ignore no-explicit-any
-  tag_string_fns?: any;
+  tag_string_fns?: { [key: string]: any }; // `any` because it can be a string, or an object with functions and/or strings, and the compiler throws errors when trying to execute certain logic with said type
   test?: boolean;
 }

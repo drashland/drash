@@ -671,7 +671,7 @@ export class Server {
    *
    * @param middleware - The middlewares to be added to the server
    */
-  protected addMiddleware(middlewares: any): void {
+  protected addMiddleware(middlewares: ServerMiddleware): void {
     // Add server-level middleware
     if (middlewares.before_request != null) {
       this.middleware.before_request = [];
