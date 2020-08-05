@@ -1,5 +1,5 @@
 import { Drash } from "../../mod.ts";
-import {ServerMiddleware} from "./server_middleware.ts";
+import { ServerMiddleware } from "./server_middleware.ts";
 
 /**
  * Contains the type of ServerConfigs
@@ -101,7 +101,7 @@ export interface ServerConfigs {
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
-  middleware?:ServerMiddleware;
+  middleware?: ServerMiddleware;
   pretty_links?: boolean;
   resources?: Drash.Interfaces.Resource[];
   response_output?: string;

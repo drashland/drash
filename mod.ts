@@ -135,7 +135,16 @@ export namespace Drash {
    * @param member - The member to add. Can be a string, function, boolean, number, class or key value pair.
    */
   // deno-lint-ignore no-explicit-any
-  export function addMember(name: string, member: Function|{[key: string]: unknown}|string|{new (): any}|boolean|number) { // Class type is any because any class could be passed in
+  export function addMember(
+    name: string,
+    member:
+      | Function
+      | { [key: string]: unknown }
+      | string
+      | { new (): any }
+      | boolean
+      | number,
+  ) { // Class type is any because any class could be passed in
     if (Members[name]) {
       throw new Exceptions.NameCollisionException(
         `Members must be unique: "${name}" was already added.`,

@@ -53,6 +53,6 @@ export interface LoggerConfigs {
   file?: string;
   level?: string;
   tag_string?: string;
-  tag_string_fns?: {[key: string]: any}; // `any` because it can be a string, or an object with functions and/or strings, and the compiler throws errors when trying to execute certain logic with said type
+  tag_string_fns?: { [key: string]: any }; // `any` because it can be a string, or an object with functions and/or strings, and the compiler throws errors when trying to execute certain logic with said type
   test?: boolean;
 }

@@ -80,7 +80,7 @@ Rhum.testPlan("mod_test.ts", () => {
     });
 
     Rhum.testCase("different data members can be added", () => {
-      let data: {[key: string]: boolean|string } = {
+      let data: { [key: string]: boolean | string } = {
         myBooleanTrue: true,
         myBooleanFalse: false,
         myString: "string",

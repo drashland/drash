@@ -60,7 +60,13 @@ export function Middleware(middlewares: MiddlewareType) {
  *
  * @param middlewares - Contains all middleware to be run
  */
-function MethodMiddleware(middlewares: MiddlewareType): (target: Drash.Http.Resource, propertyKey: string, descriptor: PropertyDescriptor) => any { // The return type should be `PropertyDescriptor` as that is what is returned, but as we modify `descriptor.value`, the actual returned type is slightly different
+function MethodMiddleware(
+  middlewares: MiddlewareType,
+): (
+  target: Drash.Http.Resource,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) => any { // The return type should be `PropertyDescriptor` as that is what is returned, but as we modify `descriptor.value`, the actual returned type is slightly different
   return function (
     target: Drash.Http.Resource,
     propertyKey: string,

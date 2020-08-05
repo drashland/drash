@@ -38,7 +38,9 @@ Rhum.testPlan("dictionaries/log_levels_test.ts", () => {
       },
     };
 
-    let actual: {[key: string]: Drash.Interfaces.LogLevelStructure|undefined} = {};
+    let actual: {
+      [key: string]: Drash.Interfaces.LogLevelStructure | undefined;
+    } = {};
 
     for (let logLevel in expected) {
       actual[logLevel] = Drash.Dictionaries.LogLevels.get(logLevel);
