@@ -26,13 +26,20 @@ Rhum.testPlan("browser_request_resource.ts", () => {
       await runServer(server);
 
       // Example browser request
-      const response = await members.fetch.get("http://localhost:3000/browser-request", {
-        headers: {
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+      const response = await members.fetch.get(
+        "http://localhost:3000/browser-request",
+        {
+          headers: {
+            "Accept":
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+          },
         },
-      });
-      Rhum.asserts.assertEquals(await response.text(), '{}'); // would be null
-      Rhum.asserts.assertEquals(response.headers.get("Content-Type"), "application/json")
+      );
+      Rhum.asserts.assertEquals(await response.text(), "{}"); // would be null
+      Rhum.asserts.assertEquals(
+        response.headers.get("Content-Type"),
+        "application/json",
+      );
 
       await server.close();
     });

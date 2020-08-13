@@ -92,11 +92,14 @@ export class Response {
     this.views_path = options.views_path;
     if (this.options && this.options.default_response_content_type) {
       //const defaultContentType = this.options.default_response_content_type ?? "application/json";
-      this.headers.set("Content-Type", this.options.default_response_content_type)
+      this.headers.set(
+        "Content-Type",
+        this.options.default_response_content_type,
+      );
     } else {
       this.headers.set(
-          "Content-Type",
-          this.getContentTypeFromRequestAcceptHeader(),
+        "Content-Type",
+        this.getContentTypeFromRequestAcceptHeader(),
       );
     }
   }
@@ -322,7 +325,7 @@ export class Response {
         // Do nothing... defaults to returning  application/json below
       }
     }
-    return "application/json"
+    return "application/json";
   }
 
   /**
