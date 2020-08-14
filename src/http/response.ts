@@ -90,10 +90,17 @@ export class Response {
     this.headers = new Headers();
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
-    this.headers.set(
-      "Content-Type",
-      this.getContentTypeFromRequestAcceptHeader(),
-    );
+    if (this.options && this.options.default_response_content_type) {
+      this.headers.set(
+        "Content-Type",
+        this.options.default_response_content_type,
+      );
+    } else {
+      this.headers.set(
+        "Content-Type",
+        this.getContentTypeFromRequestAcceptHeader(),
+      );
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -303,7 +310,7 @@ export class Response {
     if (accept) {
       try {
         let contentTypes = accept.split(";")[0].trim();
-        if (contentTypes && contentTypes == "*/*") {
+        if (contentTypes && contentTypes === "*/*") {
           return "application/json";
         }
         if (contentTypes.includes(",")) {
@@ -314,16 +321,10 @@ export class Response {
           return firstType;
         }
       } catch (error) {
-        // Do nothing... fall through down to the contentType stuff below
+        // Do nothing... defaults to returning  application/json below
       }
     }
-
-    let contentType = "application/json"; // default to application/json
-    if (this.options) {
-      contentType = this.options.default_response_content_type ?? contentType;
-    }
-
-    return contentType;
+    return "application/json";
   }
 
   /**

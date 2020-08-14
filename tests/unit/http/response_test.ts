@@ -4,6 +4,36 @@ import { Drash } from "../../../mod.ts";
 const decoder = new TextDecoder();
 
 Rhum.testPlan("http/response_test.ts", () => {
+  Rhum.testSuite("constructor()", () => {
+    Rhum.testCase(
+      "Uses the passed in default response output for headers",
+      () => {
+        const request = members.mockRequest("/", "get", {
+          headers: {
+            "Accept": "something else",
+          },
+        });
+        const response = new Drash.Http.Response(request, {
+          default_response_content_type: "application/json",
+        });
+        Rhum.asserts.assertEquals(
+          response.headers.get("Content-Type"),
+          "application/json",
+        );
+      },
+    );
+    Rhum.testCase(
+      "Uses Accept header for setting the ContentType header when no config",
+      () => {
+        const request = members.mockRequest("/", "get");
+        const response = new Drash.Http.Response(request);
+        Rhum.asserts.assertEquals(
+          response.headers.get("Content-Type"),
+          "application/json",
+        );
+      },
+    );
+  });
   Rhum.testSuite("render()", () => {
     Rhum.testCase("Returns false is `views_path` is falsy", () => {
       const request = members.mockRequest("/");

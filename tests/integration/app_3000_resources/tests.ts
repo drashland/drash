@@ -6,3 +6,4 @@ import "./cookie_resource_test.ts";
 import "./files_resource_test.ts";
 import "./users_resource_test.ts";
 import "./optional_path_params_test.ts";
+import "./browser_request_resource_test.ts";
