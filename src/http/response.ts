@@ -91,7 +91,6 @@ export class Response {
     this.template_engine = options.template_engine;
     this.views_path = options.views_path;
     if (this.options && this.options.default_response_content_type) {
-      //const defaultContentType = this.options.default_response_content_type ?? "application/json";
       this.headers.set(
         "Content-Type",
         this.options.default_response_content_type,
