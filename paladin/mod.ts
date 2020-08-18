@@ -33,13 +33,13 @@ interface Configs {
 }
 
 /**
- * A logger middleware inspired by https://www.npmjs.com/package/morgan.
+ * A middleware to help secure you applications, inspired by https://github.com/helmetjs/helmet.
  *
- * @param configs - See IDexterConfigs
+ * @param configs - See Configs
  */
 export function Paladin(
   configs: Configs = {},
-) {
+): (request: Drash.Http.Request, response?: Drash.Http.Response) => void {
   if (!configs.hsts) {
     configs.hsts = {};
   }
