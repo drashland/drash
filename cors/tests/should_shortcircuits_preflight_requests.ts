@@ -7,17 +7,26 @@ Rhum.testPlan("should_shortcircuits_preflight_requests.ts", () => {
 
       response = await fetch("http://localhost:3003/middleware", {
         method: "OPTIONS",
+        headers: {
+          "Origin": "localhost",
+          "Access-Control-Request-Method": "GET",
+        },
       });
 
       Rhum.asserts.assertEquals(
-        response.headers,
-        {
-          'access-control-allow-origin': '*',
-          'access-control-allow-methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-          vary: 'Origin, Access-Control-Request-Headers',
-          'content-length': '0'
-        },
+        response.status,
+        204,
       );
+      Rhum.asserts.assertEquals(
+        response.headers.get("access-control-allow-origin"),
+        "*",
+      );
+      Rhum.asserts.assertEquals(
+        response.headers.get("access-control-allow-methods"),
+        "GET,HEAD,PUT,PATCH,POST,DELETE",
+      );
+      Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
+      Rhum.asserts.assertEquals(response.headers.get("content-length"), "0");
     });
   });
 });

@@ -11,8 +11,6 @@ export default class FailedOptionCorsMiddlewareResource
   }
 
   public OPTIONS() {
-    this.response.body = "OPTIONS request received!";
-
     return this.response;
   }
 }

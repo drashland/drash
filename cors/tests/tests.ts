@@ -1,4 +1,5 @@
 import { Drash } from "../../deps.ts";
+import { Rhum } from "../../test_deps.ts";
 
 // Middleware
 import { CorsMiddleware } from "./../mod.ts";
@@ -27,6 +28,8 @@ console.log(`Server listening: http://${server.hostname}:${server.port}`);
 console.log("\nIntegration tests: testing server with middleware.\n");
 
 import "./should_shortcircuits_preflight_requests.ts";
+
+Rhum.run();
 
 Deno.test({
   name: "\b\b\b\b\b     \nStop the server",

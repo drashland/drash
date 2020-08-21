@@ -65,20 +65,26 @@ export const CorsMiddleware = ({
       preflight,
     };
 
-    if (!origin) {
+    if (!options.origin) {
       return;
     }
 
     if (Array.isArray(exposeHeaders)) {
       options.exposeHeaders = exposeHeaders.join(",");
+    } else {
+      options.exposeHeaders = exposeHeaders;
     }
 
     if (Array.isArray(allowMethods)) {
       options.allowMethods = allowMethods.join(",");
+    } else {
+      options.allowMethods = allowMethods;
     }
 
     if (Array.isArray(allowHeaders)) {
       options.allowHeaders = allowHeaders.join(",");
+    } else {
+      options.allowHeaders = allowHeaders;
     }
 
     if (maxAge) {
@@ -96,7 +102,7 @@ export const CorsMiddleware = ({
       (header: string, value: string) => {
         response.headers.set(header, value);
       },
-      "Origin",
+      "origin",
     );
 
     if (!requestOrigin) {
@@ -105,7 +111,13 @@ export const CorsMiddleware = ({
 
     let o;
 
-    if (typeof options.origin === "function") {
+    if (!options.origin || options.origin === "*") {
+      // allow any origin
+      o = "*";
+    } else if (typeof options.origin === "string") {
+      // fixed origin
+      o = options.origin;
+    } else if (typeof options.origin === "function") {
       o = options.origin(request, response);
 
       if (o instanceof Promise) {
@@ -121,15 +133,10 @@ export const CorsMiddleware = ({
 
         return;
       }
-    } else if (!origin || origin === "*") {
-      // allow any origin
-      o = "*";
-    } else if (typeof origin === "string") {
-      // fixed origin
-      o = origin;
     } else {
       // reflect origin
-      o = isOriginAllowed(requestOrigin, origin) ? requestOrigin : false;
+      o = isOriginAllowed(requestOrigin, options.origin) ? requestOrigin
+      : false;
     }
 
     let c;
@@ -165,7 +172,7 @@ export const CorsMiddleware = ({
         set("Access-Control-Allow-Credentials", "true");
       }
 
-      if (options.exposeHeaders) {
+      if (typeof options.exposeHeaders === "string") {
         set("Access-Control-Expose-Headers", options.exposeHeaders);
       }
     } else if (options.preflight) {
@@ -180,7 +187,7 @@ export const CorsMiddleware = ({
         response.headers.set("Access-Control-Max-Age", options.maxAge);
       }
 
-      if (options.allowMethods) {
+      if (typeof options.allowMethods === "string") {
         response.headers.set(
           "Access-Control-Allow-Methods",
           options.allowMethods,
