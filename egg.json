@@ -5,11 +5,6 @@
   "stable": true,
   "repository": "https://github.com/drashland/deno-drash-middleware",
   "files": [
-    "./dexter/**/*",
-    "./deps.ts",
-    "./README.md",
-    "./logo.png",
-    "LICENSE",
-    "./paladin/**/*"
+    "./**/*"
   ]
 }
