@@ -30,6 +30,11 @@ jobs:
       - name: Paladin
         run: deno test --allow-env --allow-net paladin/tests/
 
+      - name: CSRF
+        run: |
+          cd csrf/tests
+          deno test --allow-net --allow-env --config tsconfig.json
+
   linter:
     strategy:
       matrix:
