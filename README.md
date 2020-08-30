@@ -34,6 +34,8 @@ This repository contains Drash-approved middleware modules that you can use in y
 
 * [Paladin](./paladin) - Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
 
+* [CSRF](./csrf) - Projection middleware. Inspired by [expressjs/csurf](http://expressjs.com/en/resources/middleware/csurf.html).
+
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
 ## Contributing
