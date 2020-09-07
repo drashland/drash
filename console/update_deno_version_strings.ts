@@ -13,7 +13,6 @@ const versions: {
   versions: string[]
 } = await fetchRes.json() // eg { latest: "v1.3.3", versions: ["v1.3.2", ...] }
 const latestDenoVersion = versions.latest.replace('v', '')
-console.log(latestDenoVersion)
 
 // Master workflow
 fileContent = decoder.decode(await Deno.readFile("./.github/workflows/master.yml"));
