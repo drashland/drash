@@ -19,7 +19,7 @@ fileContent = decoder.decode(
   await Deno.readFile("./.github/workflows/master.yml"),
 );
 fileContent = fileContent.replace(
-  /deno: ["[0-9.]+[0-9.]+[0-9]"]/,
+  /deno: ["[0-9.]+[0-9.]+[0-9]"]/g,
   `deno: ["${latestDenoVersion}"]`,
 );
 await Deno.writeFile(
@@ -32,7 +32,7 @@ fileContent = decoder.decode(
   await Deno.readFile("./.github/workflows/bumper.yml"),
 );
 fileContent = fileContent.replace(
-  /deno: ["[0-9.]+[0-9.]+[0-9]"]/,
+  /deno: ["[0-9.]+[0-9.]+[0-9]"]/g,
   `deno: ["${latestDenoVersion}"]`,
 );
 await Deno.writeFile(
