@@ -14,8 +14,8 @@ let versions: {
 } = await fetchRes.json(); // eg { latest: "v1.3.3", versions: ["v1.3.2", ...] }
 const latestDenoVersion = versions.latest.replace("v", "");
 fetchRes = await fetch("https://cdn.deno.land/drash/meta/versions.json");
-versions = await fetchRes.json()
-const latestDrashVersion = versions.latest
+versions = await fetchRes.json();
+const latestDrashVersion = versions.latest;
 
 // Master workflow
 fileContent = decoder.decode(
@@ -45,39 +45,39 @@ await Deno.writeFile(
 
 // CSRF Readme, the drash version
 fileContent = decoder.decode(
-    await Deno.readFile("./csrf/README.md"),
+  await Deno.readFile("./csrf/README.md"),
 );
 fileContent = fileContent.replace(
-    /drash@[0-9.]+[0-9.]+[0-9]/g,
-    `drash@${latestDrashVersion}`,
+  /drash@[0-9.]+[0-9.]+[0-9]/g,
+  `drash@${latestDrashVersion}`,
 );
 await Deno.writeFile(
-    "./csrf/README.md",
-    encoder.encode(fileContent),
+  "./csrf/README.md",
+  encoder.encode(fileContent),
 );
 
 // Dexter Readme, the drash version
 fileContent = decoder.decode(
-    await Deno.readFile("./dexter/README.md"),
+  await Deno.readFile("./dexter/README.md"),
 );
 fileContent = fileContent.replace(
-    /drash@[0-9.]+[0-9.]+[0-9]/g,
-    `drash@${latestDrashVersion}`,
+  /drash@[0-9.]+[0-9.]+[0-9]/g,
+  `drash@${latestDrashVersion}`,
 );
 await Deno.writeFile(
-    "./dexter/README.md",
-    encoder.encode(fileContent),
+  "./dexter/README.md",
+  encoder.encode(fileContent),
 );
 
 // Paladin Readme, the drash version
 fileContent = decoder.decode(
-    await Deno.readFile("./paladin/README.md"),
+  await Deno.readFile("./paladin/README.md"),
 );
 fileContent = fileContent.replace(
-    /drash@[0-9.]+[0-9.]+[0-9]/g,
-    `drash@${latestDrashVersion}`,
+  /drash@[0-9.]+[0-9.]+[0-9]/g,
+  `drash@${latestDrashVersion}`,
 );
 await Deno.writeFile(
-    "./paladin/README.md",
-    encoder.encode(fileContent),
+  "./paladin/README.md",
+  encoder.encode(fileContent),
 );
