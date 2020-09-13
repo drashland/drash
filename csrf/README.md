@@ -3,7 +3,7 @@
 CSRF is a [CSRF])https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection middleware inspired by [expressjs/csurf](http://expressjs.com/en/resources/middleware/csurf.html). It can be simply placed as a middleware for your resources and you are all set!
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@v{latest}/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.2.3/mod.ts";
 
 // Import the Dexter middleware function
 import { CSRF } from "https://deno.land/x/drash_middleware@v0.5.0/csrf/mod.ts";
