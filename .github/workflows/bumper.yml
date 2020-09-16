@@ -31,7 +31,7 @@ jobs:
           deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
 
       - name: Update Deno Version Occurances
-        run: deno run  --allow-net --allow-net --allow-write console/update_deno_version_strings.ts
+        run: deno run --allow-net --allow-write --allow-read console/update_deno_version_strings.ts
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
