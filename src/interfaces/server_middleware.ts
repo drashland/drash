@@ -1,4 +1,4 @@
-import { Drash } from "../../mod.ts";
+import type { Drash } from "../../mod.ts";
 
 /**
  * Contains the type of ServerMiddleware

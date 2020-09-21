@@ -1,4 +1,4 @@
-import { Drash } from "../../mod.ts";
+import type { Drash } from "../../mod.ts";
 /**
  * @param request - Contains the instance of the request.
  * @param server - Contains the instance of the server.

@@ -1,4 +1,4 @@
-import { MultipartFormData } from "../../deps.ts";
+import type { MultipartFormData } from "../../deps.ts";
 
 interface KeyValuePairs {
   [key: string]: unknown;

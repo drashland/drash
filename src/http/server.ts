@@ -10,7 +10,7 @@ import {
   serve,
   serveTLS,
 } from "../../deps.ts";
-import { ServerMiddleware } from "../interfaces/server_middleware.ts";
+import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
 
 interface IRequestOptions {
   default_response_content_type: string | undefined;

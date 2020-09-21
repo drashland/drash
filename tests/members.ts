@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-import { Drash } from "../mod.ts";
+import type { Drash } from "../mod.ts";
 import {
   BufReader,
   ServerRequest,

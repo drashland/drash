@@ -1,5 +1,5 @@
-import { Drash } from "../../mod.ts";
-import { ServerMiddleware } from "./server_middleware.ts";
+import type { Drash } from "../../mod.ts";
+import type { ServerMiddleware } from "./server_middleware.ts";
 
 /**
  * Contains the type of ServerConfigs
