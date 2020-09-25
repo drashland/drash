@@ -28,14 +28,14 @@ import { Response as BaseResponse } from "./src/http/response.ts";
 import { Server as BaseServer } from "./src/http/server.ts";
 
 // Interfaces
-import { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
-import { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
-import { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
-import { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
-import { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
-import { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
-import { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
-import { ServerMiddleware as BaseServerMiddleware } from "./src/interfaces/server_middleware.ts";
+import type { LogLevelStructure as BaseLogLevelStructure } from "./src/interfaces/log_level_structure.ts";
+import type { LoggerConfigs as BaseLoggerConfigs } from "./src/interfaces/logger_configs.ts";
+import type { ParsedRequestBody as BaseParsedRequestBody } from "./src/interfaces/parsed_request_body.ts";
+import type { Resource as BaseHttpResource } from "./src/interfaces/resource.ts";
+import type { ResourcePaths as BaseResourcePaths } from "./src/interfaces/resource_paths.ts";
+import type { ResponseOutput as BaseResponseOutput } from "./src/interfaces/response_output.ts";
+import type { ServerConfigs as BaseServerConfigs } from "./src/interfaces/server_configs.ts";
+import type { ServerMiddleware as BaseServerMiddleware } from "./src/interfaces/server_middleware.ts";
 
 // Loggers
 import { Logger as BaseLogger } from "./src/core_loggers/logger.ts";

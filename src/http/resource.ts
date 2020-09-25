@@ -1,4 +1,4 @@
-import { Drash } from "../../mod.ts";
+import type { Drash } from "../../mod.ts";
 
 /**
  * This is the base resource class for all resources. All resource classes
