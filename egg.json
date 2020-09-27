@@ -9,6 +9,10 @@
     "./deps.ts",
     "./create_app.ts",
     "./src/**/*",
-    "./README.md"
-  ]
+    "./README.md",
+    "./mod.ts"
+  ],
+  "entry": "/mod.ts",
+  "checkAll": false,
+  "unlisted": false
 }
