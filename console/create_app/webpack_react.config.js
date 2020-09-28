@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require("path");
 
 module.exports = {
   /* Set the mode to run in - obviously it is dynamic now to match the environment */
@@ -7,7 +7,7 @@ module.exports = {
   entry: {
     /* Specify what files I wish webpack to compile, and the name associated with them */
     /* You don't need to specify components that are only imported, such as the Button component */
-    app: './react/App.tsx'
+    app: "./react/App.tsx",
   },
   //devtool: isProd ? false : 'inline-source-map',
   /* Defines where to place the bundles file(s) */
@@ -17,7 +17,7 @@ module.exports = {
     *  filename will be "header.js */
     filename: "[name].js",
     /* Dir to output the files in */
-    path: __dirname + '/public/js/'
+    path: __dirname + "/public/js/",
   },
   module: {
     /* Any file that comes through webpack will need to be processed, so we define some rules, and those rules
@@ -32,9 +32,9 @@ module.exports = {
         /* And to process them, pass them through the babel-loader module */
         use: [
           {
-            loader: 'babel-loader'
-          }
-        ]
+            loader: "babel-loader",
+          },
+        ],
       },
       /* CSS processing */
       {
@@ -44,32 +44,31 @@ module.exports = {
         test: /\.css$/,
         /* Pass the CSS files though the style-loader, then the css-loader to allow them to be processed. */
         use: [
-          'style-loader',
+          "style-loader",
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               // This caused some cofusion. If you wish to use modules e.g. className={mystylehseet.button} then set this to true, which also jumbles up the class name in the browser
               // which i assume helps with CSS Confusion. You can also set it to false (or comment out) to specifically set the classnames e.g. classname="button"
               modules: true,
-              importLoaders: 1
-            }
-          }
-        ]
-
+              importLoaders: 1,
+            },
+          },
+        ],
       },
       // tsx
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
   },
   /* See: https://webpack.js.org/concepts/module-resolution/ */
   resolve: {
     alias: {
-      react: path.resolve('./node_modules/react')
+      react: path.resolve("./node_modules/react"),
     },
-    extensions: ['.js', '.jsx', '.css', '.tsx']
-  }
-}
+    extensions: [".js", ".jsx", ".css", ".tsx"],
+  },
+};
