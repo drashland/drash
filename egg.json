@@ -6,7 +6,7 @@
   "repository": "https://github.com/drashland/deno-drash-middleware",
   "files": [
     "./**/*",
-    "./REAME.md",
+    "./README.md",
     "LICENSE",
     "./deps.ts",
     "./logo.svg"
