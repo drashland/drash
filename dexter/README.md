@@ -3,10 +3,10 @@
 Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@v1.2.3/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.2.4/mod.ts";
 
 // Import the Dexter middleware function
-import { Dexter } from "https://deno.land/x/drash_middleware@v0.5.0/dexter/mod.ts";
+import { Dexter } from "https://deno.land/x/drash_middleware@v0.5.1/dexter/mod.ts";
 
 // Instantiate dexter
 const dexter = Dexter();
