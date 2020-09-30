@@ -42,13 +42,13 @@ await Deno.writeFile(
 
 // pre release workflow
 fileContent = decoder.decode(
-    await Deno.readFile("./.github/workflows/pre_release.yml"),
+  await Deno.readFile("./.github/workflows/pre_release.yml"),
 );
 fileContent = fileContent.replace(
-    /deno: ["[0-9.]+[0-9.]+[0-9]"]/g,
-    `deno: ["${latestDenoVersion}"]`,
+  /deno: ["[0-9.]+[0-9.]+[0-9]"]/g,
+  `deno: ["${latestDenoVersion}"]`,
 );
 await Deno.writeFile(
-    "./.github/workflows/pre_release.yml",
-    encoder.encode(fileContent),
+  "./.github/workflows/pre_release.yml",
+  encoder.encode(fileContent),
 );
