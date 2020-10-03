@@ -6,7 +6,7 @@
  */
 
 import { Rhum } from "../deps.ts";
-import { red, green } from "../../deps.ts";
+import { green, red } from "../../deps.ts";
 import members from "../members.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 0;

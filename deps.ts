@@ -1,4 +1,5 @@
 export {
+  serve,
   // Response {
   //   status?: number;
   //   headers?: Headers;
@@ -7,48 +8,40 @@ export {
   // }
   Server,
   ServerRequest,
-  serve,
   serveTLS,
-} from "https://deno.land/std@0.71.0/http/server.ts";
+} from "https://deno.land/std@0.72.0/http/server.ts";
 
 export type {
-  Response,
   HTTPOptions,
   HTTPSOptions,
-} from "https://deno.land/std@0.71.0/http/server.ts";
+  Response,
+} from "https://deno.land/std@0.72.0/http/server.ts";
 
 export {
-  STATUS_TEXT,
   Status,
-} from "https://deno.land/std@0.71.0/http/http_status.ts";
+  STATUS_TEXT,
+} from "https://deno.land/std@0.72.0/http/http_status.ts";
 
-export {
-  BufReader,
-} from "https://deno.land/std@0.71.0/io/bufio.ts";
+export { BufReader } from "https://deno.land/std@0.72.0/io/bufio.ts";
 
-export type { ReadLineResult } from "https://deno.land/std@0.71.0/io/bufio.ts";
+export type { ReadLineResult } from "https://deno.land/std@0.72.0/io/bufio.ts";
 
-export {
-  StringReader,
-} from "https://deno.land/std@0.71.0/io/readers.ts";
+export { StringReader } from "https://deno.land/std@0.72.0/io/readers.ts";
 
 export {
   MultipartReader,
-} from "https://deno.land/std@0.71.0/mime/multipart.ts";
+} from "https://deno.land/std@0.72.0/mime/multipart.ts";
 
 export type {
   FormFile,
   MultipartFormData,
-} from "https://deno.land/std@0.71.0/mime/multipart.ts";
+} from "https://deno.land/std@0.72.0/mime/multipart.ts";
 
 export {
   deleteCookie,
   getCookies,
   setCookie,
-} from "https://deno.land/std@0.71.0/http/cookie.ts";
-export type { Cookie } from "https://deno.land/std@0.71.0/http/cookie.ts";
+} from "https://deno.land/std@0.72.0/http/cookie.ts";
+export type { Cookie } from "https://deno.land/std@0.72.0/http/cookie.ts";
 
-export {
-  red,
-  green,
-} from "https://deno.land/std@0.71.0/fmt/colors.ts";
+export { green, red } from "https://deno.land/std@0.72.0/fmt/colors.ts";

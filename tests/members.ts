@@ -1,9 +1,6 @@
 // deno-lint-ignore-file
 import type { Drash } from "../mod.ts";
-import {
-  BufReader,
-  ServerRequest,
-} from "../deps.ts";
+import { BufReader, ServerRequest } from "../deps.ts";
 import { Rhum } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 

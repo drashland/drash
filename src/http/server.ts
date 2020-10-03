@@ -2,13 +2,13 @@ import { Drash } from "../../mod.ts";
 import {
   HTTPOptions,
   HTTPSOptions,
-  STATUS_TEXT,
   Response,
-  ServerRequest,
-  Server as DenoServer,
-  Status,
   serve,
+  Server as DenoServer,
+  ServerRequest,
   serveTLS,
+  Status,
+  STATUS_TEXT,
 } from "../../deps.ts";
 import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
 
