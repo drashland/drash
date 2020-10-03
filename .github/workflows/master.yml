@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.4.2"]
+        deno: ["1.4.3"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -38,7 +38,7 @@ jobs:
   linter:
     strategy:
       matrix:
-        deno: ["1.4.2"]
+        deno: ["1.4.3"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
