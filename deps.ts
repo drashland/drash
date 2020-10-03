@@ -1,4 +1,5 @@
 export {
+  serve,
   // Response {
   //   status?: number;
   //   headers?: Headers;
@@ -7,30 +8,25 @@ export {
   // }
   Server,
   ServerRequest,
-  serve,
   serveTLS,
 } from "https://deno.land/std@0.72.0/http/server.ts";
 
 export type {
-  Response,
   HTTPOptions,
   HTTPSOptions,
+  Response,
 } from "https://deno.land/std@0.72.0/http/server.ts";
 
 export {
-  STATUS_TEXT,
   Status,
+  STATUS_TEXT,
 } from "https://deno.land/std@0.72.0/http/http_status.ts";
 
-export {
-  BufReader,
-} from "https://deno.land/std@0.72.0/io/bufio.ts";
+export { BufReader } from "https://deno.land/std@0.72.0/io/bufio.ts";
 
 export type { ReadLineResult } from "https://deno.land/std@0.72.0/io/bufio.ts";
 
-export {
-  StringReader,
-} from "https://deno.land/std@0.72.0/io/readers.ts";
+export { StringReader } from "https://deno.land/std@0.72.0/io/readers.ts";
 
 export {
   MultipartReader,
@@ -48,7 +44,4 @@ export {
 } from "https://deno.land/std@0.72.0/http/cookie.ts";
 export type { Cookie } from "https://deno.land/std@0.72.0/http/cookie.ts";
 
-export {
-  red,
-  green,
-} from "https://deno.land/std@0.72.0/fmt/colors.ts";
+export { green, red } from "https://deno.land/std@0.72.0/fmt/colors.ts";

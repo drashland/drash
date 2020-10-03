@@ -1,11 +1,11 @@
 import {
   Cookie,
   FormFile,
+  getCookies,
+  MultipartFormData,
   MultipartReader,
   Response,
   ServerRequest,
-  getCookies,
-  MultipartFormData,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
 import { Drash } from "../../mod.ts";
