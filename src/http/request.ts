@@ -119,7 +119,7 @@ export class Request extends ServerRequest {
    *
    * @returns The corresponding parameter or null if not found
    */
-  public getBodyParam(input: string): string | {[key: string]: unknown} | Array<unknown> | null {
+  public getBodyParam(input: string): string | {[key: string]: unknown} | Array<unknown> | boolean | null {
     let param;
     if (typeof this.parsed_body.data!.value === "function") {
       // For when multipart/form-data
@@ -130,7 +130,7 @@ export class Request extends ServerRequest {
       // and typescript did not like us indexing.
       param = (this.parsed_body.data as { [k: string]: unknown })[input];
     }
-    if (param) {
+    if (param || typeof param === "boolean") {
       return param;
     }
     return null;

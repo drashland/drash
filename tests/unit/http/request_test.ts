@@ -378,7 +378,7 @@ function getBodyParamTests() {
   })
   Rhum.testCase("Can handle when a body param is a boolean", async () => {
     const body = encoder.encode(JSON.stringify({
-      authenticated: true
+      authenticated: false
     }));
     const reader = new Deno.Buffer(body as ArrayBuffer);
     const serverRequest = members.mockRequest("/", "get", {
@@ -390,7 +390,7 @@ function getBodyParamTests() {
     const request = new Drash.Http.Request(serverRequest);
     await request.parseBody();
     const actual = request.getBodyParam("authenticated");
-    Rhum.asserts.assertEquals(false, actual);
+    Rhum.asserts.assertEquals(actual, false);
     const authenticated = (actual as boolean)
     Rhum.asserts.assertEquals(authenticated, false)
   })
