@@ -338,7 +338,7 @@ function getBodyParamTests() {
     const body = encoder.encode(JSON.stringify({
       user: {
         name: "Edward",
-        location: "UK"
+        location: "UK",
       },
     }));
     const reader = new Deno.Buffer(body as ArrayBuffer);
@@ -353,14 +353,14 @@ function getBodyParamTests() {
     const actual = request.getBodyParam("user");
     Rhum.asserts.assertEquals({
       name: "Edward",
-      location: "UK"
+      location: "UK",
     }, actual);
-    const name = (actual as {[key: string]: unknown}).name // Ensuring we can access it and TS doesn't throw errors
-    Rhum.asserts.assertEquals(name, "Edward")
-  })
+    const name = (actual as { [key: string]: unknown }).name; // Ensuring we can access it and TS doesn't throw errors
+    Rhum.asserts.assertEquals(name, "Edward");
+  });
   Rhum.testCase("Can handle when a body param is an array", async () => {
     const body = encoder.encode(JSON.stringify({
-      usernames: ["Edward", "John Smith", "Lord Voldemort", "Count Dankula"]
+      usernames: ["Edward", "John Smith", "Lord Voldemort", "Count Dankula"],
     }));
     const reader = new Deno.Buffer(body as ArrayBuffer);
     const serverRequest = members.mockRequest("/", "get", {
@@ -372,13 +372,16 @@ function getBodyParamTests() {
     const request = new Drash.Http.Request(serverRequest);
     await request.parseBody();
     const actual = request.getBodyParam("usernames");
-    Rhum.asserts.assertEquals(["Edward", "John Smith", "Lord Voldemort", "Count Dankula"], actual);
-    const firstName = (actual as Array<string>)[0]
-    Rhum.asserts.assertEquals(firstName, "Edward")
-  })
+    Rhum.asserts.assertEquals(
+      ["Edward", "John Smith", "Lord Voldemort", "Count Dankula"],
+      actual,
+    );
+    const firstName = (actual as Array<string>)[0];
+    Rhum.asserts.assertEquals(firstName, "Edward");
+  });
   Rhum.testCase("Can handle when a body param is a boolean", async () => {
     const body = encoder.encode(JSON.stringify({
-      authenticated: false
+      authenticated: false,
     }));
     const reader = new Deno.Buffer(body as ArrayBuffer);
     const serverRequest = members.mockRequest("/", "get", {
@@ -391,9 +394,9 @@ function getBodyParamTests() {
     await request.parseBody();
     const actual = request.getBodyParam("authenticated");
     Rhum.asserts.assertEquals(actual, false);
-    const authenticated = (actual as boolean)
-    Rhum.asserts.assertEquals(authenticated, false)
-  })
+    const authenticated = (actual as boolean);
+    Rhum.asserts.assertEquals(authenticated, false);
+  });
 }
 
 function getHeaderParamTests() {

@@ -119,7 +119,9 @@ export class Request extends ServerRequest {
    *
    * @returns The corresponding parameter or null if not found
    */
-  public getBodyParam(input: string): string | {[key: string]: unknown} | Array<unknown> | boolean | null {
+  public getBodyParam(
+    input: string,
+  ): string | { [key: string]: unknown } | Array<unknown> | boolean | null {
     let param;
     if (typeof this.parsed_body.data!.value === "function") {
       // For when multipart/form-data
