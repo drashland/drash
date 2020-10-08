@@ -10,6 +10,7 @@
     "./create_app.ts",
     "./src/**/*",
     "./README.md",
+    "./mod.ts",
     "./mod.ts"
   ],
   "entry": "/mod.ts",
