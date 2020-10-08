@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@master
-      - run: deno install -A -f --unstable -n eggs https://x.nest.land/eggs@0.1.10/mod.ts
+      - run: deno install -A -f --unstable -n eggs https://x.nest.land/eggs@0.2.2/mod.ts
       - run: |
           export PATH="/home/runner/.deno/bin:$PATH"
           eggs upgrade
