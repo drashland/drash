@@ -12,7 +12,7 @@
     "./README.md",
     "./mod.ts"
   ],
-  "entry": "/mod.ts",
+  "entry": "./mod.ts",
   "checkAll": false,
   "unlisted": false
 }
