@@ -10,10 +10,9 @@
     "LICENSE",
     "./deps.ts",
     "./logo.svg",
-    "mod.ts",
     "./mod.ts"
   ],
-  "entry": "/mod.ts",
+  "entry": "./mod.ts",
   "checkAll": false,
   "unlisted": false
 }
