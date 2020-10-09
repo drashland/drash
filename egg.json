@@ -9,7 +9,10 @@
     "./README.md",
     "LICENSE",
     "./deps.ts",
-    "./logo.svg"
+    "./logo.svg",
+    "./mod.ts"
   ],
-  "checkAll": false
+  "entry": "./mod.ts",
+  "checkAll": false,
+  "unlisted": false
 }
