@@ -38,7 +38,7 @@ jobs:
   linter:
     strategy:
       matrix:
-        deno: ["1.4.2"]
+        deno: ["1.4.5"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
