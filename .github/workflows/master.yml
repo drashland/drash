@@ -45,6 +45,12 @@ jobs:
         run: |
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
+  benchmarks:
+      - name: Setup nodejs 13
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13'
+
       - name: Install Autocannon
         run: npm install -g autocannon
 
