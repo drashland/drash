@@ -53,6 +53,10 @@ export class Server {
    */
   public port: number = 1447;
 
+  /**
+   * A property to hold all paths associated with their resources for lookups
+   * during the request-resource lifecycle.
+   */
   protected paths: any = {};
 
   /**
@@ -75,11 +79,6 @@ export class Server {
    * A property to hold middleware.
    */
   protected middleware: ServerMiddleware = {};
-
-  /**
-   * A property to hold the resources passed in from the configs.
-   */
-  protected resources: { [key: string]: Drash.Interfaces.Resource } = {};
 
   /**
    * This server's list of static paths. HTTP requests to a static path are
