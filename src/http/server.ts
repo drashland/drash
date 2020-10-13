@@ -53,6 +53,8 @@ export class Server {
    */
   public port: number = 1447;
 
+  protected paths: any = {};
+
   /**
    * A property to hold this server's logger.
    */
@@ -560,6 +562,7 @@ export class Server {
     for (const path of resourceClass.paths) {
       if (typeof path != "string") {
         newPaths.push(path);
+        this.paths[path] = resourceClass;
         continue;
       }
 
@@ -579,8 +582,8 @@ export class Server {
             },
           ),
         };
-
         newPaths.push(pathObj);
+        this.paths[pathObj.regex_path] = resourceClass;
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
         // Replace required params, in preparation to create the `regex_path`, just like
@@ -641,6 +644,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
+        this.paths[pathObj.regex_path] = resourceClass;
       } else {
         const pathObj = {
           og_path: path,
@@ -657,13 +661,10 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
+        this.paths[pathObj.regex_path] = resourceClass;
       }
     }
-
     resourceClass.paths_parsed = newPaths;
-
-    // Store the resource so it can be retrieved when requested
-    this.resources[resourceClass.name] = resourceClass;
   }
 
   /**
@@ -758,32 +759,33 @@ export class Server {
   protected getResourceClass(
     request: Drash.Http.Request,
   ): Drash.Interfaces.Resource | undefined {
-    for (const resourceName in this.resources) {
-      const resource = this.resources[resourceName];
-      const pathObjs = resource.paths_parsed!;
-      for (const pathObj of pathObjs) {
-        if (pathObj.og_path === "/" && request.url_path === "/") {
-          return resource;
-        }
+    let resource = undefined;
+    for (const regex in this.paths) {
+      if (regex === "/" && request.url_path === "/") {
+        resource = this.paths[regex];
+        break;
+      }
 
-        const pathMatchesRequestPathname = request.url_path.match(
-          pathObj.regex_path,
-        );
-        if (pathMatchesRequestPathname == null) {
-          continue;
-        }
+      const pathMatchesRequestPathname = request.url_path.match(
+        regex,
+      );
+      if (pathMatchesRequestPathname == null) {
+        continue;
+      }
 
-        pathMatchesRequestPathname.shift();
-        const pathParamsInKvpForm: { [key: string]: string } = {};
+      pathMatchesRequestPathname.shift();
+      resource = this.paths[regex];
+      const pathParamsInKvpForm: { [key: string]: string } = {};
+      resource.paths_parsed.forEach((pathObj: Drash.Interfaces.ResourcePaths) => {
         pathObj.params.forEach((paramName: string, index: number) => {
           pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
         });
-
-        request.path_params = pathParamsInKvpForm;
-        return resource;
-      }
+      });
+      request.path_params = pathParamsInKvpForm;
+      break;
     }
-    return undefined;
+
+    return resource;
   }
 
   /**
