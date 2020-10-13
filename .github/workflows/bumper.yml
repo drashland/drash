@@ -20,6 +20,11 @@ jobs:
       - name: Update Dependencies
         run: deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
 
+      - name: Update Cors Dependencies
+        run: |
+          cd cors
+          deno run -A https://deno.land/x/dmm/mod.ts update
+
       #- name: Update Test Dependencies
       #  run: |
       #    cd tests
