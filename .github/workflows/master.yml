@@ -60,8 +60,7 @@ jobs:
         uses: denolib/setup-deno@v2
         with:
           deno-version: ${{ matrix.deno }}
-    runs-on: ubuntu-latest
-    steps:
+
       - name: Setup Node 13
         uses: actions/setup-node@v1
         with:
