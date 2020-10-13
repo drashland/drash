@@ -46,21 +46,22 @@ jobs:
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
   benchmarks:
-    - name: Setup Node 13
-      uses: actions/setup-node@v1
-      with:
-        node-version: '13'
+    steps:
+      - name: Setup Node 13
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13'
 
-    - name: Install Autocannon
-      run: npm install -g autocannon
+      - name: Install Autocannon
+        run: npm install -g autocannon
 
-    - name: Run Autocannon Benchmarks
-      run: |-
-        deno run --allow-all app.ts &
-        sleep 15 &&
-        mkdir -p results &&
-        autocannon -c 40 -d 10 http://localhost:1447 &&
-        kill $!
+      - name: Run Autocannon Benchmarks
+        run: |-
+          deno run --allow-all app.ts &
+          sleep 15 &&
+          mkdir -p results &&
+          autocannon -c 40 -d 10 http://localhost:1447 &&
+          kill $!
 
   linter:
     # Only one OS is required since fmt is cross platform
