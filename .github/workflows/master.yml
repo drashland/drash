@@ -46,6 +46,7 @@ jobs:
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
   benchmarks:
+    runs-on: ubuntu-latest
     steps:
       - name: Setup Node 13
         uses: actions/setup-node@v1
