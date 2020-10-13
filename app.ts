@@ -9,13 +9,12 @@ class HomeResource extends Drash.Http.Resource {
 }
 
 const server = new Drash.Http.Server({
-  resources: [HomeResource]
+  resources: [HomeResource],
 });
 
 server.run({
-  hostname: "localhost",
-  port: 1447
+  hostname: "0.0.0.0",
+  port: 1447,
 });
 
 console.log("app running");
-

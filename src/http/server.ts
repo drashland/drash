@@ -775,11 +775,13 @@ export class Server {
       pathMatchesRequestPathname.shift();
       resource = this.paths[regex];
       const pathParamsInKvpForm: { [key: string]: string } = {};
-      resource.paths_parsed.forEach((pathObj: Drash.Interfaces.ResourcePaths) => {
-        pathObj.params.forEach((paramName: string, index: number) => {
-          pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
-        });
-      });
+      resource.paths_parsed.forEach(
+        (pathObj: Drash.Interfaces.ResourcePaths) => {
+          pathObj.params.forEach((paramName: string, index: number) => {
+            pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
+          });
+        },
+      );
       request.path_params = pathParamsInKvpForm;
       break;
     }
