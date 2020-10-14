@@ -57,7 +57,7 @@ export class Server {
    * A property to hold all paths associated with their resources for lookups
    * during the request-resource lifecycle.
    */
-  protected paths: any = {};
+  protected paths: {[key: string]: Drash.Interfaces.Resource } = {};
 
   /**
    * A property to hold this server's logger.
@@ -775,7 +775,7 @@ export class Server {
       pathMatchesRequestPathname.shift();
       resource = this.paths[regex];
       const pathParamsInKvpForm: { [key: string]: string } = {};
-      resource.paths_parsed.forEach(
+      resource.paths_parsed!.forEach(
         (pathObj: Drash.Interfaces.ResourcePaths) => {
           pathObj.params.forEach((paramName: string, index: number) => {
             pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
