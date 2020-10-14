@@ -57,7 +57,7 @@ export class Server {
    * A property to hold all paths associated with their resources for lookups
    * during the request-resource lifecycle.
    */
-  protected paths: {[key: string]: Drash.Interfaces.Resource } = {};
+  protected paths: { [key: string]: Drash.Interfaces.Resource } = {};
 
   /**
    * A property to hold this server's logger.
