@@ -758,11 +758,9 @@ export class Server {
   protected getResourceClass(
     request: Drash.Http.Request,
   ): Drash.Interfaces.Resource | undefined {
-    let resource = undefined;
     for (const regex in this.paths) {
       if (regex === "/" && request.url_path === "/") {
-        resource = this.paths[regex];
-        break;
+        return this.paths[regex];
       }
 
       const pathMatchesRequestPathname = request.url_path.match(
@@ -773,7 +771,7 @@ export class Server {
       }
 
       pathMatchesRequestPathname.shift();
-      resource = this.paths[regex];
+      const resource = this.paths[regex];
       const pathParamsInKvpForm: { [key: string]: string } = {};
       resource.paths_parsed!.forEach(
         (pathObj: Drash.Interfaces.ResourcePaths) => {
@@ -783,10 +781,10 @@ export class Server {
         },
       );
       request.path_params = pathParamsInKvpForm;
-      break;
+      return resource;
     }
 
-    return resource;
+    return undefined;
   }
 
   /**
