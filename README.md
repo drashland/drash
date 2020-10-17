@@ -119,26 +119,20 @@ $ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --he
 
 ## Features
 
-- [Content Negotiation](http://drash.land/drash/#/advanced-tutorials/content-negotiation/user-profiles)
-- [Static Path Routing](http://drash.land/drash/#/tutorials/servers/serving-static-paths)
-- [Regex Path Routing](http://drash.land/drash/#/tutorials/resources/creating-a-resource#regular-expression-uris)
-- [Middleware](http://drash.land/drash/#/tutorials/middleware/introduction)
-- [Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
-- [Body Handling: application/json](http://drash.land/drash/#/tutorials/requests/handling-application-json-bodies)
-- [Body Handling: application/x-www-form-urlencoded](http://drash.land/drash/#/tutorials/requests/handling-application-x-www-form-urlencoded-bodies)
-- [Body Handling: multipart/form-data](http://drash.land/drash/#/tutorials/requests/handling-multipart-form-data-bodies)
-- [Handling Path Params](http://drash.land/drash/#/tutorials/requests/handling-path-params)
-- [Handling URL Query Params](http://drash.land/drash/#/tutorials/requests/handling-url-query-params)
-- [Console Logging](http://drash.land/drash/#/tutorials/logging/logging-to-the-terminal)
-- [File Logging](http://drash.land/drash/#/tutorials/logging/logging-to-files)
+* Zero Dependencies
+* Extensively Documented
+* Tutorials
+* Lightweight
+* Content Negotiation
+* Routing
+* Middleware
+* Request Body Handling
 
 ## Why Use Drash?
 
 Drash is designed to help you build your projects quickly with the ability to scale. You can build an API, a web app, an SPA (like the documentation pages), or even a static HTML site. How you use Drash is up to you, so it can be everything you need and nothing you don't &mdash; like a DRASH tent.
 
-
 Drash takes concepts from the following:
-
 
 * <a href="https://flask.palletsprojects.com/en/1.1.x/" target="_BLANK">Flask</a> &mdash; being <a href="https://flask.palletsprojects.com/en/1.1.x/foreword/#what-does-micro-mean" target="_BLANK">micro</a> and extensible
 * <a href="https://laravel.com/" target="_BLANK">Laravel</a> &mdash; use of similarly styled <a href="https://laravel.com/docs/master/middleware">middleware</a>
@@ -146,7 +140,6 @@ Drash takes concepts from the following:
 * <a href="https://www.restapitutorial.com/lessons/whatisrest.html" target="_BLANK">RESTful</a> principles &mdash; content negotiation, HTTP verbs, URIs, etc.
 
 Thrown into the mix is Drash's own concepts such as:
-
 
 * Documentation-driven development
 * Test-driven development
@@ -165,7 +158,7 @@ Drash does not force you to use all of its code. You can pick and choose which d
 
 ## Benchmarks
 
-Check out our benchmarks [here](https://github.com/drashland/benchmarks).
+Drash's performance is included in the [denosaurs/bench](https://github.com/denosaurs/bench) repository.
 
 ## Contributing
 
@@ -174,4 +167,5 @@ Contributors are welcomed!
 Please read through our [contributing guidelines](./.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
 
 ## License
+
 By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
