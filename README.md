@@ -111,22 +111,23 @@ $ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --he
 
 ## Documentation
 
-[Full Documentation](https://drash.land/drash)
-
-[Lifecycle Diagram](http://drash.land/drash/#/lifecycle-diagram)
-
-[Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
+* [Full Documentation](https://drash.land/drash)
+* [Lifecycle Diagram](http://drash.land/drash/#/lifecycle-diagram)
+* [Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
 
 ## Features
 
 * Zero Dependencies
 * Extensively Documented
-* Tutorials
+* Guided Tutorials
 * Lightweight
 * Content Negotiation
 * Routing
 * Middleware
 * Request Body Handling
+    * application/json
+    * application/x-www-form-urlencoded
+    * multipart/form-data
 
 ## Why Use Drash?
 
