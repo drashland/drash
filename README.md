@@ -159,7 +159,7 @@ Drash does not force you to use all of its code. You can pick and choose which d
 
 ## Benchmarks
 
-Drash's performance is included in the [denosaurs/bench](https://github.com/denosaurs/bench) repository.
+Drash performance benchmarks are included in the [denosaurs/bench](https://github.com/denosaurs/bench) repository.
 
 ## Contributing
 
