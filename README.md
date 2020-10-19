@@ -23,6 +23,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Mirrors](#mirrors)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -37,6 +38,10 @@ This repository contains Drash-approved middleware modules that you can use in y
 * [CSRF](./csrf) - Projection middleware. Inspired by [expressjs/csurf](http://expressjs.com/en/resources/middleware/csurf.html).
 
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
+
+## Mirrors
+
+* https://nest.land/package/drash-middleware
 
 ## Contributing
 
