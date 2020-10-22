@@ -509,7 +509,7 @@ function getAllUrlQueryParamsTests() {
       const request = new Drash.Http.Request(serverRequest);
       await request.parseBody();
       const actual = request.getAllUrlQueryParams("hello");
-      Rhum.asserts.assertEquals("world", actual);
+      Rhum.asserts.assertEquals({"hello": "world"} , actual);
     },
   );
 

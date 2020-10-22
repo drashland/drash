@@ -175,7 +175,16 @@ export class Request extends ServerRequest {
   }
 
   public getAllUrlQueryParams(...inputs: string[]): {[key: string]: string|null} | null {
-    return null;
+    if (inputs.length === 0) {
+      return null;
+    }
+    
+    let result: Record<string, string> = {};
+    for (const input of inputs) {
+      result[input] = this.url_query_params[input];
+    }
+
+    return result;
   }
 
   /**
