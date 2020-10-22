@@ -82,7 +82,7 @@ Rhum.testPlan("http/request_test.ts", () => {
 
   Rhum.testSuite("getAllUrlQueryParams()", () => {
     getAllUrlQueryParamsTests();
-  })
+  });
 
   Rhum.testSuite("getUrlPath()", () => {
     getUrlPathTests();
@@ -487,7 +487,6 @@ function getUrlQueryParamTests() {
       Rhum.asserts.assertEquals(null, actual);
     },
   );
-
 }
 
 function getAllUrlQueryParamsTests() {
@@ -509,18 +508,26 @@ function getAllUrlQueryParamsTests() {
       const request = new Drash.Http.Request(serverRequest);
       await request.parseBody();
       const actual = request.getAllUrlQueryParams("hello");
-      Rhum.asserts.assertEquals({"hello": "world"} , actual);
+      Rhum.asserts.assertEquals({ "hello": "world" }, actual);
     },
   );
 
   Rhum.testCase(
     "Returns { name1: val1, name2: val2, ... } when passed ( name1, name2, ... )",
     async () => {
-      const kv_tuples = { "hello": "world", "foo": "bar", "inch": "time", "foot": "gem", 
-      "beautiful": "ugly", "explicit": "implicit", "simple": "complex", "complex": "complicated" };
+      const kv_tuples = {
+        "hello": "world",
+        "foo": "bar",
+        "inch": "time",
+        "foot": "gem",
+        "beautiful": "ugly",
+        "explicit": "implicit",
+        "simple": "complex",
+        "complex": "complicated",
+      };
       let requestParams = "/?";
       for (const [k, v] of Object.entries(kv_tuples)) {
-        requestParams += `${k}=${v}&`
+        requestParams += `${k}=${v}&`;
       }
       requestParams = requestParams.slice(0, -1);
       const serverRequest = members.mockRequest(requestParams);
