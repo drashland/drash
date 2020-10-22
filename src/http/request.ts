@@ -174,6 +174,13 @@ export class Request extends ServerRequest {
     return null;
   }
 
+  /**
+   * Gets a record whose keys are the request's url query params specified by inputs
+   * and whose values are the corresponding values of the query params.
+   * 
+   * @param inputs url query params
+   * @returns null if no inputs or record containing key-value pairs
+   */
   public getAllUrlQueryParams(...inputs: string[]): {[key: string]: string|null} | null {
     if (inputs.length === 0) {
       return null;
