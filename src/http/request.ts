@@ -174,6 +174,10 @@ export class Request extends ServerRequest {
     return null;
   }
 
+  public getAllUrlQueryParams(...inputs: string[]): {[key: string]: string|null} | null {
+    return null;
+  }
+
   /**
    * Get this request's URL path.
    *

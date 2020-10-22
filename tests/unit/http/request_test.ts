@@ -80,6 +80,10 @@ Rhum.testPlan("http/request_test.ts", () => {
     getUrlQueryParamTests();
   });
 
+  Rhum.testSuite("getAllUrlQueryParams()", () => {
+    getAllUrlQueryParamsTests();
+  })
+
   Rhum.testSuite("getUrlPath()", () => {
     getUrlPathTests();
   });
@@ -481,6 +485,49 @@ function getUrlQueryParamTests() {
       await request.parseBody();
       const actual = request.getUrlQueryParam("dont_exist");
       Rhum.asserts.assertEquals(null, actual);
+    },
+  );
+
+}
+
+function getAllUrlQueryParamsTests() {
+  Rhum.testCase(
+    "Returns null when no query params are passed in",
+    async () => {
+      const serverRequest = members.mockRequest("/?hello=world");
+      const request = new Drash.Http.Request(serverRequest);
+      await request.parseBody();
+      const actual = request.getAllUrlQueryParams();
+      Rhum.asserts.assertEquals(null, actual);
+    },
+  );
+
+  Rhum.testCase(
+    "Returns { <param_name>: <param_value> } when passing in query param <param_name>",
+    async () => {
+      const serverRequest = members.mockRequest("/?hello=world");
+      const request = new Drash.Http.Request(serverRequest);
+      await request.parseBody();
+      const actual = request.getAllUrlQueryParams("hello");
+      Rhum.asserts.assertEquals("world", actual);
+    },
+  );
+
+  Rhum.testCase(
+    "Returns { name1: val1, name2: val2, ... } when passed ( name1, name2, ... )",
+    async () => {
+      const kv_tuples = { "hello": "world", "foo": "bar", "inch": "time", "foot": "gem", 
+      "beautiful": "ugly", "explicit": "implicit", "simple": "complex", "complex": "complicated" };
+      let requestParams = "/?";
+      for (const [k, v] of Object.entries(kv_tuples)) {
+        requestParams += `${k}=${v}&`
+      }
+      requestParams = requestParams.slice(0, -1);
+      const serverRequest = members.mockRequest(requestParams);
+      const request = new Drash.Http.Request(serverRequest);
+      await request.parseBody();
+      const actual = request.getAllUrlQueryParams(...Object.keys(kv_tuples));
+      Rhum.asserts.assertEquals(kv_tuples, actual);
     },
   );
 }
