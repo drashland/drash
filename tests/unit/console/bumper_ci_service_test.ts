@@ -14,7 +14,6 @@ const c = new BumperService("drash", ["--version=1.2.3"]);
 const latestVersions = await b.getLatestVersions();
 
 Rhum.testPlan("bumper_ci_service_test.ts", () => {
-
   /**
    * The test cases in this test suite process as follows:
    *
@@ -191,4 +190,3 @@ deps files
 
 import { Drash } from "https://deno.land/x/drash@v0.0.0/mod.ts"; // up to date
 `;
-
