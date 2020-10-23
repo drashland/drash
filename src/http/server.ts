@@ -781,6 +781,7 @@ export class Server {
 
     let found = false;
     let backwardsCounts = 1;
+
     do {
       if (regexPath.charAt(0) != "^") {
         regexPath = goBackwards(this.resource_index, backwardsCounts, position);
@@ -791,15 +792,28 @@ export class Server {
     } while (found === false)
 
     const split = regexPath.split(":resource_index:");
-    console.log(split);
+    const location = split[1].match(/.+[0-9]/);
 
-    const location = split[1].match(".+[0-9]");
+
+    if (!location) {
+      const index = Number(split[1].replace(/\^.+/, ""));
+      const re = split.shift();
+      const match = request.url.match(re as string);
+
+      if (match) {
+        if (index || index === 0) {
+          this.last_path = request.url_path;
+          resource = this.paths.get(index);
+          this.last_resource = resource;
+        }
+      }
+      return resource;
+    }
 
     if (location) {
       const index = Number(location.input!.replace(/\^.+/, ""));
       const re = split.shift();
       const match = request.url.match(re as string);
-
 
       if (match) {
         if (index) {
@@ -807,12 +821,6 @@ export class Server {
           resource = this.paths.get(index);
           this.last_resource = resource;
         }
-      }
-    } else {
-      if (split.length == 2) {
-        this.last_path = request.url_path;
-        resource = this.paths.get(0);
-        this.last_resource = resource;
       }
     }
 
