@@ -34,7 +34,7 @@ export class Server {
   };
 
   protected last_path = "";
-  protected last_resource: Drash.Interfaces.Resource|undefined = undefined;
+  protected last_resource: Drash.Interfaces.Resource | undefined = undefined;
 
   protected resource_index = "";
 
@@ -569,7 +569,7 @@ export class Server {
       if (typeof path != "string") {
         newPaths.push(path);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${path}:resource_index:${index}`
+        this.resource_index += `${path}:resource_index:${index}`;
         continue;
       }
 
@@ -591,7 +591,7 @@ export class Server {
         };
         newPaths.push(pathObj);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`
+        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`;
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
         // Replace required params, in preparation to create the `regex_path`, just like
@@ -653,7 +653,7 @@ export class Server {
         };
         newPaths.push(pathObj);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`
+        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`;
       } else {
         const pathObj = {
           og_path: path,
@@ -671,7 +671,7 @@ export class Server {
         };
         newPaths.push(pathObj);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`
+        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`;
       }
     }
     resourceClass.paths_parsed = newPaths;
@@ -775,7 +775,7 @@ export class Server {
 
     let resource = undefined;
     let position = this.resource_index.search(request.url_path);
-    let regexPath = position > 1 
+    let regexPath = position > 1
       ? this.resource_index.substring(position - 1)
       : this.resource_index;
 
@@ -789,11 +789,10 @@ export class Server {
         found = true;
       }
       backwardsCounts++;
-    } while (found === false)
+    } while (found === false);
 
     const split = regexPath.split(":resource_index:");
     const location = split[1].match(/.+[0-9]/);
-
 
     if (!location) {
       const index = Number(split[1].replace(/\^.+/, ""));
