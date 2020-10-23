@@ -1,5 +1,5 @@
 export const regexes = {
-  mod: /version = ".+"/g,
+  const_statements: /version = ".+"/g,
   egg_json: /"version": ".+"/,
   import_export_statements: /drash@v[0-9\.]+[0-9\.]+[0-9\.]/g,
   yml_deno: /deno: \[".+"\]/g,
@@ -18,8 +18,8 @@ export const moduleVersionFiles = [
   },
   {
     filename: "./mod.ts",
-    replaceTheRegex: regexes.mod,
-    replaceWith: `version = "{{ thisModulesLatestVersion }}"`,
+    replaceTheRegex: regexes.const_statements,
+    replaceWith: `version = "v{{ thisModulesLatestVersion }}"`,
   },
   {
     filename: "./create_app/deps.ts",
