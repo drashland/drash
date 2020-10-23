@@ -33,6 +33,11 @@ export class Server {
     requested_favicon: false,
   };
 
+  protected last_path = "";
+  protected last_resource: Drash.Interfaces.Resource|undefined = undefined;
+
+  protected resource_index = "";
+
   /**
    * A property to hold the Deno server. This property is set in
    * this.run() like so:
@@ -57,7 +62,7 @@ export class Server {
    * A property to hold all paths associated with their resources for lookups
    * during the request-resource lifecycle.
    */
-  protected paths: { [key: string]: Drash.Interfaces.Resource } = {};
+  protected paths: Map<number, Drash.Interfaces.Resource> = new Map();
 
   /**
    * A property to hold this server's logger.
@@ -558,10 +563,13 @@ export class Server {
    */
   protected addHttpResource(resourceClass: Drash.Interfaces.Resource): void {
     const newPaths = [];
+
     for (const path of resourceClass.paths) {
+      const index = this.paths.size;
       if (typeof path != "string") {
         newPaths.push(path);
-        this.paths[path] = resourceClass;
+        this.paths.set(index, resourceClass);
+        this.resource_index += `${path}:resource_index:${index}`
         continue;
       }
 
@@ -582,7 +590,8 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.paths[pathObj.regex_path] = resourceClass;
+        this.paths.set(index, resourceClass);
+        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
         // Replace required params, in preparation to create the `regex_path`, just like
@@ -643,7 +652,8 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.paths[pathObj.regex_path] = resourceClass;
+        this.paths.set(index, resourceClass);
+        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`
       } else {
         const pathObj = {
           og_path: path,
@@ -660,7 +670,8 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.paths[pathObj.regex_path] = resourceClass;
+        this.paths.set(index, resourceClass);
+        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`
       }
     }
     resourceClass.paths_parsed = newPaths;
@@ -758,33 +769,59 @@ export class Server {
   protected getResourceClass(
     request: Drash.Http.Request,
   ): Drash.Interfaces.Resource | undefined {
-    for (const regex in this.paths) {
-      if (regex === "/" && request.url_path === "/") {
-        return this.paths[regex];
-      }
-
-      const pathMatchesRequestPathname = request.url_path.match(
-        regex,
-      );
-      if (pathMatchesRequestPathname == null) {
-        continue;
-      }
-
-      pathMatchesRequestPathname.shift();
-      const resource = this.paths[regex];
-      const pathParamsInKvpForm: { [key: string]: string } = {};
-      resource.paths_parsed!.forEach(
-        (pathObj: Drash.Interfaces.ResourcePaths) => {
-          pathObj.params.forEach((paramName: string, index: number) => {
-            pathParamsInKvpForm[paramName] = pathMatchesRequestPathname[index];
-          });
-        },
-      );
-      request.path_params = pathParamsInKvpForm;
-      return resource;
+    if (this.last_path == request.url) {
+      return this.last_resource;
     }
 
-    return undefined;
+    let resource = undefined;
+    let position = this.resource_index.search(request.url_path);
+    let regexPath = position > 1 
+      ? this.resource_index.substring(position - 1)
+      : this.resource_index;
+
+    let found = false;
+    let backwardsCounts = 1;
+    do {
+      if (regexPath.charAt(0) != "^") {
+        regexPath = goBackwards(this.resource_index, backwardsCounts, position);
+      } else {
+        found = true;
+      }
+      backwardsCounts++;
+    } while (found === false)
+
+    const split = regexPath.split(":resource_index:");
+    console.log(split);
+
+    const location = split[1].match(".+[0-9]");
+
+    if (location) {
+      const index = Number(location.input!.replace(/\^.+/, ""));
+      const re = split.shift();
+      const match = request.url.match(re as string);
+
+
+      if (match) {
+        if (index) {
+          this.last_path = request.url_path;
+          resource = this.paths.get(index);
+          this.last_resource = resource;
+        }
+      }
+    } else {
+      if (split.length == 2) {
+        this.last_path = request.url_path;
+        resource = this.paths.get(0);
+        this.last_resource = resource;
+      }
+    }
+
+    function goBackwards(index: string, counts: number, position: number) {
+      const ret = index.substring(position - counts);
+      return ret;
+    }
+
+    return resource;
   }
 
   /**
