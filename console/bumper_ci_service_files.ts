@@ -25,7 +25,7 @@ export const moduleVersionFiles = [
     filename: "./create_app/deps.ts",
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `drash@v{{ thisModulesLatestVersion }}`,
-  }
+  },
 ];
 
 export const denoVersionFiles = [
@@ -45,4 +45,3 @@ export const denoVersionFiles = [
     replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
   },
 ];
-

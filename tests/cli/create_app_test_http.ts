@@ -6,7 +6,7 @@
  */
 
 import { Rhum } from "../deps.ts";
-import { red, green } from "../../deps.ts";
+import { green, red } from "../../deps.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
