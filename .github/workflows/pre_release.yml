@@ -33,7 +33,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Bump Versions
-        run: deno run -A ./console/bump_versions.ts --version=${{ github.ref }} # vrsion passed so we know what the new release version will be
+        run: deno run -A ./console/bumper_ci_service.ts --version=${{ github.ref }} # vrsion passed so we know what the new release version will be
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
