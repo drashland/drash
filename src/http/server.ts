@@ -769,12 +769,15 @@ export class Server {
   protected getResourceClass(
     request: Drash.Http.Request,
   ): Drash.Interfaces.Resource | undefined {
-    if (this.last_path == request.url) {
+    if (this.last_path == request.url_path) {
       return this.last_resource;
     }
 
     let resource = undefined;
-    let position = this.resource_index.search(request.url_path);
+    const url = request.url_path.split("/");
+    url.pop();
+    const urlWithoutParam = url.join("/");
+    let position = this.resource_index.search(urlWithoutParam);
     let regexPath = position > 1
       ? this.resource_index.substring(position - 1)
       : this.resource_index;
@@ -790,42 +793,31 @@ export class Server {
       }
       backwardsCounts++;
     } while (found === false);
-
-    const split = regexPath.split(":resource_index:");
-    const location = split[1].match(/.+[0-9]/);
-
-    if (!location) {
-      const index = Number(split[1].replace(/\^.+/, ""));
-      const re = split.shift();
-      const match = request.url.match(re as string);
-
-      if (match) {
-        if (index || index === 0) {
-          this.last_path = request.url_path;
-          resource = this.paths.get(index);
-          this.last_resource = resource;
-        }
-      }
-      return resource;
-    }
-
-    if (location) {
-      const index = Number(location.input!.replace(/\^.+/, ""));
-      const re = split.shift();
-      const match = request.url.match(re as string);
-
-      if (match) {
-        if (index) {
-          this.last_path = request.url_path;
-          resource = this.paths.get(index);
-          this.last_resource = resource;
-        }
-      }
-    }
-
     function goBackwards(index: string, counts: number, position: number) {
       const ret = index.substring(position - counts);
       return ret;
+    }
+
+    const split = regexPath.split(":resource_index:");
+    const re = split[0];
+    const matchedIndex = split[1].match(/[0-9]+/);
+    if (matchedIndex) {
+      const index = Number(matchedIndex[0]);
+      const match = request.url_path.match(re);
+      if (match) {
+        resource = this.paths.get(index);
+        if (resource && resource.paths_parsed) {
+          const params = match.slice();
+          params.shift();
+          const pathParamsInKvpForm: { [key: string]: string } = {};
+          resource.paths_parsed.forEach((pathObj: Drash.Interfaces.ResourcePaths) => {
+            pathObj.params.forEach((paramName: string, index: number) => {
+              pathParamsInKvpForm[paramName] = params[index];
+            });
+          });
+          request.path_params = pathParamsInKvpForm;
+        }
+      }
     }
 
     return resource;
