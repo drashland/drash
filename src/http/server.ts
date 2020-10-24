@@ -854,7 +854,7 @@ export class Server {
     let resource: Drash.Interfaces.Resource | undefined = undefined;
 
     if (this.requestUrlWasHandledPreviously(request.url_path)) {
-      resource = this.cached_resource_lookup_table.get(request.url);
+      resource = this.cached_resource_lookup_table.get(request.url_path);
       const matchArray = request.url.match(
         this.last_request_regex_path as string,
       );
