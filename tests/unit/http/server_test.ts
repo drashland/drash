@@ -117,6 +117,12 @@ Rhum.testPlan("http/server_test.ts", () => {
         decoder.decode(response.body as ArrayBuffer),
         { note_id: "1557" },
       );
+      request = members.mockRequest("/notes/1557/");
+      response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        decoder.decode(response.body as ArrayBuffer),
+        { note_id: "1557" },
+      );
     });
 
     Rhum.testCase("getHeaderParam()", async () => {

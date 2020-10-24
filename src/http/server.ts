@@ -566,6 +566,7 @@ export class Server {
 
     for (const path of resourceClass.paths) {
       const index = this.paths.size;
+
       if (typeof path != "string") {
         newPaths.push(path);
         this.paths.set(index, resourceClass);
@@ -775,8 +776,26 @@ export class Server {
 
     let resource = undefined;
     const url = request.url_path.split("/");
-    url.pop();
-    const urlWithoutParam = url.join("/");
+    let hasParam = false;
+    if (url[url.length - 1] == "") {
+      url.pop();
+    }
+
+    if (url.length > 2) {
+      url.pop();
+      hasParam = true;
+    }
+
+    let urlWithoutParam = url.join("/");
+
+    if (urlWithoutParam.charAt(urlWithoutParam.length - 1) === "/") {
+      urlWithoutParam = urlWithoutParam.substring(-1, urlWithoutParam.length - 1);
+    }
+
+    if (request.url_path.charAt(request.url_path.length - 1) === "/") {
+      request.url_path = request.url_path.substring(-1, request.url_path.length - 1);
+    }
+
     let position = this.resource_index.search(urlWithoutParam);
     let regexPath = position > 1
       ? this.resource_index.substring(position - 1)
@@ -799,8 +818,18 @@ export class Server {
     }
 
     const split = regexPath.split(":resource_index:");
-    const re = split[0];
-    const matchedIndex = split[1].match(/[0-9]+/);
+    let re = split[0].replace(/[0-9]+/, "").replace("\/\/", "\/");
+    let matchedIndex = split[1].match(/[0-9]+/);
+
+
+    if (hasParam && split.length > 2) {
+      if (! new RegExp(re).test(request.url_path)) {
+        re = split[1].replace(/[0-9]+/, "").replace("\/\/", "\/");
+        matchedIndex = split[2].match(/[0-9]+/);
+      }
+    }
+
+
     if (matchedIndex) {
       const index = Number(matchedIndex[0]);
       const match = request.url_path.match(re);
