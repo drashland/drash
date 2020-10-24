@@ -844,13 +844,15 @@ export class Server {
   ): Drash.Interfaces.Resource | undefined {
     let resource: Drash.Interfaces.Resource | undefined = undefined;
 
-    if (this.cached_resource_lookup_table.has(request.url_path)) {
+    if (this.requestUrlWasHandledPreviously(request.url_path)) {
       resource = this.cached_resource_lookup_table.get(request.url);
       const matchArray = request.url.match(this.last_request_regex_path as string);
-      request.path_params = this.getRequestPathParams(
-        resource,
-        matchArray,
-      );
+      if (matchArray) {
+        request.path_params = this.getRequestPathParams(
+          resource,
+          matchArray,
+        );
+      }
     }
 
     const resourceLookupInfo = this.getResourceLookupInfo(
