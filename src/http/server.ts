@@ -33,7 +33,10 @@ export class Server {
     requested_favicon: false,
   };
 
-  protected cached_resource_map: Map<string, Drash.Interfaces.Resource | undefined> = new Map();
+  protected cached_resource_map: Map<
+    string,
+    Drash.Interfaces.Resource | undefined
+  > = new Map();
 
   protected last_request_regex_path: RegExpMatchArray | string | null = "";
   protected last_resource_index: number | undefined = undefined;
@@ -810,10 +813,12 @@ export class Server {
   ): Drash.Interfaces.Resource | undefined {
     let resource = undefined;
 
-    // Has the request URL been found before? If so, 
+    // Has the request URL been found before? If so,
     if (this.requestUrlWasHandledPreviously(request.url_path)) {
       resource = this.cached_resource_map.get(request.url_path);
-      const matchArray = request.url_path.match(this.last_request_regex_path as string);
+      const matchArray = request.url_path.match(
+        this.last_request_regex_path as string,
+      );
       request.path_params = this.getRequestPathParams(
         resource,
         matchArray,
@@ -828,7 +833,9 @@ export class Server {
 
     if (resourceLookupInfo.matched_index) {
       const index = Number(resourceLookupInfo.matched_index[0]);
-      const matchArray = request.url_path.match(resourceLookupInfo.regex_path as string);
+      const matchArray = request.url_path.match(
+        resourceLookupInfo.regex_path as string,
+      );
       if (matchArray) {
         resource = this.paths.get(index);
         this.cached_resource_map.set(request.url_path, resource);
