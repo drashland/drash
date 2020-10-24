@@ -106,6 +106,11 @@ Rhum.testPlan("http/server_test.ts", () => {
       members.assertResponseJsonEquals(members.responseBody(response), {
         user_id: "1",
       });
+      request = members.mockRequest("/users/1/");
+      response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(members.responseBody(response), {
+        user_id: "1",
+      });
       request = members.mockRequest("/notes/1557");
       response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
