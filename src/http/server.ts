@@ -859,6 +859,11 @@ export class Server {
       request.url_path,
     );
 
+    // No resource found? GTFO.
+    if (!resourceLookupInfo) {
+      return resource;
+    }
+
     if (resourceLookupInfo) {
       resourceLookupInfo.forEach((result: ISearchResult) => {
         if (resource) {
@@ -905,11 +910,12 @@ export class Server {
    * between all regex paths that the server is handling and indices to
    * resources in the resource lookup Map.
    *
-   * @returns Lookup information on a resource.
+   * @returns Lookup information on a resource or undefined if not found in the
+   * index that is used for the lookup information.
    */
   protected getResourceLookupInfo(
     urlPath: string,
-  ): ISearchResult[] {
+  ): ISearchResult[] | undefined {
     const url = urlPath.split("/");
 
     if (url[url.length - 1] == "") {
@@ -938,7 +944,12 @@ export class Server {
       }
     }
 
-    return this.resource_index_service!.getItem("\\^" + urlWithoutParam);
+    try {
+      return this.resource_index_service!.getItem("\\^" + urlWithoutParam);
+    } catch (error) {
+    }
+
+    return undefined;
   }
 
   /**
