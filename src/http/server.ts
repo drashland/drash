@@ -760,6 +760,15 @@ export class Server {
     return new Drash.Exceptions.HttpException(code, message);
   }
 
+  /**
+   * Get the path params in a request URL.
+   *
+   * @param resource - The resource that has the information about param names.
+   * These param names are associated with the values of the path params in the
+   * request URL.
+   * @param matchArray - An array containing the path params (as well as other
+   * information about the request URL).
+   */
   protected getRequestPathParams(
     resource: Drash.Interfaces.Resource | undefined,
     matchArray: RegExpMatchArray | null,
