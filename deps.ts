@@ -46,5 +46,5 @@ export type { Cookie } from "https://deno.land/std@0.74.0/http/cookie.ts";
 
 export { green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
-// export { IndexService } from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
-export { ISearchResult, IndexService } from "../services/index/index_service.ts";
+export { ISearchResult, IndexService } from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
+// export { ISearchResult, IndexService } from "../services/index/index_service.ts";
