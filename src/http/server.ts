@@ -844,6 +844,15 @@ export class Server {
   ): Drash.Interfaces.Resource | undefined {
     let resource: Drash.Interfaces.Resource | undefined = undefined;
 
+    if (this.cached_resource_lookup_table.has(request.url_path)) {
+      resource = this.cached_resource_lookup_table.get(request.url);
+      const matchArray = request.url.match(this.last_request_regex_path as string);
+      request.path_params = this.getRequestPathParams(
+        resource,
+        matchArray,
+      );
+    }
+
     const resourceLookupInfo = this.getResourceLookupInfo(
       request.url_path,
     );
@@ -911,6 +920,7 @@ export class Server {
 
     let urlWithoutParam = url.join("/");
 
+
     if (urlWithoutParam.charAt(urlWithoutParam.length - 1) === "/") {
       urlWithoutParam = urlWithoutParam.substring(
         -1,
@@ -919,8 +929,8 @@ export class Server {
     }
     const split = urlWithoutParam.split("/");
     if (split.length > 1) {
-      if (urlWithoutParam[0] == "") {
-        urlWithoutParam = split[1];
+      if (urlWithoutParam[0] == "" || urlWithoutParam[0] == "/") {
+        urlWithoutParam = "/" + split[1];
       } else {
         urlWithoutParam = split[0];
       }
