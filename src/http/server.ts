@@ -7,6 +7,7 @@ import {
   Server as DenoServer,
   ServerRequest,
   serveTLS,
+  ISearchResult,
 } from "../../deps.ts";
 import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
 
@@ -841,39 +842,31 @@ export class Server {
   protected getResourceClass(
     request: Drash.Http.Request,
   ): Drash.Interfaces.Resource | undefined {
-    let resource = undefined;
-
-    // Has the request URL been found before? If so,
-    if (this.requestUrlWasHandledPreviously(request.url_path)) {
-      resource = this.cached_resource_lookup_table.get(request.url_path);
-      const matchArray = request.url_path.match(
-        this.last_request_regex_path as string,
-      );
-      request.path_params = this.getRequestPathParams(
-        resource,
-        matchArray,
-      );
-      return resource;
-    }
+    let resource: Drash.Interfaces.Resource | undefined = undefined;
 
     const resourceLookupInfo = this.getResourceLookupInfo(
       request.url_path,
     );
 
     if (resourceLookupInfo) {
-      const index = Number(resourceLookupInfo.index);
-      const matchArray = request.url_path.match(
-        (resourceLookupInfo.search_term as string),
-      );
-      if (matchArray) {
-        resource = this.resource_lookup_table.get(index);
-        this.cached_resource_lookup_table.set(request.url_path, resource);
-        this.last_request_regex_path = resourceLookupInfo.search_term;
-        request.path_params = this.getRequestPathParams(
-          resource,
-          matchArray,
+      resourceLookupInfo.forEach((result: ISearchResult) => {
+        if (resource) {
+          return;
+        }
+        const index = result.index;
+        const matchArray = request.url_path.match(
+          result.result,
         );
-      }
+        if (matchArray) {
+          resource = this.resource_lookup_table.get(index);
+          this.cached_resource_lookup_table.set(request.url_path, resource);
+          this.last_request_regex_path = result.result;
+          request.path_params = this.getRequestPathParams(
+            resource,
+            matchArray,
+          );
+        }
+      });
     }
 
     return resource;
@@ -905,11 +898,13 @@ export class Server {
    */
   protected getResourceLookupInfo(
     urlPath: string,
-  ): { [key: string]: RegExpMatchArray | string | null } {
+  ): ISearchResult[] {
     const url = urlPath.split("/");
+
     if (url[url.length - 1] == "") {
       url.pop();
     }
+
     if (url.length > 2) {
       url.pop();
     }
@@ -921,6 +916,14 @@ export class Server {
         -1,
         urlWithoutParam.length - 1,
       );
+    }
+    const split = urlWithoutParam.split("/");
+    if (split.length > 1) {
+      if (urlWithoutParam[0] == "") {
+        urlWithoutParam = split[1];
+      } else {
+        urlWithoutParam = split[0];
+      }
     }
 
     return this.resource_index_service!.getItem("\\^" + urlWithoutParam);
