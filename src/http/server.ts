@@ -858,7 +858,6 @@ export class Server {
       return resource;
     }
 
-
     const resourceLookupInfo = this.getResourceLookupInfo(
       request.url_path,
     );
