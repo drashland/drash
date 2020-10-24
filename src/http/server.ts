@@ -781,7 +781,6 @@ export class Server {
           match
           && (match.length != 1)
         ) {
-          console.log("atmch");
           const params = match.slice();
           params.shift();
           const pathParamsInKvpForm: { [key: string]: string } = {};
