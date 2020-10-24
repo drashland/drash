@@ -3,11 +3,11 @@ import {
   HTTPOptions,
   HTTPSOptions,
   IndexService,
+  ISearchResult,
   serve,
   Server as DenoServer,
   ServerRequest,
   serveTLS,
-  ISearchResult,
 } from "../../deps.ts";
 import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
 
