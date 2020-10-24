@@ -45,3 +45,5 @@ export {
 export type { Cookie } from "https://deno.land/std@0.73.0/http/cookie.ts";
 
 export { green, red } from "https://deno.land/std@0.73.0/fmt/colors.ts";
+
+export { IndexService } from "../services/index/index_service.ts";

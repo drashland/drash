@@ -2,13 +2,11 @@ import { Drash } from "../../mod.ts";
 import {
   HTTPOptions,
   HTTPSOptions,
-  Response,
+  IndexService,
   serve,
   Server as DenoServer,
   ServerRequest,
   serveTLS,
-  Status,
-  STATUS_TEXT,
 } from "../../deps.ts";
 import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
 
@@ -38,7 +36,7 @@ export class Server {
    * URL path is associated with a resource. This makes subsequent requests to
    * the same resources faster.
    */
-  protected cached_resource_map: Map<
+  protected cached_resource_lookup_table: Map<
     string,
     Drash.Interfaces.Resource | undefined
   > = new Map();
@@ -65,18 +63,28 @@ export class Server {
 
   /**
    * An index in the form of a string that associates regex paths with indices
-   * of the `resource_map` property on this class. Basically, this string is
-   * used to match a request URL path to an index. That index is then used to
-   * .get() a resource from the `resource_map` property  on this class. This
-   * property is not to be confused with the `cached_resource_map` property.
+   * of the `resource_lookup_table` property on this class. Basically, this
+   * string is used to match a request URL path to an index. That index is then
+   * used to .get() a resource from the `resource_lookup_table` property  on
+   * this class. This property is not to be confused with the
+   * `cached_resource_lookup_table` property.
    */
   protected resource_index = "";
+
+  /**
+   * A property to hold a "divider" that divides regex paths and indices. This
+   * improves search speeds when searching the index.
+   */
+  protected resource_index_divider = ":drashRindex";
 
   /**
    * A property to hold all paths associated with their resources for lookups
    * during the request-resource lifecycle.
    */
-  protected resource_map: Map<number, Drash.Interfaces.Resource> = new Map();
+  protected resource_lookup_table: Map<number, Drash.Interfaces.Resource> =
+    new Map();
+
+  protected resource_index_service: IndexService;
 
   /**
    * A property to hold the last regex path that was processed in the last
@@ -138,6 +146,11 @@ export class Server {
     if (configs.middleware) {
       this.addMiddleware(configs.middleware);
     }
+
+    // Create the service to search this index
+    this.resource_index_service = new IndexService(
+      this.resource_lookup_table,
+    );
 
     if (configs.resources) {
       configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
@@ -585,12 +598,17 @@ export class Server {
     const newPaths = [];
 
     for (const path of resourceClass.paths) {
-      const index = this.resource_map.size;
+      if (path.includes("__is__")) {
+        throw new Drash.Exceptions.NameCollisionException(
+          `Cannot use reserved path name '${
+            this.resource_index_divider.replace(":", "")
+          }'`,
+        );
+      }
 
       if (typeof path != "string") {
         newPaths.push(path);
-        this.resource_map.set(index, resourceClass);
-        this.resource_index += `${path}:rindex:${index}`;
+        this.resource_index_service.addItem(path, resourceClass);
         continue;
       }
 
@@ -611,8 +629,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.resource_map.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
+        this.resource_index_service.addItem(pathObj.regex_path, resourceClass);
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
         // Replace required params, in preparation to create the `regex_path`, just like
@@ -673,8 +690,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.resource_map.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
+        this.resource_index_service.addItem(pathObj.regex_path, resourceClass);
       } else {
         const pathObj = {
           og_path: path,
@@ -691,8 +707,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.resource_map.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
+        this.resource_index_service.addItem(pathObj.regex_path, resourceClass);
       }
     }
     resourceClass.paths_parsed = newPaths;
@@ -830,7 +845,7 @@ export class Server {
 
     // Has the request URL been found before? If so,
     if (this.requestUrlWasHandledPreviously(request.url_path)) {
-      resource = this.cached_resource_map.get(request.url_path);
+      resource = this.cached_resource_lookup_table.get(request.url_path);
       const matchArray = request.url_path.match(
         this.last_request_regex_path as string,
       );
@@ -843,18 +858,17 @@ export class Server {
 
     const resourceLookupInfo = this.getResourceLookupInfo(
       request.url_path,
-      this.resource_index,
     );
 
-    if (resourceLookupInfo.matched_index) {
-      const index = Number(resourceLookupInfo.matched_index[0]);
+    if (resourceLookupInfo) {
+      const index = Number(resourceLookupInfo.index);
       const matchArray = request.url_path.match(
-        resourceLookupInfo.regex_path as string,
+        (resourceLookupInfo.search_term as string),
       );
       if (matchArray) {
-        resource = this.resource_map.get(index);
-        this.cached_resource_map.set(request.url_path, resource);
-        this.last_request_regex_path = resourceLookupInfo.regex_path;
+        resource = this.resource_lookup_table.get(index);
+        this.cached_resource_lookup_table.set(request.url_path, resource);
+        this.last_request_regex_path = resourceLookupInfo.search_term;
         request.path_params = this.getRequestPathParams(
           resource,
           matchArray,
@@ -875,7 +889,7 @@ export class Server {
    * @returns True if handled previously; false if not.
    */
   protected requestUrlWasHandledPreviously(urlPath: string): boolean {
-    return this.cached_resource_map.has(urlPath);
+    return this.cached_resource_lookup_table.has(urlPath);
   }
 
   /**
@@ -891,17 +905,13 @@ export class Server {
    */
   protected getResourceLookupInfo(
     urlPath: string,
-    index: string,
   ): { [key: string]: RegExpMatchArray | string | null } {
     const url = urlPath.split("/");
-    let hasParam = false;
     if (url[url.length - 1] == "") {
       url.pop();
     }
-
     if (url.length > 2) {
       url.pop();
-      hasParam = true;
     }
 
     let urlWithoutParam = url.join("/");
@@ -913,40 +923,7 @@ export class Server {
       );
     }
 
-    let position = index.search(urlWithoutParam);
-    let regexPath = position > 1 ? index.substring(position - 1) : index;
-
-    let found = false;
-    let backwardsCounts = 1;
-
-    do {
-      if (regexPath.charAt(0) != "^") {
-        regexPath = goBackwards(index, backwardsCounts, position);
-      } else {
-        found = true;
-      }
-      backwardsCounts++;
-    } while (found === false);
-    function goBackwards(index: string, counts: number, position: number) {
-      const ret = index.substring(position - counts);
-      return ret;
-    }
-
-    const split = regexPath.split(":rindex:");
-    let re = split[0].replace(/^[0-9]+/, "").replace("\/\/", "\/");
-    let matchedIndex = split[1].match(/[0-9]+/);
-
-    if (hasParam && split.length > 2) {
-      if (!new RegExp(re).test(urlPath)) {
-        re = split[1].replace(/^[0-9]+/, "").replace("\/\/", "\/");
-        matchedIndex = split[2].match(/[0-9]+/);
-      }
-    }
-
-    return {
-      matched_index: matchedIndex,
-      regex_path: re as string,
-    };
+    return this.resource_index_service!.getItem("\\^" + urlWithoutParam);
   }
 
   /**
