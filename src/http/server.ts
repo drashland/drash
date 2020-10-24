@@ -599,7 +599,6 @@ export class Server {
     const newPaths = [];
 
     for (let path of resourceClass.paths) {
-
       // Strip out the trailing slash from paths
       if (path.charAt(path.length - 1) == "/") {
         path = path.substring(-1, path.length - 1);

@@ -50,4 +50,7 @@ export {
   IndexService,
   ISearchResult,
 } from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
-// export { ISearchResult, IndexService } from "../services/index/index_service.ts";
+// export {
+//   IndexService,
+//   ISearchResult,
+// } from "../services/index/index_service.ts";
