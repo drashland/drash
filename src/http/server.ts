@@ -832,6 +832,8 @@ export class Server {
       const match = request.url_path.match(re);
       if (match) {
         resource = this.paths.get(index);
+        this.last_path = request.url_path;
+        this.last_resource = resource;
         if (resource && resource.paths_parsed) {
           const params = match.slice();
           params.shift();
