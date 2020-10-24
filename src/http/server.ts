@@ -598,7 +598,15 @@ export class Server {
   protected addHttpResource(resourceClass: Drash.Interfaces.Resource): void {
     const newPaths = [];
 
-    for (const path of resourceClass.paths) {
+    for (let path of resourceClass.paths) {
+
+      // Strip out the trailing slash from paths
+      if (path.charAt(path.length - 1) == "/") {
+        path = path.substring(-1, path.length - 1);
+      }
+
+      // If the path includes the index separator, then we HAVE TO throw an
+      // error because that string is a reserved word
       if (path.includes("__is__")) {
         throw new Drash.Exceptions.NameCollisionException(
           `Cannot use reserved path name '${
@@ -607,14 +615,15 @@ export class Server {
         );
       }
 
+      // Path isn't a string? Don't even add it...
       if (typeof path != "string") {
         newPaths.push(path);
         this.resource_index_service.addItem(path, resourceClass);
         continue;
       }
 
+      // Handle wildcard paths
       if (path.includes("*") == true) {
-        // Wildcard
         const pathObj = {
           og_path: path,
           regex_path: `^.${
