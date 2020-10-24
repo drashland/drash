@@ -33,7 +33,8 @@ export class Server {
     requested_favicon: false,
   };
 
-  protected last_request_url_path = "";
+  protected cached_resource_map: Map<string, Drash.Interfaces.Resource | undefined> = new Map();
+
   protected last_request_regex_path: RegExpMatchArray | string | null = "";
   protected last_resource_index: number | undefined = undefined;
 
@@ -802,7 +803,7 @@ export class Server {
 
     // Has the request URL been found before? If so, 
     if (this.requestUrlWasHandledPreviously(request.url_path)) {
-      resource = this.paths.get(Number(this.last_resource_index));
+      resource = this.cached_resource_map.get(request.url_path);
       const matchArray = request.url_path.match(this.last_request_regex_path as string);
       request.path_params = this.getRequestPathParams(
         resource,
@@ -821,9 +822,8 @@ export class Server {
       const matchArray = request.url_path.match(resourceLookupInfo.regex_path as string);
       if (matchArray) {
         resource = this.paths.get(index);
+        this.cached_resource_map.set(request.url_path, resource);
         this.last_request_regex_path = resourceLookupInfo.regex_path;
-        this.last_request_url_path = request.url_path;
-        this.last_resource_index = index;
         request.path_params = this.getRequestPathParams(
           resource,
           matchArray,
@@ -834,10 +834,30 @@ export class Server {
     return resource;
   }
 
+  /**
+   * Has the request URL path in question been handled previously? That is, a
+   * resource was found for it and an association was stored in the CACHED
+   * resource lookup Map.
+   *
+   * @param urlPath - The request URL path in question.
+   *
+   * @returns True if handled previously; false if not.
+   */
   protected requestUrlWasHandledPreviously(urlPath: string): boolean {
-    return this.last_request_url_path == urlPath;
+    return this.cached_resource_map.has(urlPath);
   }
 
+  /**
+   * Get the lookup information on a resource given a request URL path and the
+   * resource index.
+   *
+   * @param urlPath - The request URL path to match to a resource.
+   * @param index - The index to search. This index contains associations
+   * between all regex paths that the server is handling and indices to
+   * resources in the resource lookup Map.
+   *
+   * @returns Lookup information on a resource.
+   */
   protected getResourceLookupInfo(
     urlPath: string,
     index: string,
