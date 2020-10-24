@@ -71,7 +71,7 @@ jobs:
 
       - name: Run Autocannon Benchmarks
         run: |-
-          deno run --allow-all app.ts &
+          deno run --allow-all console/benchmark_app.ts &
           sleep 15 &&
           mkdir -p results &&
           autocannon -c 40 -d 10 http://localhost:1447 &&
