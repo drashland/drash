@@ -33,15 +33,15 @@ export class Server {
     requested_favicon: false,
   };
 
+  /**
+   * A property to hold all previously handled request URL paths. Each request
+   * URL path is associated with a resource. This makes subsequent requests to
+   * the same resources faster.
+   */
   protected cached_resource_map: Map<
     string,
     Drash.Interfaces.Resource | undefined
   > = new Map();
-
-  protected last_request_regex_path: RegExpMatchArray | string | null = "";
-  protected last_resource_index: number | undefined = undefined;
-
-  protected resource_index = "";
 
   /**
    * A property to hold the Deno server. This property is set in
@@ -64,10 +64,25 @@ export class Server {
   public port: number = 1447;
 
   /**
+   * An index in the form of a string that associates regex paths with indices
+   * of the `resource_map` property on this class. Basically, this string is
+   * used to match a request URL path to an index. That index is then used to
+   * .get() a resource from the `resource_map` property  on this class. This
+   * property is not to be confused with the `cached_resource_map` property.
+   */
+  protected resource_index = "";
+
+  /**
    * A property to hold all paths associated with their resources for lookups
    * during the request-resource lifecycle.
    */
-  protected paths: Map<number, Drash.Interfaces.Resource> = new Map();
+  protected resource_map: Map<number, Drash.Interfaces.Resource> = new Map();
+
+  /**
+   * A property to hold the last regex path that was processed in the last
+   * request. This is used to retrieve path params from request URL paths.
+   */
+  protected last_request_regex_path: RegExpMatchArray | string | null = "";
 
   /**
    * A property to hold this server's logger.
@@ -570,11 +585,11 @@ export class Server {
     const newPaths = [];
 
     for (const path of resourceClass.paths) {
-      const index = this.paths.size;
+      const index = this.resource_map.size;
 
       if (typeof path != "string") {
         newPaths.push(path);
-        this.paths.set(index, resourceClass);
+        this.resource_map.set(index, resourceClass);
         this.resource_index += `${path}:rindex:${index}`;
         continue;
       }
@@ -596,7 +611,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.paths.set(index, resourceClass);
+        this.resource_map.set(index, resourceClass);
         this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
@@ -658,7 +673,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.paths.set(index, resourceClass);
+        this.resource_map.set(index, resourceClass);
         this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
       } else {
         const pathObj = {
@@ -676,7 +691,7 @@ export class Server {
           ),
         };
         newPaths.push(pathObj);
-        this.paths.set(index, resourceClass);
+        this.resource_map.set(index, resourceClass);
         this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
       }
     }
@@ -837,7 +852,7 @@ export class Server {
         resourceLookupInfo.regex_path as string,
       );
       if (matchArray) {
-        resource = this.paths.get(index);
+        resource = this.resource_map.get(index);
         this.cached_resource_map.set(request.url_path, resource);
         this.last_request_regex_path = resourceLookupInfo.regex_path;
         request.path_params = this.getRequestPathParams(
