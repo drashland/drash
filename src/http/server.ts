@@ -846,7 +846,9 @@ export class Server {
 
     if (this.requestUrlWasHandledPreviously(request.url_path)) {
       resource = this.cached_resource_lookup_table.get(request.url);
-      const matchArray = request.url.match(this.last_request_regex_path as string);
+      const matchArray = request.url.match(
+        this.last_request_regex_path as string,
+      );
       if (matchArray) {
         request.path_params = this.getRequestPathParams(
           resource,
@@ -927,7 +929,6 @@ export class Server {
     }
 
     let urlWithoutParam = url.join("/");
-
 
     if (urlWithoutParam.charAt(urlWithoutParam.length - 1) === "/") {
       urlWithoutParam = urlWithoutParam.substring(
