@@ -34,7 +34,8 @@ export class Server {
   };
 
   protected last_path = "";
-  protected last_resource: Drash.Interfaces.Resource | undefined = undefined;
+  protected last_path_re = "";
+  protected last_resource: number | undefined = undefined;
 
   protected resource_index = "";
 
@@ -237,7 +238,7 @@ export class Server {
       // TS2351: Cannot use 'new' with an expression whose type lacks a call or
       // construct signature.
       //
-      resource = new (resourceClass as Drash.Http.Resource)(
+      resource = new (resourceClass as unknown as Drash.Http.Resource)(
         request,
         new Drash.Http.Response(request, {
           views_path: this.configs.views_path,
@@ -770,11 +771,29 @@ export class Server {
   protected getResourceClass(
     request: Drash.Http.Request,
   ): Drash.Interfaces.Resource | undefined {
+    let resource = undefined;
+
     if (this.last_path == request.url_path) {
-      return this.last_resource;
+      resource = this.paths.get(Number(this.last_resource));
+      const match = request.url_path.match(this.last_path_re);
+      if (resource && resource.paths_parsed) {
+        if (match) {
+          const params = match.slice();
+          params.shift();
+          const pathParamsInKvpForm: { [key: string]: string } = {};
+          resource.paths_parsed.forEach(
+            (pathObj: Drash.Interfaces.ResourcePaths) => {
+              pathObj.params.forEach((paramName: string, index: number) => {
+                pathParamsInKvpForm[paramName] = params[index];
+              });
+            },
+          );
+          request.path_params = pathParamsInKvpForm;
+        }
+      }
+      return resource;
     }
 
-    let resource = undefined;
     const url = request.url_path.split("/");
     let hasParam = false;
     if (url[url.length - 1] == "") {
@@ -832,8 +851,9 @@ export class Server {
       const match = request.url_path.match(re);
       if (match) {
         resource = this.paths.get(index);
+        this.last_path_re = re;
         this.last_path = request.url_path;
-        this.last_resource = resource;
+        this.last_resource = index;
         if (resource && resource.paths_parsed) {
           const params = match.slice();
           params.shift();
