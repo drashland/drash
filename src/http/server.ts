@@ -34,7 +34,7 @@ export class Server {
   };
 
   protected last_path = "";
-  protected last_path_re = "";
+  protected last_path_re: RegExpMatchArray | string | null = "";
   protected last_resource: number | undefined = undefined;
 
   protected resource_index = "";
@@ -571,7 +571,7 @@ export class Server {
       if (typeof path != "string") {
         newPaths.push(path);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${path}:resource_index:${index}`;
+        this.resource_index += `${path}:rindex:${index}`;
         continue;
       }
 
@@ -593,7 +593,7 @@ export class Server {
         };
         newPaths.push(pathObj);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`;
+        this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
       } else if (path.includes("?") === true) { // optional params
         let tmpPath = path;
         // Replace required params, in preparation to create the `regex_path`, just like
@@ -655,7 +655,7 @@ export class Server {
         };
         newPaths.push(pathObj);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`;
+        this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
       } else {
         const pathObj = {
           og_path: path,
@@ -673,7 +673,7 @@ export class Server {
         };
         newPaths.push(pathObj);
         this.paths.set(index, resourceClass);
-        this.resource_index += `${pathObj.regex_path}:resource_index:${index}`;
+        this.resource_index += `${pathObj.regex_path}:rindex:${index}`;
       }
     }
     resourceClass.paths_parsed = newPaths;
@@ -759,6 +759,33 @@ export class Server {
     return new Drash.Exceptions.HttpException(code, message);
   }
 
+  protected getRequestPathParams(
+    resource: Drash.Interfaces.Resource | undefined,
+    matchArray: RegExpMatchArray | null,
+  ): { [key: string]: string } {
+    const pathParamsInKvpForm: { [key: string]: string } = {};
+
+    // No need to get params if there aren't any
+    if (!matchArray || (matchArray.length == 1)) {
+      return pathParamsInKvpForm;
+    }
+
+    const params = matchArray.slice();
+    params.shift();
+
+    if (resource && resource.paths_parsed) {
+      resource.paths_parsed.forEach(
+        (pathObj: Drash.Interfaces.ResourcePaths) => {
+          pathObj.params.forEach((paramName: string, index: number) => {
+            pathParamsInKvpForm[paramName] = params[index];
+          });
+        },
+      );
+    }
+
+    return pathParamsInKvpForm;
+  }
+
   /**
    * Get the resource class.
    *
@@ -775,29 +802,44 @@ export class Server {
 
     if (this.last_path == request.url_path) {
       resource = this.paths.get(Number(this.last_resource));
-      const match = request.url_path.match(this.last_path_re);
+      const matchArray = request.url_path.match(this.last_path_re as string);
       if (resource && resource.paths_parsed) {
-        if (
-          match &&
-          (match.length != 1)
-        ) {
-          const params = match.slice();
-          params.shift();
-          const pathParamsInKvpForm: { [key: string]: string } = {};
-          resource.paths_parsed.forEach(
-            (pathObj: Drash.Interfaces.ResourcePaths) => {
-              pathObj.params.forEach((paramName: string, index: number) => {
-                pathParamsInKvpForm[paramName] = params[index];
-              });
-            },
-          );
-          request.path_params = pathParamsInKvpForm;
-        }
+        request.path_params = this.getRequestPathParams(
+          resource,
+          matchArray,
+        );
       }
       return resource;
     }
 
-    const url = request.url_path.split("/");
+    const resourceLookupInfo = this.getResourceLookupInfo(
+      request.url_path,
+      this.resource_index,
+    );
+
+    if (resourceLookupInfo.matched_index) {
+      const index = Number(resourceLookupInfo.matched_index[0]);
+      const matchArray = request.url_path.match(resourceLookupInfo.regex_path as string);
+      if (matchArray) {
+        resource = this.paths.get(index);
+        this.last_path_re = resourceLookupInfo.regex_path;
+        this.last_path = request.url_path;
+        this.last_resource = index;
+        request.path_params = this.getRequestPathParams(
+          resource,
+          matchArray,
+        );
+      }
+    }
+
+    return resource;
+  }
+
+  protected getResourceLookupInfo(
+    urlPath: string,
+    index: string,
+  ): { [key: string]: RegExpMatchArray | string | null } {
+    const url = urlPath.split("/");
     let hasParam = false;
     if (url[url.length - 1] == "") {
       url.pop();
@@ -817,17 +859,15 @@ export class Server {
       );
     }
 
-    let position = this.resource_index.search(urlWithoutParam);
-    let regexPath = position > 1
-      ? this.resource_index.substring(position - 1)
-      : this.resource_index;
+    let position = index.search(urlWithoutParam);
+    let regexPath = position > 1 ? index.substring(position - 1) : index;
 
     let found = false;
     let backwardsCounts = 1;
 
     do {
       if (regexPath.charAt(0) != "^") {
-        regexPath = goBackwards(this.resource_index, backwardsCounts, position);
+        regexPath = goBackwards(index, backwardsCounts, position);
       } else {
         found = true;
       }
@@ -838,42 +878,21 @@ export class Server {
       return ret;
     }
 
-    const split = regexPath.split(":resource_index:");
+    const split = regexPath.split(":rindex:");
     let re = split[0].replace(/^[0-9]+/, "").replace("\/\/", "\/");
     let matchedIndex = split[1].match(/[0-9]+/);
 
     if (hasParam && split.length > 2) {
-      if (!new RegExp(re).test(request.url_path)) {
+      if (!new RegExp(re).test(urlPath)) {
         re = split[1].replace(/^[0-9]+/, "").replace("\/\/", "\/");
         matchedIndex = split[2].match(/[0-9]+/);
       }
     }
 
-    if (matchedIndex) {
-      const index = Number(matchedIndex[0]);
-      const match = request.url_path.match(re);
-      if (match) {
-        resource = this.paths.get(index);
-        this.last_path_re = re;
-        this.last_path = request.url_path;
-        this.last_resource = index;
-        if (resource && resource.paths_parsed) {
-          const params = match.slice();
-          params.shift();
-          const pathParamsInKvpForm: { [key: string]: string } = {};
-          resource.paths_parsed.forEach(
-            (pathObj: Drash.Interfaces.ResourcePaths) => {
-              pathObj.params.forEach((paramName: string, index: number) => {
-                pathParamsInKvpForm[paramName] = params[index];
-              });
-            },
-          );
-          request.path_params = pathParamsInKvpForm;
-        }
-      }
-    }
-
-    return resource;
+    return {
+      matched_index: matchedIndex,
+      regex_path: re as string,
+    };
   }
 
   /**
