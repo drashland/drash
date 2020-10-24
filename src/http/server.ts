@@ -789,11 +789,17 @@ export class Server {
     let urlWithoutParam = url.join("/");
 
     if (urlWithoutParam.charAt(urlWithoutParam.length - 1) === "/") {
-      urlWithoutParam = urlWithoutParam.substring(-1, urlWithoutParam.length - 1);
+      urlWithoutParam = urlWithoutParam.substring(
+        -1,
+        urlWithoutParam.length - 1,
+      );
     }
 
     if (request.url_path.charAt(request.url_path.length - 1) === "/") {
-      request.url_path = request.url_path.substring(-1, request.url_path.length - 1);
+      request.url_path = request.url_path.substring(
+        -1,
+        request.url_path.length - 1,
+      );
     }
 
     let position = this.resource_index.search(urlWithoutParam);
@@ -837,11 +843,13 @@ export class Server {
           const params = match.slice();
           params.shift();
           const pathParamsInKvpForm: { [key: string]: string } = {};
-          resource.paths_parsed.forEach((pathObj: Drash.Interfaces.ResourcePaths) => {
-            pathObj.params.forEach((paramName: string, index: number) => {
-              pathParamsInKvpForm[paramName] = params[index];
-            });
-          });
+          resource.paths_parsed.forEach(
+            (pathObj: Drash.Interfaces.ResourcePaths) => {
+              pathObj.params.forEach((paramName: string, index: number) => {
+                pathParamsInKvpForm[paramName] = params[index];
+              });
+            },
+          );
           request.path_params = pathParamsInKvpForm;
         }
       }
