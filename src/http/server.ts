@@ -775,17 +775,13 @@ export class Server {
     }
 
     let resource = undefined;
-    console.log();
-    console.log(request.url_path);
     const url = request.url_path.split("/");
     let hasParam = false;
-    console.log(url);
     if (url[url.length - 1] == "") {
       url.pop();
     }
 
     if (url.length > 2) {
-      console.log("has param");
       url.pop();
       hasParam = true;
     }
@@ -800,7 +796,6 @@ export class Server {
       request.url_path = request.url_path.substring(-1, request.url_path.length - 1);
     }
 
-    console.log(urlWithoutParam);
     let position = this.resource_index.search(urlWithoutParam);
     let regexPath = position > 1
       ? this.resource_index.substring(position - 1)
@@ -826,20 +821,12 @@ export class Server {
     let re = split[0].replace(/^[0-9]+/, "").replace("\/\/", "\/");
     let matchedIndex = split[1].match(/[0-9]+/);
 
-    console.log(split[0], re);
-
-
     if (hasParam && split.length > 2) {
-      console.log(hasParam);
       if (!new RegExp(re).test(request.url_path)) {
         re = split[1].replace(/^[0-9]+/, "").replace("\/\/", "\/");
         matchedIndex = split[2].match(/[0-9]+/);
       }
     }
-
-    console.log();
-    console.log();
-    console.log(true, request.url_path, request.url_path.match(re), re, split);
 
     if (matchedIndex) {
       const index = Number(matchedIndex[0]);
