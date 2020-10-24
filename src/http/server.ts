@@ -777,7 +777,11 @@ export class Server {
       resource = this.paths.get(Number(this.last_resource));
       const match = request.url_path.match(this.last_path_re);
       if (resource && resource.paths_parsed) {
-        if (match) {
+        if (
+          match
+          && (match.length != 1)
+        ) {
+          console.log("atmch");
           const params = match.slice();
           params.shift();
           const pathParamsInKvpForm: { [key: string]: string } = {};
