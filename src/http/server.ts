@@ -778,8 +778,8 @@ export class Server {
       const match = request.url_path.match(this.last_path_re);
       if (resource && resource.paths_parsed) {
         if (
-          match
-          && (match.length != 1)
+          match &&
+          (match.length != 1)
         ) {
           const params = match.slice();
           params.shift();
