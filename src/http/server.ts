@@ -795,13 +795,6 @@ export class Server {
       );
     }
 
-    if (request.url_path.charAt(request.url_path.length - 1) === "/") {
-      request.url_path = request.url_path.substring(
-        -1,
-        request.url_path.length - 1,
-      );
-    }
-
     let position = this.resource_index.search(urlWithoutParam);
     let regexPath = position > 1
       ? this.resource_index.substring(position - 1)
