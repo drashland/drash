@@ -33,9 +33,9 @@ export class Server {
     requested_favicon: false,
   };
 
-  protected last_path = "";
-  protected last_path_re: RegExpMatchArray | string | null = "";
-  protected last_resource: number | undefined = undefined;
+  protected last_request_url_path = "";
+  protected last_request_regex_path: RegExpMatchArray | string | null = "";
+  protected last_resource_index: number | undefined = undefined;
 
   protected resource_index = "";
 
@@ -800,15 +800,14 @@ export class Server {
   ): Drash.Interfaces.Resource | undefined {
     let resource = undefined;
 
-    if (this.last_path == request.url_path) {
-      resource = this.paths.get(Number(this.last_resource));
-      const matchArray = request.url_path.match(this.last_path_re as string);
-      if (resource && resource.paths_parsed) {
-        request.path_params = this.getRequestPathParams(
-          resource,
-          matchArray,
-        );
-      }
+    // Has the request URL been found before? If so, 
+    if (this.requestUrlWasHandledPreviously(request.url_path)) {
+      resource = this.paths.get(Number(this.last_resource_index));
+      const matchArray = request.url_path.match(this.last_request_regex_path as string);
+      request.path_params = this.getRequestPathParams(
+        resource,
+        matchArray,
+      );
       return resource;
     }
 
@@ -822,9 +821,9 @@ export class Server {
       const matchArray = request.url_path.match(resourceLookupInfo.regex_path as string);
       if (matchArray) {
         resource = this.paths.get(index);
-        this.last_path_re = resourceLookupInfo.regex_path;
-        this.last_path = request.url_path;
-        this.last_resource = index;
+        this.last_request_regex_path = resourceLookupInfo.regex_path;
+        this.last_request_url_path = request.url_path;
+        this.last_resource_index = index;
         request.path_params = this.getRequestPathParams(
           resource,
           matchArray,
@@ -833,6 +832,10 @@ export class Server {
     }
 
     return resource;
+  }
+
+  protected requestUrlWasHandledPreviously(urlPath: string): boolean {
+    return this.last_request_url_path == urlPath;
   }
 
   protected getResourceLookupInfo(
