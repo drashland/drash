@@ -29,7 +29,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      json = JSON.parse(await response.json());
+      let res = await response.json();
+      json = JSON.parse(res);
       Rhum.asserts.assertEquals(json.success, true);
       Rhum.asserts.assertEquals(json.message, "application/json");
 
@@ -42,7 +43,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      json = JSON.parse(await response.json());
+      res = await response.json();
+      json = JSON.parse(res);
       await Rhum.asserts.assertEquals(json.success, false);
       Rhum.asserts.assertEquals(json.message, undefined);
 
