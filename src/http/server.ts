@@ -596,16 +596,14 @@ export class Server {
       // error because that string is a reserved word
       if (path.includes(this.resource_index_service.getSeparator())) {
         throw new Drash.Exceptions.NameCollisionException(
-          `Cannot use reserved path name '${
-            this.resource_index_divider.replace(":", "")
-          }'`,
+          `Your path name cannot include the following reserved string: ${this.resource_index_service.getSeparator()}.`,
         );
       }
 
       // Path isn't a string? Don't even add it...
       if (typeof path != "string") {
         throw new Drash.Exceptions.InvalidPathException(
-          `Path '${path as unknown as string}' needs to be a string.`
+          `Path '${path as unknown as string}' needs to be a string.`,
         );
       }
 
@@ -615,11 +613,11 @@ export class Server {
       if (path.includes("*") == true) {
         paths = this.getResourcePathsUsingWildcard(path);
 
-      // Handle optional params
+        // Handle optional params
       } else if (path.includes("?") === true) {
         paths = this.getResourcePathsUsingOptionalParams(path);
 
-      // Handle basic paths that don't include wild cards or optional params
+        // Handle basic paths that don't include wild cards or optional params
       } else {
         paths = this.getResourcePaths(path);
       }
@@ -847,7 +845,7 @@ export class Server {
    * @return A resource paths object.
    */
   protected getResourcePathsUsingWildcard(
-    path: string
+    path: string,
   ): Drash.Interfaces.ResourcePaths {
     return {
       og_path: path,
@@ -879,7 +877,7 @@ export class Server {
    * @return A resource paths object.
    */
   protected getResourcePathsUsingOptionalParams(
-    path: string
+    path: string,
   ): Drash.Interfaces.ResourcePaths {
     let tmpPath = path;
     // Replace required params, in preparation to create the `regex_path`, just like
