@@ -3,7 +3,7 @@ import { Drash } from "../../deps.ts";
 import { Rhum } from "../../test_deps.ts";
 
 const csrfWithoutCookie = CSRF();
-const csrfWithCookie = CSRF({ cookie: true })
+const csrfWithCookie = CSRF({ cookie: true });
 
 /**
  * This resource resembles the following:
@@ -38,7 +38,7 @@ class ResourceWithCookie extends Drash.Http.Resource {
     // Give token to the 'view'
     this.response.setCookie({
       name: "X-CSRF-TOKEN",
-      value: csrfWithCookie.token
+      value: csrfWithCookie.token,
     });
     this.response.body = csrfWithCookie.token;
     return this.response;
@@ -72,7 +72,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
   Rhum.testSuite("csrf", () => {
     Rhum.testCase("`csrf.token` Should return a valid token", () => {
       Rhum.asserts.assertEquals(
-          csrfWithoutCookie.token.match("[a-zA-Z0-9]{43}") !== null,
+        csrfWithoutCookie.token.match("[a-zA-Z0-9]{43}") !== null,
         true,
       );
     });
@@ -148,14 +148,14 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       },
     );
     Rhum.testCase("Should allow to set the token as a cookie", async () => {
-      await runServer()
-      const res = await fetch("http://localhost:1337/cookie")
-      await res.json()
-      const headers = res.headers
-      const token = headers.get("set-cookie")!.split("=")[1]
-      Rhum.asserts.assertEquals(token, csrfWithCookie.token)
-      server.close()
-    })
+      await runServer();
+      const res = await fetch("http://localhost:1337/cookie");
+      await res.json();
+      const headers = res.headers;
+      const token = headers.get("set-cookie")!.split("=")[1];
+      Rhum.asserts.assertEquals(token, csrfWithCookie.token);
+      server.close();
+    });
   });
 });
 

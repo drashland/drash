@@ -14,27 +14,26 @@ primaryToken.update(v4.generate());
 const primaryTokenString = primaryToken.toString();
 
 type Options = {
-  cookie?: boolean
-}
+  cookie?: boolean;
+};
 
 const defaultOptions = {
-  cookie: false
-}
+  cookie: false,
+};
 
 export function CSRF(options?: Options) {
   if (!options) {
-    options = defaultOptions
+    options = defaultOptions;
   }
   const csrf = <F> function csrf(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ): void {
     if (response) {
-
-      let requestToken: string|null = "";
+      let requestToken: string | null = "";
 
       if (options!.cookie === true) {
-        requestToken = request.getCookie("X-CSRF-TOKEN")
+        requestToken = request.getCookie("X-CSRF-TOKEN");
       } else {
         requestToken = request.headers.get("X-CSRF-TOKEN");
       }
