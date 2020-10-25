@@ -11,7 +11,6 @@ class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
     return this.response;
   }
   public OPTIONS() {
-    console.log('got put')
     return this.response
   }
 }
@@ -21,6 +20,7 @@ async function runServer(): Promise<Drash.Http.Server> {
     response_output: "application/json",
     middleware: {
       after_request: [
+          // @ts-ignore
         cors,
       ],
     },
@@ -47,7 +47,6 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           "Access-Control-Request-Method": "GET",
         },
       });
-      console.log(response)
       Rhum.asserts.assertEquals(
         response.status,
         204,

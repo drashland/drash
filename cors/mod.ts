@@ -80,8 +80,6 @@ export const CorsMiddleware = ({
     } else {
       options.allowMethods = allowMethods;
     }
-    console.log('set options inside cors:')
-    console.log(options)
 
     if (Array.isArray(allowHeaders)) {
       options.allowHeaders = allowHeaders.join(",");
@@ -106,7 +104,6 @@ export const CorsMiddleware = ({
       },
       "origin",
     );
-    console.log('requestOrigin: ' + !!requestOrigin)
     if (!requestOrigin) {
       return;
     }
@@ -126,7 +123,6 @@ export const CorsMiddleware = ({
         o = await o;
       }
 
-      console.log('o: ' + !!o)
       if (!o) {
         // Safari (and potentially other browsers) need content-length 0,
         //   for 204 or they just hang waiting for a body
@@ -189,7 +185,6 @@ export const CorsMiddleware = ({
       if (options.maxAge) {
         response.headers.set("Access-Control-Max-Age", options.maxAge);
       }
-      console.log('setting header')
       if (typeof options.allowMethods === "string") {
         response.headers.set(
           "Access-Control-Allow-Methods",
@@ -203,12 +198,11 @@ export const CorsMiddleware = ({
         aheaders = request.headers.get("Access-Control-Request-Headers") ||
           undefined;
       }
-      console.log('reached end inside cord middleware')
 
       if (aheaders) {
         response.headers.set("Access-Control-Allow-Headers", aheaders);
       }
 
-      (response.body as { status: number }).status = 204;
+      response.status_code = 204;
     }
   };
