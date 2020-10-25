@@ -196,7 +196,7 @@ export class Response {
 
     switch (contentType) {
       case "application/json":
-        return JSON.stringify(this.body);
+        return this.body ? JSON.stringify(this.body) : "";
       case "application/xml":
       case "text/html":
       case "text/xml":
