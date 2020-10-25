@@ -1,0 +1,18 @@
+{
+  "name": "drash-middleware",
+  "description": "A middleware library for Drash.",
+  "version": "0.5.1",
+  "stable": true,
+  "repository": "https://github.com/drashland/deno-drash-middleware",
+  "files": [
+    "./**/*",
+    "./README.md",
+    "LICENSE",
+    "./deps.ts",
+    "./logo.svg",
+    "./mod.ts"
+  ],
+  "entry": "./mod.ts",
+  "checkAll": false,
+  "unlisted": false
+}

@@ -1,0 +1,6 @@
+.git/**
+.idea/**
+.vscode/**
+test_deps.ts
+.gitignore
+.github/**

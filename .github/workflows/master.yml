@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.3.0"]
+        deno: ["1.4.6"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -30,13 +30,18 @@ jobs:
       - name: Paladin
         run: deno test --allow-env --allow-net paladin/tests/
 
+      - name: CSRF
+        run: |
+          cd csrf/tests
+          deno test --allow-net --allow-env --config tsconfig.json
+
       - name: Cors
         run: deno test -A cors/tests/tests.ts
 
   linter:
     strategy:
       matrix:
-        deno: ["1.3.0"]
+        deno: ["1.4.6"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
