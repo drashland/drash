@@ -596,7 +596,7 @@ export class Server {
    * @param resourceClass - A child object of the `Drash.Http.Resource` class.
    */
   protected addHttpResource(resourceClass: Drash.Interfaces.Resource): void {
-    const newPaths = [];
+    const resourceParsedPaths = [];
 
     for (let path of resourceClass.paths) {
       // Strip out the trailing slash from paths
@@ -606,7 +606,7 @@ export class Server {
 
       // If the path includes the index separator, then we HAVE TO throw an
       // error because that string is a reserved word
-      if (path.includes("__is__")) {
+      if (path.includes(this.resource_index_service.getSeparator())) {
         throw new Drash.Exceptions.NameCollisionException(
           `Cannot use reserved path name '${
             this.resource_index_divider.replace(":", "")
@@ -616,110 +616,34 @@ export class Server {
 
       // Path isn't a string? Don't even add it...
       if (typeof path != "string") {
-        newPaths.push(path);
-        this.resource_index_service.addItem(path, resourceClass);
-        continue;
+        throw new Drash.Exceptions.InvalidPathException(
+          `Path '${path as unknown as string}' needs to be a string.`
+        );
       }
+
+      let paths: Drash.Interfaces.ResourcePaths;
 
       // Handle wildcard paths
       if (path.includes("*") == true) {
-        const pathObj = {
-          og_path: path,
-          regex_path: `^.${
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT,
-            )
-          }/?$`,
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-            (element: string) => {
-              return element.replace(/:|{|}/g, "");
-            },
-          ),
-        };
-        newPaths.push(pathObj);
-        this.resource_index_service.addItem(pathObj.regex_path, resourceClass);
-      } else if (path.includes("?") === true) { // optional params
-        let tmpPath = path;
-        // Replace required params, in preparation to create the `regex_path`, just like
-        // how we do in the below else block
-        const numberOfRequiredParams = path.split("/").filter((param) => {
-          // Ignores optional (`?`) params and only pulls how many required parameters
-          // the resource path contains, eg:
-          //   :age? --> ignore, :age --> dont ignore, {age} --> dont ignore
-          //   /users/:age/{name}/:city? --> returns 2 required params
-          return (param.includes(":") || param.includes("{")) &&
-            !param.includes("?");
-        }).length;
-        for (let i = 0; i < numberOfRequiredParams; i++) {
-          tmpPath = tmpPath.replace(
-            /(:[^(/]+|{[^0-9][^}]*})/, // same as REGEX_URI_MATCHES but not global
-            Server.REGEX_URI_REPLACEMENT,
-          );
-        }
-        // Replace optional path params
-        const maxOptionalParams = path.split("/").filter((param) => {
-          return param.includes("?");
-        }).length;
-        // Description for the below for loop and why we use it to create the regex for
-        // optional parameters:
-        // For each optional parameter in the path, we replace it with custom regex.
-        // Similar to how other blocks construct the `regex_path`, but in this case,
-        // it isn't as easy as a simple `replace` one-liner, due to needing to account for
-        // optional parameters (:name?), and required parameters before optional params.
-        // This is what we do to construct the `regex_path`. I haven't been able to
-        // come up with a regex that would replace all instances and work, which is
-        // why a loop is being used here, to replace the first instance of an optional
-        // parameter (to account for a possible required parameter before), and then
-        // replace the rest of the occurrences. It's slightly tricky because the path
-        // `/users/:name?/:age?/:city?` should match  `/users`.
-        for (let i = 0; i < maxOptionalParams; i++) {
-          if (i === 0) { // We need to mark the start for the first optional param
-            // The below regex is very similar to `REGEX_URI_MATCHES` but this regex isn't
-            // global, and accounts for there being a required parameter before
-            tmpPath = tmpPath.replace(
-              /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
-              "/?([a-zA-Z0-9]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
-            );
-          } else { // We can now create the replace regex for the rest taking into consideration the above replace regex
-            tmpPath = tmpPath.replace(
-              /\/?(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
-              "([^/]+)?/?",
-            );
-          }
-        }
-        const pathObj = {
-          og_path: path,
-          regex_path: `^${tmpPath}$`,
-          // Regex is same as other blocks, but we also strip the `?`.
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-            (element: string) => {
-              return element.replace(/:|{|}|\?/g, "");
-            },
-          ),
-        };
-        newPaths.push(pathObj);
-        this.resource_index_service.addItem(pathObj.regex_path, resourceClass);
+        paths = this.getResourcePathsUsingWildcard(path);
+
+      // Handle optional params
+      } else if (path.includes("?") === true) {
+        paths = this.getResourcePathsUsingOptionalParams(path);
+
+      // Handle basic paths that don't include wild cards or optional params
       } else {
-        const pathObj = {
-          og_path: path,
-          regex_path: `^${
-            path.replace(
-              Server.REGEX_URI_MATCHES,
-              Server.REGEX_URI_REPLACEMENT,
-            )
-          }/?$`,
-          params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-            (element: string) => {
-              return element.replace(/:|{|}/g, "");
-            },
-          ),
-        };
-        newPaths.push(pathObj);
-        this.resource_index_service.addItem(pathObj.regex_path, resourceClass);
+        paths = this.getResourcePaths(path);
       }
+
+      resourceParsedPaths.push(paths);
+
+      // Include the regex path in the index, so we can search for the regex
+      // path during runtime in `.getResourceClass()`
+      this.resource_index_service.addItem(paths.regex_path, resourceClass);
     }
-    resourceClass.paths_parsed = newPaths;
+
+    resourceClass.paths_parsed = resourceParsedPaths;
   }
 
   /**
@@ -897,6 +821,137 @@ export class Server {
     }
 
     return resource;
+  }
+
+  /**
+   * Get resource paths for the path in question. These paths are use to match
+   * request URIs to a resource.
+   *
+   * @param path - The path to parse into parsable pieces.
+   *
+   * @return A resource paths object.
+   */
+  protected getResourcePaths(
+    path: string,
+  ): Drash.Interfaces.ResourcePaths {
+    return {
+      og_path: path,
+      regex_path: `^${
+        path.replace(
+          Server.REGEX_URI_MATCHES,
+          Server.REGEX_URI_REPLACEMENT,
+        )
+      }/?$`,
+      params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+        (element: string) => {
+          return element.replace(/:|{|}/g, "");
+        },
+      ),
+    };
+  }
+
+  /**
+   * Get resource paths for the wildcard path in question. These paths are use
+   * to match request URIs to a resource.
+   *
+   * @param path - The path to parse into parsable pieces.
+   *
+   * @return A resource paths object.
+   */
+  protected getResourcePathsUsingWildcard(
+    path: string
+  ): Drash.Interfaces.ResourcePaths {
+    return {
+      og_path: path,
+      regex_path: `^.${
+        path.replace(
+          Server.REGEX_URI_MATCHES,
+          Server.REGEX_URI_REPLACEMENT,
+        )
+      }/?$`,
+      params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+        (element: string) => {
+          return element.replace(/:|{|}/g, "");
+        },
+      ),
+    };
+  }
+
+  /**
+   * Get resource paths for the path in question. The path in question should
+   * have at least one optional param. An optiona param is like :id in the
+   * following path:
+   *
+   *     /my-path/:id?
+   *
+   . These paths are use * to match request URIs to a resource.
+   *
+   * @param path - The path to parse into parsable pieces.
+   *
+   * @return A resource paths object.
+   */
+  protected getResourcePathsUsingOptionalParams(
+    path: string
+  ): Drash.Interfaces.ResourcePaths {
+    let tmpPath = path;
+    // Replace required params, in preparation to create the `regex_path`, just like
+    // how we do in the below else block
+    const numberOfRequiredParams = path.split("/").filter((param) => {
+      // Ignores optional (`?`) params and only pulls how many required parameters
+      // the resource path contains, eg:
+      //   :age? --> ignore, :age --> dont ignore, {age} --> dont ignore
+      //   /users/:age/{name}/:city? --> returns 2 required params
+      return (param.includes(":") || param.includes("{")) &&
+        !param.includes("?");
+    }).length;
+    for (let i = 0; i < numberOfRequiredParams; i++) {
+      tmpPath = tmpPath.replace(
+        /(:[^(/]+|{[^0-9][^}]*})/, // same as REGEX_URI_MATCHES but not global
+        Server.REGEX_URI_REPLACEMENT,
+      );
+    }
+    // Replace optional path params
+    const maxOptionalParams = path.split("/").filter((param) => {
+      return param.includes("?");
+    }).length;
+    // Description for the below for loop and why we use it to create the regex for
+    // optional parameters:
+    // For each optional parameter in the path, we replace it with custom regex.
+    // Similar to how other blocks construct the `regex_path`, but in this case,
+    // it isn't as easy as a simple `replace` one-liner, due to needing to account for
+    // optional parameters (:name?), and required parameters before optional params.
+    // This is what we do to construct the `regex_path`. I haven't been able to
+    // come up with a regex that would replace all instances and work, which is
+    // why a loop is being used here, to replace the first instance of an optional
+    // parameter (to account for a possible required parameter before), and then
+    // replace the rest of the occurrences. It's slightly tricky because the path
+    // `/users/:name?/:age?/:city?` should match  `/users`.
+    for (let i = 0; i < maxOptionalParams; i++) {
+      if (i === 0) { // We need to mark the start for the first optional param
+        // The below regex is very similar to `REGEX_URI_MATCHES` but this regex isn't
+        // global, and accounts for there being a required parameter before
+        tmpPath = tmpPath.replace(
+          /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
+          "/?([a-zA-Z0-9]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
+        );
+      } else { // We can now create the replace regex for the rest taking into consideration the above replace regex
+        tmpPath = tmpPath.replace(
+          /\/?(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
+          "([^/]+)?/?",
+        );
+      }
+    }
+
+    return {
+      og_path: path,
+      regex_path: `^${tmpPath}$`,
+      // Regex is same as other blocks, but we also strip the `?`.
+      params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+        (element: string) => {
+          return element.replace(/:|{|}|\?/g, "");
+        },
+      ),
+    };
   }
 
   /**
