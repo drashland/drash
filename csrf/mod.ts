@@ -13,13 +13,31 @@ const primaryToken = createHash("sha512");
 primaryToken.update(v4.generate());
 const primaryTokenString = primaryToken.toString();
 
-export function CSRF() {
+type Options = {
+  cookie?: boolean
+}
+
+const defaultOptions = {
+  cookie: false
+}
+
+export function CSRF(options?: Options) {
+  if (!options) {
+    options = defaultOptions
+  }
   const csrf = <F> function csrf(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
   ): void {
     if (response) {
-      const requestToken = request.headers.get("X-CSRF-TOKEN");
+
+      let requestToken: string|null = "";
+
+      if (options!.cookie === true) {
+        requestToken = request.getCookie("X-CSRF-TOKEN")
+      } else {
+        requestToken = request.headers.get("X-CSRF-TOKEN");
+      }
 
       if (!requestToken) {
         throw new Drash.Exceptions.HttpMiddlewareException(
