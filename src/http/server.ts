@@ -33,16 +33,6 @@ export class Server {
   };
 
   /**
-   * A property to hold all previously handled request URL paths. Each request
-   * URL path is associated with a resource. This makes subsequent requests to
-   * the same resources faster.
-   */
-  protected cached_resource_lookup_table: Map<
-    string,
-    Drash.Interfaces.Resource | undefined
-  > = new Map();
-
-  /**
    * A property to hold the Deno server. This property is set in
    * this.run() like so:
    *
@@ -58,45 +48,24 @@ export class Server {
   public hostname: string = "localhost";
 
   /**
+   * A property to hold this server's logger.
+   */
+  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
+
+  /**
    * The port of the Deno server.
    */
   public port: number = 1447;
 
   /**
-   * An index in the form of a string that associates regex paths with indices
-   * of the `resource_lookup_table` property on this class. Basically, this
-   * string is used to match a request URL path to an index. That index is then
-   * used to .get() a resource from the `resource_lookup_table` property  on
-   * this class. This property is not to be confused with the
-   * `cached_resource_lookup_table` property.
+   * A property to hold all previously handled request URL paths. Each request
+   * URL path is associated with a resource. This makes subsequent requests to
+   * the same resources faster.
    */
-  protected resource_index = "";
-
-  /**
-   * A property to hold a "divider" that divides regex paths and indices. This
-   * improves search speeds when searching the index.
-   */
-  protected resource_index_divider = ":drashRindex";
-
-  /**
-   * A property to hold all paths associated with their resources for lookups
-   * during the request-resource lifecycle.
-   */
-  protected resource_lookup_table: Map<number, Drash.Interfaces.Resource> =
-    new Map();
-
-  protected resource_index_service: IndexService;
-
-  /**
-   * A property to hold the last regex path that was processed in the last
-   * request. This is used to retrieve path params from request URL paths.
-   */
-  protected last_request_regex_path: RegExpMatchArray | string | null = "";
-
-  /**
-   * A property to hold this server's logger.
-   */
-  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
+  protected cached_resource_lookup_table: Map<
+    string,
+    Drash.Interfaces.Resource | undefined
+  > = new Map();
 
   /**
    * A property to hold this server's configs.
@@ -110,9 +79,28 @@ export class Server {
   protected directory: string | undefined = undefined;
 
   /**
+   * A property to hold the last regex path that was processed in the last
+   * request. This is used to retrieve the path params in key-value pair form
+   * for a request URI that was cached.
+   */
+  protected last_request_regex_path: RegExpMatchArray | string | null = "";
+
+  /**
    * A property to hold middleware.
    */
   protected middleware: ServerMiddleware = {};
+
+  /**
+   * A property to hold all paths associated with their resources for lookups
+   * during the request-resource lifecycle.
+   */
+  protected resource_lookup_table: Map<number, Drash.Interfaces.Resource> =
+    new Map();
+
+  /**
+   * The resource index service that helps us match request URIs to resources.
+   */
+  protected resource_index_service: IndexService;
 
   /**
    * This server's list of static paths. HTTP requests to a static path are
