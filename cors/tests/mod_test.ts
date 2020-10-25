@@ -1,8 +1,8 @@
 import { Rhum } from "../../test_deps.ts";
-import {Drash} from "../../deps.ts";
-import { CorsMiddleware} from "../mod.ts";
+import { Drash } from "../../deps.ts";
+import { CorsMiddleware } from "../mod.ts";
 
-const cors = CorsMiddleware()
+const cors = CorsMiddleware();
 
 class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
   static paths = ["/cors"];
@@ -11,7 +11,7 @@ class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
     return this.response;
   }
   public OPTIONS() {
-    return this.response
+    return this.response;
   }
 }
 
@@ -20,7 +20,7 @@ async function runServer(): Promise<Drash.Http.Server> {
     response_output: "application/json",
     middleware: {
       after_request: [
-          // @ts-ignore
+        // @ts-ignore
         cors,
       ],
     },
@@ -39,7 +39,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
   Rhum.testSuite("Cors", () => {
     Rhum.testCase("Should shortcircuit preflight requests", async () => {
       let response;
-      const server = await runServer()
+      const server = await runServer();
       response = await fetch("http://localhost:1447/cors", {
         method: "OPTIONS",
         headers: {
@@ -61,9 +61,9 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       );
       Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
       Rhum.asserts.assertEquals(response.headers.get("content-length"), "0");
-      server.close()
+      server.close();
     });
   });
 });
 
-Rhum.run()
+Rhum.run();
