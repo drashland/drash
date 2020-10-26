@@ -786,24 +786,25 @@ export class Server {
     }
 
     if (resourceLookupInfo) {
-      resourceLookupInfo.forEach((result: ISearchResult) => {
-        if (resource) {
-          return;
-        }
-        const index = result.index;
+      let count = resourceLookupInfo.length - 1;
+      let matchedResource = false;
+      while (!matchedResource && count != -1) {
+        const result = resourceLookupInfo[count];
         const matchArray = request.url_path.match(
-          result.result,
+          result.search_term,
         );
         if (matchArray) {
-          resource = this.resource_lookup_table.get(index);
+          matchedResource = true;
+          resource = result.item as Drash.Interfaces.Resource;
           this.cached_resource_lookup_table.set(request.url_path, resource);
-          this.last_request_regex_path = result.result;
+          this.last_request_regex_path = result.search_term;
           request.path_params = this.getRequestPathParams(
             resource,
             matchArray,
           );
         }
-      });
+        count -= 1;
+      }
     }
 
     return resource;
@@ -996,7 +997,7 @@ export class Server {
     }
 
     try {
-      return this.resource_index_service!.getItem("\\^" + urlWithoutParam);
+      return this.resource_index_service!.search("\\^" + urlWithoutParam);
     } catch (error) {
     }
 
