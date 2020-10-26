@@ -153,12 +153,12 @@ export class Request extends ServerRequest {
    *
    * @return Key value pairs for the header name and it's value
    */
-  public getAllHeaderParams (): {[key: string]: string} {
-    let headers: {[key: string]: string} = {}
+  public getAllHeaderParams(): { [key: string]: string } {
+    let headers: { [key: string]: string } = {};
     for (const pair of this.headers.entries()) {
-      headers[pair[0]] = pair[1]
+      headers[pair[0]] = pair[1];
     }
-    return headers
+    return headers;
   }
 
   /**
@@ -166,10 +166,10 @@ export class Request extends ServerRequest {
    *
    * @return The parsed body as an object
    */
-  public getAllBodyParams (): Drash.Interfaces.ParsedRequestBody {
-    console.log('the body:')
-    console.log(this.parsed_body)
-    return this.parsed_body
+  public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
+    console.log("the body:");
+    console.log(this.parsed_body);
+    return this.parsed_body;
   }
 
   /**
