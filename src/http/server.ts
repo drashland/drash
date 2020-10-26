@@ -87,7 +87,9 @@ export class Server {
    * Drash.Http.Response will use its sendStatic() method to send the
    * static asset back to the client.
    */
-  protected static_paths: string[] = [];
+  protected static_paths: string[] | { [key: string]: string } = [];
+
+  protected virtual_paths: Map<string, string> = new Map<string, string>();
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -126,9 +128,12 @@ export class Server {
 
     if (configs.static_paths) {
       this.directory = configs.directory; // blow up if this doesn't exist
-      configs.static_paths.forEach((path: string) => {
-        this.addStaticPath(path);
-      });
+      if (!this.directory) {
+        throw new Error(
+          `Static paths are being used, but a directory config was not specified`,
+        );
+      }
+      this.addStaticPaths(configs.static_paths);
     }
 
     if (configs.template_engine && !configs.views_path) {
@@ -183,6 +188,10 @@ export class Server {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(serverRequest)) {
       return await this.handleHttpRequestForStaticPathAsset(serverRequest);
+    }
+
+    if (this.requestTargetsVirtualPath(serverRequest)) {
+      return await this.handleHttpRequestForVirtualPathAsset(serverRequest);
     }
 
     // Handle a request to the favicon
@@ -464,6 +473,47 @@ export class Server {
     }
   }
 
+  public async handleHttpRequestForVirtualPathAsset(
+    request: Drash.Http.Request
+  ): Promise<Drash.Interfaces.ResponseOutput> {
+    try {
+      const response = new Drash.Http.Response(request, {
+        views_path: this.configs.views_path,
+        template_engine: this.configs.template_engine,
+      });
+
+      // Set the response's Content-Type type header based on the request's URL.
+      // For example, if the request's URL is /public/style.css, then the
+      // Content-Type header should be set to text/css.
+      const mimeType = new Drash.Services.HttpService().getMimeType(
+        request.url,
+        true,
+      );
+
+      if (mimeType) {
+        response.headers.set("Content-Type", mimeType);
+      }
+
+      // If the request URL is "/public/assets/js/bundle.js", then we take out
+      // "/public" and use that to check against the static paths
+      const virtualPath = request.url.split("/")[1];
+      // Prefix with a leading slash, so it can be matched properly
+      const path = `/${virtualPath}`;
+
+      const directory = this.virtual_paths.get(path);
+      const physicalPath = `${Deno.realPathSync(".")}/${directory}${request.url.replace("/css", "")}`;
+      console.log(physicalPath);
+
+      response.body = Deno.readFileSync(physicalPath);
+      return response.sendStatic();
+    } catch (error) {
+      return await this.handleHttpRequestError(
+        request,
+        this.httpErrorResponse(error.code ?? 404, error.message),
+      );
+    }
+  }
+
   /**
    * Run the Deno server at the hostname specified in the configs. This
    * method takes each HTTP request and creates a new and more workable
@@ -693,8 +743,39 @@ export class Server {
    *
    * @param path - The path where the static assets are
    */
-  protected addStaticPath(path: string): void {
-    this.static_paths.push(path);
+  protected addStaticPath(
+    path: string,
+    virtualPath?: string
+  ): void {
+    if (virtualPath) {
+      this.virtual_paths.set(virtualPath, path);
+      return;
+    }
+
+    (this.static_paths as string[]).push(path);
+  }
+
+  /**
+   * Add static paths.
+   *
+   * @param paths - The array or key-value pair object containing the paths. If
+   * an array is passed in, then this method assumes each element in the array
+   * is a path. If a key-value pair object is passed in, then this method
+   * assumes that the key in each object is a virtual path and that the value is
+   * the physical path.
+   */
+  protected addStaticPaths(paths: string[] | { [key: string]: string }): void {
+    if (Array.isArray(paths)) {
+      paths.forEach((path: string) => {
+        this.addStaticPath(path);
+      });
+      return;
+    }
+
+    for (const virtualPath in paths) {
+      const physicalPath = paths[virtualPath];
+      this.addStaticPath(physicalPath, virtualPath);
+    }
   }
 
   /**
@@ -804,7 +885,26 @@ export class Server {
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${staticPath}`;
 
-    if (this.static_paths.indexOf(requestUrl) == -1) {
+    if ((this.static_paths as string[]).indexOf(requestUrl) == -1) {
+      return false;
+    }
+
+    return true;
+  }
+
+
+  protected requestTargetsVirtualPath(serverRequest: ServerRequest): boolean {
+    if (this.virtual_paths.size <= 0) {
+      return false;
+    }
+
+    // If the request URL is "/public/assets/js/bundle.js", then we take out
+    // "/public" and use that to check against the static paths
+    const virtualPath = serverRequest.url.split("/")[1];
+    // Prefix with a leading slash, so it can be matched properly
+    const requestUrl = `/${virtualPath}`;
+
+    if (!this.virtual_paths.has(requestUrl)) {
       return false;
     }
 
