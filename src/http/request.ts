@@ -178,8 +178,7 @@ export class Request extends ServerRequest {
    * Gets a record whose keys are the request's url query params specified by inputs
    * and whose values are the corresponding values of the query params.
    * 
-   * @param inputs url query params
-   * @returns null if no inputs or record containing key-value pairs
+   * @returns Key value pairs of the query param and its value. Empty object if no query params
    */
   public getAllUrlQueryParams(): { [key: string]: string } {
     return this.url_query_params;
