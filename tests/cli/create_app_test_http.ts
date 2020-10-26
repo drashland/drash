@@ -12,11 +12,18 @@ let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
+let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
+
 if (!latestBranch) {
   latestBranch = "master";
 }
-const drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/" +
-  latestBranch;
+
+if (!githubRepo) {
+  githubRepo = "drashland/deno-land";
+}
+
+const drashUrl = "https://raw.githubusercontent.com/" + githubRepo +
+  `/${latestBranch}`;
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
