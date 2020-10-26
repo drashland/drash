@@ -17,14 +17,11 @@ type Options = {
   cookie?: boolean;
 };
 
-const defaultOptions = {
+const defaultOptions: Options = {
   cookie: false,
 };
 
-export function CSRF(options?: Options) {
-  if (!options) {
-    options = defaultOptions;
-  }
+export function CSRF(options: Options = defaultOptions) {
   const csrf = <F> function csrf(
     request: Drash.Http.Request,
     response?: Drash.Http.Response,
@@ -32,7 +29,7 @@ export function CSRF(options?: Options) {
     if (response) {
       let requestToken: string | null = "";
 
-      if (options!.cookie === true) {
+      if (options.cookie === true) {
         requestToken = request.getCookie("X-CSRF-TOKEN");
       } else {
         requestToken = request.headers.get("X-CSRF-TOKEN");
