@@ -181,19 +181,8 @@ export class Request extends ServerRequest {
    * @param inputs url query params
    * @returns null if no inputs or record containing key-value pairs
    */
-  public getAllUrlQueryParams(
-    ...inputs: string[]
-  ): { [key: string]: string | null } | null {
-    if (inputs.length === 0) {
-      return null;
-    }
-
-    let result: Record<string, string> = {};
-    for (const input of inputs) {
-      result[input] = this.url_query_params[input];
-    }
-
-    return result;
+  public getAllUrlQueryParams(): { [key: string]: string } {
+    return this.url_query_params;
   }
 
   /**
@@ -230,7 +219,7 @@ export class Request extends ServerRequest {
    * {[key: string]: string}
    * ```
    */
-  public getUrlQueryParams(): { [key: string]: string } {
+  private getUrlQueryParams(): { [key: string]: string } {
     let queryParams: { [key: string]: string } = {};
 
     try {
