@@ -91,13 +91,6 @@ export class Server {
   protected middleware: ServerMiddleware = {};
 
   /**
-   * A property to hold all paths associated with their resources for lookups
-   * during the request-resource lifecycle.
-   */
-  protected resource_lookup_table: Map<number, Drash.Interfaces.Resource> =
-    new Map();
-
-  /**
    * The resource index service that helps us match request URIs to resources.
    */
   protected resource_index_service: IndexService;
@@ -137,9 +130,8 @@ export class Server {
     }
 
     // Create the service to search this index
-    this.resource_index_service = new IndexService(
-      this.resource_lookup_table,
-    );
+    const lt: Map<number, Drash.Interfaces.Resource> = new Map();
+    this.resource_index_service = new IndexService(lt);
 
     if (configs.resources) {
       configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
@@ -776,36 +768,34 @@ export class Server {
       return resource;
     }
 
-    const resourceLookupInfo = this.getResourceLookupInfo(
+    const results = this.getResourceLookupInfo(
       request.url_path,
     );
 
     // No resource found? GTFO.
-    if (!resourceLookupInfo) {
+    if (results.size === 0) {
       return resource;
     }
 
-    if (resourceLookupInfo) {
-      let count = resourceLookupInfo.length - 1;
-      let matchedResource = false;
-      while (!matchedResource && count != -1) {
-        const result = resourceLookupInfo[count];
-        const matchArray = request.url_path.match(
-          result.search_term,
-        );
-        if (matchArray) {
-          matchedResource = true;
-          resource = result.item as Drash.Interfaces.Resource;
-          this.cached_resource_lookup_table.set(request.url_path, resource);
-          this.last_request_regex_path = result.search_term;
-          request.path_params = this.getRequestPathParams(
-            resource,
-            matchArray,
-          );
-        }
-        count -= 1;
+    let matchedResource = false;
+    results.forEach((result: ISearchResult) => {
+      if (matchedResource) {
+        return;
       }
-    }
+      const matchArray = request.url_path.match(
+        result.search_term,
+      );
+      if (matchArray) {
+        matchedResource = true;
+        resource = result.item as Drash.Interfaces.Resource;
+        this.cached_resource_lookup_table.set(request.url_path, resource);
+        this.last_request_regex_path = result.search_term;
+        request.path_params = this.getRequestPathParams(
+          resource,
+          matchArray,
+        );
+      }
+    });
 
     return resource;
   }
@@ -968,7 +958,7 @@ export class Server {
    */
   protected getResourceLookupInfo(
     urlPath: string,
-  ): ISearchResult[] | undefined {
+  ): Map<number, ISearchResult> {
     const url = urlPath.split("/");
 
     if (url[url.length - 1] == "") {
@@ -996,12 +986,7 @@ export class Server {
       }
     }
 
-    try {
-      return this.resource_index_service!.search("\\^" + urlWithoutParam);
-    } catch (error) {
-    }
-
-    return undefined;
+    return this.resource_index_service!.search("^" + urlWithoutParam);
   }
 
   /**
