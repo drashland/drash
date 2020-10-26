@@ -92,6 +92,14 @@ Rhum.testPlan("http/request_test.ts", () => {
     getUrlQueryStringTests();
   });
 
+  Rhum.testSuite("getAllHeaderParams()", () => {
+    getAllHeaderParamsTests();
+  });
+
+  Rhum.testSuite("getAllBodyParams()", () => {
+    getAllBodyParamsTests();
+  });
+
   Rhum.testSuite("hasBody()", () => {
     hasBodyTests();
   });
@@ -397,6 +405,75 @@ function getBodyParamTests() {
     const authenticated = (actual as boolean);
     Rhum.asserts.assertEquals(authenticated, false);
   });
+}
+
+function getAllHeaderParamsTests () {
+  Rhum.testCase(
+      "Returns all the header params",
+      async () => {
+        const serverRequest = members.mockRequest("/", "get", {
+          headers: {
+            hello: "world",
+          },
+        });
+        const request = new Drash.Http.Request(serverRequest);
+        const actual = request.getAllHeaderParams();
+        Rhum.asserts.assertEquals(actual, {
+          hello: "world"
+        });
+      },
+  );
+}
+
+function getAllBodyParamsTests () {
+  Rhum.testCase(
+      "Returns the value for the header param when it exists",
+      async () => {
+        const data = {
+          name: "Ed",
+          age: 22
+        }
+        const body = encoder.encode(JSON.stringify(data));
+        const reader = new Deno.Buffer(body as ArrayBuffer);
+        const serverRequest = members.mockRequest("/", "get", {
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length":  JSON.stringify(data).length
+          },
+          body: reader
+        });
+        const request = new Drash.Http.Request(serverRequest);
+        await request.parseBody();
+        const actual = request.getAllBodyParams();
+        Rhum.asserts.assertEquals(actual, {
+          content_type: "application/json",
+          data: {
+            age: 22,
+            name: "Ed"
+          }
+        })
+      },
+  );
+}
+
+function getAllPathParamsTests () {
+  Rhum.testCase(
+      "Returns all of the path parameters",
+      async () => {
+        const serverRequest = members.mockRequest();
+        const request = new Drash.Http.Request(serverRequest);
+        await request.parseBody();
+        request.path_params = {
+          hello: "world",
+          goodbye: "world"
+        };
+        //const actual = request.getAllPathParams();
+        // Rhum.asserts.assertEquals(actual, {
+        //   hello: "world",
+        //   goodbye: "world"
+        // });
+      },
+  );
 }
 
 function getHeaderParamTests() {
