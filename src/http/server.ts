@@ -259,7 +259,7 @@ export class Server {
       // TS2351: Cannot use 'new' with an expression whose type lacks a call or
       // construct signature.
       //
-      resource = new (resourceClass as unknown as Drash.Http.Resource)(
+      resource = new (resourceClass as Drash.Http.Resource)(
         request,
         new Drash.Http.Response(request, {
           views_path: this.configs.views_path,
