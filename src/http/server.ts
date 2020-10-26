@@ -500,8 +500,10 @@ export class Server {
       // Prefix with a leading slash, so it can be matched properly
       const path = `/${virtualPath}`;
 
+      console.log(path);
+
       const directory = this.virtual_paths.get(path);
-      const physicalPath = `${Deno.realPathSync(".")}/${directory}${request.url.replace("/css", "")}`;
+      const physicalPath = `${Deno.realPathSync(".")}/${directory}${request.url.replace(path, "")}`;
       console.log(physicalPath);
 
       response.body = Deno.readFileSync(physicalPath);
