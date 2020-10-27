@@ -521,9 +521,9 @@ export class Server {
       }
 
       const virtualPath = request.url.split("/")[1];
-      const physicalPath = this.virtual_paths.get(virtualPath);
+      const physicalPath = this.virtual_paths.get("/" + virtualPath);
       const fullPath = `${Deno.realPathSync(".")}/${physicalPath}${
-        request.url.replace(`/${virtualPath}`, "")
+        request.url.replace("/" + virtualPath, "")
       }`;
 
       response.body = Deno.readFileSync(fullPath);
