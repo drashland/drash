@@ -380,7 +380,7 @@ Rhum.testPlan("http/server_test.ts", () => {
         const server = new Drash.Http.Server({
           directory: ".",
           static_paths: {
-            "/data": "/tests/data"
+            "/data": "/tests/data",
           },
           response_output: "text/html",
         });
@@ -408,7 +408,7 @@ Rhum.testPlan("http/server_test.ts", () => {
         const server = new Drash.Http.Server({
           directory: ".",
           static_paths: {
-            "/poo": "/tests/data"
+            "/poo": "/tests/data",
           },
           response_output: "text/html",
         });
