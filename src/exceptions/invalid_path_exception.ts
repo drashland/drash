@@ -13,7 +13,7 @@ export class InvalidPathException extends Error {
    */
   constructor(message?: string) {
     if (!message) {
-      message = "Path must to be a string.";
+      message = "Path must be a string.";
     }
     super(message);
   }
