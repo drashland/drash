@@ -584,14 +584,6 @@ export class Server {
         path = path.substring(-1, path.length - 1);
       }
 
-      // If the path includes the index separator, then we HAVE TO throw an
-      // error because that string is a reserved word
-      if (path.includes(this.resource_index_service.getSeparator())) {
-        throw new Drash.Exceptions.NameCollisionException(
-          `Your path name cannot include the following reserved string: ${this.resource_index_service.getSeparator()}.`,
-        );
-      }
-
       // Path isn't a string? Don't even add it...
       if (typeof path != "string") {
         throw new Drash.Exceptions.InvalidPathException(
