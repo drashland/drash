@@ -369,6 +369,64 @@ Rhum.testPlan("http/server_test.ts", () => {
     );
   });
 
+  Rhum.testSuite("handleHttpRequestForVirtualPathAsset", () => {
+    Rhum.testCase(
+      "Should send /data/static_file.txt to /tests/data/sample_1.txt",
+      async () => {
+        let request = members.mockRequest(
+          "/data/static_file.txt",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: {
+            "/data": "/tests/data"
+          },
+          response_output: "text/html",
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForVirtualPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+
+        await server.close();
+
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/plain");
+      },
+    );
+
+    Rhum.testCase(
+      "Should send /poo/sample_1.txt to /tests/data/sample_1.txt",
+      async () => {
+        let request = members.mockRequest(
+          "/poo/static_file.txt",
+          "get",
+        );
+        const server = new Drash.Http.Server({
+          directory: ".",
+          static_paths: {
+            "/poo": "/tests/data"
+          },
+          response_output: "text/html",
+        });
+        await server.run({
+          hostname: "localhost",
+          port: 1667,
+        });
+        const res = await server.handleHttpRequestForVirtualPathAsset(request);
+        const mimeType = res.headers.get("Content-Type");
+
+        await server.close();
+
+        Rhum.asserts.assertEquals(res.status, 200);
+        Rhum.asserts.assertEquals(mimeType, "text/plain");
+      },
+    );
+  });
+
   Rhum.testSuite("run()", () => {
     Rhum.testCase("Runs a server", async () => {
       class Resource extends Drash.Http.Resource {
