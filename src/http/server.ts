@@ -127,12 +127,12 @@ export class Server {
     }
 
     if (configs.static_paths) {
-      this.directory = configs.directory; // blow up if this doesn't exist
-      if (!this.directory) {
-        throw new Error(
+      if (!configs.directory) {
+        throw new Drash.Exceptions.ConfigsException(
           `Static paths are being used, but a directory config was not specified`,
         );
       }
+      this.directory = configs.directory; // blow up if this doesn't exist
       this.addStaticPaths(configs.static_paths);
     }
 
