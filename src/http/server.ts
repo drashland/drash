@@ -201,6 +201,7 @@ export class Server {
       return await this.handleHttpRequestForStaticPathAsset(serverRequest);
     }
 
+    // Handle a request to a virtual path
     if (this.requestTargetsVirtualPath(serverRequest)) {
       return await this.handleHttpRequestForVirtualPathAsset(serverRequest);
     }
@@ -484,6 +485,14 @@ export class Server {
     }
   }
 
+  /**
+   * Handle HTTP requests for virtual path assets.
+   *
+   * @param request - The request object.
+   *
+   * @returns The response as stringified JSON. This is only used for unit
+   * testing purposes.
+   */
   public async handleHttpRequestForVirtualPathAsset(
     request: Drash.Http.Request
   ): Promise<Drash.Interfaces.ResponseOutput> {
@@ -511,11 +520,8 @@ export class Server {
       // Prefix with a leading slash, so it can be matched properly
       const path = `/${virtualPath}`;
 
-      console.log(path);
-
       const directory = this.virtual_paths.get(path);
       const physicalPath = `${Deno.realPathSync(".")}/${directory}${request.url.replace(path, "")}`;
-      console.log(physicalPath);
 
       response.body = Deno.readFileSync(physicalPath);
       return response.sendStatic();
