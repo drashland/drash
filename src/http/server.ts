@@ -112,6 +112,15 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
+    // Set up the servies this class requires
+    this.http_service = new Drash.Services.HttpService();
+
+    // Set up this server's default configurations
+    if (!configs.memory_allocation) {
+      configs.memory_allocation = {};
+    }
+
+    // Set up the server's logger
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -120,12 +129,16 @@ export class Server {
       this.logger = configs.logger;
     }
 
+    // Make configs global to this class as a convenience to other data members
+    // in this class
     this.configs = configs;
 
+    // Set up this server's server-level middleware
     if (configs.middleware) {
       this.addMiddleware(configs.middleware);
     }
 
+    // Set up this server's resources
     if (configs.resources) {
       configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
         this.addHttpResource(resourceClass);
@@ -133,10 +146,7 @@ export class Server {
       delete this.configs.resources;
     }
 
-    if (!configs.memory_allocation) {
-      configs.memory_allocation = {};
-    }
-
+    // Set up this server's static paths and virtual paths
     if (configs.static_paths) {
       if (!configs.directory) {
         throw new Drash.Exceptions.ConfigsException(
@@ -147,6 +157,7 @@ export class Server {
       this.addStaticPaths(configs.static_paths);
     }
 
+    // Set up this server's template engine
     if (configs.template_engine && !configs.views_path) {
       throw new Drash.Exceptions.ConfigsException(
         "Property missing. The views_path must be defined if template_engine is true",
