@@ -176,7 +176,6 @@ Rhum.testPlan("create_app_test.ts", () => {
       async () => {
         const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
         // Create new tmp directory and create project files
-        console.log(`${testCaseTmpDirName}`);
         Deno.mkdirSync(testCaseTmpDirName);
         const p = Deno.run({
           cmd: [

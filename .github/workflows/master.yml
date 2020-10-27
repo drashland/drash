@@ -41,10 +41,10 @@ jobs:
           deno cache create_app.ts
           deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
 
-      # Commented out since this doesn't work on forks of main repository
-      # - name: Create App (http)
-      #   run: |
-      #     deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
+      Commented out since this doesn't work on forks of main repository
+      - name: Create App (http)
+        run: |
+          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
   linter:
     # Only one OS is required since fmt is cross platform
