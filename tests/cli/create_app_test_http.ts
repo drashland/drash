@@ -19,11 +19,11 @@ if (!latestBranch) {
 }
 
 if (!githubRepo) {
-  githubRepo = "drashland/deno-land";
+  githubRepo = "drashland/deno-drash";
 }
 
-const drashUrl = "https://raw.githubusercontent.com/" + githubRepo +
-  `/${latestBranch}`;
+const drashUrl =
+  `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
@@ -176,6 +176,7 @@ Rhum.testPlan("create_app_test.ts", () => {
       async () => {
         const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
         // Create new tmp directory and create project files
+        console.log(`${testCaseTmpDirName}`);
         Deno.mkdirSync(testCaseTmpDirName);
         const p = Deno.run({
           cmd: [
