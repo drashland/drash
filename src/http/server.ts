@@ -448,10 +448,7 @@ export class Server {
     try {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
 
-      const response = new Drash.Http.Response(request, {
-        views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine,
-      });
+      const response = this.getResponse(request);
 
       // Set the response's Content-Type type header based on the request's URL.
       // For example, if the request's URL is /public/style.css, then the
@@ -510,10 +507,7 @@ export class Server {
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
-      const response = new Drash.Http.Response(request, {
-        views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine,
-      });
+      const response = this.getResponse(request);
 
       // Set the response's Content-Type type header based on the request's URL.
       // For example, if the request's URL is /public/style.css, then the
@@ -915,6 +909,20 @@ export class Server {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Get a response object.
+   *
+   * @param request - The request object.
+   *
+   * @returns A response object.
+   */
+  protected getResponse(request: Drash.Http.Request): Drash.Http.Response {
+    return new Drash.Http.Response(request, {
+      views_path: this.configs.views_path,
+      template_engine: this.configs.template_engine,
+    });
   }
 
   /**
