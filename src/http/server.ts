@@ -89,6 +89,15 @@ export class Server {
    */
   protected static_paths: string[] | { [key: string]: string } = [];
 
+  /**
+   * This server's list of static paths as virtual paths. Virtual paths allow
+   * users to map a path that does not exist to a physical path on their
+   * filesystem. This is helpful when you want to structure your application's
+   * filesystem in a way that separates sever- and client-side code. Instead of
+   * giving end users access to your entire filesystem, you can give them access
+   * to specific directories by using virtual paths. Also, see
+   * `this.static_paths` for more information.
+   */
   protected virtual_paths: Map<string, string> = new Map<string, string>();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -758,7 +767,7 @@ export class Server {
   }
 
   /**
-   * Add static paths.
+   * Add static paths. Also, see `this.addStaticPath()`.
    *
    * @param paths - The array or key-value pair object containing the paths. If
    * an array is passed in, then this method assumes each element in the array
