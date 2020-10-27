@@ -964,7 +964,7 @@ export class Server {
     }
 
     // If the request URL is "/public/assets/js/bundle.js", then we take out
-    // "/public" and use that to check against the static paths
+    // "/public" and use that to check against the virtual paths
     const virtualPath = serverRequest.url.split("/")[1];
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${virtualPath}`;
