@@ -12,7 +12,7 @@ function getExpected() {
 }
 
 const server = new Drash.Http.Server({
-  directory: "./",
+  directory: ".",
   resources: [
     TemplateEngineNullDataResource,
   ],
