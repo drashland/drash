@@ -494,7 +494,7 @@ export class Server {
    * testing purposes.
    */
   public async handleHttpRequestForVirtualPathAsset(
-    request: Drash.Http.Request
+    request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
       const response = new Drash.Http.Response(request, {
@@ -521,7 +521,9 @@ export class Server {
       const path = `/${virtualPath}`;
 
       const directory = this.virtual_paths.get(path);
-      const physicalPath = `${Deno.realPathSync(".")}/${directory}${request.url.replace(path, "")}`;
+      const physicalPath = `${Deno.realPathSync(".")}/${directory}${
+        request.url.replace(path, "")
+      }`;
 
       response.body = Deno.readFileSync(physicalPath);
       return response.sendStatic();
@@ -764,7 +766,7 @@ export class Server {
    */
   protected addStaticPath(
     path: string,
-    virtualPath?: string
+    virtualPath?: string,
   ): void {
     if (virtualPath) {
       this.virtual_paths.set(virtualPath, path);
@@ -789,7 +791,7 @@ export class Server {
       paths.forEach((path: string) => {
         if (typeof path != "string") {
           throw new Drash.Exceptions.ConfigsException(
-            `Static path must be a string`
+            `Static path must be a string`,
           );
         }
         this.addStaticPath(path);
@@ -801,14 +803,14 @@ export class Server {
     for (const virtualPath in paths) {
       if (typeof virtualPath != "string") {
         throw new Drash.Exceptions.ConfigsException(
-          `Virtual path must be a string`
+          `Virtual path must be a string`,
         );
       }
 
       const physicalPath = paths[virtualPath];
       if (typeof physicalPath != "string") {
         throw new Drash.Exceptions.ConfigsException(
-          `Virtual path must be a string`
+          `Virtual path must be a string`,
         );
       }
 
@@ -929,7 +931,6 @@ export class Server {
 
     return true;
   }
-
 
   protected requestTargetsVirtualPath(serverRequest: ServerRequest): boolean {
     if (this.virtual_paths.size <= 0) {
