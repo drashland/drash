@@ -58,16 +58,6 @@ export class Server {
   public port: number = 1447;
 
   /**
-   * A property to hold all previously handled request URL paths. Each request
-   * URL path is associated with a resource. This makes subsequent requests to
-   * the same resources faster.
-   */
-  protected cached_resource_lookup_table: Map<
-    string,
-    Drash.Interfaces.Resource | undefined
-  > = new Map();
-
-  /**
    * A property to hold this server's configs.
    */
   protected configs: Drash.Interfaces.ServerConfigs;
@@ -77,13 +67,6 @@ export class Server {
    * property is used when resolving static paths.
    */
   protected directory: string | undefined = undefined;
-
-  /**
-   * A property to hold the last regex path that was processed in the last
-   * request. This is used to retrieve the path params in key-value pair form
-   * for a request URI that was cached.
-   */
-  protected last_request_regex_path: RegExpMatchArray | string | null = "";
 
   /**
    * A property to hold middleware.
@@ -746,42 +729,45 @@ export class Server {
   ): Drash.Interfaces.Resource | undefined {
     let resource: Drash.Interfaces.Resource | undefined = undefined;
 
-    if (this.requestUrlWasHandledPreviously(request.url_path)) {
-      resource = this.cached_resource_lookup_table.get(request.url_path);
-      const matchArray = request.url.match(
-        this.last_request_regex_path as string,
-      );
-      if (matchArray) {
-        request.path_params = this.getRequestPathParams(
-          resource,
-          matchArray,
-        );
-      }
-      return resource;
-    }
+    const uri = request.url_path.split("/");
+    // Remove the first element which would be ""
+    uri.shift();
 
-    const results = this.getResourceLookupInfo(
-      request.url_path,
-    );
+    // The search term for a URI is the URI in it's most basic form. Basically,
+    // just "/something". The resource index service will return all resources
+    // matching that basic URI. Later down in this method, we iterate over each
+    // result that the resource index service returns to find the best matching
+    // resource to the request URL. Notice, we're searching for a URI at first
+    // and then matching against a URL later.
+    const uriWithoutParams = "^/" + uri[0];
+
+    const results = this.resource_index_service.search(uriWithoutParams);
 
     // No resource found? GTFO.
     if (results.size === 0) {
-      return resource;
+      return undefined;
     }
 
+    // Find the matching resource by comparing the request URL to a regex
+    // pattern associated with a resource
     let matchedResource = false;
     results.forEach((result: ISearchResult) => {
+      // If we already matched a resource, then there is no need to parse any
+      // further
       if (matchedResource) {
         return;
       }
+
+      // Take the current result and see if it matches against the request URL
       const matchArray = request.url_path.match(
         result.search_term,
       );
+
+      // If the request URL and result matched, then we know this result that we
+      // are currently parsing contains the resource we are looking for
       if (matchArray) {
         matchedResource = true;
         resource = result.item as Drash.Interfaces.Resource;
-        this.cached_resource_lookup_table.set(request.url_path, resource);
-        this.last_request_regex_path = result.search_term;
         request.path_params = this.getRequestPathParams(
           resource,
           matchArray,
@@ -921,64 +907,6 @@ export class Server {
         },
       ),
     };
-  }
-
-  /**
-   * Has the request URL path in question been handled previously? That is, a
-   * resource was found for it and an association was stored in the CACHED
-   * resource lookup Map.
-   *
-   * @param urlPath - The request URL path in question.
-   *
-   * @returns True if handled previously; false if not.
-   */
-  protected requestUrlWasHandledPreviously(urlPath: string): boolean {
-    return this.cached_resource_lookup_table.has(urlPath);
-  }
-
-  /**
-   * Get the lookup information on a resource given a request URL path and the
-   * resource index.
-   *
-   * @param urlPath - The request URL path to match to a resource.
-   * @param index - The index to search. This index contains associations
-   * between all regex paths that the server is handling and indices to
-   * resources in the resource lookup Map.
-   *
-   * @returns Lookup information on a resource or undefined if not found in the
-   * index that is used for the lookup information.
-   */
-  protected getResourceLookupInfo(
-    urlPath: string,
-  ): Map<number, ISearchResult> {
-    const url = urlPath.split("/");
-
-    if (url[url.length - 1] == "") {
-      url.pop();
-    }
-
-    if (url.length > 2) {
-      url.pop();
-    }
-
-    let urlWithoutParam = url.join("/");
-
-    if (urlWithoutParam.charAt(urlWithoutParam.length - 1) === "/") {
-      urlWithoutParam = urlWithoutParam.substring(
-        -1,
-        urlWithoutParam.length - 1,
-      );
-    }
-    const split = urlWithoutParam.split("/");
-    if (split.length > 1) {
-      if (urlWithoutParam[0] == "" || urlWithoutParam[0] == "/") {
-        urlWithoutParam = "/" + split[1];
-      } else {
-        urlWithoutParam = split[0];
-      }
-    }
-
-    return this.resource_index_service!.search("^" + urlWithoutParam);
   }
 
   /**
