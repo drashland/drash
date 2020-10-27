@@ -507,6 +507,8 @@ export class Server {
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
+      await this.executeMiddlewareServerLevelBeforeRequest(request);
+
       const response = this.getResponse(request);
 
       // Set the response's Content-Type type header based on the request's URL.
@@ -530,6 +532,7 @@ export class Server {
       }`;
 
       response.body = Deno.readFileSync(physicalPath);
+      await this.executeMiddlewareServerLevelAfterRequest(request, response);
       return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
