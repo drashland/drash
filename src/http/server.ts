@@ -70,6 +70,11 @@ export class Server {
   protected directory: string | undefined = undefined;
 
   /**
+   * An instance of the HttpService.
+   */
+  protected http_service: Drash.Services.HttpService;
+
+  /**
    * A property to hold middleware.
    */
   protected middleware: ServerMiddleware = {};
@@ -451,10 +456,7 @@ export class Server {
       // Set the response's Content-Type type header based on the request's URL.
       // For example, if the request's URL is /public/style.css, then the
       // Content-Type header should be set to text/css.
-      const mimeType = new Drash.Services.HttpService().getMimeType(
-        request.url,
-        true,
-      );
+      const mimeType = this.http_service.getMimeType(request.url, true);
       if (mimeType) {
         response.headers.set("Content-Type", mimeType);
       }
@@ -516,10 +518,7 @@ export class Server {
       // Set the response's Content-Type type header based on the request's URL.
       // For example, if the request's URL is /public/style.css, then the
       // Content-Type header should be set to text/css.
-      const mimeType = new Drash.Services.HttpService().getMimeType(
-        request.url,
-        true,
-      );
+      const mimeType = this.http_service.getMimeType(request.url, true);
 
       if (mimeType) {
         response.headers.set("Content-Type", mimeType);
