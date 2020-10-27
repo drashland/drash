@@ -86,6 +86,8 @@ export class Server {
    * and the resource the HTTP request is trying to get is found, then
    * Drash.Http.Response will use its sendStatic() method to send the
    * static asset back to the client.
+   *
+   * TODO(crookse) Change this to a Map.
    */
   protected static_paths: string[] | { [key: string]: string } = [];
 
