@@ -520,19 +520,16 @@ export class Server {
         response.headers.set("Content-Type", mimeType);
       }
 
-      // If the request URL is "/public/assets/js/bundle.js", then we take out
-      // "/public" and use that to check against the static paths
       const virtualPath = request.url.split("/")[1];
-      // Prefix with a leading slash, so it can be matched properly
-      const path = `/${virtualPath}`;
-
-      const directory = this.virtual_paths.get(path);
-      const physicalPath = `${Deno.realPathSync(".")}/${directory}${
-        request.url.replace(path, "")
+      const physicalPath = this.virtual_paths.get(virtualPath);
+      const fullPath = `${Deno.realPathSync(".")}/${physicalPath}${
+        request.url.replace(`/${virtualPath}`, "")
       }`;
 
-      response.body = Deno.readFileSync(physicalPath);
+      response.body = Deno.readFileSync(fullPath);
+
       await this.executeMiddlewareServerLevelAfterRequest(request, response);
+
       return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
