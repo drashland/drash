@@ -8,15 +8,23 @@ import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
 // Import the Dexter middleware function
 import { CSRF } from "https://deno.land/x/drash_middleware@v0.5.1/csrf/mod.ts";
 
-// Instantiate csrf and generate the token
+// Instantiate csrf and generate the token.
 const csrf = CSRF();
 // Alongside `csrf` being a middleware, you can access the token:
 //     `console.log(csrf.token)`
+// This means you can pass it down to your view, or set as a cookie
 
 // Create your server and resource, and plug in csrf to the middleware config
 class Resource extends Drash.Http.Resource {
   public GET () {
-  
+    this.response.headers.set("X-CSRF-TOKEN", csrf.token)
+    // or
+    this.response.render("/index.html", { csrf: csrf.token })
+    // or (only when `cookie` is set)
+    this.response.setCookie({
+      name: "X-CSRF-TOKEN",
+      value: csrf.token
+    })
   }
   
   @Drash.Http.Middleware({
