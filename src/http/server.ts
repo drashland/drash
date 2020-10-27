@@ -610,7 +610,7 @@ export class Server {
 
       // Include the regex path in the index, so we can search for the regex
       // path during runtime in `.getResourceClass()`
-      this.resource_index_service.addItem(paths.regex_path, resourceClass);
+      this.resource_index_service.addItem([paths.regex_path], resourceClass);
     }
 
     resourceClass.paths_parsed = resourceParsedPaths;
