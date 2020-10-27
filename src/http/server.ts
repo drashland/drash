@@ -950,6 +950,14 @@ export class Server {
     return true;
   }
 
+  /**
+   * Is the request targeting a virtual path?
+   *
+   * @param request - The request object.
+   *
+   * @returns True if yes; false if no or if there are not any virtual paths
+   * defined.
+   */
   protected requestTargetsVirtualPath(serverRequest: ServerRequest): boolean {
     if (this.virtual_paths.size <= 0) {
       return false;
