@@ -146,7 +146,7 @@ export class Server {
     }
 
     if (configs.template_engine && !configs.views_path) {
-      throw new Error(
+      throw new Drash.Exceptions.ConfigsException(
         "Property missing. The views_path must be defined if template_engine is true",
       );
     }
