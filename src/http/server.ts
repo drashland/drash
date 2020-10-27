@@ -767,15 +767,34 @@ export class Server {
    * the physical path.
    */
   protected addStaticPaths(paths: string[] | { [key: string]: string }): void {
+    // Assume everything in the array is a string
     if (Array.isArray(paths)) {
       paths.forEach((path: string) => {
+        if (typeof path != "string") {
+          throw new Drash.Exceptions.ConfigsException(
+            `Static path must be a string`
+          );
+        }
         this.addStaticPath(path);
       });
       return;
     }
 
+    // Assume the key is the virtual path and the value is the physical path
     for (const virtualPath in paths) {
+      if (typeof virtualPath != "string") {
+        throw new Drash.Exceptions.ConfigsException(
+          `Virtual path must be a string`
+        );
+      }
+
       const physicalPath = paths[virtualPath];
+      if (typeof physicalPath != "string") {
+        throw new Drash.Exceptions.ConfigsException(
+          `Virtual path must be a string`
+        );
+      }
+
       this.addStaticPath(physicalPath, virtualPath);
     }
   }
