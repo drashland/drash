@@ -141,6 +141,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
 
     Rhum.testCase("before_request: static path asset", async () => {
       let server = new Drash.Http.Server({
+        directory: "./",
         static_paths: ["/assets"],
         middleware: {
           before_request: [BeforeRequestStaticPathAsset],
@@ -156,6 +157,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
 
     Rhum.testCase("after_request: static path asset", async () => {
       let server = new Drash.Http.Server({
+        directory: "./",
         static_paths: ["/assets"],
         middleware: {
           after_request: [AfterRequestStaticPathAsset],
