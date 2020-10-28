@@ -7,32 +7,19 @@
 
 import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
-import { Octokit } from "../deps.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 const githubRepo = Deno.env.get("GITHUB_REPOSITORY") ?? "drashland/deno-drash";
-const [owner, repo] = githubRepo.split("/");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
 
-const octokit = new Octokit();
+let drashUrl =
+  `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
 
-await octokit.repos.listBranches({
-  owner: owner,
-  repo: repo,
-}).then((branches: any) => {
-  if (
-    !branches.data?.find((branch: any) => {
-      branch.name === latestBranch;
-    })
-  ) {
-    latestBranch = "master";
-  }
+fetch(drashUrl + "/create_app.ts").catch((error) => {
+  drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/master";
 });
-
-const drashUrl =
-  `https://raw.githubusercontent.com/${owner}/${repo}/${latestBranch}`;
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
