@@ -17,7 +17,7 @@ let latestBranch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
 let drashUrl =
   `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
 
-fetch(drashUrl + "/create_app.ts").catch((error) => {
+await fetch(drashUrl + "/create_app.ts").catch((error) => {
   drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/master";
 });
 
