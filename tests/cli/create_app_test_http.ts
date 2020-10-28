@@ -14,12 +14,20 @@ const decoder = new TextDecoder("utf-8");
 const githubRepo = Deno.env.get("GITHUB_REPOSITORY") ?? "drashland/deno-drash";
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
 
+console.log("START");
+console.log(latestBranch);
+console.log(githubRepo);
+console.log(Deno.env.get("GITHUB_BASE_REF"));
+console.log("END");
+
 let drashUrl =
   `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
 
-await fetch(drashUrl + "/create_app.ts").catch((error) => {
+try {
+  await fetch(drashUrl + "/create_app.ts");
+} catch {
   drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/master";
-});
+}
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
