@@ -13,6 +13,7 @@ const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
 let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
+console.log(`{ Repo: ${githubRepo}, Branch: ${latestBranch} }`)
 
 if (!githubRepo || !latestBranch) {
   githubRepo = "drashland/deno-drash";
