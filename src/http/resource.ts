@@ -72,8 +72,3 @@ export class Resource implements Drash.Interfaces.Resource {
     this.server = server;
   }
 }
-
-
-
-
-
