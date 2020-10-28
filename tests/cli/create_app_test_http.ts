@@ -14,32 +14,17 @@ const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
 let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
 
+console.log("START")
+console.log(latestBranch)
+console.log(githubRepo)
+console.log("END")
+
 if (!latestBranch) {
   latestBranch = "master";
 }
 
-if (!githubRepo) {
-  githubRepo = "drashland/deno-land";
-}
-
 const drashUrl = "https://raw.githubusercontent.com/" + githubRepo +
   `/${latestBranch}`;
-
-function getOsCwd() {
-  let cwd = `//${originalCWD}/console/create_app`;
-  if (Deno.build.os === "windows") {
-    cwd = `${originalCWD}\console\create_app`;
-  }
-  return cwd;
-}
-
-function getOsTmpDirName() {
-  let tmp = `${originalCWD}/${tmpDirName}`;
-  if (Deno.build.os === "windows") {
-    tmp = `${originalCWD}\${tmpDirName}`;
-  }
-  return tmp;
-}
 
 /**
  * To keep line endings consistent all on operating systems.
