@@ -11,22 +11,22 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-const githubRepo = Deno.env.get("GITHUB_REPOSITORY") ?? "drashland/deno-drash";
-let latestBranch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
 
-console.log("START");
-console.log(latestBranch);
-console.log(githubRepo);
-console.log(Deno.env.get("GITHUB_BASE_REF"));
-console.log("END");
-
+const githubRepo = Deno.env.get("GITHUB_REPOSITORY");
+const latestBranch = Deno.env.get("GITHUB_HEAD_REF");
 let drashUrl =
   `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
+// https://raw.githubusercontent.com/<NAME>/deno-drash/<branch>
 
+// if fork doesnt exist, use drashland repo, eg name might be ebebbington, but i dont have a fork
 try {
-  await fetch(drashUrl + "/create_app.ts");
-} catch {
-  drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/master";
+  const res = await fetch(drashUrl);
+  await res.json();
+  if (res.status !== 200) {
+    drashUrl = "https://raw.githubusercontent.com/drashland/deno-drash/master";
+  }
+} catch (err) {
+  // do nothing
 }
 
 function getOsCwd() {
