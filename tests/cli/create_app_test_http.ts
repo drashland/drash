@@ -14,10 +14,12 @@ const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
 let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
 
+/*
 if (!githubRepo || !latestBranch) {
   githubRepo = "drashland/deno-drash";
   latestBranch = "master";
 }
+*/
 
 const drashUrl =
   `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
