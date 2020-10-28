@@ -12,7 +12,7 @@ let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
-const githubOwner = Deno.env.get("GITHUB_OWNER")
+const githubOwner = Deno.env.get("GITHUB_ACTOR")
 
 if (!latestBranch) {
   latestBranch = "master";
