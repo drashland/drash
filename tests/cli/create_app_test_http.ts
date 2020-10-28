@@ -32,7 +32,7 @@ try {
   const res = await fetch(drashUrl)
   console.log('the res:')
   console.log(res)
-  await res.json()
+  await res.text()
   if (res.status !== 200) {
     console.log('no repo for user, using drashlands org')
     drashUrl = "https://raw.githubusercontent.com/drashland" + `/deno-drash/${latestBranch}`
