@@ -12,8 +12,11 @@ let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
+let githubRepo = Deno.env.get("GITHUB_REPOSITORY")
 const githubOwner = Deno.env.get("GITHUB_ACTOR")
-
+if (!githubRepo) {
+  githubRepo = "drashland/deno-drash"
+}
 if (!latestBranch) {
   latestBranch = "master";
 }
@@ -27,12 +30,16 @@ console.log(drashUrl)
 // if fork doesnt exist, use drashland repo, eg name might be ebebbington, but i dont have a fork
 try {
   const res = await fetch(drashUrl)
+  console.log('the res:')
+  console.log(res)
   await res.json()
   if (res.status !== 200) {
     console.log('no repo for user, using drashlands org')
     drashUrl = "https://raw.githubusercontent.com/drashland" + `/deno-drash/${latestBranch}`
   }
 } catch (err) {
+  console.log('got error:')
+  console.log(err)
   // do nothing
 }
 console.log(drashUrl)
