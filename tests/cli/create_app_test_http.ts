@@ -13,7 +13,6 @@ const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
 let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
-console.log(`{ Repo: ${githubRepo}, Branch: ${latestBranch} }`);
 
 if (!githubRepo || !latestBranch) {
   githubRepo = "drashland/deno-drash";
@@ -103,6 +102,7 @@ Rhum.testPlan("create_app_test.ts", () => {
       p.close();
       const stdout = new TextDecoder("utf-8").decode(await p.output());
       const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
+      console.log(`{ Repo: ${githubRepo}, Branch: ${latestBranch} }`);
       Rhum.asserts.assertEquals(
         stderr.includes(
           "Too few options were given. Use the --help option for more information.",
