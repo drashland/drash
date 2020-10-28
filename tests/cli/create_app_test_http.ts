@@ -12,37 +12,22 @@ let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
-let githubRepo = Deno.env.get("GITHUB_REPOSITORY")
 const githubOwner = Deno.env.get("GITHUB_ACTOR")
-if (!githubRepo) {
-  githubRepo = "drashland/deno-drash"
-}
-if (!latestBranch) {
-  latestBranch = "master";
-}
 
 // supports forks
 let drashUrl = "https://raw.githubusercontent.com/" + githubOwner +
     `/deno-drash/${latestBranch}`; // https://raw.githubusercontent.com/<NAME>/deno-drash/<branch>
 
-console.log('1')
-console.log(drashUrl)
-// if fork doesnt exist, use drashland repo, eg name might be ebebbington, but i dont have a fork
+// if fork doesnt exist, use drashland repo
 try {
   const res = await fetch(drashUrl + "/create_app.ts")
-  console.log('the res:')
-  console.log(res)
   await res.text()
   if (res.status !== 200) {
-    console.log('no repo for user, using drashlands org')
-    drashUrl = "https://raw.githubusercontent.com/drashland" + `/deno-drash/${latestBranch}`
+    drashUrl = `https://raw.githubusercontent.com/drashland/deno-drash/${latestBranch}`
   }
 } catch (err) {
-  console.log('got error:')
-  console.log(err)
   // do nothing
 }
-console.log(drashUrl)
 
 /**
  * To keep line endings consistent all on operating systems.
