@@ -48,7 +48,10 @@ export { green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
 export {
   IndexService,
-  ISearchResult,
+} from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
+
+export type {
+  ISearchResult
 } from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
 // export {
 //   IndexService,
