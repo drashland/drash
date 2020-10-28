@@ -741,11 +741,17 @@ export class Server {
     // and then matching against a URL later.
     const uriWithoutParams = "^/" + uri[0];
 
-    const results = this.resource_index_service.search(uriWithoutParams);
+    let results = this.resource_index_service.search(uriWithoutParams);
 
-    // No resource found? GTFO.
+    // If no results are found, then check if /:some_param is in the index
+    // service's lookup table because there might be a resource with
+    // /:some_param as a URI
     if (results.size === 0) {
-      return undefined;
+      results = this.resource_index_service.search("^/");
+      // Still no resource found? GTFO.
+      if (!results) {
+        return undefined;
+      }
     }
 
     // Find the matching resource by comparing the request URL to a regex

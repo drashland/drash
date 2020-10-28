@@ -66,11 +66,23 @@ Rhum.testPlan("http/server_test.ts", () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
-      const request = members.mockRequest("/");
-      const response = await server.handleHttpRequest(request);
+      let request = members.mockRequest("/");
+      let response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
         decoder.decode(response.body as ArrayBuffer),
         { body: "got" },
+      );
+    });
+
+    Rhum.testCase("GET /:some_param", async () => {
+      const server = new Drash.Http.Server({
+        resources: [HomeResource],
+      });
+      let request = members.mockRequest("/w00t");
+      let response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        decoder.decode(response.body as ArrayBuffer),
+        { body: "w00t" },
       );
     });
 
@@ -454,8 +466,13 @@ Rhum.run();
 ////////////////////////////////////////////////////////////////////////////////
 
 class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"];
+  static paths = ["/", "/:some_param"];
   public GET() {
+    const someParam = this.request.getPathParam("some_param");
+    if (someParam) {
+      this.response.body = { body: someParam };
+      return this.response;
+    }
     this.response.body = { body: "got" };
     return this.response;
   }
