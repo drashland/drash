@@ -7,22 +7,32 @@
 
 import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
+import { Octokit } from "../deps.ts";
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
-let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
+const githubRepo = Deno.env.get("GITHUB_REPOSITORY") ?? "drashland/deno-drash";
+const [owner, repo] = githubRepo.split("/");
+let latestBranch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
 
-/*
-if (!githubRepo || !latestBranch) {
-  githubRepo = "drashland/deno-drash";
-  latestBranch = "master";
-}
-*/
+const octokit = new Octokit();
+
+await octokit.repos.listBranches({
+  owner: owner,
+  repo: repo,
+}).then((branches: any) => {
+  if (
+    !branches.data?.find((branch: any) => {
+      branch.name === latestBranch;
+    })
+  ) {
+    latestBranch = "master";
+  }
+});
 
 const drashUrl =
-  `https://raw.githubusercontent.com/${githubRepo}/${latestBranch}`;
+  `https://raw.githubusercontent.com/${owner}/${repo}/${latestBranch}`;
 
 function getOsCwd() {
   let cwd = `//${originalCWD}/console/create_app`;
@@ -104,7 +114,6 @@ Rhum.testPlan("create_app_test.ts", () => {
       p.close();
       const stdout = new TextDecoder("utf-8").decode(await p.output());
       const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
-      console.log(`{ Repo: ${githubRepo}, Branch: ${latestBranch} }`);
       Rhum.asserts.assertEquals(
         stderr.includes(
           "Too few options were given. Use the --help option for more information.",

@@ -4,3 +4,5 @@ export {
   isFormFile,
   MultipartReader,
 } from "https://deno.land/std@0.74.0/mime/multipart.ts";
+
+export { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
