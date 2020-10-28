@@ -29,7 +29,7 @@ console.log('1')
 console.log(drashUrl)
 // if fork doesnt exist, use drashland repo, eg name might be ebebbington, but i dont have a fork
 try {
-  const res = await fetch(drashUrl)
+  const res = await fetch(drashUrl + "/create_app.ts")
   console.log('the res:')
   console.log(res)
   await res.text()
