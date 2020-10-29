@@ -24,11 +24,12 @@ interface IRequestOptions {
  * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
  */
 // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface anyway
-function responseIsOfTypeResponseOutput (response: any): boolean {
+function responseIsOfTypeResponseOutput(response: any): boolean {
   if (typeof response === "object" && Array.isArray(response) === false) {
-    return "status" in response && "headers" in response && "body" in response && "send" in response && "status_code" in response
+    return "status" in response && "headers" in response &&
+      "body" in response && "send" in response && "status_code" in response;
   }
-  return false
+  return false;
 }
 
 /**
@@ -271,9 +272,15 @@ export class Server {
       response = await resource[request.method.toUpperCase()](); // response can  be literally anything, it's down to the user what they return from the method
 
       // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
-      const isValidResponse = response instanceof Drash.Http.Response === true || responseIsOfTypeResponseOutput(response) === true
+      const isValidResponse =
+        response instanceof Drash.Http.Response === true ||
+        responseIsOfTypeResponseOutput(response) === true;
       if (isValidResponse === false) {
-        throw new Drash.Exceptions.HttpResponseException(418, "The response must be returned inside the " + request.method.toUpperCase() + " method of the resource")
+        throw new Drash.Exceptions.HttpResponseException(
+          418,
+          "The response must be returned inside the " +
+            request.method.toUpperCase() + " method of the resource",
+        );
       }
 
       await this.executeMiddlewareServerLevelAfterRequest(request, response);

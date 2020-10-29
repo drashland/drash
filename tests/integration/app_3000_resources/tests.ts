@@ -7,4 +7,4 @@ import "./files_resource_test.ts";
 import "./users_resource_test.ts";
 import "./optional_path_params_test.ts";
 import "./browser_request_resource_test.ts";
-import "./returning_invalid_response_in_resource_test.ts"
+import "./returning_invalid_response_in_resource_test.ts";

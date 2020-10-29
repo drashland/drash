@@ -176,17 +176,20 @@ Rhum.testPlan("http/server_test.ts", () => {
       );
     });
 
-    Rhum.testCase("Throws an error when the response was not returned in the resource", async () => {
-      const server = new Drash.Http.Server({
-        resources: [InvalidReturningOfResponseResource],
-      });
-      let request = members.mockRequest("/invalid/returning/of/response");
-      let response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(response.status_code, 418);
-      request = members.mockRequest("/invalid/returning/of/response", "POST");
-      response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(response.status_code, 418);
-    });
+    Rhum.testCase(
+      "Throws an error when the response was not returned in the resource",
+      async () => {
+        const server = new Drash.Http.Server({
+          resources: [InvalidReturningOfResponseResource],
+        });
+        let request = members.mockRequest("/invalid/returning/of/response");
+        let response = await server.handleHttpRequest(request);
+        Rhum.asserts.assertEquals(response.status_code, 418);
+        request = members.mockRequest("/invalid/returning/of/response", "POST");
+        response = await server.handleHttpRequest(request);
+        Rhum.asserts.assertEquals(response.status_code, 418);
+      },
+    );
   });
 
   Rhum.testSuite("handleHttpRequestError()", () => {
@@ -490,12 +493,11 @@ class NotesResource extends Drash.Http.Resource {
 }
 
 class InvalidReturningOfResponseResource extends Drash.Http.Resource {
-  static paths = ["/invalid/returning/of/response"]
+  static paths = ["/invalid/returning/of/response"];
   public GET() {
-
   }
   public POST() {
-    return "hello"
+    return "hello";
   }
 }
 
