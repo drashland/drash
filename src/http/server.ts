@@ -63,6 +63,8 @@ export class Server {
    */
   protected configs: Drash.Interfaces.ServerConfigs;
 
+  protected preprocessors: Array<any> = [];
+
   /**
    * A property to hold the location of this server on the filesystem. This
    * property is used when resolving static paths.
@@ -89,9 +91,18 @@ export class Server {
    */
   protected static_paths: string[] = [];
 
+  protected p_client_side_typescript: any = {};
+
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+
+  protected async executeClientSideTypeScriptBundling(preprocessor: any, data: any) {
+    const p = new preprocessor(data.files);
+    const d = await p.run();
+    this.p_client_side_typescript = d;
+  }
 
   /**
    * Construct an object of this class.
@@ -99,6 +110,18 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
+    if (configs.preprocessors) {
+      configs.preprocessors.forEach(async (preprocessorObj: any) => {
+        if (preprocessorObj.preprocessor.name == "ClientSideTypeScript") {
+          await this.executeClientSideTypeScriptBundling(
+            preprocessorObj.preprocessor,
+            preprocessorObj.data
+          );
+        }
+      });
+    }
+
+
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -425,6 +448,11 @@ export class Server {
       );
       if (mimeType) {
         response.headers.set("Content-Type", mimeType);
+      }
+      if (request.url.includes(".ts")) {
+        response.body = this.p_client_side_typescript.output;
+        response.headers.set("Content-Type", "text/javascript");
+        return response.sendStatic();
       }
 
       // Two things are happening here:
