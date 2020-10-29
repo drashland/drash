@@ -175,6 +175,16 @@ export class Request extends ServerRequest {
   }
 
   /**
+   * Gets a record whose keys are the request's url query params specified by inputs
+   * and whose values are the corresponding values of the query params.
+   * 
+   * @returns Key value pairs of the query param and its value. Empty object if no query params
+   */
+  public getAllUrlQueryParams(): { [key: string]: string } {
+    return this.url_query_params;
+  }
+
+  /**
    * Get this request's URL path.
    *
    * @returns The URL path.
@@ -208,7 +218,7 @@ export class Request extends ServerRequest {
    * {[key: string]: string}
    * ```
    */
-  public getUrlQueryParams(): { [key: string]: string } {
+  private getUrlQueryParams(): { [key: string]: string } {
     let queryParams: { [key: string]: string } = {};
 
     try {
