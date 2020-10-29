@@ -9,47 +9,46 @@ export {
   Server,
   ServerRequest,
   serveTLS,
-} from "https://deno.land/std@0.74.0/http/server.ts";
+} from "https://deno.land/std@0.75.0/http/server.ts";
 
 export type {
   HTTPOptions,
   HTTPSOptions,
   Response,
-} from "https://deno.land/std@0.74.0/http/server.ts";
+} from "https://deno.land/std@0.75.0/http/server.ts";
 
 export {
   Status,
   STATUS_TEXT,
-} from "https://deno.land/std@0.74.0/http/http_status.ts";
+} from "https://deno.land/std@0.75.0/http/http_status.ts";
 
-export { BufReader } from "https://deno.land/std@0.74.0/io/bufio.ts";
+export { BufReader } from "https://deno.land/std@0.75.0/io/bufio.ts";
 
-export type { ReadLineResult } from "https://deno.land/std@0.74.0/io/bufio.ts";
+export type { ReadLineResult } from "https://deno.land/std@0.75.0/io/bufio.ts";
 
-export { StringReader } from "https://deno.land/std@0.74.0/io/readers.ts";
+export { StringReader } from "https://deno.land/std@0.75.0/io/readers.ts";
 
 export {
   MultipartReader,
-} from "https://deno.land/std@0.74.0/mime/multipart.ts";
+} from "https://deno.land/std@0.75.0/mime/multipart.ts";
 
 export type {
   FormFile,
   MultipartFormData,
-} from "https://deno.land/std@0.74.0/mime/multipart.ts";
+} from "https://deno.land/std@0.75.0/mime/multipart.ts";
 
 export {
   deleteCookie,
   getCookies,
   setCookie,
-} from "https://deno.land/std@0.74.0/http/cookie.ts";
-export type { Cookie } from "https://deno.land/std@0.74.0/http/cookie.ts";
+} from "https://deno.land/std@0.75.0/http/cookie.ts";
+export type { Cookie } from "https://deno.land/std@0.75.0/http/cookie.ts";
 
-export { green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
+export { green, red } from "https://deno.land/std@0.75.0/fmt/colors.ts";
 
 export {
   IndexService,
 } from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
-
 export type {
   ISearchResult
 } from "https://raw.githubusercontent.com/drashland/services/master/index/index_service.ts";
