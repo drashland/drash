@@ -41,11 +41,10 @@ export interface ServerMiddleware {
       // The compile time method to run during compile time
       compile: () => Promise<void>;
       // The runtime method to run during runtime
-      run:
-        ((
-          request: Drash.Http.Request,
-          response: Drash.Http.Response,
-        ) => Promise<Drash.Http.Response | boolean>)
+      run: ((
+        request: Drash.Http.Request,
+        response: Drash.Http.Response,
+      ) => Promise<Drash.Http.Response | boolean>);
     }
   >;
 

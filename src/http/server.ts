@@ -754,7 +754,7 @@ export class Server {
       if (response) {
         await this.executeMiddlewareServerLevelRuntimeAfterRequest(
           request,
-          response
+          response,
         );
       }
     }
