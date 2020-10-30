@@ -99,7 +99,6 @@ export interface ServerConfigs {
   directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
-  preprocessors?: Array<any>;
   middleware?: ServerMiddleware;
   pretty_links?: boolean;
   resources?: Drash.Interfaces.Resource[];
