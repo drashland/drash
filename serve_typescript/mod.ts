@@ -10,7 +10,6 @@ interface IOptions {
 }
 
 export function ServeTypeScript(options: IOptions) {
-
   if (!options.files) {
     throw new Error(
       "ServeTypeScript requires an array of files to compile.",
