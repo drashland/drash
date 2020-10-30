@@ -1,14 +1,15 @@
 import type { Drash } from "../../mod.ts";
 
 /**
- * Contains the type of ServerMiddleware
+ * Contains the type of ServerMiddleware.
+ *
  * @remarks
- * before_request: Array<Function>
+ * before_request
  *
  *     An array of functions that take a Drash.Http.Request as a parameter.
  *     Method can be async.
  *
- * after_request: Array<Function>
+ * after_request
  *
  *     An array of functions that take in a Drash.Http.Request as the first
  *     parameter, and a Drash.Http.Response as the second parameter.
@@ -37,11 +38,14 @@ export interface ServerMiddleware {
   // compile time will be able to be used during runtime.
   compile_time?: Array<
     {
-      runtime_method: (
-        request: Drash.Http.Request,
-        response: Drash.Http.Response,
-      ) => Promise<Drash.Http.Response | boolean>;
-      compile_time_method: () => void;
+      // The compile time method to run during compile time
+      compile: () => Promise<void>;
+      // The runtime method to run during runtime
+      run:
+        ((
+          request: Drash.Http.Request,
+          response: Drash.Http.Response,
+        ) => Promise<Drash.Http.Response | boolean>)
     }
   >;
 

@@ -77,7 +77,10 @@ export class Server {
   protected middleware: ServerMiddleware = {
     runtime: new Map<
       number,
-      ((
+      | ((
+        request: Drash.Http.Request,
+      ) => Promise<Drash.Http.Response | boolean>)
+      | ((
         request: Drash.Http.Request,
         response: Drash.Http.Response,
       ) => Promise<Drash.Http.Response | boolean>)
@@ -426,17 +429,6 @@ export class Server {
         template_engine: this.configs.template_engine,
       });
 
-      if (this.middleware.runtime) {
-        const result = await this.executeMiddlewareServerLevelRuntime(
-          request,
-          response,
-        );
-
-        if (result) {
-          return response.sendStatic();
-        }
-      }
-
       // Set the response's Content-Type type header based on the request's URL.
       // For example, if the request's URL is /public/style.css, then the
       // Content-Type header should be set to text/css.
@@ -713,10 +705,10 @@ export class Server {
     // data to be used later during runtime
     if (middlewares.compile_time) {
       for (const middleware of middlewares.compile_time) {
-        await middleware.compile_time_method();
+        await middleware.compile();
         this.middleware.runtime!.set(
           this.middleware.runtime!.size,
-          middleware.runtime_method,
+          middleware.run,
         );
       }
     }
@@ -741,7 +733,6 @@ export class Server {
   protected async executeMiddlewareServerLevelBeforeRequest(
     request: Drash.Http.Request,
   ): Promise<void> {
-    // Execute server-level middleware
     if (this.middleware.before_request != null) {
       for (const middleware of this.middleware.before_request) {
         await middleware(request);
@@ -757,8 +748,17 @@ export class Server {
    */
   protected async executeMiddlewareServerLevelAfterRequest(
     request: Drash.Http.Request,
-    response: Drash.Http.Response | null,
+    response: Drash.Http.Response | null = null,
   ): Promise<void> {
+    if (this.middleware.runtime) {
+      if (response) {
+        await this.executeMiddlewareServerLevelRuntimeAfterRequest(
+          request,
+          response
+        );
+      }
+    }
+
     if (this.middleware.after_request != null) {
       for (const middleware of this.middleware.after_request) {
         await middleware(request, response!);
@@ -767,8 +767,8 @@ export class Server {
   }
 
   /**
-   * Execute server level runtime middleware. Runtime middleware requires
-   * compile time data. See 
+   * Execute server level runtime middleware after requests. Runtime middleware
+   * requires compile time data.
    *
    * @param request - The request objecft.
    * @param response - The response object.
@@ -777,7 +777,7 @@ export class Server {
    * it did or did not process properly (true being it processed; false being it
    * did not process).
    */
-  protected async executeMiddlewareServerLevelRuntime(
+  protected async executeMiddlewareServerLevelRuntimeAfterRequest(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<Drash.Http.Response | boolean> {
@@ -785,15 +785,15 @@ export class Server {
 
     // Yes... we await this shit. Don't worry about TS notifications here about
     // await not having an effect on this code
-    await this.middleware.runtime!.forEach(
+    this.middleware.runtime!.forEach(
       async (
-        runtimeMethod: (
+        run: (
           request: Drash.Http.Request,
           response: Drash.Http.Response,
         ) => Promise<Drash.Http.Response | boolean>,
       ) => {
         if (!result) {
-          result = await runtimeMethod(request, response);
+          result = await run(request, response);
         }
       },
     );
