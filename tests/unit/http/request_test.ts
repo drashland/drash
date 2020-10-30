@@ -80,12 +80,12 @@ Rhum.testPlan("http/request_test.ts", () => {
     getUrlQueryParamTests();
   });
 
-  Rhum.testSuite("getUrlPath()", () => {
-    getUrlPathTests();
+  Rhum.testSuite("getAllUrlQueryParams()", () => {
+    getAllUrlQueryParamsTests();
   });
 
-  Rhum.testSuite("getUrlQueryParams()", () => {
-    getUrlQueryParamsTests();
+  Rhum.testSuite("getUrlPath()", () => {
+    getUrlPathTests();
   });
 
   Rhum.testSuite("getUrlQueryString()", () => {
@@ -513,11 +513,11 @@ function getUrlPathTests() {
   );
 }
 
-function getUrlQueryParamsTests() {
+function getAllUrlQueryParamsTests() {
   Rhum.testCase("Returns {} with no query strings", async () => {
     const serverRequest = members.mockRequest("/");
     const request = new Drash.Http.Request(serverRequest);
-    const queryParams = request.getUrlQueryParams();
+    const queryParams = request.getAllUrlQueryParams();
     Rhum.asserts.assertEquals(queryParams, {});
   });
 
@@ -528,7 +528,7 @@ function getUrlQueryParamsTests() {
         "/api/v2/users?name=John&age=44",
       );
       const request = new Drash.Http.Request(serverRequest);
-      const queryParams = request.getUrlQueryParams();
+      const queryParams = request.getAllUrlQueryParams();
       Rhum.asserts.assertEquals(queryParams, {
         name: "John",
         age: "44",

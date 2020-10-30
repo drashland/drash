@@ -175,6 +175,21 @@ Rhum.testPlan("http/server_test.ts", () => {
         "/notes/1557",
       );
     });
+
+    Rhum.testCase(
+      "Throws an error when the response was not returned in the resource",
+      async () => {
+        const server = new Drash.Http.Server({
+          resources: [InvalidReturningOfResponseResource],
+        });
+        let request = members.mockRequest("/invalid/returning/of/response");
+        let response = await server.handleHttpRequest(request);
+        Rhum.asserts.assertEquals(response.status_code, 418);
+        request = members.mockRequest("/invalid/returning/of/response", "POST");
+        response = await server.handleHttpRequest(request);
+        Rhum.asserts.assertEquals(response.status_code, 418);
+      },
+    );
   });
 
   Rhum.testSuite("handleHttpRequestError()", () => {
@@ -434,6 +449,47 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assert(!server.deno_server);
     });
   });
+
+  Rhum.testSuite("isValidResponse()", () => {
+    Rhum.testCase("Should check that the response object is valid", () => {
+      const server = new Drash.Http.Server({});
+      const isValidResponse = Reflect.get(server, "isValidResponse");
+      //Simulate user not returning properly inside their resource method
+      const possiblesInvalidResponse = [
+        "hello",
+        true,
+        1,
+        { name: "Ed" },
+        ["hello"],
+        null,
+        undefined,
+      ];
+      possiblesInvalidResponse.forEach((invalidRes) => {
+        const isValid = isValidResponse(invalidRes);
+        Rhum.asserts.assertEquals(isValid, false);
+      });
+      const responseOutput: Drash.Interfaces.ResponseOutput = {
+        body: new Uint8Array(1),
+        headers: new Headers(),
+        status: 69420,
+        status_code: 418,
+        send: undefined,
+      };
+      const request = new Drash.Http.Request(members.mockRequest("/hello"));
+      const response: Drash.Http.Response = new Drash.Http.Response(
+        request,
+        {},
+      );
+      const validResponses = [
+        responseOutput,
+        response,
+      ];
+      validResponses.forEach((validRes) => {
+        const isValid = isValidResponse(validRes);
+        Rhum.asserts.assertEquals(isValid, true);
+      });
+    });
+  });
 });
 
 Rhum.run();
@@ -474,6 +530,15 @@ class NotesResource extends Drash.Http.Resource {
     }
     this.response.body = { note_id: noteId };
     return this.response;
+  }
+}
+
+class InvalidReturningOfResponseResource extends Drash.Http.Resource {
+  static paths = ["/invalid/returning/of/response"];
+  public GET() {
+  }
+  public POST() {
+    return "hello";
   }
 }
 
