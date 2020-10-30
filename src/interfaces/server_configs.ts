@@ -41,14 +41,12 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *
  * middleware?: ServerMiddleware
  *
- *     The middleware that the server should use. Server-level middleware
- *     should be placed in middleware.server_level. Resource-level
- *     middleware should be placed in middleware.resource_level. For
- *     example:
+ *     The middleware that the server will execute during runtime.
  *
  *         middleware: {
- *           resource_level: { ... },
- *           server_level: { ... }
+ *          after_request: []
+ *          before_request: []
+ *          compile_time: []
  *         }
  *
  * pretty_links?: boolean
