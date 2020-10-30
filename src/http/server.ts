@@ -63,8 +63,6 @@ export class Server {
    */
   protected configs: Drash.Interfaces.ServerConfigs;
 
-  protected preprocessors: Array<any> = [];
-
   /**
    * A property to hold the location of this server on the filesystem. This
    * property is used when resolving static paths.
@@ -72,9 +70,19 @@ export class Server {
   protected directory: string | undefined = undefined;
 
   /**
-   * A property to hold middleware.
+   * A property to hold server-level middleware. This includes before request
+   * middleware, after request middleware, compile time middleware, and runtime
+   * middleware.
    */
-  protected middleware: ServerMiddleware = {};
+  protected middleware: ServerMiddleware = {
+    runtime: new Map<
+      number,
+      ((
+        request: Drash.Http.Request,
+        response: Drash.Http.Response,
+      ) => Promise<Drash.Http.Response | boolean>)
+    >(),
+  };
 
   /**
    * A property to hold the resources passed in from the configs.
@@ -91,18 +99,9 @@ export class Server {
    */
   protected static_paths: string[] = [];
 
-  protected p_client_side_typescript: any = {};
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-
-  protected async executeClientSideTypeScriptBundling(preprocessor: any, data: any) {
-    const p = new preprocessor(data.files);
-    const d = await p.run();
-    this.p_client_side_typescript = d;
-  }
 
   /**
    * Construct an object of this class.
@@ -110,18 +109,6 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
-    if (configs.preprocessors) {
-      configs.preprocessors.forEach(async (preprocessorObj: any) => {
-        if (preprocessorObj.preprocessor.name == "ClientSideTypeScript") {
-          await this.executeClientSideTypeScriptBundling(
-            preprocessorObj.preprocessor,
-            preprocessorObj.data
-          );
-        }
-      });
-    }
-
-
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -439,6 +426,17 @@ export class Server {
         template_engine: this.configs.template_engine,
       });
 
+      if (this.middleware.runtime) {
+        const result = await this.executeMiddlewareServerLevelRuntime(
+          request,
+          response,
+        );
+
+        if (result) {
+          return response.sendStatic();
+        }
+      }
+
       // Set the response's Content-Type type header based on the request's URL.
       // For example, if the request's URL is /public/style.css, then the
       // Content-Type header should be set to text/css.
@@ -448,11 +446,6 @@ export class Server {
       );
       if (mimeType) {
         response.headers.set("Content-Type", mimeType);
-      }
-      if (request.url.includes(".ts")) {
-        response.body = this.p_client_side_typescript.output;
-        response.headers.set("Content-Type", "text/javascript");
-        return response.sendStatic();
       }
 
       // Two things are happening here:
@@ -699,18 +692,32 @@ export class Server {
    *
    * @param middleware - The middlewares to be added to the server
    */
-  protected addMiddleware(middlewares: ServerMiddleware): void {
-    // Add server-level middleware
+  protected async addMiddleware(middlewares: ServerMiddleware): Promise<void> {
+    // Add server-level middleware that executes before requests
     if (middlewares.before_request != null) {
       this.middleware.before_request = [];
       for (const middleware of middlewares.before_request) {
         this.middleware.before_request.push(middleware);
       }
     }
+
+    // Add server-level middleware that executes after requests
     if (middlewares.after_request != null) {
       this.middleware.after_request = [];
       for (const middleware of middlewares.after_request) {
         this.middleware.after_request.push(middleware);
+      }
+    }
+
+    // Add compile time level middleware that executes right now--processing
+    // data to be used later during runtime
+    if (middlewares.compile_time) {
+      for (const middleware of middlewares.compile_time) {
+        await middleware.compile_time_method();
+        this.middleware.runtime!.set(
+          this.middleware.runtime!.size,
+          middleware.runtime_method,
+        );
       }
     }
   }
@@ -757,6 +764,42 @@ export class Server {
         await middleware(request, response!);
       }
     }
+  }
+
+  /**
+   * Execute server level runtime middleware. Runtime middleware requires
+   * compile time data. See 
+   *
+   * @param request - The request objecft.
+   * @param response - The response object.
+   *
+   * @returns A Drash response or a boolean. If it returns a boolean, it means
+   * it did or did not process properly (true being it processed; false being it
+   * did not process).
+   */
+  protected async executeMiddlewareServerLevelRuntime(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<Drash.Http.Response | boolean> {
+    let result: Drash.Http.Response | boolean = false;
+
+    // Yes... we await this shit. Don't worry about TS notifications here about
+    // await not having an effect on this code
+    await this.middleware.runtime!.forEach(
+      async (
+        runtimeMethod: (
+          request: Drash.Http.Request,
+          response: Drash.Http.Response,
+        ) => Promise<Drash.Http.Response | boolean>,
+      ) => {
+        if (!result) {
+          result = await runtimeMethod(request, response);
+        }
+      },
+    );
+
+
+    return result;
   }
 
   /**

@@ -33,10 +33,36 @@ import type { Drash } from "../../mod.ts";
  * ```
  */
 export interface ServerMiddleware {
+  // Middleware to execute during compile time. The data that's compiled during
+  // compile time will be able to be used during runtime.
+  compile_time?: Array<
+    {
+      runtime_method: (
+        request: Drash.Http.Request,
+        response: Drash.Http.Response,
+      ) => Promise<Drash.Http.Response | boolean>;
+      compile_time_method: () => void;
+    }
+  >;
+
+  // Middleware to execute during runtime based on compiled data from compile
+  // time level middleware
+  runtime?: Map<
+    number,
+    ((
+      request: Drash.Http.Request,
+      response: Drash.Http.Response,
+    ) => Promise<Drash.Http.Response | boolean>)
+  >;
+
+  // Middleware executed before a request is made. That is, before a resource's
+  // HTTP method is called.
   before_request?: Array<
     | ((request: Drash.Http.Request) => Promise<void>)
     | ((request: Drash.Http.Request) => void)
   >;
+
+  // Middleware executed after requests, but before responses are sent
   after_request?: Array<
     | ((
       request: Drash.Http.Request,
