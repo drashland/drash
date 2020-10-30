@@ -14,10 +14,11 @@ interface ICompiledFile {
   contents: string;
 }
 
-export function ServeTs(options: IOptions) {
+export function ServeTypesScript(options: IOptions) {
+
   if (!options.files) {
     throw new Error(
-      "ServeTs middleware requires an array of files to compile.",
+      "ServeTypesScript requires an array of files to compile.",
     );
   }
 
@@ -30,12 +31,12 @@ export function ServeTs(options: IOptions) {
     for (const index in options.files) {
       const file = options.files[index];
 
-      const [diagnostics, emitMap] = await Deno.compile(
-        file.source,
-      );
-
-      if (emitMap) {
+      try {
+        const [diagnostics, emitMap] = await Deno.compile(
+          file.source,
+        );
         for (const filename in emitMap) {
+          // Exclude source maps from the during compilation
           if (filename.includes(".map")) {
             continue;
           }
@@ -47,6 +48,9 @@ export function ServeTs(options: IOptions) {
             },
           );
         }
+      } catch (error) {
+        console.log(error);
+        continue;
       }
     }
   }
@@ -70,11 +74,11 @@ export function ServeTs(options: IOptions) {
 
     response.headers.set("Content-Type", "text/javascript");
 
-    compiledFiles.forEach((file: ICompiledFile, key: string) => {
-      if (response.body === "" && key.includes(request.url)) {
-        response.body = file.contents;
-      }
-    });
+    const target = request.url.split("?")[0];
+    const file = compiledFiles.get(target);
+    if (file) {
+      response.body = file.contents;
+    }
 
     return response;
   }
