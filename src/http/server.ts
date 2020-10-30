@@ -449,14 +449,10 @@ export class Server {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
 
       const response = this.getResponse(request);
-
-      // Set the response's Content-Type type header based on the request's URL.
-      // For example, if the request's URL is /public/style.css, then the
-      // Content-Type header should be set to text/css.
-      const mimeType = this.http_service.getMimeType(request.url, true);
-      if (mimeType) {
-        response.headers.set("Content-Type", mimeType);
-      }
+      response.headers.set(
+        "Content-Type",
+        this.http_service.getMimeType(request.url, true) || "text/plain"
+      );
 
       // Two things are happening here:
       // 1. If pretty_links is not enabled, then serve what was requested; or
@@ -475,17 +471,21 @@ export class Server {
       // /hello/index.html exists by trying to read /hello/index.html.
       response.headers.set("Content-Type", "text/html");
       const path = `${this.directory}${request.url}`;
-      let contents = Deno.readFileSync(
+      const indexHtmlFile = Deno.readFileSync(
         `${path}/index.html`,
       );
       // If an index.html file does not exist, then maybe the client is trying
       // to request a different HTML file, so let's try reading the requested
       // URL instead.
-      if (!contents) {
-        contents = Deno.readFileSync(path);
+      if (!indexHtmlFile) {
+        const contents = Deno.readFileSync(path);
+        if (contents) {
+          response.body = contents;
+        }
       }
-      response.body = contents;
+
       await this.executeMiddlewareServerLevelAfterRequest(request, response);
+
       return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
@@ -510,15 +510,10 @@ export class Server {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
 
       const response = this.getResponse(request);
-
-      // Set the response's Content-Type type header based on the request's URL.
-      // For example, if the request's URL is /public/style.css, then the
-      // Content-Type header should be set to text/css.
-      const mimeType = this.http_service.getMimeType(request.url, true);
-
-      if (mimeType) {
-        response.headers.set("Content-Type", mimeType);
-      }
+      response.headers.set(
+        "Content-Type",
+        this.http_service.getMimeType(request.url, true) || "text/plain"
+      );
 
       const virtualPath = request.url.split("/")[1];
       const physicalPath = this.virtual_paths.get("/" + virtualPath);
