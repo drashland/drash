@@ -449,6 +449,44 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assert(!server.deno_server);
     });
   });
+
+  Rhum.testSuite("isValidResponse()", () => {
+    Rhum.testCase("Should check that the response object is valid", () => {
+      const server = new Drash.Http.Server({})
+      const isValidResponse = Reflect.get(server, "isValidResponse")
+      //Simulate user not returning properly inside their resource method
+      const possiblesInvalidResponse = [
+          "hello",
+          true,
+          1,
+        { name: "Ed"},
+          ["hello"],
+          null,
+          undefined
+      ]
+      possiblesInvalidResponse.forEach(invalidRes => {
+        const isValid = isValidResponse(invalidRes)
+        Rhum.asserts.assertEquals(isValid, false)
+      })
+      const responseOutput: Drash.Interfaces.ResponseOutput = {
+        body: new Uint8Array(1),
+        headers: new Headers(),
+        status: 69420,
+        status_code: 418,
+        send: undefined
+      };
+      const request = new  Drash.Http.Request(members.mockRequest('/hello'))
+      const response: Drash.Http.Response = new Drash.Http.Response(request, {})
+      const validResponses = [
+          responseOutput,
+          response
+      ]
+      validResponses.forEach(validRes => {
+        const isValid = isValidResponse(validRes)
+        Rhum.asserts.assertEquals(isValid, true)
+      })
+    })
+  })
 });
 
 Rhum.run();

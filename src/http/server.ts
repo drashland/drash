@@ -21,18 +21,6 @@ interface IRequestOptions {
 }
 
 /**
- * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
- */
-// @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface anyway
-function responseIsOfTypeResponseOutput(response: any): boolean {
-  if (typeof response === "object" && Array.isArray(response) === false) {
-    return "status" in response && "headers" in response &&
-      "body" in response && "send" in response && "status_code" in response;
-  }
-  return false;
-}
-
-/**
  * Server handles the entire request-resource-response lifecycle. It is in
  * charge of handling HTTP requests to resources, static paths, sending
  * appropriate responses, and handling errors that bubble up within the
@@ -269,12 +257,11 @@ export class Server {
       if (typeof resource[request.method.toUpperCase()] !== "function") {
         throw new Drash.Exceptions.HttpException(405);
       }
-      response = await resource[request.method.toUpperCase()](); // response can  be literally anything, it's down to the user what they return from the method
+      // response can  be literally anything, it's down to the user what they return from the method
+      response = await resource[request.method.toUpperCase()]();
 
       // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
-      const isValidResponse =
-        response instanceof Drash.Http.Response === true ||
-        responseIsOfTypeResponseOutput(response) === true;
+      const isValidResponse = this.isValidResponse(response)
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
           418,
@@ -842,5 +829,27 @@ export class Server {
    */
   protected logDebug(message: string): void {
     this.logger.debug("[syslog] " + message);
+  }
+
+
+  /**
+   * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
+   * or Drash.Http.Response.
+   *
+   * @return If the response returned from a method is what the returned value should be
+   */
+  // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface or response anyway
+  protected isValidResponse (response: any) {
+    // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
+    function responseIsOfTypeResponseOutput(response: any): boolean {
+      if (typeof response === "object" && Array.isArray(response) === false && response !== null) {
+        return "status" in response && "headers" in response &&
+            "body" in response && "send" in response && "status_code" in response;
+      }
+      return false;
+    }
+    const valid = response instanceof Drash.Http.Response ||
+    responseIsOfTypeResponseOutput(response) === true;
+    return valid
   }
 }
