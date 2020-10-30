@@ -44,9 +44,9 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *     The middleware that the server will execute during runtime.
  *
  *         middleware: {
- *          after_request: []
- *          before_request: []
- *          compile_time: []
+ *           after_request: []
+ *           before_request: []
+ *           compile_time: []
  *         }
  *
  * pretty_links?: boolean
