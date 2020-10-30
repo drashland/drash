@@ -456,25 +456,25 @@ function getAllBodyParamsTests() {
   );
 }
 
-function getAllPathParamsTests() {
-  Rhum.testCase(
-    "Returns all of the path parameters",
-    async () => {
-      const serverRequest = members.mockRequest();
-      const request = new Drash.Http.Request(serverRequest);
-      await request.parseBody();
-      request.path_params = {
-        hello: "world",
-        goodbye: "world",
-      };
-      //const actual = request.getAllPathParams();
-      // Rhum.asserts.assertEquals(actual, {
-      //   hello: "world",
-      //   goodbye: "world"
-      // });
-    },
-  );
-}
+// function getAllPathParamsTests() {
+//   Rhum.testCase(
+//     "Returns all of the path parameters",
+//     async () => {
+//       const serverRequest = members.mockRequest();
+//       const request = new Drash.Http.Request(serverRequest);
+//       await request.parseBody();
+//       request.path_params = {
+//         hello: "world",
+//         goodbye: "world",
+//       };
+//       const actual = request.getAllPathParams();
+//       Rhum.asserts.assertEquals(actual, {
+//         hello: "world",
+//         goodbye: "world"
+//       });
+//     },
+//   );
+// }
 
 function getHeaderParamTests() {
   Rhum.testCase(
