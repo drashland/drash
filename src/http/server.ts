@@ -471,18 +471,16 @@ export class Server {
       // /hello/index.html exists by trying to read /hello/index.html.
       response.headers.set("Content-Type", "text/html");
       const path = `${this.directory}${request.url}`;
-      const indexHtmlFile = Deno.readFileSync(
+      let contents = Deno.readFileSync(
         `${path}/index.html`,
       );
       // If an index.html file does not exist, then maybe the client is trying
       // to request a different HTML file, so let's try reading the requested
       // URL instead.
-      if (!indexHtmlFile) {
-        const contents = Deno.readFileSync(path);
-        if (contents) {
-          response.body = contents;
-        }
+      if (!contents) {
+        contents = Deno.readFileSync(path);
       }
+      response.body = contents;
 
       await this.executeMiddlewareServerLevelAfterRequest(request, response);
 
