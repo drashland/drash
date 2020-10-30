@@ -18,3 +18,15 @@ jobs:
      - name: Send Event to Website to Update Versions
        run: |
          curl -XPOST -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/drashland/website/dispatches --data '{"event_type": "update_docs", "client_payload": { "module_to_update": "drash", "version": "${{ github.event.release.tag_name }}" }}'
+
+  send-reddit-post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: bluwy/release-for-reddit-action@v1
+        with:
+          username: ${{ secrets.REDDIT_USERNAME }}
+          password: ${{ secrets.REDDIT_PASSWORD }}
+          app-id: ${{ secrets.REDDIT_APP_ID }}
+          app-secret: ${{ secrets.REDDIT_APP_SECRET }}
+          subreddit: deno
+          comment: ${{ github.event.release.body }}
