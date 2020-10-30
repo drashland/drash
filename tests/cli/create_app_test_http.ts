@@ -12,33 +12,22 @@ let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
-let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
+const githubOwner = Deno.env.get("GITHUB_ACTOR");
 
-if (!latestBranch) {
-  latestBranch = "master";
-}
+// supports forks
+let drashUrl = "https://raw.githubusercontent.com/" + githubOwner +
+  `/deno-drash/${latestBranch}`; // https://raw.githubusercontent.com/<NAME>/deno-drash/<branch>
 
-if (!githubRepo) {
-  githubRepo = "drashland/deno-land";
-}
-
-const drashUrl = "https://raw.githubusercontent.com/" + githubRepo +
-  `/${latestBranch}`;
-
-function getOsCwd() {
-  let cwd = `//${originalCWD}/console/create_app`;
-  if (Deno.build.os === "windows") {
-    cwd = `${originalCWD}\console\create_app`;
+// if fork doesnt exist, use drashland repo
+try {
+  const res = await fetch(drashUrl + "/create_app.ts");
+  await res.text();
+  if (res.status !== 200) {
+    drashUrl =
+      `https://raw.githubusercontent.com/drashland/deno-drash/${latestBranch}`;
   }
-  return cwd;
-}
-
-function getOsTmpDirName() {
-  let tmp = `${originalCWD}/${tmpDirName}`;
-  if (Deno.build.os === "windows") {
-    tmp = `${originalCWD}\${tmpDirName}`;
-  }
-  return tmp;
+} catch (err) {
+  // do nothing
 }
 
 /**
