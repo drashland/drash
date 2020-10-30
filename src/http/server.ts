@@ -451,7 +451,7 @@ export class Server {
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
-        this.http_service.getMimeType(request.url, true) || "text/plain"
+        this.http_service.getMimeType(request.url, true) || "text/plain",
       );
 
       // Two things are happening here:
@@ -512,7 +512,7 @@ export class Server {
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
-        this.http_service.getMimeType(request.url, true) || "text/plain"
+        this.http_service.getMimeType(request.url, true) || "text/plain",
       );
 
       const virtualPath = request.url.split("/")[1];
