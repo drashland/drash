@@ -482,9 +482,26 @@ export class Server {
       // requested asset. Since this occurs after the MIME code above, the
       // client should receive a proper response in the proper format.
       if (!this.configs.pretty_links || request.url.split(".")[1]) {
-        response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
-        await this.executeMiddlewareServerLevelAfterRequest(request, response);
-        return response.sendStatic();
+        try {
+          // Try to reaed the file if it exists
+          response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
+          await this.executeMiddlewareServerLevelAfterRequest(request, response);
+        } catch (error) {
+          // If the file doesn't exist, run the middleware just in case
+          // ServeTypeScript is being used. If it's being used, then the
+          // middleware will return a response body.
+          await this.executeMiddlewareServerLevelAfterRequest(request, response);
+        }
+        // If there's a response body, then we know the middleware created a
+        // response body and we can send the response
+        if (response.body) {
+          return response.sendStatic();
+        }
+
+        // Otherwise, throw a normal error. We don't really care about the error
+        // type or error message because the catch block below will handle all
+        // of that  -- returning a 404 Not Found error.
+        throw new Error();
       }
 
       // If pretty links are enabled (that is, the code above was not executed),
