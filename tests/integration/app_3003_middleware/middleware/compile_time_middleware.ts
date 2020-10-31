@@ -11,12 +11,12 @@ export default function CompileTimeMiddleware() {
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<void> {
-      if (request.url == "/hello") {
-        response.body = compiledStuff[0];
-      }
+    if (request.url == "/hello") {
+      response.body = compiledStuff[0];
+    }
   }
   return {
     compile,
     run,
-  }
+  };
 }

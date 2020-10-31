@@ -23,7 +23,9 @@ Rhum.testPlan("compile_time_middleware_resource_test.ts", () => {
       await runServer(server, { port: 3003 });
       let response;
 
-      response = await members.fetch.get("http://localhost:3003/compile-time-middleware");
+      response = await members.fetch.get(
+        "http://localhost:3003/compile-time-middleware",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"WE OUT HERE"',
