@@ -11,12 +11,23 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
+const isAFork = !!Deno.env.get("GITHUB_HEAD_REF");
+let theBranch = "";
+if (isAFork) {
+  theBranch = Deno.env.get("GITHUB_HEAD_REF")
+} else {
+  const splitRef = Deno.env.get("GITHUB_REF").split("/")
+  theBranch = splitRef[splitRef.length - 1]
+}
 const githubOwner = Deno.env.get("GITHUB_ACTOR");
+const repository = "deno-drash";
+console.log("IS A FORK: " + isAFork)
+console.log("THE BRANCH OT TEST: " + theBranch)
+console.log("GITHUB OWNER: " + githubOwner)
 
 // supports forks
 let drashUrl = "https://raw.githubusercontent.com/" + githubOwner +
-  `/deno-drash/${latestBranch}`; // https://raw.githubusercontent.com/<NAME>/deno-drash/<branch>
+  `/deno-drash/${theBranch}`; // https://raw.githubusercontent.com/<NAME>/deno-drash/<branch>
 
 // if fork doesnt exist, use drashland repo
 try {
@@ -24,7 +35,7 @@ try {
   await res.text();
   if (res.status !== 200) {
     drashUrl =
-      `https://raw.githubusercontent.com/drashland/deno-drash/${latestBranch}`;
+      `https://raw.githubusercontent.com/drashland/deno-drash/${theBranch}`;
   }
 } catch (err) {
   // do nothing
