@@ -76,12 +76,13 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
       files: [
         {
           source: "./ts/my_ts_file.ts",
-          target "/assets/my_compiled_ts_file.ts",
+          target: "/assets/my_compiled_ts_file.ts",
         }
       ]
     });
-
+    
     const server = new Drash.Http.Server({
+      directory: ".",
       response_output: "text/html",
       resources: [
         HomeResource,
@@ -90,14 +91,17 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
         compile_time: [
           serveTs
         ]
-      }
+      },
+      static_paths: [
+        "/assets"
+      ]
     });
-
+    
     server.run({
       hostname: "localhost",
       port: 1447,
     });
-
+    
     console.log(`Server running at ${server.hostname}:${server.port}`);
     ```
 
@@ -131,11 +135,13 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
 3. Create your `my_ts_file.ts`.
 
     ```typescript
-    function greet(name: string): void {
-        document.getElementById("container").innerHTML = "Hello, " + name;
+    function greet(name: string): string {
+      return "Hello, " + name + "!";
     }
     
-    greet();
+    const result = greet("TypeScript user");
+    
+    document.getElementById("container").innerHTML = result;
     ```
     
 #### Verification
@@ -150,3 +156,19 @@ deno run --allow-net --unstable app.ts
 
 You should see the following response:
 
+```
+Hello, TypeScript user!
+```
+
+3. Check out the Network tab in the browser's inspector. You should see the following when you check the Response tab for the `my_compiled_ts_file.ts` file.
+
+```javascript
+"use strict";
+function greet(name) {
+    return "Hello, " + name + "!";
+}
+const result = greet("TypeScript user");
+document.getElementById("container").innerHTML = result;
+```
+
+Notice that the TypeScript typings are now gone.
