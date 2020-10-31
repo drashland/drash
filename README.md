@@ -33,11 +33,11 @@ This repository contains Drash-approved middleware modules that you can use in y
 
 * [CSRF](./csrf) - Projection middleware. Inspired by [expressjs/csurf](http://expressjs.com/en/resources/middleware/csurf.html).
 
-* [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
+* [Dexter](./dexter) - A logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
 
-* [Paladin](./paladin) - Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
+* [Paladin](./paladin) - Secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
 
-* [ServeTypeScript](./serve_typescript) - ServeTypeScript allows you to write front-end TypeScript and serve it as compiled JavaScript.
+* [ServeTypeScript](./serve_typescript) - Write front-end TypeScript and serve it as compiled JavaScript.
 
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
