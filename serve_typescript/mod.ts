@@ -1,4 +1,4 @@
-import type { Drash } from "../../deno-drash/mod.ts";
+import type { Drash } from "../deps.ts";
 
 interface IFile {
   source: string;
