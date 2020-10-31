@@ -700,7 +700,7 @@ export class Server {
             // global, and accounts for there being a required parameter before
             tmpPath = tmpPath.replace(
               /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
-              "/?([a-zA-Z0-9]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
+              "/?([^/]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
             );
           } else { // We can now create the replace regex for the rest taking into consideration the above replace regex
             tmpPath = tmpPath.replace(
