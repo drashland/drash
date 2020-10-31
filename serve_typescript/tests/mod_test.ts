@@ -6,14 +6,14 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
     Rhum.testCase("requires files", async () => {
       Rhum.asserts.assertThrows(() => {
         const serveTs = ServeTypeScript({
-          files: []
+          files: [],
         });
       });
     });
     Rhum.testCase("compiles TypeScript to JavaScript", async () => {
       Rhum.asserts.assertThrows(() => {
         const serveTs = ServeTypeScript({
-          files: []
+          files: [],
         });
       });
     });
