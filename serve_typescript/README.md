@@ -10,6 +10,9 @@ _Note: Since this middleware uses `Deno.compile()`, it can only be used with Den
 * [Configuration](#configuration)
 * [Tutorials](#tutorials)
     * [Writing Front-end TypeScript](#writing-front-end-typescript)
+        * [Folder Structure End State](#folder-structure-end-state)
+        * [Steps](#steps)
+        * [Verification](#verification)
 
 ## Usage
 
