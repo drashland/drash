@@ -23,8 +23,10 @@ if (isAFork) {
 const githubOwner = Deno.env.get("GITHUB_ACTOR");
 const repository = "deno-drash";
 console.log("IS A FORK: " + isAFork)
+console.log("GITHUB HEAD REF: " + Deno.env.get("GITHUB_HEAD_REF"))
 console.log("THE BRANCH OT TEST: " + theBranch)
 console.log("GITHUB OWNER: " + githubOwner)
+console.log("GITHUB REPO: " + Deno.eenv.get("GITHUB_REPOSITORY"))
 
 // supports forks
 let drashUrl = "https://raw.githubusercontent.com/" + githubOwner +
