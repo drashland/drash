@@ -152,27 +152,27 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
 
 1. Run your `app.ts` file.
 
-```
-deno run --allow-net --allow-read --unstable app.ts
-```
+    ```
+    deno run --allow-net --allow-read --unstable app.ts
+    ```
 
 2. Navigate to `localhost:1447` in your browser.
 
 You should see the following response:
 
-```
-Hello, TypeScript user!
-```
+    ```
+    Hello, TypeScript user!
+    ```
 
 3. Check out the Network tab in the browser's inspector. You should see the following when you check the Response tab for the `my_compiled_ts_file.ts` file.
 
-```javascript
-"use strict";
-function greet(name) {
-    return "Hello, " + name + "!";
-}
-const result = greet("TypeScript user");
-document.getElementById("container").innerHTML = result;
-```
+    ```javascript
+    "use strict";
+    function greet(name) {
+        return "Hello, " + name + "!";
+    }
+    const result = greet("TypeScript user");
+    document.getElementById("container").innerHTML = result;
+    ```
 
-Notice that the TypeScript typings are now gone.
+    Notice that the TypeScript typings are now gone.
