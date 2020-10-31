@@ -14,10 +14,11 @@ const decoder = new TextDecoder("utf-8");
 const isAFork = !!Deno.env.get("GITHUB_HEAD_REF");
 let theBranch = "";
 if (isAFork) {
-  theBranch = Deno.env.get("GITHUB_HEAD_REF")
+  theBranch = Deno.env.get("GITHUB_HEAD_REF") || ""
 } else {
-  const splitRef = Deno.env.get("GITHUB_REF").split("/")
-  theBranch = splitRef[splitRef.length - 1]
+  const ref = (Deno.env.get("GITHUB_REF") as string);
+  const splitRef = ref.split("/");
+  theBranch = splitRef[splitRef.length - 1] || ""
 }
 const githubOwner = Deno.env.get("GITHUB_ACTOR");
 const repository = "deno-drash";
