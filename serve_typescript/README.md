@@ -8,11 +8,10 @@ _Note: Since this middleware uses `Deno.compile()`, it can only be used with Den
 
 * [Usage](#usage)
 * [Configuration](#configuration)
-* [Tutorials](#tutorials)
-    * [Writing Front-end TypeScript](#writing-front-end-typescript)
-        * [Folder Structure End State](#folder-structure-end-state)
-        * [Steps](#steps)
-        * [Verification](#verification)
+* [Tutorial: Writing Front-end TypeScript](#tutorial-writing-front-end-typescript)
+    * [Folder Structure End State](#folder-structure-end-state)
+    * [Steps](#steps)
+    * [Verification](#verification)
 
 ## Usage
 
@@ -50,13 +49,11 @@ const serveTs = ServeTypeScript({
 
 The `source` is the filepath to the actual TypeScript file. The `target` is the URI that the file is accessible at. For example, if you want to serve your TypeScript file at the `/ts/my_ts.ts` URI, then define `target` as `/ts/my_ts.ts`. When a request is made to `http://yourserver.com/ts/my_ts.ts`, your compiled TypeScript will be returned as the response.
 
-## Tutorials
-
-### Writing Front-end TypeScript
+## Tutorial: Writing Front-end TypeScript
 
 This tutorial teaches you how to write front-end TypeScript, which gets compiled into JavaScript during server creation (compile time).
 
-#### Folder Structure End State
+### Folder Structure End State
 
 ```
 ▾ /path/to/your/project/
@@ -66,7 +63,7 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
     home_resource.ts
 ```
 
-#### Steps
+### Steps
 
 1. Create your `app.ts` file.
 
@@ -148,7 +145,7 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
     document.getElementById("container").innerHTML = result;
     ```
     
-#### Verification
+### Verification
 
 1. Run your `app.ts` file.
 
