@@ -1,16 +1,6 @@
 import { Drash } from "../../deps.ts";
-import { Rhum, ServerRequest } from "../../test_deps.ts";
+import { Rhum, mockRequest } from "../../test_deps.ts";
 import { ServeTypeScript } from "../mod.ts";
-
-// deno-lint-ignore no-explicit-any
-function mockRequest(url = "/", method = "get"): any {
-  // deno-lint-ignore no-explicit-any
-  let request: any = new ServerRequest();
-  request.url = url;
-  request.method = method;
-  request.headers = new Headers();
-  return request;
-}
 
 Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
   Rhum.testSuite("ServeTypeScript", () => {
