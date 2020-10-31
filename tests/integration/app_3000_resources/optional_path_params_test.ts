@@ -162,20 +162,23 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/:city/:other", () => {
-    Rhum.testCase("Resource should NOT handle request", async () => {
-      await runServer(server);
+  Rhum.testSuite(
+    "/oppWithoutRequired/:name/:age_of_person/:city/:other",
+    () => {
+      Rhum.testCase("Resource should NOT handle request", async () => {
+        await runServer(server);
 
-      const response = await members.fetch.get(
-        "http://localhost:3000/oppWithoutRequired/edward/999/UK/other",
-      );
-      Rhum.asserts.assertEquals(
-        await response.text(),
-        '"Not Found"',
-      );
-      await server.close();
-    });
-  });
+        const response = await members.fetch.get(
+          "http://localhost:3000/oppWithoutRequired/edward/999/UK/other",
+        );
+        Rhum.asserts.assertEquals(
+          await response.text(),
+          '"Not Found"',
+        );
+        await server.close();
+      });
+    },
+  );
   Rhum.testSuite("/oppWithoutRequired/:name/", () => {
     Rhum.testCase(
       "Resource should handle request",
