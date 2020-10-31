@@ -909,8 +909,6 @@ export class Server {
   ): Promise<Drash.Http.Response | boolean> {
     let result: Drash.Http.Response | boolean = false;
 
-    // Yes... we await this shit. Don't worry about TS notifications here about
-    // await not having an effect on this code
     this.middleware.runtime!.forEach(
       async (
         run: (
