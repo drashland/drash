@@ -85,7 +85,7 @@ export class Server {
       ((
         request: Drash.Http.Request,
         response: Drash.Http.Response,
-      ) => Promise<Drash.Http.Response | boolean>)
+      ) => Promise<void>)
     >(),
   };
 
@@ -312,7 +312,7 @@ export class Server {
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
           418,
-          "The response must be returned inside the " +
+          "The response must be returned inside the " + resource.name + "." +
             request.method.toUpperCase() + " method of the resource",
         );
       }
@@ -906,23 +906,22 @@ export class Server {
   protected async executeMiddlewareServerLevelRuntimeAfterRequest(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
-  ): Promise<Drash.Http.Response | boolean> {
-    let result: Drash.Http.Response | boolean = false;
+  ): Promise<void> {
+    let processed: boolean = false;
 
     this.middleware.runtime!.forEach(
       async (
         run: (
           request: Drash.Http.Request,
           response: Drash.Http.Response,
-        ) => Promise<Drash.Http.Response | boolean>,
+        ) => Promise<void>,
       ) => {
-        if (!result) {
-          result = await run(request, response);
+        if (!processed) {
+          await run(request, response);
+          processed = true;
         }
       },
     );
-
-    return result;
   }
 
   /**

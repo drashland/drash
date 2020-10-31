@@ -44,7 +44,7 @@ export interface ServerMiddleware {
       run: ((
         request: Drash.Http.Request,
         response: Drash.Http.Response,
-      ) => Promise<Drash.Http.Response | boolean>);
+      ) => Promise<void>);
     }
   >;
 
@@ -55,7 +55,7 @@ export interface ServerMiddleware {
     ((
       request: Drash.Http.Request,
       response: Drash.Http.Response,
-    ) => Promise<Drash.Http.Response | boolean>)
+    ) => Promise<void>)
   >;
 
   // Middleware executed before a request is made. That is, before a resource's
