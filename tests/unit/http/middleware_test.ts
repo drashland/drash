@@ -4,6 +4,23 @@ import { Drash } from "../../../mod.ts";
 
 Rhum.testPlan("http/middleware_test.ts", () => {
   Rhum.testSuite("http/middleware_test.ts", () => {
+    Rhum.testCase("compile_time", async () => {
+      let server = new Drash.Http.Server({
+        directory: ".",
+        middleware: {
+          compile_time: [
+            CompileTimeMiddleware()
+          ],
+        },
+      });
+      const request = members.mockRequest("/hello");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "WE OUT HERE",
+      );
+    });
+
     Rhum.testCase("before_request: missing CSRF token", async () => {
       const server = new Drash.Http.Server({
         middleware: {
@@ -264,5 +281,26 @@ function AfterRequestStaticPathAsset(
 ) {
   if (res) {
     res.body = "this static path asset's contents got changed";
+  }
+}
+
+function CompileTimeMiddleware() {
+  const compiledStuff: string[] = [];
+
+  async function compile(): Promise<void> {
+    compiledStuff.push("WE OUT HERE");
+  }
+
+  async function run(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+      if (request.url == "/hello") {
+        response.body = compiledStuff[0];
+      }
+  }
+  return {
+    compile,
+    run,
   }
 }
