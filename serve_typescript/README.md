@@ -4,9 +4,16 @@ ServeTypeScript is a compile time middleware that allows you to write front-end 
 
 _Note: Since this middleware uses `Deno.compile()`, it can only be used with Deno's `--unstable` flag (e.g., `deno run --unstable app.ts`)._
 
-```typescript
-import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
+## Table of Contents
 
+* [Usage](#usage)
+* [Configuration](#configuration)
+* [Tutorials](#tutorials)
+    * [Writing Front-end TypeScript](#writing-front-end-typescript)
+
+## Usage
+
+```typescript
 // Import the ServeTypeScript middleware function
 import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/serve_typescript/mod.ts";
 
@@ -19,26 +26,6 @@ const serveTs = ServeTypeScript({
     },
   ],
 });
-
-// Create your server and plug in ServeTypeScript to the middleware config
-const server = new Drash.Http.Server({
-  resources: [
-    HomeResource,
-  ],
-  middleware: {
-    compile_time: [
-      serveTs
-    ]
-  }
-});
-
-// Run your server
-server.run({
-  hostname: "localhost",
-  port: 1447,
-});
-
-console.log(`Server running at ${server.hostname}:${server.port}`);
 ```
 
 ## Configuration
@@ -62,9 +49,9 @@ The `source` is the filepath to the actual TypeScript file. The `target` is the 
 
 ## Tutorials
 
-### Writing front-end TypeScript and serving it as JavaScript
+### Writing Front-end TypeScript
 
-If you want to write front-end TypeScript and serve it as compiled JavaScript, then follow the steps below.
+This tutorial teaches you how to write front-end TypeScript, which gets compiled into JavaScript during server creation (compile time).
 
 #### Folder Structure End State
 
