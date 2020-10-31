@@ -65,16 +65,13 @@ export function ServeTypeScript(options: IOptions) {
    *
    * @param request - The request object.
    * @param response - The response object.
-   *
-   * @returns A Drash response or boolean. If a boolean is returned, then true
-   * means it processed properly and false means it did not.
    */
   async function run(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
-  ): Promise<Drash.Http.Response | boolean> {
+  ): Promise<void> {
     if (!request.url.includes(".ts")) {
-      return false;
+      return;
     }
 
     response.headers.set("Content-Type", "text/javascript");
@@ -84,8 +81,6 @@ export function ServeTypeScript(options: IOptions) {
     if (contents) {
       response.body = contents;
     }
-
-    return response;
   }
 
   return {
