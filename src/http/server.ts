@@ -312,7 +312,7 @@ export class Server {
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
           418,
-          "The response must be returned inside the " + resource.name + "." +
+          "The response must be returned inside the " + resource.constructor.name + "." +
             request.method.toUpperCase() + " method of the resource",
         );
       }
