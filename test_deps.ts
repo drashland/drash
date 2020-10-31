@@ -10,4 +10,4 @@ export const mockRequest = (url = "/", method = "get"): any => {
   request.method = method;
   request.headers = new Headers();
   return request;
-}
+};
