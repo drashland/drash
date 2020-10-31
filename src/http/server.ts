@@ -82,10 +82,7 @@ export class Server {
   protected middleware: ServerMiddleware = {
     runtime: new Map<
       number,
-      | ((
-        request: Drash.Http.Request,
-      ) => Promise<Drash.Http.Response | boolean>)
-      | ((
+      ((
         request: Drash.Http.Request,
         response: Drash.Http.Response,
       ) => Promise<Drash.Http.Response | boolean>)
