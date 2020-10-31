@@ -9,10 +9,7 @@ Rhum.testPlan("mod_test.ts", () => {
         level: "debug",
       });
       Drash.addLogger("TestLogger", testLogger);
-      let expected = {
-        "TestLogger": testLogger,
-      };
-      Rhum.asserts.assertEquals(Drash.Loggers, expected);
+      Rhum.asserts.assertEquals(Drash.Loggers.TestLogger, testLogger);
     });
 
     Rhum.testCase("names must be unique", () => {
