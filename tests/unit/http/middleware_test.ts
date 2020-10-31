@@ -38,7 +38,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       );
     });
 
-    Rhum.testCase("before_response: missing header", async () => {
+    Rhum.testCase("after_request: missing header", async () => {
       const server = new Drash.Http.Server({
         middleware: {
           after_request: [AfterRequest],
