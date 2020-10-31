@@ -103,7 +103,7 @@ export interface ServerConfigs {
   pretty_links?: boolean;
   resources?: Drash.Interfaces.Resource[];
   response_output?: string;
-  static_paths?: string[];
+  static_paths?: string[] | { [key: string]: string };
   views_path?: string;
   template_engine?: boolean;
 }

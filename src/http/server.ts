@@ -70,6 +70,11 @@ export class Server {
   protected directory: string | undefined = undefined;
 
   /**
+   * An instance of the HttpService.
+   */
+  protected http_service: Drash.Services.HttpService;
+
+  /**
    * A property to hold server-level middleware. This includes before request
    * middleware, after request middleware, compile time middleware, and runtime
    * middleware.
@@ -99,8 +104,21 @@ export class Server {
    * and the resource the HTTP request is trying to get is found, then
    * Drash.Http.Response will use its sendStatic() method to send the
    * static asset back to the client.
+   *
+   * TODO(crookse) Change this to a Map.
    */
-  protected static_paths: string[] = [];
+  protected static_paths: string[] | { [key: string]: string } = [];
+
+  /**
+   * This server's list of static paths as virtual paths. Virtual paths allow
+   * users to map a path that does not exist to a physical path on their
+   * filesystem. This is helpful when you want to structure your application's
+   * filesystem in a way that separates sever- and client-side code. Instead of
+   * giving end users access to your entire filesystem, you can give them access
+   * to specific directories by using virtual paths. Also, see
+   * `this.static_paths` for more information.
+   */
+  protected virtual_paths: Map<string, string> = new Map<string, string>();
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -112,6 +130,15 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
+    // Set up this server's services
+    this.http_service = new Drash.Services.HttpService();
+
+    // Set up this server's default configurations
+    if (!configs.memory_allocation) {
+      configs.memory_allocation = {};
+    }
+
+    // Set up this server's logger
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -120,12 +147,16 @@ export class Server {
       this.logger = configs.logger;
     }
 
+    // Make configs global to this class as a convenience to other data members
+    // in this class
     this.configs = configs;
 
+    // Set up this server's server-level middleware
     if (configs.middleware) {
       this.addMiddleware(configs.middleware);
     }
 
+    // Set up this server's resources
     if (configs.resources) {
       configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
         this.addHttpResource(resourceClass);
@@ -133,19 +164,20 @@ export class Server {
       delete this.configs.resources;
     }
 
-    if (!configs.memory_allocation) {
-      configs.memory_allocation = {};
-    }
-
+    // Set up this server's static paths and virtual paths
     if (configs.static_paths) {
+      if (!configs.directory) {
+        throw new Drash.Exceptions.ConfigsException(
+          `Static paths are being used, but a directory config was not specified`,
+        );
+      }
       this.directory = configs.directory; // blow up if this doesn't exist
-      configs.static_paths.forEach((path: string) => {
-        this.addStaticPath(path);
-      });
+      this.addStaticPaths(configs.static_paths);
     }
 
+    // Set up this server's template engine
     if (configs.template_engine && !configs.views_path) {
-      throw new Error(
+      throw new Drash.Exceptions.ConfigsException(
         "Property missing. The views_path must be defined if template_engine is true",
       );
     }
@@ -196,6 +228,11 @@ export class Server {
     // Handle a request to a static path
     if (this.requestTargetsStaticPath(serverRequest)) {
       return await this.handleHttpRequestForStaticPathAsset(serverRequest);
+    }
+
+    // Handle a request to a virtual path
+    if (this.requestTargetsVirtualPath(serverRequest)) {
+      return await this.handleHttpRequestForVirtualPathAsset(serverRequest);
     }
 
     // Handle a request to the favicon
@@ -270,7 +307,18 @@ export class Server {
       if (typeof resource[request.method.toUpperCase()] !== "function") {
         throw new Drash.Exceptions.HttpException(405);
       }
+      // response can  be literally anything, it's down to the user what they return from the method
       response = await resource[request.method.toUpperCase()]();
+
+      // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
+      const isValidResponse = this.isValidResponse(response);
+      if (isValidResponse === false) {
+        throw new Drash.Exceptions.HttpResponseException(
+          418,
+          "The response must be returned inside the " +
+            request.method.toUpperCase() + " method of the resource",
+        );
+      }
 
       await this.executeMiddlewareServerLevelAfterRequest(request, response);
 
@@ -424,21 +472,11 @@ export class Server {
     try {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
 
-      const response = new Drash.Http.Response(request, {
-        views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine,
-      });
-
-      // Set the response's Content-Type type header based on the request's URL.
-      // For example, if the request's URL is /public/style.css, then the
-      // Content-Type header should be set to text/css.
-      const mimeType = new Drash.Services.HttpService().getMimeType(
-        request.url,
-        true,
+      const response = this.getResponse(request);
+      response.headers.set(
+        "Content-Type",
+        this.http_service.getMimeType(request.url, true) || "text/plain",
       );
-      if (mimeType) {
-        response.headers.set("Content-Type", mimeType);
-      }
 
       // Two things are happening here:
       // 1. If pretty_links is not enabled, then serve what was requested; or
@@ -467,7 +505,48 @@ export class Server {
         contents = Deno.readFileSync(path);
       }
       response.body = contents;
+
       await this.executeMiddlewareServerLevelAfterRequest(request, response);
+
+      return response.sendStatic();
+    } catch (error) {
+      return await this.handleHttpRequestError(
+        request,
+        this.httpErrorResponse(error.code ?? 404, error.message),
+      );
+    }
+  }
+
+  /**
+   * Handle HTTP requests for virtual path assets.
+   *
+   * @param request - The request object.
+   *
+   * @returns The response as stringified JSON. This is only used for unit
+   * testing purposes.
+   */
+  public async handleHttpRequestForVirtualPathAsset(
+    request: Drash.Http.Request,
+  ): Promise<Drash.Interfaces.ResponseOutput> {
+    try {
+      await this.executeMiddlewareServerLevelBeforeRequest(request);
+
+      const response = this.getResponse(request);
+      response.headers.set(
+        "Content-Type",
+        this.http_service.getMimeType(request.url, true) || "text/plain",
+      );
+
+      const virtualPath = request.url.split("/")[1];
+      const physicalPath = this.virtual_paths.get("/" + virtualPath);
+      const fullPath = `${Deno.realPathSync(".")}/${physicalPath}${
+        request.url.replace("/" + virtualPath, "")
+      }`;
+
+      response.body = Deno.readFileSync(fullPath);
+
+      await this.executeMiddlewareServerLevelAfterRequest(request, response);
+
       return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
@@ -634,7 +713,7 @@ export class Server {
             // global, and accounts for there being a required parameter before
             tmpPath = tmpPath.replace(
               /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
-              "/?([a-zA-Z0-9]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
+              "/?([^/]+)?/?", // A `/` being optional, as well as the param being optional, and a ending `/` being optional
             );
           } else { // We can now create the replace regex for the rest taking into consideration the above replace regex
             tmpPath = tmpPath.replace(
@@ -720,8 +799,58 @@ export class Server {
    *
    * @param path - The path where the static assets are
    */
-  protected addStaticPath(path: string): void {
-    this.static_paths.push(path);
+  protected addStaticPath(
+    path: string,
+    virtualPath?: string,
+  ): void {
+    if (virtualPath) {
+      this.virtual_paths.set(virtualPath, path);
+      return;
+    }
+
+    (this.static_paths as string[]).push(path);
+  }
+
+  /**
+   * Add static paths. Also, see `this.addStaticPath()`.
+   *
+   * @param paths - The array or key-value pair object containing the paths. If
+   * an array is passed in, then this method assumes each element in the array
+   * is a path. If a key-value pair object is passed in, then this method
+   * assumes that the key in each object is a virtual path and that the value is
+   * the physical path.
+   */
+  protected addStaticPaths(paths: string[] | { [key: string]: string }): void {
+    // Assume everything in the array is a string
+    if (Array.isArray(paths)) {
+      paths.forEach((path: string) => {
+        if (typeof path != "string") {
+          throw new Drash.Exceptions.ConfigsException(
+            `Static path must be a string`,
+          );
+        }
+        this.addStaticPath(path);
+      });
+      return;
+    }
+
+    // Assume the key is the virtual path and the value is the physical path
+    for (const virtualPath in paths) {
+      if (typeof virtualPath != "string") {
+        throw new Drash.Exceptions.ConfigsException(
+          `Virtual path must be a string`,
+        );
+      }
+
+      const physicalPath = paths[virtualPath];
+      if (typeof physicalPath != "string") {
+        throw new Drash.Exceptions.ConfigsException(
+          `Virtual path must be a string`,
+        );
+      }
+
+      this.addStaticPath(physicalPath, virtualPath);
+    }
   }
 
   /**
@@ -857,6 +986,20 @@ export class Server {
   }
 
   /**
+   * Get a response object.
+   *
+   * @param request - The request object.
+   *
+   * @returns A response object.
+   */
+  protected getResponse(request: Drash.Http.Request): Drash.Http.Response {
+    return new Drash.Http.Response(request, {
+      views_path: this.configs.views_path,
+      template_engine: this.configs.template_engine,
+    });
+  }
+
+  /**
    * Is the request targeting a static path?
    *
    * @param request - The request object
@@ -874,7 +1017,33 @@ export class Server {
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${staticPath}`;
 
-    if (this.static_paths.indexOf(requestUrl) == -1) {
+    if ((this.static_paths as string[]).indexOf(requestUrl) == -1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Is the request targeting a virtual path?
+   *
+   * @param request - The request object.
+   *
+   * @returns True if yes; false if no or if there are not any virtual paths
+   * defined.
+   */
+  protected requestTargetsVirtualPath(serverRequest: ServerRequest): boolean {
+    if (this.virtual_paths.size <= 0) {
+      return false;
+    }
+
+    // If the request URL is "/public/assets/js/bundle.js", then we take out
+    // "/public" and use that to check against the virtual paths
+    const virtualPath = serverRequest.url.split("/")[1];
+    // Prefix with a leading slash, so it can be matched properly
+    const requestUrl = `/${virtualPath}`;
+
+    if (!this.virtual_paths.has(requestUrl)) {
       return false;
     }
 
@@ -888,5 +1057,29 @@ export class Server {
    */
   protected logDebug(message: string): void {
     this.logger.debug("[syslog] " + message);
+  }
+
+  /**
+   * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
+   * or Drash.Http.Response.
+   *
+   * @return If the response returned from a method is what the returned value should be
+   */
+  // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface or response anyway
+  protected isValidResponse(response: any) {
+    // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
+    function responseIsOfTypeResponseOutput(response: any): boolean {
+      if (
+        typeof response === "object" && Array.isArray(response) === false &&
+        response !== null
+      ) {
+        return "status" in response && "headers" in response &&
+          "body" in response && "send" in response && "status_code" in response;
+      }
+      return false;
+    }
+    const valid = response instanceof Drash.Http.Response ||
+      responseIsOfTypeResponseOutput(response) === true;
+    return valid;
   }
 }

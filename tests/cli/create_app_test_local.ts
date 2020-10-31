@@ -509,6 +509,160 @@ Rhum.testPlan("create_app_test.ts", () => {
     );
   });
 
+  Rhum.testSuite("--web-app --with-react", () => {
+    Rhum.testCase(
+      "Script creates a web app with vue with the --web-app and --with-vue arguments",
+      async () => {
+        const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
+        // Create new tmp directory and create project files
+        Deno.mkdirSync(testCaseTmpDirName);
+        const p = Deno.run({
+          cmd: [
+            "deno",
+            "run",
+            "--allow-read",
+            "--allow-write",
+            "--allow-net",
+            "--allow-run",
+            "../create_app.ts",
+            "--web-app",
+            "--with-react",
+          ],
+          stdout: "piped",
+          stderr: "piped",
+          cwd: testCaseTmpDirName,
+        });
+        const status = await p.status();
+        p.close();
+        const stdout = new TextDecoder("utf-8").decode(await p.output());
+        const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
+        Rhum.asserts.assertEquals(stderr, "");
+        Rhum.asserts.assertEquals(status.code, 0);
+        Rhum.asserts.assertEquals(status.success, true);
+        // assert each file and it's content are correct
+        let boilerPlateFile;
+        let copiedFile;
+        // app.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/app.ts"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/app_web_app.ts",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // deps.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/deps.ts"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/deps.ts",
+        ), copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // config.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/config.ts"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/config.ts",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // home_resource.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/resources/home_resource.ts",
+        );
+        copiedFile = getFileContent(
+          testCaseTmpDirName + "/resources/home_resource.ts",
+        );
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // home_resource_test.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(
+            testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
+          ),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD +
+            "/console/create_app/tests/resources/home_resource_test.ts",
+        );
+        copiedFile = getFileContent(
+          testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
+        );
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // public/img.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/public/img"),
+          true,
+        );
+        // webpack.config.js
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/webpack.config.js"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/webpack_react.config.js",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/webpack.config.js");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // package.json
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/package.json"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/package_react.json",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/package.json");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // vue/App.vue
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/react"),
+          true,
+        );
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/react/App.tsx"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/react/app.tsx",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/react/App.tsx");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // tsconfig.json
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/tsconfig.json"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/tsconfig_react.json",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/tsconfig.json");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // public/views/index.html
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/public/views/index.html"),
+          true,
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + "/console/create_app/public/views/index_react.html",
+        );
+        copiedFile = getFileContent(
+          testCaseTmpDirName + "/public/views/index.html",
+        );
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+      },
+    );
+  });
+
   Rhum.testSuite("--api and --web-app", () => {
     Rhum.testCase(
       "Script fails if --api and --web-app are specified",

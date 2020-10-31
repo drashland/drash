@@ -11,34 +11,28 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-let latestBranch = Deno.env.get("GITHUB_HEAD_REF");
-let githubRepo = Deno.env.get("GITHUB_REPOSITORY");
+const branch = Deno.env.get("GITHUB_HEAD_REF")
+  ? Deno.env.get("GITHUB_HEAD_REF")
+  : "master";
+const githubOwner = Deno.env.get("GITHUB_ACTOR"); // possible it's the user and not drashland
+const repository = "deno-drash";
 
-if (!latestBranch) {
-  latestBranch = "master";
-}
+// supports forks
+let drashUrl =
+  `https://raw.githubusercontent.com/${githubOwner}/${repository}/${branch}`;
 
-if (!githubRepo) {
-  githubRepo = "drashland/deno-land";
-}
-
-const drashUrl = "https://raw.githubusercontent.com/" + githubRepo +
-  `/${latestBranch}`;
-
-function getOsCwd() {
-  let cwd = `//${originalCWD}/console/create_app`;
-  if (Deno.build.os === "windows") {
-    cwd = `${originalCWD}\console\create_app`;
+// if fork doesnt exist, use drashland repo. An instance where this can happen
+// is if I (Edward) make a PR to drashland NOT from a fork, the github owner
+// will be "ebebbington" which it shouldn't be, it should be drashland
+try {
+  const res = await fetch(drashUrl + "/create_app.ts");
+  await res.text();
+  if (res.status !== 200) {
+    drashUrl =
+      `https://raw.githubusercontent.com/drashland/deno-drash/${branch}`;
   }
-  return cwd;
-}
-
-function getOsTmpDirName() {
-  let tmp = `${originalCWD}/${tmpDirName}`;
-  if (Deno.build.os === "windows") {
-    tmp = `${originalCWD}\${tmpDirName}`;
-  }
-  return tmp;
+} catch (err) {
+  // do nothing
 }
 
 /**
