@@ -63,6 +63,7 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
     ▾ ts/
         my_ts_file.ts
     app.ts
+    home_resource.ts
 ```
 
 #### Steps
