@@ -51,7 +51,7 @@ The `source` is the filepath to the actual TypeScript file. The `target` is the 
 
 ## Tutorial: Writing Front-end TypeScript
 
-This tutorial teaches you how to write front-end TypeScript, which gets compiled into JavaScript during server creation (compile time).
+This tutorial teaches you how to write front-end TypeScript, which gets compiled into JavaScript during server creation.
 
 ### Folder Structure End State
 
