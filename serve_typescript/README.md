@@ -1,42 +1,38 @@
-# Dexter
+# ServeTypeScript
 
-Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
+ServeTypeScript is a compile time middleware that allows you to write front-end TypeScript and serve it as compiled JavaScript during runtime.
+
+_Note: Since this middleware uses `Deno.compile()`, it can only be used with Deno's `--unstable` flag (e.g., `deno run --unstable app.ts`)._
 
 ```typescript
 import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
 
-// Import the Dexter middleware function
-import { Dexter } from "https://deno.land/x/drash_middleware@v0.5.1/dexter/mod.ts";
+// Import the ServeTypeScript middleware function
+import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/serve_typescript/mod.ts";
 
-// Instantiate dexter
-const dexter = Dexter();
+// Instantiate ServeTypeScript and pass in the files you want compiled during compile time. The compiled output of these files will be used during runtime.
+const serveTs = ServeTypeScript({
+  files: [
+    {
+      source: Deno.realPathSync("./ts/my_ts.ts"), // the path to the actual TypeScript file
+      target: "/ts/my_ts.ts", // the URI this file is accessible at (e.g., localhost:1447/ts/my_ts.ts)
+    },
+  ],
+});
 
-// The above will instantiate Dexter with default values: 
-// {
-//     enabled: true,
-//     level: "info",
-//     tag_string: "{datetime} | {level} |",
-//     tag_string_fns: {
-//       datetime() {
-//         return new Date().toISOString().replace("T", " ").split(".")[0];
-//     },
-// };
-
-// Create your server and plug in dexter to the middleware config
+// Create your server and plug in ServeTypeScript to the middleware config
 const server = new Drash.Http.Server({
   resources: [
     HomeResource,
   ],
   middleware: {
-    before_request: [
-      dexter
-    ],
-    after_request: [
-      dexter
+    compile_time: [
+      serveTs
     ]
   }
 });
 
+// Run your server
 server.run({
   hostname: "localhost",
   port: 1447,
@@ -47,86 +43,39 @@ console.log(`Server running at ${server.hostname}:${server.port}`);
 
 ## Configuration
 
-If you decide to configure Dexter, make sure you specify the `enabled` flag in the configs as it is required when customizing the configuration.
+### `files`
 
-### `enabled`
-
-Enable or disable the logger from logging based on the value of this config.
+This config is required. ServeTypeScript cannot run unless it is given files to compile during compile time. Compile time is when the Drash server is being created.
 
 ```typescript
-const dexter = Dexter({
-  enabled: true, // or false
+const serveTs = ServeTypeScript({
+  files: [
+    {
+      source: "/path/to/typescript/file.ts",
+      target: "/uri/to/associate/the/typescript/file/to.ts",
+    }
+  ]
 });
 ```
 
-### `level`
-
-Define what log statements should be written based on their log level definition (e.g., debug, info, warn).
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  level: "debug", // or all, trace, debug, info, warn, error, fatal
-});
-```
-
-* `all`: logs all messages below
-* `trace`: logs `.trace()` messages and the below
-* `debug`: logs `.debug()` messages and the below
-* `info`: logs `.info()` messages and the below
-* `warn`: logs `.warn()` messages and the below
-* `error`: logs `.error()` messages and the below
-* `fatal`: logs `.fatal()` messages only
-
-
-### `tag_string`
-
-Define the display of the log messages' tag string. The tag string is a concatenation of tokens preceding the log message. Available, predefined tags:
-
-* `{level}`
-* `{request_method}`
-* `{request_url}`
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  tag_string: "{level} | {request_method} {request_url} |" // Will output something similar to "INFO | GET /home | The log message."
-});
-```
-
-### `tag_string_fns`
-
-If you want more customizations with the `tag_string` config, then you can use `tag_string_fns` to define what your tags should resolve to.
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  tag_string: "{datetime} | {my_tag} |", // Will output something similar to "2020-07-12 10:32:14 | TIGERRR | The log message."
-  tag_string_fns: {
-    datetime() {
-      return new Date().toISOString().replace("T", " ").split(".")[0];
-    },
-    my_tag: "TIGERRR"
-  }
-});
-```
-
-### `response_time`
-
-If you want to see how fast your responses are taking, then use this config. This config will output something similar to `Response sent. [2 ms]`.
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  response_time: true, // or false
-});
-```
+The `source` is the filepath to the actual TypeScript file. The `target` is the URI that the file is accessible at. For example, if you want to serve your TypeScript file at the `/ts/my_ts.ts` URI, then define `target` as `/ts/my_ts.ts`. When a request is made to `http://yourserver.com/ts/my_ts.ts`, your compiled TypeScript will be returned as the response.
 
 ## Tutorials
 
-### Reusing Dexter in resource classes (or other parts of your codebase)
+### Writing front-end TypeScript and serving it as JavaScript
 
-You can reuse Dexter in your codebase by accessing its `logger`. For example, if you want to use Dexter in one of your resources, then do the following:
+If you want to write front-end TypeScript and serve it as compiled JavaScript, then follow the steps below.
+
+#### Folder Structure End State
+
+```
+▾ /path/to/your/project/
+    ▾ ts/
+        my_ts_file.ts
+    app.ts
+```
+
+#### Steps
 
 1. Create your `app.ts` file.
 
@@ -134,27 +83,25 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
     // File: app.ts
     import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Dexter } from "https://deno.land/x/drash_middleware@v0.3.0/dexter.ts";
+    import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/serve_typescript/mod.ts";
 
-    const dexter = Dexter({
-      enabled: true,
-      level: "debug",
-      tag_string: "{request_method} {request_url} |",
+    const serveTs = ServeTypeScript({
+      files: [
+        {
+          source: "./ts/my_ts_file.ts",
+          target "/assets/my_compiled_ts_file.ts",
+        }
+      ]
     });
 
-    // Export dexter after calling it with your configurations
-    export { dexter };
-
     const server = new Drash.Http.Server({
+      response_output: "text/html",
       resources: [
         HomeResource,
       ],
       middleware: {
-        before_request: [
-          dexter
-        ],
-        after_request: [
-          dexter
+        compile_time: [
+          serveTs
         ]
       }
     });
@@ -167,29 +114,52 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
     console.log(`Server running at ${server.hostname}:${server.port}`);
     ```
 
-2. Create your `home_resource` file.
+2. Create your `home_resource.ts` file.
 
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
-    import { dexter } from "./app.ts";
 
     export class HomeResource extends Drash.Http.Resource {
 
       static paths = ["/"];
 
       public GET() {
-
-        // Access Dexter's logger from it's prototype and log some messages
-        dexter.logger.debug("This is a log message.");
-        dexter.logger.error("This is a log message.");
-        dexter.logger.fatal("This is a log message.");
-        dexter.logger.info("This is a log message.");
-        dexter.logger.trace("This is a log message.");
-        dexter.logger.warn("This is a log message.");
-
-        this.response.body = "GET request received!";
+        this.response.body = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Drash</title>
+          </head>
+          <body>
+            <div id="container"></div>
+            <script src="/assets/my_compiled_ts_file.ts"></script>
+          </body>
+        </html>`;
 
         return this.response;
       }
     }
     ```
+
+3. Create your `my_ts_file.ts`.
+
+    ```typescript
+    function greet(name: string): void {
+        document.getElementById("container").innerHTML = "Hello, " + name;
+    }
+    
+    greet();
+    ```
+    
+#### Verification
+
+1. Run your `app.ts` file.
+
+```
+deno run --allow-net --unstable app.ts
+```
+
+2. Navigate to `localhost:1447` in your browser.
+
+You should see the following response:
+
