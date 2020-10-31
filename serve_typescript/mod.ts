@@ -78,6 +78,7 @@ export function ServeTypeScript(options: IOptions) {
 
     const filepath = request.url.split("?")[0];
     const contents = compiledFiles.get(filepath);
+
     if (contents) {
       response.body = contents;
     }
