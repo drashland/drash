@@ -69,7 +69,7 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
 
     ```typescript
     // File: app.ts
-    import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
     import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/serve_typescript/mod.ts";
 
@@ -109,7 +109,7 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
 2. Create your `home_resource.ts` file.
 
     ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
 
     export class HomeResource extends Drash.Http.Resource {
 
