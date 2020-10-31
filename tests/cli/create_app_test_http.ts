@@ -11,13 +11,15 @@ const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
-const branch = Deno.env.get("GITHUB_HEAD_REF") ?
-  Deno.env.get("GITHUB_HEAD_REF") : "master";
+const branch = Deno.env.get("GITHUB_HEAD_REF")
+  ? Deno.env.get("GITHUB_HEAD_REF")
+  : "master";
 const githubOwner = Deno.env.get("GITHUB_ACTOR"); // possible it's the user and not drashland
 const repository = "deno-drash";
 
 // supports forks
-let drashUrl = `https://raw.githubusercontent.com/${githubOwner}/${repository}/${branch}`;
+let drashUrl =
+  `https://raw.githubusercontent.com/${githubOwner}/${repository}/${branch}`;
 
 // if fork doesnt exist, use drashland repo. An instance where this can happen
 // is if I (Edward) make a PR to drashland NOT from a fork, the github owner
