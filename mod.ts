@@ -15,6 +15,7 @@ import * as log_levels from "./src/dictionaries/log_levels.ts";
 import { mime_db } from "./src/dictionaries/mime_db.ts";
 
 // Exceptions
+import { ConfigsException as BaseConfigsException } from "./src/exceptions/configs_exception.ts";
 import { HttpException as BaseHttpException } from "./src/exceptions/http_exception.ts";
 import { InvalidPathException as BaseInvalidPathException } from "./src/exceptions/invalid_path_exception.ts";
 import { HttpMiddlewareException as BaseHttpMiddlewareException } from "./src/exceptions/http_middleware_exception.ts";
@@ -63,6 +64,7 @@ export namespace Drash {
   }
 
   export namespace Exceptions {
+    export class ConfigsException extends BaseConfigsException {}
     export class HttpException extends BaseHttpException {}
     export class HttpMiddlewareException extends BaseHttpMiddlewareException {}
     export class HttpResponseException extends BaseHttpResponseException {}

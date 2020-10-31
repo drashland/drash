@@ -7,6 +7,7 @@ const wantsHelp = (args.find((arg) => arg === "--help") !== undefined);
 const wantsWebApp = (args.find((arg) => arg === "--web-app") !== undefined);
 const wantsApi = (args.find((arg) => arg === "--api") !== undefined);
 const wantsVue = (args.find((arg) => arg === "--with-vue") !== undefined);
+const wantsReact = (args.find((arg) => arg === "--with-react") !== undefined);
 const cwd = Deno.realPathSync(".");
 const notesForUser: string[] = [];
 const encoder = new TextEncoder();
@@ -117,6 +118,8 @@ function sendThankYouMessage() {
     ? "Your Drash web app project "
     : wantsWebApp && wantsVue
     ? "Your Drash web app project with Vue "
+    : wantsWebApp && wantsReact
+    ? "Your Drash web app project with React "
     : "";
   console.info(
     whatUserWanted + "has been created.\n" +
@@ -160,6 +163,20 @@ async function buildForWebApp() {
     notesForUser.push(
       "Build your Vue component with Webpack:\n    npm run buildVue",
     );
+  } else if (wantsReact) {
+    await copyFile("/package_react.json", "/package.json");
+    await copyFile("/webpack_react.config.js", "/webpack.config.js");
+    Deno.mkdirSync(cwd + "/react");
+    await copyFile("/react/app.tsx", "/react/App.tsx");
+    await copyFile(
+      "/public/views/index_react.html",
+      "/public/views/index.html",
+    );
+    await copyFile("/tsconfig_react.json", "/tsconfig.json");
+    notesForUser.push("Install NPM dependencies:\n    npm install");
+    notesForUser.push(
+      "Build your Vue component with Webpack:\n    npm run buildReact",
+    );
   } else {
     await copyFile("/public/views/index.html", "/public/views/index.html");
     await copyFile("/public/css/index.css", "/public/css/index.css");
@@ -191,6 +208,14 @@ if (wantsApi && wantsWebApp) {
     ),
   );
   Deno.exit(1);
+}
+
+if (wantsReact && wantsVue) {
+  console.error(
+    red(
+      "--with-react and --with-vue options are not allowed to be used together.",
+    ),
+  );
 }
 
 // Requirement: One main argument is required
