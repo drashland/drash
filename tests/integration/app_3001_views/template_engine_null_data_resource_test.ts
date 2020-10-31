@@ -24,6 +24,12 @@ const server = new Drash.Http.Server({
   template_engine: true,
 });
 
+/**
+ * @deprecated
+ * (MVEMCJSUNPE) personally, I don't think it's necessary to log a deprecation
+ * warning here, since template_engine_null_data_resource already has a
+ * deprecation warning in its only public declared method GET.
+ */
 Rhum.testPlan("template_engine_null_data_resource_test.ts", () => {
   Rhum.testSuite("/template-engine-null-data", () => {
     Rhum.testCase("handles null data", async () => {

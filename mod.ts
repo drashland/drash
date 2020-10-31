@@ -54,6 +54,9 @@ export namespace Drash {
   export const version = "v1.2.5";
 
   export namespace Compilers {
+    /**
+     * @deprecated
+     */
     export class TemplateEngine extends BaseTemplateEngine {}
   }
 

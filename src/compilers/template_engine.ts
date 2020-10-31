@@ -1,11 +1,16 @@
+import { Drash } from "../../mod.ts";
 const decoder = new TextDecoder();
 
+/**
+   * @deprecated
+   */
 export class TemplateEngine {
   /**
    * A property to hold the base path to the template(s).
    *
    */
   public views_path: string = "";
+  private static wasConstructed = false;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -18,6 +23,14 @@ export class TemplateEngine {
    */
 
   constructor(viewsPath: string) {
+    if (!TemplateEngine.wasConstructed) {
+      Drash.addLogger(
+        "DeprecateLogger",
+        new Drash.CoreLoggers.ConsoleLogger({ enabled: true }),
+      );
+      TemplateEngine.wasConstructed = true;
+    }
+
     this.views_path = viewsPath;
   }
 

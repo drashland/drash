@@ -112,6 +112,7 @@ export class Response {
    * files. This method will read a file based on the `views_path` and filename
    * passed in. When called, will set the response content type to "text/html"
    *
+   * @deprecated
    * @param args - The arguments used to render.
    *
    * @remarks
@@ -137,6 +138,9 @@ export class Response {
 
       if (this.template_engine) {
         const engine = new Drash.Compilers.TemplateEngine(this.views_path);
+        Drash.Loggers.DeprecateLogger.warn(
+          "You are using deprecated code. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53",
+        );
         return engine.render(args[0], data);
       }
 
