@@ -10,6 +10,13 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
         });
       });
     });
+    Rhum.testCase("compiles TypeScript to JavaScript", async () => {
+      Rhum.asserts.assertThrows(() => {
+        const serveTs = ServeTypeScript({
+          files: []
+        });
+      });
+    });
   });
 });
 
