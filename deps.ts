@@ -44,4 +44,6 @@ export {
 } from "https://deno.land/std@0.75.0/http/cookie.ts";
 export type { Cookie } from "https://deno.land/std@0.75.0/http/cookie.ts";
 
+export { BumperService } from "https://raw.githubusercontent.com/drashland/services/master/ci/bumper_service.ts";
+
 export { green, red } from "https://deno.land/std@0.75.0/fmt/colors.ts";
