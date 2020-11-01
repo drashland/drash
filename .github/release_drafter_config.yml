@@ -19,23 +19,23 @@ change-template: '- $TITLE (#$NUMBER)'
 
 # Only add to the draft release when a PR has one of these labels
 include-labels:
-  - 'major'
-  - 'minor'
-  - 'patch'
-  - 'chore'
+  - 'Type: Major'
+  - 'Type: Minor'
+  - 'Type: Patch'
+  - 'Type: Chore'
 
 # Here is how we determine what version the release would be, by using labels. Eg when "minor" is used, the drafter knows to bump up to a new minor version
 version-resolver:
   major:
     labels:
-      - 'major'
+      - 'Type: Major'
   minor:
     labels:
-      - 'minor'
+      - 'Type: Minor'
   patch:
     labels:
-      - 'patch'
-      - 'chore' # allow our chore PR's to just be patches too
+      - 'Type: Patch'
+      - 'Type: Chore' # allow our chore PR's to just be patches too
   default: patch
 
 # What our release will look like. If no draft has been created, then this will be used, otherwise $CHANGES just gets addedd
