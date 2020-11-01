@@ -245,6 +245,14 @@ export class Server {
         `Request received: ${request.method.toUpperCase()} ${request.url}`,
       );
 
+      // Build a response object that is ready to be hydrated later in the
+      // lifecycle
+      response = new Drash.Http.Response(request, {
+        views_path: this.configs.views_path,
+        template_engine: this.configs.template_engine,
+        default_response_content_type: this.configs.response_output,
+      });
+
       let resourceClass = this.getResourceClass(request);
 
       await this.executeMiddlewareServerLevelBeforeRequest(request);
@@ -270,11 +278,7 @@ export class Server {
       //
       resource = new (resourceClass as Drash.Http.Resource)(
         request,
-        new Drash.Http.Response(request, {
-          views_path: this.configs.views_path,
-          template_engine: this.configs.template_engine,
-          default_response_content_type: this.configs.response_output,
-        }),
+        response,
         this,
       );
       // We have to add the static properties back because they get blown away
