@@ -102,6 +102,12 @@ $ cd my-drash-project
     ```
     $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app --with-vue
     ```
+  
+* To make a web app with React:
+
+    ```
+    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app --with-react
+    ```
 
 Display the options with `--help`:
 

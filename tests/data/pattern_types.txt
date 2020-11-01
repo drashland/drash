@@ -1,0 +1,30 @@
+workflow files
+
+deno: ["0.0.0"]
+deno: ["0.0.0"]
+
+-----
+
+import statements
+
+import { Drash } from "https://deno.land/x/drash@v0.0.0/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v0.0.0/mod.ts";
+
+----
+
+consts
+
+export const version = "v0.0.0";
+export const version = "v0.0.0";
+
+----
+
+egg.json
+
+"version": "0.0.0",
+
+----
+
+deps files
+
+import { Drash } from "https://deno.land/x/drash@v0.0.0/mod.ts"; // up to date
