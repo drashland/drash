@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        deno: ["1.4.6"]
+        deno: ["1.5.1"]
 
     runs-on: ubuntu-latest
 
