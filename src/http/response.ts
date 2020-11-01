@@ -124,9 +124,9 @@ export class Response {
    * @returns The html content of the view, or false if the `views_path` is not
    * set.
    */
-  public render(
+  public async render(
     ...args: unknown[]
-  ): string | boolean {
+  ): Promise<boolean|string> {
     if (!this.views_path) {
       return false;
     }
