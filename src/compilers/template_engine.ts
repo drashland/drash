@@ -1,4 +1,4 @@
-import { Drash } from "../../mod.ts";
+import { LoggerService } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 /**
@@ -10,7 +10,6 @@ export class TemplateEngine {
    *
    */
   public views_path: string = "";
-  private static wasConstructed = false;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -23,14 +22,9 @@ export class TemplateEngine {
    */
 
   constructor(viewsPath: string) {
-    if (!TemplateEngine.wasConstructed) {
-      Drash.addLogger(
-        "DeprecateLogger",
-        new Drash.CoreLoggers.ConsoleLogger({ enabled: true }),
+    LoggerService.logWarn(
+      "You are using deprecated code, which will be removed by January 1, 2021. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53"
       );
-      TemplateEngine.wasConstructed = true;
-    }
-
     this.views_path = viewsPath;
   }
 
@@ -58,6 +52,9 @@ export class TemplateEngine {
    * @returns The html to be rendered
    */
   public render(template: string, data: unknown): string {
+    LoggerService.logWarn(
+      "You are using deprecated code, which will be removed by January 1, 2021. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53"
+      );
     let code = "with(obj) { var r=[];\n";
     let cursor = 0;
     let html: string = decoder.decode(
