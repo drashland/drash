@@ -9,8 +9,8 @@ Rhum.testPlan("mod_test.ts", () => {
         level: "debug",
       });
       const expected = {
-        "TestLogger": testLogger
-      }
+        "TestLogger": testLogger,
+      };
       Drash.addLogger("TestLogger", testLogger);
       Rhum.asserts.assertEquals(Drash.Loggers, expected);
     });

@@ -23,8 +23,8 @@ export class TemplateEngine {
 
   constructor(viewsPath: string) {
     LoggerService.logWarn(
-      "You are using deprecated code, which will be removed by January 1, 2021. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53"
-      );
+      "You are using deprecated code, which will be removed by January 1, 2021. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53",
+    );
     this.views_path = viewsPath;
   }
 
@@ -53,8 +53,8 @@ export class TemplateEngine {
    */
   public render(template: string, data: unknown): string {
     LoggerService.logWarn(
-      "You are using deprecated code, which will be removed by January 1, 2021. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53"
-      );
+      "You are using deprecated code, which will be removed by January 1, 2021. See migration solutions here: https://github.com/drashland/deno-drash-middleware/issues/53",
+    );
     let code = "with(obj) { var r=[];\n";
     let cursor = 0;
     let html: string = decoder.decode(
