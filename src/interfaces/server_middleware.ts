@@ -44,4 +44,11 @@ export interface ServerMiddleware {
     ) => Promise<void>)
     | ((request: Drash.Http.Request, response: Drash.Http.Response) => void)
   >;
+  after_resource?: Array<
+    | ((
+      request: Drash.Http.Request,
+      response: Drash.Http.Response,
+    ) => Promise<void>)
+    | ((request: Drash.Http.Request, response: Drash.Http.Response) => void)
+  >;
 }

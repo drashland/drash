@@ -298,6 +298,12 @@ export class Server {
       if (typeof resource[request.method.toUpperCase()] !== "function") {
         throw new Drash.Exceptions.HttpException(405);
       }
+
+      // TODO(crookse) In v2, this is where the before_request middleware hook
+      // will be placed. The current location of the before_request middleware
+      // hook will be replaced with a before_resource middleware hook.
+      await this.executeMiddlewareServerLevelAfterResource(request, response);
+
       // response can  be literally anything, it's down to the user what they return from the method
       response = await resource[request.method.toUpperCase()]();
 
@@ -768,6 +774,12 @@ export class Server {
         this.middleware.after_request.push(middleware);
       }
     }
+    if (middlewares.after_resource != null) {
+      this.middleware.after_resource = [];
+      for (const middleware of middlewares.after_resource) {
+        this.middleware.after_resource.push(middleware);
+      }
+    }
   }
 
   /**
@@ -831,6 +843,24 @@ export class Server {
   }
 
   /**
+   * Execute server-level middleware after a resource has been found, but before
+   * the resource's HTTP request method is executed.
+   *
+   * @param request - The request object.
+   * @param resource - The resource object.
+   */
+  protected async executeMiddlewareServerLevelAfterResource(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+    if (this.middleware.after_resource != null) {
+      for (const middleware of this.middleware.after_resource) {
+        await middleware(request, response);
+      }
+    }
+  }
+
+  /**
    * Execute server-level middleware before the request.
    *
    * @param request - The request object.
@@ -839,7 +869,6 @@ export class Server {
   protected async executeMiddlewareServerLevelBeforeRequest(
     request: Drash.Http.Request,
   ): Promise<void> {
-    // Execute server-level middleware
     if (this.middleware.before_request != null) {
       for (const middleware of this.middleware.before_request) {
         await middleware(request);
