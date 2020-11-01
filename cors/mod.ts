@@ -126,8 +126,7 @@ export const CorsMiddleware = ({
       if (!o) {
         // Safari (and potentially other browsers) need content-length 0,
         //   for 204 or they just hang waiting for a body
-        (response.body as { status: number }).status = options
-          .optionsSuccessStatus as number;
+        response.status_code = options.optionsSuccessStatus as number;
         response.headers.set("Content-Length", "0");
 
         return;
