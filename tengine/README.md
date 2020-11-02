@@ -18,12 +18,13 @@ Tengine allows your Drash application to use a template engine.
 ## Usage
 
 ```typescript
-// Import the ServeTypeScript middleware function
+// Import the Tengine middleware function
 import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
 // Use the default template engine that comes with Tengine, known as Drake.
 // Returning false in the render method tells Tengine to use Drake. Specifying
-// the views_path config tells Drake where your HTML files are located.
+// the views_path config tells Drake where your HTML files are located. The
+// views_path config is required if Drake is being used.
 const tengine = Tengine({
   render: (...args: unknown[]): boolean => {
     return false;
