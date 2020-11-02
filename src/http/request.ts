@@ -167,9 +167,17 @@ export class Request extends ServerRequest {
    * @return The parsed body as an object
    */
   public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
-    console.log("the body:");
-    console.log(this.parsed_body);
     return this.parsed_body;
+  }
+
+  /**
+   * Get all the path params.
+   *
+   * @return A key-value pair object where the key is the param name and the
+   * value is the param value.
+   */
+  public getAllPathParams(): { [key: string]: string } {
+    return this.path_params;
   }
 
   /**
