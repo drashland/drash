@@ -329,7 +329,6 @@ function CompileTimeMiddleware() {
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<void> {
-    console.log(request);
     if (request.url == "/hello") {
       response.body = compiledStuff[0];
     }
