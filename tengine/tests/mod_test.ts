@@ -1,35 +1,21 @@
+import { Drash } from "../../deps.ts";
 import { Rhum } from "../../test_deps.ts";
 import { Tengine } from "../mod.ts";
-import { Drash } from "../../deps.ts";
-import * as eta from "https://deno.land/x/eta@v1.6.0/mod.ts";
-
-const tengine = Tengine({
-  render: async (args: any[]): Promise<string|void> => {
-    const path = Deno.realPathSync(".") + "/tengine/tests" + args[0];
-
-    const content = await eta.render(
-      new TextDecoder().decode(Deno.readFileSync(path)),
-      args[1],
-      args[2],
-      args[3]
-    );
-
-    return content;
-
-  }
-});
 
 class Resource extends Drash.Http.Resource {
   static paths = ["/"];
   public async GET() {
-    try {
-      this.response.body = await this.getMiddleware("tengine").render("/index.eta", { greeting: "hello" });
-    } catch (error) {
-      console.log(error);
-    }
+    this.response.body = this.response.render("/index.html", { greeting: "hello" });
     return this.response;
   }
 }
+
+const tengine = Tengine({
+  render: (...args: unknown[]): boolean => {
+    return false; // This render method returns false to tell Tengine to use Drake
+  },
+  views_path: "./tengine/tests/views"
+});
 
 // deno-lint-ignore no-explicit-any
 async function runServer(
@@ -40,7 +26,7 @@ async function runServer(
     response_output: "text/html",
     resources: [Resource],
     middleware: {
-      after_request: [
+      after_resource: [
         tengine,
       ],
     },
