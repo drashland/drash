@@ -1,4 +1,4 @@
-# ServeTypeScript
+# Tengine
 
 Tengine allows your Drash application to use a template engine.
 
@@ -61,7 +61,7 @@ const tengine = Tengine({
 
 This tutorial teaches you how to use Drake (Tengine's default template engine) to render HTML files in your Drash application.
 
-### Folder Structure End State
+### Drake: Folder Structure End State
 
 ```
 ▾ /path/to/your/project/
@@ -73,7 +73,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
     home_resource.ts
 ```
 
-### Steps
+### Drake: Steps
 
 1. Create your `app.ts` file.
 
@@ -172,7 +172,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
     </ul>
     ```
 
-### Verification
+### Drake: Verification
 
 1. Run your `app.ts` file.
 
