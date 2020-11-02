@@ -67,8 +67,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
 ▾ /path/to/your/project/
     ▾ views/
         index.html
-        header.html
-        footer.html
+        template_engines.html
     app.ts
     home_resource.ts
 ```
