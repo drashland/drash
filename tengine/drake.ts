@@ -1,6 +1,6 @@
 const decoder = new TextDecoder("utf-8");
 
-export class Drake {
+export class Jae {
   /**
    * A property to hold the base path to the template(s).
    *

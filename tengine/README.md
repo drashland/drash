@@ -6,7 +6,7 @@ Tengine allows your Drash application to use a template engine.
 
 * [Usage](#usage)
 * [Configuration](#configuration)
-* [Tutorial: Using Drake](#tutorial-using-drake)
+* [Tutorial: Using Jae](#tutorial-using-drake)
     * [Folder Structure End State](#drake-folder-structure-end-state)
     * [Steps](#drake-steps)
     * [Verification](#drake-verification)
@@ -21,10 +21,10 @@ Tengine allows your Drash application to use a template engine.
 // Import the Tengine middleware function
 import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
-// Use the default template engine that comes with Tengine, known as Drake.
-// Returning false in the render method tells Tengine to use Drake. Specifying
-// the views_path config tells Drake where your HTML files are located. The
-// views_path config is required if Drake is being used.
+// Use the default template engine that comes with Tengine, known as Jae.
+// Returning false in the render method tells Tengine to use Jae. Specifying
+// the views_path config tells Jae where your HTML files are located. The
+// views_path config is required if Jae is being used.
 const tengine = Tengine({
   render: (...args: unknown[]): boolean => {
     return false;
@@ -49,7 +49,7 @@ const tengine = Tengine({
 
 ### `views_path`
 
-This config is optional. If you are using the default template engine that comes with Tengine (known as Drake), then this config is required. Otherwise, leave this config out if you are using a different template engine. This config tells Drake where your HTML files are located.
+This config is optional. If you are using the default template engine that comes with Tengine (known as Jae), then this config is required. Otherwise, leave this config out if you are using a different template engine. This config tells Jae where your HTML files are located.
 
 _Note: This config value SHOULD NOT have a trailing slash._
 
@@ -62,11 +62,11 @@ const tengine = Tengine({
 });
 ```
 
-## Tutorial: Using Drake
+## Tutorial: Using Jae
 
-This tutorial teaches you how to use Drake (Tengine's default template engine).
+This tutorial teaches you how to use Jae (Tengine's default template engine).
 
-### Drake: Folder Structure End State
+### Jae: Folder Structure End State
 
 ```
 ▾ /path/to/your/project/
@@ -77,7 +77,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
     home_resource.ts
 ```
 
-### Drake: Steps
+### Jae: Steps
 
 1. Create your `app.ts` file.
 
@@ -88,7 +88,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
 
     const tengine = Tengine({
       render: (...args: unknown[]): boolean => {
-        return false; // This render method returns false to tell Tengine to use Drake
+        return false; // This render method returns false to tell Tengine to use Jae
       },
       views_path: "./views"
     });
@@ -127,7 +127,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
         // relative path to the views_path config value. Notice, this
         // argument has a leading slash whereas the views_path config
         // does not have a trailing slash. Having a trailing slash in
-        // the views_path config would make Drake look for ...
+        // the views_path config would make Jae look for ...
         //
         //     ./views_path//index.html
         //
@@ -135,7 +135,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
         this.response.body = this.response.render(
           "/index.html",
           {
-            message: "Hella using Drake.",
+            message: "Hella using Jae.",
             template_engines: [
               {
                 name: "dejs",
@@ -172,7 +172,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
       <body style="background: #f4f4f4">
         <div style="max-width: 640px; margin: 50px auto;">
           <h1 class="text-5xl mb-5"><% message %></h1>
-          <p class="mb-5">Drake is a template engine. Some other template engines are:</p>
+          <p class="mb-5">Jae is a template engine. Some other template engines are:</p>
           <% include_partial("/template_engines.html") %>
         </div>
       </body>
@@ -192,7 +192,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
     </ul>
     ```
 
-### Drake: Verification
+### Jae: Verification
 
 1. Run your `app.ts` file.
 
@@ -203,7 +203,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine).
 2. Navigate to `localhost:1447` in your browser. You should see an HTML page with the following text:
 
    ```text
-   Hella using Drake.
+   Hella using Jae.
    ```
 
 ## Tutorial: Using Eta
@@ -290,7 +290,7 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
                 url: "https://github.com/denjucks/dinja",
               },
               {
-                name: "Drake",
+                name: "Jae",
                 url: "https://github.com/drashland/deno-drash-middleware",
               }
             ],

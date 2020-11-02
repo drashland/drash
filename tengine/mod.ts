@@ -1,5 +1,5 @@
 import { Drash } from "../../deno-drash/mod.ts";
-import { Drake } from "./drake.ts";
+import { Jae } from "./drake.ts";
 
 interface IOptions {
   render:
@@ -10,7 +10,7 @@ interface IOptions {
 export function Tengine(
   options: IOptions,
 ) {
-  let templateEngine: Drake;
+  let templateEngine: Jae;
 
   /**
    * The middleware function that's called by Drash.
@@ -27,7 +27,7 @@ export function Tengine(
 
     if (options.views_path) {
       if (!templateEngine) {
-        templateEngine = new Drake(options.views_path);
+        templateEngine = new Jae(options.views_path);
       }
       options.render = (...args: unknown[]): string => {
         return templateEngine.render(

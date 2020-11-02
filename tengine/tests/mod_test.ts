@@ -15,7 +15,7 @@ class Resource extends Drash.Http.Resource {
 
 const tengine = Tengine({
   render: (...args: unknown[]): boolean => {
-    return false; // This render method returns false to tell Tengine to use Drake
+    return false; // This render method returns false to tell Tengine to use Jae
   },
   views_path: "./tengine/tests/views",
 });
