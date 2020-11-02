@@ -75,9 +75,19 @@ export class Server {
   protected http_service: Drash.Services.HttpService;
 
   /**
-   * A property to hold middleware.
+   * A property to hold server-level middleware. This includes before request
+   * middleware, after request middleware, compile time middleware, and runtime
+   * middleware.
    */
-  protected middleware: ServerMiddleware = {};
+  protected middleware: ServerMiddleware = {
+    runtime: new Map<
+      number,
+      ((
+        request: Drash.Http.Request,
+        response: Drash.Http.Response,
+      ) => Promise<void>)
+    >(),
+  };
 
   /**
    * A property to hold the resources passed in from the configs.
@@ -117,7 +127,7 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
-    // Set up the servies this class requires
+    // Set up this server's services
     this.http_service = new Drash.Services.HttpService();
 
     // Set up this server's default configurations
@@ -125,7 +135,7 @@ export class Server {
       configs.memory_allocation = {};
     }
 
-    // Set up the server's logger
+    // Set up this server's logger
     if (!configs.logger) {
       this.logger = new Drash.CoreLoggers.ConsoleLogger({
         enabled: false,
@@ -312,8 +322,7 @@ export class Server {
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
           418,
-          "The response must be returned inside the " +
-            request.method.toUpperCase() + " method of the resource",
+          `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
         );
       }
 
@@ -481,9 +490,32 @@ export class Server {
       // requested asset. Since this occurs after the MIME code above, the
       // client should receive a proper response in the proper format.
       if (!this.configs.pretty_links || request.url.split(".")[1]) {
-        response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
-        await this.executeMiddlewareServerLevelAfterRequest(request, response);
-        return response.sendStatic();
+        try {
+          // Try to read the file if it exists
+          response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
+          await this.executeMiddlewareServerLevelAfterRequest(
+            request,
+            response,
+          );
+        } catch (error) {
+          // If the file doesn't exist, run the middleware just in case
+          // ServeTypeScript is being used. If it's being used, then the
+          // middleware will return a response body.
+          await this.executeMiddlewareServerLevelAfterRequest(
+            request,
+            response,
+          );
+        }
+        // If there's a response body, then we know the middleware created a
+        // response body and we can send the response
+        if (response.body) {
+          return response.sendStatic();
+        }
+
+        // Otherwise, throw a normal error. We don't really care about the error
+        // type or error message because the catch block below will handle all
+        // of that  -- returning a 404 Not Found error.
+        throw new Error();
       }
 
       // If pretty links are enabled (that is, the code above was not executed),
@@ -529,6 +561,7 @@ export class Server {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
 
       const response = this.getResponse(request);
+
       response.headers.set(
         "Content-Type",
         this.http_service.getMimeType(request.url, true) || "text/plain",
@@ -760,24 +793,40 @@ export class Server {
    *
    * @param middleware - The middlewares to be added to the server
    */
-  protected addMiddleware(middlewares: ServerMiddleware): void {
-    // Add server-level middleware
+  protected async addMiddleware(middlewares: ServerMiddleware): Promise<void> {
+    // Add server-level middleware that executes before requests
     if (middlewares.before_request != null) {
       this.middleware.before_request = [];
       for (const middleware of middlewares.before_request) {
         this.middleware.before_request.push(middleware);
       }
     }
+
+    // Add server-level middleware that executes after requests
     if (middlewares.after_request != null) {
       this.middleware.after_request = [];
       for (const middleware of middlewares.after_request) {
         this.middleware.after_request.push(middleware);
       }
     }
+
+    // Add server-level middleware that executes after the resource is found
     if (middlewares.after_resource != null) {
       this.middleware.after_resource = [];
       for (const middleware of middlewares.after_resource) {
         this.middleware.after_resource.push(middleware);
+      }
+    }
+
+    // Add compile time level middleware that executes right now--processing
+    // data to be used later during runtime
+    if (middlewares.compile_time) {
+      for (const middleware of middlewares.compile_time) {
+        await middleware.compile();
+        this.middleware.runtime!.set(
+          this.middleware.runtime!.size,
+          middleware.run,
+        );
       }
     }
   }
@@ -884,13 +933,50 @@ export class Server {
    */
   protected async executeMiddlewareServerLevelAfterRequest(
     request: Drash.Http.Request,
-    response: Drash.Http.Response | null,
+    response: Drash.Http.Response | null = null,
   ): Promise<void> {
+    if (this.middleware.runtime) {
+      if (response) {
+        await this.executeMiddlewareServerLevelRuntimeAfterRequest(
+          request,
+          response,
+        );
+      }
+    }
+
     if (this.middleware.after_request != null) {
       for (const middleware of this.middleware.after_request) {
         await middleware(request, response!);
       }
     }
+  }
+
+  /**
+   * Execute server level runtime middleware after requests. Runtime middleware
+   * requires compile time data.
+   *
+   * @param request - The request objecft.
+   * @param response - The response object.
+   */
+  protected async executeMiddlewareServerLevelRuntimeAfterRequest(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+    let processed: boolean = false;
+
+    this.middleware.runtime!.forEach(
+      async (
+        run: (
+          request: Drash.Http.Request,
+          response: Drash.Http.Response,
+        ) => Promise<void>,
+      ) => {
+        if (!processed) {
+          await run(request, response);
+          processed = true;
+        }
+      },
+    );
   }
 
   /**

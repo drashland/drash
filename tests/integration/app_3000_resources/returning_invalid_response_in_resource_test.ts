@@ -22,7 +22,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
 
       Rhum.asserts.assertEquals(
         await response.text(),
-        '"The response must be returned inside the GET method of the resource"',
+        '"The response must be returned inside the GET method of the InvalidReturningOfResponseResource class."',
       );
       Rhum.asserts.assertEquals(response.status, 418);
     });
@@ -36,7 +36,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
 
       Rhum.asserts.assertEquals(
         await response.text(),
-        '"The response must be returned inside the POST method of the resource"',
+        '"The response must be returned inside the POST method of the InvalidReturningOfResponseResource class."',
       );
       Rhum.asserts.assertEquals(response.status, 418);
     });

@@ -20,6 +20,23 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       );
     });
 
+    Rhum.testCase("compile_time", async () => {
+      let server = new Drash.Http.Server({
+        directory: ".",
+        middleware: {
+          compile_time: [
+            CompileTimeMiddleware(),
+          ],
+        },
+      });
+      const request = members.mockRequest("/hello");
+      const response = await server.handleHttpRequest(request);
+      members.assertResponseJsonEquals(
+        members.responseBody(response),
+        "WE OUT HERE",
+      );
+    });
+
     Rhum.testCase("before_request: missing CSRF token", async () => {
       const server = new Drash.Http.Server({
         middleware: {
@@ -54,7 +71,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       );
     });
 
-    Rhum.testCase("before_response: missing header", async () => {
+    Rhum.testCase("after_request: missing header", async () => {
       const server = new Drash.Http.Server({
         middleware: {
           after_request: [AfterRequest],
@@ -182,7 +199,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = members.mockRequest("/assets/test.js", "get");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
-        members.responseBody(response),
+        response.body,
         "this static path asset's contents got changed",
       );
     });
@@ -298,5 +315,27 @@ function TemplateEngine(
   res.render = (...args: string[]): string | boolean => {
     res.headers.set("Content-Type", "text/html");
     return "RENDERRRRRRd";
+  }
+}
+
+function CompileTimeMiddleware() {
+  const compiledStuff: string[] = [];
+
+  async function compile(): Promise<void> {
+    compiledStuff.push("WE OUT HERE");
+  }
+
+  async function run(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+    console.log(request);
+    if (request.url == "/hello") {
+      response.body = compiledStuff[0];
+    }
+  }
+  return {
+    compile,
+    run,
   };
 }
