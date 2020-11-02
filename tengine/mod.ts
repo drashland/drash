@@ -1,5 +1,5 @@
 import { Drash } from "../../deno-drash/mod.ts";
-import { Jae } from "./drake.ts";
+import { Jae } from "./jae.ts";
 
 interface IOptions {
   render:
