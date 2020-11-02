@@ -128,7 +128,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
         //     ./views_path//index.html
         //
         // ... which would cause an error.
-        this.response.body = await this.response.render(
+        this.response.body = this.response.render(
           "/index.html",
           {
             message: "Hella using Drake.",
