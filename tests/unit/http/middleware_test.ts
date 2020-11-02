@@ -1,9 +1,25 @@
 import { Rhum } from "../../deps.ts";
 import members from "../../members.ts";
 import { Drash } from "../../../mod.ts";
+const decoder = new TextDecoder();
 
 Rhum.testPlan("http/middleware_test.ts", () => {
   Rhum.testSuite("http/middleware_test.ts", () => {
+    Rhum.testCase("after_resource: can change response.render", async () => {
+      const server = new Drash.Http.Server({
+        middleware: {
+          after_resource: [TemplateEngine],
+        },
+        resources: [ResourceWithTemplateEngine],
+      });
+      const request = members.mockRequest("/template-engine");
+      const response = await server.handleHttpRequest(request);
+      Rhum.asserts.assertEquals(
+        decoder.decode(response.body as ArrayBuffer),
+        "RENDERRRRRRd",
+      );
+    });
+
     Rhum.testCase("before_request: missing CSRF token", async () => {
       const server = new Drash.Http.Server({
         middleware: {
@@ -183,6 +199,14 @@ interface IUser {
   name: string;
 }
 
+class ResourceWithTemplateEngine extends Drash.Http.Resource {
+  static paths = ["/template-engine"];
+  public GET() {
+    this.response.body = this.response.render("hello");
+    return this.response;
+  }
+}
+
 class ResourceWithMiddleware extends Drash.Http.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
@@ -265,4 +289,14 @@ function AfterRequestStaticPathAsset(
   if (res) {
     res.body = "this static path asset's contents got changed";
   }
+}
+
+function TemplateEngine(
+  req: Drash.Http.Request,
+  res: Drash.Http.Response,
+) {
+  res.render = (...args: string[]): string | boolean => {
+    res.headers.set("Content-Type", "text/html");
+    return "RENDERRRRRRd";
+  };
 }
