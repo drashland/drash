@@ -916,10 +916,6 @@ export class Server {
    *
    * @param request - The request objecft.
    * @param response - The response object.
-   *
-   * @returns A Drash response or a boolean. If it returns a boolean, it means
-   * it did or did not process properly (true being it processed; false being it
-   * did not process).
    */
   protected async executeMiddlewareServerLevelRuntimeAfterRequest(
     request: Drash.Http.Request,
