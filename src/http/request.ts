@@ -171,6 +171,16 @@ export class Request extends ServerRequest {
   }
 
   /**
+   * Get all the path params.
+   *
+   * @return A key-value pair object where the key is the param name and the
+   * value is the param value.
+   */
+  public getAllPathParams(): {[key: string]: string} {
+    return this.path_params;
+  }
+
+  /**
    * Get the value of one of this request's path params by its input name.
    *
    * @returns The corresponding path parameter or null if not found.
