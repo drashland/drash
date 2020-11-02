@@ -17,7 +17,7 @@ _Note: Since this middleware uses `Deno.compile()`, it can only be used with Den
 
 ```typescript
 // Import the ServeTypeScript middleware function
-import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/serve_typescript/mod.ts";
+import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.0/serve_typescript/mod.ts";
 
 // Instantiate ServeTypeScript and pass in the files you want compiled during
 // compile time. The compiled output of these files will be used during runtime.
@@ -72,7 +72,7 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
     // File: app.ts
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/serve_typescript/mod.ts";
+    import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.0/serve_typescript/mod.ts";
 
     const serveTs = ServeTypeScript({
       files: [
