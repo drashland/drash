@@ -42,12 +42,16 @@ This config is required. Tengine uses this method to replace the `.render()` met
 ```typescript
 const tengine = Tengine({
   render: (...args: unknown[]): boolean => {
+    return false;
+  }
 });
 ```
 
 ### `views_path`
 
-This config is optional. If you're using the default template engine that comes with Tengine (known as Drake), then this config is required. Otherwise, leave this config out if you are using a different template engine. This config tells Drake where our HTML files are located. Note that this config value SHOULD NOT have a trailing slash.
+This config is optional. If you are using the default template engine that comes with Tengine (known as Drake), then this config is required. Otherwise, leave this config out if you are using a different template engine. This config tells Drake where your HTML files are located.
+
+_Note: This config value SHOULD NOT have a trailing slash._
 
 ```typescript
 const tengine = Tengine({
@@ -60,7 +64,7 @@ const tengine = Tengine({
 
 ## Tutorial: Using Drake
 
-This tutorial teaches you how to use Drake (Tengine's default template engine) to render HTML files in your Drash application.
+This tutorial teaches you how to use Drake (Tengine's default template engine).
 
 ### Drake: Folder Structure End State
 
@@ -196,9 +200,11 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
     deno run --allow-net --allow-read app.ts
     ```
 
-2. Navigate to `localhost:1447` in your browser. You should see the following response:
+2. Navigate to `localhost:1447` in your browser. You should see an HTML page with the following text:
 
-    <img src="./verification_drake.png">
+   ```text
+   Hella using Drake.
+   ```
 
 ## Tutorial: Using Eta
 
@@ -227,8 +233,7 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
     
     // Set Eta's configuration
     configure({
-      // This tells Eta to look for templates
-      // In the ./views/ directory
+      // This tells Eta to look for templates in the ./views/ directory
       views: "./views/"
     })
 
@@ -285,8 +290,8 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
                 url: "https://github.com/denjucks/dinja",
               },
               {
-                name: "Eta",
-                url: "https://github.com/eta-dev/eta",
+                name: "Drake",
+                url: "https://github.com/drashland/deno-drash-middleware",
               }
             ],
           }
@@ -333,6 +338,8 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
     deno run --allow-net --allow-read --unstable app.ts
     ```
 
-2. Navigate to `localhost:1447` in your browser. You should see the following response:
+2. Navigate to `localhost:1447` in your browser. You should see an HTML page with the following text:
 
-    <img src="./verification_eta.png">
+   ```text
+   Hella using Eta.
+   ```
