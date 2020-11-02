@@ -262,11 +262,7 @@ export class Server {
 
       // Build a response object that is ready to be hydrated later in the
       // lifecycle
-      response = new Drash.Http.Response(request, {
-        views_path: this.configs.views_path,
-        template_engine: this.configs.template_engine,
-        default_response_content_type: this.configs.response_output,
-      });
+      response = this.getResponse(request);
 
       let resourceClass = this.getResourceClass(request);
 
