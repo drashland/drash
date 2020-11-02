@@ -167,8 +167,6 @@ export class Request extends ServerRequest {
    * @return The parsed body as an object
    */
   public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
-    console.log("the body:");
-    console.log(this.parsed_body);
     return this.parsed_body;
   }
 
