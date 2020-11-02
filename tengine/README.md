@@ -196,6 +196,6 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
     deno run --allow-net --allow-read app.ts
     ```
 
-2. Navigate to `localhost:1447` in your browser.
+2. Navigate to `localhost:1447` in your browser. You should see the following response:
 
-You should see the following response:
+    <img src="./verification_drake.png">
