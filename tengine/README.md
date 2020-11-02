@@ -78,7 +78,6 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
 1. Create your `app.ts` file.
 
     ```typescript
-    // File: app.ts
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
     import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
