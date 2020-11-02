@@ -1,162 +1,105 @@
-# Dexter
+# ServeTypeScript
 
-Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
+Tengine allows your Drash application to use a template engine.
+
+## Table of Contents
+
+* [Usage](#usage)
+* [Configuration](#configuration)
+* [Tutorial: Using Drake](#tutorial-using-drake)
+    * [Folder Structure End State](#drake-folder-structure-end-state)
+    * [Steps](#drake-steps)
+    * [Verification](#drake-verification)
+* [Tutorial: Using Eta](#tutorial-using-eta)
+    * [Folder Structure End State](#eta-folder-structure-end-state)
+    * [Steps](#eta-steps)
+    * [Verification](#eta-verification)
+
+## Usage
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@v{latest}/mod.ts";
+// Import the ServeTypeScript middleware function
+import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
-// Import the Dexter middleware function
-import { Dexter } from "https://deno.land/x/drash_middleware@v0.4.0/dexter/mod.ts";
-
-// Instantiate dexter
-const dexter = Dexter();
-
-// The above will instantiate Dexter with default values: 
-// {
-//     enabled: true,
-//     level: "info",
-//     tag_string: "{datetime} | {level} |",
-//     tag_string_fns: {
-//       datetime() {
-//         return new Date().toISOString().replace("T", " ").split(".")[0];
-//     },
-// };
-
-// Create your server and plug in dexter to the middleware config
-const server = new Drash.Http.Server({
-  resources: [
-    HomeResource,
-  ],
-  middleware: {
-    before_request: [
-      dexter
-    ],
-    after_request: [
-      dexter
-    ]
-  }
+// Use the default template engine that comes with Tengine, known as Drake.
+// Returning false in the render method tells Tengine to use Drake. Specifying
+// the views_path config tells Drake where your HTML files are located.
+const tengine = Tengine({
+  render: (...args: unknown[]): boolean => {
+    return false;
+  },
+  views_path: "./views"
 });
-
-server.run({
-  hostname: "localhost",
-  port: 1447,
-});
-
-console.log(`Server running at ${server.hostname}:${server.port}`);
 ```
 
 ## Configuration
 
-If you decide to configure Dexter, make sure you specify the `enabled` flag in the configs as it is required when customizing the configuration.
+### `render`
 
-### `enabled`
-
-Enable or disable the logger from logging based on the value of this config.
+This config is required. Tengine uses this method to replace the `.render()` method in Drash's response object. The `...args` must always be of type `unknown[]` because you can use any template engine you want. You just have to specify that template engine's render method in this config so Tengine knows how to render templates.
 
 ```typescript
-const dexter = Dexter({
-  enabled: true, // or false
+const tengine = Tengine({
+  render: (...args: unknown[]): boolean => {
 });
 ```
 
-### `level`
+### `views_path`
 
-Define what log statements should be written based on their log level definition (e.g., debug, info, warn).
+This config is optional. If you're using the default template engine that comes with Tengine (known as Drake), then this config is required. Otherwise, leave this config out if you are using a different template engine. This config tells Drake where our HTML files are located. Note that this config value SHOULD NOT have a trailing slash.
 
 ```typescript
-const dexter = Dexter({
-  enabled: true,
-  level: "debug", // or all, trace, debug, info, warn, error, fatal
+const tengine = Tengine({
+  render: (...args: unknown[]): boolean => {
+    return false;
+  },
+  views_path: "./views"
 });
 ```
 
-* `all`: logs all messages below
-* `trace`: logs `.trace()` messages and the below
-* `debug`: logs `.debug()` messages and the below
-* `info`: logs `.info()` messages and the below
-* `warn`: logs `.warn()` messages and the below
-* `error`: logs `.error()` messages and the below
-* `fatal`: logs `.fatal()` messages only
+## Tutorial: Using Drake
 
+This tutorial teaches you how to use Drake (Tengine's default template engine) to render HTML files in your Drash application.
 
-### `tag_string`
+### Folder Structure End State
 
-Define the display of the log messages' tag string. The tag string is a concatenation of tokens preceding the log message. Available, predefined tags:
-
-* `{level}`
-* `{request_method}`
-* `{request_url}`
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  tag_string: "{level} | {request_method} {request_url} |" // Will output something similar to "INFO | GET /home | The log message."
-});
+```
+▾ /path/to/your/project/
+    ▾ views/
+        index.html
+        header.html
+        footer.html
+    app.ts
+    home_resource.ts
 ```
 
-### `tag_string_fns`
-
-If you want more customizations with the `tag_string` config, then you can use `tag_string_fns` to define what your tags should resolve to.
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  tag_string: "{datetime} | {my_tag} |", // Will output something similar to "2020-07-12 10:32:14 | TIGERRR | The log message."
-  tag_string_fns: {
-    datetime() {
-      return new Date().toISOString().replace("T", " ").split(".")[0];
-    },
-    my_tag: "TIGERRR"
-  }
-});
-```
-
-### `response_time`
-
-If you want to see how fast your responses are taking, then use this config. This config will output something similar to `Response sent. [2 ms]`.
-
-```typescript
-const dexter = Dexter({
-  enabled: true,
-  response_time: true, // or false
-});
-```
-
-## Tutorials
-
-### Reusing Dexter in resource classes (or other parts of your codebase)
-
-You can reuse Dexter in your codebase by accessing its `logger`. For example, if you want to use Dexter in one of your resources, then do the following:
+### Steps
 
 1. Create your `app.ts` file.
 
     ```typescript
     // File: app.ts
-    import { Drash } from "https://deno.land/x/drash@v{latest}/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Dexter } from "https://deno.land/x/drash_middleware@v0.3.0/dexter.ts";
+    import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
-    const dexter = Dexter({
-      enabled: true,
-      level: "debug",
-      tag_string: "{request_method} {request_url} |",
+    const tengine = Tengine({
+      render: (...args: unknown[]): boolean => {
+        return false; // This render method returns false to tell Tengine to use Drake
+      },
+      views_path: "./views"
     });
 
-    // Export dexter after calling it with your configurations
-    export { dexter };
-
     const server = new Drash.Http.Server({
+      response_output: "text/html",
       resources: [
         HomeResource,
       ],
       middleware: {
-        before_request: [
-          dexter
-        ],
-        after_request: [
-          dexter
+        after_resource: [
+          tengine
         ]
-      }
+      },
     });
 
     server.run({
@@ -167,29 +110,76 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
     console.log(`Server running at ${server.hostname}:${server.port}`);
     ```
 
-2. Create your `home_resource` file.
+2. Create your `home_resource.ts` file.
 
     ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.x/mod.ts";
-    import { dexter } from "./app.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
 
     export class HomeResource extends Drash.Http.Resource {
 
       static paths = ["/"];
 
       public GET() {
-
-        // Access Dexter's logger from it's prototype and log some messages
-        dexter.logger.debug("This is a log message.");
-        dexter.logger.error("This is a log message.");
-        dexter.logger.fatal("This is a log message.");
-        dexter.logger.info("This is a log message.");
-        dexter.logger.trace("This is a log message.");
-        dexter.logger.warn("This is a log message.");
-
-        this.response.body = "GET request received!";
+        // Call the .render() method and specify the first argument as a
+        // relative path to the views_path config value. Notice, this
+        // argument has a leading slash whereas the views_path config
+        // does not have a trailing slash. Having a trailing slash index
+        // the views_path config would make Drash look for ...
+        //
+        //     ./views_path//index.html
+        //
+        // ... which would cause an error.
+        this.response.body = this.response.render("/index.html", {
+          message: "Hella using Drake."
+        });
 
         return this.response;
       }
     }
     ```
+
+3. Create your `index.html` file.
+
+    ```html
+    <!DOCTYPE html>
+    <html class="h-full w-full">
+      <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+        <title>Tengine</title>
+      </head>
+      <body style="background: #f4f4f4">
+        <div style="max-width: 640px; margin: 50px auto;">
+          <h1 class="text-5xl mb-5"><% message %></h1>
+          <p class="mb-5">Drake is a template engine. Some other template engines are:</p>
+          <% include_partial("/template_engines.html") %>
+        </div>
+      </body>
+    </html>
+    ```
+
+4. Create your `template_engines.html` file.
+
+    ```html
+    <ul class="list-disc ml-5">
+      <% for (const index in template_engines) { %>
+        <li>
+          <span class="text-bold"><% template_engines[index].name %>: </span>
+          <a href="<% template_engines[index].url %>" target="_BLANK"><% template_engines[index].url %></a>
+        </li>
+      <% } %>
+    </ul>
+    ```
+
+### Verification
+
+1. Run your `app.ts` file.
+
+    ```
+    deno run --allow-net --allow-read app.ts
+    ```
+
+2. Navigate to `localhost:1447` in your browser.
+
+You should see the following response:
