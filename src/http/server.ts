@@ -312,9 +312,7 @@ export class Server {
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
           418,
-          "The response must be returned inside the " +
-            resource.constructor.name + "." +
-            request.method.toUpperCase() + " method of the resource",
+          `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
         );
       }
 
@@ -485,12 +483,18 @@ export class Server {
         try {
           // Try to read the file if it exists
           response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
-          await this.executeMiddlewareServerLevelAfterRequest(request, response);
+          await this.executeMiddlewareServerLevelAfterRequest(
+            request,
+            response,
+          );
         } catch (error) {
           // If the file doesn't exist, run the middleware just in case
           // ServeTypeScript is being used. If it's being used, then the
           // middleware will return a response body.
-          await this.executeMiddlewareServerLevelAfterRequest(request, response);
+          await this.executeMiddlewareServerLevelAfterRequest(
+            request,
+            response,
+          );
         }
         // If there's a response body, then we know the middleware created a
         // response body and we can send the response
