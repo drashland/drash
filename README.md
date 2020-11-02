@@ -23,12 +23,15 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Mirrors](#mirrors)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Overview
 
 This repository contains Drash-approved middleware modules that you can use in your Drash application. Be aware that some modules may use third-party dependencies whilst some will not. You are still able to [**create your own**](https://drash.land/drash/#/tutorials/middleware/introduction) middleware within Drash, but this project supplies already developed middleware that can be plugged straight into your application. Here is the current list of middleware modules:
+
+* [CSRF](./csrf) - Projection middleware. Inspired by [expressjs/csurf](http://expressjs.com/en/resources/middleware/csurf.html).
 
 * [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
 
@@ -38,6 +41,10 @@ This repository contains Drash-approved middleware modules that you can use in y
 
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
+## Mirrors
+
+* https://nest.land/package/drash-middleware
+
 ## Contributing
 
 Contributors are welcomed!
@@ -45,4 +52,5 @@ Contributors are welcomed!
 Please read through our [contributing guidelines](./.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
 
 ## License
+
 By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
