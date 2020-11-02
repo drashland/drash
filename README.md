@@ -34,6 +34,8 @@ This repository contains Drash-approved middleware modules that you can use in y
 
 * [Paladin](./paladin) - Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
 
+* [Tengine](./tengine) - Tengine allows your Drash applications to use the template engine of your choice.
+
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
 ## Contributing
