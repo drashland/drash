@@ -100,6 +100,10 @@ Rhum.testPlan("http/request_test.ts", () => {
     getAllBodyParamsTests();
   });
 
+  Rhum.testSuite("getAllPathParams()", () => {
+    getAllPathParamsTests();
+  });
+
   Rhum.testSuite("hasBody()", () => {
     hasBodyTests();
   });
@@ -452,6 +456,23 @@ function getAllBodyParamsTests() {
           name: "Ed",
         },
       });
+    },
+  );
+}
+
+function getAllPathParamsTests() {
+  Rhum.testCase(
+    "Returns all path params",
+    async () => {
+      const expected = {
+        param_1: "user",
+        param_2: "name"
+      };
+      const serverRequest = members.mockRequest("/user/name", "get");
+      const request = new Drash.Http.Request(serverRequest);
+      request.path_params = expected;
+      const actual = request.getAllPathParams();
+      Rhum.asserts.assertEquals(actual, expected);
     },
   );
 }
