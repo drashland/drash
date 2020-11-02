@@ -199,3 +199,140 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
 2. Navigate to `localhost:1447` in your browser. You should see the following response:
 
     <img src="./verification_drake.png">
+
+## Tutorial: Using Eta
+
+This tutorial teaches you how to use Eta.
+
+_Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable` flag when you run your application._
+
+### Eta: Folder Structure End State
+
+```
+▾ /path/to/your/project/
+    ▾ views/
+        index.html
+    app.ts
+    home_resource.ts
+```
+
+### Eta: Steps
+
+1. Create your `app.ts` file.
+
+    ```typescript
+    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+    import { HomeResource } from "./home_resource.ts";
+    import { renderFile, configure } from "https://deno.land/x/eta@v1.6.0/mod.ts"
+    
+    // Set Eta's configuration
+    configure({
+      // This tells Eta to look for templates
+      // In the ./views/ directory
+      views: "./views/"
+    })
+
+    const tengine = Tengine({
+      render: async (...args: unknown[]): Promise<string>=> {
+        return await renderFile(
+          args[0] as string,
+          args[1] as any,
+        );
+      }
+    });
+
+    const server = new Drash.Http.Server({
+      response_output: "text/html",
+      resources: [
+        HomeResource,
+      ],
+      middleware: {
+        after_resource: [
+          tengine
+        ]
+      },
+    });
+
+    server.run({
+      hostname: "localhost",
+      port: 1447,
+    });
+
+    console.log(`Server running at ${server.hostname}:${server.port}`);
+    ```
+
+2. Create your `home_resource.ts` file.
+
+    ```typescript
+    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+
+    export class HomeResource extends Drash.Http.Resource {
+
+      static paths = ["/"];
+
+      public async GET() {
+        this.response.body = await this.response.render(
+          "/index.html",
+          {
+            message: "Hella using Eta.",
+            template_engines: [
+              {
+                name: "dejs",
+                url: "https://github.com/syumai/dejs",
+              },
+              {
+                name: "Dinja",
+                url: "https://github.com/denjucks/dinja",
+              },
+              {
+                name: "Eta",
+                url: "https://github.com/eta-dev/eta",
+              }
+            ],
+          }
+        );
+
+        return this.response;
+      }
+    }
+    ```
+
+3. Create your `index.html` file.
+
+    ```html
+    <!DOCTYPE html>
+    <html class="h-full w-full">
+      <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+        <title>Tengine</title>
+      </head>
+      <body style="background: #f4f4f4">
+        <div style="max-width: 640px; margin: 50px auto;">
+          <h1 class="text-5xl mb-5"><%= it.message %></h1>
+          <p class="mb-5">Eta is a template engine. Some other template engines are:</p>
+          <ul class="list-disc ml-5">
+            <% for (const index in it.template_engines) { %>
+              <li>
+                <span class="text-bold"><%= it.template_engines[index].name %>: </span>
+                <a href="<%= it.template_engines[index].url %>" target="_BLANK"><%= it.template_engines[index].url %></a>
+              </li>
+            <% } %>
+          </ul>
+        </div>
+      </body>
+    </html>
+    ```
+
+### Eta: Verification
+
+1. Run your `app.ts` file.
+
+    ```
+    deno run --allow-net --allow-read --unstable app.ts
+    ```
+
+2. Navigate to `localhost:1447` in your browser. You should see the following response:
+
+    <img src="./verification_eta.png">
