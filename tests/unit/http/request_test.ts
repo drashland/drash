@@ -466,7 +466,7 @@ function getAllPathParamsTests() {
     async () => {
       const expected = {
         param_1: "user",
-        param_2: "name"
+        param_2: "name",
       };
       const serverRequest = members.mockRequest("/user/name", "get");
       const request = new Drash.Http.Request(serverRequest);
@@ -476,26 +476,6 @@ function getAllPathParamsTests() {
     },
   );
 }
-
-// function getAllPathParamsTests() {
-//   Rhum.testCase(
-//     "Returns all of the path parameters",
-//     async () => {
-//       const serverRequest = members.mockRequest();
-//       const request = new Drash.Http.Request(serverRequest);
-//       await request.parseBody();
-//       request.path_params = {
-//         hello: "world",
-//         goodbye: "world",
-//       };
-//       const actual = request.getAllPathParams();
-//       Rhum.asserts.assertEquals(actual, {
-//         hello: "world",
-//         goodbye: "world"
-//       });
-//     },
-//   );
-// }
 
 function getHeaderParamTests() {
   Rhum.testCase(

@@ -176,7 +176,7 @@ export class Request extends ServerRequest {
    * @return A key-value pair object where the key is the param name and the
    * value is the param value.
    */
-  public getAllPathParams(): {[key: string]: string} {
+  public getAllPathParams(): { [key: string]: string } {
     return this.path_params;
   }
 
