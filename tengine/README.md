@@ -122,15 +122,32 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
         // Call the .render() method and specify the first argument as a
         // relative path to the views_path config value. Notice, this
         // argument has a leading slash whereas the views_path config
-        // does not have a trailing slash. Having a trailing slash index
-        // the views_path config would make Drash look for ...
+        // does not have a trailing slash. Having a trailing slash in
+        // the views_path config would make Drake look for ...
         //
         //     ./views_path//index.html
         //
         // ... which would cause an error.
-        this.response.body = this.response.render("/index.html", {
-          message: "Hella using Drake."
-        });
+        this.response.body = this.response.render(
+          "/index.html",
+          {
+            message: "Hella using Drake.",
+            template_engines: [
+              {
+                name: "dejs",
+                url: "https://github.com/syumai/dejs",
+              },
+              {
+                name: "Dinja",
+                url: "https://github.com/denjucks/dinja",
+              },
+              {
+                name: "Eta",
+                url: "https://github.com/eta-dev/eta",
+              }
+            ],
+          }
+        );
 
         return this.response;
       }
