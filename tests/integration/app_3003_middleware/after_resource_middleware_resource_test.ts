@@ -23,10 +23,12 @@ Rhum.testPlan("after_resource_middleware_resource_test.ts", () => {
       await runServer(server, { port: 3003 });
       let response;
 
-      response = await members.fetch.get("http://localhost:3003/template-engine-middleware");
+      response = await members.fetch.get(
+        "http://localhost:3003/template-engine-middleware",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
-        "[\"hello\",{\"what\":\"ok\"}]",
+        '["hello",{"what":"ok"}]',
       );
 
       await server.close();
@@ -35,4 +37,3 @@ Rhum.testPlan("after_resource_middleware_resource_test.ts", () => {
 });
 
 Rhum.run();
-
