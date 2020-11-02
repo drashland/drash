@@ -315,7 +315,7 @@ function TemplateEngine(
   res.render = (...args: string[]): string | boolean => {
     res.headers.set("Content-Type", "text/html");
     return "RENDERRRRRRd";
-  }
+  };
 }
 
 function CompileTimeMiddleware() {
