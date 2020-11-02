@@ -183,7 +183,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = members.mockRequest("/assets/test.js", "get");
       const response = await server.handleHttpRequest(request);
       members.assertResponseJsonEquals(
-        members.responseBody(response),
+        response.body,
         "this static path asset's contents got changed",
       );
     });
