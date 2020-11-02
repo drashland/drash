@@ -150,15 +150,13 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
 
 1. Run your `app.ts` file.
 
-    ```
+    ```sh
     deno run --allow-net --allow-read --unstable app.ts
     ```
 
-2. Navigate to `localhost:1447` in your browser.
+2. Navigate to `localhost:1447` in your browser. You should see the following response:
 
-You should see the following response:
-
-    ```
+    ```text
     Hello, TypeScript user!
     ```
 
