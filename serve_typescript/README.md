@@ -1,6 +1,6 @@
 # ServeTypeScript
 
-ServeTypeScript is a compile time middleware that allows you to write front-end TypeScript and serve it as compiled JavaScript during runtime.
+ServeTypeScript is a compile time middleware that allows you to write front-end TypeScript and serve it as compiled JavaScript during runtime. Since the compiling happens during compile time, this doesn't impact your application's runtime performance.
 
 _Note: Since this middleware uses `Deno.compile()`, it can only be used with Deno's `--unstable` flag (e.g., `deno run --unstable app.ts`)._
 
