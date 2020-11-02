@@ -5,7 +5,10 @@ import { Tengine } from "../mod.ts";
 class Resource extends Drash.Http.Resource {
   static paths = ["/"];
   public async GET() {
-    this.response.body = this.response.render("/index.html", { greeting: "hello" });
+    this.response.body = this.response.render(
+      "/index.html",
+      { greeting: "hello" },
+    );
     return this.response;
   }
 }
@@ -14,7 +17,7 @@ const tengine = Tengine({
   render: (...args: unknown[]): boolean => {
     return false; // This render method returns false to tell Tengine to use Drake
   },
-  views_path: "./tengine/tests/views"
+  views_path: "./tengine/tests/views",
 });
 
 // deno-lint-ignore no-explicit-any

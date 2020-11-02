@@ -118,4 +118,3 @@ export class Drake {
     return result;
   }
 }
-

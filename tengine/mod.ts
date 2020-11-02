@@ -2,14 +2,14 @@ import { Drash } from "../../deno-drash/mod.ts";
 import { Drake } from "./drake.ts";
 
 interface IOptions {
-  render: ((...args: unknown[]) => Promise<boolean|string> | boolean | string)
+  render:
+    ((...args: unknown[]) => Promise<boolean | string> | boolean | string);
   views_path?: string;
 }
 
 export function Tengine(
-  options: IOptions
+  options: IOptions,
 ) {
-
   let templateEngine: Drake;
 
   /**
@@ -32,9 +32,9 @@ export function Tengine(
       options.render = (...args: unknown[]): string => {
         return templateEngine.render(
           args[0] as string,
-          args[1] as unknown
+          args[1] as unknown,
         );
-      }
+      };
     }
 
     if (response.render) {
