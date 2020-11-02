@@ -1,14 +1,16 @@
-import { Drash } from "../deps.ts";
+import { Drash } from "../../deno-drash/mod.ts";
+import { Drake } from "./drake.ts";
 
-interface ITengineOptions {
-  render: (...args: any[]) => Promise<string|void>;
+interface IOptions {
+  render: ((...args: unknown[]) => Promise<boolean|string> | boolean | string)
+  views_path?: string;
 }
 
-/**
- */
 export function Tengine(
-  options: ITengineOptions
+  options: IOptions
 ) {
+
+  let templateEngine: Drake;
 
   /**
    * The middleware function that's called by Drash.
@@ -18,16 +20,27 @@ export function Tengine(
    */
   function tengine(
     request: Drash.Http.Request,
-    response?: Drash.Http.Response,
+    response: Drash.Http.Response,
   ): void {
     // If there is a response, then we know this is occurring after the request
-    if (response) {
-      response.headers.set("Content-Type", "text/html");
-    }
-  }
+    response.headers.set("Content-Type", "text/html");
 
-  tengine.render = async function(...args: unknown[]): Promise<string> {
-    return await options.render(args) as unknown as string;
+    if (options.views_path) {
+      if (!templateEngine) {
+        templateEngine = new Drake(options.views_path);
+      }
+      options.render = (...args: unknown[]): string => {
+        return templateEngine.render(
+          args[0] as string,
+          args[1] as unknown
+        );
+      }
+    }
+
+    if (response.render) {
+      response.render = options.render;
+      return;
+    }
   }
 
   return tengine;
