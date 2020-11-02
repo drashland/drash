@@ -75,9 +75,14 @@ export class Server {
   protected http_service: Drash.Services.HttpService;
 
   /**
-   * A property to hold server-level middleware. This includes before request
-   * middleware, after request middleware, compile time middleware, and runtime
-   * middleware.
+   * A property to hold server-level middleware. This includes the following
+   * middleware types:
+   *
+   *     - after request
+   *     - after resource
+   *     - before request
+   *     - compile time
+   *     - runtime
    */
   protected middleware: ServerMiddleware = {
     runtime: new Map<
