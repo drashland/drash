@@ -26,9 +26,6 @@ const server = new Drash.Http.Server({
 
 /**
  * @deprecated
- * (MVEMCJSUNPE) it shouldn't be necessary to add a deprecation
- * warning here, since TemplateEngineResource already has a deprecation
- * warning
  */
 Rhum.testPlan("template_engine_resource_test.ts", () => {
   Rhum.testSuite("/template-engine", () => {
