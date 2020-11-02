@@ -483,7 +483,7 @@ export class Server {
       // client should receive a proper response in the proper format.
       if (!this.configs.pretty_links || request.url.split(".")[1]) {
         try {
-          // Try to reaed the file if it exists
+          // Try to read the file if it exists
           response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
           await this.executeMiddlewareServerLevelAfterRequest(request, response);
         } catch (error) {
