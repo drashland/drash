@@ -80,7 +80,7 @@ This tutorial teaches you how to use Drake (Tengine's default template engine) t
     // File: app.ts
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
     const tengine = Tengine({
       render: (...args: unknown[]): boolean => {
