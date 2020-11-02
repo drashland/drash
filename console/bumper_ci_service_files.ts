@@ -5,10 +5,10 @@ export const regexes = {
   egg_json: /"version": ".+"/,
   import_export_statements: /drash_middleware@v[0-9\.]+[0-9\.]+[0-9\.]/g,
   yml_deno: /deno: \[".+"\]/g,
-  drash_import_statements: /drash@v[0-9\.]+[0-9\.]+[0-9\.]/g
+  drash_import_statements: /drash@v[0-9\.]+[0-9\.]+[0-9\.]/g,
 };
 
-const bumperService = new BumperService("drash_middleware")
+const bumperService = new BumperService("drash_middleware");
 const latestDrashVersion = await bumperService.getModulesLatestVersion("drash");
 
 export const bumpVersionFiles = [
