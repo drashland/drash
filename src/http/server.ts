@@ -74,9 +74,14 @@ export class Server {
   protected http_service: Drash.Services.HttpService;
 
   /**
-   * A property to hold server-level middleware. This includes before request
-   * middleware, after request middleware, compile time middleware, and runtime
-   * middleware.
+   * A property to hold server-level middleware. This includes the following
+   * middleware types:
+   *
+   *     - after request
+   *     - after resource
+   *     - before request
+   *     - compile time
+   *     - runtime
    */
   protected middleware: ServerMiddleware = {
     runtime: new Map<
@@ -258,6 +263,10 @@ export class Server {
         `Request received: ${request.method.toUpperCase()} ${request.url}`,
       );
 
+      // Build a response object that is ready to be hydrated later in the
+      // lifecycle
+      response = this.getResponse(request);
+
       let resourceClass = this.getResourceClass(request);
 
       await this.executeMiddlewareServerLevelBeforeRequest(request);
@@ -283,11 +292,7 @@ export class Server {
       //
       resource = new (resourceClass as Drash.Http.Resource)(
         request,
-        new Drash.Http.Response(request, {
-          views_path: this.configs.views_path,
-          template_engine: this.configs.template_engine,
-          default_response_content_type: this.configs.response_output,
-        }),
+        response,
         this,
       );
       // We have to add the static properties back because they get blown away
@@ -307,6 +312,12 @@ export class Server {
       if (typeof resource[request.method.toUpperCase()] !== "function") {
         throw new Drash.Exceptions.HttpException(405);
       }
+
+      // TODO(crookse) In v2, this is where the before_request middleware hook
+      // will be placed. The current location of the before_request middleware
+      // hook will be replaced with a before_resource middleware hook.
+      await this.executeMiddlewareServerLevelAfterResource(request, response);
+
       // response can  be literally anything, it's down to the user what they return from the method
       response = await resource[request.method.toUpperCase()]();
 
@@ -554,6 +565,7 @@ export class Server {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
 
       const response = this.getResponse(request);
+
       response.headers.set(
         "Content-Type",
         this.http_service.getMimeType(request.url, true) || "text/plain",
@@ -732,6 +744,14 @@ export class Server {
       }
     }
 
+    // Add server-level middleware that executes after the resource is found
+    if (middlewares.after_resource != null) {
+      this.middleware.after_resource = [];
+      for (const middleware of middlewares.after_resource) {
+        this.middleware.after_resource.push(middleware);
+      }
+    }
+
     // Add compile time level middleware that executes right now--processing
     // data to be used later during runtime
     if (middlewares.compile_time) {
@@ -802,6 +822,24 @@ export class Server {
       }
 
       this.addStaticPath(physicalPath, virtualPath);
+    }
+  }
+
+  /**
+   * Execute server-level middleware after a resource has been found, but before
+   * the resource's HTTP request method is executed.
+   *
+   * @param request - The request object.
+   * @param resource - The resource object.
+   */
+  protected async executeMiddlewareServerLevelAfterResource(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+    if (this.middleware.after_resource != null) {
+      for (const middleware of this.middleware.after_resource) {
+        await middleware(request, response);
+      }
     }
   }
 

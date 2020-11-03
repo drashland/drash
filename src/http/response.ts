@@ -126,7 +126,7 @@ export class Response {
    */
   public render(
     ...args: unknown[]
-  ): string | boolean {
+  ): Promise<boolean | string> | boolean | string {
     if (!this.views_path) {
       return false;
     }

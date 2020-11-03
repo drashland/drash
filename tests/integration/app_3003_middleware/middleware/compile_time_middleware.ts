@@ -11,7 +11,7 @@ export default function CompileTimeMiddleware() {
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<void> {
-    if (request.url == "/hello") {
+    if (request.url == "/compile-time-middleware") {
       response.body = compiledStuff[0];
     }
   }
