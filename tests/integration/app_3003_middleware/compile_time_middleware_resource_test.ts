@@ -8,8 +8,8 @@ import { runServer } from "../test_utils.ts";
 const server = new Drash.Http.Server({
   response_output: "application/json",
   middleware: {
-    before_request: [
-      CompileTimeMiddleware,
+    compile_time: [
+      CompileTimeMiddleware(),
     ],
   },
   resources: [
