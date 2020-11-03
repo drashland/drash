@@ -52,9 +52,6 @@ export class TemplateEngine {
    * @returns The html to be rendered
    */
   public render(template: string, data: unknown): string {
-    LoggerService.logWarn(
-      "You are using deprecated code, which will be removed on January 1, 2021. Please update your application to use Tengine -- a template engine middleware. View it at https://github.com/drashland/deno-drash-middleware/tree/master/tengine.",
-    );
     let code = "with(obj) { var r=[];\n";
     let cursor = 0;
     let html: string = decoder.decode(
