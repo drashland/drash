@@ -49,7 +49,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        deno: ["1.4.4"]
+        deno: ["1.5.1"]
 
     runs-on: ${{ matrix.os }}
 
