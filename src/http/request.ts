@@ -9,6 +9,7 @@ import {
 } from "../../deps.ts";
 type Reader = Deno.Reader;
 import { Drash } from "../../mod.ts";
+
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
@@ -145,6 +146,38 @@ export class Request extends ServerRequest {
    */
   public getHeaderParam(input: string): string | null {
     return this.headers.get(input);
+  }
+
+  /**
+   * Gets all header params
+   *
+   * @return Key value pairs for the header name and it's value
+   */
+  public getAllHeaderParams(): { [key: string]: string } {
+    let headers: { [key: string]: string } = {};
+    for (const pair of this.headers.entries()) {
+      headers[pair[0]] = pair[1];
+    }
+    return headers;
+  }
+
+  /**
+   * Gets all the body params
+   *
+   * @return The parsed body as an object
+   */
+  public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
+    return this.parsed_body;
+  }
+
+  /**
+   * Get all the path params.
+   *
+   * @return A key-value pair object where the key is the param name and the
+   * value is the param value.
+   */
+  public getAllPathParams(): { [key: string]: string } {
+    return this.path_params;
   }
 
   /**
