@@ -1,5 +1,9 @@
+import { LoggerService } from "../../deps.ts";
 const decoder = new TextDecoder();
 
+/**
+   * @deprecated
+   */
 export class TemplateEngine {
   /**
    * A property to hold the base path to the template(s).
@@ -18,6 +22,9 @@ export class TemplateEngine {
    */
 
   constructor(viewsPath: string) {
+    LoggerService.logWarn(
+      "You are using deprecated code, which will be removed on January 1, 2021. Please update your application to use Tengine -- a template engine middleware. View it at https://github.com/drashland/deno-drash-middleware/tree/master/tengine.",
+    );
     this.views_path = viewsPath;
   }
 

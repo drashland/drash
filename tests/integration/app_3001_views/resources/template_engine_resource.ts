@@ -1,5 +1,8 @@
 import { Drash } from "../../../../mod.ts";
 
+/**
+ * @deprecated
+ */
 export default class TemplateEngineResource extends Drash.Http.Resource {
   static paths = ["/template-engine"];
   public GET() {

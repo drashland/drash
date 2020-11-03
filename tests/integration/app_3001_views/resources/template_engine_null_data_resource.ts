@@ -1,5 +1,8 @@
 import { Drash } from "../../../../mod.ts";
 
+/**
+ * @deprecated
+ */
 export default class TemplateEngineNullDataResource
   extends Drash.Http.Resource {
   static paths = ["/template-engine-null-data"];
