@@ -3,7 +3,7 @@
 Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
 
 // Import the Dexter middleware function
 import { Dexter } from "https://deno.land/x/drash_middleware@v0.6.0/dexter/mod.ts";
@@ -132,7 +132,7 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
 
     ```typescript
     // File: app.ts
-    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
     import { HomeResource } from "./home_resource.ts";
     import { Dexter } from "https://deno.land/x/drash_middleware@v0.6.0/dexter.ts";
 
@@ -170,7 +170,7 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
 2. Create your `home_resource` file.
 
     ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.2.5/mod.ts";
     import { dexter } from "./app.ts";
 
     export class HomeResource extends Drash.Http.Resource {
