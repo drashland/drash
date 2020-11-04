@@ -58,3 +58,5 @@ export type {
 // } from "../services/index/index_service.ts";
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/master/ci/bumper_service.ts";
+
+export { LoggerService } from "https://raw.githubusercontent.com/drashland/services/master/logger/logger_service.ts";

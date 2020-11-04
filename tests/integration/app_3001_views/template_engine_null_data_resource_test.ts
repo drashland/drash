@@ -24,6 +24,9 @@ const server = new Drash.Http.Server({
   template_engine: true,
 });
 
+/**
+ * @deprecated
+ */
 Rhum.testPlan("template_engine_null_data_resource_test.ts", () => {
   Rhum.testSuite("/template-engine-null-data", () => {
     Rhum.testCase("handles null data", async () => {

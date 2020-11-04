@@ -8,10 +8,10 @@ Rhum.testPlan("mod_test.ts", () => {
         enabled: true,
         level: "debug",
       });
-      Drash.addLogger("TestLogger", testLogger);
-      let expected = {
+      const expected = {
         "TestLogger": testLogger,
       };
+      Drash.addLogger("TestLogger", testLogger);
       Rhum.asserts.assertEquals(Drash.Loggers, expected);
     });
 
