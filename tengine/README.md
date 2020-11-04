@@ -19,7 +19,7 @@ Tengine allows your Drash application to use a template engine.
 
 ```typescript
 // Import the Tengine middleware function
-import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
+import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.0/tengine/mod.ts";
 
 // Use the default template engine that comes with Tengine, known as Jae.
 // Returning false in the render method tells Tengine to use Jae. Specifying
@@ -84,7 +84,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.0/tengine/mod.ts";
 
     const tengine = Tengine({
       render: (...args: unknown[]): boolean => {
