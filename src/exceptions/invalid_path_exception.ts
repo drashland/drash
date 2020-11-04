@@ -11,10 +11,7 @@ export class InvalidPathException extends Error {
    *
    * @param message - (optional) The exception message.
    */
-  constructor(message?: string) {
-    if (!message) {
-      message = "Path must be a string.";
-    }
+  constructor(message: string = "Path must be a string.") {
     super(message);
   }
 }
