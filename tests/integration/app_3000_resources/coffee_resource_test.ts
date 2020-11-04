@@ -12,7 +12,7 @@ const server = new Drash.Http.Server({
 
 Rhum.testPlan("coffee_resource_test.ts", () => {
   Rhum.testSuite("/coffee", () => {
-    Rhum.testCase("works as expected", async () => {
+    Rhum.testCase("works as expected with path params", async () => {
       await runServer(server);
 
       let response;
@@ -58,8 +58,15 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
 
       response = await members.fetch.post("http://localhost:3000/coffee/17/");
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
+    });
+  });
+
+  Rhum.testSuite("/coffee", () => {
+    Rhum.testCase("works as expected with URL query params", async () => {
+      await runServer(server);
 
       let data;
+      let response;
 
       data = { id: 18 };
       response = await members.fetch.get(

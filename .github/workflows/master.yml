@@ -45,6 +45,36 @@ jobs:
         run: |
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
+  benchmarks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        deno: ["1.5.1"]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno v${{ matrix.deno }}
+        uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Setup Node 13
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13'
+
+      - name: Install Autocannon
+        run: npm install -g autocannon
+
+      - name: Run Drash Application
+        run: deno run --allow-net ./console/benchmark_app.ts &
+
+      - name: Run Autocannon Benchmarks
+        run: autocannon -c 40 -d 10 -j http://localhost:1447
+
   linter:
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest

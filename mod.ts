@@ -17,6 +17,7 @@ import { mime_db } from "./src/dictionaries/mime_db.ts";
 // Exceptions
 import { ConfigsException as BaseConfigsException } from "./src/exceptions/configs_exception.ts";
 import { HttpException as BaseHttpException } from "./src/exceptions/http_exception.ts";
+import { InvalidPathException as BaseInvalidPathException } from "./src/exceptions/invalid_path_exception.ts";
 import { HttpMiddlewareException as BaseHttpMiddlewareException } from "./src/exceptions/http_middleware_exception.ts";
 import { HttpResponseException as BaseHttpResponseException } from "./src/exceptions/http_response_exception.ts";
 import { NameCollisionException as BaseNameCollisionException } from "./src/exceptions/name_collision_exception.ts";
@@ -70,6 +71,7 @@ export namespace Drash {
     export class HttpException extends BaseHttpException {}
     export class HttpMiddlewareException extends BaseHttpMiddlewareException {}
     export class HttpResponseException extends BaseHttpResponseException {}
+    export class InvalidPathException extends BaseInvalidPathException {}
     export class NameCollisionException extends BaseNameCollisionException {}
   }
 
