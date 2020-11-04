@@ -1,4 +1,4 @@
-import { Drash } from "./mod.ts";
+import { Drash } from "../mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
@@ -17,4 +17,4 @@ server.run({
   port: 1447,
 });
 
-console.log("app running");
+console.log(`App running at http://${server.hostname}:${server.port}.`);
