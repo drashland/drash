@@ -70,7 +70,7 @@ jobs:
         run: npm install -g autocannon
 
       - name: Run Drash Application
-        run: deno run --allow-net ./console/benchmark_app.ts
+        run: deno run --allow-net ./console/benchmark_app.ts &
 
       - name: Run Autocannon Benchmarks
         run: autocannon -c 40 -d 10 -j http://localhost:1447
