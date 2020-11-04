@@ -48,7 +48,7 @@ jobs:
   benchmarks:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         deno: ["1.5.1"]
 
     runs-on: ${{ matrix.os }}
@@ -61,20 +61,17 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
-      - name: Setup Node 13
-        uses: actions/setup-node@v1
-        with:
-          node-version: '13'
+      - name: Install wrk
+        run: |
+          yum install https://extras.getpagespeed.com/release-el6-latest.rpm
+          yum install wrk
 
-      - name: Install Autocannon
-        run: npm install -g autocannon
-
-      - name: Run Autocannon Benchmarks
+      - name: Run wrk Benchmarks
         run: |-
           deno run --allow-all benchmark_app.ts &
           sleep 15 &&
           mkdir -p results &&
-          autocannon -c 40 -d 10 -j http://localhost:1447 &&
+          wrk -c 40 -d 10 http://localhost:1447 &&
           kill $!
 
   linter:
