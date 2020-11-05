@@ -4,7 +4,7 @@ Tengine allows your Drash application to use a template engine.
 
 ## Migrating From Drash.Compilers.TemplateEngine?
 
-If you have received the message about `Drash.Compilers.TemplateEngine` being deprecated and are looking for the migration guide, here it is:
+If you have received the message about `server.template_engine` being deprecated and are looking for the migration guide, here it is:
 
 1. Remove the following from your `const server = new Drash.Http.Server({ ... })` block:
     * `views_path`
