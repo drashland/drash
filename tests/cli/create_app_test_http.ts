@@ -462,20 +462,6 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           testCaseTmpDirName + "/resources/home_resource.ts",
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // home_resource_test.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(
-            testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
-          ),
-          true,
-        );
-        boilerPlateFile = await fetchFileContent(
-          "/console/create_app/tests/resources/home_resource_test_web_app.ts",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // public/img.ts
         Rhum.asserts.assertEquals(
           await fileExists(testCaseTmpDirName + "/public/img"),
