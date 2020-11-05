@@ -205,6 +205,16 @@ Rhum.testPlan("create_app_test_http.ts", () => {
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // server.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/server.ts"),
+          true,
+        );
+        boilerPlateFile = await fetchFileContent(
+          "/console/create_app/server_api.ts",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // deps.ts
         Rhum.asserts.assertEquals(
           await fileExists(testCaseTmpDirName + "/deps.ts"),
@@ -296,6 +306,16 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           "/console/create_app/app_web_app.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // server.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/server.ts"),
+          true,
+        );
+        boilerPlateFile = await fetchFileContent(
+          "/console/create_app/server_api.ts",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // deps.ts
         Rhum.asserts.assertEquals(
@@ -430,6 +450,16 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           "/console/create_app/app_web_app.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        // server.ts
+        Rhum.asserts.assertEquals(
+          await fileExists(testCaseTmpDirName + "/server.ts"),
+          true,
+        );
+        boilerPlateFile = await fetchFileContent(
+          "/console/create_app/server_api.ts",
+        );
+        copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         // deps.ts
         Rhum.asserts.assertEquals(

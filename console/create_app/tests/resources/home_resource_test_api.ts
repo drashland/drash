@@ -1,5 +1,5 @@
 import { assertEquals } from "../../deps.ts";
-import { server } from "../../app.ts";
+import { server } from "../../server.ts";
 
 async function startServer() {
   await server.run({
@@ -31,8 +31,6 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-  sanitizeResources: false,
-  sanitizeOps: false,
 });
 
 Deno.test({
@@ -58,8 +56,6 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-  sanitizeResources: false,
-  sanitizeOps: false,
 });
 
 Deno.test({
@@ -85,8 +81,6 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-  sanitizeResources: false,
-  sanitizeOps: false,
 });
 
 Deno.test({
@@ -112,8 +106,4 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-  sanitizeResources: false,
-  sanitizeOps: false,
 });
-
-await server.close();

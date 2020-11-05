@@ -140,6 +140,7 @@ async function buildTheBaseline() {
  */
 async function buildForWebApp() {
   await copyFile("/app_web_app.ts", "/app.ts");
+  await copyFile("/server_web_app.ts", "/server.ts");
   Deno.mkdirSync(cwd + "/public/views", { recursive: true });
   Deno.mkdirSync(cwd + "/public/css", { recursive: true });
   Deno.mkdirSync(cwd + "/public/js", { recursive: true });
@@ -192,6 +193,7 @@ async function buildForAPI() {
     "/resources/home_resource_api.ts",
     "/resources/home_resource.ts",
   );
+  await copyFile("/server_api.ts", "/server.ts");
 }
 
 async function buildTheTestsApi() {
