@@ -9,17 +9,17 @@ export default class HomeResource extends Drash.Http.Resource {
   }
 
   public POST() {
-    this.response.body = JSON.stringify({ message: "Not implemented" });
+    this.response.body = "POST method not implemented.";
     return this.response;
   }
 
   public DELETE() {
-    this.response.body = JSON.stringify({ message: "Not implemented" });
+    this.response.body = "DELETE method not implemented.";
     return this.response;
   }
 
   public PUT() {
-    this.response.body = JSON.stringify({ message: "Not implemented" });
+    this.response.body = "PUT method not implemented.";
     return this.response;
   }
 }

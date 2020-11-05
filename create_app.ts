@@ -133,11 +133,6 @@ async function buildTheBaseline() {
   await copyFile("/deps.ts", "/deps.ts");
   await copyFile("/config.ts", "/config.ts");
   Deno.mkdirSync(cwd + "/middleware");
-  Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
-  await copyFile(
-    "/tests/resources/home_resource_test.ts",
-    "/tests/resources/home_resource_test.ts",
-  );
 }
 
 /**
@@ -145,12 +140,16 @@ async function buildTheBaseline() {
  */
 async function buildForWebApp() {
   await copyFile("/app_web_app.ts", "/app.ts");
+  await copyFile("/server_web_app.ts", "/server.ts");
   Deno.mkdirSync(cwd + "/public/views", { recursive: true });
   Deno.mkdirSync(cwd + "/public/css", { recursive: true });
   Deno.mkdirSync(cwd + "/public/js", { recursive: true });
   Deno.mkdirSync(cwd + "/public/img", { recursive: true });
   Deno.mkdirSync(cwd + "/resources");
-  await copyFile("/resources/home_resource.ts", "/resources/home_resource.ts");
+  await copyFile(
+    "/resources/home_resource_web_app.ts",
+    "/resources/home_resource.ts",
+  );
 
   if (wantsVue) {
     await copyFile("/package_vue.json", "/package.json");
@@ -175,7 +174,7 @@ async function buildForWebApp() {
     await copyFile("/tsconfig_react.json", "/tsconfig.json");
     notesForUser.push("Install NPM dependencies:\n    npm install");
     notesForUser.push(
-      "Build your Vue component with Webpack:\n    npm run buildReact",
+      "Build your React component:\n    npm run buildReact",
     );
   } else {
     await copyFile("/public/views/index.html", "/public/views/index.html");
@@ -194,6 +193,25 @@ async function buildForAPI() {
     "/resources/home_resource_api.ts",
     "/resources/home_resource.ts",
   );
+  await copyFile("/server_api.ts", "/server.ts");
+}
+
+async function buildTheTestsApi() {
+  Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
+  await copyFile(
+    "/tests/resources/home_resource_test_api.ts",
+    "/tests/resources/home_resource_test.ts",
+  );
+}
+
+async function buildTheTestsWebApp() {
+  if (!wantsReact && !wantsVue) {
+    Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
+    await copyFile(
+      "/tests/resources/home_resource_test_web_app.ts",
+      "/tests/resources/home_resource_test.ts",
+    );
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -239,6 +257,7 @@ if (wantsHelp) {
 if (wantsApi) {
   await buildTheBaseline();
   await buildForAPI();
+  await buildTheTestsApi();
   sendThankYouMessage();
   Deno.exit();
 }
@@ -247,6 +266,7 @@ if (wantsApi) {
 if (wantsWebApp) {
   await buildTheBaseline();
   await buildForWebApp();
+  await buildTheTestsWebApp();
   sendThankYouMessage();
   Deno.exit();
 }

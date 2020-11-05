@@ -25,7 +25,7 @@
 
 ## Table of Contents
 - [Quick Start](#quick-start)
-- [Create Drash App](#create-drash-app)
+- [Create Drash App Script](#create-drash-app-script)
 - [Documentation](#documentation)
 - [Features](#features)
 - [Why use Drash?](#why-use-drash)
@@ -72,48 +72,9 @@ $ curl localhost:1447
 Hello World! deno + Drash is cool!
 ```
 
-## Create Drash App
+## Create Drash App Script
 
-Drash provides a basic tool to help you quickly create a Drash skeleton, with everything working out of the box, ready for you to build something great with.
-
-This tool does not require you to install any Drash scripts or modules. It will create the skeleton of your choice (an API, a full web app, or a full web app with Vue) inside your current working directory.
-
-To get started with the Create Drash App tool, see the following commands:
-
-```
-$ mkdir my-drash-project
-$ cd my-drash-project
-```
-
-* To make an API:
-
-    ```
-    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --api
-    ```
-    
-* To make a web app:
-
-    ```
-    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app
-    ```
-
-* To make a web app with Vue:
-
-    ```
-    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app --with-vue
-    ```
-  
-* To make a web app with React:
-
-    ```
-    $ deno run --allow-run --allow-read --allow-write --allow-net https://deno.land/x/drash/create_app.ts --web-app --with-react
-    ```
-
-Display the options with `--help`:
-
-```
-$ deno run --allow-run --allow-read https://deno.land/x/drash/create_app.ts --help
-```
+Want to get started with a Drash skeleton quickly? Check out the tutorial [here](https://drash.land/drash/#/tutorials/cli/create-app).
 
 ## Documentation
 

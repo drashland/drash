@@ -4,6 +4,7 @@ import {
   HTTPSOptions,
   IndexService,
   ISearchResult,
+  LoggerService,
   serve,
   Server as DenoServer,
   ServerRequest,
@@ -153,8 +154,8 @@ export class Server {
     this.configs = configs;
 
     // Set up this server's server-level middleware
-    if (configs.middleware) {
-      this.addMiddleware(configs.middleware);
+    if (this.configs.middleware) {
+      this.addMiddleware(this.configs.middleware);
     }
 
     // Set up this server's service that handles resource looksup
@@ -162,29 +163,41 @@ export class Server {
     this.resource_index_service = new IndexService(lt);
 
     // Set up this server's resources
-    if (configs.resources) {
-      configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
-        this.addHttpResource(resourceClass);
-      });
+    if (this.configs.resources) {
+      this.configs.resources.forEach(
+        (resourceClass: Drash.Interfaces.Resource) => {
+          this.addHttpResource(resourceClass);
+        },
+      );
       delete this.configs.resources;
     }
 
     // Set up this server's static paths and virtual paths
-    if (configs.static_paths) {
-      if (!configs.directory) {
+    if (this.configs.static_paths) {
+      if (!this.configs.directory) {
         throw new Drash.Exceptions.ConfigsException(
           `Static paths are being used, but a directory config was not specified`,
         );
       }
-      this.directory = configs.directory; // blow up if this doesn't exist
-      this.addStaticPaths(configs.static_paths);
+      this.directory = this.configs.directory; // blow up if this doesn't exist
+      this.addStaticPaths(this.configs.static_paths);
     }
 
     // Set up this server's template engine
-    if (configs.template_engine && !configs.views_path) {
-      throw new Drash.Exceptions.ConfigsException(
-        "Property missing. The views_path must be defined if template_engine is true",
-      );
+    if (this.configs.template_engine) {
+      LoggerService.logWarn(`DEPRECATED CODE DETECTED
+"The \`server.template_engine\` config is deprecated and will be removed on January 1, 2021.
+Please update your application to use Tengine -- a template engine middleware.
+View migration guide at:
+  https://github.com/drashland/deno-drash-middleware/tree/master/tengine.
+View more information regarding this deprecation/removal at:
+  https://github.com/drashland/deno-drash/issues/430 for more information regarding this deprecation/removal.
+`);
+      if (!this.configs.views_path) {
+        throw new Drash.Exceptions.ConfigsException(
+          "Property missing. The views_path must be defined if template_engine is true",
+        );
+      }
     }
   }
 
@@ -389,11 +402,7 @@ export class Server {
       }
     }
 
-    response = new Drash.Http.Response(request, {
-      views_path: this.configs.views_path,
-      template_engine: this.configs.template_engine,
-      default_response_content_type: this.configs.response_output,
-    });
+    response = this.getResponse(request);
     response.status_code = error.code ? error.code : 500;
     response.body = error.message ? error.message : response.getStatusMessage();
 
