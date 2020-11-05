@@ -1,6 +1,9 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+}
 main {
     margin: auto;
 }
 h1 {
-    color: #282828;
+    color: #ff7700;
 }

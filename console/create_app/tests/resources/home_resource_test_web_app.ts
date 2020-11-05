@@ -1,13 +1,5 @@
-import { Drash } from "../../deps.ts";
 import { assertEquals } from "../../deps.ts";
-import HomeResource from "../../resources/home_resource.ts";
-
-const server = new Drash.Http.Server({
-  response_output: "application/json",
-  resources: [
-    HomeResource,
-  ],
-});
+import { server } from "../../app.ts";
 
 async function startServer() {
   await server.run({
@@ -30,14 +22,12 @@ Deno.test({
     // Make assertions
     assertEquals(response.status, 200);
     assertEquals(
-      await response.json(),
-      JSON.stringify({
-        message: "GET request received!",
-      }),
+      await response.text(),
+      '<!DOCTYPE html>\n<html>\n    <head>\n        <meta charset="utf-8">\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <script src="/public/js/index.js"></script>\n        <link rel="stylesheet" href="/public/css/index.css">\n        <title>Drash - Create App</title>\n    </head>\n    <body>\n        <main>\n            <h1>Welcome</h1>\n            <p>Welcome to your new application, start building something great with Drash!</p>\n        </main>\n    </body>\n</html>'
     );
 
     // Stop the server
-    server.close();
+    await server.close();
   },
     sanitizeResources: false,
     sanitizeOps: false
@@ -58,14 +48,12 @@ Deno.test({
     // Make assertions
     assertEquals(response.status, 200);
     assertEquals(
-      await response.json(),
-      JSON.stringify({
-        message: "Not implemented",
-      }),
+      await response.text(),
+      "POST method not implemented.",
     );
 
     // Stop the server
-    server.close();
+    await server.close();
   },
     sanitizeResources: false,
     sanitizeOps: false
@@ -86,14 +74,12 @@ Deno.test({
     // Make assertions
     assertEquals(response.status, 200);
     assertEquals(
-      await response.json(),
-      JSON.stringify({
-        message: "Not implemented",
-      }),
+      await response.text(),
+      "PUT method not implemented.",
     );
 
     // Stop the server
-    server.close();
+    await server.close();
   },
     sanitizeResources: false,
     sanitizeOps: false
@@ -113,15 +99,15 @@ Deno.test({
     // Make assertions
     assertEquals(response.status, 200);
     assertEquals(
-      await response.json(),
-      JSON.stringify({
-        message: "Not implemented",
-      }),
+      await response.text(),
+      "DELETE method not implemented.",
     );
 
     // Stop the server
-    server.close();
+    await server.close();
   },
     sanitizeResources: false,
     sanitizeOps: false
 });
+
+await server.close();

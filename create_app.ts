@@ -133,11 +133,6 @@ async function buildTheBaseline() {
   await copyFile("/deps.ts", "/deps.ts");
   await copyFile("/config.ts", "/config.ts");
   Deno.mkdirSync(cwd + "/middleware");
-  Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
-  await copyFile(
-    "/tests/resources/home_resource_test.ts",
-    "/tests/resources/home_resource_test.ts",
-  );
 }
 
 /**
@@ -150,7 +145,10 @@ async function buildForWebApp() {
   Deno.mkdirSync(cwd + "/public/js", { recursive: true });
   Deno.mkdirSync(cwd + "/public/img", { recursive: true });
   Deno.mkdirSync(cwd + "/resources");
-  await copyFile("/resources/home_resource.ts", "/resources/home_resource.ts");
+  await copyFile(
+    "/resources/home_resource_web_app.ts",
+    "/resources/home_resource.ts"
+  );
 
   if (wantsVue) {
     await copyFile("/package_vue.json", "/package.json");
@@ -193,6 +191,22 @@ async function buildForAPI() {
   await copyFile(
     "/resources/home_resource_api.ts",
     "/resources/home_resource.ts",
+  );
+}
+
+async function buildTheTestsApi() {
+  Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
+  await copyFile(
+    "/tests/resources/home_resource_test_api.ts",
+    "/tests/resources/home_resource_test.ts",
+  );
+}
+
+async function buildTheTestsWebApp() {
+  Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
+  await copyFile(
+    "/tests/resources/home_resource_test_web_app.ts",
+    "/tests/resources/home_resource_test.ts",
   );
 }
 
@@ -239,6 +253,7 @@ if (wantsHelp) {
 if (wantsApi) {
   await buildTheBaseline();
   await buildForAPI();
+  await buildTheTestsApi();
   sendThankYouMessage();
   Deno.exit();
 }
@@ -247,6 +262,7 @@ if (wantsApi) {
 if (wantsWebApp) {
   await buildTheBaseline();
   await buildForWebApp();
+  await buildTheTestsWebApp();
   sendThankYouMessage();
   Deno.exit();
 }
