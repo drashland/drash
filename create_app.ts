@@ -174,7 +174,7 @@ async function buildForWebApp() {
     await copyFile("/tsconfig_react.json", "/tsconfig.json");
     notesForUser.push("Install NPM dependencies:\n    npm install");
     notesForUser.push(
-      "Build your Vue component with Webpack:\n    npm run buildReact",
+      "Build your React component:\n    npm run buildReact",
     );
   } else {
     await copyFile("/public/views/index.html", "/public/views/index.html");
