@@ -9,30 +9,119 @@ const server = new Drash.Http.Server({
   ],
 });
 
-server.run({
-  hostname: "localhost",
-  port: 1557,
-});
-console.log(`Server listening: http://${server.hostname}:${server.port}`);
-
-Deno.test("HomeResource - GET /", async () => {
-  const response = await fetch("http://localhost:1557", {
-    method: "POST",
+async function startServer() {
+  await server.run({
+    hostname: "localhost",
+    port: 1557,
   });
-  assertEquals(response.status, 200);
-  assertEquals(
-    await response.json(),
-    JSON.stringify({
-      message: "Not implemented",
-    }),
-  );
+}
+
+Deno.test({
+  name: "HomeResource - GET /",
+  fn: async () => {
+    // Start the server
+    await startServer();
+
+    // Fetch a response
+    const response = await fetch("http://localhost:1557", {
+      method: "GET",
+    });
+
+    // Make assertions
+    assertEquals(response.status, 200);
+    assertEquals(
+      await response.json(),
+      JSON.stringify({
+        message: "GET request received!",
+      }),
+    );
+
+    // Stop the server
+    server.close();
+  },
+    sanitizeResources: false,
+    sanitizeOps: false
+});
+
+
+Deno.test({
+  name: "HomeResource - POST /",
+  fn: async () => {
+    // Start the server
+    await startServer();
+
+    // Fetch a response
+    const response = await fetch("http://localhost:1557", {
+      method: "POST",
+    });
+
+    // Make assertions
+    assertEquals(response.status, 200);
+    assertEquals(
+      await response.json(),
+      JSON.stringify({
+        message: "Not implemented",
+      }),
+    );
+
+    // Stop the server
+    server.close();
+  },
+    sanitizeResources: false,
+    sanitizeOps: false
+});
+
+
+Deno.test({
+  name: "HomeResource - PUT /",
+  fn: async () => {
+    // Start the server
+    await startServer();
+
+    // Fetch a response
+    const response = await fetch("http://localhost:1557", {
+      method: "PUT",
+    });
+
+    // Make assertions
+    assertEquals(response.status, 200);
+    assertEquals(
+      await response.json(),
+      JSON.stringify({
+        message: "Not implemented",
+      }),
+    );
+
+    // Stop the server
+    server.close();
+  },
+    sanitizeResources: false,
+    sanitizeOps: false
 });
 
 Deno.test({
-  name: "\b\b\b\b\b     \nStop the server",
-  async fn() {
-    await server.close();
+  name: "HomeResource - DELETE /",
+  fn: async () => {
+    // Start the server
+    await startServer();
+
+    // Fetch a response
+    const response = await fetch("http://localhost:1557", {
+      method: "DELETE",
+    });
+
+    // Make assertions
+    assertEquals(response.status, 200);
+    assertEquals(
+      await response.json(),
+      JSON.stringify({
+        message: "Not implemented",
+      }),
+    );
+
+    // Stop the server
+    server.close();
   },
-  sanitizeResources: false,
-  sanitizeOps: false,
+    sanitizeResources: false,
+    sanitizeOps: false
 });

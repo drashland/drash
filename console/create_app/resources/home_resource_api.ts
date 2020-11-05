@@ -5,7 +5,7 @@ export default class HomeResource extends Drash.Http.Resource {
 
   public GET() {
     this.response.body = JSON.stringify(
-      { success: true, message: "GET request received." },
+      { message: "GET request received!" },
     );
     return this.response;
   }
