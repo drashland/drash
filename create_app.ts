@@ -147,7 +147,7 @@ async function buildForWebApp() {
   Deno.mkdirSync(cwd + "/resources");
   await copyFile(
     "/resources/home_resource_web_app.ts",
-    "/resources/home_resource.ts"
+    "/resources/home_resource.ts",
   );
 
   if (wantsVue) {

@@ -23,16 +23,15 @@ Deno.test({
     assertEquals(response.status, 200);
     assertEquals(
       await response.text(),
-      '<!DOCTYPE html>\n<html>\n    <head>\n        <meta charset="utf-8">\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <script src="/public/js/index.js"></script>\n        <link rel="stylesheet" href="/public/css/index.css">\n        <title>Drash - Create App</title>\n    </head>\n    <body>\n        <main>\n            <h1>Welcome</h1>\n            <p>Welcome to your new application, start building something great with Drash!</p>\n        </main>\n    </body>\n</html>'
+      '<!DOCTYPE html>\n<html>\n    <head>\n        <meta charset="utf-8">\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <script src="/public/js/index.js"></script>\n        <link rel="stylesheet" href="/public/css/index.css">\n        <title>Drash - Create App</title>\n    </head>\n    <body>\n        <main>\n            <h1>Welcome</h1>\n            <p>Welcome to your new application, start building something great with Drash!</p>\n        </main>\n    </body>\n</html>',
     );
 
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
-
 
 Deno.test({
   name: "HomeResource - POST /",
@@ -55,10 +54,9 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
-
 
 Deno.test({
   name: "HomeResource - PUT /",
@@ -81,8 +79,8 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
 
 Deno.test({
@@ -106,8 +104,8 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
 
 await server.close();

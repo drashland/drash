@@ -31,10 +31,9 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
-
 
 Deno.test({
   name: "HomeResource - POST /",
@@ -59,10 +58,9 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
-
 
 Deno.test({
   name: "HomeResource - PUT /",
@@ -87,8 +85,8 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
 
 Deno.test({
@@ -114,8 +112,8 @@ Deno.test({
     // Stop the server
     await server.close();
   },
-    sanitizeResources: false,
-    sanitizeOps: false
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
 
 await server.close();

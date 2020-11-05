@@ -166,9 +166,11 @@ export class Server {
 
     // Set up this server's resources
     if (this.configs.resources) {
-      this.configs.resources.forEach((resourceClass: Drash.Interfaces.Resource) => {
-        this.addHttpResource(resourceClass);
-      });
+      this.configs.resources.forEach(
+        (resourceClass: Drash.Interfaces.Resource) => {
+          this.addHttpResource(resourceClass);
+        },
+      );
       delete this.configs.resources;
     }
 
