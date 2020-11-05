@@ -4,6 +4,7 @@ import {
   HTTPSOptions,
   IndexService,
   ISearchResult,
+  LoggerService,
   serve,
   Server as DenoServer,
   ServerRequest,
@@ -185,6 +186,15 @@ export class Server {
       throw new Drash.Exceptions.ConfigsException(
         "Property missing. The views_path must be defined if template_engine is true",
       );
+    } else {
+      LoggerService.logWarn(`DEPRECATED CODE DETECTED
+"The \`server.template_engine\` config is deprecated and will be removed on January 1, 2021.
+Please update your application to use Tengine -- a template engine middleware.
+View migration guide at:
+  https://github.com/drashland/deno-drash-middleware/tree/master/tengine.
+View more information regarding this deprecation/removal at:
+  https://github.com/drashland/deno-drash/issues/430 for more information regarding this deprecation/removal.
+`);
     }
   }
 
