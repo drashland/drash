@@ -60,7 +60,7 @@ const fileExists = async (filename: string): Promise<boolean> => {
   }
 };
 
-Rhum.testPlan("create_app_test.ts", () => {
+Rhum.testPlan("create_app_test_local.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
     Rhum.testCase("script fails with no argument", async () => {
       const p = Deno.run({
@@ -223,7 +223,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         );
         boilerPlateFile = getFileContent(
           originalCWD +
-            "/console/create_app/tests/resources/home_resource_test.ts",
+            "/console/create_app/tests/resources/home_resource_test_api.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
@@ -301,7 +301,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           true,
         );
         boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/resources/home_resource.ts",
+          originalCWD + "/console/create_app/resources/home_resource_web_app.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/resources/home_resource.ts",
@@ -316,7 +316,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         );
         boilerPlateFile = getFileContent(
           originalCWD +
-            "/console/create_app/tests/resources/home_resource_test.ts",
+            "/console/create_app/tests/resources/home_resource_test_web_app.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
@@ -435,7 +435,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           true,
         );
         boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/resources/home_resource.ts",
+          originalCWD + "/console/create_app/resources/home_resource_web_app.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/resources/home_resource.ts",
@@ -450,7 +450,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         );
         boilerPlateFile = getFileContent(
           originalCWD +
-            "/console/create_app/tests/resources/home_resource_test.ts",
+            "/console/create_app/tests/resources/home_resource_test_web_app.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
@@ -577,7 +577,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           true,
         );
         boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/resources/home_resource.ts",
+          originalCWD + "/console/create_app/resources/home_resource_web_app.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/resources/home_resource.ts",
@@ -592,7 +592,7 @@ Rhum.testPlan("create_app_test.ts", () => {
         );
         boilerPlateFile = getFileContent(
           originalCWD +
-            "/console/create_app/tests/resources/home_resource_test.ts",
+            "/console/create_app/tests/resources/home_resource_test_web_app.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/tests/resources/home_resource_test.ts",

@@ -80,7 +80,7 @@ const fileExists = async (filename: string): Promise<boolean> => {
   }
 };
 
-Rhum.testPlan("create_app_test.ts", () => {
+Rhum.testPlan("create_app_test_http.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
     Rhum.testCase("script fails with no argument", async () => {
       const p = Deno.run({
@@ -245,7 +245,7 @@ Rhum.testPlan("create_app_test.ts", () => {
           true,
         );
         boilerPlateFile = await fetchFileContent(
-          "/console/create_app/tests/resources/home_resource_test.ts",
+          "/console/create_app/tests/resources/home_resource_test_api.ts",
         );
         copiedFile = getFileContent(
           testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
