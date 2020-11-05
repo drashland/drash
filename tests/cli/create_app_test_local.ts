@@ -359,7 +359,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
           testCaseTmpDirName + "/public/views/index.html",
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/img.ts
+        // public/img
         Rhum.asserts.assertEquals(
           await fileExists(testCaseTmpDirName + "/public/img"),
           true,
@@ -436,8 +436,8 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
     });
 
-    Rhum.testCase("img.ts exists", async () => {
-      // public/img.ts
+    Rhum.testCase("img dir exists", async () => {
+      // public/img
       Rhum.asserts.assertEquals(
         await fileExists(testCaseTmpDirName + "/public/img"),
         true,
@@ -572,7 +572,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
           testCaseTmpDirName + "/resources/home_resource.ts",
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/img.ts
+        // public/img
         Rhum.asserts.assertEquals(
           await fileExists(testCaseTmpDirName + "/public/img"),
           true,

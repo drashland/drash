@@ -379,7 +379,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           testCaseTmpDirName + "/public/views/index.html",
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/img.ts
+        // public/img
         Rhum.asserts.assertEquals(
           await fileExists(testCaseTmpDirName + "/public/img"),
           true,
@@ -462,7 +462,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           testCaseTmpDirName + "/resources/home_resource.ts",
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/img.ts
+        // public/img
         Rhum.asserts.assertEquals(
           await fileExists(testCaseTmpDirName + "/public/img"),
           true,
