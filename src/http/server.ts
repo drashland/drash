@@ -132,7 +132,6 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
-    console.log(configs);
     // Set up this server's services
     this.http_service = new Drash.Services.HttpService();
 
@@ -153,7 +152,6 @@ export class Server {
     // Make configs global to this class as a convenience to other data members
     // in this class
     this.configs = configs;
-    console.log(this.configs);
 
     // Set up this server's server-level middleware
     if (this.configs.middleware) {
