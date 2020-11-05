@@ -14,5 +14,9 @@
   ],
   "entry": "./mod.ts",
   "checkAll": false,
-  "unlisted": false
+  "unlisted": false,
+  "checkTests": false,
+  "check": true,
+  "homepage": "https://github.com/drashland/deno-drash",
+  "ignore": []
 }
