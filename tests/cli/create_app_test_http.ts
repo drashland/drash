@@ -313,7 +313,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           true,
         );
         boilerPlateFile = await fetchFileContent(
-          "/console/create_app/server_api.ts",
+          "/console/create_app/server_web_app.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -457,7 +457,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
           true,
         );
         boilerPlateFile = await fetchFileContent(
-          "/console/create_app/server_api.ts",
+          "/console/create_app/server_web_app.ts",
         );
         copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
