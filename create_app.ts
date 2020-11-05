@@ -203,11 +203,13 @@ async function buildTheTestsApi() {
 }
 
 async function buildTheTestsWebApp() {
-  Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
-  await copyFile(
-    "/tests/resources/home_resource_test_web_app.ts",
-    "/tests/resources/home_resource_test.ts",
-  );
+  if (!wantsReact && !wantsVue) {
+    Deno.mkdirSync(cwd + "/tests/resources", { recursive: true });
+    await copyFile(
+      "/tests/resources/home_resource_test_web_app.ts",
+      "/tests/resources/home_resource_test.ts",
+    );
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

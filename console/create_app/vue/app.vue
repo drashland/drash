@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <h1>Welcome</h1>
-        <p>Welcome to your new application, start building something great with Drash!</p>
+        <p>Welcome to your new Drash + Vue app!</p>
     </div>
 </template>
 
@@ -17,13 +17,14 @@
 
 <style lang="scss">
     #app {
-        max-width: 400px;
-        margin: 0 auto;
-        line-height: 1.4;
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        color: blue;
+        -webkit-font-smoothing: antialiased;
+        color: #333;
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        line-height: 1.4;
+        margin: 0 auto;
+        max-width: 400px;
+        text-align: center;
     }
     h1 {
         text-align: center;
