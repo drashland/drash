@@ -36,7 +36,7 @@ jobs:
           deno test --allow-net --allow-env --config tsconfig.json
 
       - name: Cors
-        run: deno test -A cors/tests/tests.ts
+        run: deno test -A cors/tests
 
   linter:
     strategy:

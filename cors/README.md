@@ -9,7 +9,7 @@
 Use the following import:
 
 ```ts
-import { CorsMiddleware } from "https://deno.land/x/drash-middleware@{version}/cors/mod.ts"; // If module is uploaded into deno.land
+import { CorsMiddleware } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts"; // If module is uploaded into deno.land
 ```
 
 ## Usage
