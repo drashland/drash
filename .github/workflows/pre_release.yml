@@ -35,6 +35,10 @@ jobs:
       - name: Bump Versions
         run: deno run -A ./console/bumper_ci_service.ts --version=${{ github.ref }} # vrsion passed so we know what the new release version will be
 
+      - name: Send Event to Website to Update Versions
+        run: |
+          curl -XPOST -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/drashland/website/dispatches --data '{"event_type": "update_docs", "client_payload": { "module_to_update": "drash", "version": "${{ github.ref }}" }}'
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v2
         with:
