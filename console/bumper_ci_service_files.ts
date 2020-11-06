@@ -80,4 +80,9 @@ export const bumpDependencyFiles = [
     replaceTheRegex: regexes.drash_import_statements,
     replaceWith: `drash@v${latestDrashVersion}`,
   },
+  {
+    filename: "./cors/README.md",
+    replaceTheRegex: regexes.drash_import_statements,
+    replaceWith: `drash@v${latestDrashVersion}`,
+  },
 ];

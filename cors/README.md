@@ -16,8 +16,8 @@ import { CorsMiddleware } from "https://deno.land/x/drash-middleware@v0.6.0/cors
 Require cors middleware and register it as server-level middleware.
 
 ```ts
-import { Drash } from "https://deno.land/x/drash@{version}/mod.ts";
-import { CorsMiddleware } from "https://deno.land/x/drash-middleware@{version}/cors/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+import { CorsMiddleware } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts";
 
 const server = new Drash.Http.Server({
   middleware: {
