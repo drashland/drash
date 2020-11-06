@@ -7,7 +7,7 @@ jobs:
   update-dep:
     strategy:
       matrix:
-        deno: ["1.4.6"]
+        deno: ["1.5.1"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,8 +25,8 @@ jobs:
           cd csrf
           deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
 
-      - name: Update Deno Version Occurances
-        run: deno run --allow-read --allow-net --allow-write console/update_dependency_version_strings.ts
+      - name: Bump Versons
+        run: deno run --allow-read --allow-net --allow-write console/bumper_ci_service.ts
 
       - name: Update Cors Dependencies
         run: |

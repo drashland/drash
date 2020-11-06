@@ -31,12 +31,12 @@
 
 This repository contains Drash-approved middleware modules that you can use in your Drash application. Be aware that some modules may use third-party dependencies whilst some will not. You are still able to [**create your own**](https://drash.land/drash/#/tutorials/middleware/introduction) middleware within Drash, but this project supplies already developed middleware that can be plugged straight into your application. Here is the current list of middleware modules:
 
-* [Dexter](./dexter) - Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
-* [Cors](./cors) - enables the use of [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) in a drash application.
-
-* [Paladin](./paladin) - Paladin helps you secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
-
+* [Cors](./cors) - Enables the use of [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) within a Drash application.
 * [CSRF](./csrf) - Projection middleware. Inspired by [expressjs/csurf](http://expressjs.com/en/resources/middleware/csurf.html).
+* [Dexter](./dexter) - A logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan).
+* [Paladin](./paladin) - Secure your Drash applications by setting various HTTP headers. Inspired by [helmet](https://github.com/helmetjs/helmet).
+* [ServeTypeScript](./serve_typescript) - Write front-end TypeScript and serve it as compiled JavaScript.
+* [Tengine](./tengine) - Enable templating and use the template engine of your choice.
 
 Each middleware directory in this repository has a `README.md` file that shows you how to use the middleware.
 
@@ -51,4 +51,5 @@ Contributors are welcomed!
 Please read through our [contributing guidelines](./.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
 
 ## License
+
 By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
