@@ -2,8 +2,6 @@ import { Rhum } from "../../test_deps.ts";
 import { Drash } from "../../deps.ts";
 import { CorsMiddleware } from "../mod.ts";
 
-const cors = CorsMiddleware();
-
 class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
   static paths = ["/cors"];
   public GET() {
@@ -15,12 +13,12 @@ class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
   }
 }
 
-async function runServer(): Promise<Drash.Http.Server> {
+async function runServer(allowAll: boolean = true): Promise<Drash.Http.Server> {
+  const cors = allowAll ? CorsMiddleware() : CorsMiddleware({ origin: "localhost "});
   const server = new Drash.Http.Server({
     response_output: "application/json",
     middleware: {
       after_request: [
-        // @ts-ignore
         cors,
       ],
     },
@@ -36,11 +34,11 @@ async function runServer(): Promise<Drash.Http.Server> {
 }
 
 Rhum.testPlan("cors/tests/mod_test.ts", () => {
-  Rhum.testSuite("Cors", () => {
+  // Also covers unit tests
+  Rhum.testSuite("Integration", () => {
     Rhum.testCase("Should shortcircuit preflight requests", async () => {
-      let response;
       const server = await runServer();
-      response = await fetch("http://localhost:1447/cors", {
+      const response = await fetch("http://localhost:1447/cors", {
         method: "OPTIONS",
         headers: {
           "Origin": "localhost",
@@ -63,6 +61,72 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       Rhum.asserts.assertEquals(response.headers.get("content-length"), "0");
       server.close();
     });
+    Rhum.testCase("Should always set the vary header", async () => {
+      const server = await runServer();
+      const response = await fetch("http://localhost:1447/cors", {
+        method: "OPTIONS",
+        headers: {
+          "Origin": "localhost",
+          "Access-Control-Request-Method": "GET",
+        },
+      });
+      server.close();
+      Rhum.asserts.assertEquals(response.headers.get('vary'), 'origin')
+    });
+    Rhum.testCase("Only sets the vary header if Origin header is not set", async () => {
+      const server = await runServer();
+      const response = await fetch("http://localhost:1447/cors", {
+        method: "OPTIONS",
+        headers: {
+          "Access-Control-Request-Method": "GET",
+        },
+      });
+      await response.arrayBuffer()
+      server.close();
+      Rhum.asserts.assertEquals(response.headers.get('vary'), 'origin')
+      Rhum.asserts.assertEquals(
+          response.headers.get("access-control-allow-origin"),
+          null,
+      );
+      Rhum.asserts.assertEquals(
+          response.headers.get("access-control-allow-methods"),
+          null,
+      );
+    })
+    Rhum.testCase("Should not allow request when origins do not match", async () => {
+      const server = await runServer(false);
+      const response = await fetch("http://localhost:1447/cors", {
+        method: "OPTIONS",
+        headers: {
+          "Origin": "the big bang",
+          "Access-Control-Request-Method": "GET",
+        },
+      });
+      await response.arrayBuffer();
+      server.close();
+      Rhum.asserts.assertEquals(response.headers.get('vary'), 'origin')
+      Rhum.asserts.assertEquals(
+          response.headers.get("access-control-allow-origin"),
+          null,
+      );
+    })
+    Rhum.testCase("Sets Allow Headers header when Request Header header is set", async () => {
+      const server = await runServer(false);
+      const response = await fetch("http://localhost:1447/cors", {
+        method: "OPTIONS",
+        headers: {
+          "Origin": "localhost",
+          "Access-Control-Request-Method": "GET",
+          "Access-Control-Request-Headers": "hello world"
+        },
+      });
+      await response.arrayBuffer();
+      server.close();
+      Rhum.asserts.assertEquals(
+          response.headers.get("access-control-allow-headers"),
+          'hello world',
+      );
+    })
   });
 });
 

@@ -3,21 +3,11 @@ import { vary } from "./deps.ts";
 
 interface ArrayOfValueOrArray<T> extends Array<ValueOrArray<T>> {}
 type ValueOrArray<T> = T | ArrayOfValueOrArray<T>;
-type OriginOption =
-  | ((
-    request: Drash.Http.Request,
-    response?: Drash.Http.Response,
-  ) => string | Promise<string>)
-  | ValueOrArray<string | boolean | RegExp>;
+type OriginOption = ValueOrArray<string | boolean | RegExp>;
 
 type CorsMiddlewareConfig = {
   origin?: OriginOption;
-  credentials?:
-    | ((
-      request: Drash.Http.Request,
-      response?: Drash.Http.Response,
-    ) => boolean | Promise<boolean>)
-    | boolean;
+  credentials?: boolean;
   exposeHeaders?: string | string[];
   allowMethods?: string | string[];
   allowHeaders?: string | string[];
@@ -26,6 +16,14 @@ type CorsMiddlewareConfig = {
   preflight?: boolean;
 };
 
+/**
+ * Is the origin allowed for the request?
+ *
+ * @param reqOrigin - The header value from the request
+ * @param origin - The origin option for the config
+ *
+ * @returns Whether or not the origin option is allowed for the origin header
+ */
 const isOriginAllowed = (reqOrigin: string, origin: OriginOption): boolean => {
   if (Array.isArray(origin)) {
     for (let i = 0; i < origin.length; ++i) {
@@ -33,7 +31,6 @@ const isOriginAllowed = (reqOrigin: string, origin: OriginOption): boolean => {
         return true;
       }
     }
-
     return false;
   } else if (typeof origin === "string") {
     return reqOrigin === origin;
@@ -58,42 +55,19 @@ export const CorsMiddleware = ({
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<void> => {
-    let options: any = {
-      origin,
-      credentials,
-      optionsSuccessStatus,
-      preflight,
-    };
-
-    if (!options.origin) {
-      return;
-    }
-
+    // Make some config properties easier to work with
     if (Array.isArray(exposeHeaders)) {
-      options.exposeHeaders = exposeHeaders.join(",");
-    } else {
-      options.exposeHeaders = exposeHeaders;
+      exposeHeaders = exposeHeaders.join(",");
     }
-
+    exposeHeaders = (exposeHeaders as string); // To tell the tsc it is 100% a string now
     if (Array.isArray(allowMethods)) {
-      options.allowMethods = allowMethods.join(",");
-    } else {
-      options.allowMethods = allowMethods;
+      allowMethods = allowMethods.join(",");
     }
-
+    allowMethods = (allowMethods as string); // To tell the tsc it is 100% a string now
     if (Array.isArray(allowHeaders)) {
-      options.allowHeaders = allowHeaders.join(",");
-    } else {
-      options.allowHeaders = allowHeaders;
+      allowHeaders = allowHeaders.join(",");
     }
-
-    if (maxAge) {
-      options.maxAge = String(maxAge);
-    }
-
-    // If the Origin header is not present terminate this set of steps.
-    // The request is outside the scope of this specification.
-    const requestOrigin = request.headers.get("Origin");
+    allowHeaders = (allowHeaders as string); // To tell the tsc it is 100% a string now
 
     // Always set Vary header
     // https://github.com/rs/cors/issues/10
@@ -104,102 +78,70 @@ export const CorsMiddleware = ({
       },
       "origin",
     );
+
+    // If the Origin header is not present terminate this set of steps.
+    // The request would be outside the scope of this specification.
+    const requestOrigin = request.headers.get("Origin");
     if (!requestOrigin) {
       return;
     }
-
-    let o;
-
-    if (!options.origin || options.origin === "*") {
+    if (!origin) {
       // allow any origin
-      o = "*";
-    } else if (typeof options.origin === "string") {
-      // fixed origin
-      o = options.origin;
-    } else if (typeof options.origin === "function") {
-      o = options.origin(request, response);
-
-      if (o instanceof Promise) {
-        o = await o;
-      }
-
-      if (!o) {
-        // Safari (and potentially other browsers) need content-length 0,
-        //   for 204 or they just hang waiting for a body
-        response.status_code = options.optionsSuccessStatus as number;
-        response.headers.set("Content-Length", "0");
-
-        return;
-      }
-    } else {
+      origin = "*";
+    } else if (origin !== "*") {
       // reflect origin
-      o = isOriginAllowed(requestOrigin, options.origin) ? requestOrigin
+      origin = isOriginAllowed(requestOrigin, origin) ? requestOrigin
       : false;
     }
-
-    let c;
-
-    if (typeof options.credentials === "function") {
-      c = options.credentials(request, response);
-
-      if (c instanceof Promise) {
-        c = await c;
-      }
-    } else {
-      c = !!options.credentials;
-    }
-
-    const headersSet: { [key: string]: string } = {};
-
-    function set(key: string, value: string) {
-      response.headers.set(key, value);
-      headersSet[key] = value;
-    }
+    origin = (origin as string | boolean); // To tell the tsc it is 100% a string or boolean now
 
     // If there is no Access-Control-Request-Method header or if parsing failed,
     // do not set any additional headers and terminate this set of steps.
-    // The request is outside the scope of this specification.
+    // The request would be outside the scope of this specification.
     if (
       request.method !== "OPTIONS" ||
       !request.headers.get("Access-Control-Request-Method")
     ) {
       // Simple Cross-Origin Request, Actual Request, and Redirects
-      set("Access-Control-Allow-Origin", o);
-
-      if (c === true) {
-        set("Access-Control-Allow-Credentials", "true");
+      if (origin && typeof origin === "string") {
+        response.headers.set("Access-Control-Allow-Origin", origin);
       }
 
-      if (typeof options.exposeHeaders === "string") {
-        set("Access-Control-Expose-Headers", options.exposeHeaders);
-      }
-    } else if (options.preflight) {
-      // Preflight Request
-      response.headers.set("Access-Control-Allow-Origin", o);
-
-      if (c === true) {
+      if (credentials && credentials === true) {
         response.headers.set("Access-Control-Allow-Credentials", "true");
       }
 
-      if (options.maxAge) {
-        response.headers.set("Access-Control-Max-Age", options.maxAge);
+      if (exposeHeaders && typeof exposeHeaders === "string") {
+        response.headers.set("Access-Control-Expose-Headers", exposeHeaders);
       }
-      if (typeof options.allowMethods === "string") {
+    } else if (preflight) {
+      // Preflight Request
+      if (origin && typeof origin === "string") {
+        response.headers.set("Access-Control-Allow-Origin", origin);
+      }
+
+      if (credentials && credentials === true) {
+        response.headers.set("Access-Control-Allow-Credentials", "true");
+      }
+
+      if (maxAge) {
+        response.headers.set("Access-Control-Max-Age", maxAge.toString());
+      }
+
+      if (allowMethods && typeof allowMethods === "string") {
         response.headers.set(
           "Access-Control-Allow-Methods",
-          options.allowMethods,
+          allowMethods,
         );
       }
 
-      let aheaders = options.allowHeaders;
-
-      if (!aheaders) {
-        aheaders = request.headers.get("Access-Control-Request-Headers") ||
+      if (!allowHeaders) {
+        allowHeaders = request.headers.get("Access-Control-Request-Headers") ||
           undefined;
       }
 
-      if (aheaders) {
-        response.headers.set("Access-Control-Allow-Headers", aheaders);
+      if (allowHeaders) {
+        response.headers.set("Access-Control-Allow-Headers", allowHeaders);
       }
 
       response.status_code = 204;
