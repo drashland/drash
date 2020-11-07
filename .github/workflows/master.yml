@@ -39,11 +39,11 @@ jobs:
       - name: Create App (local)
         run: |
           deno cache create_app.ts
-          deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
+          deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env --unstable
 
       - name: Create App (http)
         run: |
-          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
+          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net --unstable
 
   benchmarks:
     strategy:

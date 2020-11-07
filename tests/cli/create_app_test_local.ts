@@ -7,7 +7,9 @@
 
 import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
+import { existsSync } from "../deps.ts";
 import members from "../members.ts";
+
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 0;
 const originalCWD = Deno.cwd();
@@ -42,24 +44,24 @@ function getFileContent(filePathAndName: string): string {
   return fileContent;
 }
 
-// Need a way to check if a file exists
-// Thanks to https://stackoverflow.com/questions/56658114/how-can-one-check-if-a-file-or-directory-exists-using-deno
-const fileExists = async (filename: string): Promise<boolean> => {
-  try {
-    await Deno.stat(filename);
-    // successful, file or directory must exist
-    return true;
-  } catch (error) {
-    if (error instanceof Deno.errors.NotFound) {
-      // file or directory does not exist
-      return false;
-    } else {
-      // unexpected error, maybe permissions, pass it along
-      throw error;
+function add_suffix(fileName: string, suffix: string) {
+  return fileName.replace(/([^.\/]+)\./, `\$1${suffix}.`);
+}
+
+function* FilePairGenerator(
+  suffixDict: { [suffix: string]: string[] },
+  rootDirName = "",
+): Generator<[string, string]> {
+  const fetchPrefix = "/console/create_app";
+  for (const suffix in suffixDict) {
+    for (const file of suffixDict[suffix]) {
+      yield [
+        `${rootDirName}/${file}`,
+        `${fetchPrefix}/${add_suffix(file, suffix)}`,
+      ];
     }
   }
-};
-
+}
 Rhum.testPlan("create_app_test_local.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
     Rhum.testCase("script fails with no argument", async () => {
@@ -87,7 +89,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
       Rhum.asserts.assertEquals(stdout, "");
       Rhum.asserts.assertEquals(status.code, 1);
-      Rhum.asserts.assertEquals(status.success, false);
+      Rhum.asserts.assert(status.success);
     });
   });
 
@@ -145,10 +147,22 @@ Rhum.testPlan("create_app_test_local.ts", () => {
   });
 
   Rhum.testSuite("--api", () => {
+    const suffixDict = {
+      "": ["deps.ts", "config.ts"],
+      "_api": [
+        "app.ts",
+        "server.ts",
+        "resources/home_resource.ts",
+        "tests/resources/home_resource_test.ts",
+      ],
+    };
+
+    const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
+    const FP_Gen: Generator<[string, string]> = FilePairGenerator(suffixDict);
+
     Rhum.testCase(
-      "create_app_test.ts | Script creates an API project with the --api argument",
+      "creates an API project",
       async () => {
-        const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
         // Create new tmp directory and create project files
         Deno.mkdirSync(testCaseTmpDirName);
         const p = Deno.run({
@@ -172,82 +186,51 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
         Rhum.asserts.assertEquals(status.code, 0);
         Rhum.asserts.assertEquals(status.success, true);
-        // assert each file and it's content are correct
-        let boilerPlateFile;
-        let copiedFile;
-        // app.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/app.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/app_api.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // server.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/server.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/server_api.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // deps.ts
-        Rhum.asserts.assertEquals(await fileExists("deps.ts"), true);
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/deps.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // config.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/config.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/config.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // home_resource.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/resources/home_resource_api.ts",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/resources/home_resource.ts",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // home_resource_test.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(
-            testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
-          ),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD +
-            "/console/create_app/tests/resources/home_resource_test_api.ts",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       },
     );
+
+    for (let [copiedFileName, boilerPlateFileName] of FP_Gen) {
+      Rhum.testCase(
+        `Correctly creates template file ${copiedFileName.slice(1)}`,
+        async () => {
+          let copiedFile: string;
+          let boilerPlateFile = await getFileContent(
+            originalCWD + boilerPlateFileName,
+          );
+
+          Rhum.asserts.assert(
+            existsSync(testCaseTmpDirName + copiedFileName),
+          );
+
+          copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
+          Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        },
+      );
+    }
   });
 
   Rhum.testSuite("--web-app", () => {
+    const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
+    let suffixDict = {
+      "": [
+        "deps.ts",
+        "config.ts",
+        "public/js/index.js",
+        "public/css/index.css",
+        "public/views/index.html",
+      ],
+      "_web_app": [
+        "app.ts",
+        "server.ts",
+        "resources/home_resource.ts",
+        "tests/resources/home_resource_test.ts",
+      ],
+    };
+    const FP_Gen: Generator<[string, string]> = FilePairGenerator(suffixDict);
+
     Rhum.testCase(
       "Script creates a web app with the --web-app argument",
       async () => {
-        const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
         // Create new tmp directory and create project files
         Deno.mkdirSync(testCaseTmpDirName);
         const p = Deno.run({
@@ -271,269 +254,145 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
         Rhum.asserts.assertEquals(stderr, "");
         Rhum.asserts.assertEquals(status.code, 0);
-        Rhum.asserts.assertEquals(status.success, true);
-        // assert each file and it's content are correct
-        let boilerPlateFile;
-        let copiedFile;
-        // app.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/app.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/app_web_app.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // server.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/server.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/server_web_app.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // deps.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/deps.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/deps.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // config.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/config.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/config.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // home_resource.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD +
-            "/console/create_app/resources/home_resource_web_app.ts",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/resources/home_resource.ts",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // home_resource_test.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(
-            testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
-          ),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD +
-            "/console/create_app/tests/resources/home_resource_test_web_app.ts",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/tests/resources/home_resource_test.ts",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/views/js/index.js
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/public/js/index.js"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/public/js/index.js",
-        ),
-          copiedFile = getFileContent(
-            testCaseTmpDirName + "/public/js/index.js",
-          );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/css/index.css.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/public/css/index.css"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/public/css/index.css",
-        ),
-          copiedFile = getFileContent(
-            testCaseTmpDirName + "/public/css/index.css",
-          );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/views/index.html.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/public/views/index.html"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/public/views/index.html",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/public/views/index.html",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/img
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/public/img"),
-          true,
-        );
+        Rhum.asserts.assert(status.success);
       },
     );
+
+    Rhum.testCase("public/img exists", () => {
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/public/img"),
+      );
+    });
+
+    for (let [copiedFileName, boilerPlateFileName] of FP_Gen) {
+      Rhum.testCase(
+        `Correctly creates template file ${copiedFileName.slice(1)}`,
+        async () => {
+          let copiedFile: string;
+          let boilerPlateFile = await getFileContent(
+            originalCWD + boilerPlateFileName,
+          );
+
+          Rhum.asserts.assert(
+            existsSync(testCaseTmpDirName + copiedFileName),
+          );
+
+          copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
+          Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        },
+      );
+    }
   });
 
   Rhum.testSuite("--web-app --with-vue", async () => {
-    const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
-    // Create new tmp directory and create project files
-    Deno.mkdirSync(testCaseTmpDirName);
-    const p = Deno.run({
-      cmd: [
-        "deno",
-        "run",
-        "--allow-read",
-        "--allow-write",
-        "--allow-net",
-        "--allow-run",
-        "../create_app.ts",
-        "--web-app",
-        "--with-vue",
-      ],
-      stdout: "piped",
-      stderr: "piped",
-      cwd: testCaseTmpDirName,
-    });
+    const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
+    let suffixDict = {
+      "": ["deps.ts", "config.ts", "vue/app.js"],
+      "_web_app": ["app.ts", "server.ts"],
+      "_vue": ["webpack.config.js", "package.json"],
+    };
+    const FP_Gen: Generator<[string, string]> = FilePairGenerator(suffixDict);
 
-    let boilerPlateFile;
-    let copiedFile;
+    Rhum.testCase(
+      "creates a web app",
+      async () => {
+        // Create new tmp directory and create project files
+        Deno.mkdirSync(testCaseTmpDirName);
+        const p = Deno.run({
+          cmd: [
+            "deno",
+            "run",
+            "--allow-read",
+            "--allow-write",
+            "--allow-net",
+            "--allow-run",
+            "../create_app.ts",
+            "--web-app",
+            "--with-vue",
+          ],
+          stdout: "piped",
+          stderr: "piped",
+          cwd: testCaseTmpDirName,
+        });
+        const status = await p.status();
+        p.close();
+        const stdout = new TextDecoder("utf-8").decode(await p.output());
+        const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
+        Rhum.asserts.assertEquals(stderr, "");
+        Rhum.asserts.assertEquals(status.code, 0);
+        Rhum.asserts.assert(status.success);
+      },
+    );
 
-    Rhum.testCase("app.ts exists", async () => {
-      // app.ts
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/app.ts"),
-        true,
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/app_web_app.ts",
-      );
-      copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
-    Rhum.testCase("server.ts exists", async () => {
-      // server.ts
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/server.ts"),
-        true,
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/server_web_app.ts",
-      );
-      copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
-    Rhum.testCase("deps.ts exists", async () => {
-      // deps.ts
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/deps.ts"),
-        true,
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/deps.ts",
-      ), copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
-    Rhum.testCase("config.ts exists", async () => {
-      // config.ts
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/config.ts"),
-        true,
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/config.ts",
-      );
-      copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
-
-    Rhum.testCase("home_resource.ts exists", async () => {
-      // home_resource.ts
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
-        true,
-      );
-    });
-
-    Rhum.testCase("img dir exists", async () => {
+    Rhum.testCase("creates public/img directory", () => {
       // public/img
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/public/img"),
-        true,
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/public/img"),
       );
     });
-    Rhum.testCase("webpack.config.js exists", async () => {
-      // webpack.config.js
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/webpack.config.js"),
-        true,
+
+    Rhum.testCase("creates resources/home_resource.ts", async () => {
+      // home_resource.ts
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/resources/home_resource.ts"),
       );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/webpack_vue.config.js",
-      );
-      copiedFile = getFileContent(testCaseTmpDirName + "/webpack.config.js");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
-    Rhum.testCase("package.json exists", async () => {
-      // package.json
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/package.json"),
-        true,
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/package_vue.json",
-      );
-      copiedFile = getFileContent(testCaseTmpDirName + "/package.json");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
-    Rhum.testCase("App.vue exists", async () => {
+
+    Rhum.testCase("correctly creates App.vue", () => {
       // vue/App.vue
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/vue"),
-        true,
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/vue"),
       );
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/vue/App.vue"),
-        true,
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/vue/App.vue"),
       );
-      boilerPlateFile = getFileContent(
+
+      let boilerPlateFile = getFileContent(
         originalCWD + "/console/create_app/vue/app.vue",
       );
-      copiedFile = getFileContent(testCaseTmpDirName + "/vue/App.vue");
+
+      let copiedFile = getFileContent(testCaseTmpDirName + "/vue/App.vue");
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
-    Rhum.testCase("app.js exists", async () => {
-      // vue/app.js
-      Rhum.asserts.assertEquals(
-        await fileExists(testCaseTmpDirName + "/vue/app.js"),
-        true,
+
+    for (let [copiedFileName, boilerPlateFileName] of FP_Gen) {
+      Rhum.testCase(
+        `correctly creates template file ${copiedFileName.slice(1)}`,
+        async () => {
+          let copiedFile: string;
+          let boilerPlateFile = await getFileContent(
+            originalCWD + boilerPlateFileName,
+          );
+
+          Rhum.asserts.assert(
+            existsSync(testCaseTmpDirName + copiedFileName),
+          );
+
+          copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
+          Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        },
       );
-      boilerPlateFile = getFileContent(
-        originalCWD + "/console/create_app/vue/app.js",
-      );
-      copiedFile = getFileContent(testCaseTmpDirName + "/vue/app.js");
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
+    }
   });
 
   Rhum.testSuite("--web-app --with-react", () => {
+    const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
+    let suffixDict = {
+      "": ["deps.ts", "config.ts"],
+      "_web_app": ["app.ts", "server.ts", "resources/home_resource.ts"],
+      "_react": [
+        "webpack.config.js",
+        "package.json",
+        "tsconfig.json",
+        "public/views/index.html",
+      ],
+    };
+
+    const FP_Gen: Generator<[string, string]> = FilePairGenerator(suffixDict);
+
     Rhum.testCase(
-      "Script creates a web app with vue with the --web-app and --with-vue arguments",
+      "creates a web app",
       async () => {
-        const testCaseTmpDirName = tmpDirName + (tmpDirNameCount += 1);
         // Create new tmp directory and create project files
         Deno.mkdirSync(testCaseTmpDirName);
         const p = Deno.run({
@@ -558,130 +417,54 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
         Rhum.asserts.assertEquals(stderr, "");
         Rhum.asserts.assertEquals(status.code, 0);
-        Rhum.asserts.assertEquals(status.success, true);
-        // assert each file and it's content are correct
-        let boilerPlateFile;
-        let copiedFile;
-        // app.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/app.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/app_web_app.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/app.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // server.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/server.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/server_web_app.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/server.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // deps.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/deps.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/deps.ts",
-        ), copiedFile = getFileContent(testCaseTmpDirName + "/deps.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // config.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/config.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/config.ts",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/config.ts");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // home_resource.ts
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD +
-            "/console/create_app/resources/home_resource_web_app.ts",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/resources/home_resource.ts",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/img
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/public/img"),
-          true,
-        );
-        // webpack.config.js
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/webpack.config.js"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/webpack_react.config.js",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/webpack.config.js");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // package.json
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/package.json"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/package_react.json",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/package.json");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // vue/App.vue
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/react"),
-          true,
-        );
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/react/App.tsx"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/react/app.tsx",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/react/App.tsx");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // tsconfig.json
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/tsconfig.json"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/tsconfig_react.json",
-        );
-        copiedFile = getFileContent(testCaseTmpDirName + "/tsconfig.json");
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-        // public/views/index.html
-        Rhum.asserts.assertEquals(
-          await fileExists(testCaseTmpDirName + "/public/views/index.html"),
-          true,
-        );
-        boilerPlateFile = getFileContent(
-          originalCWD + "/console/create_app/public/views/index_react.html",
-        );
-        copiedFile = getFileContent(
-          testCaseTmpDirName + "/public/views/index.html",
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        Rhum.asserts.assert(status.success);
       },
     );
+    Rhum.testCase("creates public/img dir", () => {
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/public/img"),
+      );
+    });
+    // assert each file and it's content are correct
+    Rhum.testCase("correctly creates template file App.tsx", () => {
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/react"),
+      );
+
+      Rhum.asserts.assert(
+        existsSync(testCaseTmpDirName + "/react/App.tsx"),
+      );
+
+      let boilerPlateFile = getFileContent(
+        originalCWD + "/console/create_app/react/app.tsx",
+      );
+      let copiedFile = getFileContent(testCaseTmpDirName + "/react/App.tsx");
+      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+    });
+
+    for (let [copiedFileName, boilerPlateFileName] of FP_Gen) {
+      Rhum.testCase(
+        `correctly creates template file ${copiedFileName.slice(1)}`,
+        async () => {
+          let copiedFile: string;
+          let boilerPlateFile = await getFileContent(
+            originalCWD + boilerPlateFileName,
+          );
+
+          Rhum.asserts.assert(
+            existsSync(testCaseTmpDirName + copiedFileName),
+          );
+
+          copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
+          Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+        },
+      );
+    }
   });
 
   Rhum.testSuite("--api and --web-app", () => {
     Rhum.testCase(
-      "Script fails if --api and --web-app are specified",
+      "fails if --api and --web-app are specified",
       async () => {
         const p = Deno.run({
           cmd: [
