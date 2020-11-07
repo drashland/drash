@@ -354,7 +354,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
     });
 
-    Rhum.testCase("correctly creates template file App.vue", async () => {
+    Rhum.testCase("correctly creates template file vue/App.vue", async () => {
       // vue/App.vue
       Rhum.asserts.assert(
         await fileExists(testCaseTmpDirName + "/vue"),
