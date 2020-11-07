@@ -90,8 +90,7 @@ export const CorsMiddleware = ({
       origin = "*";
     } else if (origin !== "*") {
       // reflect origin
-      origin = isOriginAllowed(requestOrigin, origin) ? requestOrigin
-      : false;
+      origin = isOriginAllowed(requestOrigin, origin) ? requestOrigin : false;
     }
     origin = (origin as string | boolean); // To tell the tsc it is 100% a string or boolean now
 
