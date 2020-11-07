@@ -6,7 +6,7 @@ Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com
 import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
 
 // Import the Dexter middleware function
-import { Dexter } from "https://deno.land/x/drash_middleware@v0.6.0/dexter/mod.ts";
+import { Dexter } from "https://deno.land/x/drash_middleware@v0.6.1/dexter/mod.ts";
 
 // Instantiate dexter
 const dexter = Dexter();
@@ -134,7 +134,7 @@ You can reuse Dexter in your codebase by accessing its `logger`. For example, if
     // File: app.ts
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Dexter } from "https://deno.land/x/drash_middleware@v0.6.0/dexter.ts";
+    import { Dexter } from "https://deno.land/x/drash_middleware@v0.6.1/dexter.ts";
 
     const dexter = Dexter({
       enabled: true,
