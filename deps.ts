@@ -11,6 +11,10 @@ export {
   serveTLS,
 } from "https://deno.land/std@0.76.0/http/server.ts";
 
+export {
+  existsSync
+} from "https://deno.land/std@0.76.0/fs/mod.ts";
+
 export type {
   HTTPOptions,
   HTTPSOptions,
