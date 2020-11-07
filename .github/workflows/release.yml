@@ -8,11 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: denolib/setup-deno@master
-      - run: deno install -A -f --unstable -n eggs https://x.nest.land/eggs@0.2.2/mod.ts
+      - run: deno install -A -f --unstable -n eggs https://x.nest.land/eggs@0.3.2/eggs.ts
       - run: |
           export PATH="/home/runner/.deno/bin:$PATH"
           eggs link ${{ secrets.CI_NESTLAND_API_KEY }}
-          eggs publish
+          eggs publish --no-check-tests
 
   socials:
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
           comment: ${{ github.event.release.body }}
       - uses: ethomson/send-tweet-action@v1
         with:
-          status: "New Drash Version Released! https://github.com/drashland/deno-drash-middleware/releases/latest"
+          status: "New Drash Middleware Version Released! https://github.com/drashland/deno-drash-middleware/releases/latest"
           consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
           consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
