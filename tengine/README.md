@@ -256,7 +256,7 @@ This tutorial teaches you how to use Eta.
 ```
 ▾ /path/to/your/project/
     ▾ views/
-        index.html
+        index.eta
     app.ts
     home_resource.ts
 ```
@@ -317,7 +317,7 @@ This tutorial teaches you how to use Eta.
 
       public async GET() {
         this.response.body = await this.response.render(
-          "/index.html",
+          "./index",
           {
             message: "Hella using Eta.",
             template_engines: [
@@ -342,7 +342,7 @@ This tutorial teaches you how to use Eta.
     }
     ```
 
-3. Create your `index.html` file.
+3. Create your `index.eta` file.
 
     ```html
     <!DOCTYPE html>
