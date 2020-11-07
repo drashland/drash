@@ -13,3 +13,22 @@ jobs:
           export PATH="/home/runner/.deno/bin:$PATH"
           eggs link ${{ secrets.CI_NESTLAND_API_KEY }}
           eggs publish
+
+  socials:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: bluwy/release-for-reddit-action@v1
+        with:
+          username: ${{ secrets.REDDIT_USERNAME }}
+          password: ${{ secrets.REDDIT_PASSWORD }}
+          app-id: ${{ secrets.REDDIT_APP_ID }}
+          app-secret: ${{ secrets.REDDIT_APP_SECRET }}
+          subreddit: deno
+          comment: ${{ github.event.release.body }}
+      - uses: ethomson/send-tweet-action@v1
+        with:
+          status: "New Drash Version Released! https://github.com/drashland/deno-drash-middleware/releases/latest"
+          consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
+          consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
+          access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
