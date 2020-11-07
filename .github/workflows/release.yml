@@ -14,11 +14,7 @@ jobs:
           eggs link ${{ secrets.CI_NESTLAND_API_KEY }}
           eggs publish --no-check-tests
 
-     - name: Send Event to Website to Update Versions
-       run: |
-         curl -XPOST -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/drashland/website/dispatches --data '{"event_type": "update_docs", "client_payload": { "module_to_update": "drash", "version": "${{ github.event.release.tag_name }}" }}'
-
-  send-reddit-post:
+  socials:
     runs-on: ubuntu-latest
     steps:
       - uses: bluwy/release-for-reddit-action@v1
@@ -29,13 +25,9 @@ jobs:
           app-secret: ${{ secrets.REDDIT_APP_SECRET }}
           subreddit: deno
           comment: ${{ github.event.release.body }}
-
-  send-twitter-tweet:
-    runs-on: ubuntu-latest
-    steps:
       - uses: ethomson/send-tweet-action@v1
         with:
-          status: "New Drash Version Released! https://github.com/drashland/drash/releases/latest"
+          status: "New Drash Version Released! https://github.com/drashland/deno-drash/releases/latest"
           consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
           consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
