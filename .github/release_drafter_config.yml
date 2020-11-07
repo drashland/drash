@@ -29,6 +29,7 @@ template: |
   __Compatibility__
 
   * Requires Deno v<DENO_VERSION> or higher
+  * Requires Drashv<DRASH_VERSION> or higher
   * Uses Deno std@<STD_VERSION>
 
   __Importing__
@@ -37,6 +38,8 @@ template: |
     ```typescript
     import { MiddlewareModule } from "https://deno.land/x/rhum@v$RESOLVED_VERSION/<middleware-module>/mod.ts";
     ```
+
+    _Note: Change `MiddlewareModule` and `<middleware_module>` to reflect the middleware you want to import._
 
   __Updates__
 
