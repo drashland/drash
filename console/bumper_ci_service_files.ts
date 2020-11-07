@@ -5,7 +5,7 @@ export const regexes = {
   yml_deno: /deno: \[".+"\]/g,
 };
 
-export const moduleVersionFiles = [
+export const preReleaseFiles = [
   {
     filename: "./egg.json",
     replaceTheRegex: regexes.egg_json,
@@ -28,7 +28,7 @@ export const moduleVersionFiles = [
   },
 ];
 
-export const denoVersionFiles = [
+export const bumperFiles = [
   {
     filename: "./.github/workflows/master.yml",
     replaceTheRegex: regexes.yml_deno,
