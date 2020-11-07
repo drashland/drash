@@ -11,7 +11,7 @@ If you have received the message about `server.template_engine` being deprecated
     * `template_engine`
 2. Import Tengine into your application where you are creating your server.
     ```typescript
-    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.0/tengine/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
     ```
 3. Configure Tengine.
     ```typescript
@@ -45,6 +45,7 @@ If you have received the message about `server.template_engine` being deprecated
     * [Steps](#jae-steps)
     * [Verification](#jae-verification)
 * [Tutorial: Using Eta](#tutorial-using-eta)
+    * [Disclaimer](#disclaimer-related-to-eta)
     * [Folder Structure End State](#eta-folder-structure-end-state)
     * [Steps](#eta-steps)
     * [Verification](#eta-verification)
@@ -53,7 +54,7 @@ If you have received the message about `server.template_engine` being deprecated
 
 ```typescript
 // Import the Tengine middleware function
-import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.0/tengine/mod.ts";
+import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
 // Use the default template engine that comes with Tengine, known as Jae.
 // Returning false in the render method tells Tengine to use Jae. Specifying
@@ -118,7 +119,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.0/tengine/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
 
     const tengine = Tengine({
       render: (...args: unknown[]): boolean => {
@@ -244,14 +245,18 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
 
 This tutorial teaches you how to use Eta.
 
-_Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable` flag when you run your application._
+### Disclaimer Related To Eta
+
+* Drash Land is not affiliated with the Eta project or its maintainers in any form. Eta is a third-party project. Any issues related to Eta must be filed with Eta and not Drash Land.
+* Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable` flag when you run your application. This means, if you use Eta with Drash, your Drash application will be running under unstable APIs; and your application could break in the future since Deno's unstable APIs are subject to change or be removed without notice.
+* The Drash Land team has manually tested using Eta with Tengine. The version of Eta being imported in the code block/s below has/have been verified to work with the latest release of Drash Middleware. If you decide you want to upgrade to a newer version of Eta, please note that your application might break. Do not file an issue with Drash Land if your application breaks in this scenario.
 
 ### Eta: Folder Structure End State
 
 ```
 ▾ /path/to/your/project/
     ▾ views/
-        index.html
+        index.eta
     app.ts
     home_resource.ts
 ```
@@ -263,7 +268,7 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { HomeResource } from "./home_resource.ts";
-    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.0/tengine/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
     import { renderFile, configure } from "https://deno.land/x/eta@v1.6.0/mod.ts"
     
     // Set Eta's configuration
@@ -312,7 +317,7 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
 
       public async GET() {
         this.response.body = await this.response.render(
-          "/index.html",
+          "./index",
           {
             message: "Hella using Eta.",
             template_engines: [
@@ -337,7 +342,7 @@ _Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable`
     }
     ```
 
-3. Create your `index.html` file.
+3. Create your `index.eta` file.
 
     ```html
     <!DOCTYPE html>
