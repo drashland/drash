@@ -1,4 +1,4 @@
-import { Drash } from "../../deno-drash/mod.ts";
+import { Drash } from "../deps.ts";
 import { Jae } from "./jae.ts";
 
 interface IOptions {
