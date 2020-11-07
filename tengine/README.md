@@ -244,7 +244,11 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
 
 This tutorial teaches you how to use Eta.
 
-_Note: Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable` flag when you run your application._
+### Disclaimer
+
+* Drash Land is not affiliated with the Eta project or its maintainers in any form. Eta is a third-party project. Any issues related to Eta must be filed with Eta and not Drash Land.
+* Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable` flag when you run your application. This means, if you use Eta with Drash, your Drash application will be running under unstable APIs; and your application could break in the future since Deno's unstable APIs are subject to change or be removed without notice.
+* The Drash Land team has manually tested using Eta with Tengine. The version of Eta being imported in the code block/s below has/have been verified to work with the latest release of Drash Middleware. If you decide you want to upgrade to a newer version of Eta, please note that your application might break. Do not file an issue with Drash Land if your application breaks in this scenario.
 
 ### Eta: Folder Structure End State
 
