@@ -34,7 +34,7 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Bump Versions
-        run: deno run -A ./console/bumper_ci_service.ts --version=${{ github.ref }} # vrsion passed so we know what the new release version will be
+        run: deno run -A ./console/bumper_ci_service.ts --version=${{ github.ref }} # version passed so we know what the new release version will be
 
       # - name: Send Event to Website to Update Versions
       #   run: |
