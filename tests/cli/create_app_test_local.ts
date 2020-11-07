@@ -7,7 +7,6 @@
 
 import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
-import { existsSync } from "../deps.ts";
 import members from "../members.ts";
 
 const tmpDirName = "tmp-dir-for-testing-create-app";
@@ -43,6 +42,23 @@ function getFileContent(filePathAndName: string): string {
   ).replace(/\r\n/g, "\n");
   return fileContent;
 }
+
+const fileExists = async (filename: string): Promise<boolean> => {
+  const fullFilepath = originalCWD + "/" + filename;
+  try {
+    await Deno.stat(fullFilepath);
+    // successful, file or directory must exist
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) {
+      // file or directory does not exist
+      return false;
+    } else {
+      // unexpected error, maybe permissions, pass it along
+      throw error;
+    }
+  }
+};
 
 function add_suffix(fileName: string, suffix: string) {
   return fileName.replace(/([^.\/]+)\./, `\$1${suffix}.`);
@@ -199,7 +215,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
           );
 
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
@@ -229,7 +245,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
     const FP_Gen: Generator<[string, string]> = FilePairGenerator(suffixDict);
 
     Rhum.testCase(
-      "Script creates a web app with the --web-app argument",
+      "creates a web app",
       async () => {
         // Create new tmp directory and create project files
         Deno.mkdirSync(testCaseTmpDirName);
@@ -258,9 +274,9 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       },
     );
 
-    Rhum.testCase("public/img exists", () => {
+    Rhum.testCase("creates public/img dir", async () => {
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/public/img"),
+        await fileExists(testCaseTmpDirName + "/public/img"),
       );
     });
 
@@ -274,7 +290,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
           );
 
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
@@ -324,27 +340,27 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       },
     );
 
-    Rhum.testCase("creates public/img directory", () => {
+    Rhum.testCase("creates public/img directory", async () => {
       // public/img
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/public/img"),
+        await fileExists(testCaseTmpDirName + "/public/img"),
       );
     });
 
     Rhum.testCase("creates resources/home_resource.ts", async () => {
       // home_resource.ts
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/resources/home_resource.ts"),
+        await fileExists(testCaseTmpDirName + "/resources/home_resource.ts"),
       );
     });
 
-    Rhum.testCase("correctly creates template file App.vue", () => {
+    Rhum.testCase("correctly creates template file App.vue", async () => {
       // vue/App.vue
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/vue"),
+        await fileExists(testCaseTmpDirName + "/vue"),
       );
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/vue/App.vue"),
+        await fileExists(testCaseTmpDirName + "/vue/App.vue"),
       );
 
       let boilerPlateFile = getFileContent(
@@ -365,7 +381,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
           );
 
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
@@ -420,19 +436,19 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         Rhum.asserts.assert(status.success);
       },
     );
-    Rhum.testCase("creates public/img dir", () => {
+    Rhum.testCase("creates public/img dir", async () => {
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/public/img"),
+        await fileExists(testCaseTmpDirName + "/public/img"),
       );
     });
     // assert each file and it's content are correct
-    Rhum.testCase("correctly creates template file App.tsx", () => {
+    Rhum.testCase("correctly creates template file App.tsx", async () => {
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/react"),
+        await fileExists(testCaseTmpDirName + "/react"),
       );
 
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + "/react/App.tsx"),
+        await fileExists(testCaseTmpDirName + "/react/App.tsx"),
       );
 
       let boilerPlateFile = getFileContent(
@@ -452,7 +468,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
           );
 
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);

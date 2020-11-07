@@ -7,14 +7,32 @@
 
 import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
-import { existsSync } from "../deps.ts";
+
 const tmpDirName = "tmp-dir-for-testing-create-app";
 let tmpDirNameCount = 10;
 const originalCWD = Deno.cwd();
 const decoder = new TextDecoder("utf-8");
 const branch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
-const githubOwner = Deno.env.get("GITHUB_ACTOR"); // possible it's the user and not drashland
+const githubOwner = Deno.env.get("GITHUB_ACTOR") ?? "drashland"; // possible it's the user and not drashland
 const repository = "deno-drash";
+
+// supports forks
+let drashUrl =
+  `https://raw.githubusercontent.com/${githubOwner}/${repository}/${branch}`;
+
+// if fork doesnt exist, use drashland repo. An instance where this can happen
+// is if I (Edward) make a PR to drashland NOT from a fork, the github owner
+// will be "ebebbington" which it shouldn't be, it should be drashland
+try {
+  const res = await fetch(`${drashUrl}/create_app.ts`);
+  await res.text();
+  if (res.status !== 200) {
+    drashUrl =
+      `https://raw.githubusercontent.com/drashland/deno-drash/${branch}`;
+  }
+} catch (err) {
+  // do nothing
+}
 
 function add_suffix(fileName: string, suffix: string) {
   return fileName.replace(/([^.\/]+)\./, `\$1${suffix}.`);
@@ -33,24 +51,6 @@ function* FilePairGenerator(
       ];
     }
   }
-}
-
-// supports forks
-let drashUrl =
-  `https://raw.githubusercontent.com/${githubOwner}/${repository}/${branch}`;
-
-// if fork doesnt exist, use drashland repo. An instance where this can happen
-// is if I (Edward) make a PR to drashland NOT from a fork, the github owner
-// will be "ebebbington" which it shouldn't be, it should be drashland
-try {
-  const res = await fetch(`${drashUrl}/create_app.ts`);
-  await res.text();
-  if (res.status !== 200) {
-    drashUrl =
-      `https://raw.githubusercontent.com/drashland/deno-drash/${branch}`;
-  }
-} catch (err) {
-  // do nothing
 }
 
 /**
@@ -78,6 +78,23 @@ async function fetchFileContent(url: string): Promise<string> {
   const response = await fetch(drashUrl + url);
   return await response.text();
 }
+
+const fileExists = async (filename: string): Promise<boolean> => {
+  const fullFilepath = originalCWD + "/" + filename;
+  try {
+    await Deno.stat(fullFilepath);
+    // successful, file or directory must exist
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) {
+      // file or directory does not exist
+      return false;
+    } else {
+      // unexpected error, maybe permissions, pass it along
+      throw error;
+    }
+  }
+};
 
 Rhum.testPlan("create_app_test_http.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
@@ -216,7 +233,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
 
           console.log("Before assert: " + testCaseTmpDirName + copiedFileName);
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
@@ -286,7 +303,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
 
           console.log("Before assert: " + testCaseTmpDirName + copiedFileName);
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
@@ -343,9 +360,9 @@ Rhum.testPlan("create_app_test_http.ts", () => {
       Rhum.asserts.assert(status.success);
     });
 
-    Rhum.testCase("Created public/img directory", () => {
+    Rhum.testCase("Created public/img directory", async () => {
       Rhum.asserts.assert(
-        existsSync(testCaseTmpDirName + `/public/img`),
+        await fileExists(testCaseTmpDirName + `/public/img`),
       );
     });
 
@@ -360,7 +377,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
 
           console.log("Before assert: " + testCaseTmpDirName + copiedFileName);
           Rhum.asserts.assert(
-            existsSync(testCaseTmpDirName + copiedFileName),
+            await fileExists(testCaseTmpDirName + copiedFileName),
           );
 
           copiedFile = getFileContent(testCaseTmpDirName + copiedFileName);
