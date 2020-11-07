@@ -37,6 +37,11 @@ export const bumpVersionFiles = [
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
   },
+  {
+    filename: "./tengine/README.md",
+    replaceTheRegex: regexes.import_export_statements,
+    replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
+  },
 ];
 
 export const bumpDependencyFiles = [
