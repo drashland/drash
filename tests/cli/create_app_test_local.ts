@@ -64,7 +64,7 @@ function* FilePairGenerator(
 }
 Rhum.testPlan("create_app_test_local.ts", () => {
   Rhum.testSuite("(no arguments passed in)", () => {
-    Rhum.testCase("script fails with no argument", async () => {
+    Rhum.testCase("fails with no argument", async () => {
       const p = Deno.run({
         cmd: [
           "deno",
@@ -89,12 +89,12 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
       Rhum.asserts.assertEquals(stdout, "");
       Rhum.asserts.assertEquals(status.code, 1);
-      Rhum.asserts.assert(status.success);
+      Rhum.asserts.assertEquals(status.success, false);
     });
   });
 
   Rhum.testSuite("--help", () => {
-    Rhum.testCase("Script success with the --help argument", async () => {
+    Rhum.testCase("dispays help", async () => {
       const p = Deno.run({
         cmd: [
           "deno",
@@ -338,7 +338,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
     });
 
-    Rhum.testCase("correctly creates App.vue", () => {
+    Rhum.testCase("correctly creates template file App.vue", () => {
       // vue/App.vue
       Rhum.asserts.assert(
         existsSync(testCaseTmpDirName + "/vue"),
