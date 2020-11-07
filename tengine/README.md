@@ -45,6 +45,7 @@ If you have received the message about `server.template_engine` being deprecated
     * [Steps](#jae-steps)
     * [Verification](#jae-verification)
 * [Tutorial: Using Eta](#tutorial-using-eta)
+    * [Disclaimer](#disclaimer-related-to-eta)
     * [Folder Structure End State](#eta-folder-structure-end-state)
     * [Steps](#eta-steps)
     * [Verification](#eta-verification)
@@ -244,7 +245,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
 
 This tutorial teaches you how to use Eta.
 
-### Disclaimer
+### Disclaimer Related To Eta
 
 * Drash Land is not affiliated with the Eta project or its maintainers in any form. Eta is a third-party project. Any issues related to Eta must be filed with Eta and not Drash Land.
 * Eta uses unstable Deno APIs. Therefore, you must pass in the `--unstable` flag when you run your application. This means, if you use Eta with Drash, your Drash application will be running under unstable APIs; and your application could break in the future since Deno's unstable APIs are subject to change or be removed without notice.
