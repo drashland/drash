@@ -26,7 +26,7 @@ Upon completing the Steps section below, your project's folder structure should 
 
 ## Steps
 
-1. Create your template file that will include the template partial. _Note: The `skills.html` file must be relative to the `views_path` config.
+1. Create your template file that will include the template partial. _Note: The `skills.html` file must be relative to the `views_path` config._
 
     Filename: `/path/to/your/project/views/user.html`
 
