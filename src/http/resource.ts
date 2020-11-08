@@ -56,19 +56,25 @@ export class Resource implements Drash.Interfaces.Resource {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-     * Construct an object of this class.
-     *
-     * @param request - The request object.
-     * @param response - The response object.
-     * @param server - The server object.
-     */
+   * Construct an object of this class.
+   *
+   * @param request - The request object.
+   * @param response - The response object.
+   * @param server - The server object.
+   * @param paths - The paths the resource accepts
+   * @param middleware - Any middleware for the resource
+   */
   constructor(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
     server: Drash.Http.Server,
+    paths: string[],
+    middleware: { after_request?: []; before_request?: [] }
   ) {
     this.request = request;
     this.response = response;
     this.server = server;
+    this.paths = paths;
+    this.middleware = middleware;
   }
 }

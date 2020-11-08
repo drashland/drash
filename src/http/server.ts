@@ -217,7 +217,7 @@ View more information regarding this deprecation/removal at:
   public async getRequest(
     serverRequest: ServerRequest,
   ): Promise<Drash.Http.Request> {
-    let options: IRequestOptions = {
+    const options: IRequestOptions = {
       default_response_content_type: this.configs.response_output,
       memory_allocation: {
         multipart_form_data: 10,
@@ -236,95 +236,87 @@ View more information regarding this deprecation/removal at:
   /**
    * Handle an HTTP request from the Deno server.
    *
-   * @param request - The request object.
+   * @param serverRequest - The incoming request object.
    *
    * @returns A Promise of ResponseOutput.
    */
   public async handleHttpRequest(
-    serverRequest: Drash.Http.Request,
+    serverRequest: ServerRequest,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    // Handle a request to a static path
-    if (this.requestTargetsStaticPath(serverRequest)) {
-      return await this.handleHttpRequestForStaticPathAsset(serverRequest);
-    }
+    this.logger.info(
+        `Request received: ${serverRequest.method.toUpperCase()} ${serverRequest.url}`,
+    );
 
-    // Handle a request to a virtual path
-    if (this.requestTargetsVirtualPath(serverRequest)) {
-      return await this.handleHttpRequestForVirtualPathAsset(serverRequest);
-    }
+    const request = await this.getRequest(serverRequest);
 
     // Handle a request to the favicon
     if (serverRequest.url == "/favicon.ico") {
-      return this.handleHttpRequestForFavicon(serverRequest);
+      return this.handleHttpRequestForFavicon(request);
     }
 
-    let response;
-    let resource;
-    let request;
-
+    // Execute middleware before we handle the request
     try {
-      request = await this.getRequest(serverRequest);
+      await this.executeMiddlewareServerLevelBeforeRequest(request);
     } catch (error) {
       return await this.handleHttpRequestError(
-        serverRequest as Drash.Http.Request,
-        this.httpErrorResponse(400, error.message),
+          request,
+          this.httpErrorResponse(error.code ?? 404, error.message),
       );
     }
 
-    try {
-      this.logger.info(
-        `Request received: ${request.method.toUpperCase()} ${request.url}`,
-      );
+    // Handle a request to a static path
+    if (this.requestTargetsStaticPath(request)) {
+      return await this.handleHttpRequestForStaticPathAsset(request);
+    }
 
-      // Build a response object that is ready to be hydrated later in the
-      // lifecycle
-      response = this.getResponse(request);
+    // Handle a request to a virtual path
+    if (this.requestTargetsVirtualPath(request)) {
+      return await this.handleHttpRequestForVirtualPathAsset(request);
+    }
 
-      let resourceClass = this.getResourceClass(request);
-
-      await this.executeMiddlewareServerLevelBeforeRequest(request);
-
-      // No resource? Send a 404 (Not Found) response.
-      if (!resourceClass) {
-        return await this.handleHttpRequestError(
+    // Handle for resources
+    const resourceClass = await this.getResourceClass(request); // todo rename method to buildResource
+    // No resource? Send a 404 (Not Found) response.
+    if (!resourceClass) {
+      return await this.handleHttpRequestError(
           request,
           this.httpErrorResponse(404),
-        );
-      }
-
-      // deno-lint-ignore ban-ts-comment
-      // @ts-ignore
-      // (crookse)
-      //
-      // We ignore this because `resourceClass` could be `undefined`. `undefined`
-      // doesn't have a construct signature and the compiler will complain about
-      // it with the following error:
-      //
-      // TS2351: Cannot use 'new' with an expression whose type lacks a call or
-      // construct signature.
-      //
-      resource = new (resourceClass as Drash.Http.Resource)(
-        request,
-        response,
-        this,
       );
-      // We have to add the static properties back because they get blown away
-      // when the resource object is created
-      resource.paths = resourceClass.paths;
-      resource.middleware = resourceClass.middleware;
+    }
 
-      request.resource = resource;
-      this.logDebug(
+    const response = this.getResponse(request);
+
+    // deno-lint-ignore ban-ts-comment
+    // @ts-ignore
+    // (crookse)
+    //
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    //
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    // it with the following error:
+    //
+    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+    // construct signature.
+    //
+    const resource = new (resourceClass as Drash.Http.Resource)(request, response, this, resourceClass.paths, resourceClass.middleware);
+
+    request.resource = resource;
+
+    this.logDebug(
         "Using `" +
-          resource.constructor.name +
-          "` resource class to handle the request.",
-      );
+        resource.constructor.name +
+        "` resource class to handle the request.",
+    );
 
-      // Perform the request
-      this.logDebug("Calling " + request.method.toUpperCase() + "().");
+    // If any errors are thrown inside the resources, or thrown inside this code, we can handle it with a http exception error
+    try {
       if (typeof resource[request.method.toUpperCase()] !== "function") {
-        throw new Drash.Exceptions.HttpException(405);
+        throw new Drash.Exceptions.HttpException(405)
       }
+
+      this.logDebug("Calling " + request.method.toUpperCase() + "().");
 
       // TODO(crookse) In v2, this is where the before_request middleware hook
       // will be placed. The current location of the before_request middleware
@@ -332,30 +324,24 @@ View more information regarding this deprecation/removal at:
       await this.executeMiddlewareServerLevelAfterResource(request, response);
 
       // response can  be literally anything, it's down to the user what they return from the method
-      response = await resource[request.method.toUpperCase()]();
+      const resourceResponse = await resource[request.method.toUpperCase()]();
 
       // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
-      const isValidResponse = this.isValidResponse(response);
+      const isValidResponse = this.isValidResponse(resourceResponse);
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
-          418,
-          `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
+            418,
+            `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
         );
       }
 
-      await this.executeMiddlewareServerLevelAfterRequest(request, response);
+      await this.executeMiddlewareServerLevelAfterRequest(request, resourceResponse);
 
-      // Send the response
       this.logDebug("Sending response. " + response.status_code + ".");
-      return response.send();
+      return resourceResponse.send();
     } catch (error) {
-      this.logDebug(error.stack);
-      return await this.handleHttpRequestError(
-        request,
-        error,
-        resource,
-        response,
-      );
+      this.logDebug(error.stack)
+      return await this.handleHttpRequestError(request, error, resource, response)
     }
   }
 
@@ -489,8 +475,6 @@ View more information regarding this deprecation/removal at:
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
-      await this.executeMiddlewareServerLevelBeforeRequest(request);
-
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
@@ -571,8 +555,6 @@ View more information regarding this deprecation/removal at:
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
-      await this.executeMiddlewareServerLevelBeforeRequest(request);
-
       const response = this.getResponse(request);
 
       response.headers.set(
@@ -619,18 +601,7 @@ View more information regarding this deprecation/removal at:
     this.hostname = options.hostname;
     this.port = options.port;
     this.deno_server = serve(options);
-    (async () => {
-      for await (const request of this.deno_server!) {
-        try {
-          this.handleHttpRequest(request as Drash.Http.Request);
-        } catch (error) {
-          this.handleHttpRequestError(
-            request as Drash.Http.Request,
-            this.httpErrorResponse(500),
-          );
-        }
-      }
-    })();
+    await this.listen();
     return this.deno_server;
   }
 
@@ -654,18 +625,7 @@ View more information regarding this deprecation/removal at:
     this.hostname = options.hostname;
     this.port = options.port;
     this.deno_server = serveTLS(options);
-    (async () => {
-      for await (const request of this.deno_server!) {
-        try {
-          this.handleHttpRequest(request as Drash.Http.Request);
-        } catch (error) {
-          this.handleHttpRequestError(
-            request as Drash.Http.Request,
-            this.httpErrorResponse(500),
-          );
-        }
-      }
-    })();
+    await this.listen();
     return this.deno_server;
   }
 
@@ -680,6 +640,24 @@ View more information regarding this deprecation/removal at:
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Listens for incoming HTTP connections on the server property
+   */
+  protected async listen () {
+    (async () => {
+      for await (const request of this.deno_server!) {
+        try {
+          this.handleHttpRequest(request as ServerRequest);
+        } catch (error) {
+          this.handleHttpRequestError(
+              request as Drash.Http.Request,
+              this.httpErrorResponse(500),
+          );
+        }
+      }
+    })();
+  }
 
   /**
    * Add an HTTP resource to the server which can be retrieved at specific
@@ -969,7 +947,6 @@ View more information regarding this deprecation/removal at:
         },
       );
     }
-
     return pathParamsInKvpForm;
   }
 
@@ -984,7 +961,7 @@ View more information regarding this deprecation/removal at:
    */
   protected getResourceClass(
     request: Drash.Http.Request,
-  ): Drash.Interfaces.Resource | undefined {
+  ): Drash.Http.Resource | undefined {
     let resource: Drash.Interfaces.Resource | undefined = undefined;
 
     const uri = request.url_path.split("/");
@@ -1016,6 +993,7 @@ View more information regarding this deprecation/removal at:
     // pattern associated with a resource
     let matchedResource = false;
     results.forEach((result: ISearchResult) => {
+      //result = (result as ISearchResult);
       // If we already matched a resource, then there is no need to parse any
       // further
       if (matchedResource) {
