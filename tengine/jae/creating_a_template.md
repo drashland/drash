@@ -25,7 +25,7 @@ In this tutorial, you will create an HTML template with a `<% user.name %>` temp
 
 1. Create your template file.
 
-    Filename: /path/to/your/project/views/user.html
+    Filename: `/path/to/your/project/views/user.html`
 
     ```html
     <!DOCTYPE html>
@@ -46,7 +46,7 @@ In this tutorial, you will create an HTML template with a `<% user.name %>` temp
 
 2. Create your resource file.
 
-    Filename: /path/to/your/project/user_resource.ts
+    Filename: `/path/to/your/project/user_resource.ts`
     
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
@@ -72,7 +72,7 @@ In this tutorial, you will create an HTML template with a `<% user.name %>` temp
 
 3. Create your app file.
 
-    Filename: /path/to/your/project/app.ts
+    Filename: `/path/to/your/project/app.ts`
     
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
