@@ -275,74 +275,7 @@ View more information regarding this deprecation/removal at:
     }
 
     // Handle for resources
-    const resourceClass = await this.getResourceClass(request); // todo rename method to buildResource
-    // No resource? Send a 404 (Not Found) response.
-    if (!resourceClass) {
-      return await this.handleHttpRequestError(
-          request,
-          this.httpErrorResponse(404),
-      );
-    }
-
-    const response = this.getResponse(request);
-
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
-    // (crookse)
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    // it with the following error:
-    //
-    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
-    // construct signature.
-    //
-    const resource = new (resourceClass as Drash.Http.Resource)(request, response, this, resourceClass.paths, resourceClass.middleware);
-
-    request.resource = resource;
-
-    this.logDebug(
-        "Using `" +
-        resource.constructor.name +
-        "` resource class to handle the request.",
-    );
-
-    // If any errors are thrown inside the resources, or thrown inside this code, we can handle it with a http exception error
-    try {
-      if (typeof resource[request.method.toUpperCase()] !== "function") {
-        throw new Drash.Exceptions.HttpException(405)
-      }
-
-      this.logDebug("Calling " + request.method.toUpperCase() + "().");
-
-      // TODO(crookse) In v2, this is where the before_request middleware hook
-      // will be placed. The current location of the before_request middleware
-      // hook will be replaced with a before_resource middleware hook.
-      await this.executeMiddlewareServerLevelAfterResource(request, response);
-
-      // response can  be literally anything, it's down to the user what they return from the method
-      const resourceResponse = await resource[request.method.toUpperCase()]();
-
-      // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
-      const isValidResponse = this.isValidResponse(resourceResponse);
-      if (isValidResponse === false) {
-        throw new Drash.Exceptions.HttpResponseException(
-            418,
-            `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
-        );
-      }
-
-      await this.executeMiddlewareServerLevelAfterRequest(request, resourceResponse);
-
-      this.logDebug("Sending response. " + response.status_code + ".");
-      return resourceResponse.send();
-    } catch (error) {
-      this.logDebug(error.stack)
-      return await this.handleHttpRequestError(request, error, resource, response)
-    }
+    return await this.handleHttpRequestForResource(request)
   }
 
   /**
@@ -463,6 +396,77 @@ View more information regarding this deprecation/removal at:
     return output;
   }
 
+  public async handleHttpRequestForResource(request: Drash.Http.Request): Promise<Drash.Interfaces.ResponseOutput> {
+    const resourceClass = await this.getResourceClass(request);
+    // No resource? Send a 404 (Not Found) response.
+    if (!resourceClass) {
+      return await this.handleHttpRequestError(
+          request,
+          this.httpErrorResponse(404),
+      );
+    }
+
+    const response = this.getResponse(request);
+
+    // deno-lint-ignore ban-ts-comment
+    // @ts-ignore
+    // (crookse)
+    //
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    //
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    // it with the following error:
+    //
+    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+    // construct signature.
+    //
+    const resource = new (resourceClass as Drash.Http.Resource)(request, response, this, resourceClass.paths, resourceClass.middleware);
+
+    request.resource = resource;
+
+    this.logDebug(
+        "Using `" +
+        resource.constructor.name +
+        "` resource class to handle the request.",
+    );
+
+    // If any errors are thrown inside the resources, or thrown inside this code, we can handle it with a http exception error
+    try {
+      if (typeof resource[request.method.toUpperCase()] !== "function") {
+        throw new Drash.Exceptions.HttpException(405)
+      }
+
+      this.logDebug("Calling " + request.method.toUpperCase() + "().");
+
+      // TODO(crookse) In v2, this is where the before_request middleware hook
+      // will be placed. The current location of the before_request middleware
+      // hook will be replaced with a before_resource middleware hook.
+      await this.executeMiddlewareServerLevelAfterResource(request, response);
+
+      // response can  be literally anything, it's down to the user what they return from the method
+      const resourceResponse = await resource[request.method.toUpperCase()]();
+
+      // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
+      const isValidResponse = this.isValidResponse(resourceResponse);
+      if (isValidResponse === false) {
+        throw new Drash.Exceptions.HttpResponseException(
+            418,
+            `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
+        );
+      }
+
+      await this.executeMiddlewareServerLevelAfterRequest(request, resourceResponse);
+
+      this.logDebug("Sending response. " + response.status_code + ".");
+      return resourceResponse.send();
+    } catch (error) {
+      this.logDebug(error.stack)
+      return await this.handleHttpRequestError(request, error, resource, response)
+    }
+  }
+
   /**
    * Handle HTTP requests for static path assets.
    *
@@ -556,7 +560,6 @@ View more information regarding this deprecation/removal at:
   ): Promise<Drash.Interfaces.ResponseOutput> {
     try {
       const response = this.getResponse(request);
-
       response.headers.set(
         "Content-Type",
         this.http_service.getMimeType(request.url, true) || "text/plain",
