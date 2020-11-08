@@ -45,7 +45,7 @@ Upon completing the Steps section below, your project's folder structure should 
     </html>
     ```
 
-2. Create your extended template. The contents of this file will replace the `<% yield %>` variable. The `index.html` file must be relative to the `views_path` server config.
+2. Create your extended template. The contents of this file will replace the `<% yield %>` variable. The `index.html` file must be relative to the `views_path` config.
 
     Filename: `/path/to/your/project/views/user.html`
     
