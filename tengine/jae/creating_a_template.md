@@ -13,6 +13,8 @@ In this tutorial, you will create an HTML template with a `<% user.name %>` temp
 
 ## Folder Structure End State
 
+Upon completing the Steps section below, your project's folder structure should look similar to the following:
+
 ```
 ▾ /path/to/your/project/
   ▾ /views
