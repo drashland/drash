@@ -83,4 +83,4 @@ this.response.render(
 
 ---
 
-Other tutorials: [Creating A Template](./creating_a_template.md) | [Extending A Template](./extending_a_template.md)
+Other tutorials: [Creating A Template](./creating_a_template.md) | [Extending A Template](./extending_a_template.md) | [Adding Template Partials](./adding_template_partials.md)
