@@ -38,14 +38,54 @@ export const bumpVersionFiles = [
     replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
   },
   {
+    filename: "./cors/README.md",
+    replaceTheRegex: regexes.import_export_statements,
+    replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
+  },
+  {
     filename: "./tengine/README.md",
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
   },
   {
-    filename: "./cors/README.md",
+    filename: "./tengine/jae/adding_template_partials.md",
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/adding_template_partials.md",
+    replaceTheRegex: regexes.drash_import_statements,
+    replaceWith: `drash@v{{ latestDrashVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/creating_a_template.md",
+    replaceTheRegex: regexes.import_export_statements,
+    replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/creating_a_template.md",
+    replaceTheRegex: regexes.drash_import_statements,
+    replaceWith: `drash@v{{ latestDrashVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/extending_a_template.md",
+    replaceTheRegex: regexes.import_export_statements,
+    replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/extending_a_template.md",
+    replaceTheRegex: regexes.drash_import_statements,
+    replaceWith: `drash@v{{ latestDrashVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/in_template_javascript.md",
+    replaceTheRegex: regexes.import_export_statements,
+    replaceWith: `drash_middleware@v{{ thisModulesLatestVersion }}`,
+  },
+  {
+    filename: "./tengine/jae/in_template_javascript.md",
+    replaceTheRegex: regexes.drash_import_statements,
+    replaceWith: `drash@v{{ latestDrashVersion }}`,
   },
 ];
 

@@ -4,37 +4,7 @@ Tengine allows your Drash application to use a template engine.
 
 ## Migrating From Drash.Compilers.TemplateEngine?
 
-If you have received the message about `server.template_engine` being deprecated and are looking for the migration guide, here it is:
-
-1. Remove the following from your `const server = new Drash.Http.Server({ ... })` block:
-    * `views_path`
-    * `template_engine`
-2. Import Tengine into your application where you are creating your server.
-    ```typescript
-    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
-    ```
-3. Configure Tengine.
-    ```typescript
-    const tengine = Tengine({
-      render: (...args: unknown[]): boolean => {
-        return false; // This render method returns false to tell Tengine to use its default template engine
-      },
-      views_path: "./path/to/your/views"
-    });
-    ```
-4. Add Tengine to your server's middleware configs.
-    ```typescript
-    const server = new Drash.Http.Server({
-      ...
-      middleware: {
-        after_resource: [
-          tengine
-        ]
-      }
-      ...
-    });
-    ```
-5. You are all set!
+If you have received the message about `server.template_engine` being deprecated and are looking for the migration guide, click [here](./drash_migration_guide.md).
 
 ## Table of Contents
 
@@ -44,6 +14,7 @@ If you have received the message about `server.template_engine` being deprecated
     * [Folder Structure End State](#jae-folder-structure-end-state)
     * [Steps](#jae-steps)
     * [Verification](#jae-verification)
+    * [Further Learning](#jae-further-learning)
 * [Tutorial: Using Eta](#tutorial-using-eta)
     * [Disclaimer](#disclaimer-related-to-eta)
     * [Folder Structure End State](#eta-folder-structure-end-state)
@@ -240,6 +211,10 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
    ```text
    Hella using Jae.
    ```
+
+### Jae: Further Learning
+
+You can learn more about Jae through its tutorials [here](./jae).
 
 ## Tutorial: Using Eta
 
