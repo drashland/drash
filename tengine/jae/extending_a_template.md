@@ -129,4 +129,4 @@ You can verify that your app's code works by making requests like the ones below
     
 2. Go to `localhost:1447/user` in your browser. You should receive the following response:
 
-    ![Creating A Template](./img/extending_a_template.png)
+    ![Extending A Template](./img/extending_a_template.png)
