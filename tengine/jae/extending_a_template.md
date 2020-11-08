@@ -64,7 +64,7 @@ Upon completing the Steps section below, your project's folder structure should 
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
 
-    export default class UserResource extends Drash.Http.Resource {
+    export class UserResource extends Drash.Http.Resource {
 
       static paths = ["/user"];
 
@@ -130,3 +130,7 @@ You can verify that your app's code works by making requests like the ones below
 2. Go to `localhost:1447/user` in your browser. You should receive the following response:
 
     ![Extending A Template](./img/extending_a_template.png)
+
+---
+
+Other tutorials: [Creating A Template](./creating_a_template.md) | [Adding Template Partials](./adding_template_partials.md) | [In-Template JavaScript](./in_template_javascript.md)
