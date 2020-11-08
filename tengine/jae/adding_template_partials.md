@@ -1,4 +1,4 @@
-# Creating A Template
+# Adding Template Partials
 
 ## Table of Contents
 
@@ -9,7 +9,7 @@
 
 ## Before You Get Started
 
-In this tutorial, you will create an HTML template with a `<% user.name %>` template variable.
+In this tutorial, you will create an HTML template with template partials using `<% include_partial("/skills.html") %>`.
 
 ## Folder Structure End State
 
@@ -18,6 +18,7 @@ Upon completing the Steps section below, your project's folder structure should 
 ```
 ▾ /path/to/your/project/
   ▾ /views
+    skills.html
     user.html
   app.ts
   user_resource.ts
@@ -25,7 +26,7 @@ Upon completing the Steps section below, your project's folder structure should 
 
 ## Steps
 
-1. Create your template file.
+1. Create your template file that will include the template partial. _Note: The `skills.html` file must be relative to the `views_path` config.
 
     Filename: `/path/to/your/project/views/user.html`
 
@@ -36,43 +37,56 @@ Upon completing the Steps section below, your project's folder structure should 
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, user-scalable=no"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
-        <title>User Profile</title>
+        <title>Skills</title>
       </head>
       <body style="background: #f4f4f4">
         <div style="max-width: 640px; margin: 50px auto;">
           <h1 class="text-5xl"><% user.name %></h1>
+          <h2 class="text-4xl mt-4">Skills</h2>
+          <% include_partial("/skills.html") %>
         </div>
       </body>
     </html>
     ```
 
-2. Create your resource file.
+2. Create your template partial file.
+
+    Filename: `/path/to/your/project/views/skills.html`
+    
+    ```html
+    <ul>
+      <li>Agility</li>
+      <li>Strength</li>
+      <li>Endurance</li>
+    </ul>
+    ```
+
+3. Create your resource file.
 
     Filename: `/path/to/your/project/user_resource.ts`
     
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
 
-    export class UserResource extends Drash.Http.Resource {
+    export default class UserResource extends Drash.Http.Resource {
 
       static paths = ["/user"];
 
       public GET() {
         this.response.body = this.response.render(
-          "/user.html", // Leading slash is required here
+          "/user.html",
           {
             user: {
               name: "Captain America",
             },
           },
         );
-
         return this.response;
       }
     }
     ```
 
-3. Create your app file.
+4. Create your app file.
 
     Filename: `/path/to/your/project/app.ts`
     
@@ -80,7 +94,7 @@ Upon completing the Steps section below, your project's folder structure should 
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
     import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
     import { UserResource } from "./user_resource.ts";
-    
+
     // Configure Tengine
     const tengine = Tengine({
       render: (...args: unknown[]): boolean => {
@@ -119,4 +133,4 @@ You can verify that your app's code works by making requests like the ones below
     
 2. Go to `localhost:1447/user` in your browser. You should receive the following response:
 
-    ![Creating A Template](./img/creating_a_template.png)
+    ![Adding Template Partials](./img/adding_template_partials.png)
