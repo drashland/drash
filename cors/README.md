@@ -11,7 +11,7 @@
 Use the following import:
 
 ```ts
-import { CorsMiddleware } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts"; // If module is uploaded into deno.land
+import { Cors } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts"; // If module is uploaded into deno.land
 ```
 
 ## Usage
@@ -20,12 +20,12 @@ Require cors middleware and register it as server-level middleware.
 
 ```ts
 import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
-import { CorsMiddleware } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts";
+import { Cors } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts";
 
 const server = new Drash.Http.Server({
   middleware: {
     after_request: [
-      CorsMiddleware(),
+      Cors(),
     ]
   },
   resources: [

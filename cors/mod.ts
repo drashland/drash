@@ -41,7 +41,7 @@ const isOriginAllowed = (reqOrigin: string, origin: OriginOption): boolean => {
   }
 };
 
-export const CorsMiddleware = ({
+export const Cors = ({
   origin = "*",
   credentials = false,
   exposeHeaders,

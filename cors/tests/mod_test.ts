@@ -1,6 +1,6 @@
 import { Rhum } from "../../test_deps.ts";
 import { Drash } from "../../deps.ts";
-import { CorsMiddleware } from "../mod.ts";
+import { Cors } from "../mod.ts";
 
 class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
   static paths = ["/cors"];
@@ -15,8 +15,8 @@ class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
 
 async function runServer(allowAll: boolean = true): Promise<Drash.Http.Server> {
   const cors = allowAll
-    ? CorsMiddleware()
-    : CorsMiddleware({ origin: "localhost " });
+    ? Cors()
+    : Cors({ origin: "localhost " });
   const server = new Drash.Http.Server({
     response_output: "application/json",
     middleware: {
