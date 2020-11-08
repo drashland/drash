@@ -1,4 +1,4 @@
-# Jae: Advanced Tutorials
+# Jae
 
 Although Jae is not as powerful as template engines you might be familiar with (e.g., Blade, mustache, etc.), it still allows you to:
 
