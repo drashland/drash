@@ -64,7 +64,7 @@ Upon completing the Steps section below, your project's folder structure should 
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
 
-    export default class UserResource extends Drash.Http.Resource {
+    export class UserResource extends Drash.Http.Resource {
 
       static paths = ["/user"];
 
