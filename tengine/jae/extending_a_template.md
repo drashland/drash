@@ -88,16 +88,27 @@ Upon completing the Steps section below, your project's folder structure should 
     
     ```typescript
     import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
+    import { UserResource } from "./user_resource.ts";
 
-    import UserResource from "./user_resource.ts";
+    // Configure Tengine
+    const tengine = Tengine({
+      render: (...args: unknown[]): boolean => {
+        return false;
+      },
+      views_path: "./path/to/your/project/views" // DO NOT include a trailing slash
+    });
 
     const server = new Drash.Http.Server({
+      middleware: {
+        after_resource: [
+          tengine
+        ]
+      },
       resources: [
         UserResource
       ],
       response_output: "text/html",
-      template_engine: true,
-      views_path: "./views",
     });
 
     server.run({
