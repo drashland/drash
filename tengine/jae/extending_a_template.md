@@ -133,4 +133,4 @@ You can verify that your app's code works by making requests like the ones below
 
 ---
 
-Other tutorials: [Creating A Template](./creating_a_template.md) | [Adding Template Partials](./adding_template_partials) | [In-Template JavaScript](./in_template_javascript.md)
+Other tutorials: [Creating A Template](./creating_a_template.md) | [Adding Template Partials](./adding_template_partials.md) | [In-Template JavaScript](./in_template_javascript.md)
