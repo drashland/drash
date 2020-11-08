@@ -14,9 +14,7 @@ class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
 }
 
 async function runServer(allowAll: boolean = true): Promise<Drash.Http.Server> {
-  const cors = allowAll
-    ? Cors()
-    : Cors({ origin: "localhost " });
+  const cors = allowAll ? Cors() : Cors({ origin: "localhost " });
   const server = new Drash.Http.Server({
     response_output: "application/json",
     middleware: {
