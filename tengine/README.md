@@ -244,7 +244,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
 
 ### Jae: Further Learning
 
-You can learn more about Jae through its advanced tutorials [here](./jae_advanced_tutorials.md).
+You can learn more about Jae through its tutorials [here](./jae).
 
 ## Tutorial: Using Eta
 
