@@ -44,6 +44,7 @@ If you have received the message about `server.template_engine` being deprecated
     * [Folder Structure End State](#jae-folder-structure-end-state)
     * [Steps](#jae-steps)
     * [Verification](#jae-verification)
+    * [Further Learning](#jae-further-learning)
 * [Tutorial: Using Eta](#tutorial-using-eta)
     * [Disclaimer](#disclaimer-related-to-eta)
     * [Folder Structure End State](#eta-folder-structure-end-state)
@@ -240,6 +241,10 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
    ```text
    Hella using Jae.
    ```
+
+### Jae: Further Learning
+
+You can learn more about Jae through its advanced tutorials [here](./jae_advanced_tutorials.md).
 
 ## Tutorial: Using Eta
 
