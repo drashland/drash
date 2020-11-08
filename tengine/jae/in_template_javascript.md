@@ -80,3 +80,7 @@ this.response.render(
   <li>Endurance</li>
 </ul>
 ```
+
+---
+
+Other tutorials: [Creating A Template](./creating_a_template.md) | [Extending A Template](./extending_a_template.md)
