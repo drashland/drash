@@ -34,9 +34,45 @@ try {
   // do nothing
 }
 
+/**
+ * Appends a suffix after the main part of the filename before the dot.
+ * 
+ * @param fileName  name of file to add suffix to
+ * @param suffix    suffix to add to name of file
+ * @return  filename with suffix before the .extension.
+ */
 function add_suffix(fileName: string, suffix: string) {
   return fileName.replace(/([^.\/]+)\./, `\$1${suffix}.`);
 }
+
+/**
+ * FilePairGenerator takes in a Javascript object whose keys are suffixes
+ * and whose values are the file names of files created locally. For example,
+ * when the api flag is given, create_app copies files from a repository to the
+ * directory on a local machine. Some of the files' names don't match, such as
+ * server_api.ts and server.ts shown in the diagram.
+ * 
+ * |             Boiler Plate File               |               Copied File               |        
+ * +---------------------------------------------+-----------------------------------------+
+ * |  config.ts                                  |  config.ts                              |
+ * |  deps.ts                                    |  deps.ts                                |
+ * |  server_api.ts                              |  server.ts                              |
+ * |  app_api.ts                                 |  app.ts                                 |
+ * |  resources/home_resource_api.ts             |  resources/home_resources.ts            |
+ * |  tests/resources/home_resource_test_api.ts  |  tests/resources/home_resource_test.ts  |
+ * +---------------------------------------------+-----------------------------------------+
+ *                                    ------ Copy to ------>
+ * 
+ * We can store this information in a Javascript object like so:
+ * {  '': [ 'config.ts', 'deps.ts' ],
+ *    '_api': [ 'app.ts', 'server.ts', 'resources/home_resource.ts', tests/resources/home_resource_test.ts' ]
+ * }
+ * All FilePairGenerator does is convert this object into a Generator that yields the corresponding pairs
+ * of (BoilerPlateFileName, CopiedFileName )
+ * @param suffixDict Javascript object whose keys are suffixes to a file
+ * @param rootDirName Directory name to prepend to a path
+ * @return Generator that generates pairs of (copiedFileName, boilerPlateFileName)
+ */
 
 function* FilePairGenerator(
   suffixDict: { [suffix: string]: string[] },
@@ -253,7 +289,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
         "app.ts",
         "server.ts",
         "resources/home_resource.ts",
-        "tests/resources/home_resources_test.ts",
+        "tests/resources/home_resource_test.ts",
       ],
     };
     const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
