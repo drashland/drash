@@ -120,3 +120,7 @@ You can verify that your app's code works by making requests like the ones below
 2. Go to `localhost:1447/user` in your browser. You should receive the following response:
 
     ![Creating A Template](./img/creating_a_template.png)
+
+---
+
+Other tutorials: [Extending A Template](./extending_a_template.md) | [In-Template JavaScript](./in_template_javascript.md)
