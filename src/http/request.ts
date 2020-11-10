@@ -1,20 +1,15 @@
 import {
-  Cookie,
+  decoder,
   FormFile,
   getCookies,
   MultipartFormData,
   MultipartReader,
-  Response,
   ServerRequest,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
 import { Drash } from "../../mod.ts";
 
-const decoder = new TextDecoder();
-const encoder = new TextEncoder();
-
-interface IOptionsConfig {
-  default_response_content_type: string | undefined;
+export interface IOptions {
   headers?: Headers;
   memory_allocation: {
     multipart_form_data: number;
@@ -30,7 +25,6 @@ export class Request extends ServerRequest {
   public url_query_params: { [key: string]: string } = {};
   public url_path: string;
   public resource: Drash.Http.Resource | null = null;
-  public response_content_type: string = "application/json";
   protected original_request: ServerRequest;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -47,9 +41,9 @@ export class Request extends ServerRequest {
      *     we keep track of the original request if we ever want to access data
      *     members from it. An example of a data member that we want to access is
      *     the original request's body.
-     * @param IOptionsConfig - options to be used in the server
+     * @param IOptions - options to be used in the server
      */
-  constructor(originalRequest: ServerRequest, options?: IOptionsConfig) {
+  constructor(originalRequest: ServerRequest, options?: IOptions) {
     super();
     this.headers = originalRequest.headers;
     this.method = originalRequest.method;
@@ -57,10 +51,6 @@ export class Request extends ServerRequest {
     this.url = originalRequest.url;
     this.url_path = this.getUrlPath(originalRequest);
     this.url_query_params = this.getUrlQueryParams();
-    if (options) {
-      this.response_content_type = options.default_response_content_type ??
-        this.response_content_type;
-    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -314,13 +304,13 @@ export class Request extends ServerRequest {
   /**
    * Parse the specified request's body.
    *
-   * @param options - See IOptionsConfig.
+   * @param options - See IOptions.
    *
    * @returns The content type of the body, and based on this the body itself in
    * that format. If there is no body, it returns an empty properties
    */
   public async parseBody(
-    options?: IOptionsConfig,
+    options?: IOptions,
   ): Promise<Drash.Interfaces.ParsedRequestBody> {
     if ((await this.hasBody()) === false) {
       return {

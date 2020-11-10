@@ -11,14 +11,7 @@ import {
   serveTLS,
 } from "../../deps.ts";
 import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
-
-interface IRequestOptions {
-  default_response_content_type: string | undefined;
-  headers?: Headers;
-  memory_allocation: {
-    multipart_form_data: number;
-  };
-}
+import { IOptions as IRequestOptions } from "./request.ts";
 
 interface IServices {
   http_service: Drash.Services.HttpService;
@@ -290,7 +283,7 @@ export class Server {
     // TODO(crookse) In v2, this is where the before_request middleware hook
     // will be placed. The current location of the before_request middleware
     // hook will be replaced with a before_resource middleware hook.
-    await this.executeMiddlewareAfterRequest(request, response);
+    await this.executeMiddlewareAfterResource(request, response);
 
     // Does the HTTP method exist on the resource?
     if (
@@ -307,13 +300,10 @@ export class Server {
     response = await resource[request.method.toUpperCase()]();
 
     // Check if the response returned is of type Drash.Http.Response, or as
-    // ResponseOutput
+    // Drash.Interfaces.ResponseOutput
     this.isValidResponse(request, response, resource);
 
-    await this.executeMiddlewareAfterRequest(
-      request,
-      response,
-    );
+    await this.executeMiddlewareAfterRequest(request, response);
 
     this.logDebug("Sending response. " + response.status_code + ".");
     return response.send();
@@ -513,18 +503,25 @@ export class Server {
     serverRequest: ServerRequest,
   ): Promise<Drash.Http.Request> {
     const options: IRequestOptions = {
-      default_response_content_type: this.configs.response_output,
       memory_allocation: {
         multipart_form_data: 10,
       },
     };
+
+    // Check if memory allocation has been specified in the configs. If so, use
+    // it. We don't want to limit the user to 10MB of memory if they specify a
+    // different value.
     const config = this.configs.memory_allocation;
     if (config && config.multipart_form_data) {
       options.memory_allocation.multipart_form_data =
         config.multipart_form_data;
     }
+
+    // We have to build the request and then parse it's body after because
+    // constructors cannot be async
     const request = new Drash.Http.Request(serverRequest, options);
     await request.parseBody();
+
     return request;
   }
 
@@ -603,6 +600,8 @@ export class Server {
    * @param resourceClass - A child object of the `Drash.Http.Resource` class.
    */
   protected addResource(resourceClass: Drash.Interfaces.Resource): void {
+    // Define the variable that will hold the data to helping us match path
+    // params on the request during runtime
     const resourceParsedPaths = [];
 
     for (let path of resourceClass.paths) {
@@ -643,6 +642,8 @@ export class Server {
       );
     }
 
+    // Make sure we set the parsed paths so we can use it during runtime to
+    // match request path params
     resourceClass.paths_parsed = resourceParsedPaths;
   }
 
@@ -858,6 +859,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     return new Drash.Http.Response(request, {
       views_path: this.configs.views_path,
       template_engine: this.configs.template_engine,
+      default_content_type: this.configs.response_output,
     });
   }
 
@@ -1127,7 +1129,6 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    *
    * @return If the response returned from a method is what the returned value should be
    */
-  // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface or response anyway
   protected isValidResponse(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
