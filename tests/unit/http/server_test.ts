@@ -21,13 +21,13 @@ Rhum.testPlan("http/server_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("getRequest()", () => {
+  Rhum.testSuite("buildRequest()", () => {
     Rhum.testCase("gives get*Param/File methods", async () => {
       const server = new Drash.Http.Server({
         resources: [HomeResource],
       });
       let request = members.mockRequest();
-      request = await server.getRequest(request);
+      request = await server.buildRequest(request);
       Rhum.asserts.assertEquals("function", typeof request.getBodyFile);
       Rhum.asserts.assertEquals("function", typeof request.getBodyParam);
       Rhum.asserts.assertEquals("function", typeof request.getHeaderParam);
@@ -47,7 +47,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       request.headers.set("Content-Type", "application/json");
       const reader = new Deno.Buffer(body as ArrayBuffer);
       request.r = new members.BufReader(reader);
-      const newRequest = await server.getRequest(request);
+      const newRequest = await server.buildRequest(request);
       Rhum.asserts.assertEquals("world", newRequest.getBodyParam("hello"));
     });
   });
@@ -237,7 +237,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       const request = members.mockRequest("/favicon.ico", "get");
       const server = new Drash.Http.Server({});
       const response = await server.handleHttpRequestForFavicon(request);
-      Rhum.asserts.assertEquals(response.body, "");
+      Rhum.asserts.assertEquals(response.body, new TextEncoder().encode(""));
       Rhum.asserts.assertEquals(response.status_code, 200);
       let expectedHeaders = new Headers();
       expectedHeaders.set("content-type", "image/x-icon");
@@ -534,7 +534,19 @@ Rhum.testPlan("http/server_test.ts", () => {
   Rhum.testSuite("isValidResponse()", () => {
     Rhum.testCase("Should check that the response object is valid", () => {
       const server = new Drash.Http.Server({});
+      const request = new Drash.Http.Request(members.mockRequest("/hello"));
       const isValidResponse = Reflect.get(server, "isValidResponse");
+      let response: Drash.Http.Response = new Drash.Http.Response(
+        request,
+        {}
+      );
+      const resource = new HomeResource(
+        request,
+        response,
+        server,
+        ["/"],
+        {}
+      );
       //Simulate user not returning properly inside their resource method
       const possiblesInvalidResponse = [
         "hello",
@@ -546,8 +558,9 @@ Rhum.testPlan("http/server_test.ts", () => {
         undefined,
       ];
       possiblesInvalidResponse.forEach((invalidRes) => {
-        const isValid = isValidResponse(invalidRes);
-        Rhum.asserts.assertEquals(isValid, false);
+        Rhum.asserts.assertThrows(() => {
+          isValidResponse(request, invalidRes, resource);
+        });
       });
       const responseOutput: Drash.Interfaces.ResponseOutput = {
         body: new Uint8Array(1),
@@ -556,19 +569,14 @@ Rhum.testPlan("http/server_test.ts", () => {
         status_code: 418,
         send: undefined,
       };
-      const request = new Drash.Http.Request(members.mockRequest("/hello"));
-      const response: Drash.Http.Response = new Drash.Http.Response(
+      response = new Drash.Http.Response(
         request,
         {},
       );
-      const validResponses = [
-        responseOutput,
-        response,
-      ];
-      validResponses.forEach((validRes) => {
-        const isValid = isValidResponse(validRes);
-        Rhum.asserts.assertEquals(isValid, true);
-      });
+      let isValid = isValidResponse(request, responseOutput, resource);
+      Rhum.asserts.assertEquals(isValid, true);
+      isValid = isValidResponse(request, response, resource);
+      Rhum.asserts.assertEquals(isValid, true);
     });
   });
 });

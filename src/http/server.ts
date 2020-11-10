@@ -34,9 +34,6 @@ interface IServices {
 export class Server {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
-  protected trackers = {
-    requested_favicon: false,
-  };
 
   /**
    * A property to hold the Deno server. This property is set in
@@ -150,7 +147,7 @@ export class Server {
    * methods than the ServerRequest object. These properties and methods are
    * used throughout the Drash request-resource-response lifecycle.
    */
-  public async getRequest(
+  public async buildRequest(
     serverRequest: ServerRequest,
   ): Promise<Drash.Http.Request> {
     const options: IRequestOptions = {
@@ -179,39 +176,34 @@ export class Server {
   public async handleHttpRequest(
     serverRequest: ServerRequest,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    this.logDebug(
-      `Request received: ${serverRequest.method.toUpperCase()} ${serverRequest.url}`,
-    );
+    const request = await this.buildRequest(serverRequest);
+    let response = this.getResponse(request);
 
-    const request = await this.getRequest(serverRequest);
-
-    // Handle a request to the favicon
-    if (serverRequest.url == "/favicon.ico") {
-      return this.handleHttpRequestForFavicon(request);
-    }
-
-    // Execute middleware before we handle the request
     try {
-      await this.executeMiddlewareServerLevelBeforeRequest(request);
+      await this.executeMiddlewareBeforeRequest(request);
+
+      // Is this request for the favicon?
+      if (request.url == "/favicon.ico") {
+        return await this.handleHttpRequestForFavicon(request);
+      }
+
+      // Is this request for a static asset?
+      if (this.requestTargetsStaticPath(request)) {
+        return await this.handleHttpRequestForStaticPathAsset(request);
+      }
+
+      // Is this request for a virtual path asset?
+      if (this.requestTargetsVirtualPath(request)) {
+        return await this.handleHttpRequestForVirtualPathAsset(request);
+      }
+
+      return await this.handleHttpRequestForResource(request, response);
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        this.httpErrorResponse(error.code ?? 404, error.message),
+        this.httpErrorResponse(error.code ?? 400, error.message),
       );
     }
-
-    // Handle a request to a static path
-    if (this.requestTargetsStaticPath(request)) {
-      return await this.handleHttpRequestForStaticPathAsset(request);
-    }
-
-    // Handle a request to a virtual path
-    if (this.requestTargetsVirtualPath(request)) {
-      return await this.handleHttpRequestForVirtualPathAsset(request);
-    }
-
-    // Handle for resources
-    return await this.handleHttpRequestForResource(request);
   }
 
   /**
@@ -292,131 +284,66 @@ export class Server {
    * @returns The response as stringified JSON. This is only used for
    * unit testing purposes.
    */
-  public handleHttpRequestForFavicon(
-    request: Drash.Http.Request,
-  ): Drash.Interfaces.ResponseOutput {
-    const headers = new Headers();
-    headers.set("Content-Type", "image/x-icon");
-
-    const response = new Drash.Http.Response(request);
+  public async handleHttpRequestForFavicon(
+    request: Drash.Http.Request
+  ): Promise<Drash.Interfaces.ResponseOutput> {
+    const response = this.getResponse(request);
+    response.body = "";
+    response.headers = new Headers();
     response.status_code = 200;
-    response.headers = headers;
+
+    response.headers.set("Content-Type", "image/x-icon");
 
     try {
-      const body = Deno.readFileSync(`${Deno.realPathSync(".")}/favicon.ico`);
-      response.body = body;
-      if (!this.trackers.requested_favicon) {
-        this.trackers.requested_favicon = true;
-        this.logDebug("/favicon.ico requested.");
-        if (!body) {
-          this.logDebug("/favicon.ico was not found.");
-        } else {
-          this.logDebug("/favicon.ico was found.");
-        }
-        this.logDebug(
-          "All future log messages for /favicon.ico will be muted.",
-        );
-      }
+      response.body = Deno.readFileSync(
+        `${Deno.realPathSync(".")}/favicon.ico`,
+      );
     } catch (error) {
-      response.body = "";
     }
 
-    let output: Drash.Interfaces.ResponseOutput = {
-      body: response.body as string,
-      headers: headers,
-      status: response.status_code,
-    };
-
-    request.respond(output);
-    output.status_code = response.status_code;
-    return output;
+    return response.send();
   }
 
   public async handleHttpRequestForResource(
     request: Drash.Http.Request,
+    response: Drash.Http.Response,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    const resourceClass = await this.getResourceClass(request);
-    // No resource? Send a 404 (Not Found) response.
-    if (!resourceClass) {
-      return await this.handleHttpRequestError(
-        request,
-        this.httpErrorResponse(404),
-      );
+    this.logDebug(
+      `Request received: ${request.method.toUpperCase()} ${request.url}`,
+    );
+
+    const resource = this.buildResource(request, response);
+
+    // TODO(crookse) In v2, this is where the before_request middleware hook
+    // will be placed. The current location of the before_request middleware
+    // hook will be replaced with a before_resource middleware hook.
+    await this.executeMiddlewareAfterRequest(request, response);
+
+    // Does the HTTP method exist on the resource?
+    if (
+      typeof (resource as unknown as { [key: string]: unknown })[
+        request.method.toUpperCase()
+      ] !== "function"
+    ) {
+      throw new Drash.Exceptions.HttpException(405);
     }
 
-    const response = this.getResponse(request);
+    this.logDebug("Calling " + request.method.toUpperCase() + "().");
 
-    // deno-lint-ignore ban-ts-comment
     // @ts-ignore
-    // (crookse)
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    // it with the following error:
-    //
-    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
-    // construct signature.
-    //
-    const resource = new (resourceClass as Drash.Http.Resource)(
+    response = await resource[request.method.toUpperCase()]();
+
+    // Check if the response returned is of type Drash.Http.Response, or as
+    // ResponseOutput
+    this.isValidResponse(request, response, resource);
+
+    await this.executeMiddlewareServerLevelAfterRequest(
       request,
       response,
-      this,
-      resourceClass.paths,
-      resourceClass.middleware,
     );
 
-    request.resource = resource;
-
-    this.logDebug(
-      "Using `" +
-        resource.constructor.name +
-        "` resource class to handle the request.",
-    );
-
-    // If any errors are thrown inside the resources, or thrown inside this code, we can handle it with a http exception error
-    try {
-      if (typeof resource[request.method.toUpperCase()] !== "function") {
-        throw new Drash.Exceptions.HttpException(405);
-      }
-
-      this.logDebug("Calling " + request.method.toUpperCase() + "().");
-
-      // TODO(crookse) In v2, this is where the before_request middleware hook
-      // will be placed. The current location of the before_request middleware
-      // hook will be replaced with a before_resource middleware hook.
-      await this.executeMiddlewareServerLevelAfterResource(request, response);
-
-      // response can  be literally anything, it's down to the user what they return from the method
-      const resourceResponse = await resource[request.method.toUpperCase()]();
-
-      // Check the response was returned as the Drash.Http.Response type, or as ResponseOutput
-      const isValidResponse = this.isValidResponse(resourceResponse);
-      if (isValidResponse === false) {
-        throw new Drash.Exceptions.HttpResponseException(
-          418,
-          `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
-        );
-      }
-
-      await this.executeMiddlewareServerLevelAfterRequest(
-        request,
-        resourceResponse,
-      );
-
-      this.logDebug("Sending response. " + response.status_code + ".");
-      return resourceResponse.send();
-    } catch (error) {
-      this.logDebug(error.stack);
-      return await this.handleHttpRequestError(
-        request,
-        error,
-        resource,
-        response,
-      );
-    }
+    this.logDebug("Sending response. " + response.status_code + ".");
+    return response.send();
   }
 
   /**
@@ -430,8 +357,9 @@ export class Server {
   public async handleHttpRequestForStaticPathAsset(
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
+    const response = this.getResponse(request);
+
     try {
-      const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
         this.services.http_service.getMimeType(request.url, true) ||
@@ -513,8 +441,9 @@ export class Server {
   public async handleHttpRequestForVirtualPathAsset(
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
+    const response = this.getResponse(request);
+
     try {
-      const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
         this.services.http_service.getMimeType(request.url, true) ||
@@ -541,10 +470,9 @@ export class Server {
   }
 
   /**
-   * Run the Deno server at the hostname specified in the configs. This
-   * method takes each HTTP request and creates a new and more workable
-   * request object and passes it to
-   * `Drash.Http.Server.handleHttpRequest()`.
+   * Run the Deno server at the hostname specified in the configs. This method
+   * takes each HTTP request and creates a new and more workable request object
+   * and passes it to `.handleHttpRequest()`.
    *
    * @param options - The HTTPOptions interface from https://deno.land/std/http/server.ts.
    *
@@ -565,10 +493,9 @@ export class Server {
   }
 
   /**
-   * Run the Deno server at the hostname specified in the configs as an
-   * HTTPS Server. This method takes each HTTP request and creates a new and
-   * more workable request object and passes it to
-   * `Drash.Http.Server.handleHttpRequest()`.
+   * Run the Deno server at the hostname specified in the configs as an HTTPS
+   * Server. This method takes each HTTP request and creates a new and more
+   * workable request object and passes it to `.handleHttpRequest()`.
    *
    * @param options - The HTTPSOptions interface from https://deno.land/std/http/server.ts.
    *
@@ -618,6 +545,69 @@ export class Server {
     })();
   }
 
+  protected findResource(request: Drash.Http.Request): Drash.Interfaces.Resource {
+    let resource: Drash.Interfaces.Resource|undefined = undefined;
+
+    const uri = request.url_path.split("/");
+    // Remove the first element which would be ""
+    uri.shift();
+
+    // The search term for a URI is the URI in it's most basic form. Basically,
+    // just "/something". The resource index service will return all resources
+    // matching that basic URI. Later down in this method, we iterate over each
+    // result that the resource index service returns to find the best matching
+    // resource to the request URL. Notice, we're searching for a URI at first
+    // and then matching against a URL later.
+    const uriWithoutParams = "^/" + uri[0];
+
+    let results = this.services.resource_index_service.search(uriWithoutParams);
+
+    // If no results are found, then check if /:some_param is in the index
+    // service's lookup table because there might be a resource with
+    // /:some_param as a URI
+    if (results.size === 0) {
+      results = this.services.resource_index_service.search("^/");
+      // Still no resource found? GTFO.
+      if (!results) {
+        throw new Drash.Exceptions.HttpException(404);
+      }
+    }
+
+    // Find the matching resource by comparing the request URL to a regex
+    // pattern associated with a resource
+    let matchedResource = false;
+    results.forEach((result: ISearchResult) => {
+      //result = (result as ISearchResult);
+      // If we already matched a resource, then there is no need to parse any
+      // further
+      if (matchedResource) {
+        return;
+      }
+
+      // Take the current result and see if it matches against the request URL
+      const matchArray = request.url_path.match(
+        result.search_term,
+      );
+
+      // If the request URL and result matched, then we know this result that we
+      // are currently parsing contains the resource we are looking for
+      if (matchArray) {
+        matchedResource = true;
+        resource = result.item as Drash.Interfaces.Resource;
+        request.path_params = this.getRequestPathParams(
+          resource,
+          matchArray,
+        );
+      }
+    });
+
+    if (!resource) {
+      throw new Drash.Exceptions.HttpException(404);
+    }
+
+    return resource;
+  }
+
   /**
    * Add an HTTP resource to the server which can be retrieved at specific
    * URIs.
@@ -661,7 +651,7 @@ export class Server {
       resourceParsedPaths.push(paths);
 
       // Include the regex path in the index, so we can search for the regex
-      // path during runtime in `.getResourceClass()`
+      // path during runtime in `.buildResource()`
       this.services.resource_index_service.addItem(
         [paths.regex_path],
         resourceClass,
@@ -839,7 +829,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected async executeMiddlewareServerLevelAfterResource(
+  protected async executeMiddlewareAfterRequest(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<void> {
@@ -856,7 +846,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected async executeMiddlewareServerLevelBeforeRequest(
+  protected async executeMiddlewareBeforeRequest(
     request: Drash.Http.Request,
   ): Promise<void> {
     if (this.middleware.before_request != null) {
@@ -979,63 +969,33 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    * be matched to a `Drash.Http.Resource` object's paths. Otherwise, it returns
    * `undefined` if a `Drash.Http.Resource` object can't be matched.
    */
-  protected getResourceClass(
+  protected buildResource(
     request: Drash.Http.Request,
-  ): Drash.Http.Resource | undefined {
-    let resource: Drash.Interfaces.Resource | undefined = undefined;
+    response: Drash.Http.Response,
+  ): Drash.Http.Resource {
+    let resourceClass = this.findResource(request);
 
-    const uri = request.url_path.split("/");
-    // Remove the first element which would be ""
-    uri.shift();
-
-    // The search term for a URI is the URI in it's most basic form. Basically,
-    // just "/something". The resource index service will return all resources
-    // matching that basic URI. Later down in this method, we iterate over each
-    // result that the resource index service returns to find the best matching
-    // resource to the request URL. Notice, we're searching for a URI at first
-    // and then matching against a URL later.
-    const uriWithoutParams = "^/" + uri[0];
-
-    let results = this.services.resource_index_service.search(uriWithoutParams);
-
-    // If no results are found, then check if /:some_param is in the index
-    // service's lookup table because there might be a resource with
-    // /:some_param as a URI
-    if (results.size === 0) {
-      results = this.services.resource_index_service.search("^/");
-      // Still no resource found? GTFO.
-      if (!results) {
-        return undefined;
-      }
-    }
-
-    // Find the matching resource by comparing the request URL to a regex
-    // pattern associated with a resource
-    let matchedResource = false;
-    results.forEach((result: ISearchResult) => {
-      //result = (result as ISearchResult);
-      // If we already matched a resource, then there is no need to parse any
-      // further
-      if (matchedResource) {
-        return;
-      }
-
-      // Take the current result and see if it matches against the request URL
-      const matchArray = request.url_path.match(
-        result.search_term,
-      );
-
-      // If the request URL and result matched, then we know this result that we
-      // are currently parsing contains the resource we are looking for
-      if (matchArray) {
-        matchedResource = true;
-        resource = result.item as Drash.Interfaces.Resource;
-        request.path_params = this.getRequestPathParams(
-          resource,
-          matchArray,
-        );
-      }
-    });
+    // deno-lint-ignore ban-ts-comment
+    // @ts-ignore
+    // (crookse)
+    //
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    //
+    // We ignore this because `resourceClass` could be `undefined`. `undefined`
+    // doesn't have a construct signature and the compiler will complain about
+    // it with the following error:
+    //
+    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
+    // construct signature.
+    //
+    const resource = new (resourceClass as Drash.Http.Resource)(
+      request,
+      response,
+      this,
+      resourceClass.paths,
+      resourceClass.middleware,
+    );
 
     return resource;
   }
@@ -1199,13 +1159,13 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    * @returns Either true or false. If the request targets a static path then it
    * returns true. Otherwise it returns false.
    */
-  protected requestTargetsStaticPath(serverRequest: ServerRequest): boolean {
+  protected requestTargetsStaticPath(request: Drash.Http.Request): boolean {
     if (this.static_paths.length <= 0) {
       return false;
     }
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
-    const staticPath = serverRequest.url.split("/")[1];
+    const staticPath = request.url.split("/")[1];
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${staticPath}`;
 
@@ -1260,20 +1220,38 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    * @return If the response returned from a method is what the returned value should be
    */
   // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface or response anyway
-  protected isValidResponse(response: any) {
+  protected isValidResponse(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+    resource: Drash.Http.Resource,
+  ): boolean {
     // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
     function responseIsOfTypeResponseOutput(response: any): boolean {
       if (
-        typeof response === "object" && Array.isArray(response) === false &&
-        response !== null
+        (typeof response === "object")
+        && (Array.isArray(response) === false)
+        && (response !== null)
       ) {
-        return "status" in response && "headers" in response &&
-          "body" in response && "send" in response && "status_code" in response;
+        return "status" in response
+          && "headers" in response
+          && "body" in response
+          && "send" in response
+          && "status_code" in response;
       }
+
       return false;
     }
-    const valid = response instanceof Drash.Http.Response ||
-      responseIsOfTypeResponseOutput(response) === true;
-    return valid;
+
+    const valid = response instanceof Drash.Http.Response
+      || responseIsOfTypeResponseOutput(response) === true;
+
+    if (!valid) {
+      throw new Drash.Exceptions.HttpResponseException(
+        418,
+        `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
+      );
+    }
+
+    return true;
   }
 }
