@@ -14,7 +14,7 @@ class FailedOptionCorsMiddlewareResource extends Drash.Http.Resource {
 }
 
 async function runServer(allowAll: boolean = true): Promise<Drash.Http.Server> {
-  const cors = allowAll ? Cors() : Cors({ origin: "localhost " });
+  const cors = allowAll ? Cors() : Cors({ origin: "localhost" });
   const server = new Drash.Http.Server({
     response_output: "application/json",
     middleware: {
@@ -27,7 +27,7 @@ async function runServer(allowAll: boolean = true): Promise<Drash.Http.Server> {
     ],
   });
   await server.run({
-    hostname: "localhost",
+    hostname: "127.0.0.1",
     port: 1447,
   });
   return server;
@@ -136,6 +136,30 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         );
       },
     );
+    Rhum.testCase("Realworld example", async () => {
+      // Failed request - access control header is not present
+      const serverOne = await runServer(false)
+      const resOne = await fetch("http://localhost:1447", {
+        method: "GET",
+        headers: {
+          Origin: "https://google.com"
+        }
+      })
+      await resOne.text()
+      serverOne.close()
+      Rhum.asserts.assertEquals(resOne.headers.get("access-control-allow-origin"), null)
+      // Successful request - access control header is present and the value of the origin
+      const serverTwo = await runServer(false)
+      const resTwo = await fetch("http://localhost:1447", {
+        method: "GET",
+        headers: {
+          Origin: "localhost" // As server two is setting cors origin as localhost
+        }
+      })
+      await resTwo.text()
+      serverTwo.close()
+      Rhum.asserts.assertEquals(resTwo.headers.get("access-control-allow-origin"), "localhost")
+    })
   });
 });
 
