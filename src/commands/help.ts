@@ -1,36 +1,26 @@
 import { CliService } from "../../deps.ts";
+import { Drash } from "../../mod.ts";
 
 export const help = CliService.createHelpMenu({
   description:
-    `Drash v1.3.0`,
+    `drash ${Drash.version}
+    "A REST microframework for Deno's HTTP server with zero dependencies"`,
   usage: [
     "drash [SUBCOMMAND] [OPTIONS]",
   ],
-  subcommands: {
-    "make resource /path/to/my_resource.ts": "Do something.",
-    "help, --help": "Display the help menu.",
-    "version, --version": "Display the version.",
-  },
   options: {
-    "do-something": {
-      "--some-option":
-        "Execute some option.",
-    },
+    "-h, --help": "Display the help menu",
+    "-v, --version": "Display the version",
+  },
+  subcommands: {
+    "make --resource <path>": "Creates a resource class",
   },
   example_usage: [
     {
       description:
-        "Do something and pass in an option.",
+        "Creates a resource class named MyResource",
       examples: [
-        `drash make resource`,
-      ],
-    },
-    {
-      description:
-        "Display the help menu.",
-      examples: [
-        `drash help`,
-        `drash --help`,
+        `drash make --resource /path/to/my_resource.ts`,
       ],
     },
   ],

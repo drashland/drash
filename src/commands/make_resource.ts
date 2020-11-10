@@ -10,6 +10,12 @@ function getResourceTemplate(resourceName: string): string {
 }`
 };
 
+/**
+ * Extracts resource name from user provided path.
+ *
+ * @param path - path to resource file.
+ * @returns name of resource class.
+ */
 function getResourceName(path: string): string {
   const filename = path.split("/").pop()!;
   const [name, ext] = filename.split(".");
@@ -24,6 +30,11 @@ function getResourceName(path: string): string {
   return resourceName;
 }
 
+/**
+ * Makes a resource file and writes to path.
+ *
+ * @param path - path to resource file.
+ */
 export function makeResource(path: string): void {
   const resourceName = getResourceName(path);
   const resourceTemplate = getResourceTemplate(resourceName);
