@@ -69,7 +69,7 @@ export class Server {
   protected services: IServices = {
     http_service: new Drash.Services.HttpService(),
     resource_index_service: new IndexService(
-      new Map<number, Drash.Interfaces.Resource>()
+      new Map<number, Drash.Interfaces.Resource>(),
     ),
   };
 
@@ -180,7 +180,7 @@ export class Server {
     serverRequest: ServerRequest,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     this.logDebug(
-        `Request received: ${serverRequest.method.toUpperCase()} ${serverRequest.url}`,
+      `Request received: ${serverRequest.method.toUpperCase()} ${serverRequest.url}`,
     );
 
     const request = await this.getRequest(serverRequest);
@@ -195,8 +195,8 @@ export class Server {
       await this.executeMiddlewareServerLevelBeforeRequest(request);
     } catch (error) {
       return await this.handleHttpRequestError(
-          request,
-          this.httpErrorResponse(error.code ?? 404, error.message),
+        request,
+        this.httpErrorResponse(error.code ?? 404, error.message),
       );
     }
 
@@ -211,7 +211,7 @@ export class Server {
     }
 
     // Handle for resources
-    return await this.handleHttpRequestForResource(request)
+    return await this.handleHttpRequestForResource(request);
   }
 
   /**
@@ -332,13 +332,15 @@ export class Server {
     return output;
   }
 
-  public async handleHttpRequestForResource(request: Drash.Http.Request): Promise<Drash.Interfaces.ResponseOutput> {
+  public async handleHttpRequestForResource(
+    request: Drash.Http.Request,
+  ): Promise<Drash.Interfaces.ResponseOutput> {
     const resourceClass = await this.getResourceClass(request);
     // No resource? Send a 404 (Not Found) response.
     if (!resourceClass) {
       return await this.handleHttpRequestError(
-          request,
-          this.httpErrorResponse(404),
+        request,
+        this.httpErrorResponse(404),
       );
     }
 
@@ -358,12 +360,18 @@ export class Server {
     // TS2351: Cannot use 'new' with an expression whose type lacks a call or
     // construct signature.
     //
-    const resource = new (resourceClass as Drash.Http.Resource)(request, response, this, resourceClass.paths, resourceClass.middleware);
+    const resource = new (resourceClass as Drash.Http.Resource)(
+      request,
+      response,
+      this,
+      resourceClass.paths,
+      resourceClass.middleware,
+    );
 
     request.resource = resource;
 
     this.logDebug(
-        "Using `" +
+      "Using `" +
         resource.constructor.name +
         "` resource class to handle the request.",
     );
@@ -371,7 +379,7 @@ export class Server {
     // If any errors are thrown inside the resources, or thrown inside this code, we can handle it with a http exception error
     try {
       if (typeof resource[request.method.toUpperCase()] !== "function") {
-        throw new Drash.Exceptions.HttpException(405)
+        throw new Drash.Exceptions.HttpException(405);
       }
 
       this.logDebug("Calling " + request.method.toUpperCase() + "().");
@@ -388,18 +396,26 @@ export class Server {
       const isValidResponse = this.isValidResponse(resourceResponse);
       if (isValidResponse === false) {
         throw new Drash.Exceptions.HttpResponseException(
-            418,
-            `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
+          418,
+          `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
         );
       }
 
-      await this.executeMiddlewareServerLevelAfterRequest(request, resourceResponse);
+      await this.executeMiddlewareServerLevelAfterRequest(
+        request,
+        resourceResponse,
+      );
 
       this.logDebug("Sending response. " + response.status_code + ".");
       return resourceResponse.send();
     } catch (error) {
-      this.logDebug(error.stack)
-      return await this.handleHttpRequestError(request, error, resource, response)
+      this.logDebug(error.stack);
+      return await this.handleHttpRequestError(
+        request,
+        error,
+        resource,
+        response,
+      );
     }
   }
 
@@ -418,7 +434,8 @@ export class Server {
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
-        this.services.http_service.getMimeType(request.url, true) || "text/plain",
+        this.services.http_service.getMimeType(request.url, true) ||
+          "text/plain",
       );
 
       // Two things are happening here:
@@ -429,7 +446,9 @@ export class Server {
       if (!this.configs.pretty_links || request.url.split(".")[1]) {
         try {
           // Try to read the file if it exists
-          response.body = Deno.readFileSync(`${this.configs.directory}/${request.url}`);
+          response.body = Deno.readFileSync(
+            `${this.configs.directory}/${request.url}`,
+          );
           await this.executeMiddlewareServerLevelAfterRequest(
             request,
             response,
@@ -498,7 +517,8 @@ export class Server {
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
-        this.services.http_service.getMimeType(request.url, true) || "text/plain",
+        this.services.http_service.getMimeType(request.url, true) ||
+          "text/plain",
       );
 
       const virtualPath = request.url.split("/")[1];
@@ -583,15 +603,15 @@ export class Server {
   /**
    * Listens for incoming HTTP connections on the server property
    */
-  protected async listen () {
+  protected async listen() {
     (async () => {
       for await (const request of this.deno_server!) {
         try {
           this.handleHttpRequest(request as ServerRequest);
         } catch (error) {
           this.handleHttpRequestError(
-              request as Drash.Http.Request,
-              this.httpErrorResponse(500),
+            request as Drash.Http.Request,
+            this.httpErrorResponse(500),
           );
         }
       }
@@ -642,7 +662,10 @@ export class Server {
 
       // Include the regex path in the index, so we can search for the regex
       // path during runtime in `.getResourceClass()`
-      this.services.resource_index_service.addItem([paths.regex_path], resourceClass);
+      this.services.resource_index_service.addItem(
+        [paths.regex_path],
+        resourceClass,
+      );
     }
 
     resourceClass.paths_parsed = resourceParsedPaths;
@@ -800,7 +823,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
   }
 
   protected buildConfigs(
-    configs: Drash.Interfaces.ServerConfigs
+    configs: Drash.Interfaces.ServerConfigs,
   ): Drash.Interfaces.ServerConfigs {
     if (!configs.memory_allocation) {
       configs.memory_allocation = {};
