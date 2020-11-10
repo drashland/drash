@@ -169,6 +169,7 @@ export class Server {
         return await this.handleHttpRequestForVirtualPathAsset(request);
       }
 
+      // If all conditions above fail, then a resource is likely being requested
       return await this.handleHttpRequestForResource(request, response);
     } catch (error) {
       return await this.handleHttpRequestError(
