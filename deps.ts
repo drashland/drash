@@ -1,9 +1,6 @@
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
-export {
-  decoder,
-  encoder,
-}
+export { decoder, encoder };
 
 export {
   serve,

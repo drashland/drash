@@ -69,18 +69,45 @@ export class Request extends ServerRequest {
   }
 
   /**
-   * Get a cookie value by the name that is sent in with the request.
+   * Gets all the body params
    *
-   * @param cookie - The name of the cookie to retrieve
-   *
-   * @returns The cookie value associated with the cookie name or `undefined` if
-   * a cookie with that name doesn't exist
+   * @return The parsed body as an object
    */
-  public getCookie(name: string): string {
-    const cookies: { [key: string]: string } = getCookies(
-      this.original_request,
-    );
-    return cookies[name];
+  public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
+    return this.parsed_body;
+  }
+
+  /**
+   * Gets all header params
+   *
+   * @return Key value pairs for the header name and it's value
+   */
+  public getAllHeaderParams(): { [key: string]: string } {
+    let headers: { [key: string]: string } = {};
+    for (const pair of this.headers.entries()) {
+      headers[pair[0]] = pair[1];
+    }
+    return headers;
+  }
+
+  /**
+   * Get all the path params.
+   *
+   * @return A key-value pair object where the key is the param name and the
+   * value is the param value.
+   */
+  public getAllPathParams(): { [key: string]: string } {
+    return this.path_params;
+  }
+
+  /**
+   * Gets a record whose keys are the request's url query params specified by inputs
+   * and whose values are the corresponding values of the query params.
+   * 
+   * @returns Key value pairs of the query param and its value. Empty object if no query params
+   */
+  public getAllUrlQueryParams(): { [key: string]: string } {
+    return this.url_query_params;
   }
 
   /**
@@ -130,44 +157,27 @@ export class Request extends ServerRequest {
   }
 
   /**
+   * Get a cookie value by the name that is sent in with the request.
+   *
+   * @param cookie - The name of the cookie to retrieve
+   *
+   * @returns The cookie value associated with the cookie name or `undefined` if
+   * a cookie with that name doesn't exist
+   */
+  public getCookie(name: string): string {
+    const cookies: { [key: string]: string } = getCookies(
+      this.original_request,
+    );
+    return cookies[name];
+  }
+
+  /**
    * Get the value of one of this request's headers by its input name.
    *
    * @returns The corresponding header or null if not found.
    */
   public getHeaderParam(input: string): string | null {
     return this.headers.get(input);
-  }
-
-  /**
-   * Gets all header params
-   *
-   * @return Key value pairs for the header name and it's value
-   */
-  public getAllHeaderParams(): { [key: string]: string } {
-    let headers: { [key: string]: string } = {};
-    for (const pair of this.headers.entries()) {
-      headers[pair[0]] = pair[1];
-    }
-    return headers;
-  }
-
-  /**
-   * Gets all the body params
-   *
-   * @return The parsed body as an object
-   */
-  public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
-    return this.parsed_body;
-  }
-
-  /**
-   * Get all the path params.
-   *
-   * @return A key-value pair object where the key is the param name and the
-   * value is the param value.
-   */
-  public getAllPathParams(): { [key: string]: string } {
-    return this.path_params;
   }
 
   /**
@@ -182,29 +192,6 @@ export class Request extends ServerRequest {
       return param;
     }
     return null;
-  }
-
-  /**
-   * Get the value of one of this request's query params by its input name.
-   *
-   * @returns The corresponding query parameter from url or null if not found.
-   */
-  public getUrlQueryParam(input: string): string | null {
-    const param = this.url_query_params[input];
-    if (param) {
-      return param;
-    }
-    return null;
-  }
-
-  /**
-   * Gets a record whose keys are the request's url query params specified by inputs
-   * and whose values are the corresponding values of the query params.
-   * 
-   * @returns Key value pairs of the query param and its value. Empty object if no query params
-   */
-  public getAllUrlQueryParams(): { [key: string]: string } {
-    return this.url_query_params;
   }
 
   /**
@@ -230,6 +217,19 @@ export class Request extends ServerRequest {
     }
 
     return path;
+  }
+
+  /**
+   * Get the value of one of this request's query params by its input name.
+   *
+   * @returns The corresponding query parameter from url or null if not found.
+   */
+  public getUrlQueryParam(input: string): string | null {
+    const param = this.url_query_params[input];
+    if (param) {
+      return param;
+    }
+    return null;
   }
 
   /**

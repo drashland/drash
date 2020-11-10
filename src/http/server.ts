@@ -188,16 +188,16 @@ export class Server {
     resource: Drash.Http.Resource | null = null,
     response: Drash.Http.Response | null = null,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    this.logDebug(
+    this.log(
       `Error occurred while handling request: ${request.method} ${request.url}`,
     );
-    this.logDebug(error.message);
+    this.log(error.message);
     if (error.stack) {
-      this.logDebug("Stack trace below:");
-      this.logDebug(error.stack);
+      this.log("Stack trace below:");
+      this.log(error.stack);
     }
 
-    this.logDebug("Generating generic error response object.");
+    this.log("Generating generic error response object.");
 
     // If a resource was found, but an error occurred, then that's most likely
     // due to the HTTP method not being defined in the resource class;
@@ -219,7 +219,7 @@ export class Server {
     response.status_code = error.code ? error.code : 500;
     response.body = error.message ? error.message : response.getStatusMessage();
 
-    this.logDebug(
+    this.log(
       `Sending response. Content-Type: ${
         response.headers.get(
           "Content-Type",
@@ -274,7 +274,7 @@ export class Server {
     request: Drash.Http.Request,
     response: Drash.Http.Response,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    this.logDebug(
+    this.log(
       `Request received: ${request.method.toUpperCase()} ${request.url}`,
     );
 
@@ -294,7 +294,7 @@ export class Server {
       throw new Drash.Exceptions.HttpException(405);
     }
 
-    this.logDebug("Calling " + request.method.toUpperCase() + "().");
+    this.log("Calling " + request.method.toUpperCase() + "().");
 
     // @ts-ignore
     response = await resource[request.method.toUpperCase()]();
@@ -305,7 +305,7 @@ export class Server {
 
     await this.executeMiddlewareAfterRequest(request, response);
 
-    this.logDebug("Sending response. " + response.status_code + ".");
+    this.log("Sending response. " + response.status_code + ".");
     return response.send();
   }
 
@@ -445,12 +445,15 @@ export class Server {
     if (!options.hostname) {
       options.hostname = this.hostname;
     }
+
     if (!options.port) {
       options.port = this.port;
     }
+
     this.hostname = options.hostname;
     this.port = options.port;
     this.deno_server = serve(options);
+
     await this.listen();
     return this.deno_server;
   }
@@ -468,12 +471,15 @@ export class Server {
     if (!options.hostname) {
       options.hostname = this.hostname;
     }
+
     if (!options.port) {
       options.port = this.port;
     }
+
     this.hostname = options.hostname;
     this.port = options.port;
     this.deno_server = serveTLS(options);
+
     await this.listen();
     return this.deno_server;
   }
@@ -491,103 +497,50 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get the request object with more properties and methods.
-   *
-   * @param request - The request object.
-   *
-   * @returns Returns a Drash request object--hydrated with more properties and
-   * methods than the ServerRequest object. These properties and methods are
-   * used throughout the Drash request-resource-response lifecycle.
+   * Add the middleware passed in via configs.
    */
-  protected async buildRequest(
-    serverRequest: ServerRequest,
-  ): Promise<Drash.Http.Request> {
-    const options: IRequestOptions = {
-      memory_allocation: {
-        multipart_form_data: 10,
-      },
-    };
-
-    // Check if memory allocation has been specified in the configs. If so, use
-    // it. We don't want to limit the user to 10MB of memory if they specify a
-    // different value.
-    const config = this.configs.memory_allocation;
-    if (config && config.multipart_form_data) {
-      options.memory_allocation.multipart_form_data =
-        config.multipart_form_data;
+  protected async addMiddleware(): Promise<void> {
+    if (!this.configs.middleware) {
+      return;
     }
 
-    // We have to build the request and then parse it's body after because
-    // constructors cannot be async
-    const request = new Drash.Http.Request(serverRequest, options);
-    await request.parseBody();
+    const middlewares = this.configs.middleware;
 
-    return request;
-  }
-
-  protected findResource(
-    request: Drash.Http.Request,
-  ): Drash.Interfaces.Resource {
-    let resource: Drash.Interfaces.Resource | undefined = undefined;
-
-    const uri = request.url_path.split("/");
-    // Remove the first element which would be ""
-    uri.shift();
-
-    // The search term for a URI is the URI in it's most basic form. Basically,
-    // just "/something". The resource index service will return all resources
-    // matching that basic URI. Later down in this method, we iterate over each
-    // result that the resource index service returns to find the best matching
-    // resource to the request URL. Notice, we're searching for a URI at first
-    // and then matching against a URL later.
-    const uriWithoutParams = "^/" + uri[0];
-
-    let results = this.services.resource_index_service.search(uriWithoutParams);
-
-    // If no results are found, then check if /:some_param is in the index
-    // service's lookup table because there might be a resource with
-    // /:some_param as a URI
-    if (results.size === 0) {
-      results = this.services.resource_index_service.search("^/");
-      // Still no resource found? GTFO.
-      if (!results) {
-        throw new Drash.Exceptions.HttpException(404);
+    // Add server-level middleware that executes before requests
+    if (middlewares.before_request != null) {
+      this.middleware.before_request = [];
+      for (const middleware of middlewares.before_request) {
+        this.middleware.before_request.push(middleware);
       }
     }
 
-    // Find the matching resource by comparing the request URL to a regex
-    // pattern associated with a resource
-    let matchedResource = false;
-    results.forEach((result: ISearchResult) => {
-      //result = (result as ISearchResult);
-      // If we already matched a resource, then there is no need to parse any
-      // further
-      if (matchedResource) {
-        return;
+    // Add server-level middleware that executes after requests
+    if (middlewares.after_request != null) {
+      this.middleware.after_request = [];
+      for (const middleware of middlewares.after_request) {
+        this.middleware.after_request.push(middleware);
       }
+    }
 
-      // Take the current result and see if it matches against the request URL
-      const matchArray = request.url_path.match(
-        result.search_term,
-      );
+    // Add server-level middleware that executes after the resource is found
+    if (middlewares.after_resource != null) {
+      this.middleware.after_resource = [];
+      for (const middleware of middlewares.after_resource) {
+        this.middleware.after_resource.push(middleware);
+      }
+    }
 
-      // If the request URL and result matched, then we know this result that we
-      // are currently parsing contains the resource we are looking for
-      if (matchArray) {
-        matchedResource = true;
-        resource = result.item as Drash.Interfaces.Resource;
-        request.path_params = this.getRequestPathParams(
-          resource,
-          matchArray,
+    // Add compile time level middleware that executes right now--processing
+    // data to be used later during runtime
+    if (middlewares.compile_time) {
+      for (const middleware of middlewares.compile_time) {
+        await middleware.compile();
+        this.middleware.runtime!.set(
+          this.middleware.runtime!.size,
+          middleware.run,
         );
       }
-    });
-
-    if (!resource) {
-      throw new Drash.Exceptions.HttpException(404);
     }
-
-    return resource;
   }
 
   /**
@@ -648,59 +601,26 @@ export class Server {
   }
 
   /**
-   * Add server-level and resource-level middleware.
-   *
-   * @param middleware - The middlewares to be added to the server
+   * Add the resources passed in via configs.
    */
-  protected async addMiddleware(): Promise<void> {
-    if (!this.configs.middleware) {
+  protected addResources(): void {
+    if (!this.configs.resources) {
       return;
     }
 
-    const middlewares = this.configs.middleware;
-
-    // Add server-level middleware that executes before requests
-    if (middlewares.before_request != null) {
-      this.middleware.before_request = [];
-      for (const middleware of middlewares.before_request) {
-        this.middleware.before_request.push(middleware);
-      }
-    }
-
-    // Add server-level middleware that executes after requests
-    if (middlewares.after_request != null) {
-      this.middleware.after_request = [];
-      for (const middleware of middlewares.after_request) {
-        this.middleware.after_request.push(middleware);
-      }
-    }
-
-    // Add server-level middleware that executes after the resource is found
-    if (middlewares.after_resource != null) {
-      this.middleware.after_resource = [];
-      for (const middleware of middlewares.after_resource) {
-        this.middleware.after_resource.push(middleware);
-      }
-    }
-
-    // Add compile time level middleware that executes right now--processing
-    // data to be used later during runtime
-    if (middlewares.compile_time) {
-      for (const middleware of middlewares.compile_time) {
-        await middleware.compile();
-        this.middleware.runtime!.set(
-          this.middleware.runtime!.size,
-          middleware.run,
-        );
-      }
-    }
+    this.configs.resources.forEach(
+      (resourceClass: Drash.Interfaces.Resource) => {
+        this.addResource(resourceClass);
+      },
+    );
   }
 
   /**
    * Add a static path for serving static assets like CSS files, JS files,
    * PDF files, etc.
    *
-   * @param path - The path where the static assets are
+   * @param path - The path where the static assets are located.
+   * @param virtualPath - Is this a virtual path?
    */
   protected addStaticPath(
     path: string,
@@ -715,13 +635,7 @@ export class Server {
   }
 
   /**
-   * Add static paths. Also, see `this.addStaticPath()`.
-   *
-   * @param paths - The array or key-value pair object containing the paths. If
-   * an array is passed in, then this method assumes each element in the array
-   * is a path. If a key-value pair object is passed in, then this method
-   * assumes that the key in each object is a virtual path and that the value is
-   * the physical path.
+   * Add static paths passed in via configs.
    */
   protected addStaticPaths(): void {
     const paths = this.configs.static_paths;
@@ -766,18 +680,9 @@ export class Server {
     }
   }
 
-  protected addResources(): void {
-    if (!this.configs.resources) {
-      return;
-    }
-
-    this.configs.resources.forEach(
-      (resourceClass: Drash.Interfaces.Resource) => {
-        this.addResource(resourceClass);
-      },
-    );
-  }
-
+  /**
+   * Add the template engine passed in via configs.
+   */
   protected addTemplateEngine(): void {
     if (!this.configs.template_engine) {
       return;
@@ -798,6 +703,14 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     }
   }
 
+  /**
+   * Build the configs for this server -- making sure to set any necessary
+   * defaults.
+   *
+   * @param configs - The configs passed in by the user.
+   *
+   * @return The configs.
+   */
   protected buildConfigs(
     configs: Drash.Interfaces.ServerConfigs,
   ): Drash.Interfaces.ServerConfigs {
@@ -806,6 +719,41 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     }
 
     return configs;
+  }
+
+  /**
+   * Get the request object with more properties and methods.
+   *
+   * @param request - The request object.
+   *
+   * @returns Returns a Drash request object--hydrated with more properties and
+   * methods than the ServerRequest object. These properties and methods are
+   * used throughout the Drash request-resource-response lifecycle.
+   */
+  protected async buildRequest(
+    serverRequest: ServerRequest,
+  ): Promise<Drash.Http.Request> {
+    const options: IRequestOptions = {
+      memory_allocation: {
+        multipart_form_data: 10,
+      },
+    };
+
+    // Check if memory allocation has been specified in the configs. If so, use
+    // it. We don't want to limit the user to 10MB of memory if they specify a
+    // different value.
+    const config = this.configs.memory_allocation;
+    if (config && config.multipart_form_data) {
+      options.memory_allocation.multipart_form_data =
+        config.multipart_form_data;
+    }
+
+    // We have to build the request and then parse it's body after because
+    // constructors cannot be async
+    const request = new Drash.Http.Request(serverRequest, options);
+    await request.parseBody();
+
+    return request;
   }
 
   /**
@@ -925,7 +873,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
 
   /**
    * Execute server level runtime middleware after requests. Runtime middleware
-   * requires compile time data.
+   * requires compile time data from compile time middleware.
    *
    * @param request - The request objecft.
    * @param response - The response object.
@@ -949,6 +897,81 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
         }
       },
     );
+  }
+
+  /**
+   * The the resource that will handled the specified request based on the
+   * request's URI.
+   *
+   * @param request - The request object.
+   *
+   * @return The resource as a constructor function to be used in
+   * `.buildResource()`.
+   */
+  protected findResource(
+    request: Drash.Http.Request,
+  ): Drash.Interfaces.Resource {
+    let resource: Drash.Interfaces.Resource | undefined = undefined;
+
+    const uri = request.url_path.split("/");
+    // Remove the first element which would be ""
+    uri.shift();
+
+    // The search term for a URI is the URI in it's most basic form. Basically,
+    // just "/something" instead of "/something/blah/what/ok?hello=world". The
+    // resource index service will return all resources matching that basic URI.
+    // Later down in this method, we iterate over each result that the resource
+    // index service returns to find the best matching resource to the request
+    // URL. Notice, we're searching for a URI at first and then matching against
+    // a URL later.
+    const uriWithoutParams = "^/" + uri[0];
+
+    let results = this.services.resource_index_service.search(uriWithoutParams);
+
+    // If no results are found, then check if /:some_param is in the index
+    // service's lookup table because there might be a resource with
+    // /:some_param as a URI
+    if (results.size === 0) {
+      results = this.services.resource_index_service.search("^/");
+      // Still no resource found? GTFO.
+      if (!results) {
+        throw new Drash.Exceptions.HttpException(404);
+      }
+    }
+
+    // Find the matching resource by comparing the request URL to a regex
+    // pattern associated with a resource
+    let matchedResource = false;
+    results.forEach((result: ISearchResult) => {
+      //result = (result as ISearchResult);
+      // If we already matched a resource, then there is no need to parse any
+      // further
+      if (matchedResource) {
+        return;
+      }
+
+      // Take the current result and see if it matches against the request URL
+      const matchArray = request.url_path.match(
+        result.search_term,
+      );
+
+      // If the request URL and result matched, then we know this result that we
+      // are currently parsing contains the resource we are looking for
+      if (matchArray) {
+        matchedResource = true;
+        resource = result.item as Drash.Interfaces.Resource;
+        request.path_params = this.getRequestPathParams(
+          resource,
+          matchArray,
+        );
+      }
+    });
+
+    if (!resource) {
+      throw new Drash.Exceptions.HttpException(404);
+    }
+
+    return resource;
   }
 
   /**
@@ -1000,33 +1023,6 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     return {
       og_path: path,
       regex_path: `^${
-        path.replace(
-          Server.REGEX_URI_MATCHES,
-          Server.REGEX_URI_REPLACEMENT,
-        )
-      }/?$`,
-      params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
-        (element: string) => {
-          return element.replace(/:|{|}/g, "");
-        },
-      ),
-    };
-  }
-
-  /**
-   * Get resource paths for the wildcard path in question. These paths are use
-   * to match request URIs to a resource.
-   *
-   * @param path - The path to parse into parsable pieces.
-   *
-   * @return A resource paths object.
-   */
-  protected getResourcePathsUsingWildcard(
-    path: string,
-  ): Drash.Interfaces.ResourcePaths {
-    return {
-      og_path: path,
-      regex_path: `^.${
         path.replace(
           Server.REGEX_URI_MATCHES,
           Server.REGEX_URI_REPLACEMENT,
@@ -1124,6 +1120,33 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
   }
 
   /**
+   * Get resource paths for the wildcard path in question. These paths are use
+   * to match request URIs to a resource.
+   *
+   * @param path - The path to parse into parsable pieces.
+   *
+   * @return A resource paths object.
+   */
+  protected getResourcePathsUsingWildcard(
+    path: string,
+  ): Drash.Interfaces.ResourcePaths {
+    return {
+      og_path: path,
+      regex_path: `^.${
+        path.replace(
+          Server.REGEX_URI_MATCHES,
+          Server.REGEX_URI_REPLACEMENT,
+        )
+      }/?$`,
+      params: (path.match(Server.REGEX_URI_MATCHES) || []).map(
+        (element: string) => {
+          return element.replace(/:|{|}/g, "");
+        },
+      ),
+    };
+  }
+
+  /**
    * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
    * or Drash.Http.Response.
    *
@@ -1183,14 +1206,17 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
   }
 
   /**
-   * Log a debug message
+   * Log a message. This only works if the server has a logger and it is set to
+   * log "debug" level messages.
    *
    * @param message - Message to log
    */
-  protected logDebug(message: string): void {
-    if (this.configs.logger) {
-      this.configs.logger.debug("[syslog] " + message);
+  protected log(message: string): void {
+    if (!this.configs.logger) {
+      return;
     }
+
+    this.configs.logger.debug("[syslog] " + message);
   }
 
   /**
@@ -1205,9 +1231,11 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     if (this.static_paths.length <= 0) {
       return false;
     }
+
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the static paths
     const staticPath = request.url.split("/")[1];
+
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${staticPath}`;
 
@@ -1234,6 +1262,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     // If the request URL is "/public/assets/js/bundle.js", then we take out
     // "/public" and use that to check against the virtual paths
     const virtualPath = serverRequest.url.split("/")[1];
+
     // Prefix with a leading slash, so it can be matched properly
     const requestUrl = `/${virtualPath}`;
 
