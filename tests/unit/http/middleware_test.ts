@@ -29,8 +29,8 @@ Rhum.testPlan("http/middleware_test.ts", () => {
           ],
         },
         resources: [
-          ResourceWithCompileTimeMiddleware
-        ]
+          ResourceWithCompileTimeMiddleware,
+        ],
       });
       const request = members.mockRequest("/hello");
       const response = await server.handleHttpRequest(request);

@@ -285,7 +285,7 @@ export class Server {
    * unit testing purposes.
    */
   public async handleHttpRequestForFavicon(
-    request: Drash.Http.Request
+    request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     const response = this.getResponse(request);
     response.body = "";
@@ -545,8 +545,10 @@ export class Server {
     })();
   }
 
-  protected findResource(request: Drash.Http.Request): Drash.Interfaces.Resource {
-    let resource: Drash.Interfaces.Resource|undefined = undefined;
+  protected findResource(
+    request: Drash.Http.Request,
+  ): Drash.Interfaces.Resource {
+    let resource: Drash.Interfaces.Resource | undefined = undefined;
 
     const uri = request.url_path.split("/");
     // Remove the first element which would be ""
@@ -1228,22 +1230,22 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
     function responseIsOfTypeResponseOutput(response: any): boolean {
       if (
-        (typeof response === "object")
-        && (Array.isArray(response) === false)
-        && (response !== null)
+        (typeof response === "object") &&
+        (Array.isArray(response) === false) &&
+        (response !== null)
       ) {
-        return "status" in response
-          && "headers" in response
-          && "body" in response
-          && "send" in response
-          && "status_code" in response;
+        return "status" in response &&
+          "headers" in response &&
+          "body" in response &&
+          "send" in response &&
+          "status_code" in response;
       }
 
       return false;
     }
 
-    const valid = response instanceof Drash.Http.Response
-      || responseIsOfTypeResponseOutput(response) === true;
+    const valid = response instanceof Drash.Http.Response ||
+      responseIsOfTypeResponseOutput(response) === true;
 
     if (!valid) {
       throw new Drash.Exceptions.HttpResponseException(

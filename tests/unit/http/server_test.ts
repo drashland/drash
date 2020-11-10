@@ -538,14 +538,14 @@ Rhum.testPlan("http/server_test.ts", () => {
       const isValidResponse = Reflect.get(server, "isValidResponse");
       let response: Drash.Http.Response = new Drash.Http.Response(
         request,
-        {}
+        {},
       );
       const resource = new HomeResource(
         request,
         response,
         server,
         ["/"],
-        {}
+        {},
       );
       //Simulate user not returning properly inside their resource method
       const possiblesInvalidResponse = [
