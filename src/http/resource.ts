@@ -69,7 +69,7 @@ export class Resource implements Drash.Interfaces.Resource {
     response: Drash.Http.Response,
     server: Drash.Http.Server,
     paths: string[],
-    middleware: { after_request?: []; before_request?: [] }
+    middleware: { after_request?: []; before_request?: [] },
   ) {
     this.request = request;
     this.response = response;

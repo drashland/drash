@@ -1,7 +1,13 @@
 import { Drash } from "../../mod.ts";
-import { Status, STATUS_TEXT } from "../../deps.ts";
-import { Cookie, deleteCookie, setCookie } from "../../deps.ts";
-const decoder = new TextDecoder();
+import {
+  Cookie,
+  decoder,
+  deleteCookie,
+  encoder,
+  setCookie,
+  Status,
+  STATUS_TEXT,
+} from "../../deps.ts";
 
 /**
  * @description
@@ -26,10 +32,10 @@ const decoder = new TextDecoder();
  *               template_engine: true
  *             })
  */
-export interface IResponseOptions {
+export interface IOptions {
   views_path?: string;
   template_engine?: boolean;
-  default_response_content_type?: string;
+  default_content_type?: string;
 }
 
 /**
@@ -61,18 +67,7 @@ export class Response {
   /**
    * An object of options to help determine how this object should behave.
    */
-  private options: IResponseOptions;
-
-  /**
-   * A property to hold the path to the users views directory
-   * from their project root
-   */
-  private views_path: string | undefined;
-
-  /**
-   * The render method extracted from dejs
-   */
-  private readonly template_engine: boolean | undefined = false;
+  protected options: IOptions;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -84,23 +79,11 @@ export class Response {
    *
    * @param options - The response options
    */
-  constructor(request: Drash.Http.Request, options: IResponseOptions = {}) {
+  constructor(request: Drash.Http.Request, options: IOptions = {}) {
     this.options = options;
     this.request = request;
     this.headers = new Headers();
-    this.template_engine = options.template_engine;
-    this.views_path = options.views_path;
-    if (this.options && this.options.default_response_content_type) {
-      this.headers.set(
-        "Content-Type",
-        this.options.default_response_content_type,
-      );
-    } else {
-      this.headers.set(
-        "Content-Type",
-        this.getContentTypeFromRequestAcceptHeader(),
-      );
-    }
+    this.headers.set("Content-Type", this.getContentType());
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -128,7 +111,7 @@ export class Response {
   public render(
     ...args: unknown[]
   ): Promise<boolean | string> | boolean | string {
-    if (!this.views_path) {
+    if (!this.options.views_path) {
       return false;
     }
 
@@ -136,12 +119,14 @@ export class Response {
       const data = args.length >= 2 ? args[1] : null;
       this.headers.set("Content-Type", "text/html");
 
-      if (this.template_engine) {
-        const engine = new Drash.Compilers.TemplateEngine(this.views_path);
+      if (this.options.template_engine) {
+        const engine = new Drash.Compilers.TemplateEngine(
+          this.options.views_path,
+        );
         return engine.render(args[0], data);
       }
 
-      const filename = (this.views_path += args[0]);
+      const filename = (this.options.views_path += args[0]);
       const fileContentsRaw = Deno.readFileSync(filename);
       let decoded = decoder.decode(fileContentsRaw);
       return decoded;
@@ -247,6 +232,36 @@ export class Response {
   }
 
   /**
+   * Redirect the client to another URL.
+   *
+   * @param httpStatusCode - Response's status code.
+   * - Permanent: (301 and 308)
+   * - Temporary: (302, 303, and 307)
+   * @param location - URL of desired redirection. Relative or external paths
+   * (e.g., "/users/1", https://drash.land)
+   *
+   * @returns The final output to be sent.
+   */
+  public redirect(
+    httpStatusCode: number,
+    location: string,
+  ): Drash.Interfaces.ResponseOutput {
+    this.status_code = httpStatusCode;
+    this.headers.set("Location", location);
+
+    let output: Drash.Interfaces.ResponseOutput = {
+      status: this.status_code,
+      headers: this.headers,
+      body: "",
+    };
+
+    this.request.respond(output);
+
+    output.status_code = this.status_code;
+    return output;
+  }
+
+  /**
    * Send the response to the client making the request.
    *
    * @returns A `Promise` of the output which is passed to `request.respond()`.
@@ -255,11 +270,11 @@ export class Response {
    * request-resource-response lifecycle.
    */
   public async send(): Promise<Drash.Interfaces.ResponseOutput> {
-    let body = await this.generateResponse();
+    let body = this.generateResponse();
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body),
+      body: encoder.encode(body),
     };
 
     this.request.respond(output);
@@ -294,6 +309,14 @@ export class Response {
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  protected getContentType(): string {
+    if (this.options.default_content_type) {
+      return this.options.default_content_type;
+    }
+
+    return this.getContentTypeFromRequestAcceptHeader();
+  }
+
   /**
    * Get the content type from the request object's "Accept" header. Default to
    * the response_output config passed in when the server was created if no
@@ -326,35 +349,5 @@ export class Response {
       }
     }
     return "application/json";
-  }
-
-  /**
-   * Redirect the client to another URL.
-   *
-   * @param httpStatusCode - Response's status code.
-   * - Permanent: (301 and 308)
-   * - Temporary: (302, 303, and 307)
-   * @param location - URL of desired redirection. Relative or external paths
-   * (e.g., "/users/1", https://drash.land)
-   *
-   * @returns The final output to be sent.
-   */
-  public redirect(
-    httpStatusCode: number,
-    location: string,
-  ): Drash.Interfaces.ResponseOutput {
-    this.status_code = httpStatusCode;
-    this.headers.set("Location", location);
-
-    let output: Drash.Interfaces.ResponseOutput = {
-      status: this.status_code,
-      headers: this.headers,
-      body: "",
-    };
-
-    this.request.respond(output);
-
-    output.status_code = this.status_code;
-    return output;
   }
 }
