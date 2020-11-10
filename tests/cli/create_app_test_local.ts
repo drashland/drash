@@ -197,7 +197,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
       // console.log('HELLO WORLD ' + originalCWD + `${bpPrefix}/app_api.ts`);
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/app_api.ts`
+        originalCWD + `${bpPrefix}/app_api.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/app.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -205,29 +205,27 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates server.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/server.ts`)
+        await fileExists(`${testCaseTmpDirName}/server.ts`),
       );
 
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/server_api.ts`
+        originalCWD + `${bpPrefix}/server_api.ts`,
       );
 
       copiedFile = getFileContent(`${testCaseTmpDirName}/server.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
 
-    
     Rhum.testCase("correctly creates deps.ts", async () => {
       Rhum.asserts.assert(
         await fileExists(`${testCaseTmpDirName}/deps.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/deps.ts`
+        originalCWD + `${bpPrefix}/deps.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/deps.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
-
 
     Rhum.testCase("correctly creates config.ts", async () => {
       Rhum.asserts.assert(
@@ -242,26 +240,34 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates resources/home_resource.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`)
+        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`),
       );
       boilerPlateFile = getFileContent(
         originalCWD + `${bpPrefix}/resources/home_resource_api.ts`,
       );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/resources/home_resource.ts`);
+      copiedFile = getFileContent(
+        `${testCaseTmpDirName}/resources/home_resource.ts`,
+      );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
 
-    Rhum.testCase("correctly creates tests/resources/home_resource_test.ts", async () => {
-      Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/tests/resources/home_resource_test.ts`),
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/tests/resources/home_resource_test_api.ts`,
-      );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/tests/resources/home_resource_test.ts`);
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
-
+    Rhum.testCase(
+      "correctly creates tests/resources/home_resource_test.ts",
+      async () => {
+        Rhum.asserts.assert(
+          await fileExists(
+            `${testCaseTmpDirName}/tests/resources/home_resource_test.ts`,
+          ),
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD + `${bpPrefix}/tests/resources/home_resource_test_api.ts`,
+        );
+        copiedFile = getFileContent(
+          `${testCaseTmpDirName}/tests/resources/home_resource_test.ts`,
+        );
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+      },
+    );
   });
 
   /**
@@ -318,10 +324,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates app.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/app.ts`)
+        await fileExists(`${testCaseTmpDirName}/app.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/app_web_app.ts`
+        originalCWD + `${bpPrefix}/app_web_app.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/app.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -332,7 +338,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/server.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/server_web_app.ts`
+        originalCWD + `${bpPrefix}/server_web_app.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/server.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -340,10 +346,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates deps.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/deps.ts`)
+        await fileExists(`${testCaseTmpDirName}/deps.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/deps.ts`
+        originalCWD + `${bpPrefix}/deps.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/deps.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -351,7 +357,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates config.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/config.ts`)
+        await fileExists(`${testCaseTmpDirName}/config.ts`),
       );
       boilerPlateFile = getFileContent(
         originalCWD + `${bpPrefix}/config.ts`,
@@ -362,25 +368,35 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates resources/home_resource.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`)
+        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/resources/home_resource_web_app.ts`
+        originalCWD + `${bpPrefix}/resources/home_resource_web_app.ts`,
       );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/resources/home_resource.ts`);
+      copiedFile = getFileContent(
+        `${testCaseTmpDirName}/resources/home_resource.ts`,
+      );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
 
-    Rhum.testCase("correctly creates tests/resources/home_resource_test.ts", async () => {
-      Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/tests/resources/home_resource_test.ts`),
-      );
-      boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/tests/resources/home_resource_test_web_app.ts`
-      );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/tests/resources/home_resource_test.ts`);
-      Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-    });
+    Rhum.testCase(
+      "correctly creates tests/resources/home_resource_test.ts",
+      async () => {
+        Rhum.asserts.assert(
+          await fileExists(
+            `${testCaseTmpDirName}/tests/resources/home_resource_test.ts`,
+          ),
+        );
+        boilerPlateFile = getFileContent(
+          originalCWD +
+            `${bpPrefix}/tests/resources/home_resource_test_web_app.ts`,
+        );
+        copiedFile = getFileContent(
+          `${testCaseTmpDirName}/tests/resources/home_resource_test.ts`,
+        );
+        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
+      },
+    );
 
     Rhum.testCase("correctly creates public/js/index.js", async () => {
       Rhum.asserts.assert(
@@ -411,13 +427,15 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       boilerPlateFile = getFileContent(
         originalCWD + `${bpPrefix}/public/views/index.html`,
       );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/public/views/index.html`);
+      copiedFile = getFileContent(
+        `${testCaseTmpDirName}/public/views/index.html`,
+      );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
 
     Rhum.testCase("creates public/img dir", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/public/img`)
+        await fileExists(`${testCaseTmpDirName}/public/img`),
       );
     });
   });
@@ -475,7 +493,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/app.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/app_web_app.ts`
+        originalCWD + `${bpPrefix}/app_web_app.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/app.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -486,7 +504,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/server.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/server_web_app.ts`
+        originalCWD + `${bpPrefix}/server_web_app.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/server.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -494,10 +512,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates deps.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/deps.ts`)
+        await fileExists(`${testCaseTmpDirName}/deps.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/deps.ts`
+        originalCWD + `${bpPrefix}/deps.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/deps.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -505,7 +523,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates config.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/config.ts`)
+        await fileExists(`${testCaseTmpDirName}/config.ts`),
       );
       boilerPlateFile = getFileContent(
         originalCWD + `${bpPrefix}/config.ts`,
@@ -516,18 +534,20 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates resources/home_resource.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`)
+        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/resources/home_resource_web_app.ts`
+        originalCWD + `${bpPrefix}/resources/home_resource_web_app.ts`,
       );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/resources/home_resource.ts`);
+      copiedFile = getFileContent(
+        `${testCaseTmpDirName}/resources/home_resource.ts`,
+      );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
 
     Rhum.testCase("creates public/img directory", async () => {
       Rhum.asserts.assert(
-        await fileExists(testCaseTmpDirName + "/public/img")
+        await fileExists(testCaseTmpDirName + "/public/img"),
       );
     });
 
@@ -536,7 +556,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/webpack.config.js`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/webpack_vue.config.js`
+        originalCWD + `${bpPrefix}/webpack_vue.config.js`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/webpack.config.js`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -544,10 +564,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates package.json", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/package.json`)
+        await fileExists(`${testCaseTmpDirName}/package.json`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/package_vue.json`
+        originalCWD + `${bpPrefix}/package_vue.json`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/package.json`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -562,7 +582,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       );
 
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/vue/app.vue`
+        originalCWD + `${bpPrefix}/vue/app.vue`,
       );
 
       copiedFile = getFileContent(`${testCaseTmpDirName}/vue/App.vue`);
@@ -571,15 +591,14 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates vue/app.js", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/vue/app.js`)
+        await fileExists(`${testCaseTmpDirName}/vue/app.js`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/vue/app.js`
+        originalCWD + `${bpPrefix}/vue/app.js`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/vue/app.js`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
-
   });
 
   /**
@@ -635,7 +654,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/app.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/app_web_app.ts`
+        originalCWD + `${bpPrefix}/app_web_app.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/app.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -646,7 +665,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/server.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/server_web_app.ts`
+        originalCWD + `${bpPrefix}/server_web_app.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/server.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -654,10 +673,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates deps.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/deps.ts`)
+        await fileExists(`${testCaseTmpDirName}/deps.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/deps.ts`
+        originalCWD + `${bpPrefix}/deps.ts`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/deps.ts`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -665,7 +684,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates config.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/config.ts`)
+        await fileExists(`${testCaseTmpDirName}/config.ts`),
       );
       boilerPlateFile = getFileContent(
         originalCWD + `${bpPrefix}/config.ts`,
@@ -676,18 +695,20 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates resources/home_resource.ts", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`)
+        await fileExists(`${testCaseTmpDirName}/resources/home_resource.ts`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/resources/home_resource_web_app.ts`
+        originalCWD + `${bpPrefix}/resources/home_resource_web_app.ts`,
       );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/resources/home_resource.ts`);
+      copiedFile = getFileContent(
+        `${testCaseTmpDirName}/resources/home_resource.ts`,
+      );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
 
     Rhum.testCase("creates public/img directory", async () => {
       Rhum.asserts.assert(
-        await fileExists(testCaseTmpDirName + "/public/img")
+        await fileExists(testCaseTmpDirName + "/public/img"),
       );
     });
 
@@ -696,7 +717,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
         await fileExists(`${testCaseTmpDirName}/webpack.config.js`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/webpack_react.config.js`
+        originalCWD + `${bpPrefix}/webpack_react.config.js`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/webpack.config.js`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -704,10 +725,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates package.json", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/package.json`)
+        await fileExists(`${testCaseTmpDirName}/package.json`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/package_react.json`
+        originalCWD + `${bpPrefix}/package_react.json`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/package.json`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -715,14 +736,14 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates template file react/App.tsx", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/react`)
+        await fileExists(`${testCaseTmpDirName}/react`),
       );
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/react/App.tsx`)
+        await fileExists(`${testCaseTmpDirName}/react/App.tsx`),
       );
 
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/react/app.tsx`
+        originalCWD + `${bpPrefix}/react/app.tsx`,
       );
 
       copiedFile = getFileContent(`${testCaseTmpDirName}/react/App.tsx`);
@@ -731,10 +752,10 @@ Rhum.testPlan("create_app_test_local.ts", () => {
 
     Rhum.testCase("correctly creates tsconfig.json", async () => {
       Rhum.asserts.assert(
-        await fileExists(`${testCaseTmpDirName}/tsconfig.json`)
+        await fileExists(`${testCaseTmpDirName}/tsconfig.json`),
       );
       boilerPlateFile = getFileContent(
-        originalCWD + `${bpPrefix}/tsconfig_react.json`
+        originalCWD + `${bpPrefix}/tsconfig_react.json`,
       );
       copiedFile = getFileContent(`${testCaseTmpDirName}/tsconfig.json`);
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -747,12 +768,12 @@ Rhum.testPlan("create_app_test_local.ts", () => {
       boilerPlateFile = getFileContent(
         originalCWD + `${bpPrefix}/public/views/index_react.html`,
       );
-      copiedFile = getFileContent(`${testCaseTmpDirName}/public/views/index.html`);
+      copiedFile = getFileContent(
+        `${testCaseTmpDirName}/public/views/index.html`,
+      );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
-
   });
-
 
   Rhum.testSuite("--api and --web-app", () => {
     Rhum.testCase(
