@@ -261,8 +261,8 @@ export class Server {
     response.headers.set("Content-Type", "image/x-icon");
 
     try {
-      response.body = Deno.readFileSync(
-        `${Deno.realPathSync(".")}/favicon.ico`,
+      response.body = await Deno.readFile(
+        `${await Deno.realPath(".")}/favicon.ico`,
       );
     } catch (error) {
     }
@@ -337,7 +337,7 @@ export class Server {
       if (!this.configs.pretty_links || request.url.split(".")[1]) {
         try {
           // Try to read the file if it exists
-          response.body = Deno.readFileSync(
+          response.body = await Deno.readFile(
             `${this.configs.directory}/${request.url}`,
           );
           await this.executeMiddlewareAfterRequest(
@@ -371,14 +371,14 @@ export class Server {
       // /hello/index.html exists by trying to read /hello/index.html.
       response.headers.set("Content-Type", "text/html");
       const path = `${this.configs.directory}${request.url}`;
-      let contents = Deno.readFileSync(
+      let contents = await Deno.readFile(
         `${path}/index.html`,
       );
       // If an index.html file does not exist, then maybe the client is trying
       // to request a different HTML file, so let's try reading the requested
       // URL instead.
       if (!contents) {
-        contents = Deno.readFileSync(path);
+        contents = await Deno.readFile(path);
       }
       response.body = contents;
 
@@ -415,11 +415,11 @@ export class Server {
 
       const virtualPath = request.url.split("/")[1];
       const physicalPath = this.virtual_paths.get("/" + virtualPath);
-      const fullPath = `${Deno.realPathSync(".")}/${physicalPath}${
+      const fullPath = `${await Deno.realPath(".")}/${physicalPath}${
         request.url.replace("/" + virtualPath, "")
       }`;
 
-      response.body = Deno.readFileSync(fullPath);
+      response.body = await Deno.readFile(fullPath);
 
       await this.executeMiddlewareAfterRequest(request, response);
 
@@ -878,10 +878,10 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    * @param request - The request objecft.
    * @param response - The response object.
    */
-  protected async executeMiddlewareRuntime(
+  protected executeMiddlewareRuntime(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
-  ): Promise<void> {
+  ): void {
     let processed: boolean = false;
 
     this.middleware.runtime!.forEach(
