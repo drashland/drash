@@ -173,7 +173,7 @@ export class Server {
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        new Drash.Exceptions.HttpException(error.code ?? 400, error.message)
+        new Drash.Exceptions.HttpException(error.code ?? 400, error.message),
       );
     }
   }
@@ -397,7 +397,7 @@ export class Server {
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        new Drash.Exceptions.HttpException(error.code ?? 404, error.message)
+        new Drash.Exceptions.HttpException(error.code ?? 404, error.message),
       );
     }
   }
@@ -436,7 +436,7 @@ export class Server {
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        new Drash.Exceptions.HttpException(error.code ?? 404, error.message)
+        new Drash.Exceptions.HttpException(error.code ?? 404, error.message),
       );
     }
   }
@@ -1173,7 +1173,7 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
         } catch (error) {
           this.handleHttpRequestError(
             request as Drash.Http.Request,
-            new Drash.Exceptions.HttpException(500)
+            new Drash.Exceptions.HttpException(500),
           );
         }
       }
