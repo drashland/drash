@@ -61,16 +61,6 @@ export class Server {
   protected configs: Drash.Interfaces.ServerConfigs;
 
   /**
-   * A property to hold this server's services.
-   */
-  protected services: IServices = {
-    http_service: new Drash.Services.HttpService(),
-    resource_index_service: new IndexService(
-      new Map<number, Drash.Interfaces.Resource>(),
-    ),
-  };
-
-  /**
    * A property to hold server-level middleware. This includes the following
    * middleware types:
    *
@@ -88,6 +78,16 @@ export class Server {
         response: Drash.Http.Response,
       ) => Promise<void>)
     >(),
+  };
+
+  /**
+   * A property to hold this server's services.
+   */
+  protected services: IServices = {
+    http_service: new Drash.Services.HttpService(),
+    resource_index_service: new IndexService(
+      new Map<number, Drash.Interfaces.Resource>(),
+    ),
   };
 
   /**
@@ -139,34 +139,6 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get the request object with more properties and methods.
-   *
-   * @param request - The request object.
-   *
-   * @returns Returns a Drash request object--hydrated with more properties and
-   * methods than the ServerRequest object. These properties and methods are
-   * used throughout the Drash request-resource-response lifecycle.
-   */
-  public async buildRequest(
-    serverRequest: ServerRequest,
-  ): Promise<Drash.Http.Request> {
-    const options: IRequestOptions = {
-      default_response_content_type: this.configs.response_output,
-      memory_allocation: {
-        multipart_form_data: 10,
-      },
-    };
-    const config = this.configs.memory_allocation;
-    if (config && config.multipart_form_data) {
-      options.memory_allocation.multipart_form_data =
-        config.multipart_form_data;
-    }
-    const request = new Drash.Http.Request(serverRequest, options);
-    await request.parseBody();
-    return request;
-  }
-
-  /**
    * Handle an HTTP request from the Deno server.
    *
    * @param serverRequest - The incoming request object.
@@ -177,7 +149,7 @@ export class Server {
     serverRequest: ServerRequest,
   ): Promise<Drash.Interfaces.ResponseOutput> {
     const request = await this.buildRequest(serverRequest);
-    let response = this.getResponse(request);
+    let response = this.buildResponse(request);
 
     try {
       await this.executeMiddlewareBeforeRequest(request);
@@ -201,7 +173,7 @@ export class Server {
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        this.httpErrorResponse(error.code ?? 400, error.message),
+        new Drash.Exceptions.HttpException(error.code ?? 400, error.message);
       );
     }
   }
@@ -249,7 +221,7 @@ export class Server {
       }
     }
 
-    response = this.getResponse(request);
+    response = this.buildResponse(request);
     response.status_code = error.code ? error.code : 500;
     response.body = error.message ? error.message : response.getStatusMessage();
 
@@ -262,9 +234,9 @@ export class Server {
     );
 
     try {
-      await this.executeMiddlewareServerLevelAfterRequest(request, response);
+      await this.executeMiddlewareAfterRequest(request, response);
     } catch (error) {
-      // Do nothing. The `executeMiddlewareServerLevelAfterRequest()` method is
+      // Do nothing. The `executeMiddlewareAfterRequest()` method is
       // run once in `handleHttpRequest()`. We run this method a second time
       // here in case the server has middleware that needs to run (e.g.,
       // logging middleware) without throwing uncaught exceptions. This is a bit
@@ -287,7 +259,7 @@ export class Server {
   public async handleHttpRequestForFavicon(
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    const response = this.getResponse(request);
+    const response = this.buildResponse(request);
     response.body = "";
     response.headers = new Headers();
     response.status_code = 200;
@@ -337,7 +309,7 @@ export class Server {
     // ResponseOutput
     this.isValidResponse(request, response, resource);
 
-    await this.executeMiddlewareServerLevelAfterRequest(
+    await this.executeMiddlewareAfterRequest(
       request,
       response,
     );
@@ -357,7 +329,7 @@ export class Server {
   public async handleHttpRequestForStaticPathAsset(
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    const response = this.getResponse(request);
+    const response = this.buildResponse(request);
 
     try {
       response.headers.set(
@@ -377,7 +349,7 @@ export class Server {
           response.body = Deno.readFileSync(
             `${this.configs.directory}/${request.url}`,
           );
-          await this.executeMiddlewareServerLevelAfterRequest(
+          await this.executeMiddlewareAfterRequest(
             request,
             response,
           );
@@ -385,7 +357,7 @@ export class Server {
           // If the file doesn't exist, run the middleware just in case
           // ServeTypeScript is being used. If it's being used, then the
           // middleware will return a response body.
-          await this.executeMiddlewareServerLevelAfterRequest(
+          await this.executeMiddlewareAfterRequest(
             request,
             response,
           );
@@ -419,13 +391,13 @@ export class Server {
       }
       response.body = contents;
 
-      await this.executeMiddlewareServerLevelAfterRequest(request, response);
+      await this.executeMiddlewareAfterRequest(request, response);
 
       return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        this.httpErrorResponse(error.code ?? 404, error.message),
+        new Drash.Exceptions.HttpException(error.code ?? 404, error.message);
       );
     }
   }
@@ -441,7 +413,7 @@ export class Server {
   public async handleHttpRequestForVirtualPathAsset(
     request: Drash.Http.Request,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    const response = this.getResponse(request);
+    const response = this.buildResponse(request);
 
     try {
       response.headers.set(
@@ -458,13 +430,13 @@ export class Server {
 
       response.body = Deno.readFileSync(fullPath);
 
-      await this.executeMiddlewareServerLevelAfterRequest(request, response);
+      await this.executeMiddlewareAfterRequest(request, response);
 
       return response.sendStatic();
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        this.httpErrorResponse(error.code ?? 404, error.message),
+        new Drash.Exceptions.HttpException(error.code ?? 404, error.message);
       );
     }
   }
@@ -528,21 +500,31 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Listens for incoming HTTP connections on the server property
+   * Get the request object with more properties and methods.
+   *
+   * @param request - The request object.
+   *
+   * @returns Returns a Drash request object--hydrated with more properties and
+   * methods than the ServerRequest object. These properties and methods are
+   * used throughout the Drash request-resource-response lifecycle.
    */
-  protected async listen() {
-    (async () => {
-      for await (const request of this.deno_server!) {
-        try {
-          this.handleHttpRequest(request as ServerRequest);
-        } catch (error) {
-          this.handleHttpRequestError(
-            request as Drash.Http.Request,
-            this.httpErrorResponse(500),
-          );
-        }
-      }
-    })();
+  protected async buildRequest(
+    serverRequest: ServerRequest,
+  ): Promise<Drash.Http.Request> {
+    const options: IRequestOptions = {
+      default_response_content_type: this.configs.response_output,
+      memory_allocation: {
+        multipart_form_data: 10,
+      },
+    };
+    const config = this.configs.memory_allocation;
+    if (config && config.multipart_form_data) {
+      options.memory_allocation.multipart_form_data =
+        config.multipart_form_data;
+    }
+    const request = new Drash.Http.Request(serverRequest, options);
+    await request.parseBody();
+    return request;
   }
 
   protected findResource(
@@ -825,144 +807,6 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
   }
 
   /**
-   * Execute server-level middleware after a resource has been found, but before
-   * the resource's HTTP request method is executed.
-   *
-   * @param request - The request object.
-   * @param resource - The resource object.
-   */
-  protected async executeMiddlewareAfterRequest(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-  ): Promise<void> {
-    if (this.middleware.after_resource != null) {
-      for (const middleware of this.middleware.after_resource) {
-        await middleware(request, response);
-      }
-    }
-  }
-
-  /**
-   * Execute server-level middleware before the request.
-   *
-   * @param request - The request object.
-   * @param resource - The resource object.
-   */
-  protected async executeMiddlewareBeforeRequest(
-    request: Drash.Http.Request,
-  ): Promise<void> {
-    if (this.middleware.before_request != null) {
-      for (const middleware of this.middleware.before_request) {
-        await middleware(request);
-      }
-    }
-  }
-
-  /**
-   * Execute server-level middleware after the request.
-   *
-   * @param request - The request object.
-   * @param resource - The resource object.
-   */
-  protected async executeMiddlewareServerLevelAfterRequest(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response | null = null,
-  ): Promise<void> {
-    if (this.middleware.runtime) {
-      if (response) {
-        await this.executeMiddlewareServerLevelRuntimeAfterRequest(
-          request,
-          response,
-        );
-      }
-    }
-
-    if (this.middleware.after_request != null) {
-      for (const middleware of this.middleware.after_request) {
-        await middleware(request, response!);
-      }
-    }
-  }
-
-  /**
-   * Execute server level runtime middleware after requests. Runtime middleware
-   * requires compile time data.
-   *
-   * @param request - The request objecft.
-   * @param response - The response object.
-   */
-  protected async executeMiddlewareServerLevelRuntimeAfterRequest(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-  ): Promise<void> {
-    let processed: boolean = false;
-
-    this.middleware.runtime!.forEach(
-      async (
-        run: (
-          request: Drash.Http.Request,
-          response: Drash.Http.Response,
-        ) => Promise<void>,
-      ) => {
-        if (!processed) {
-          await run(request, response);
-          processed = true;
-        }
-      },
-    );
-  }
-
-  /**
-   * Get an HTTP error response exception object.
-   *
-   * @param code - The code that should be used
-   * @param message - The message it should be displayed
-   *
-   * @returns A new http exception.
-   */
-  protected httpErrorResponse(
-    code: number,
-    message?: string,
-  ): Drash.Exceptions.HttpException {
-    return new Drash.Exceptions.HttpException(code, message);
-  }
-
-  /**
-   * Get the path params in a request URL.
-   *
-   * @param resource - The resource that has the information about param names.
-   * These param names are associated with the values of the path params in the
-   * request URL.
-   * @param matchArray - An array containing the path params (as well as other
-   * information about the request URL).
-   */
-  protected getRequestPathParams(
-    resource: Drash.Interfaces.Resource | undefined,
-    matchArray: RegExpMatchArray | null,
-  ): { [key: string]: string } {
-    const pathParamsInKvpForm: { [key: string]: string } = {};
-
-    // No need to get params if there aren't any
-    if (!matchArray || (matchArray.length == 1)) {
-      return pathParamsInKvpForm;
-    }
-
-    const params = matchArray.slice();
-    params.shift();
-
-    if (resource && resource.paths_parsed) {
-      resource.paths_parsed.forEach(
-        (pathObj: Drash.Interfaces.ResourcePaths) => {
-          pathObj.params.forEach((paramName: string, index: number) => {
-            pathParamsInKvpForm[paramName] = params[index];
-          });
-        },
-      );
-    }
-    return pathParamsInKvpForm;
-  }
-
-  /**
    * Get the resource class.
    *
    * @param request - The request object.
@@ -1000,6 +844,143 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
     );
 
     return resource;
+  }
+
+  /**
+   * Get a response object.
+   *
+   * @param request - The request object.
+   *
+   * @returns A response object.
+   */
+  protected buildResponse(request: Drash.Http.Request): Drash.Http.Response {
+    return new Drash.Http.Response(request, {
+      views_path: this.configs.views_path,
+      template_engine: this.configs.template_engine,
+    });
+  }
+
+  /**
+   * Execute server-level middleware after the request.
+   *
+   * @param request - The request object.
+   * @param resource - The resource object.
+   */
+  protected async executeMiddlewareAfterRequest(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response | null = null,
+  ): Promise<void> {
+    if (this.middleware.runtime) {
+      if (response) {
+        await this.executeMiddlewareRuntime(
+          request,
+          response,
+        );
+      }
+    }
+
+    if (this.middleware.after_request != null) {
+      for (const middleware of this.middleware.after_request) {
+        await middleware(request, response!);
+      }
+    }
+  }
+
+  /**
+   * Execute server-level middleware after a resource has been found, but before
+   * the resource's HTTP request method is executed.
+   *
+   * @param request - The request object.
+   * @param resource - The resource object.
+   */
+  protected async executeMiddlewareAfterResource(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+    if (this.middleware.after_resource != null) {
+      for (const middleware of this.middleware.after_resource) {
+        await middleware(request, response);
+      }
+    }
+  }
+
+  /**
+   * Execute server-level middleware before the request.
+   *
+   * @param request - The request object.
+   * @param resource - The resource object.
+   */
+  protected async executeMiddlewareBeforeRequest(
+    request: Drash.Http.Request,
+  ): Promise<void> {
+    if (this.middleware.before_request != null) {
+      for (const middleware of this.middleware.before_request) {
+        await middleware(request);
+      }
+    }
+  }
+
+  /**
+   * Execute server level runtime middleware after requests. Runtime middleware
+   * requires compile time data.
+   *
+   * @param request - The request objecft.
+   * @param response - The response object.
+   */
+  protected async executeMiddlewareRuntime(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+  ): Promise<void> {
+    let processed: boolean = false;
+
+    this.middleware.runtime!.forEach(
+      async (
+        run: (
+          request: Drash.Http.Request,
+          response: Drash.Http.Response,
+        ) => Promise<void>,
+      ) => {
+        if (!processed) {
+          await run(request, response);
+          processed = true;
+        }
+      },
+    );
+  }
+
+  /**
+   * Get the path params in a request URL.
+   *
+   * @param resource - The resource that has the information about param names.
+   * These param names are associated with the values of the path params in the
+   * request URL.
+   * @param matchArray - An array containing the path params (as well as other
+   * information about the request URL).
+   */
+  protected getRequestPathParams(
+    resource: Drash.Interfaces.Resource | undefined,
+    matchArray: RegExpMatchArray | null,
+  ): { [key: string]: string } {
+    const pathParamsInKvpForm: { [key: string]: string } = {};
+
+    // No need to get params if there aren't any
+    if (!matchArray || (matchArray.length == 1)) {
+      return pathParamsInKvpForm;
+    }
+
+    const params = matchArray.slice();
+    params.shift();
+
+    if (resource && resource.paths_parsed) {
+      resource.paths_parsed.forEach(
+        (pathObj: Drash.Interfaces.ResourcePaths) => {
+          pathObj.params.forEach((paramName: string, index: number) => {
+            pathParamsInKvpForm[paramName] = params[index];
+          });
+        },
+      );
+    }
+    return pathParamsInKvpForm;
   }
 
   /**
@@ -1140,17 +1121,74 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
   }
 
   /**
-   * Get a response object.
+   * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
+   * or Drash.Http.Response.
    *
-   * @param request - The request object.
-   *
-   * @returns A response object.
+   * @return If the response returned from a method is what the returned value should be
    */
-  protected getResponse(request: Drash.Http.Request): Drash.Http.Response {
-    return new Drash.Http.Response(request, {
-      views_path: this.configs.views_path,
-      template_engine: this.configs.template_engine,
-    });
+  // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface or response anyway
+  protected isValidResponse(
+    request: Drash.Http.Request,
+    response: Drash.Http.Response,
+    resource: Drash.Http.Resource,
+  ): boolean {
+    // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
+    function responseIsOfTypeResponseOutput(response: any): boolean {
+      if (
+        (typeof response === "object") &&
+        (Array.isArray(response) === false) &&
+        (response !== null)
+      ) {
+        return "status" in response &&
+          "headers" in response &&
+          "body" in response &&
+          "send" in response &&
+          "status_code" in response;
+      }
+
+      return false;
+    }
+
+    const valid = response instanceof Drash.Http.Response ||
+      responseIsOfTypeResponseOutput(response) === true;
+
+    if (!valid) {
+      throw new Drash.Exceptions.HttpResponseException(
+        418,
+        `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
+      );
+    }
+
+    return true;
+  }
+
+  /**
+   * Listens for incoming HTTP connections on the server property
+   */
+  protected async listen() {
+    (async () => {
+      for await (const request of this.deno_server!) {
+        try {
+          this.handleHttpRequest(request as ServerRequest);
+        } catch (error) {
+          this.handleHttpRequestError(
+            request as Drash.Http.Request,
+            new Drash.Exceptions.HttpException(500);
+          );
+        }
+      }
+    })();
+  }
+
+  /**
+   * Log a debug message
+   *
+   * @param message - Message to log
+   */
+  protected logDebug(message: string): void {
+    if (this.configs.logger) {
+      this.configs.logger.debug("[syslog] " + message);
+    }
   }
 
   /**
@@ -1199,59 +1237,6 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
 
     if (!this.virtual_paths.has(requestUrl)) {
       return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Log a debug message
-   *
-   * @param message - Message to log
-   */
-  protected logDebug(message: string): void {
-    if (this.configs.logger) {
-      this.configs.logger.debug("[syslog] " + message);
-    }
-  }
-
-  /**
-   * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
-   * or Drash.Http.Response.
-   *
-   * @return If the response returned from a method is what the returned value should be
-   */
-  // @ts-ignore Only exception because response cannot be properly typed and we're checking if it is of type interface or response anyway
-  protected isValidResponse(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-    resource: Drash.Http.Resource,
-  ): boolean {
-    // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
-    function responseIsOfTypeResponseOutput(response: any): boolean {
-      if (
-        (typeof response === "object") &&
-        (Array.isArray(response) === false) &&
-        (response !== null)
-      ) {
-        return "status" in response &&
-          "headers" in response &&
-          "body" in response &&
-          "send" in response &&
-          "status_code" in response;
-      }
-
-      return false;
-    }
-
-    const valid = response instanceof Drash.Http.Response ||
-      responseIsOfTypeResponseOutput(response) === true;
-
-    if (!valid) {
-      throw new Drash.Exceptions.HttpResponseException(
-        418,
-        `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
-      );
     }
 
     return true;
