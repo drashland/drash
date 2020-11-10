@@ -136,50 +136,63 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         );
       },
     );
-    Rhum.testCase("Realworld example", async () => {
-      // Failed request - access control header is not present
-      const serverOne = await runServer(false);
-      const resOne = await fetch("http://localhost:1447", {
-        method: "GET",
-        headers: {
-          Origin: "https://google.com",
-        },
-      });
-      await resOne.text();
-      serverOne.close();
-      Rhum.asserts.assertEquals(
-        resOne.headers.get("access-control-allow-origin"),
-        null,
-      );
-      // Successful request - access control header is present and the value of the origin
-      const serverTwo = await runServer(false);
-      const resTwo = await fetch("http://localhost:1447", {
-        method: "GET",
-        headers: {
-          Origin: "localhost", // As server two is setting cors origin as localhost
-        },
-      });
-      await resTwo.text();
-      serverTwo.close();
-      Rhum.asserts.assertEquals(
-        resTwo.headers.get("access-control-allow-origin"),
-        "localhost",
-      );
-      // Another successful request, but the origin allows anything
-      const serverThree = await runServer(true);
-      const resThree = await fetch("http://localhost:1447", {
-        method: "GET",
-        headers: {
-          Origin: "https://anything.com",
-        },
-      });
-      await resThree.text();
-      serverThree.close();
-      Rhum.asserts.assertEquals(
-        resThree.headers.get("access-control-allow-origin"),
-        "*",
-      );
-    });
+    Rhum.testCase(
+      "Realworld example - Cors not enabled for request",
+      async () => {
+        // Failed request - access control header is not present
+        const server = await runServer(false);
+        const res = await fetch("http://localhost:1447", {
+          method: "GET",
+          headers: {
+            Origin: "https://google.com",
+          },
+        });
+        await res.text();
+        server.close();
+        Rhum.asserts.assertEquals(
+          res.headers.get("access-control-allow-origin"),
+          null,
+        );
+      },
+    );
+    Rhum.testCase(
+      "Realworld example - Cors enabled for a single origin",
+      async () => {
+        // Successful request - access control header is present and the value of the origin
+        const server = await runServer(false);
+        const res = await fetch("http://localhost:1447", {
+          method: "GET",
+          headers: {
+            Origin: "localhost", // As server two is setting cors origin as localhost
+          },
+        });
+        await res.text();
+        server.close();
+        Rhum.asserts.assertEquals(
+          res.headers.get("access-control-allow-origin"),
+          "localhost",
+        );
+      },
+    );
+    Rhum.testCase(
+      "Realworld example - Cors enabled for every origin",
+      async () => {
+        // Another successful request, but the origin allows anything
+        const server = await runServer(true);
+        const res = await fetch("http://localhost:1447", {
+          method: "GET",
+          headers: {
+            Origin: "https://anything.com",
+          },
+        });
+        await res.text();
+        server.close();
+        Rhum.asserts.assertEquals(
+          res.headers.get("access-control-allow-origin"),
+          "*",
+        );
+      },
+    );
   });
 });
 
