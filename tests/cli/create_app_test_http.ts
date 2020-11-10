@@ -461,7 +461,6 @@ Rhum.testPlan("create_app_test_http.ts", () => {
    *  - deps.ts
    *  - config.ts
    *  - resources/home_resource_web_app.ts -> resources/home_resource.ts
-   *  - tests/resources/home_resource_test_web_app.ts -> tests/resources/home_resource.ts
    *  - public/img
    *  - webpack_vue.config.json -> webpack.config.json
    *  - package_vue.json -> package.json
@@ -558,24 +557,6 @@ Rhum.testPlan("create_app_test_http.ts", () => {
       );
       Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
     });
-
-    Rhum.testCase(
-      "correctly creates tests/resources/home_resource.ts",
-      async () => {
-        Rhum.asserts.assert(
-          await fileExists(
-            `${testCaseTmpDirName}/tests/resources/home_resource.ts`,
-          ),
-        );
-        boilerPlateFile = await fetchFileContent(
-          `${bpPrefix}/tests/resources/home_resource_web_app.ts`,
-        );
-        copiedFile = getFileContent(
-          `${testCaseTmpDirName}/tests/resources/home_resource.ts`,
-        );
-        Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
-      },
-    );
 
     Rhum.testCase("creates public/img directory", async () => {
       Rhum.asserts.assert(
