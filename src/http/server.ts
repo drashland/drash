@@ -20,6 +20,11 @@ interface IRequestOptions {
   };
 }
 
+interface IServices {
+  http_service: Drash.Services.HttpService;
+  resource_index_service: IndexService;
+}
+
 /**
  * Server handles the entire request-resource-response lifecycle. It is in
  * charge of handling HTTP requests to resources, static paths, sending
@@ -49,11 +54,6 @@ export class Server {
   public hostname: string = "localhost";
 
   /**
-   * A property to hold this server's logger.
-   */
-  public logger: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
-
-  /**
    * The port of the Deno server.
    */
   public port: number = 1447;
@@ -64,15 +64,14 @@ export class Server {
   protected configs: Drash.Interfaces.ServerConfigs;
 
   /**
-   * A property to hold the location of this server on the filesystem. This
-   * property is used when resolving static paths.
+   * A property to hold this server's services.
    */
-  protected directory: string | undefined = undefined;
-
-  /**
-   * An instance of the HttpService.
-   */
-  protected http_service: Drash.Services.HttpService;
+  protected services: IServices = {
+    http_service: new Drash.Services.HttpService(),
+    resource_index_service: new IndexService(
+      new Map<number, Drash.Interfaces.Resource>()
+    ),
+  };
 
   /**
    * A property to hold server-level middleware. This includes the following
@@ -93,11 +92,6 @@ export class Server {
       ) => Promise<void>)
     >(),
   };
-
-  /**
-   * The resource index service that helps us match request URIs to resources.
-   */
-  protected resource_index_service: IndexService;
 
   /**
    * This server's list of static paths. HTTP requests to a static path are
@@ -132,73 +126,15 @@ export class Server {
    * @param configs - The config of Drash Server
    */
   constructor(configs: Drash.Interfaces.ServerConfigs) {
-    // Set up this server's services
-    this.http_service = new Drash.Services.HttpService();
+    this.configs = this.buildConfigs(configs);
 
-    // Set up this server's default configurations
-    if (!configs.memory_allocation) {
-      configs.memory_allocation = {};
-    }
+    this.addMiddleware();
 
-    // Set up this server's logger
-    if (!configs.logger) {
-      this.logger = new Drash.CoreLoggers.ConsoleLogger({
-        enabled: false,
-      });
-    } else {
-      this.logger = configs.logger;
-    }
+    this.addResources();
 
-    // Make configs global to this class as a convenience to other data members
-    // in this class
-    this.configs = configs;
+    this.addStaticPaths();
 
-    // Set up this server's server-level middleware
-    if (this.configs.middleware) {
-      this.addMiddleware(this.configs.middleware);
-    }
-
-    // Set up this server's service that handles resource looksup
-    const lt: Map<number, Drash.Interfaces.Resource> = new Map();
-    this.resource_index_service = new IndexService(lt);
-
-    // Set up this server's resources
-    if (this.configs.resources) {
-      this.configs.resources.forEach(
-        (resourceClass: Drash.Interfaces.Resource) => {
-          this.addHttpResource(resourceClass);
-        },
-      );
-      delete this.configs.resources;
-    }
-
-    // Set up this server's static paths and virtual paths
-    if (this.configs.static_paths) {
-      if (!this.configs.directory) {
-        throw new Drash.Exceptions.ConfigsException(
-          `Static paths are being used, but a directory config was not specified`,
-        );
-      }
-      this.directory = this.configs.directory; // blow up if this doesn't exist
-      this.addStaticPaths(this.configs.static_paths);
-    }
-
-    // Set up this server's template engine
-    if (this.configs.template_engine) {
-      LoggerService.logWarn(`DEPRECATED CODE DETECTED
-"The \`server.template_engine\` config is deprecated and will be removed on January 1, 2021.
-Please update your application to use Tengine -- a template engine middleware.
-View migration guide at:
-  https://github.com/drashland/deno-drash-middleware/tree/master/tengine.
-View more information regarding this deprecation/removal at:
-  https://github.com/drashland/deno-drash/issues/430 for more information regarding this deprecation/removal.
-`);
-      if (!this.configs.views_path) {
-        throw new Drash.Exceptions.ConfigsException(
-          "Property missing. The views_path must be defined if template_engine is true",
-        );
-      }
-    }
+    this.addTemplateEngine();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -243,7 +179,7 @@ View more information regarding this deprecation/removal at:
   public async handleHttpRequest(
     serverRequest: ServerRequest,
   ): Promise<Drash.Interfaces.ResponseOutput> {
-    this.logger.info(
+    this.logDebug(
         `Request received: ${serverRequest.method.toUpperCase()} ${serverRequest.url}`,
     );
 
@@ -482,7 +418,7 @@ View more information regarding this deprecation/removal at:
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
-        this.http_service.getMimeType(request.url, true) || "text/plain",
+        this.services.http_service.getMimeType(request.url, true) || "text/plain",
       );
 
       // Two things are happening here:
@@ -493,7 +429,7 @@ View more information regarding this deprecation/removal at:
       if (!this.configs.pretty_links || request.url.split(".")[1]) {
         try {
           // Try to read the file if it exists
-          response.body = Deno.readFileSync(`${this.directory}/${request.url}`);
+          response.body = Deno.readFileSync(`${this.configs.directory}/${request.url}`);
           await this.executeMiddlewareServerLevelAfterRequest(
             request,
             response,
@@ -524,7 +460,7 @@ View more information regarding this deprecation/removal at:
       // example, if the request URL is /hello, then we will check to see if
       // /hello/index.html exists by trying to read /hello/index.html.
       response.headers.set("Content-Type", "text/html");
-      const path = `${this.directory}${request.url}`;
+      const path = `${this.configs.directory}${request.url}`;
       let contents = Deno.readFileSync(
         `${path}/index.html`,
       );
@@ -562,7 +498,7 @@ View more information regarding this deprecation/removal at:
       const response = this.getResponse(request);
       response.headers.set(
         "Content-Type",
-        this.http_service.getMimeType(request.url, true) || "text/plain",
+        this.services.http_service.getMimeType(request.url, true) || "text/plain",
       );
 
       const virtualPath = request.url.split("/")[1];
@@ -706,7 +642,7 @@ View more information regarding this deprecation/removal at:
 
       // Include the regex path in the index, so we can search for the regex
       // path during runtime in `.getResourceClass()`
-      this.resource_index_service.addItem([paths.regex_path], resourceClass);
+      this.services.resource_index_service.addItem([paths.regex_path], resourceClass);
     }
 
     resourceClass.paths_parsed = resourceParsedPaths;
@@ -717,7 +653,13 @@ View more information regarding this deprecation/removal at:
    *
    * @param middleware - The middlewares to be added to the server
    */
-  protected async addMiddleware(middlewares: ServerMiddleware): Promise<void> {
+  protected async addMiddleware(): Promise<void> {
+    if (!this.configs.middleware) {
+      return;
+    }
+
+    const middlewares = this.configs.middleware;
+
     // Add server-level middleware that executes before requests
     if (middlewares.before_request != null) {
       this.middleware.before_request = [];
@@ -782,7 +724,17 @@ View more information regarding this deprecation/removal at:
    * assumes that the key in each object is a virtual path and that the value is
    * the physical path.
    */
-  protected addStaticPaths(paths: string[] | { [key: string]: string }): void {
+  protected addStaticPaths(): void {
+    const paths = this.configs.static_paths;
+
+    if (paths) {
+      if (!this.configs.directory) {
+        throw new Drash.Exceptions.ConfigsException(
+          `Static paths are being used, but a directory config was not specified`,
+        );
+      }
+    }
+
     // Assume everything in the array is a string
     if (Array.isArray(paths)) {
       paths.forEach((path: string) => {
@@ -813,6 +765,48 @@ View more information regarding this deprecation/removal at:
 
       this.addStaticPath(physicalPath, virtualPath);
     }
+  }
+
+  protected addResources(): void {
+    if (!this.configs.resources) {
+      return;
+    }
+
+    this.configs.resources.forEach(
+      (resourceClass: Drash.Interfaces.Resource) => {
+        this.addHttpResource(resourceClass);
+      },
+    );
+  }
+
+  protected addTemplateEngine(): void {
+    if (!this.configs.template_engine) {
+      return;
+    }
+
+    LoggerService.logWarn(`DEPRECATED CODE DETECTED
+"The \`server.template_engine\` config is deprecated and will be removed on January 1, 2021.
+Please update your application to use Tengine -- a template engine middleware.
+View migration guide at:
+https://github.com/drashland/deno-drash-middleware/tree/master/tengine.
+View more information regarding this deprecation/removal at:
+https://github.com/drashland/deno-drash/issues/430 for more information regarding this deprecation/removal.
+`);
+    if (!this.configs.views_path) {
+      throw new Drash.Exceptions.ConfigsException(
+        "Property missing. The views_path must be defined if template_engine is true",
+      );
+    }
+  }
+
+  protected buildConfigs(
+    configs: Drash.Interfaces.ServerConfigs
+  ): Drash.Interfaces.ServerConfigs {
+    if (!configs.memory_allocation) {
+      configs.memory_allocation = {};
+    }
+
+    return configs;
   }
 
   /**
@@ -979,13 +973,13 @@ View more information regarding this deprecation/removal at:
     // and then matching against a URL later.
     const uriWithoutParams = "^/" + uri[0];
 
-    let results = this.resource_index_service.search(uriWithoutParams);
+    let results = this.services.resource_index_service.search(uriWithoutParams);
 
     // If no results are found, then check if /:some_param is in the index
     // service's lookup table because there might be a resource with
     // /:some_param as a URI
     if (results.size === 0) {
-      results = this.resource_index_service.search("^/");
+      results = this.services.resource_index_service.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
         return undefined;
@@ -1231,7 +1225,9 @@ View more information regarding this deprecation/removal at:
    * @param message - Message to log
    */
   protected logDebug(message: string): void {
-    this.logger.debug("[syslog] " + message);
+    if (this.configs.logger) {
+      this.configs.logger.debug("[syslog] " + message);
+    }
   }
 
   /**
