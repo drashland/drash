@@ -176,7 +176,8 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       await resThree.text();
       serverThree.close();
       Rhum.asserts.assertEquals(
-        resThree.headers.get("access-control-allow-origin", "*"),
+        resThree.headers.get("access-control-allow-origin"),
+        "*",
       );
     });
   });
