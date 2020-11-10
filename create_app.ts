@@ -1,4 +1,4 @@
-import { green, red } from "./deps.ts";
+import { encoder, green, red } from "./deps.ts";
 const { args } = Deno;
 const drashDir = Deno.build.os === "windows"
   ? import.meta.url.replace("file:///", "").replace("/create_app.ts", "")
@@ -10,7 +10,6 @@ const wantsVue = (args.find((arg) => arg === "--with-vue") !== undefined);
 const wantsReact = (args.find((arg) => arg === "--with-react") !== undefined);
 const cwd = Deno.realPathSync(".");
 const notesForUser: string[] = [];
-const encoder = new TextEncoder();
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - FUNCTIONS /////////////////////////////////////////////////////

@@ -1,4 +1,5 @@
 import type { Drash } from "../../mod.ts";
+import { encoder } from "../../deps.ts";
 import { Logger } from "./logger.ts";
 
 /**

@@ -1,7 +1,13 @@
 import { Drash } from "../../mod.ts";
-import { Status, STATUS_TEXT } from "../../deps.ts";
-import { Cookie, deleteCookie, setCookie } from "../../deps.ts";
-const decoder = new TextDecoder();
+import {
+  Cookie,
+  decoder,
+  deleteCookie,
+  encoder,
+  setCookie,
+  Status,
+  STATUS_TEXT,
+} from "../../deps.ts";
 
 /**
  * @description
@@ -268,7 +274,7 @@ export class Response {
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: new TextEncoder().encode(body),
+      body: encoder.encode(body),
     };
 
     this.request.respond(output);

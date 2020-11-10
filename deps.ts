@@ -1,5 +1,9 @@
-export const decoder = new TextDecoder();
-export const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
+export {
+  decoder,
+  encoder,
+}
 
 export {
   serve,
