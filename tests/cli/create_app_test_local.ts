@@ -289,7 +289,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
   Rhum.testSuite("--web-app", () => {
     let copiedFile: string;
     let boilerPlateFile: string;
-    let bpPrefix = "/console/create_app";
+    const bpPrefix = "/console/create_app";
     const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
 
     Rhum.testCase(
@@ -457,7 +457,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
   Rhum.testSuite("--web-app --with-vue", () => {
     let boilerPlateFile: string;
     let copiedFile: string;
-    let bpPrefix = "/console/create_app"; // boilerplate prefix
+    const bpPrefix = "/console/create_app"; // boilerplate prefix
     const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
 
     Rhum.testCase("creates a web app with Vue", async () => {
@@ -618,7 +618,7 @@ Rhum.testPlan("create_app_test_local.ts", () => {
   Rhum.testSuite("--web-app --with-react", () => {
     let boilerPlateFile: string;
     let copiedFile: string;
-    let bpPrefix = "/console/create_app"; // boilerplate prefix
+    const bpPrefix = "/console/create_app";
     const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
 
     Rhum.testCase("creates a web app with React", async () => {

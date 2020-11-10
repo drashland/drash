@@ -304,7 +304,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
   Rhum.testSuite("--web-app", () => {
     let copiedFile: string;
     let boilerPlateFile: string;
-    let bpPrefix = "/console/create_app";
+    const bpPrefix = "/console/create_app";
     const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
 
     Rhum.testCase(
@@ -464,13 +464,13 @@ Rhum.testPlan("create_app_test_http.ts", () => {
    *  - public/img
    *  - webpack_vue.config.json -> webpack.config.json
    *  - package_vue.json -> package.json
-   *  - Vue/app.vue -> Vue/App.vue
-   *  - Vue/app.js
+   *  - vue/app.vue -> Vue/App.vue
+   *  - vue/app.js
    */
   Rhum.testSuite("--web-app --with-vue", () => {
     let boilerPlateFile: string;
     let copiedFile: string;
-    let bpPrefix = "/console/create_app"; // boilerplate prefix
+    const bpPrefix = "/console/create_app";
     const testCaseTmpDirName = tmpDirName + (++tmpDirNameCount);
 
     Rhum.testCase("creates a web app with Vue", async () => {
@@ -595,7 +595,7 @@ Rhum.testPlan("create_app_test_http.ts", () => {
       );
 
       boilerPlateFile = await fetchFileContent(
-        "/console/create_app/vue/app.vue",
+        `${bpPrefix}/vue/app.vue`,
       );
 
       copiedFile = getFileContent(`${testCaseTmpDirName}/vue/App.vue`);
