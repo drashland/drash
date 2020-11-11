@@ -23,6 +23,6 @@ jobs:
           curl -X POST \
             -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" \
             -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Content-Type: application/json"
-            --data '{"event_type": "pre_release", "client_payload": { "repo": "deno-drash", "module": "drash", "version": "${{ github.ref }}" }}'
+            -H "Content-Type: application/json" \
+            --data '{"event_type": "pre_release", "client_payload": { "repo": "deno-drash", "module": "drash", "version": "${{ github.ref }}" }}' \
             https://api.github.com/repos/drashland/castle/dispatches
