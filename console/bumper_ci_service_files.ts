@@ -35,11 +35,6 @@ export const bumperFiles = [
     replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
   },
   {
-    filename: "./.github/workflows/bumper.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
     filename: "./.github/workflows/pre_release.yml",
     replaceTheRegex: regexes.yml_deno,
     replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
