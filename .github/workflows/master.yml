@@ -1,4 +1,4 @@
-name: master
+name: Master
 
 on:
   pull_request:

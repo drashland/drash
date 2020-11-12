@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Notify the castle that this module needs to be prepped for release
+      - name: Notify the castle about this pre-release
         run: |
           curl -X POST \
             -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" \
