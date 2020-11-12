@@ -37,15 +37,15 @@ export function CSRF(options: Options = defaultOptions) {
 
       if (!requestToken) {
         throw new Drash.Exceptions.HttpMiddlewareException(
-          403,
+          400,
           "No CSRF token was passed in",
         );
       }
 
       if (requestToken !== primaryTokenString) {
         throw new Drash.Exceptions.HttpMiddlewareException(
-          400,
-          "The CSRF tokens do match",
+          403,
+          "The CSRF tokens do not match",
         );
       }
     }

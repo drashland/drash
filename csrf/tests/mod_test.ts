@@ -114,16 +114,34 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       server.close();
     });
     Rhum.testCase(
-      "Route with CSRF should throw a 403 when no token",
+      "Route with CSRF should throw a 400 when no token",
       async () => {
         await runServer();
         const res = await fetch("http://localhost:1337", {
           method: "POST",
         });
-        Rhum.asserts.assertEquals(res.status, 403);
+        Rhum.asserts.assertEquals(res.status, 400);
         Rhum.asserts.assertEquals(
           await res.text(),
           '"No CSRF token was passed in"',
+        );
+        server.close();
+      },
+    );
+    Rhum.testCase(
+      "Route with CSRF should throw 403 for an invalid token",
+      async () => {
+        await runServer();
+        const res = await fetch("http://localhost:1337", {
+          method: "POST",
+          headers: {
+            "X-CSRF-TOKEN": csrfWithoutCookie.token.substr(1),
+          },
+        });
+        Rhum.asserts.assertEquals(res.status, 403);
+        Rhum.asserts.assertEquals(
+          await res.text(),
+          '"The CSRF tokens do not match"',
         );
         server.close();
       },
