@@ -11,10 +11,6 @@ jobs:
     # Only run when a release-v* branch is created, and not by drashbot
     if: contains(github.ref, 'release-v') && !contains(github.event.sender.login, 'drashbot')
 
-    strategy:
-      matrix:
-        deno: ["1.5.2"]
-
     runs-on: ubuntu-latest
 
     steps:
