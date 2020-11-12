@@ -22,7 +22,7 @@ export const preReleaseFiles = [
     replaceWith: `version = "v{{ thisModulesLatestVersion }}"`,
   },
   {
-    filename: "./create_app/deps.ts",
+    filename: "./console/create_app/deps.ts",
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `drash@v{{ thisModulesLatestVersion }}`,
   },
