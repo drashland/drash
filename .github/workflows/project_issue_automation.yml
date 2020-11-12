@@ -1,4 +1,4 @@
-name: issue_project
+name: Projec issue automation
 on:
     issues:
         types:
