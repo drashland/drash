@@ -39,7 +39,7 @@
 ```typescript
 // File: app.ts
 
-import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.3.1/mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
