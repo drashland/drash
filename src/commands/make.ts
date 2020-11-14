@@ -2,6 +2,7 @@ const cwd = Deno.realPathSync(".");
 
 /**
  * Creates a map of { option: value }
+ * TODO: This needs to be reworked in services/cli
  *
  * @param args - Deno.args
  * @returns options
@@ -9,6 +10,10 @@ const cwd = Deno.realPathSync(".");
 function getOptionsMap(args: string[]): { [key: string]: string } {
   const optionsMap = args.reduce((acc: any, arg: string) => {
     const [option, value] = arg.split("=");
+    if (!value) {
+      console.error("Resource requires a path argument");
+      Deno.exit(1);
+    }
     acc[option] = value;
     return acc;
   }, {});
@@ -29,7 +34,7 @@ function getResourceTemplate(resourceName: string): string {
   public DELETE() {}
   public PATCH() {}
 }`;
-}/**
+} /**
  * Extracts resource name from user provided path.
  *
  * @param path - path to resource file.
