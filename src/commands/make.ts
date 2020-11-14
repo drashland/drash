@@ -45,8 +45,10 @@ function getResourceName(path: string): string {
   const filename = path.split("/").pop()!;
   const [name, ext] = filename.split(".");
   if (!ext || ext !== "ts") {
-    throw new Error("A valid file extension is required: .ts.");
+    console.error("A valid file extension is required: .ts.");
+    Deno.exit(1);
   }
+
   const parts = name.split("_");
   const resourceName = parts.reduce((acc, part) => {
     acc += part.substr(0, 1).toUpperCase() + part.substr(1);
