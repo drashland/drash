@@ -3,7 +3,7 @@ import { help } from "./src/commands/help.ts";
 import { version } from "./src/commands/version.ts";
 import { make } from "./src/commands/make.ts";
 
-const cli = new CliService(Deno.args)
+const cli = new CliService(Deno.args);
 
 cli.addSubcommand(["help", "--help"], () => {
   console.log(help);

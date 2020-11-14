@@ -2,8 +2,7 @@ import { CliService } from "../../deps.ts";
 import { Drash } from "../../mod.ts";
 
 export const help = CliService.createHelpMenu({
-  description:
-    `drash ${Drash.version}
+  description: `drash ${Drash.version}
     A REST microframework for Deno's HTTP server with zero dependencies`,
   usage: [
     "drash [SUBCOMMAND] [OPTIONS]",

@@ -11,7 +11,7 @@ function getOptionsMap(args: string[]): { [key: string]: string } {
     const [option, value] = arg.split("=");
     acc[option] = value;
     return acc;
-  }, {})
+  }, {});
   return Object.keys(optionsMap).length ? optionsMap : null;
 }
 
@@ -28,15 +28,14 @@ function getResourceTemplate(resourceName: string): string {
   public POST() {}
   public DELETE() {}
   public PATCH() {}
-}`
-};
-
-/**
+}`;
+}/**
  * Extracts resource name from user provided path.
  *
  * @param path - path to resource file.
  * @returns name of resource class.
  */
+
 function getResourceName(path: string): string {
   const filename = path.split("/").pop()!;
   const [name, ext] = filename.split(".");
@@ -45,7 +44,7 @@ function getResourceName(path: string): string {
   }
   const parts = name.split("_");
   const resourceName = parts.reduce((acc, part) => {
-    acc += part.substr(0,1).toUpperCase() + part.substr(1);
+    acc += part.substr(0, 1).toUpperCase() + part.substr(1);
     return acc;
   }, "" as string);
   return resourceName;
@@ -66,5 +65,7 @@ export function make(args: string[]): void {
   const absolutePath = cwd + path;
 
   Deno.writeFileSync(cwd + path, encodedTemplate);
-  console.log(`Success! ${resourceName} resource has been created in ${absolutePath}`);
+  console.log(
+    `Success! ${resourceName} resource has been created in ${absolutePath}`,
+  );
 }
