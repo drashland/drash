@@ -1,5 +1,26 @@
 const cwd = Deno.realPathSync(".");
 
+/**
+ * Creates a map of { option: value }
+ *
+ * @param args - Deno.args
+ * @returns options
+ */
+function getOptionsMap(args: string[]): { [key: string]: string } {
+  const optionsMap = args.reduce((acc: any, arg: string) => {
+    const [option, value] = arg.split("=");
+    acc[option] = value;
+    return acc;
+  }, {})
+  return Object.keys(optionsMap).length ? optionsMap : null;
+}
+
+/**
+ * Resource template.
+ *
+ * @param resourceName - resouce name of class
+ * @returns resource template
+ */
 function getResourceTemplate(resourceName: string): string {
   return `class ${resourceName} extends Drash.Http.Resource {
   static paths = [];
@@ -33,15 +54,17 @@ function getResourceName(path: string): string {
 /**
  * Makes a resource file and writes to path.
  *
- * @param path - path to resource file.
+ * @param args - command args
  */
-export function makeResource(path: string): void {
+export function make(args: string[]): void {
+  const options = getOptionsMap(args);
+  const path = options["--resource"];
   const resourceName = getResourceName(path);
   const resourceTemplate = getResourceTemplate(resourceName);
 
   const encodedTemplate = new TextEncoder().encode(resourceTemplate);
   const absolutePath = cwd + path;
-  Deno.writeFileSync(cwd + path, encodedTemplate);
 
+  Deno.writeFileSync(cwd + path, encodedTemplate);
   console.log(`Success! ${resourceName} resource has been created in ${absolutePath}`);
 }
