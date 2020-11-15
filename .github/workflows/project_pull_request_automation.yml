@@ -1,12 +1,13 @@
-name: issue_project
+name: Project pull request automation
 on:
-    issues:
+    pull_request:
+        branches:
+            - master
         types:
             - opened
             - closed
             - reopened
-            - assigned
-            - unassigned
+            - review_requested
 jobs:
     manage-cards:
         runs-on: ubuntu-latest
@@ -15,7 +16,7 @@ jobs:
               uses: alex-page/github-project-automation-plus@v0.2.4
               with:
                   project: The Omnipresent Drash Land Project
-                  column: To Do
+                  column: In Progress Pull Requests
                   repo-token: ${{ secrets.CI_USER_PAT }}
             - if: github.event.action == 'closed'
               uses: alex-page/github-project-automation-plus@v0.2.4
@@ -27,17 +28,11 @@ jobs:
               uses: alex-page/github-project-automation-plus@v0.2.4
               with:
                   project: The Omnipresent Drash Land Project
-                  column: In Progress Issues
+                  column: In Progress Pull Requests
                   repo-token: ${{ secrets.CI_USER_PAT }}
-            - if: github.event.action == 'assigned'
+            - if: github.event.action == 'review_requested'
               uses: alex-page/github-project-automation-plus@v0.2.4
               with:
                   project: The Omnipresent Drash Land Project
-                  column: In Progress Issues
-                  repo-token: ${{ secrets.CI_USER_PAT }}
-            - if: github.event.action == 'unassigned'
-              uses: alex-page/github-project-automation-plus@v0.2.4
-              with:
-                  project: The Omnipresent Drash Land Project
-                  column: To Do
+                  column: Review In Progress
                   repo-token: ${{ secrets.CI_USER_PAT }}

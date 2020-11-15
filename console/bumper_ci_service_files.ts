@@ -22,7 +22,7 @@ export const preReleaseFiles = [
     replaceWith: `version = "v{{ thisModulesLatestVersion }}"`,
   },
   {
-    filename: "./create_app/deps.ts",
+    filename: "./console/create_app/deps.ts",
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `drash@v{{ thisModulesLatestVersion }}`,
   },
@@ -31,16 +31,6 @@ export const preReleaseFiles = [
 export const bumperFiles = [
   {
     filename: "./.github/workflows/master.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
-    filename: "./.github/workflows/bumper.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
-    filename: "./.github/workflows/pre_release.yml",
     replaceTheRegex: regexes.yml_deno,
     replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
   },
