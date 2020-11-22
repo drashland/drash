@@ -36,41 +36,8 @@
 - [License](#license)
 
 ## Quick Start
-```typescript
-// File: app.ts
 
-import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
-
-class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"];
-  public GET() {
-    this.response.body = "Hello World! deno + Drash is cool!";
-    return this.response;
-  }
-}
-
-const server = new Drash.Http.Server({
-  response_output: "text/html",
-  resources: [HomeResource]
-});
-
-server.run({
-  hostname: "localhost",
-  port: 1447
-});
-
-console.log("Server listening: http://localhost:1447");
-```
-
-```
-$ deno run --allow-net app.ts
-Server listening: http://localhost:1447
-```
-
-```
-$ curl localhost:1447
-Hello World! deno + Drash is cool!
-```
+Get started [here](https://drash.land/drash/#/#quickstart) by building a simple Drash HTTP server.
 
 ## Create Drash App Script
 

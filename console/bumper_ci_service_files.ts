@@ -12,11 +12,6 @@ export const preReleaseFiles = [
     replaceWith: `"version": "{{ thisModulesLatestVersion }}"`,
   },
   {
-    filename: "./README.md",
-    replaceTheRegex: regexes.import_export_statements,
-    replaceWith: `drash@v{{ thisModulesLatestVersion }}`,
-  },
-  {
     filename: "./mod.ts",
     replaceTheRegex: regexes.const_statements,
     replaceWith: `version = "v{{ thisModulesLatestVersion }}"`,
@@ -29,9 +24,5 @@ export const preReleaseFiles = [
 ];
 
 export const bumperFiles = [
-  {
-    filename: "./.github/workflows/master.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
+
 ];
