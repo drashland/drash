@@ -23,6 +23,4 @@ export const preReleaseFiles = [
   },
 ];
 
-export const bumperFiles = [
-
-];
+export const bumperFiles = [];
