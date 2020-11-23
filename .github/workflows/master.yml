@@ -13,16 +13,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.5.2"]
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno v${{ matrix.deno }}
-        uses: denolib/setup-deno@v2
-        with:
-          deno-version: ${{ matrix.deno }}
+      - name: Install Deno
+        uses: denolib/setup-deno@master
 
       - name: Dexter
         run: deno test --allow-env --allow-net dexter/tests/
@@ -36,19 +33,14 @@ jobs:
           deno test --allow-net --allow-env --config tsconfig.json
 
   linter:
-    strategy:
-      matrix:
-        deno: ["1.5.2"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno v${{ matrix.deno }}
-        uses: denolib/setup-deno@v2
-        with:
-          deno-version: ${{ matrix.deno }}
+      - name: Install Deno
+        uses: denolib/setup-deno@master
 
       - name: Formatter
         run: deno fmt --check
