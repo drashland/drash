@@ -7,7 +7,7 @@
 
 import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
-import {testMethods} from "./test_methods.ts";
+import { testMethods } from "./test_methods.ts";
 
 const branch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
 const githubOwner = Deno.env.get("GITHUB_ACTOR") ?? "drashland"; // possible it's the user and not drashland
@@ -30,4 +30,4 @@ try {
   // do nothing
 }
 
-testMethods("http", drashUrl)
+testMethods("http", drashUrl);

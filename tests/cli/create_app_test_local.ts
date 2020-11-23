@@ -1,3 +1,3 @@
-import {testMethods} from "./test_methods.ts";
+import { testMethods } from "./test_methods.ts";
 
-testMethods("local")
+testMethods("local");
