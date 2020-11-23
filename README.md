@@ -1,6 +1,9 @@
-# Drash
-<p>A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero dependencies.</p>
-<p>
+<p align="center">
+  <img height="200" src="https://drash.land/drash/assets/img/drash.svg" alt="Drash logo">
+  <h1 align="center">Drash</h1>
+</p>
+<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero dependencies.</p>
+<p align="center">
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
   </a>
@@ -17,9 +20,8 @@
     <img src="https://img.shields.io/badge/Tutorials-YouTube-red">
   </a>
 </p>
-<p>
-  <img align="right" height="200" src="https://drash.land/drash/assets/img/drash.svg" alt="Drash logo">
-</p>
+
+---
 
 ### Features
 
