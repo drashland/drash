@@ -1,9 +1,6 @@
-<p align="center">
-  <img height="200" src="https://drash.land/drash/assets/img/drash.svg" alt="Drash logo">
-  <h1 align="center">Drash</h1>
-</p>
-<p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero dependencies.</p>
-<p align="center">
+# Drash
+<p>A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero dependencies.</p>
+<p>
   <a href="https://github.com/drashland/deno-drash/releases">
     <img src="https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest">
   </a>
@@ -20,15 +17,25 @@
     <img src="https://img.shields.io/badge/Tutorials-YouTube-red">
   </a>
 </p>
+<p>
+  <img align="right" height="200" src="https://drash.land/drash/assets/img/drash.svg" alt="Drash logo">
+</p>
+
+### Features
+
+* Zero Dependencies
+* Extensively Documented
+* Tutorials
+* Lightweight
+* Content Negotiation
+* Routing
+* Middleware
+* Request Body Handling
+
+### Quick Start
+
+To build a simple Drash HTTP server, follow the quick start guide [here](https://drash.land/drash/#/#quickstart) or use the Drash Create App script [here](https://drash.land/drash/#/tutorials/cli/create-app).
 
 ---
 
-## Table of Contents
-- [Quick Start](#quick-start)
-- [Documentation](https://drash.land/drash)
-- [Contributing Guidelines](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md)
-- [License](./LICENSE)
-
-## Quick Start
-
-To build a simple Drash HTTP server, follow the quick start guide [here](https://drash.land/drash/#/#quickstart) or use the Drash Create App script [here](https://drash.land/drash/#/tutorials/cli/create-app).
+Want to contribute? Follow the Contributing Guidelines [here](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md). All code is released under the [MIT License](./LICENSE).
