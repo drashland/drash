@@ -10,7 +10,7 @@ const file = "./tmp/file_logger_test.log";
 Rhum.testPlan("core_loggers/file_logger.ts", () => {
   Rhum.testSuite("FileLogger", () => {
     Rhum.testCase(`writes file: ${file}`, () => {
-      Deno.mkdirSync("tmp")
+      Deno.mkdirSync("tmp");
       let expected = "some_date | hello | tiger | This is cool!\n";
       let logger = new Drash.CoreLoggers.FileLogger({
         enabled: true,
@@ -35,7 +35,7 @@ Rhum.testPlan("core_loggers/file_logger.ts", () => {
 
   Rhum.testSuite("write()", () => {
     Rhum.testCase("logs correctly", () => {
-      Deno.mkdirSync("tmp")
+      Deno.mkdirSync("tmp");
       let logger = new Drash.CoreLoggers.ConsoleLogger({
         test: true,
         enabled: true,

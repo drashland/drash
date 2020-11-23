@@ -94,9 +94,12 @@ export function testMethods(suffix: "local" | "http", url?: string) {
         const stdout = new TextDecoder("utf-8").decode(await p.output());
         const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
         Rhum.asserts.assertEquals(
-          stderr.indexOf(red(
-            "Too few options were given. Use the --help option for more information.",
-          ) + "\n") > -1, true
+          stderr.indexOf(
+            red(
+              "Too few options were given. Use the --help option for more information.",
+            ) + "\n",
+          ) > -1,
+          true,
         );
         Rhum.asserts.assertEquals(stdout, "");
         Rhum.asserts.assertEquals(status.code, 1);
