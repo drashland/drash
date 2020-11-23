@@ -60,16 +60,16 @@ jobs:
 
       - name: Create App With Vue Builds
         run: |
-          mkdir tmp2
-          cd tmp2
+          mkdir tmp3
+          cd tmp3
           deno run -A ../create_app.ts --web-app --with-vue
           npm run buildVue
           rm -rf tmp
 
       - name: Create App With React Builds
         run: |
-          mkdir tmp3
-          cd tmp3
+          mkdir tmp4
+          cd tmp4
           deno run -A ../create_app.ts --web-app --with-react
           npm run buildReact
 
