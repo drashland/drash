@@ -25,8 +25,7 @@
 
 ## Table of Contents
 - [Quick Start](#quick-start)
-- [Full Documentation](https://drash.land/drash)
-- [Drash Approved Middleware](https://github.com/drashland/deno-drash-middleware)
+- [Documentation](https://drash.land/drash)
 - [Contributing Guidelines](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md)
 - [License](./LICENSE)
 
