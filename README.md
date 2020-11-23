@@ -25,8 +25,8 @@
 
 ### Features
 
-* [Extensively Documented](https://drash.land/drash)
 * Zero Dependencies
+* Extensively Documented
 * Tutorials
 * Lightweight
 * Content Negotiation
@@ -34,9 +34,11 @@
 * Middleware
 * Request Body Handling
 
-### Quick Start
+### Getting Started
 
 To build a simple Drash HTTP server, follow the quick start guide [here](https://drash.land/drash/#/#quickstart) or use the Drash Create App script [here](https://drash.land/drash/#/tutorials/cli/create-app).
+
+Alternatively, you can navigate through the [full documentation](https://drash.land/drash) and check out the tutorials on building an API, a single-page application (SPA), and more.
 
 ---
 
