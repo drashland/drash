@@ -5,8 +5,6 @@
  * This is only for some tests
  */
 
-// todo add tests that run the app and npm build scripts
-
 import { Rhum } from "../deps.ts";
 import { red } from "../../deps.ts";
 
@@ -42,8 +40,6 @@ function runCreateAppScript(
       command.push(arg);
     });
   }
-  console.log("COMMAND FOR RUN PROCESS:");
-  console.log(command.join(" "));
   const p = Deno.run({
     cmd: command,
     stdout: "piped",
@@ -182,7 +178,6 @@ export function testMethods(suffix: "local" | "http", url?: string) {
           );
           Rhum.asserts.assertEquals(status.code, 0);
           Rhum.asserts.assert(status.success);
-          // TODO :: Assert stdout and stderr
         },
       );
 
@@ -305,7 +300,6 @@ export function testMethods(suffix: "local" | "http", url?: string) {
           Rhum.asserts.assertEquals(stderr, "");
           Rhum.asserts.assertEquals(status.code, 0);
           Rhum.asserts.assert(status.success);
-          // TODO :: ASSERT STDOUT
         },
       );
 
@@ -461,7 +455,6 @@ export function testMethods(suffix: "local" | "http", url?: string) {
         Rhum.asserts.assertEquals(stderr, "");
         Rhum.asserts.assertEquals(status.code, 0);
         Rhum.asserts.assert(status.success);
-        // TODO :: ASSERT STDOUT
       });
 
       Rhum.testCase("correctly creates app.ts", async () => {
@@ -611,7 +604,6 @@ export function testMethods(suffix: "local" | "http", url?: string) {
         Rhum.asserts.assertEquals(stderr, "");
         Rhum.asserts.assertEquals(status.code, 0);
         Rhum.asserts.assert(status.success);
-        // TODO ASSERT STDOUT
       });
 
       Rhum.testCase("correctly creates app.ts", async () => {
