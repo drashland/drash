@@ -10,6 +10,7 @@ const file = "./tmp/file_logger_test.log";
 Rhum.testPlan("core_loggers/file_logger.ts", () => {
   Rhum.testSuite("FileLogger", () => {
     Rhum.testCase(`writes file: ${file}`, () => {
+      Deno.mkdirSync("tmp")
       let expected = "some_date | hello | tiger | This is cool!\n";
       let logger = new Drash.CoreLoggers.FileLogger({
         enabled: true,
@@ -28,12 +29,13 @@ Rhum.testPlan("core_loggers/file_logger.ts", () => {
       const decoder = new TextDecoder();
       let actual = decoder.decode(Deno.readFileSync(file));
       Rhum.asserts.assertEquals(actual, expected);
-      Deno.removeSync(file, { recursive: false });
+      Deno.removeSync("tmp", { recursive: true });
     });
   });
 
   Rhum.testSuite("write()", () => {
     Rhum.testCase("logs correctly", () => {
+      Deno.mkdirSync("tmp")
       let logger = new Drash.CoreLoggers.ConsoleLogger({
         test: true,
         enabled: true,
@@ -47,6 +49,7 @@ Rhum.testPlan("core_loggers/file_logger.ts", () => {
         actual,
         "This is cool!",
       );
+      Deno.removeSync("tmp", { recursive: true });
     });
   });
 });
