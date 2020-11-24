@@ -1,2 +1,2 @@
 export { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
-export { assertEquals } from "https://deno.land/std@0.77.0/testing/asserts.ts";
+export { assertEquals } from "https://deno.land/std@0.79.0/testing/asserts.ts";
