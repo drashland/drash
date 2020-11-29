@@ -42,6 +42,38 @@ jobs:
         run: |
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
+      - name: Create App API Server Runs
+        run: |
+          mkdir tmp1
+          cd tmp1
+          deno run -A ../create_app.ts --api
+          echo "server.close()" >> app.ts
+          deno run -A app.ts
+
+      - name: Create App Web App Runs
+        run: |
+          mkdir tmp2
+          cd tmp2
+          deno run -A ../create_app.ts --web-app
+          echo "server.close()" >> app.ts
+          deno run -A app.ts
+
+      - name: Create App With Vue Builds
+        run: |
+          mkdir tmp3
+          cd tmp3
+          deno run -A ../create_app.ts --web-app --with-vue
+          npm i
+          npm run buildVue
+
+      - name: Create App With React Builds
+        run: |
+          mkdir tmp4
+          cd tmp4
+          deno run -A ../create_app.ts --web-app --with-react
+          npm i
+          npm run buildReact
+
   benchmarks:
     strategy:
       matrix:
