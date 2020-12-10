@@ -52,7 +52,7 @@ export namespace Drash {
   /**
    * Drash version.
    */
-  export const version = "v1.3.0";
+  export const version = "v1.3.1";
 
   export namespace Compilers {
     /**
