@@ -46,6 +46,7 @@ jobs:
         run: |
           mkdir tmp1
           cd tmp1
+          echo "export { Drash } from '../mod.ts'" > ../console/create_app/deps.ts # so the create app can target the local version instead of a versioned one
           deno run -A ../create_app.ts --api
           echo "server.close()" >> app.ts
           deno run -A app.ts
@@ -54,6 +55,7 @@ jobs:
         run: |
           mkdir tmp2
           cd tmp2
+          echo "export { Drash } from '../mod.ts'" > ../console/create_app/deps.ts # so the create app can target the local version instead of a versioned one
           deno run -A ../create_app.ts --web-app
           echo "server.close()" >> app.ts
           deno run -A app.ts

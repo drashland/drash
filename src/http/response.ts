@@ -138,7 +138,7 @@ export class Response {
 
       if (this.template_engine) {
         const engine = new Drash.Compilers.TemplateEngine(this.views_path);
-        return engine.render(args[0], data);
+        return engine.render(args[0] as string, data);
       }
 
       const filename = (this.views_path += args[0]);
