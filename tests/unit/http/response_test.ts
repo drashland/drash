@@ -14,7 +14,7 @@ Rhum.testPlan("http/response_test.ts", () => {
           },
         });
         const response = new Drash.Http.Response(request, {
-          default_response_content_type: "application/json",
+          default_content_type: "application/json",
         });
         Rhum.asserts.assertEquals(
           response.headers.get("Content-Type"),

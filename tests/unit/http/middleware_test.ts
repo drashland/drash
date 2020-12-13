@@ -28,6 +28,9 @@ Rhum.testPlan("http/middleware_test.ts", () => {
             CompileTimeMiddleware(),
           ],
         },
+        resources: [
+          ResourceWithCompileTimeMiddleware,
+        ],
       });
       const request = members.mockRequest("/hello");
       const response = await server.handleHttpRequest(request);
@@ -241,6 +244,14 @@ class ResourceWithMiddleware extends Drash.Http.Resource {
 
 class ResourceWithMiddlewareHooked extends Drash.Http.Resource {
   static paths = ["/"];
+  public GET() {
+    this.response.body = "got";
+    return this.response;
+  }
+}
+
+class ResourceWithCompileTimeMiddleware extends Drash.Http.Resource {
+  static paths = ["/hello"];
   public GET() {
     this.response.body = "got";
     return this.response;
