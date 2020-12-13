@@ -1,7 +1,5 @@
 import { Rhum } from "../../deps.ts";
-import {
-  preReleaseFiles,
-} from "../../../console/bumper_ci_service_files.ts";
+import { preReleaseFiles } from "../../../console/bumper_ci_service_files.ts";
 import { BumperService } from "../../../deps.ts";
 
 // Not for pre-release
