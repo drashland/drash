@@ -1,4 +1,4 @@
-name: pullrequest_project
+name: Project pull request automation
 on:
     pull_request:
         branches:

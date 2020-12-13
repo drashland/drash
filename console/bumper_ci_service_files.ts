@@ -91,21 +91,6 @@ export const bumpVersionFiles = [
 
 export const bumpDependencyFiles = [
   {
-    filename: "./.github/workflows/master.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
-    filename: "./.github/workflows/bumper.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
-    filename: "./.github/workflows/pre_release.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
     filename: "./dexter/README.md",
     replaceTheRegex: regexes.drash_import_statements,
     replaceWith: `drash@v${latestDrashVersion}`,
