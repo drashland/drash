@@ -13,16 +13,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.5.2"]
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno v${{ matrix.deno }}
-        uses: denolib/setup-deno@v2
-        with:
-          deno-version: ${{ matrix.deno }}
+      - name: Install Deno
+        uses: denolib/setup-deno@master
 
       - name: Unit
         run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read --allow-env
@@ -45,21 +42,52 @@ jobs:
         run: |
           deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
 
+      - name: Create App API Server Runs
+        run: |
+          mkdir tmp1
+          cd tmp1
+          echo "export { Drash } from '../mod.ts'" > ../console/create_app/deps.ts # so the create app can target the local version instead of a versioned one
+          deno run -A ../create_app.ts --api
+          echo "server.close()" >> app.ts
+          deno run -A app.ts
+
+      - name: Create App Web App Runs
+        run: |
+          mkdir tmp2
+          cd tmp2
+          echo "export { Drash } from '../mod.ts'" > ../console/create_app/deps.ts # so the create app can target the local version instead of a versioned one
+          deno run -A ../create_app.ts --web-app
+          echo "server.close()" >> app.ts
+          deno run -A app.ts
+
+      - name: Create App With Vue Builds
+        run: |
+          mkdir tmp3
+          cd tmp3
+          deno run -A ../create_app.ts --web-app --with-vue
+          npm i
+          npm run buildVue
+
+      - name: Create App With React Builds
+        run: |
+          mkdir tmp4
+          cd tmp4
+          deno run -A ../create_app.ts --web-app --with-react
+          npm i
+          npm run buildReact
+
   benchmarks:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        deno: ["1.5.2"]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno v${{ matrix.deno }}
-        uses: denolib/setup-deno@v2
-        with:
-          deno-version: ${{ matrix.deno }}
+      - name: Install Deno
+        uses: denolib/setup-deno@master
 
       - name: Setup Node 13
         uses: actions/setup-node@v1

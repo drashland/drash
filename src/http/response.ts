@@ -123,7 +123,7 @@ export class Response {
         const engine = new Drash.Compilers.TemplateEngine(
           this.options.views_path,
         );
-        return engine.render(args[0], data);
+        return engine.render(args[0] as string, data);
       }
 
       const filename = (this.options.views_path += args[0]);

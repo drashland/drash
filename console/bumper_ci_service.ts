@@ -1,4 +1,4 @@
-import { BumperService } from "https://raw.githubusercontent.com/drashland/services/master/ci/bumper_service.ts";
+import { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.0.1/ci/bumper_service.ts";
 import { bumperFiles, preReleaseFiles } from "./bumper_ci_service_files.ts";
 
 const b = new BumperService("drash", Deno.args);
