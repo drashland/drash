@@ -27,21 +27,21 @@ Rhum.testPlan("bumper_ci_service_test.ts", () => {
     () => {
       Rhum.testCase("bumps egg.json correctly", async () => {
         let file = preReleaseFiles[0];
-        file.filename = "tests/data/pattern_types.txt";
+        file.filename = "./tests/data/pattern_types.txt";
         const bumped = await c.bump([file], false);
         Rhum.asserts.assertEquals(bumped[0], data_eggJson);
       });
 
       Rhum.testCase("bumps drash import statements correctly", async () => {
-        let file = preReleaseFiles[1];
-        file.filename = "tests/data/pattern_types.txt";
+        let file = preReleaseFiles[2];
+        file.filename = "./tests/data/pattern_types.txt";
         const bumped = await c.bump([file], false);
         Rhum.asserts.assertEquals(bumped[0], data_drashImports);
       });
 
       Rhum.testCase("bumps const statements correctly", async () => {
-        let file = preReleaseFiles[2];
-        file.filename = "tests/data/pattern_types.txt";
+        let file = preReleaseFiles[1];
+        file.filename = "./tests/data/pattern_types.txt";
         const bumped = await c.bump([file], false);
         Rhum.asserts.assertEquals(bumped[0], data_constStatements);
       });
