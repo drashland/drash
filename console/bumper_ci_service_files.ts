@@ -1,3 +1,9 @@
+export interface IFile {
+  filename: string;
+  replaceTheRegex: RegExp;
+  replaceWith: string;
+}
+
 export const regexes = {
   const_statements: /version = ".+"/g,
   egg_json: /"version": ".+"/,
@@ -5,7 +11,7 @@ export const regexes = {
   yml_deno: /deno: \[".+"\]/g,
 };
 
-export const preReleaseFiles = [
+export const preReleaseFiles: IFile[] = [
   {
     filename: "./egg.json",
     replaceTheRegex: regexes.egg_json,
@@ -22,5 +28,3 @@ export const preReleaseFiles = [
     replaceWith: `drash@v{{ thisModulesLatestVersion }}`,
   },
 ];
-
-export const bumperFiles = [];
