@@ -1,8 +1,5 @@
 import { Rhum } from "../../deps.ts";
-import {
-  bumperFiles,
-  preReleaseFiles,
-} from "../../../console/bumper_ci_service_files.ts";
+import { preReleaseFiles } from "../../../console/bumper_ci_service_files.ts";
 import { BumperService } from "../../../deps.ts";
 
 // Not for pre-release
@@ -26,29 +23,22 @@ Rhum.testPlan("bumper_ci_service_test.ts", () => {
   Rhum.testSuite(
     "bumper_ci_service.ts",
     () => {
-      Rhum.testCase("bumps deno versions in yml files correctly", async () => {
-        const file = bumperFiles[2];
-        file.filename = "./tests/data/pattern_types.txt";
-        const bumped = await b.bump([file], false);
-        Rhum.asserts.assertEquals(bumped[0], data_denoVersionsYml);
-      });
-
       Rhum.testCase("bumps egg.json correctly", async () => {
-        const file = preReleaseFiles[0];
+        let file = preReleaseFiles[0];
         file.filename = "./tests/data/pattern_types.txt";
         const bumped = await c.bump([file], false);
         Rhum.asserts.assertEquals(bumped[0], data_eggJson);
       });
 
       Rhum.testCase("bumps drash import statements correctly", async () => {
-        const file = preReleaseFiles[1];
+        let file = preReleaseFiles[2];
         file.filename = "./tests/data/pattern_types.txt";
         const bumped = await c.bump([file], false);
         Rhum.asserts.assertEquals(bumped[0], data_drashImports);
       });
 
       Rhum.testCase("bumps const statements correctly", async () => {
-        const file = preReleaseFiles[2];
+        let file = preReleaseFiles[1];
         file.filename = "./tests/data/pattern_types.txt";
         const bumped = await c.bump([file], false);
         Rhum.asserts.assertEquals(bumped[0], data_constStatements);
