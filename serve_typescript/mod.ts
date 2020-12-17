@@ -47,7 +47,9 @@ export function ServeTypeScript(options: IOptions) {
           if (filename && start) {
             const cwd = Deno.cwd();
             console.log('cwd: ' + cwd)
-            const cwdSplit = cwd.split("/");
+            const separator = Deno.build.os === "windows" ? "\\" : "/"
+            console.log('separator: ' + separator)
+            const cwdSplit = cwd.split(separator);
             console.log('cwd split: ' + cwdSplit)
             const rootDir = cwdSplit[cwdSplit.length - 1];
             console.log('root dir: ' + rootDir)
