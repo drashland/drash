@@ -32,6 +32,15 @@ jobs:
           cd csrf/tests
           deno test --allow-net --allow-env --config tsconfig.json
 
+      - name: Serve TypeScript
+        run: |
+          deno test -A --unstable serve_typescript/tests/mod_test.ts
+
+      - name: Tengine
+        run: |
+          cd tengine/tests
+          deno test -A
+
   linter:
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest

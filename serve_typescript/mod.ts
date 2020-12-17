@@ -32,30 +32,35 @@ export function ServeTypeScript(options: IOptions) {
       const file = options.files[index];
 
       try {
-        const [diagnostics, emitMap] = await Deno.compile(
+        const [diagnostics, outputString]: [undefined | Deno.Diagnostic[], string] = await Deno.bundle(
           file.source,
         );
-        for (const fullFilepath in emitMap) {
-          // Exclude source maps during compilation of the `compiledFiles`
-          // variable. We don't care about source maps because this middleware
-          // sends virtual files that aren't associated with a source map. If a
-          // client request a source map through this middleware, it wouldn't
-          // work becauset the file does not actually exist on the filesystem.
-          if (fullFilepath.includes(".map")) {
-            continue;
-          }
 
-          // Store the compiled out (excluding the source map link) in the
-          // `compiledFiles` variable so that we can check it later for files
-          // when clients make requests.
-          compiledFiles.set(
-            file.target,
-            emitMap[fullFilepath].replace(/\/\/\# sourceMapping.+/, ""), // contents
-          );
+        // Check if there were errors when bundling the clients code
+        if (diagnostics && diagnostics.length) {
+          const diagnostic = diagnostics[0] // we only really care about throwing the first error
+          const filename = diagnostic.fileName
+          const start = diagnostic.start
+          if (filename && start) {
+            const cwd = Deno.cwd()
+            const cwdSplit =  cwd.split("/")
+            const rootDir = cwdSplit[cwdSplit.length - 1]
+            const pathToBrokenFile = "." + filename.split(rootDir)[1] // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
+            throw new Error(`User error. ${pathToBrokenFile}:${start.line}:${start.character} - ${diagnostic.messageText}`)
+          } else {
+            throw new Error(`User error. ${diagnostic.messageText}`)
+          }
         }
+
+        // Store the compiled out in the
+        // `compiledFiles` variable so that we can check it later for files
+        // when clients make requests.
+        compiledFiles.set(
+            file.target,
+            outputString.replace(/\/\/\# sourceMapping.+/, ""), // contents
+        )
       } catch (error) {
-        console.log(error);
-        continue;
+        throw new Error(error.message)
       }
     }
   }
