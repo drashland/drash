@@ -34,7 +34,7 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
         }
         Rhum.asserts.assertEquals(
           errMsg,
-          "User error. ./serve_typescript/tests/data/invalid_ts.ts:0:28 - Cannot find name 's'.",
+          "User error. ./serve_typescript/tests/data/invalid_ts.ts:0:27 - Cannot find name 's'.",
         );
       },
     );
