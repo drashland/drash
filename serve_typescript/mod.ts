@@ -51,7 +51,9 @@ export function ServeTypeScript(options: IOptions) {
             console.log('cwd: ' + cwd)
             const rootDir = cwdSplit[cwdSplit.length - 1];
             console.log('root dir: ' + rootDir)
-            const pathToBrokenFile = "." + filename.split(rootDir)[1]; // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
+            const filenameSplit = filename.split(rootDir)
+            console.log('filename split: ' + filenameSplit)
+            const pathToBrokenFile = "." + filenameSplit[filenameSplit.length - 1]; // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
             console.log('path to broken file: ' + pathToBrokenFile)
             throw new Error(
               `User error. ${pathToBrokenFile}:${start.line}:${start.character} - ${diagnostic.messageText}`,
