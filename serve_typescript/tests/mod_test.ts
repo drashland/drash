@@ -11,30 +11,33 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
         });
       });
     });
-    Rhum.testCase("Throws an error when the users code is invalid when trying to compile", async () => {
-      const drashRequest = new Drash.Http.Request(
+    Rhum.testCase(
+      "Throws an error when the users code is invalid when trying to compile",
+      async () => {
+        const drashRequest = new Drash.Http.Request(
           mockRequest("/assets/compiled.ts"),
-      );
-      const drashResponse = new Drash.Http.Response(drashRequest);
-      const serveTs = ServeTypeScript({
-        files: [
-          {
-            source: "./serve_typescript/tests/data/invalid_ts.ts",
-            target: "/assets/compiled.ts",
-          },
-        ],
-      });
-      let errMsg = "";
-      try {
-        await serveTs.compile();
-      } catch (err) {
-        errMsg = err.message
-      }
-      Rhum.asserts.assertEquals(
+        );
+        const drashResponse = new Drash.Http.Response(drashRequest);
+        const serveTs = ServeTypeScript({
+          files: [
+            {
+              source: "./serve_typescript/tests/data/invalid_ts.ts",
+              target: "/assets/compiled.ts",
+            },
+          ],
+        });
+        let errMsg = "";
+        try {
+          await serveTs.compile();
+        } catch (err) {
+          errMsg = err.message;
+        }
+        Rhum.asserts.assertEquals(
           errMsg,
           "User error. ./serve_typescript/tests/data/invalid_ts.ts:0:28 - Cannot find name 's'.",
-      );
-    })
+        );
+      },
+    );
     Rhum.testCase("Compiles TypeScript to JavaScript", async () => {
       const drashRequest = new Drash.Http.Request(
         mockRequest("/assets/compiled.ts"),
@@ -56,7 +59,7 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
       Rhum.asserts.assertEquals(
         drashResponse.body,
         "export function greet(name) {\n" +
-          "    return \"Hello, \" + name;\n" +
+          '    return "Hello, " + name;\n' +
           "}\n" +
           "class Employee {\n" +
           "    constructor(props){\n" +

@@ -32,23 +32,28 @@ export function ServeTypeScript(options: IOptions) {
       const file = options.files[index];
 
       try {
-        const [diagnostics, outputString]: [undefined | Deno.Diagnostic[], string] = await Deno.bundle(
+        const [diagnostics, outputString]: [
+          undefined | Deno.Diagnostic[],
+          string,
+        ] = await Deno.bundle(
           file.source,
         );
 
         // Check if there were errors when bundling the clients code
         if (diagnostics && diagnostics.length) {
-          const diagnostic = diagnostics[0] // we only really care about throwing the first error
-          const filename = diagnostic.fileName
-          const start = diagnostic.start
+          const diagnostic = diagnostics[0]; // we only really care about throwing the first error
+          const filename = diagnostic.fileName;
+          const start = diagnostic.start;
           if (filename && start) {
-            const cwd = Deno.cwd()
-            const cwdSplit =  cwd.split("/")
-            const rootDir = cwdSplit[cwdSplit.length - 1]
-            const pathToBrokenFile = "." + filename.split(rootDir)[1] // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
-            throw new Error(`User error. ${pathToBrokenFile}:${start.line}:${start.character} - ${diagnostic.messageText}`)
+            const cwd = Deno.cwd();
+            const cwdSplit = cwd.split("/");
+            const rootDir = cwdSplit[cwdSplit.length - 1];
+            const pathToBrokenFile = "." + filename.split(rootDir)[1]; // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
+            throw new Error(
+              `User error. ${pathToBrokenFile}:${start.line}:${start.character} - ${diagnostic.messageText}`,
+            );
           } else {
-            throw new Error(`User error. ${diagnostic.messageText}`)
+            throw new Error(`User error. ${diagnostic.messageText}`);
           }
         }
 
@@ -56,11 +61,11 @@ export function ServeTypeScript(options: IOptions) {
         // `compiledFiles` variable so that we can check it later for files
         // when clients make requests.
         compiledFiles.set(
-            file.target,
-            outputString.replace(/\/\/\# sourceMapping.+/, ""), // contents
-        )
+          file.target,
+          outputString.replace(/\/\/\# sourceMapping.+/, ""), // contents
+        );
       } catch (error) {
-        throw new Error(error.message)
+        throw new Error(error.message);
       }
     }
   }

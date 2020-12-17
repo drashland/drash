@@ -3,23 +3,22 @@ export function greet(name: string): string {
 }
 
 interface Details {
-  company_name: string,
-  name: string
+  company_name: string;
+  name: string;
 }
 
 class Employee {
-  public company_name: string
-  public name: string
+  public company_name: string;
+  public name: string;
 
   constructor(props: Details) {
-    this.company_name = props.company_name
-    this.name = props.name
+    this.company_name = props.company_name;
+    this.name = props.name;
   }
-
 }
 
 export class User extends Employee {
   constructor(details: Details) {
-    super(details)
+    super(details);
   }
 }
