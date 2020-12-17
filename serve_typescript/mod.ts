@@ -48,8 +48,9 @@ export function ServeTypeScript(options: IOptions) {
             const cwd = Deno.cwd();
             const cwdSplit = cwd.split("/");
             const rootDir = cwdSplit[cwdSplit.length - 1];
-            const filenameSplit = filename.split(rootDir)
-            const pathToBrokenFile = "." + filenameSplit[filenameSplit.length - 1]; // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
+            const filenameSplit = filename.split(rootDir);
+            const pathToBrokenFile = "." +
+              filenameSplit[filenameSplit.length - 1]; // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
             throw new Error(
               `User error. ${pathToBrokenFile}:${start.line}:${start.character} - ${diagnostic.messageText}`,
             );
