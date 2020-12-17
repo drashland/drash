@@ -76,10 +76,10 @@ export function ServeTypeScript(options: IOptions) {
    * @param request - The request object.
    * @param response - The response object.
    */
-  async function run(
+  function run(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
-  ): Promise<void> {
+  ): void {
     if (!request.url.includes(".ts")) {
       return;
     }

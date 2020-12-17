@@ -24,7 +24,9 @@ export function Dexter(
   const defaultConfigs = {
     enabled: true,
     level: "info",
+    // deno-lint-ignore camelcase
     tag_string: "{datetime} | {level} |",
+    // deno-lint-ignore camelcase
     tag_string_fns: {
       datetime() {
         return new Date().toISOString().replace("T", " ").split(".")[0];

@@ -10,8 +10,8 @@ class Resource extends Drash.Http.Resource {
   }
 }
 
-// deno-lint-ignore no-explicit-any
 async function runServer(
+  // deno-lint-ignore no-explicit-any
   paladin: any, // eg `const paladin = new Paladin()`, imported from paladin/mod.ts
   port: number,
 ): Promise<Drash.Http.Server> {

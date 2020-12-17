@@ -4,7 +4,7 @@ import { ServeTypeScript } from "../mod.ts";
 
 Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
   Rhum.testSuite("ServeTypeScript", () => {
-    Rhum.testCase("requires files", async () => {
+    Rhum.testCase("requires files", () => {
       Rhum.asserts.assertThrows(() => {
         ServeTypeScript({
           files: [],
