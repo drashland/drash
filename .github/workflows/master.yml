@@ -36,10 +36,9 @@ jobs:
         run: |
           deno test -A --unstable serve_typescript/tests/mod_test.ts
 
-      - name: Tengine
-        run: |
-          cd tengine/tests
-          deno test -A
+#      - name: Tengine
+#        run: |
+#          deno test -A tengine/tests/mod_test.ts
 
   linter:
     # Only one OS is required since fmt is cross platform
