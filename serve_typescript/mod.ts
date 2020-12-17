@@ -46,7 +46,7 @@ export function ServeTypeScript(options: IOptions) {
           const start = diagnostic.start;
           if (filename && start) {
             const cwd = Deno.cwd();
-            const separator = Deno.build.os === "windows" ? "\\" : "/"
+            const separator = Deno.build.os === "windows" ? "\\" : "/";
             const cwdSplit = cwd.split(separator);
             const rootDir = cwdSplit[cwdSplit.length - 1];
             const filenameSplit = filename.split(rootDir);
