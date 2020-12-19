@@ -32,6 +32,9 @@ jobs:
           cd csrf/tests
           deno test --allow-net --allow-env --config tsconfig.json
 
+      - name: Cors
+        run: deno test -A cors/tests
+
   linter:
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
