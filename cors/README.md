@@ -3,8 +3,8 @@
 Cors is a [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) HTTP-based middleware inspired by [expressjs/cors](https://expressjs.com/en/resources/middleware/cors.html). It can be simply placed as a middleware on your server and you're all set!
 
 ```ts
-import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
-import { Cors } from "https://deno.land/x/drash-middleware@v0.6.0/cors/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.3.1/mod.ts";
+import { Cors } from "https://deno.land/x/drash-middleware@v0.6.1/cors/mod.ts";
 
 const server = new Drash.Http.Server({
   middleware: {
