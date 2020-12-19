@@ -81,7 +81,6 @@ export function testMethods(
   const createAppLocation = baseUrl + "/create_app.ts";
 
   Rhum.testPlan("create_app_test_" + suffix + ".ts / url: " + baseUrl, () => {
-
     // console.log(options); // uncomment this for debugging purposes
 
     let boilerPlateFile: string;
