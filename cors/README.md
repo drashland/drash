@@ -6,7 +6,6 @@ Cors is a [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) HTTP-ba
 
 * [Usage](#usage)
 * [Configuration](#configuration)
-* [Tutorial: Enabling CORS](#tutorial-enabling-cors)
 
 ## Usage
 
@@ -25,45 +24,62 @@ const server = new Drash.Http.Server({
 
 ## Configuration
 
-You can use it as is without passing any options (using the default options the middleware will set), or you can configure it as explained below. Passing no options will allow CORS for any requests to your server from any origin.
-
-`Cors` can be configured by passing in an object, for example: `Cors({ ... })`. Below are supported options:
-
-### `origin`
-
-The `origin` property configures the `Access-Control-Allow-Origin` header. This option tells the middleware what origins to allow requests from. For example, if the value is `"https://google.com"`, then the middleware will not allow requests from `"https://stackoverflow.com"`.
-
-The `origin` can be of type:
-  - `boolean` - set `origin` to `true` to reflect the [request origin](http://tools.ietf.org/html/draft-abarth-origin-09), or set it to `false` to disable CORS.
-  - `string` - set `origin` to a specific origin. For example if you set it to `"http://example.com"` only requests from "http://example.com" will be allowed.
-  - `RegExp` - set `origin` to a regular expression pattern which will be used to test the request origin. If it's a match, the request origin will be reflected. For example the pattern `/example\.com$/` will reflect any request that is coming from an origin ending with "example.com".
-  - `array` - set `origin` to an array of valid origins. Each origin can be a `string` or a `RegExp`. For example `["http://example1.com", /\.example2\.com$/]` will accept any request from "http://example1.com" or from a subdomain of "example2.com".
-  - `Function` - set `origin` to a function implementing some custom logic. The function takes the request origin as the first parameter and a callback as a second (which expects the signature `err [Error | null], allow [bool]`), *async-await* and promises are supported as well.
-
-### `methods`
-
-Configures the **Access-Control-Allow-Methods** CORS header. Expects a comma-delimited string (ex: `"GET,PUT,POST"`) or an array (ex: `['GET', 'PUT', 'POST']`).
+You can use `Cors` without passing in any options. If you do not pass in any options, then `Cors` will set its own default settings. Also, you should note that not passing in any options will enable CORS for all requests from any origin.
 
 ### `allowedHeaders`
 
-Configures the **Access-Control-Allow-Headers** CORS header. Expects a comma-delimited string (ex: `"Content-Type,Authorization"`) or an array (ex: `['Content-Type', 'Authorization']`). If not specified, defaults to reflecting the headers specified in the request's **Access-Control-Request-Headers** header.
+This config is optional. This config manages the [`Access-Control-Allow-Headers` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers).
 
-### `exposedHeaders`
+This config expects a `string` or `string[]` (e.g., `"Content-Type,Authorization"` or `["Content-Type", "Authorization"]`).
 
-Configures the **Access-Control-Expose-Headers** CORS header. Expects a comma-delimited string (ex: `'Content-Range,X-Content-Range'`) or an array (ex: `['Content-Range', 'X-Content-Range']`). If not specified, no custom headers are exposed.
+If this config is not specified, then it defaults to reflecting the values specified in the request's `Access-Control-Request-Headers` header.
 
 ### `credentials`
 
-Configures the **Access-Control-Allow-Credentials** CORS header. Set to `true` to pass the header, otherwise it is omitted.
+This config is optional. This config manages the [`Access-Control-Allow-Credentials` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials).
+
+Set this config to `true` to send the header. Otherwise, it is omitted from the response.
+
+### `exposedHeaders`
+
+This config is optional. This config manages the [`Access-Control-Expose-Headers` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers).
+
+This config expects a `string` or `string[]` (e.g., `"Content-Range,X-Content-Range"` or `["Content-Range", "X-Content-Range"]`).
+
+If this config is not specified, then no custom headers are exposed.
+
+### `origin`
+
+This config is optional. This config manages the [`Access-Control-Allow-Origin` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin). This config tells `Cors` what origins to allow requests from. For example, if the value is `"https://google.com"`, then `Cors` will not allow requests from `"https://stackoverflow.com"`.
+
+The `origin` config can be of the following types:
+  * `RegExp`
+      * Set `origin` to a regular expression to allow requests only from origins matching the regular expression. For example, the pattern `/example\.com$/` will match and allow any request that is coming from an origin ending with `example.com`.
+  * `array`
+      * Set `origin` to an array of valid origins. Each origin can be a `string` or a `RegExp`. For example, `["http://example1.com", /\.example2\.com$/]` will allow any request from `http://example1.com` and any request from a subdomain of `example2.com`.
+  * `boolean`
+      * Set `origin` to `true` to reflect the [request origin](http://tools.ietf.org/html/draft-abarth-origin-09), or set it to `false` to disable CORS.
+  * `string`
+      * Set `origin` to a single, specific origin. For example, set it to `"http://example.com"` to allow requests only from that origin.
+
+### `methods`
+
+This config is optional. This config manages the (`Access-Control-Allow-Methods` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods).
+
+This config expects a `string` or `string[]` (e.g., `"GET,PUT,POST"` or `["GET", "PUT", "POST"]`).
 
 ### `maxAge`
 
-Configures the **Access-Control-Max-Age** CORS header. Set to an integer to pass the header, otherwise it is omitted.
+This config is optional. This config manages the [`Access-Control-Max-Age` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age).
+
+Set this config to an integer to send the header. Otherwise, it is omitted from the response.
 
 ### `optionsSuccessStatus`
 
-Provides a status code to use for successful `OPTIONS` requests, since some legacy browsers (IE11, various SmartTVs) choke on `204`.
+This config is optional. This config provides a status code to use for successful `OPTIONS` requests, since some legacy browsers (e.g., IE11, various SmartTVs) choke on `204`.
 
 ### `preflight`
 
-If needed you can entirely disable preflight by passing `false` here (default: `true`).
+This config is optional. If needed, you can disable preflight entirely by setting this config to `false`.
+
+If this config is not specified, then it defaults to `true`.
