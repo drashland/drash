@@ -9,7 +9,10 @@ import { Rhum } from "../deps.ts";
 import { green, red } from "../../deps.ts";
 import { testMethods } from "./test_methods.ts";
 
-const branch = Deno.env.get("GITHUB_HEAD_REF") ?? "master";
+let branch = Deno.env.get("GITHUB_HEAD_REF");
+if (!branch || branch.trim() == "") {
+  branch = "master";
+}
 const githubOwner = Deno.env.get("GITHUB_ACTOR") ?? "drashland"; // possible it's the user and not drashland
 const repository = "deno-drash";
 // supports forks
@@ -30,4 +33,9 @@ try {
   // do nothing
 }
 
-testMethods("http", drashUrl);
+testMethods("http", {
+  base_url: drashUrl,
+  branch: branch,
+  github_owner: githubOwner,
+  repository: repository,
+});

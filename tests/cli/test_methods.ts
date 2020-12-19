@@ -66,11 +66,24 @@ const fileExists = async (filename: string): Promise<boolean> => {
   }
 };
 
-export function testMethods(suffix: "local" | "http", url?: string) {
-  const baseUrl = url ? url : "..";
+interface ITestOptions {
+  base_url?: string;
+  branch?: string;
+  github_owner?: string;
+  repository?: string;
+}
+
+export function testMethods(
+  suffix: "local" | "http",
+  options: ITestOptions = {},
+) {
+  const baseUrl = options.base_url ?? "..";
   const createAppLocation = baseUrl + "/create_app.ts";
 
-  Rhum.testPlan("create_app_test_" + suffix + ".ts", () => {
+  Rhum.testPlan("create_app_test_" + suffix + ".ts / url: " + baseUrl, () => {
+
+    // console.log(options); // uncomment this for debugging purposes
+
     let boilerPlateFile: string;
     let copiedFile: string;
 
