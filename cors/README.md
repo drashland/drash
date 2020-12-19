@@ -1,6 +1,6 @@
 # Cors
 
-Cors is a [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) HTTP-based middleware inspired by [expressjs/cors](https://expressjs.com/en/resources/middleware/cors.html). It can be simply placed as a middleware on your server and you're all set!
+Cors is a [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) HTTP-based middleware inspired by [expressjs/cors](https://expressjs.com/en/resources/middleware/cors.html). Simply add it to your Drash server's `middleware` config and you are all set!
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ const server = new Drash.Http.Server({
 
 ## Configuration
 
-You can use `Cors` without passing in any options. If you do not pass in any options, then `Cors` will set its own default settings. Also, you should note that not passing in any options will enable CORS for all requests from any origin.
+You can use `Cors` without passing in any configs. If you do not pass in any configs, then `Cors` will use its default configs. Also, you should note that not passing in any configs will enable CORS for all requests from any origin.
 
 ### `allowedHeaders`
 
