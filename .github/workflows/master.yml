@@ -60,5 +60,5 @@ jobs:
       - name: Formatter
         run: deno fmt --check
 
-      - name: Linter
-        run: deno lint --unstable
+      # - name: Linter
+      #   run: deno lint --unstable
