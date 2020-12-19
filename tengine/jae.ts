@@ -5,7 +5,7 @@ export class Jae {
    * A property to hold the base path to the template(s).
    *
    */
-  public views_path: string = "";
+  public views_path = "";
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -54,7 +54,7 @@ export class Jae {
     );
 
     // Check if the template extends another template
-    let extended = html.match(/<% extends.* %>/g);
+    const extended = html.match(/<% extends.* %>/g);
     if (extended) {
       extended.forEach((m: string, i: number) => {
         html = html.replace(m, "");
@@ -68,7 +68,6 @@ export class Jae {
 
     // Check for partials
     let partials;
-    // deno-lint-ignore no-cond-assign
     while ((partials = html.match(/<% include_partial.* %>/g))) {
       partials.forEach((m: string, i: number) => {
         let template = m
@@ -84,8 +83,8 @@ export class Jae {
     // The following code was taken from (and modified):
     // https://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
     // Thanks, Krasimir!
-    let re = /<%(.+?)\%>/g;
-    let reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
+    const re = /<%(.+?)\%>/g;
+    const reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g;
     let result;
     function add(line: string, js: unknown | null = null) {
       js
@@ -96,7 +95,6 @@ export class Jae {
       return add;
     }
 
-    // deno-lint-ignore no-cond-assign
     while ((match = re.exec(html))) {
       add(html.slice(cursor, match.index));
       add(match[1], true);

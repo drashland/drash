@@ -19,21 +19,34 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Deno
-        uses: denolib/setup-deno@master
-
-      - name: Dexter
-        run: deno test --allow-env --allow-net dexter/tests/
-
-      - name: Paladin
-        run: deno test --allow-env --allow-net paladin/tests/
+        uses: |
+          denolib/setup-deno@master
 
       - name: CSRF
         run: |
           cd csrf/tests
           deno test --allow-net --allow-env --config tsconfig.json
 
-      - name: Cors
-        run: deno test -A cors/tests
+      - name: CORS
+        run: |
+          deno test -A cors/tests
+
+      - name: Dexter
+        run: |
+          deno test --allow-env --allow-net dexter/tests/
+
+      - name: Paladin
+        run: |
+          deno test --allow-env --allow-net paladin/tests/
+
+#      - name: Tengine
+#        run: |
+#          deno test -A tengine/tests/mod_test.ts
+
+
+      - name: Serve TypeScript
+        run: |
+          deno test -A --unstable serve_typescript/tests/mod_test.ts
 
   linter:
     # Only one OS is required since fmt is cross platform
@@ -47,3 +60,6 @@ jobs:
 
       - name: Formatter
         run: deno fmt --check
+
+      - name: Linter
+        run: deno lint --unstable
