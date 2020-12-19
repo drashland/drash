@@ -3,7 +3,7 @@ import { Dexter } from "../mod.ts";
 
 Rhum.testPlan("Dexter - mod_test.ts", () => {
   Rhum.testSuite("Dexter", () => {
-    Rhum.testCase("is configurable", async () => {
+    Rhum.testCase("is configurable", () => {
       let dexter = Dexter();
       Rhum.asserts.assertEquals(dexter.configs.enabled, true);
       dexter = Dexter({
@@ -12,7 +12,7 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
       Rhum.asserts.assertEquals(dexter.configs.enabled, false);
     });
     Rhum.testCase("logger and all of its log functions are exposed", () => {
-      let dexter = Dexter({
+      const dexter = Dexter({
         enabled: true,
         test: true,
         tag_string: "{level} |",
@@ -25,7 +25,7 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
       Rhum.asserts.assertEquals(typeof dexter.logger.warn, "function");
     });
     Rhum.testCase("logger can be used to write messages", () => {
-      let dexter = Dexter({
+      const dexter = Dexter({
         enabled: true,
         level: "all",
         test: true,
