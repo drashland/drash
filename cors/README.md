@@ -2,6 +2,14 @@
 
 Cors is a [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) HTTP-based middleware inspired by [expressjs/cors](https://expressjs.com/en/resources/middleware/cors.html). It can be simply placed as a middleware on your server and you're all set!
 
+## Table of Contents
+
+* [Usage](#usage)
+* [Configuration](#configuration)
+* [Tutorial: Enabling CORS](#tutorial-enabling-cors)
+
+## Usage
+
 ```ts
 import { Drash } from "https://deno.land/x/drash@v1.3.1/mod.ts";
 import { Cors } from "https://deno.land/x/drash-middleware@v0.6.1/cors/mod.ts";
@@ -12,13 +20,12 @@ const server = new Drash.Http.Server({
       Cors(),
     ]
   },
-  // ...
 });
 ```
 
-You can use it as is without passing any options (using the default options the middleware will set), or you can configure it as explained below. Passing no options will allow CORS for any requests to your server from any origin.
-
 ## Configuration
+
+You can use it as is without passing any options (using the default options the middleware will set), or you can configure it as explained below. Passing no options will allow CORS for any requests to your server from any origin.
 
 `Cors` can be configured by passing in an object, for example: `Cors({ ... })`. Below are supported options:
 
