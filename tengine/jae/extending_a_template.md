@@ -62,7 +62,7 @@ Upon completing the Steps section below, your project's folder structure should 
     Filename: `/path/to/your/project/user_resource.ts`
     
     ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.3.1/mod.ts";
 
     export class UserResource extends Drash.Http.Resource {
 
@@ -87,8 +87,8 @@ Upon completing the Steps section below, your project's folder structure should 
     Filename: `/path/to/your/project/app.ts`
     
     ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
-    import { Tengine } from "https://deno.land/x/drash_middleware@v0.6.1/tengine/mod.ts";
+    import { Drash } from "https://deno.land/x/drash@v1.3.1/mod.ts";
+    import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.0/tengine/mod.ts";
     import { UserResource } from "./user_resource.ts";
 
     // Configure Tengine
