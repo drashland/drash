@@ -27,7 +27,6 @@ jobs:
       - name: Integration
         run: |
           deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/tests.ts
-          deno test --allow-all --config tsconfig.json tests/integration/app_3001_views/tests.ts
           # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
           deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/tests.ts
           deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/tests.ts
