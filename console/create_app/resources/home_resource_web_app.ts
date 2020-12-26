@@ -5,10 +5,9 @@ export default class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
 
   public async GET() {
+    const realPath = await Deno.realPath(".");
     this.response.body = decoder.decode(
-      await Deno.readFile(
-        await Deno.realPath(".") + "/public/views/index.html",
-      ),
+      await Deno.readFile(realPath + "/public/views/index.html"),
     );
     return this.response;
   }
