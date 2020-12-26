@@ -6,7 +6,7 @@ export default class HomeResource extends Drash.Http.Resource {
 
   public async GET() {
     this.response.body = decoder.decode(
-      await Deno.readFile("./public/index.html");
+      await Deno.readFile(await Deno.realPath(".") + "/public/views/index.html")
     );
     return this.response;
   }
