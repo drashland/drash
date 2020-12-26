@@ -6,20 +6,6 @@ const decoder = new TextDecoder();
 
 Rhum.testPlan("http/server_test.ts", () => {
   Rhum.testSuite("constructor()", () => {
-    Rhum.testCase("Throw error when incorrect template engine configs", () => {
-      try {
-        new Drash.Http.Server({
-          template_engine: true,
-        });
-        Rhum.asserts.assertEquals(true, false);
-      } catch (err) {
-        Rhum.asserts.assertEquals(
-          err.message,
-          "Property missing. The views_path must be defined if template_engine is true",
-        );
-      }
-    });
-  });
 
   // Rhum.testSuite("buildRequest()", () => {
   //   Rhum.testCase("gives get*Param/File methods", async () => {

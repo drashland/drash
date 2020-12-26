@@ -34,52 +34,14 @@ Rhum.testPlan("http/response_test.ts", () => {
       },
     );
   });
+
   Rhum.testSuite("render()", () => {
-    Rhum.testCase("Returns false is `views_path` is falsy", () => {
+    Rhum.testCase("Returns false by default", () => {
       const request = members.mockRequest("/");
       const Response = new Drash.Http.Response(request);
       const result = Response.render("/users/index.html");
       Rhum.asserts.assertEquals(result, false);
     });
-
-    if (Deno.build.os != "windows") {
-      Rhum.testCase(
-        "Returns the html content when not using the template engine",
-        () => {
-          const request = members.mockRequest("/");
-          const Response = new Drash.Http.Response(request, {
-            views_path: "tests/integration/app_3001_views/public/views",
-          });
-          const result = Response.render("/index.html");
-          Rhum.asserts.assertEquals(
-            result,
-            `<body>\n` +
-              `    <h1>Hello Drash</h1>\n` +
-              `</body>`,
-          );
-        },
-      );
-
-      Rhum.testCase(
-        "Returns the html content when using the template engine",
-        () => {
-          const request = members.mockRequest("/");
-          const Response = new Drash.Http.Response(request, {
-            views_path: "tests/integration/app_3001_views/public/views",
-            template_engine: true,
-          });
-          const result = Response.render("/template_engine.html", {
-            name: "Drash",
-          });
-          Rhum.asserts.assertEquals(
-            result,
-            "<body>" +
-              "     <h1>Hello Drash</h1>" +
-              " </body>",
-          );
-        },
-      );
-    }
   });
 
   Rhum.testSuite("setCookie()", () => {

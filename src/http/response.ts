@@ -1,7 +1,6 @@
 import { Drash } from "../../mod.ts";
 import {
   Cookie,
-  decoder,
   deleteCookie,
   encoder,
   setCookie,
@@ -9,32 +8,7 @@ import {
   STATUS_TEXT,
 } from "../../deps.ts";
 
-/**
- * @description
- *     views_path?: string
- *
- *         A string that contains the path to the views directory from
- *         your project directory. This must exist if the `views_renderer` property
- *         is set by you. Only needs to be set if you plan to return HTML
- *
- *           const server = new Drash.Http.Server({
- *             ...,
- *             views_path: "/public/views"
- *           })
- *
- *     template_engine?: boolean
- *
- *         True if you wish to use Drash's own template engine to render html files.
- *         The `views_path` property must be set if this is set to true
- *
- *             const server = new Drash.Http.Server({
- *               ...
- *               template_engine: true
- *             })
- */
 export interface IOptions {
-  views_path?: string;
-  template_engine?: boolean;
   default_content_type?: string;
 }
 
@@ -64,13 +38,9 @@ export class Response {
    */
   public status_code: number = Status.OK;
 
-  /**
-   * An object of options to help determine how this object should behave.
-   */
-  protected options: IOptions;
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
@@ -91,47 +61,13 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Render html files. Can be used with Drash's template engine or basic HTML
-   * files. This method will read a file based on the `views_path` and filename
-   * passed in. When called, will set the response content type to "text/html"
+   * Used by Tengine:
    *
-   * @deprecated
-   * @param args - The arguments used to render.
-   *
-   * @remarks
-   *     // if `views_path` is "/public/views",
-   *     // file to read is "/public/views/users/add.html"
-   *     const content = this.response.render('/users/add.html', { name: 'Drash' })
-   *     if (!content) throw new Error(...)
-   *     this.response.body = content
-   *
-   * @returns The html content of the view, or false if the `views_path` is not
-   * set.
+   *   https://github.com/drashland/deno-drash-middleware/tree/master/tengine
    */
   public render(
     ...args: unknown[]
   ): Promise<boolean | string> | boolean | string {
-    if (!this.options.views_path) {
-      return false;
-    }
-
-    if (Array.isArray(args)) {
-      const data = args.length >= 2 ? args[1] : null;
-      this.headers.set("Content-Type", "text/html");
-
-      if (this.options.template_engine) {
-        const engine = new Drash.Compilers.TemplateEngine(
-          this.options.views_path,
-        );
-        return engine.render(args[0] as string, data);
-      }
-
-      const filename = (this.options.views_path += args[0]);
-      const fileContentsRaw = Deno.readFileSync(filename);
-      let decoded = decoder.decode(fileContentsRaw);
-      return decoded;
-    }
-
     return false;
   }
 
