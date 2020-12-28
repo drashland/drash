@@ -66,7 +66,8 @@ export class Response {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Used by Tengine:
+   * This method allows users to make `this.response.render()` calls in
+   * resources. This method is also used by Tengine:
    *
    *   https://github.com/drashland/deno-drash-middleware/tree/master/tengine
    */
