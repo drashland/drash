@@ -5,53 +5,6 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 Rhum.testPlan("http/server_test.ts", () => {
-  Rhum.testSuite("constructor()", () => {
-    Rhum.testCase("Throw error when incorrect template engine configs", () => {
-      try {
-        new Drash.Http.Server({
-          template_engine: true,
-        });
-        Rhum.asserts.assertEquals(true, false);
-      } catch (err) {
-        Rhum.asserts.assertEquals(
-          err.message,
-          "Property missing. The views_path must be defined if template_engine is true",
-        );
-      }
-    });
-  });
-
-  // Rhum.testSuite("buildRequest()", () => {
-  //   Rhum.testCase("gives get*Param/File methods", async () => {
-  //     const server = new Drash.Http.Server({
-  //       resources: [HomeResource],
-  //     });
-  //     let request = members.mockRequest();
-  //     request = await server.buildRequest(request);
-  //     Rhum.asserts.assertEquals("function", typeof request.getBodyFile);
-  //     Rhum.asserts.assertEquals("function", typeof request.getBodyParam);
-  //     Rhum.asserts.assertEquals("function", typeof request.getHeaderParam);
-  //     Rhum.asserts.assertEquals("function", typeof request.getUrlQueryParam);
-  //   });
-  //   Rhum.testCase("request.body takes in a reader", async () => {
-  //     const server = new Drash.Http.Server({
-  //       resources: [HomeResource],
-  //     });
-  //     let request = members.mockRequest();
-  //     const body = encoder.encode(JSON.stringify({
-  //       hello: "world",
-  //     }));
-  //     request.url = "/";
-  //     request.headers = new Headers();
-  //     request.headers.set("Content-Length", body.length.toString());
-  //     request.headers.set("Content-Type", "application/json");
-  //     const reader = new Deno.Buffer(body as ArrayBuffer);
-  //     request.r = new members.BufReader(reader);
-  //     const newRequest = await server.buildRequest(request);
-  //     Rhum.asserts.assertEquals("world", newRequest.getBodyParam("hello"));
-  //   });
-  // });
-
   Rhum.testSuite("handleHttpRequest()", () => {
     Rhum.testCase("request.url == /favicon.ico", async () => {
       const server = new Drash.Http.Server({

@@ -1,8 +1,5 @@
 // deno-lint-ignore-file
 
-// Compilers
-import { TemplateEngine as BaseTemplateEngine } from "./src/compilers/template_engine.ts";
-
 // Decorators
 import {
   Middleware as MiddlewareHandler,
@@ -53,13 +50,6 @@ export namespace Drash {
    * Drash version.
    */
   export const version = "v1.3.1";
-
-  export namespace Compilers {
-    /**
-     * @deprecated
-     */
-    export class TemplateEngine extends BaseTemplateEngine {}
-  }
 
   export namespace Dictionaries {
     export const LogLevels = log_levels.LogLevels;

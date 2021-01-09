@@ -12,5 +12,4 @@ export const server = new Drash.Http.Server({
     HomeResource,
   ],
   static_paths: ["/public"],
-  views_path: "./public/views",
 });

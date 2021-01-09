@@ -1,10 +1,14 @@
 import { Drash } from "../deps.ts";
+const decoder = new TextDecoder();
 
 export default class HomeResource extends Drash.Http.Resource {
   static paths = ["/"];
 
-  public GET() {
-    this.response.body = this.response.render("/index.html");
+  public async GET() {
+    const realPath = await Deno.realPath(".");
+    this.response.body = decoder.decode(
+      await Deno.readFile(realPath + "/public/views/index.html"),
+    );
     return this.response;
   }
 

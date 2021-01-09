@@ -7,6 +7,7 @@ import { Route } from "react-router";
 const User = () => {
   return (
     <div>
+      <h1>Welcome</h1>
       <p>Welcome to your new Drash + React app!</p>
     </div>
   );
