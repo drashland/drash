@@ -1,7 +1,7 @@
 {
   "name": "deno-drash",
   "description": "A REST microframework for Deno's HTTP server with zero dependencies.",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "stable": true,
   "repository": "https://github.com/drashland/deno-drash",
   "files": [
