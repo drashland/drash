@@ -6,7 +6,7 @@ Paladin helps you secure your Drash applications by setting various HTTP headers
 import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
 
 // Import the Paladin middleware function
-import { Paladin } from "https://deno.land/x/drash_middleware@v0.7.0/paladin/mod.ts";
+import { Paladin } from "https://deno.land/x/drash_middleware@v0.7.1/paladin/mod.ts";
 
 // Instantiate paladin
 const paladin = Paladin();
