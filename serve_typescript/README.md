@@ -1,17 +1,21 @@
 # ServeTypeScript
 
-ServeTypeScript is a compile time middleware that allows you to write front-end TypeScript and serve it as compiled JavaScript during runtime. Since the compiling happens during compile time, this doesn't impact your application's runtime performance.
+ServeTypeScript is a compile time middleware that allows you to write front-end
+TypeScript and serve it as compiled JavaScript during runtime. Since the
+compiling happens during compile time, this doesn't impact your application's
+runtime performance.
 
-_Note: Since this middleware uses `Deno.compile()`, it can only be used with Deno's `--unstable` flag (e.g., `deno run --unstable app.ts`)._
+_Note: Since this middleware uses `Deno.compile()`, it can only be used with
+Deno's `--unstable` flag (e.g., `deno run --unstable app.ts`)._
 
 ## Table of Contents
 
-* [Usage](#usage)
-* [Configuration](#configuration)
-* [Tutorial: Writing Front-end TypeScript](#tutorial-writing-front-end-typescript)
-    * [Folder Structure End State](#folder-structure-end-state)
-    * [Steps](#steps)
-    * [Verification](#verification)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Tutorial: Writing Front-end TypeScript](#tutorial-writing-front-end-typescript)
+  - [Folder Structure End State](#folder-structure-end-state)
+  - [Steps](#steps)
+  - [Verification](#verification)
 
 ## Usage
 
@@ -35,7 +39,9 @@ const serveTs = ServeTypeScript({
 
 ### `files`
 
-This config is required. ServeTypeScript cannot run unless it is given files to compile during compile time. Compile time is when the Drash server is being created.
+This config is required. ServeTypeScript cannot run unless it is given files to
+compile during compile time. Compile time is when the Drash server is being
+created.
 
 ```typescript
 const serveTs = ServeTypeScript({
@@ -43,16 +49,21 @@ const serveTs = ServeTypeScript({
     {
       source: "/path/to/typescript/file.ts",
       target: "/uri/to/associate/the/typescript/file/to.ts",
-    }
-  ]
+    },
+  ],
 });
 ```
 
-The `source` is the filepath to the actual TypeScript file. The `target` is the URI that the file is accessible at. For example, if you want to serve your TypeScript file at the `/ts/my_ts.ts` URI, then define `target` as `/ts/my_ts.ts`. When a request is made to `http://yourserver.com/ts/my_ts.ts`, your compiled TypeScript will be returned as the response.
+The `source` is the filepath to the actual TypeScript file. The `target` is the
+URI that the file is accessible at. For example, if you want to serve your
+TypeScript file at the `/ts/my_ts.ts` URI, then define `target` as
+`/ts/my_ts.ts`. When a request is made to `http://yourserver.com/ts/my_ts.ts`,
+your compiled TypeScript will be returned as the response.
 
 ## Tutorial: Writing Front-end TypeScript
 
-This tutorial teaches you how to write front-end TypeScript, which gets compiled into JavaScript during server creation.
+This tutorial teaches you how to write front-end TypeScript, which gets compiled
+into JavaScript during server creation.
 
 ### Folder Structure End State
 
@@ -68,107 +79,109 @@ This tutorial teaches you how to write front-end TypeScript, which gets compiled
 
 1. Create your `app.ts` file.
 
-    ```typescript
-    // File: app.ts
-    import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
-    import { HomeResource } from "./home_resource.ts";
-    import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.7.1/serve_typescript/mod.ts";
+   ```typescript
+   // File: app.ts
+   import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
+   import { HomeResource } from "./home_resource.ts";
+   import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.7.1/serve_typescript/mod.ts";
 
-    const serveTs = ServeTypeScript({
-      files: [
-        {
-          source: "./ts/my_ts_file.ts",
-          target: "/assets/my_compiled_ts_file.ts",
-        }
-      ]
-    });
-    
-    const server = new Drash.Http.Server({
-      directory: ".",
-      response_output: "text/html",
-      resources: [
-        HomeResource,
-      ],
-      middleware: {
-        compile_time: [
-          serveTs
-        ]
-      },
-      static_paths: [
-        "/assets"
-      ]
-    });
-    
-    server.run({
-      hostname: "localhost",
-      port: 1447,
-    });
-    
-    console.log(`Server running at ${server.hostname}:${server.port}`);
-    ```
+   const serveTs = ServeTypeScript({
+     files: [
+       {
+         source: "./ts/my_ts_file.ts",
+         target: "/assets/my_compiled_ts_file.ts",
+       },
+     ],
+   });
+
+   const server = new Drash.Http.Server({
+     directory: ".",
+     response_output: "text/html",
+     resources: [
+       HomeResource,
+     ],
+     middleware: {
+       compile_time: [
+         serveTs,
+       ],
+     },
+     static_paths: [
+       "/assets",
+     ],
+   });
+
+   server.run({
+     hostname: "localhost",
+     port: 1447,
+   });
+
+   console.log(`Server running at ${server.hostname}:${server.port}`);
+   ```
 
 2. Create your `home_resource.ts` file.
 
-    ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
+   ```typescript
+   import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
 
-    export class HomeResource extends Drash.Http.Resource {
+   export class HomeResource extends Drash.Http.Resource {
+     static paths = ["/"];
 
-      static paths = ["/"];
+     public GET() {
+       this.response.body = `
+       <!DOCTYPE html>
+       <html>
+         <head>
+           <title>Drash</title>
+         </head>
+         <body>
+           <div id="container"></div>
+           <script src="/assets/my_compiled_ts_file.ts"></script>
+         </body>
+       </html>`;
 
-      public GET() {
-        this.response.body = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Drash</title>
-          </head>
-          <body>
-            <div id="container"></div>
-            <script src="/assets/my_compiled_ts_file.ts"></script>
-          </body>
-        </html>`;
-
-        return this.response;
-      }
-    }
-    ```
+       return this.response;
+     }
+   }
+   ```
 
 3. Create your `my_ts_file.ts`.
 
-    ```typescript
-    function greet(name: string): string {
-      return "Hello, " + name + "!";
-    }
-    
-    const result = greet("TypeScript user");
-    
-    document.getElementById("container").innerHTML = result;
-    ```
-    
+   ```typescript
+   function greet(name: string): string {
+     return "Hello, " + name + "!";
+   }
+
+   const result = greet("TypeScript user");
+
+   document.getElementById("container").innerHTML = result;
+   ```
+
 ### Verification
 
 1. Run your `app.ts` file.
 
-    ```sh
-    deno run --allow-net --allow-read --unstable app.ts
-    ```
+   ```sh
+   deno run --allow-net --allow-read --unstable app.ts
+   ```
 
-2. Navigate to `localhost:1447` in your browser. You should see the following response:
+2. Navigate to `localhost:1447` in your browser. You should see the following
+   response:
 
-    ```text
-    Hello, TypeScript user!
-    ```
+   ```text
+   Hello, TypeScript user!
+   ```
 
-3. Check out the Network tab in the browser's inspector. You should see the following when you check the Response tab for the `my_compiled_ts_file.ts` file.
+3. Check out the Network tab in the browser's inspector. You should see the
+   following when you check the Response tab for the `my_compiled_ts_file.ts`
+   file.
 
-    ```javascript
-    "use strict";
-    function greet(name) {
-        return "Hello, " + name + "!";
-    }
-    const result = greet("TypeScript user");
-    document.getElementById("container").innerHTML = result;
-    ```
+   ```javascript
+   "use strict";
+   function greet(name) {
+     return "Hello, " + name + "!";
+   }
+   const result = greet("TypeScript user");
+   document.getElementById("container").innerHTML = result;
+   ```
 
-    Notice that the TypeScript typings are now gone.
+   Notice that the TypeScript typings are now gone.

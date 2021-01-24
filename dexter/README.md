@@ -1,6 +1,8 @@
 # Dexter
 
-Dexter is a logging middleware inspired by [expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and can be used throughout the request-resource-response lifecycle.
+Dexter is a logging middleware inspired by
+[expressjs/morgan](https://github.com/expressjs/morgan). It is configurable and
+can be used throughout the request-resource-response lifecycle.
 
 ```typescript
 import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
@@ -11,7 +13,7 @@ import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.1/dexter/mod.t
 // Instantiate dexter
 const dexter = Dexter();
 
-// The above will instantiate Dexter with default values: 
+// The above will instantiate Dexter with default values:
 // {
 //     enabled: true,
 //     level: "info",
@@ -29,12 +31,12 @@ const server = new Drash.Http.Server({
   ],
   middleware: {
     before_request: [
-      dexter
+      dexter,
     ],
     after_request: [
-      dexter
-    ]
-  }
+      dexter,
+    ],
+  },
 });
 
 server.run({
@@ -47,7 +49,8 @@ console.log(`Server running at ${server.hostname}:${server.port}`);
 
 ## Configuration
 
-If you decide to configure Dexter, make sure you specify the `enabled` flag in the configs as it is required when customizing the configuration.
+If you decide to configure Dexter, make sure you specify the `enabled` flag in
+the configs as it is required when customizing the configuration.
 
 ### `enabled`
 
@@ -61,7 +64,8 @@ const dexter = Dexter({
 
 ### `level`
 
-Define what log statements should be written based on their log level definition (e.g., debug, info, warn).
+Define what log statements should be written based on their log level definition
+(e.g., debug, info, warn).
 
 ```typescript
 const dexter = Dexter({
@@ -70,33 +74,34 @@ const dexter = Dexter({
 });
 ```
 
-* `all`: logs all messages below
-* `trace`: logs `.trace()` messages and the below
-* `debug`: logs `.debug()` messages and the below
-* `info`: logs `.info()` messages and the below
-* `warn`: logs `.warn()` messages and the below
-* `error`: logs `.error()` messages and the below
-* `fatal`: logs `.fatal()` messages only
-
+- `all`: logs all messages below
+- `trace`: logs `.trace()` messages and the below
+- `debug`: logs `.debug()` messages and the below
+- `info`: logs `.info()` messages and the below
+- `warn`: logs `.warn()` messages and the below
+- `error`: logs `.error()` messages and the below
+- `fatal`: logs `.fatal()` messages only
 
 ### `tag_string`
 
-Define the display of the log messages' tag string. The tag string is a concatenation of tokens preceding the log message. Available, predefined tags:
+Define the display of the log messages' tag string. The tag string is a
+concatenation of tokens preceding the log message. Available, predefined tags:
 
-* `{level}`
-* `{request_method}`
-* `{request_url}`
+- `{level}`
+- `{request_method}`
+- `{request_url}`
 
 ```typescript
 const dexter = Dexter({
   enabled: true,
-  tag_string: "{level} | {request_method} {request_url} |" // Will output something similar to "INFO | GET /home | The log message."
+  tag_string: "{level} | {request_method} {request_url} |", // Will output something similar to "INFO | GET /home | The log message."
 });
 ```
 
 ### `tag_string_fns`
 
-If you want more customizations with the `tag_string` config, then you can use `tag_string_fns` to define what your tags should resolve to.
+If you want more customizations with the `tag_string` config, then you can use
+`tag_string_fns` to define what your tags should resolve to.
 
 ```typescript
 const dexter = Dexter({
@@ -106,14 +111,15 @@ const dexter = Dexter({
     datetime() {
       return new Date().toISOString().replace("T", " ").split(".")[0];
     },
-    my_tag: "TIGERRR"
-  }
+    my_tag: "TIGERRR",
+  },
 });
 ```
 
 ### `response_time`
 
-If you want to see how fast your responses are taking, then use this config. This config will output something similar to `Response sent. [2 ms]`.
+If you want to see how fast your responses are taking, then use this config.
+This config will output something similar to `Response sent. [2 ms]`.
 
 ```typescript
 const dexter = Dexter({
@@ -126,70 +132,69 @@ const dexter = Dexter({
 
 ### Reusing Dexter in resource classes (or other parts of your codebase)
 
-You can reuse Dexter in your codebase by accessing its `logger`. For example, if you want to use Dexter in one of your resources, then do the following:
+You can reuse Dexter in your codebase by accessing its `logger`. For example, if
+you want to use Dexter in one of your resources, then do the following:
 
 1. Create your `app.ts` file.
 
-    ```typescript
-    // File: app.ts
-    import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
-    import { HomeResource } from "./home_resource.ts";
-    import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.1/dexter.ts";
+   ```typescript
+   // File: app.ts
+   import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
+   import { HomeResource } from "./home_resource.ts";
+   import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.1/dexter.ts";
 
-    const dexter = Dexter({
-      enabled: true,
-      level: "debug",
-      tag_string: "{request_method} {request_url} |",
-    });
+   const dexter = Dexter({
+     enabled: true,
+     level: "debug",
+     tag_string: "{request_method} {request_url} |",
+   });
 
-    // Export dexter after calling it with your configurations
-    export { dexter };
+   // Export dexter after calling it with your configurations
+   export { dexter };
 
-    const server = new Drash.Http.Server({
-      resources: [
-        HomeResource,
-      ],
-      middleware: {
-        before_request: [
-          dexter
-        ],
-        after_request: [
-          dexter
-        ]
-      }
-    });
+   const server = new Drash.Http.Server({
+     resources: [
+       HomeResource,
+     ],
+     middleware: {
+       before_request: [
+         dexter,
+       ],
+       after_request: [
+         dexter,
+       ],
+     },
+   });
 
-    server.run({
-      hostname: "localhost",
-      port: 1447,
-    });
+   server.run({
+     hostname: "localhost",
+     port: 1447,
+   });
 
-    console.log(`Server running at ${server.hostname}:${server.port}`);
-    ```
+   console.log(`Server running at ${server.hostname}:${server.port}`);
+   ```
 
 2. Create your `home_resource` file.
 
-    ```typescript
-    import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
-    import { dexter } from "./app.ts";
+   ```typescript
+   import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
+   import { dexter } from "./app.ts";
 
-    export class HomeResource extends Drash.Http.Resource {
+   export class HomeResource extends Drash.Http.Resource {
+     static paths = ["/"];
 
-      static paths = ["/"];
+     public GET() {
+       // Access Dexter's logger from it's prototype and log some messages
+       dexter.logger.debug("This is a log message.");
+       dexter.logger.error("This is a log message.");
+       dexter.logger.fatal("This is a log message.");
+       dexter.logger.info("This is a log message.");
+       dexter.logger.trace("This is a log message.");
+       dexter.logger.warn("This is a log message.");
 
-      public GET() {
+       this.response.body = "GET request received!";
 
-        // Access Dexter's logger from it's prototype and log some messages
-        dexter.logger.debug("This is a log message.");
-        dexter.logger.error("This is a log message.");
-        dexter.logger.fatal("This is a log message.");
-        dexter.logger.info("This is a log message.");
-        dexter.logger.trace("This is a log message.");
-        dexter.logger.warn("This is a log message.");
-
-        this.response.body = "GET request received!";
-
-        return this.response;
-      }
-    }
-    ```
+       return this.response;
+     }
+   }
+   ```
