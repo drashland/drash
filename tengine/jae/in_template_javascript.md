@@ -2,13 +2,15 @@
 
 ## Table of Contents
 
-* [Before You Get Started](#before-you-get-started)
-* [`for` Loops](#for-loops)
-* [`if-else` Conditionals](#if-else-conditionals)
+- [Before You Get Started](#before-you-get-started)
+- [`for` Loops](#for-loops)
+- [`if-else` Conditionals](#if-else-conditionals)
 
 ## Before You Get Started
 
-Jae can take in HTML with in-template JavaScript. That is, you can write JavaScript in your templates directly. Below are examples of `for` loops and `if-else` conditionals in templates.
+Jae can take in HTML with in-template JavaScript. That is, you can write
+JavaScript in your templates directly. Below are examples of `for` loops and
+`if-else` conditionals in templates.
 
 ## `for` Loops
 
@@ -22,8 +24,8 @@ this.response.render(
       "Agility",
       "Strength",
       "Endurance",
-    ]
-  }
+    ],
+  },
 );
 ```
 
@@ -57,8 +59,8 @@ this.response.render(
       "Agility",
       "Strength",
       "Endurance",
-    ]
-  }
+    ],
+  },
 );
 ```
 
@@ -83,4 +85,6 @@ this.response.render(
 
 ---
 
-Other tutorials: [Creating A Template](./creating_a_template.md) | [Extending A Template](./extending_a_template.md) | [Adding Template Partials](./adding_template_partials.md)
+Other tutorials: [Creating A Template](./creating_a_template.md) |
+[Extending A Template](./extending_a_template.md) |
+[Adding Template Partials](./adding_template_partials.md)
