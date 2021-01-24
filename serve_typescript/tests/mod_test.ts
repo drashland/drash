@@ -62,13 +62,13 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
           '    return "Hello, " + name;\n' +
           "}\n" +
           "class Employee {\n" +
-          "    constructor(props){\n" +
+          "    constructor(props) {\n" +
           "        this.company_name = props.company_name;\n" +
           "        this.name = props.name;\n" +
           "    }\n" +
           "}\n" +
           "export class User extends Employee {\n" +
-          "    constructor(details){\n" +
+          "    constructor(details) {\n" +
           "        super(details);\n" +
           "    }\n" +
           "}\n",

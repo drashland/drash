@@ -32,12 +32,13 @@ export function ServeTypeScript(options: IOptions) {
       const file = options.files[index];
 
       try {
-        const [diagnostics, outputString]: [
-          undefined | Deno.Diagnostic[],
-          string,
-        ] = await Deno.bundle(
+        const { diagnostics, files } = await Deno.emit(
           file.source,
         );
+        const fileKey = Object.keys(files).find((filename) => {
+          return filename.includes(".ts.js.map") === false;
+        }) as string;
+        const outputString = files[fileKey];
 
         // Check if there were errors when bundling the clients code
         if (diagnostics && diagnostics.length) {
