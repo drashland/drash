@@ -93,7 +93,7 @@ look similar to the following:
 
    ```typescript
    import { Drash } from "https://deno.land/x/drash@v1.4.0/mod.ts";
-   import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.1/tengine/mod.ts";
+   import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.2/tengine/mod.ts";
    import { UserResource } from "./user_resource.ts";
 
    // Configure Tengine

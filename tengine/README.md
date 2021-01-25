@@ -27,7 +27,7 @@ and are looking for the migration guide, click
 
 ```typescript
 // Import the Tengine middleware function
-import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.1/tengine/mod.ts";
+import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.2/tengine/mod.ts";
 
 // Use the default template engine that comes with Tengine, known as Jae.
 // Returning false in the render method tells Tengine to use Jae. Specifying
@@ -99,7 +99,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
    ```typescript
    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
    import { HomeResource } from "./home_resource.ts";
-   import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.1/tengine/mod.ts";
+   import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.2/tengine/mod.ts";
 
    const tengine = Tengine({
      render: (...args: unknown[]): boolean => {
@@ -262,7 +262,7 @@ This tutorial teaches you how to use Eta.
    ```typescript
    import { Drash } from "https://deno.land/x/drash@v1.3.0/mod.ts";
    import { HomeResource } from "./home_resource.ts";
-   import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.1/tengine/mod.ts";
+   import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.2/tengine/mod.ts";
    import {
      configure,
      renderFile,
