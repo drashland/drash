@@ -52,15 +52,15 @@ export { green, red } from "https://deno.land/std@0.86.0/fmt/colors.ts";
 
 export {
   IndexService,
-} from "https://raw.githubusercontent.com/drashland/services/v0.0.1/index/index_service.ts";
+} from "https://raw.githubusercontent.com/drashland/services/v0.1.0/index/index_service.ts";
 export type {
   ISearchResult,
-} from "https://raw.githubusercontent.com/drashland/services/v0.0.1/index/index_service.ts";
+} from "https://raw.githubusercontent.com/drashland/services/v0.1.0/index/index_service.ts";
 // export {
 //   IndexService,
 //   ISearchResult,
 // } from "../services/index/index_service.ts";
 
-export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.0.1/ci/bumper_service.ts";
+export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/ci/bumper_service.ts";
 
-export { LoggerService } from "https://raw.githubusercontent.com/drashland/services/v0.0.1/logger/logger_service.ts";
+export { LoggerService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/logger/logger_service.ts";
