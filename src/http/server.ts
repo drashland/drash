@@ -4,7 +4,7 @@ import {
   HTTPSOptions,
   IndexService,
   ISearchResult,
-  LoggerService,
+  ConsoleLogger,
   serve,
   Server as DenoServer,
   ServerRequest,
