@@ -25,7 +25,7 @@
 
 ### Features
 
-- Zero Dependencies
+- Zero 3rd Party Dependencies
 - Extensively Documented
 - Tutorials
 - Lightweight
