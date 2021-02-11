@@ -1,10 +1,10 @@
 import { Drash } from "../../mod.ts";
 import {
+  ConsoleLogger,
   HTTPOptions,
   HTTPSOptions,
   IndexService,
   ISearchResult,
-  LoggerService,
   serve,
   Server as DenoServer,
   ServerRequest,
