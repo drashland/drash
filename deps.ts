@@ -63,4 +63,4 @@ export type {
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/ci/bumper_service.ts";
 
-export { LoggerService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/logger/logger_service.ts";
+export { ConsoleLogger } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/loggers/console_logger.ts";
