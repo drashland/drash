@@ -29,14 +29,14 @@ template: |
   __Compatibility__
 
   * Requires Deno v<DENO_VERSION> or higher
-  * Requires Drashv<DRASH_VERSION> or higher
+  * Requires Drash v<DRASH_VERSION> or higher
   * Uses Deno std@<STD_VERSION>
 
   __Importing__
 
   * Import this latest release by using the following in your project(s):
     ```typescript
-    import { MiddlewareModule } from "https://deno.land/x/rhum@v$RESOLVED_VERSION/<middleware-module>/mod.ts";
+    import { MiddlewareModule } from "https://deno.land/x/drash_middleware@v$RESOLVED_VERSION/<middleware-module>/mod.ts";
     ```
 
     _Note: Change `MiddlewareModule` and `<middleware_module>` to reflect the middleware you want to import._
