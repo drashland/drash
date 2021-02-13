@@ -2,6 +2,8 @@ import { Docable } from "./docable.ts";
 
 const d = new Docable(
   [
+    "./src/dictionaries/log_levels.ts",
+    "./src/dictionaries/mime_db.ts",
     "./src/exceptions/configs_exception.ts",
     "./src/exceptions/http_exception.ts",
     "./src/exceptions/http_middleware_exception.ts",

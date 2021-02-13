@@ -1,7 +1,8 @@
+/// Member: Drash.Dictionaries.LogLevels
+
 import type { Drash } from "../../mod.ts";
 
 /**
- *
  * The log levels which are organized by rank in ascending order.
  */
 export enum LogLevel {

@@ -1,4 +1,12 @@
 {
+  "Drash.Dictionaries.LogLevels": [
+    "  /**\n * The log levels which are organized by rank in ascending order.\n */\nexport enum LogLevel",
+    "  /**\n * A dictionary of log levels used in the logger classes to properly\n * display, rank, and prioritize log messages.\n */\nexport const LogLevels = new Map<string, Drash.Interfaces.LogLevelStructure>([\n  [\"off\","
+  ],
+  "Drash.Dictionaries.MimeDb": [
+    "  /**\n * The interface used for MIME Types.\n *\n *     [key: string]\n *\n *         The mime type (e.g., \"application/json\").\n *\n *         charset\n *\n *             The character encoding of the MIME type.\n *\n *         compressible\n *\n *             Is this MIME type compressible?\n *\n *         extensions\n *\n *             An array of extensions that match this MIME type.\n *\n *         source\n *\n *             The source of the MIME type's data (e.g., \"iana\")\n *\n */\ninterface IMime",
+    "  /**\n * The MIME database.\n */\nexport const mime_db: IMime ="
+  ],
   "Drash.Exceptions.ConfigsException": [
     "  /**\n * Throw semantic errors related to configuration settings.\n */\nexport class ConfigsException extends Error",
     "  /**\n   * Construct an object of this class.\n   *\n   * @param message - (optional) The exception message.\n   */\n  constructor(message: string = \"Config is missing or invalid.\")"
