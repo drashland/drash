@@ -39,7 +39,7 @@ export class Docable {
       }
 
       (members as string[]).forEach((member: string) => {
-        this.json_output[fullMemberName as string].push("  " + member);
+        this.json_output[fullMemberName as string].push(member);
       });
 
     }
