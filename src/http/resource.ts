@@ -1,3 +1,5 @@
+/// Member: Drash.Http.Resource
+
 import type { Drash } from "../../mod.ts";
 
 /**

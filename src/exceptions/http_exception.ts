@@ -1,3 +1,5 @@
+/// Member: Drash.Exceptions.HttpException
+
 /**
  * This class gives you a way to throw HTTP errors semantically.
  */

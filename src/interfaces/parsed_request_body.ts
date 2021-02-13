@@ -1,3 +1,5 @@
+/// Member: Drash.Interfaces.ParsedRequestBody
+
 import type { MultipartFormData } from "../../deps.ts";
 
 interface KeyValuePairs {
@@ -5,14 +7,14 @@ interface KeyValuePairs {
 }
 
 /**
- * Contains the type of ParsedRequestBody
- * @remarks
- * content_type: string
+ * Contains the type of ParsedRequestBody.
  *
- *     The Content-Type of the request body. For example, if the body is
- *     JSON, then the Content-Type should be application/json.
+ * content_type
  *
- * data: undefined|MultipartFormData|KeyValuePairs
+ *     The Content-Type of the request body. For example, if the body is JSON,
+ *     then the Content-Type should be application/json.
+ *
+ * data
  *
  *     The data passed in the body of the request.
  */

@@ -1,3 +1,5 @@
+/// Member: Drash.Exceptions.HttpMiddlewareException
+
 import { HttpException } from "./http_exception.ts";
 
 /**

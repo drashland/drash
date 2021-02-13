@@ -1,3 +1,5 @@
+/// Member: Drash.Services.StringService
+
 /**
  * This class helps perform string-related processes like string
  * transformations, reading, and replacing.

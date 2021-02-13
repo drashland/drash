@@ -1,3 +1,5 @@
+/// Member: Drash.Exceptions.ConfigsException
+
 /**
  * Throw semantic errors related to configuration settings.
  */

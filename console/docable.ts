@@ -1,30 +1,35 @@
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-class Docable {
+/**
+ * Parse data member doc blocks and signatures and place them in a minimalistic,
+ * JSON format.
+ */
+export class Docable {
 
   protected filepaths: string[];
   protected json_output: {[k: string]: string[]} = {};
-  protected output_file: string;
+  protected output_filepath: string;
 
-  constructor(filepaths: string[], outputFile: string) {
+  constructor(filepaths: string[], outputFilepath: string) {
     this.filepaths = filepaths;
-    this.output_file = outputFile;
+    this.output_filepath = outputFilepath;
   }
 
-  public run() {
-    this.filepaths.forEach(async (filepath: string) => {
+  public async run() {
+    for (let index in this.filepaths) {
+      const filepath = this.filepaths[index];
 
       const fileContents = await this.getFileContents(filepath);
 
-      // Get the full class name and only continue with the script if it's found
-      const fullClassName = this.getFullClassName(fileContents);
-      if (!fullClassName) {
-        console.log(`File "${filepath}" is missing the "/// Class:" comment at the top of the file.`);
+      // Get the full member name and only continue with the script if it's found
+      const fullMemberName = this.getFullMemberName(fileContents);
+      if (!fullMemberName) {
+        console.log(`File "${filepath}" is missing the "/// Member:" comment at the top of the file.`);
         Deno.exit(1);
       }
 
-      this.json_output[fullClassName as string] = [];
+      this.json_output[fullMemberName as string] = [];
 
       const members = this.getAllDataMembers(fileContents);
 
@@ -34,13 +39,18 @@ class Docable {
       }
 
       (members as string[]).forEach((member: string) => {
-        this.json_output[fullClassName as string].push(member);
+        this.json_output[fullMemberName as string].push("  " + member);
       });
 
-      console.log(this.json_output);
-    });
+    }
 
-    // await Deno.writeFile(this.output_filepath, encoder.encode(this.json_output));
+    try {
+      await this.writeOutputFile();
+      console.log(`Successfully created "${this.output_filepath}" file.`);
+    } catch (error) {
+      console.log(`Error occurred when creating "${this.output_filepath}" file. See stack trace below.`);
+      console.log(error);
+    }
   }
 
   protected getAllDataMembers(fileContents: string): boolean | string[] {
@@ -57,22 +67,17 @@ class Docable {
     return decoder.decode(await Deno.readFile(filepath));
   }
 
-  protected getFullClassName(fileContents: string): boolean | string {
-    const fullClassNameMatch = fileContents.match(/\/\/\/ Class:.+/g);
+  protected getFullMemberName(fileContents: string): boolean | string {
+    const fullMemberNameMatch = fileContents.match(/\/\/\/ Member:.+/g);
 
-    if (!fullClassNameMatch) {
+    if (!fullMemberNameMatch) {
       return false;
     }
 
-    return fullClassNameMatch[0].replace("/// Class: ", "");
+    return fullMemberNameMatch[0].replace("/// Member: ", "");
+  }
+
+  protected async writeOutputFile() {
+    await Deno.writeFile(this.output_filepath, encoder.encode(JSON.stringify(this.json_output, null, 2)));
   }
 }
-
-const d = new Docable(
-  [
-    "./src/http/server.ts",
-  ],
-  "./api_reference.json"
-);
-
-d.run();

@@ -1,4 +1,4 @@
-/// Class: Drash.Http.Server
+/// Member: Drash.Http.Server
 
 import { Drash } from "../../mod.ts";
 import {

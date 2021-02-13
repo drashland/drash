@@ -1,10 +1,12 @@
+/// Member: Drash.Interfaces.ServerConfigs
+
 import type { Drash } from "../../mod.ts";
 import type { ServerMiddleware } from "./server_middleware.ts";
 
 /**
  * Contains the type of ServerConfigs
- * @remarks
- * directory?: string
+ *
+ * directory
  *
  *     The path to the directory of the server on the filesystem.  This is
  *     used when resolving static paths, so make sure you have this set
@@ -13,7 +15,7 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *
  *         directory: `${await Deno.realpath('.')}`
  *
- * logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger
+ * logger
  *
  *     The server's logger. For example:
  *
@@ -28,9 +30,8 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *           },
  *         })
  *
- * memory_allocation?: {
- *   multipart_form_data?: number
- * }
+ * memory_allocation
+ *
  *     The amount of memory to allocate to certain parts of the codebase.
  *     For example, the multipart reader uses a default of 10MB, but you can
  *     override that default by specifying the following:
@@ -39,7 +40,7 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *           multipart_form_data: 128 // This would be translated to 128MB
  *         }
  *
- * middleware?: ServerMiddleware
+ * middleware
  *
  *     The middleware that the server will execute during compile time and
  *     runtime.
@@ -50,20 +51,20 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *           compile_time: []
  *         }
  *
- * pretty_links?: boolean
+ * pretty_links
  *
  *     Enabling pretty links allows your Drash server to check whether or
  *     not an index.html file exists in a static directory. For example, if
  *     /public/app/index.html exists, then you can go to /public/app and it
  *     will serve the index.html in that static directory.
  *
- * resources?: Drash.Interfaces.Resource[]
+ * resources
  *
  *     An array of resources that the server should register. Passing in 0
  *     resources means clients can't access anything on the server--because
  *     there aren't any resources.
  *
- * response_output?: string
+ * response_output
  *
  *     The fallback response Content-Type that the server should use. The
  *     response_output MUST be a proper MIME type. For example, the
@@ -71,7 +72,7 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *
  *         response_output: "application/json"
  *
- * static_paths?: string[]
+ * static_paths
  *
  *     An array of static paths. Static paths are made public to clients.
  *     This means they can access anything in static paths. For example, if

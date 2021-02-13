@@ -1,3 +1,5 @@
+/// Member: Drash.Exceptions.NameCollisionException
+
 /**
  * This class gives you a way to throw name collision errors. For example,
  * if you try to add two loggers via Drash.addLogger() with the same name,

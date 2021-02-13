@@ -1,3 +1,5 @@
+/// Member: Drash.Exceptions.InvalidPathException
+
 /**
  * This class is for throwing errors related to resource paths.
  */

@@ -1,9 +1,10 @@
+/// Member: Drash.Interfaces.ServerMiddleware
+
 import type { Drash } from "../../mod.ts";
 
 /**
  * Contains the type of ServerMiddleware.
  *
- * @remarks
  * before_request
  *
  *     An array of functions that take a Drash.Http.Request as a parameter.
@@ -13,25 +14,25 @@ import type { Drash } from "../../mod.ts";
  *
  *     An array of functions that take in a Drash.Http.Request as the first
  *     parameter, and a Drash.Http.Response as the second parameter.
- *     Method can be async.
+ *     Method can be async
  *
- * ```ts
- * function beforeRequestMiddleware (request: Drash.Http.Request): void {
- *   ...
- * }
- * async function afterRequestMiddleware (
- *   request: Drash.Http.Request,
- *   response: Drash.Http.Response
- * ): Promise<void> {
- *   ...
- * }
- * const server = new Drash.Http.Server({
- *   middleware: {
- *     before_request: [beforeRequestMiddleware],
- *     afterRequest: [afterRequestMiddleware]
- *   }
- * }
- * ```
+ * @example
+ *
+ *     function beforeRequestMiddleware (
+ *       request: Drash.Http.Request
+ *     ): void { ... }
+ *
+ *     async function afterRequestMiddleware (
+ *       request: Drash.Http.Request,
+ *       response: Drash.Http.Response
+ *     ): Promise<void> { ... }
+ *
+ *     const server = new Drash.Http.Server({
+ *       middleware: {
+ *         before_request: [beforeRequestMiddleware],
+ *         afterRequest: [afterRequestMiddleware]
+ *       }
+ *     }
  */
 export interface ServerMiddleware {
   // Middleware to execute during compile time. The data that's compiled during

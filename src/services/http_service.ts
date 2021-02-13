@@ -1,3 +1,5 @@
+/// Member: Drash.Services.HttpService
+
 import { Drash } from "../../mod.ts";
 import { MultipartReader } from "../../deps.ts";
 
