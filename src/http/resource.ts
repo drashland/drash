@@ -22,23 +22,24 @@ export class Resource implements Drash.Interfaces.Resource {
   /**
    * A property to hold the paths to access this resource.
    *
-   * All derived resource classes MUST define this property as static
-   * (e.g., static paths = ["path"];)
+   * All derived resource classes MUST define this property as static. For
+   * example, static paths = ["/path"].
    */
   public paths: string[] = [];
 
   /**
-   * A property to hold the expanded versions of the paths.
+   * A property to hold the expanded versions of the paths. See
+   * Drash.Interfaces.ResourcePaths for more information.
    */
   public paths_parsed: Drash.Interfaces.ResourcePaths[] = [];
 
   /**
-   * The request object.
+   * The request object that targeted this resource.
    */
   protected request: Drash.Http.Request;
 
   /**
-   * The response object.
+   * The response object that this resource will use to respond to the request.
    */
   protected response: Drash.Http.Response;
 
@@ -54,11 +55,11 @@ export class Resource implements Drash.Interfaces.Resource {
   /**
    * Construct an object of this class.
    *
-   * @param request - The request object.
-   * @param response - The response object.
-   * @param server - The server object.
-   * @param paths - The paths the resource accepts
-   * @param middleware - Any middleware for the resource
+   * @param request - See this.request.
+   * @param response - See this.response.
+   * @param server - See this.server.
+   * @param paths - See this.paths.
+   * @param middleware - See this.middleware.
    */
   constructor(
     request: Drash.Http.Request,

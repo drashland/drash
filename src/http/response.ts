@@ -10,6 +10,13 @@ import {
   STATUS_TEXT,
 } from "../../deps.ts";
 
+/**
+ * Options to help determine how the response object shoud behave.
+ *
+ * default_content_type
+ *
+ *     (optional) The default content type of the response (e.g., "text/html").
+ */
 export interface IOptions {
   default_content_type?: string;
 }
@@ -29,7 +36,7 @@ export class Response {
   public headers: Headers;
 
   /**
-   * The request object.
+   * The request object this response will respond to.
    */
   public request: Drash.Http.Request;
 
@@ -41,7 +48,7 @@ export class Response {
   public status_code: number = Status.OK;
 
   /**
-   * An object of options to help determine how this object should behave.
+   * See IOptions under Drash.Http.Response.
    */
   protected options: IOptions;
 
@@ -52,9 +59,8 @@ export class Response {
   /**
    * Construct an object of this class.
    *
-   * @param request - Contains the request object
-   *
-   * @param options - The response options
+   * @param request - See this.request.
+   * @param options - See IOptions under Drash.Http.Response.
    */
   constructor(request: Drash.Http.Request, options: IOptions = {}) {
     this.options = options;
@@ -81,12 +87,12 @@ export class Response {
 
   /**
    * Create a cookie to be sent in the response. Note: Once set, it cannot be
-   * read until the next request
+   * read until the next request.
    *
-   * @param cookie - Object holding all the properties for a cookie object
+   * @param cookie - The object holding all the properties for a cookie object.
    */
   public setCookie(cookie: Cookie): void {
-    let response = {
+    const response = {
       status: this.status_code,
       // The setCookie() method doesn't care what the body is. It only cares
       // about the response's headers. Our bodie is not assignable to the body
@@ -95,6 +101,7 @@ export class Response {
       body: "",
       headers: this.headers,
     };
+
     setCookie(response, cookie);
   }
 
@@ -104,7 +111,7 @@ export class Response {
    * @param cookieName - The cookie name to delete
    */
   public delCookie(cookieName: string): void {
-    let response = {
+    const response = {
       status: this.status_code,
       // The deleteCookie() method doesn't care what the body is. It only cares
       // about the response's headers. Our bodie is not assignable to the body
@@ -113,6 +120,7 @@ export class Response {
       body: "",
       headers: this.headers,
     };
+
     deleteCookie(response, cookieName);
   }
 
@@ -122,7 +130,7 @@ export class Response {
    * @returns The response in string form.
    */
   public generateResponse(): string {
-    let contentType = this.headers.get("Content-Type");
+    const contentType = this.headers.get("Content-Type");
 
     switch (contentType) {
       case "application/json":
@@ -157,7 +165,7 @@ export class Response {
    * the status message.
    */
   public getStatusMessage(): null | string {
-    let message = STATUS_TEXT.get(this.status_code);
+    const message = STATUS_TEXT.get(this.status_code);
     return message ? message : null;
   }
 
@@ -168,10 +176,10 @@ export class Response {
    * - If the status code is 200, then this will return "200 (OK)"
    * - If the status code is 404, then this will return "404 (Not Found)"
    *
-   * @returns The status code
+   * @returns The status code.
    */
   public getStatusMessageFull(): null | string {
-    let message = STATUS_TEXT.get(this.status_code);
+    const message = STATUS_TEXT.get(this.status_code);
     return message ? `${this.status_code} (${message})` : null;
   }
 
@@ -193,7 +201,7 @@ export class Response {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
-    let output: Drash.Interfaces.ResponseOutput = {
+    const output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: "",
@@ -214,8 +222,8 @@ export class Response {
    * request-resource-response lifecycle.
    */
   public async send(): Promise<Drash.Interfaces.ResponseOutput> {
-    let body = this.generateResponse();
-    let output: Drash.Interfaces.ResponseOutput = {
+    const body = this.generateResponse();
+    const output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: encoder.encode(body),
@@ -237,7 +245,7 @@ export class Response {
    * @returns The final output to be sent.
    */
   public sendStatic(): Drash.Interfaces.ResponseOutput {
-    let output: Drash.Interfaces.ResponseOutput = {
+    const output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: this.body as Uint8Array,
@@ -253,6 +261,11 @@ export class Response {
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Get this response's content type.
+   *
+   * @returns The content type.
+   */
   protected getContentType(): string {
     if (this.options.default_content_type) {
       return this.options.default_content_type;
