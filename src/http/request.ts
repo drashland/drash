@@ -19,7 +19,6 @@ export interface IOptions {
 }
 
 export class Request extends ServerRequest {
-
   public parsed_body: Drash.Interfaces.ParsedRequestBody = {
     content_type: "",
     data: undefined,

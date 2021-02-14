@@ -7,7 +7,6 @@ import type { Drash } from "../../mod.ts";
  * must be derived from this class.
  */
 export class Resource implements Drash.Interfaces.Resource {
-
   /**
    * A property to hold the middleware this resource uses.
    */
