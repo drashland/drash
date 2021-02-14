@@ -19,14 +19,20 @@ export interface IOptions {
 }
 
 export class Request extends ServerRequest {
+
   public parsed_body: Drash.Interfaces.ParsedRequestBody = {
     content_type: "",
     data: undefined,
   };
+
   public path_params: { [key: string]: string } = {};
+
   public url_query_params: { [key: string]: string } = {};
+
   public url_path: string;
+
   public resource: Drash.Http.Resource | null = null;
+
   protected original_request: ServerRequest;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -34,17 +40,17 @@ export class Request extends ServerRequest {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-     * Construct an object of this class.
-     *
-     * @param ServerRequest - originalRequest
-     *     The original Deno ServerRequest object that's used to help create this
-     *     Drash.Http.Request object. There are some data members that the
-     *     original request has that can't be attached to this object. Therefore,
-     *     we keep track of the original request if we ever want to access data
-     *     members from it. An example of a data member that we want to access is
-     *     the original request's body.
-     * @param IOptions - options to be used in the server
-     */
+   * Construct an object of this class.
+   *
+   * @param ServerRequest - originalRequest
+   *     The original Deno ServerRequest object that's used to help create this
+   *     Drash.Http.Request object. There are some data members that the
+   *     original request has that can't be attached to this object. Therefore,
+   *     we keep track of the original request if we ever want to access data
+   *     members from it. An example of a data member that we want to access is
+   *     the original request's body.
+   * @param IOptions - options to be used in the server
+   */
   constructor(originalRequest: ServerRequest, options?: IOptions) {
     super();
     this.headers = originalRequest.headers;

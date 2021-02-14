@@ -6,6 +6,7 @@
  * then this exception will be thrown because the names are colliding.
  */
 export class NameCollisionException extends Error {
+
   /**
    * A property to hold the error message associated with this
    * exception.

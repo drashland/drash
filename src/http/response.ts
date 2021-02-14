@@ -18,6 +18,7 @@ export interface IOptions {
  * Response handles sending a response to the client making the request.
  */
 export class Response {
+
   /**
    * A property to hold the body of this response.
    */

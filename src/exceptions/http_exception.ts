@@ -4,6 +4,7 @@
  * This class gives you a way to throw HTTP errors semantically.
  */
 export class HttpException extends Error {
+
   /**
    * A property to hold the HTTP response code associated with this
    * exception.

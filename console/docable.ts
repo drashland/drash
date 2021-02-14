@@ -39,6 +39,13 @@ export class Docable {
       }
 
       (members as string[]).forEach((member: string) => {
+        member = member
+          .replace(/   \*/g, " *")
+          .replace(/     \*/g, " *")
+          .replace(/  protected/g, "protected")
+          .replace(/  private/g, "private")
+          .replace(/  public/g, "public")
+          .replace(/  constructor/g, "constructor");
         this.json_output[fullMemberName as string].push(member);
       });
 
@@ -54,7 +61,8 @@ export class Docable {
   }
 
   protected getAllDataMembers(fileContents: string): boolean | string[] {
-    const members = fileContents.match(/\/\*\*\n[\s\S]*?(?=(;| {))/g);
+    const members = fileContents
+      .match(/\/\*\*\n[\s\S]*?(?=((\n\n)|( {}\n)|( {\n)|( = {)|(\n$)))/g);
 
     if (!members) {
       return false;

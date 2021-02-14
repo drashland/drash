@@ -27,7 +27,9 @@ interface IServices {
  * request-resource-response lifecycle.
  */
 export class Server {
+
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
+
   static REGEX_URI_REPLACEMENT = "([^/]+)";
 
   /**
