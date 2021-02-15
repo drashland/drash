@@ -1,6 +1,17 @@
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
+/**
+ * The structure of items in the json_output property.
+ *
+ * file
+ *
+ *     The file in question.
+ *
+ * members
+ *
+ *     The members in the file in question.
+ */
 interface IJsonOutput {
   file: string;
   members: string[];
@@ -24,15 +35,44 @@ interface IJsonOutput {
  */
 export class Docable {
 
+  /**
+   * A property to hold the list of file paths containing doc block info that
+   * will be written in the json_output property.
+   */
   protected filepaths: string[];
+
+  /**
+   * A property to hold the JSON that is written in the output file.
+   */
   protected json_output: {[k: string]: IJsonOutput} = {};
+
+  /**
+   * A property to hold the output filepath.
+   */
   protected output_filepath: string;
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR //////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Construct an object of this class.
+   *
+   * @param filepaths - An array of filepaths to check for doc blocks.
+   * @param outputFilepath - The filepath that this script will write to.
+   */
   constructor(filepaths: string[], outputFilepath: string) {
     this.filepaths = filepaths;
     this.output_filepath = outputFilepath;
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC /////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Run this script.
+   */
   public async run() {
     for (let index in this.filepaths) {
       const filepath = this.filepaths[index];
@@ -83,6 +123,17 @@ export class Docable {
     }
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED //////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Get all data members in the file contents in question.
+   *
+   * @param fileContents - The file contents containing the data members.
+   *
+   * @returns False if there are no members; an array of members if any.
+   */
   protected getAllDataMembers(fileContents: string): boolean | string[] {
     const members = fileContents
       .match(/\/\*\*\n[\s\S]*?(?=((\n\n)|( {}\n)|( {\n)|( = {)|(\n$)))/g);
@@ -99,10 +150,28 @@ export class Docable {
     return members;
   }
 
+  /**
+   * Get the file contents of the filepath in question.
+   *
+   * @param filepath - A filepath (e.g., /some/file/path.extension).
+   *
+   * @returns The contents.
+   */
   protected async getFileContents(filepath: string): Promise<string> {
     return decoder.decode(await Deno.readFile(filepath));
   }
 
+  /**
+   * Get the member's full name from the contents in question (e.g.,
+   * Drash.Http.Server).
+   *
+   * @param fileContents - The file contents containing the member's full name.
+   * The member's full name should be in a comment like the following:
+   *
+   *     /// Member: Drash.Http.Server
+   *
+   * @returns The member's full name.
+   */
   protected getFullMemberName(fileContents: string): boolean | string {
     const fullMemberNameMatch = fileContents.match(/\/\/\/ Member:.+/g);
 
@@ -113,7 +182,13 @@ export class Docable {
     return fullMemberNameMatch[0].replace("/// Member: ", "");
   }
 
+  /**
+   * Write to the output file.
+   */
   protected async writeOutputFile() {
-    await Deno.writeFile(this.output_filepath, encoder.encode(JSON.stringify(this.json_output, null, 2)));
+    await Deno.writeFile(
+      this.output_filepath,
+      encoder.encode(JSON.stringify(this.json_output, null, 2))
+    );
   }
 }
