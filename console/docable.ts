@@ -139,7 +139,7 @@ export class Docable {
   protected getAllDataMembers(fileContents: string): boolean | string[] {
     const members = fileContents
       .match(/\/\*\*\n[\s\S]*?(?=((\n\n)|( {}\n)|( {\n)|( = {)|(\n$)))/g);
-    //     \_________/\______________________________________/
+    //       \_______________/\______________________________________/
     //          |                          |
     //          v                          v
     //      See Regex Note 1            See Regex Note 2
