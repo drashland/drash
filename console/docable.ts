@@ -100,7 +100,6 @@ export class Docable {
       };
 
       (members as string[]).forEach((member: string) => {
-
         // We want to clean up the output of the JSON so we remove unnecessary
         // whitespace here
         member = member
