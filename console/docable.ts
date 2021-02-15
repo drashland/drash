@@ -73,7 +73,7 @@ export class Docable {
    * Run this script.
    */
   public async run() {
-    for (let index in this.filepaths) {
+    for (const index in this.filepaths) {
       const filepath = this.filepaths[index];
 
       const fileContents = await this.getFileContents(filepath);
