@@ -14,6 +14,7 @@
  * status
  *
  *     The response's status.
+ *
  * status_code
  *
  *     The response's status (e.g., 200), but under a semantic name.
