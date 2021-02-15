@@ -29,7 +29,7 @@ const d = new Docable(
     "./src/services/http_service.ts",
     "./src/services/string_service.ts",
   ],
-  "./api_reference.json"
+  "./api_reference.json",
 );
 
 d.run();

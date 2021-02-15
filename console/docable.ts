@@ -34,7 +34,6 @@ interface IJsonOutput {
  *   - (\n$)   -->  a new line where the new line is the end of the line
  */
 export class Docable {
-
   /**
    * A property to hold the list of file paths containing doc block info that
    * will be written in the json_output property.
@@ -44,7 +43,7 @@ export class Docable {
   /**
    * A property to hold the JSON that is written in the output file.
    */
-  protected json_output: {[k: string]: IJsonOutput} = {};
+  protected json_output: { [k: string]: IJsonOutput } = {};
 
   /**
    * A property to hold the output filepath.
@@ -82,13 +81,15 @@ export class Docable {
       // Get the full member name and only continue with the script if it's found
       const fullMemberName = this.getFullMemberName(fileContents);
       if (!fullMemberName) {
-        console.log(`File "${filepath}" is missing the "/// Member:" comment at the top of the file.`);
+        console.log(
+          `File "${filepath}" is missing the "/// Member:" comment at the top of the file.`,
+        );
         Deno.exit(1);
       }
 
       this.json_output[fullMemberName as string] = {
         file: filepath,
-        members: []
+        members: [],
       };
 
       const members = this.getAllDataMembers(fileContents);
@@ -111,14 +112,15 @@ export class Docable {
 
         this.json_output[fullMemberName as string].members.push(member);
       });
-
     }
 
     try {
       await this.writeOutputFile();
       console.log(`Successfully created "${this.output_filepath}" file.`);
     } catch (error) {
-      console.log(`Error occurred when creating "${this.output_filepath}" file. See stack trace below.`);
+      console.log(
+        `Error occurred when creating "${this.output_filepath}" file. See stack trace below.`,
+      );
       console.log(error);
     }
   }
@@ -137,11 +139,11 @@ export class Docable {
   protected getAllDataMembers(fileContents: string): boolean | string[] {
     const members = fileContents
       .match(/\/\*\*\n[\s\S]*?(?=((\n\n)|( {}\n)|( {\n)|( = {)|(\n$)))/g);
-      //     \_________/\______________________________________/
-      //          |                          |
-      //          v                          v
-      //      See Regex Note 1            See Regex Note 2
-      //      at top of file              at top of file
+    //     \_________/\______________________________________/
+    //          |                          |
+    //          v                          v
+    //      See Regex Note 1            See Regex Note 2
+    //      at top of file              at top of file
 
     if (!members) {
       return false;
@@ -188,7 +190,7 @@ export class Docable {
   protected async writeOutputFile() {
     await Deno.writeFile(
       this.output_filepath,
-      encoder.encode(JSON.stringify(this.json_output, null, 2))
+      encoder.encode(JSON.stringify(this.json_output, null, 2)),
     );
   }
 }
