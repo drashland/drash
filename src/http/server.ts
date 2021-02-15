@@ -740,7 +740,7 @@ export class Server {
 
     // We have to build the request and then parse it's body after because
     // constructors cannot be async
-    const request = new Drash.Http.Request(serverRequest, options);
+    const request = new Drash.Http.Request(serverRequest);
     await request.parseBody();
 
     return request;

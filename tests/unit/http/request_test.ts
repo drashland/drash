@@ -567,14 +567,14 @@ function getUrlPathTests() {
   Rhum.testCase("Returns / when Url is /", async () => {
     const serverRequest = members.mockRequest("/");
     const request = new Drash.Http.Request(serverRequest);
-    const url = request.getUrlPath(request);
+    const url = request.getUrlPath();
     Rhum.asserts.assertEquals("/", url);
   });
 
   Rhum.testCase("Returns the path when it contains no queries", async () => {
     const serverRequest = members.mockRequest("/api/v2/users");
     const request = new Drash.Http.Request(serverRequest);
-    const url = request.getUrlPath(request);
+    const url = request.getUrlPath();
     Rhum.asserts.assertEquals("/api/v2/users", url);
   });
 
@@ -585,7 +585,7 @@ function getUrlPathTests() {
         "/company/users?name=John&age=44",
       );
       const request = new Drash.Http.Request(serverRequest);
-      const url = request.getUrlPath(request);
+      const url = request.getUrlPath();
       Rhum.asserts.assertEquals("/company/users", url);
     },
   );
