@@ -1,14 +1,31 @@
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
+interface IJsonOutput {
+  file: string;
+  members: string[];
+}
+
 /**
  * Parse data member doc blocks and signatures and place them in a minimalistic,
  * JSON format.
+ *
+ * Regex Note 1: The initial expression which matches /**\n.
+ * Regex Note 2: After the initial expression, keep going until one of the
+ * following groups is matched. For example, "Hey regex, find /** and keep going
+ * until you find {}.  Stop at {} and do not include it in what you have
+ * matched." The groups to stop at are as follows:
+ *
+ *   - (\n\n)  -->  double new line
+ *   - ( {}\n) -->  {} followed by a new line
+ *   - ( {\n)  -->  { followed by a new line
+ *   - ( = {)  -->  = {
+ *   - (\n$)   -->  a new line where the new line is the end of the line
  */
 export class Docable {
 
   protected filepaths: string[];
-  protected json_output: {[k: string]: string[]} = {};
+  protected json_output: {[k: string]: IJsonOutput} = {};
   protected output_filepath: string;
 
   constructor(filepaths: string[], outputFilepath: string) {
@@ -29,7 +46,10 @@ export class Docable {
         Deno.exit(1);
       }
 
-      this.json_output[fullMemberName as string] = [];
+      this.json_output[fullMemberName as string] = {
+        file: filepath,
+        members: []
+      };
 
       const members = this.getAllDataMembers(fileContents);
 
@@ -49,7 +69,7 @@ export class Docable {
           .replace(/  public/g, "public")
           .replace(/  constructor/g, "constructor");
 
-        this.json_output[fullMemberName as string].push(member);
+        this.json_output[fullMemberName as string].members.push(member);
       });
 
     }
@@ -66,6 +86,11 @@ export class Docable {
   protected getAllDataMembers(fileContents: string): boolean | string[] {
     const members = fileContents
       .match(/\/\*\*\n[\s\S]*?(?=((\n\n)|( {}\n)|( {\n)|( = {)|(\n$)))/g);
+      //     \_________/\______________________________________/
+      //          |                          |
+      //          v                          v
+      //      See Regex Note 1            See Regex Note 2
+      //      at top of file              at top of file
 
     if (!members) {
       return false;
