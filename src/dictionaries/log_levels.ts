@@ -4,6 +4,15 @@ import type { Drash } from "../../mod.ts";
 
 /**
  * The log levels which are organized by rank in ascending order.
+ *
+ *   - Off - Use this to turn off logging for a specific message.
+ *   - Fatal - Use this to log a fatal message.
+ *   - Error - Use this to log an error message.
+ *   - Warn - Use this to log a warning message.
+ *   - Info - Use this to log an informative message.
+ *   - Debug - Use this to log a message that helps with debugging.
+ *   - Trace - Use this to log a message that helps with tracing.
+ *   - All - Use this to log a message despite a logger's log level.
  */
 export enum LogLevel {
   Off,

@@ -36,7 +36,6 @@ export interface IOptions {
  * The class that represents the HTTP request.
  */
 export class Request extends ServerRequest {
-
   /**
    * A property to hold the request's headers.
    */

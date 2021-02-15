@@ -39,6 +39,8 @@ export class Docable {
       }
 
       (members as string[]).forEach((member: string) => {
+        // We want to clean up the output of the JSON so we remove unnecessary
+        // whitespace here
         member = member
           .replace(/   \*/g, " *")
           .replace(/     \*/g, " *")
@@ -46,6 +48,7 @@ export class Docable {
           .replace(/  private/g, "private")
           .replace(/  public/g, "public")
           .replace(/  constructor/g, "constructor");
+
         this.json_output[fullMemberName as string].push(member);
       });
 
