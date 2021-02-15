@@ -87,11 +87,6 @@ export class Docable {
         Deno.exit(1);
       }
 
-      this.json_output[fullMemberName as string] = {
-        file: filepath,
-        members: [],
-      };
-
       const members = this.getAllDataMembers(fileContents);
 
       if (!members) {
@@ -99,7 +94,13 @@ export class Docable {
         Deno.exit(1);
       }
 
+      this.json_output[fullMemberName as string] = {
+        file: filepath,
+        members: [],
+      };
+
       (members as string[]).forEach((member: string) => {
+
         // We want to clean up the output of the JSON so we remove unnecessary
         // whitespace here
         member = member
