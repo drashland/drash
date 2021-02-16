@@ -300,7 +300,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.asserts.assertEquals(response.status, 200);
       Rhum.asserts.assertEquals(
         decoder.decode(response.body as ArrayBuffer),
-        '\"Drash\"',
+        '"Drash"',
       );
       Rhum.asserts.assertEquals(
         response.headers!.get("content-type"),
