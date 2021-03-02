@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="508px" height="508px" viewBox="0 0 508 508" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>back</title>
+    <g id="drash" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="polygons" transform="translate(96.000000, 9.000000)">
+            <polygon id="Triangle" fill="#109ED3" transform="translate(49.500000, 326.500000) rotate(-90.000000) translate(-49.500000, -326.500000) " points="49.5 289 125 364 -26 364"></polygon>
+            <polygon id="Triangle" fill="#10B0EC" transform="translate(49.500000, 251.500000) rotate(-270.000000) translate(-49.500000, -251.500000) " points="49.5 214 125 289 -26 289"></polygon>
+            <polygon id="Triangle" fill="#1788B3" transform="translate(49.500000, 413.500000) rotate(-270.000000) translate(-49.500000, -413.500000) " points="49.5 376 125 451 -26 451"></polygon>
+            <polygon id="Triangle" fill="#279D34" transform="translate(150.500000, 452.500000) rotate(-180.000000) translate(-150.500000, -452.500000) " points="150.5 415 226 490 75 490"></polygon>
+            <polygon id="Triangle" fill="#32B240" points="75.5 415 151 490 0 490"></polygon>
+            <polygon id="Triangle" fill="#2A8735" points="239.5 415 315 490 164 490"></polygon>
+            <polygon id="Triangle" fill="#CB0806" transform="translate(229.500000, 237.500000) rotate(-90.000000) translate(-229.500000, -237.500000) " points="229.5 200 305 275 154 275"></polygon>
+            <polygon id="Triangle" fill="#860404" transform="translate(229.500000, 389.500000) rotate(-90.000000) translate(-229.500000, -389.500000) " points="229.5 352 305 427 154 427"></polygon>
+            <polygon id="Triangle" fill="#FF0000" transform="translate(229.500000, 75.500000) rotate(-90.000000) translate(-229.500000, -75.500000) " points="229.5 38 305 113 154 113"></polygon>
+            <polygon id="Triangle" fill="#E10709" transform="translate(229.500000, 162.500000) rotate(-270.000000) translate(-229.500000, -162.500000) " points="229.5 125 305 200 154 200"></polygon>
+            <polygon id="Triangle" fill="#A7080A" transform="translate(229.500000, 314.500000) rotate(-270.000000) translate(-229.500000, -314.500000) " points="229.5 277 305 352 154 352"></polygon>
+            <polygon id="Triangle" fill="#D9BA06" points="162.5 176 238 251 87 251"></polygon>
+            <polygon id="Triangle" fill="#F4D002" transform="translate(85.500000, 213.500000) rotate(-180.000000) translate(-85.500000, -213.500000) " points="85.5 176 161 251 10 251"></polygon>
+        </g>
+    </g>
+</svg>
