@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="200" src="https://drash.land/assets/drash/img/drash.svg" alt="Drash logo">
+  <img height="200" src="./logo.svg" alt="Drash logo">
   <h1 align="center">Drash</h1>
 </p>
 <p align="center">A REST microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero 3rd party dependencies.</p>
