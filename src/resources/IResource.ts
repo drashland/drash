@@ -22,42 +22,23 @@
  * SOFTWARE.
  */
 
-/*
- * This file has the purpose of auto creating a TypeScript Map for the available
- * web mime types. The way we create it is by relying on extentions, for
- * example, a json extention will have a corresponding application/json mime.
+import { Request } from "../http/Request.ts";
+import { Response } from "../http/Response.ts";
+
+/**
+ * An interface that represents a Resource
  *
- * For now we are ignoring all mime types that are not associated with an
- * extention.
+ * @interface
+ * @since 2.0.0
  */
-
-const response = await fetch(
-  "https://cdn.jsdelivr.net/gh/jshttp/mime-db@master/db.json",
-);
-const data = await response.json();
-
-let output =`// This file was generated at ${new Date().toISOString()}\n`
-output += `export const MimeTypes = new Map<string, string>([`;
-const mimeTypes = new Map<string, string>();
-for (const key in data) {
-  if (!Object.prototype.hasOwnProperty.call(data, key)) {
-    continue;
-  }
-  const element = data[key];
-  if (!element.source) {
-    continue;
-  }
-  if (!element.extensions) {
-    continue;
-  }
-  for (const extension of element.extensions) {
-    output += `\n`;
-    mimeTypes.set(extension, key);
-    output += `  ["${extension}", "${key}"],`;
-  }
+export interface IResource {
+  CONNECT(request: Request): Promise<Response>;
+  DELETE(request: Request): Promise<Response>;
+  GET(request: Request): Promise<Response>;
+  HEAD(request: Request): Promise<Response>;
+  OPTIONS(request: Request): Promise<Response>;
+  PATCH(request: Request): Promise<Response>;
+  POST(request: Request): Promise<Response>;
+  PUT(request: Request): Promise<Response>;
+  TRACE(request: Request): Promise<Response>;
 }
-output += `\n]);`;
-Deno.writeFile(
-  `${Deno.cwd()}/src/domain/entities/MimeTypes.ts`,
-  new TextEncoder().encode(output),
-);

@@ -22,42 +22,28 @@
  * SOFTWARE.
  */
 
-/*
- * This file has the purpose of auto creating a TypeScript Map for the available
- * web mime types. The way we create it is by relying on extentions, for
- * example, a json extention will have a corresponding application/json mime.
+/**
+ * A custom class to represent a Config Error
  *
- * For now we are ignoring all mime types that are not associated with an
- * extention.
+ *     try {
+ *     } catch (error) {
+ *       if (error instanceof ConfigError) {
+ *         // Handle error as ConfigError
+ *       }
+ *     }
+ *
+ * @class
+ * @since 2.0.0
  */
-
-const response = await fetch(
-  "https://cdn.jsdelivr.net/gh/jshttp/mime-db@master/db.json",
-);
-const data = await response.json();
-
-let output =`// This file was generated at ${new Date().toISOString()}\n`
-output += `export const MimeTypes = new Map<string, string>([`;
-const mimeTypes = new Map<string, string>();
-for (const key in data) {
-  if (!Object.prototype.hasOwnProperty.call(data, key)) {
-    continue;
-  }
-  const element = data[key];
-  if (!element.source) {
-    continue;
-  }
-  if (!element.extensions) {
-    continue;
-  }
-  for (const extension of element.extensions) {
-    output += `\n`;
-    mimeTypes.set(extension, key);
-    output += `  ["${extension}", "${key}"],`;
+export class ConfigError extends Error {
+  /**
+   * @param {number} status - The status code for this error
+   * @param {string} [message] - The custom message for this error
+   *
+   * @since 2.0.0
+   */
+  public constructor(message?: string) {
+    super(message);
+    this.name = "ConfigError";
   }
 }
-output += `\n]);`;
-Deno.writeFile(
-  `${Deno.cwd()}/src/domain/entities/MimeTypes.ts`,
-  new TextEncoder().encode(output),
-);
