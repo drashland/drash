@@ -704,6 +704,7 @@ export function testMethods(
           originalCWD + `${boilerPlatePrefix}/package_react.json`,
         );
         copiedFile = await getFileContent(`tmp/package.json`);
+        copiedFile += "\n" // Some reason, the tsconfig.json file ONLY FOR REACT has the ending newline removed, which resulted in the below assertion failing, because our boilerplate file does have a newline at the end of the file. So this is more of a tiny hack really, as at first glance, I have no clue why the newline is removed in the copied file
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -734,6 +735,7 @@ export function testMethods(
           originalCWD + `${boilerPlatePrefix}/tsconfig_react.json`,
         );
         copiedFile = await getFileContent(`tmp/tsconfig.json`);
+        copiedFile += "\n" // Some reason, the tsconfig.json file ONLY FOR REACT has the ending newline removed, which resulted in the below assertion failing, because our boilerplate file does have a newline at the end of the file. So this is more of a tiny hack really, as at first glance, I have no clue why the newline is removed in the copied file
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
