@@ -49,7 +49,7 @@ export namespace Drash {
   /**
    * Drash version.
    */
-  export const version = "v1.4.1";
+  export const version = "v1.4.2";
 
   export namespace Dictionaries {
     export const LogLevels = log_levels.LogLevels;
