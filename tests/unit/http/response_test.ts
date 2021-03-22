@@ -316,6 +316,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       response.body = Deno.readFileSync("./tests/data/static_file.txt");
       const actual = response.sendStatic();
       const headers = new Headers();
+      response.headers.set("content-type", "undefined");
       headers.set("content-type", "undefined");
       const expected = {
         status: 200,
