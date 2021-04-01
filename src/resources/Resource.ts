@@ -43,7 +43,7 @@ import { HttpError } from "../domain/errors/HttpError.ts";
  * @class
  * @since 2.0.0
  */
-export class Resource implements IResource {
+export abstract class Resource implements IResource {
   /**
    * A property to hold the list of uri where a resource can be found
    *

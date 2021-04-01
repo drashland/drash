@@ -23,51 +23,40 @@
  */
 
 import { Status } from "../../../deps.ts";
-import { Handler } from "../Handler.ts";
-import { Request } from "../../http/Request.ts";
-import { Response } from "../../http/Response.ts";
 import { MimeTypes } from "../../domain/entities/MimeTypes.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
 import { IFileService } from "../../services/IFileService.ts";
+import { Request } from "../../http/Request.ts";
+import { Response } from "../../http/Response.ts";
+import { ResourceProxy } from "../ResourceProxy.ts";
+import { IResource } from "../IResource.ts";
 
-/**
- * The StaticFileHandler class that handles static assets
- *
- * @class
- * @since 2.0.0
- */
-export class StaticFileHandler extends Handler {
+export class StaticFileResourceProxy extends ResourceProxy {
   private fileService: IFileService;
-  private uri: string;
   private staticDirectory: string;
 
   public constructor(
+    original: IResource,
     fileService: IFileService,
-    uri: string,
-    staticDirectory: string
+    staticDirectory: string,
   ) {
-    super();
+    super(original);
     this.fileService = fileService;
-    this.uri = uri;
     this.staticDirectory = staticDirectory;
   }
 
-  public async handle(request: Request) {
-    if (request.url.startsWith(this.uri) === false) {
-      // We cannot statictly serve this request
-      return super.handle(request);
-    }
+  public async GET(request: Request) {
     const response = new Response();
     response.headers = new Headers();
 
     try {
       const prettyUri = this.prettyUri(request.url);
       response.body = await Deno.readFile(
-        `${this.staticDirectory}/${prettyUri}`
+        `${this.staticDirectory}/${prettyUri}`,
       );
       response.status = Status.OK;
       const mimeType = MimeTypes.get(
-        this.fileService.getFilenameExtension(prettyUri)
+        this.fileService.getFilenameExtension(prettyUri),
       );
       if (!mimeType) {
         throw new HttpError(415);

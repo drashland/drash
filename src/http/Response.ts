@@ -23,11 +23,11 @@
  */
 
 import {
+  Cookie,
+  deleteCookie,
+  getCookies,
   ServerResponse,
   setCookie,
-  getCookies,
-  deleteCookie,
-  Cookie,
 } from "../../deps.ts";
 
 /**
@@ -47,7 +47,7 @@ export class Response implements ServerResponse {
    * @returns {Map<string, string>} A map that contains all the cookies
    * @since 2.0.0
    */
-  public get cookies(): Map<string,string> {
+  public get cookies(): Map<string, string> {
     if (this._cookies.size !== 0) {
       // We already defined it for this request (cached)
       return this._cookies;
@@ -86,5 +86,20 @@ export class Response implements ServerResponse {
    */
   public deleteCookie(name: string) {
     deleteCookie(this, name);
+  }
+
+  // TODO: Make a better JSDoc
+  /**
+   * Use this method to render a response.
+   * @param {function(args=:T):Promise<string>} callback - The function used to render
+   * @param {...T} args - The rest parameter to be used on callback
+   * @returns {Promise<string>} The rendered body
+   * @since 2.0.0
+   */
+  public render<T extends unknown[]>(
+    callback: (args?: T) => Promise<string>,
+    ...args: T
+  ): Promise<string> {
+    return callback(args);
   }
 }

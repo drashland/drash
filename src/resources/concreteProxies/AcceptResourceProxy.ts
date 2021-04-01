@@ -27,12 +27,6 @@ import { Response } from "../../http/Response.ts";
 import { ResourceProxy } from "../ResourceProxy.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
 
-/**
- * The AcceptResourceProxy class is a Proxy that handles the logic for content negotiation between the server and the client
- *
- * @class
- * @since 2.0.0
- */
 export class AcceptResourceProxy extends ResourceProxy {
   public CONNECT(request: Request) {
     return this.execute(request, super.CONNECT(request));

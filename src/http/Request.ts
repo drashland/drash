@@ -40,6 +40,7 @@ import { HttpError } from "../domain/errors/HttpError.ts";
 export class Request extends ServerRequest {
   private parsedBody = new Map<string, string | FormFile | FormFile[]>();
   private _query = new Map<string, string>();
+  private _baseuri = "";
   private _cookies = new Map<string, string>();
 
   /**
@@ -78,6 +79,23 @@ export class Request extends ServerRequest {
       }
     }
     return this._cookies;
+  }
+
+  /**
+   * @returns {string} A string that contains the baseuri (without query)
+   * @since 2.0.0
+   */
+  public get baseuri(): string {
+    if (this._baseuri.length !== 0) {
+      // We already defined it for this request (cached)
+      return this._baseuri;
+    }
+    if (this.url === "/") {
+      this._baseuri = this.url;
+      return this._baseuri;
+    }
+    this._baseuri = this.url.split("?")[0];
+    return this._baseuri;
   }
 
   /**

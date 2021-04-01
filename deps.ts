@@ -11,6 +11,8 @@ export {
 
 export { MultipartReader } from "https://deno.land/std@0.90.0/mime/mod.ts";
 
+export { Moogle } from "https://deno.land/x/moogle/mod.ts"
+
 export type { FormFile } from "https://deno.land/std@0.90.0/mime/mod.ts";
 
 export type {

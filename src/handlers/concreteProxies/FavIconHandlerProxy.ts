@@ -22,77 +22,50 @@
  * SOFTWARE.
  */
 
+import { Status } from "../../../deps.ts";
 import { IHandler } from "../IHandler.ts";
 import { HandlerProxy } from "../HandlerProxy.ts";
-import { IFileService } from "../../services/IFileService.ts";
 import { Request } from "../../http/Request.ts";
 import { Response } from "../../http/Response.ts";
-import { Status } from "../../../deps.ts";
-import { MimeTypes } from "../../domain/entities/MimeTypes.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
+import { MimeTypes } from "../../domain/entities/MimeTypes.ts";
+import { IFileService } from "../../services/IFileService.ts";
 
-export class StaticFileHandlerProxy extends HandlerProxy {
+export class FavIconHandlerProxy extends HandlerProxy {
   private fileService: IFileService;
-  private uri: string;
-  private staticDirectory: string;
 
-  public constructor(
-    original: IHandler,
-    fileService: IFileService,
-    uri: string,
-    staticDirectory: string,
-  ) {
+  public constructor(original: IHandler, fileService: IFileService) {
     super(original);
     this.fileService = fileService;
-    this.uri = uri;
-    this.staticDirectory = staticDirectory;
   }
 
   public async handle(request: Request) {
     if (request.method.toUpperCase() !== "GET") {
-      // We only care about GET requests
       return super.handle(request);
     }
-    if (request.url.startsWith(this.uri) === false) {
-      // We cannot statictly serve this request
+    const filenameExtension = this.fileService.getFilenameExtension(
+      request.url,
+    );
+    if (filenameExtension !== "ico") {
       return super.handle(request);
     }
+
+    const mimeType = MimeTypes.get(filenameExtension);
+    if (!mimeType) {
+      throw new HttpError(415);
+    }
+
+    const headers = new Headers();
     const response = new Response();
-    response.headers = new Headers();
+    response.headers = headers;
 
     try {
-      const prettyUri = this.prettyUri(request.url);
-      response.body = await Deno.readFile(
-        `${this.staticDirectory}/${prettyUri}`,
-      );
+      response.body = await Deno.readFile(`${Deno.cwd()}${request.url}`);
+      headers.set("Content-Type", mimeType);
       response.status = Status.OK;
-      const mimeType = MimeTypes.get(
-        this.fileService.getFilenameExtension(prettyUri),
-      );
-      if (!mimeType) {
-        throw new HttpError(415);
-      }
-      response.headers.set("Content-Type", mimeType);
     } catch (error) {
       throw new HttpError(404);
     }
     return response;
-  }
-
-  private prettyUri(uri: string) {
-    if (uri.endsWith("/")) {
-      // If it ends with a /, append index.html
-      uri = `${uri}index.html`;
-    }
-    if (uri.startsWith("/")) {
-      // Remove / if it starts with it
-      uri = uri.substring(1);
-    }
-
-    if (this.fileService.getFilenameExtension(uri) === "") {
-      // No extention? Default to .html
-      return `${uri}.html`;
-    }
-    return uri;
   }
 }

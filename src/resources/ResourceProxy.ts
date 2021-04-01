@@ -28,7 +28,7 @@ import { IResource } from "./IResource.ts";
 /**
  * The ResourceProxy class is used to provide extra functionality to a Resource
  *
- *     class Logger extends Proxy{
+ *     class Logger extends ResourceProxy{
  *       public async GET(request: Request) {
  *         console.log("Before handling");
  *         const response = await super.GET(request);
@@ -41,7 +41,7 @@ import { IResource } from "./IResource.ts";
  * @class
  * @since 2.0.0
  */
-export class ResourceProxy implements IResource {
+export abstract class ResourceProxy implements IResource {
   private original: IResource;
 
   /**

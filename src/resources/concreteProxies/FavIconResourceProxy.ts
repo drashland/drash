@@ -31,12 +31,6 @@ import { Response } from "../../http/Response.ts";
 import { ResourceProxy } from "../ResourceProxy.ts";
 import { IResource } from "../IResource.ts";
 
-/**
- * The FavIconResourceProxy class is a Proxy that handles the logic of delivering `.ico` to the client
- *
- * @class
- * @since 2.0.0
- */
 export class FavIconResourceProxy extends ResourceProxy {
   private fileService: IFileService;
 

@@ -23,6 +23,7 @@
  */
 
 import { Request } from "../http/Request.ts";
+import { Response } from "../http/Response.ts";
 import { IHandler } from "./IHandler.ts";
 import { HttpError } from "../domain/errors/HttpError.ts";
 
@@ -68,7 +69,7 @@ export class Handler implements IHandler {
    * @returns {Promise<Response>} The last handler from the chaing
    * @since 2.0.0
    */
-  public handle(request: Request) {
+  public handle(request: Request): Promise<Response> {
     if (this.nextHandler) {
       return this.nextHandler.handle(request);
     }

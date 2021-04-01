@@ -22,41 +22,33 @@
  * SOFTWARE.
  */
 
-import { IHandler } from "./IHandler.ts";
-import { Request } from "../http/Request.ts";
+import { IHandler } from "../IHandler.ts";
+import { HandlerProxy } from "../HandlerProxy.ts";
+import { Request } from "../../http/Request.ts";
+import { HttpError } from "../../domain/errors/HttpError.ts";
 
-/**
- * The HandlerProxy class is used to provide extra functionality to a Handler
- *
- *     class MyHandlerProxy extends HandlerProxy {
- *       public async handle(request: Request) {
- *         console.log("Before handling");
- *         const response = super.handle(request);
- *         console.log("After handling");
- *         return response;
- *       }
- *     }
- *
- * @class
- * @since 2.0.0
- */
-export abstract class HandlerProxy implements IHandler {
-  private original: IHandler;
-
-  /**
-   * @param {IHandler} original - The original Resource to add functionality
-   *
-   * @since 2.0.0
-   */
+export class AcceptHandlerProxy extends HandlerProxy {
   public constructor(original: IHandler) {
-    this.original = original;
+    super(original);
   }
 
-  public setNext(handler: IHandler) {
-    return this.original.setNext(handler);
-  }
-
-  public handle(request: Request) {
-    return this.original.handle(request);
+  public async handle(request: Request) {
+    const accept = request.headers.get("Accept") ||
+      request.headers.get("accept");
+    if (!accept) {
+      return super.handle(request);
+    }
+    // We await for our original object to handle a response
+    const response = await super.handle(request);
+    const contentType = response.headers?.get("Content-Type");
+    if (!contentType) {
+      // No Content-Type added, so we error
+      throw new HttpError(406);
+    }
+    if (accept.includes(contentType) === false) {
+      // Content-Type is defined but doesn't have what user wants
+      throw new HttpError(406);
+    }
+    return response;
   }
 }
