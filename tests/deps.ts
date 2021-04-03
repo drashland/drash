@@ -1,4 +1,4 @@
-export { Rhum } from "https://deno.land/x/rhum@v1.1.8/mod.ts";
+export { Rhum } from "https://deno.land/x/rhum@v1.1.9/mod.ts";
 
 export * as path from "https://deno.land/std@0.92.0/path/mod.ts";
 
