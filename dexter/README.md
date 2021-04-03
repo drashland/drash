@@ -8,7 +8,7 @@ can be used throughout the request-resource-response lifecycle.
 import { Drash } from "https://deno.land/x/drash@v1.4.2/mod.ts";
 
 // Import the Dexter middleware function
-import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.4/dexter/mod.ts";
+import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.5/dexter/mod.ts";
 
 // Instantiate dexter
 const dexter = Dexter();
@@ -141,7 +141,7 @@ you want to use Dexter in one of your resources, then do the following:
    // File: app.ts
    import { Drash } from "https://deno.land/x/drash@v1.4.2/mod.ts";
    import { HomeResource } from "./home_resource.ts";
-   import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.4/dexter.ts";
+   import { Dexter } from "https://deno.land/x/drash_middleware@v0.7.5/dexter.ts";
 
    const dexter = Dexter({
      enabled: true,
