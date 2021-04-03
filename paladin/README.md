@@ -6,10 +6,10 @@ configurable and can be used throughout the request-resource-response lifecycle.
 This does not make your application bulletproof, but adds extra security layers.
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@v1.4.2/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
 
 // Import the Paladin middleware function
-import { Paladin } from "https://deno.land/x/drash_middleware@v0.7.4/paladin/mod.ts";
+import { Paladin } from "https://deno.land/x/drash_middleware@v0.7.5/paladin/mod.ts";
 
 // Instantiate paladin
 const paladin = Paladin();

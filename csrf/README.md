@@ -6,10 +6,10 @@ protection middleware inspired by
 can be simply placed as a middleware for your resources and you are all set!
 
 ```typescript
-import { Drash } from "https://deno.land/x/drash@v1.4.2/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
 
 // Import the Dexter middleware function
-import { CSRF } from "https://deno.land/x/drash_middleware@v0.7.4/csrf/mod.ts";
+import { CSRF } from "https://deno.land/x/drash_middleware@v0.7.5/csrf/mod.ts";
 
 // Instantiate csrf and generate the token.
 const csrf = CSRF();
