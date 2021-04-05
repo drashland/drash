@@ -1,4 +1,4 @@
-import { BumperService } from "https://raw.githubusercontent.com/drashland/services/master/ci/bumper_service.ts";
+import { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.2.1/mod.ts";
 import {
   bumpDependencyFiles,
   bumpVersionFiles,
