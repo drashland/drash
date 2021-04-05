@@ -68,7 +68,7 @@ look similar to the following:
    Filename: `/path/to/your/project/user_resource.ts`
 
    ```typescript
-   import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
 
    export class UserResource extends Drash.Http.Resource {
      static paths = ["/user"];
@@ -92,7 +92,7 @@ look similar to the following:
    Filename: `/path/to/your/project/app.ts`
 
    ```typescript
-   import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
    import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.5/tengine/mod.ts";
    import { UserResource } from "./user_resource.ts";
 

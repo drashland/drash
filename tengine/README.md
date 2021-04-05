@@ -97,7 +97,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
 1. Create your `app.ts` file.
 
    ```typescript
-   import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
    import { HomeResource } from "./home_resource.ts";
    import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.5/tengine/mod.ts";
 
@@ -131,7 +131,7 @@ This tutorial teaches you how to use Jae (Tengine's default template engine).
 2. Create your `home_resource.ts` file.
 
    ```typescript
-   import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
 
    export class HomeResource extends Drash.Http.Resource {
      static paths = ["/"];
@@ -260,7 +260,7 @@ This tutorial teaches you how to use Eta.
 1. Create your `app.ts` file.
 
    ```typescript
-   import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
    import { HomeResource } from "./home_resource.ts";
    import { Tengine } from "https://deno.land/x/drash_middleware@v0.7.5/tengine/mod.ts";
    import {
@@ -306,7 +306,7 @@ This tutorial teaches you how to use Eta.
 2. Create your `home_resource.ts` file.
 
    ```typescript
-   import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
 
    export class HomeResource extends Drash.Http.Resource {
      static paths = ["/"];

@@ -13,7 +13,7 @@ Simply add it to your Drash server's `middleware` config and you are all set!
 ## Usage
 
 ```ts
-import { Drash } from "https://deno.land/x/drash@v1.4.3/mod.ts";
+import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
 import { Cors } from "https://deno.land/x/drash_middleware@v0.7.5/cors/mod.ts";
 
 const server = new Drash.Http.Server({
