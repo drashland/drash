@@ -18,3 +18,5 @@ export { StaticFileHandlerProxy } from "./src/handlers/concreteProxies/StaticFil
 export type { HttpMethod } from "./src/domain/types/HttpMethod.ts";
 export { HttpError } from "./src/domain/errors/HttpError.ts";
 export { MimeTypes } from "./src/domain/entities/MimeTypes.ts";
+
+export { Status } from "./deps.ts";

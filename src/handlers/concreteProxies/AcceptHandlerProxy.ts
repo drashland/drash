@@ -28,10 +28,6 @@ import { Request } from "../../http/Request.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
 
 export class AcceptHandlerProxy extends HandlerProxy {
-  public constructor(original: IHandler) {
-    super(original);
-  }
-
   public async handle(request: Request) {
     const accept = request.headers.get("Accept") ||
       request.headers.get("accept");
