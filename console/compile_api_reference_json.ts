@@ -1,4 +1,4 @@
-import { Docable } from "./docable.ts";
+import { Docable } from "https://deno.land/x/docable@v0.0.1/mod.ts";
 
 const d = new Docable(
   [
@@ -32,4 +32,6 @@ const d = new Docable(
   "./api_reference.json",
 );
 
-d.run();
+const output = d.run();
+
+Deno.writeFileSync("./api_reference.json", new TextEncoder().encode(output));
