@@ -212,11 +212,16 @@ export class Response {
    * request-resource-response lifecycle.
    */
   public async send(): Promise<Drash.Interfaces.ResponseOutput> {
-    let body = this.generateResponse();
+    let body: Uint8Array | string = this.generateResponse();
+    if (this.body instanceof Uint8Array) {
+      body = this.body as Uint8Array;
+    } else {
+      body = encoder.encode(body)
+    }
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: encoder.encode(body),
+      body: body,
     };
 
     this.request.respond(output);
