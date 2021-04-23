@@ -119,7 +119,7 @@ export class Response {
    *
    * @returns The response in string form.
    */
-  public generateResponse(): string {
+  public generateResponse(): string | Uint8Array {
     let contentType = this.headers.get("Content-Type");
 
     switch (contentType) {
@@ -138,6 +138,9 @@ export class Response {
         }
         if (typeof this.body === "boolean") {
           return this.body.toString();
+        }
+        if (this.body instanceof Uint8Array) {
+          return this.body;
         }
         if (typeof this.body !== "string") {
           // final catch all, respond with a generic value
@@ -212,16 +215,14 @@ export class Response {
    * request-resource-response lifecycle.
    */
   public async send(): Promise<Drash.Interfaces.ResponseOutput> {
-    let body: Uint8Array | string = this.generateResponse();
-    if (this.body instanceof Uint8Array) {
-      body = this.body as Uint8Array;
-    } else {
-      body = encoder.encode(body)
+    let body = this.generateResponse();
+    if (!(body instanceof Uint8Array)) {
+      body = encoder.encode(body);
     }
     let output: Drash.Interfaces.ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
-      body: body,
+      body,
     };
 
     this.request.respond(output);
