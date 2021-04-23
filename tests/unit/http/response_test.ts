@@ -142,6 +142,24 @@ Rhum.testPlan("http/response_test.ts", () => {
       Rhum.asserts.assertEquals(body, '"Hello world!"');
     });
 
+    Rhum.testCase(
+      "Responds with the same body for binary",
+      () => {
+        let request = members.mockRequest("/", "get", {
+          headers: {
+            "Content-Type": "image/png",
+          },
+        });
+        const data = new Uint8Array([1, 2, 3]);
+        const Response = new Drash.Http.Response(request);
+        Response.headers.set("Content-Type", "image/png");
+        Response.body = data;
+        const body = Response.generateResponse();
+        console.log(typeof body);
+        Rhum.asserts.assertEquals(body, data);
+      },
+    );
+
     Rhum.testCase("Responds with the same body for any other types", () => {
       let request = members.mockRequest("/", "get", {
         headers: {
@@ -307,6 +325,33 @@ Rhum.testPlan("http/response_test.ts", () => {
         "application/json",
       );
     });
+
+    Rhum.testCase(
+      "Contains the correct binary data for the request",
+      async () => {
+        // Checks: status code, body and headers
+        const mock = members.mockRequest("/", "get", {
+          headers: {
+            "Content-Type": "image/png",
+          },
+        });
+        const data = new Uint8Array([1, 2, 3]);
+        const request = new Drash.Http.Request(mock);
+        const responseObj = new Drash.Http.Response(request);
+        responseObj.headers.set("Content-Type", "image/png");
+        responseObj.body = data;
+        const response = await responseObj.send();
+        Rhum.asserts.assertEquals(response.status, 200);
+        Rhum.asserts.assertEquals(
+          response.body,
+          data,
+        );
+        Rhum.asserts.assertEquals(
+          response.headers!.get("content-type"),
+          "image/png",
+        );
+      },
+    );
   });
 
   Rhum.testSuite("sendStatic()", () => {
