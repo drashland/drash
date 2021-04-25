@@ -193,7 +193,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       Rhum.asserts.assertEquals(response.body, new TextEncoder().encode(""));
       Rhum.asserts.assertEquals(response.status_code, 200);
       let expectedHeaders = new Headers();
-      expectedHeaders.set("content-type", "image/x-icon");
+      expectedHeaders.set("Content-Type", "image/x-icon");
       Rhum.asserts.assertEquals(response.headers, expectedHeaders);
     });
   });

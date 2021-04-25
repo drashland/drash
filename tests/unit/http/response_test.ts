@@ -68,13 +68,16 @@ Rhum.testPlan("http/response_test.ts", () => {
         value: "Drash",
       });
       Rhum.asserts.assertEquals(
-        Response.headers!.get("set-cookie"),
+        Response.headers!.get("Set-Cookie"),
         "Framework=Drash",
       );
       Response.delCookie("Framework");
+      // Before 0552eaf569ef910b0d132b6e60758f17a4519d91, the dataAppend function replaces the cookie key if it already exists.
+      // But after that, it seems that it will only be appended to the back.
+      // [1]: https://github.com/denoland/deno/blob/0552eaf569ef910b0d132b6e60758f17a4519d91/op_crates/fetch/20_headers.js#L74
       Rhum.asserts.assertEquals(
-        Response.headers!.get("set-cookie"),
-        "Framework=; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+        Response.headers!.get("Set-Cookie"),
+        "Framework=Drash, Framework=; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
       );
     });
   });
@@ -362,7 +365,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const actual = response.sendStatic();
       const headers = new Headers();
       response.headers.set("content-type", "undefined");
-      headers.set("content-type", "undefined");
+      headers.set("Content-Type", "undefined");
       const expected = {
         status: 200,
         headers: headers,
