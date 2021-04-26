@@ -68,13 +68,16 @@ Rhum.testPlan("http/response_test.ts", () => {
         value: "Drash",
       });
       Rhum.asserts.assertEquals(
-        Response.headers!.get("set-cookie"),
+        Response.headers!.get("Set-Cookie"),
         "Framework=Drash",
       );
       Response.delCookie("Framework");
+      // Before 0552eaf569ef910b0d132b6e60758f17a4519d91, the dataAppend function replaces the cookie key if it already exists.
+      // But after that, it seems that it will only be appended to the back.
+      // [1]: https://github.com/denoland/deno/blob/0552eaf569ef910b0d132b6e60758f17a4519d91/op_crates/fetch/20_headers.js#L74
       Rhum.asserts.assertEquals(
-        Response.headers!.get("set-cookie"),
-        "Framework=; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+        Response.headers!.get("Set-Cookie"),
+        "Framework=Drash, Framework=; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
       );
     });
   });
@@ -141,6 +144,24 @@ Rhum.testPlan("http/response_test.ts", () => {
       const body = Response.generateResponse();
       Rhum.asserts.assertEquals(body, '"Hello world!"');
     });
+
+    Rhum.testCase(
+      "Responds with the same body for binary",
+      () => {
+        let request = members.mockRequest("/", "get", {
+          headers: {
+            "Content-Type": "image/png",
+          },
+        });
+        const data = new Uint8Array([1, 2, 3]);
+        const Response = new Drash.Http.Response(request);
+        Response.headers.set("Content-Type", "image/png");
+        Response.body = data;
+        const body = Response.generateResponse();
+        console.log(typeof body);
+        Rhum.asserts.assertEquals(body, data);
+      },
+    );
 
     Rhum.testCase("Responds with the same body for any other types", () => {
       let request = members.mockRequest("/", "get", {
@@ -307,6 +328,33 @@ Rhum.testPlan("http/response_test.ts", () => {
         "application/json",
       );
     });
+
+    Rhum.testCase(
+      "Contains the correct binary data for the request",
+      async () => {
+        // Checks: status code, body and headers
+        const mock = members.mockRequest("/", "get", {
+          headers: {
+            "Content-Type": "image/png",
+          },
+        });
+        const data = new Uint8Array([1, 2, 3]);
+        const request = new Drash.Http.Request(mock);
+        const responseObj = new Drash.Http.Response(request);
+        responseObj.headers.set("Content-Type", "image/png");
+        responseObj.body = data;
+        const response = await responseObj.send();
+        Rhum.asserts.assertEquals(response.status, 200);
+        Rhum.asserts.assertEquals(
+          response.body,
+          data,
+        );
+        Rhum.asserts.assertEquals(
+          response.headers!.get("content-type"),
+          "image/png",
+        );
+      },
+    );
   });
 
   Rhum.testSuite("sendStatic()", () => {
@@ -317,7 +365,7 @@ Rhum.testPlan("http/response_test.ts", () => {
       const actual = response.sendStatic();
       const headers = new Headers();
       response.headers.set("content-type", "undefined");
-      headers.set("content-type", "undefined");
+      headers.set("Content-Type", "undefined");
       const expected = {
         status: 200,
         headers: headers,
