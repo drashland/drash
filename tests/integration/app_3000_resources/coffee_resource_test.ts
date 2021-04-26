@@ -59,46 +59,41 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       response = await members.fetch.post("http://localhost:3000/coffee/17/");
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
 
-      server.close();
+      await server.close();
     });
   });
 
-  // Rhum.testSuite("/coffee (url query params)", () => {
-  //   Rhum.testCase("works as expected with URL query params", async () => {
-  //     await runServer(server);
+  Rhum.testSuite("/coffee (url query params)", () => {
+    Rhum.testCase("works as expected with URL query params", async () => {
+      await runServer(server);
 
-  //     let response;
+      let response;
 
-  //     let data1 = { id: 18 };
-  //     const headers1 = new Headers();
-  //     headers1.set("Content-Type", "application/json")
-  //     headers1.set("Content-Length",  JSON.stringify(data1).length.toString())
+      const headers1 = new Headers();
+      headers1.set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+      headers1.set("Content-Length", ("id=18".length + 1).toString());
+      response = await fetch(
+        "http://localhost:3000/coffee/19?location=from_body&id=18",
+        {
+          headers: headers1,
+        },
+      );
+      Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-  //     response = await fetch(new Request(
-  //       "http://localhost:3000/coffee/19?location=from_body",
-  //       {
-  //         headers: headers1,
-  //         body: JSON.stringify(data1),
-  //       },
-  //     ));
-  //     Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
+      const headers2 = new Headers();
+      headers2.set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+      headers2.set("Content-Length", ("id=19".length + 1).toString());
+      response = await fetch(
+        "http://localhost:3000/coffee/19/?location=from_body&id=19",
+        {
+          headers: headers2,
+        },
+      );
+      Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-  //     let data2 = "id=19";
-  //     const headers2 = new Headers();
-  //     headers2.set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-  //     headers2.set("Content-Length", (data2.length + 1).toString());
-  //     response = await fetch(new Request(
-  //       "http://localhost:3000/coffee/19/?location=from_body",
-  //       {
-  //         headers: headers2,
-  //         body: data2,
-  //       },
-  //     ));
-  //     Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
-
-  //     await server.close();
-  //   });
-  // });
+      await server.close();
+    });
+  });
 });
 
 Rhum.run();
