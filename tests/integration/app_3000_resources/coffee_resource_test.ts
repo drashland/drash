@@ -71,14 +71,14 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       let t;
 
       response = await fetch(
-        "http://localhost:3000/coffee/19?location=from_query&id=18",
+        "http://localhost:3000/coffee?location=from_query&id=18",
         {},
       );
       t = await response.text();
       Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
 
       response = await fetch(
-        "http://localhost:3000/coffee/19?location=from_query&id=19",
+        "http://localhost:3000/coffee?location=from_query&id=19",
         {},
       );
       t = await response.text();
