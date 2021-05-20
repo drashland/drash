@@ -68,34 +68,21 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       await runServer(server);
 
       let response;
+      let t;
 
-      const headers1 = new Headers();
-      headers1.set(
-        "Content-Type",
-        "application/x-www-form-urlencoded;charset=UTF-8",
-      );
-      headers1.set("Content-Length", ("id=18".length + 1).toString());
       response = await fetch(
-        "http://localhost:3000/coffee/19?location=from_body&id=18",
-        {
-          headers: headers1,
-        },
+        "http://localhost:3000/coffee/19?location=from_query&id=18",
+        {},
       );
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
+      t = await response.text();
+      Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
 
-      const headers2 = new Headers();
-      headers2.set(
-        "Content-Type",
-        "application/x-www-form-urlencoded;charset=UTF-8",
-      );
-      headers2.set("Content-Length", ("id=19".length + 1).toString());
       response = await fetch(
-        "http://localhost:3000/coffee/19/?location=from_body&id=19",
-        {
-          headers: headers2,
-        },
+        "http://localhost:3000/coffee/19?location=from_query&id=19",
+        {},
       );
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
+      t = await response.text();
+      Rhum.asserts.assertEquals(t, '{"name":"Dark"}');
 
       await server.close();
     });
