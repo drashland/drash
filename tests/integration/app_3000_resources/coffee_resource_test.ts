@@ -75,14 +75,15 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         {},
       );
       t = await response.text();
+      console.log(t)
       Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
 
-      response = await fetch(
-        "http://localhost:3000/coffee?location=from_query&id=19",
-        {},
-      );
-      t = await response.text();
-      Rhum.asserts.assertEquals(t, '{"name":"Dark"}');
+      // response = await fetch(
+      //   "http://localhost:3000/coffee?location=from_query&id=19",
+      //   {},
+      // );
+      // t = await response.text();
+      // Rhum.asserts.assertEquals(t, '{"name":"Dark"}');
 
       await server.close();
     });
