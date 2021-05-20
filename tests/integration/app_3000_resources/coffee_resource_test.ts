@@ -75,7 +75,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         {},
       );
       t = await response.text();
-      console.log(t)
+      console.log(t);
       Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
 
       // response = await fetch(
