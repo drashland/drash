@@ -18,8 +18,8 @@ export default class CoffeeResource extends Drash.Http.Resource {
     let coffeeId: any = this.request.getPathParam("id");
     const location = this.request.getUrlQueryParam("location");
     if (location) {
-      if (location == "from_body") {
-        coffeeId = this.request.getBodyParam("id");
+      if (location == "from_query") {
+        coffeeId = this.request.getUrlQueryParam("id");
       }
     }
 
