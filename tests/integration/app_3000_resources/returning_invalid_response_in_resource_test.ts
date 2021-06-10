@@ -10,7 +10,7 @@ const server = new Drash.Http.Server({
   ],
 });
 
-Rhum.testPlan("coffee_resource_test.ts", () => {
+Rhum.testPlan("returning_invalid_response_in_resource_test.ts", () => {
   Rhum.testSuite("/invalid/returning/of/response", () => {
     Rhum.testCase("Error is thrown when nothing is returned", async () => {
       await runServer(server);

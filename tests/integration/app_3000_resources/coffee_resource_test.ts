@@ -11,46 +11,46 @@ const server = new Drash.Http.Server({
 });
 
 Rhum.testPlan("coffee_resource_test.ts", () => {
-  Rhum.testSuite("/coffee", () => {
+  Rhum.testSuite("/coffee (path params)", () => {
     Rhum.testCase("works as expected with path params", async () => {
       await runServer(server);
 
       let response;
 
-      response = await members.fetch.get("http://localhost:3000/coffee");
+      response = await fetch("http://localhost:3000/coffee");
       Rhum.asserts.assertEquals(
         await response.text(),
         '"Please specify a coffee ID."',
       );
 
-      response = await members.fetch.get("http://localhost:3000/coffee/");
+      response = await fetch("http://localhost:3000/coffee/");
       Rhum.asserts.assertEquals(
         await response.text(),
         '"Please specify a coffee ID."',
       );
 
-      response = await members.fetch.get("http://localhost:3000/coffee//");
+      response = await fetch("http://localhost:3000/coffee//");
       Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/17");
+      response = await fetch("http://localhost:3000/coffee/17");
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/17/");
+      response = await fetch("http://localhost:3000/coffee/17/");
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/18");
+      response = await fetch("http://localhost:3000/coffee/18");
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/18/");
+      response = await fetch("http://localhost:3000/coffee/18/");
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/19");
+      response = await fetch("http://localhost:3000/coffee/19");
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/19/");
+      response = await fetch("http://localhost:3000/coffee/19/");
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-      response = await members.fetch.get("http://localhost:3000/coffee/20");
+      response = await fetch("http://localhost:3000/coffee/20");
       Rhum.asserts.assertEquals(
         await response.text(),
         `\"Coffee with ID \\\"20\\\" not found.\"`,
@@ -58,15 +58,17 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
 
       response = await members.fetch.post("http://localhost:3000/coffee/17/");
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
+
+      await server.close();
     });
   });
 
-  Rhum.testSuite("/coffee", () => {
+  Rhum.testSuite("/coffee (url query params)", () => {
     Rhum.testCase("works as expected with URL query params", async () => {
       await runServer(server);
 
-      let data;
       let response;
+      let t;
 
       response = await fetch(
         "http://localhost:3000/coffee/19?location=from_query&id=18",
