@@ -52,11 +52,6 @@ export { green, red } from "https://deno.land/std@0.92.0/fmt/colors.ts";
 
 export { Moogle } from "https://deno.land/x/moogle@v1.0.0/mod.ts";
 
-// export {
-//   IndexService,
-//   ISearchResult,
-// } from "../services/index/index_service.ts";
-
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.2.1/ci/bumper_service.ts";
 
 export { ConsoleLogger } from "https://raw.githubusercontent.com/drashland/services/v0.2.1/loggers/console_logger.ts";
