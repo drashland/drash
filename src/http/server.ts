@@ -3,8 +3,7 @@ import {
   ConsoleLogger,
   HTTPOptions,
   HTTPSOptions,
-  IndexService,
-  ISearchResult,
+  Moogle,
   serve,
   Server as DenoServer,
   ServerRequest,
@@ -15,7 +14,7 @@ import { IOptions as IRequestOptions } from "./request.ts";
 
 interface IServices {
   http_service: Drash.Services.HttpService;
-  resource_index_service: IndexService;
+  resource_index_service: Moogle<Drash.Interfaces.Resource>;
 }
 
 /**
@@ -78,9 +77,7 @@ export class Server {
    */
   protected services: IServices = {
     http_service: new Drash.Services.HttpService(),
-    resource_index_service: new IndexService(
-      new Map<number, Drash.Interfaces.Resource>(),
-    ),
+    resource_index_service: new Moogle<Drash.Interfaces.Resource>(),
   };
 
   /**
@@ -915,7 +912,7 @@ export class Server {
     // Find the matching resource by comparing the request URL to a regex
     // pattern associated with a resource
     let matchedResource = false;
-    results.forEach((result: ISearchResult) => {
+    results.forEach((result) => {
       //result = (result as ISearchResult);
       // If we already matched a resource, then there is no need to parse any
       // further
@@ -925,7 +922,7 @@ export class Server {
 
       // Take the current result and see if it matches against the request URL
       const matchArray = request.url_path.match(
-        result.search_term,
+        result.searchTerm,
       );
 
       // If the request URL and result matched, then we know this result that we

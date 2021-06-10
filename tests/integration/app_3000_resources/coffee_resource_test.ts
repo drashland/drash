@@ -67,23 +67,14 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
     Rhum.testCase("works as expected with URL query params", async () => {
       await runServer(server);
 
-      let response;
-      let t;
-
-      response = await fetch(
-        "http://localhost:3000/coffee?location=from_query&id=18",
-        {},
+      const response = await fetch(
+        "http://localhost:3000/coffee/19?location=from_query&id=18",
+        {
+          method: "GET",
+        },
       );
-      t = await response.text();
-      console.log(t);
+      const t = await response.text();
       Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
-
-      // response = await fetch(
-      //   "http://localhost:3000/coffee?location=from_query&id=19",
-      //   {},
-      // );
-      // t = await response.text();
-      // Rhum.asserts.assertEquals(t, '{"name":"Dark"}');
 
       await server.close();
     });

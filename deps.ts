@@ -50,16 +50,7 @@ export type { Cookie } from "https://deno.land/std@0.92.0/http/cookie.ts";
 
 export { green, red } from "https://deno.land/std@0.92.0/fmt/colors.ts";
 
-export {
-  IndexService,
-} from "https://raw.githubusercontent.com/drashland/services/v0.2.1/index/index_service.ts";
-export type {
-  ISearchResult,
-} from "https://raw.githubusercontent.com/drashland/services/v0.2.1/index/index_service.ts";
-// export {
-//   IndexService,
-//   ISearchResult,
-// } from "../services/index/index_service.ts";
+export { Moogle } from "https://deno.land/x/moogle@v1.0.0/mod.ts";
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.2.1/ci/bumper_service.ts";
 
