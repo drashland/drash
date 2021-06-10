@@ -33,8 +33,8 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
           errMsg = err.message;
         }
         Rhum.asserts.assertEquals(
-          errMsg,
-          "User error. ./serve_typescript/tests/data/invalid_ts.ts:0:27 - Cannot find name 's'.",
+          errMsg.indexOf("Cannot find name 's'.") !== -1,
+          true,
         );
       },
     );
@@ -50,6 +50,9 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
             target: "/assets/compiled.ts",
           },
         ],
+        compilerOptions: {
+          lib: ["dom", "DOM.Iterable", "esnext"],
+        },
       });
       await serveTs.compile();
       await serveTs.run(
@@ -73,7 +76,8 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
           "    constructor(details) {\n" +
           "        super(details);\n" +
           "    }\n" +
-          "}\n",
+          "}\n" +
+          "const something = document.body;\n",
       );
     });
   });

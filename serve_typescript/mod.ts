@@ -7,6 +7,7 @@ interface IFile {
 
 interface IOptions {
   files: IFile[];
+  compilerOptions?: Deno.CompilerOptions;
 }
 
 export function ServeTypeScript(options: IOptions) {
@@ -34,31 +35,18 @@ export function ServeTypeScript(options: IOptions) {
       try {
         const { diagnostics, files } = await Deno.emit(
           file.source,
+          {
+            compilerOptions: options.compilerOptions ?? {},
+          },
         );
         const fileKey = Object.keys(files).find((filename) => {
           return filename.includes(".ts.js.map") === false;
         }) as string;
         const outputString = files[fileKey];
 
-        // Check if there were errors when bundling the clients code
-        if (diagnostics && diagnostics.length) {
-          const diagnostic = diagnostics[0]; // we only really care about throwing the first error
-          const filename = diagnostic.fileName;
-          const start = diagnostic.start;
-          if (filename && start) {
-            const cwd = Deno.cwd();
-            const separator = Deno.build.os === "windows" ? "\\" : "/";
-            const cwdSplit = cwd.split(separator);
-            const rootDir = cwdSplit[cwdSplit.length - 1];
-            const filenameSplit = filename.split(rootDir);
-            const pathToBrokenFile = "." +
-              filenameSplit[filenameSplit.length - 1]; // a shorter, cleaner display, eg "./server_typescript/..." instead of "file:///Users/..."
-            throw new Error(
-              `User error. ${pathToBrokenFile}:${start.line}:${start.character} - ${diagnostic.messageText}`,
-            );
-          } else {
-            throw new Error(`User error. ${diagnostic.messageText}`);
-          }
+        const formattedDiagnostics = Deno.formatDiagnostics(diagnostics);
+        if (formattedDiagnostics !== "") {
+          throw new Error(formattedDiagnostics);
         }
 
         // Store the compiled out in the

@@ -22,3 +22,5 @@ export class User extends Employee {
     super(details);
   }
 }
+
+const something = document.body;
