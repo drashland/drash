@@ -32,6 +32,9 @@ const serveTs = ServeTypeScript({
       target: "/ts/my_ts.ts", // the URI this file is accessible at (e.g., localhost:1447/ts/my_ts.ts)
     },
   ],
+  // compilerOptions: {
+  //   lib: ["dom", "DOM.Iterable", "esnext"]
+  // }
 });
 ```
 
@@ -59,6 +62,25 @@ URI that the file is accessible at. For example, if you want to serve your
 TypeScript file at the `/ts/my_ts.ts` URI, then define `target` as
 `/ts/my_ts.ts`. When a request is made to `http://yourserver.com/ts/my_ts.ts`,
 your compiled TypeScript will be returned as the response.
+
+### `compilerOptions`
+
+This property is optional, and is used when the middleware is emitting the
+source file. It is of type `Deno.compilerOptions`, and you can find more
+information in
+[Deno's Documentation](https://doc.deno.land/builtin/unstable#Deno.CompilerOptions).
+
+```ts
+const serverTs = ServerTypeScript({
+  files: [...],
+  compilerOptions: {
+    lib: ["dom", "DOM.Iterable", "esnext"] // most common libs to use when targetting the DOM
+  }
+});
+```
+
+That is just one of the many properties you can specify inside
+`compilerOptions`.
 
 ## Tutorial: Writing Front-end TypeScript
 
