@@ -50,7 +50,7 @@ export type { Cookie } from "https://deno.land/std@0.92.0/http/cookie.ts";
 
 export { green, red } from "https://deno.land/std@0.92.0/fmt/colors.ts";
 
-export { Moogle } from "https://deno.land/x/moogle@v0.0.8/mod.ts";
+export { Moogle } from "https://deno.land/x/moogle@v1.0.0/mod.ts";
 
 // export {
 //   IndexService,
