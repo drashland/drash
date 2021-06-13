@@ -145,7 +145,7 @@ export class Server {
     let response = this.buildResponse(request);
 
     try {
-      await this.executeMiddlewareBeforeRequest(request);
+      await this.executeMiddlewareBeforeRequest(request, response);
 
       // Is this request for the favicon?
       if (request.url == "/favicon.ico") {
@@ -863,10 +863,11 @@ https://github.com/drashland/deno-drash/issues/430 for more information regardin
    */
   protected async executeMiddlewareBeforeRequest(
     request: Drash.Http.Request,
+    response: Drash.Http.Response
   ): Promise<void> {
     if (this.middleware.before_request != null) {
       for (const middleware of this.middleware.before_request) {
-        await middleware(request);
+        await middleware(request, response);
       }
     }
   }
