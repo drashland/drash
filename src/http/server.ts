@@ -80,29 +80,6 @@ export class Server {
     resource_index_service: new Moogle<Drash.Interfaces.Resource>(),
   };
 
-  /**
-   * This server's list of static paths. HTTP requests to a static path are
-   * usually intended to retrieve some type of concrete resource (e.g., a
-   * CSS file or a JS file). If an HTTP request is matched to a static path
-   * and the resource the HTTP request is trying to get is found, then
-   * Drash.Http.Response will use its sendStatic() method to send the
-   * static asset back to the client.
-   *
-   * TODO(crookse) Change this to a Map.
-   */
-  protected static_paths: string[] | { [key: string]: string } = [];
-
-  /**
-   * This server's list of static paths as virtual paths. Virtual paths allow
-   * users to map a path that does not exist to a physical path on their
-   * filesystem. This is helpful when you want to structure your application's
-   * filesystem in a way that separates sever- and client-side code. Instead of
-   * giving end users access to your entire filesystem, you can give them access
-   * to specific directories by using virtual paths. Also, see
-   * `this.static_paths` for more information.
-   */
-  protected virtual_paths: Map<string, string> = new Map<string, string>();
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -118,8 +95,6 @@ export class Server {
     this.addMiddleware();
 
     this.addResources();
-
-    this.addStaticPaths();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -131,7 +106,8 @@ export class Server {
    *
    * @param serverRequest - The incoming request object.
    *
-   * @returns A Promise of ResponseOutput.
+   * @returns A Promise of ResponseOutput. See Drash.Interfaces.ResponseOutput
+   * for more information.
    */
   public async handleHttpRequest(
     serverRequest: ServerRequest,
@@ -141,23 +117,6 @@ export class Server {
 
     try {
       await this.executeMiddlewareBeforeRequest(request);
-
-      // Is this request for the favicon?
-      if (request.url == "/favicon.ico") {
-        return await this.handleHttpRequestForFavicon(request);
-      }
-
-      // Is this request for a static asset?
-      if (this.requestTargetsStaticPath(request)) {
-        return await this.handleHttpRequestForStaticPathAsset(request);
-      }
-
-      // Is this request for a virtual path asset?
-      if (this.requestTargetsVirtualPath(request)) {
-        return await this.handleHttpRequestForVirtualPathAsset(request);
-      }
-
-      // If all conditions above fail, then a resource is likely being requested
       return await this.handleHttpRequestForResource(request, response);
     } catch (error) {
       return await this.handleHttpRequestError(
@@ -175,7 +134,8 @@ export class Server {
    * @param resource - (optional) Pass in the resource that threw the error.
    * @param response - (optional) Pass in the response that threw the error.
    *
-   * @returns A Promise of ResponseOutput.
+   * @returns A Promise of ResponseOutput. See Drash.Interfaces.ResponseOutput
+   * for more information.
    */
   public async handleHttpRequestError(
     request: Drash.Http.Request,
@@ -236,35 +196,14 @@ export class Server {
   }
 
   /**
-   * Handle HTTP requests for the favicon. This method only exists to
-   * short-circuit favicon requests--preventing the requests from clogging
-   * the logs.
+   * Handle an HTTP request to a resource.
    *
-   * @param request - The request object
+   * @param request - See Drash.Http.Request.
+   * @param response - See Drash.Http.Response.
    *
-   * @returns The response as stringified JSON. This is only used for
-   * unit testing purposes.
+   * @returns A Promise of ResponseOutput. See Drash.Interfaces.ResponseOutput
+   * for more information.
    */
-  public async handleHttpRequestForFavicon(
-    request: Drash.Http.Request,
-  ): Promise<Drash.Interfaces.ResponseOutput> {
-    const response = this.buildResponse(request);
-    response.body = "";
-    response.headers = new Headers();
-    response.status_code = 200;
-
-    response.headers.set("Content-Type", "image/x-icon");
-
-    try {
-      response.body = await Deno.readFile(
-        `${await Deno.realPath(".")}/favicon.ico`,
-      );
-    } catch (error) {
-    }
-
-    return response.send();
-  }
-
   public async handleHttpRequestForResource(
     request: Drash.Http.Request,
     response: Drash.Http.Response,
@@ -302,129 +241,6 @@ export class Server {
 
     this.log("Sending response. " + response.status_code + ".");
     return response.send();
-  }
-
-  /**
-   * Handle HTTP requests for static path assets.
-   *
-   * @param request - The request object
-   *
-   * @returns The response as stringified JSON. This is only used for unit
-   * testing purposes.
-   */
-  public async handleHttpRequestForStaticPathAsset(
-    request: Drash.Http.Request,
-  ): Promise<Drash.Interfaces.ResponseOutput> {
-    const response = this.buildResponse(request);
-
-    try {
-      response.headers.set(
-        "Content-Type",
-        this.services.http_service.getMimeType(request.url, true) ||
-          "text/plain",
-      );
-
-      // Two things are happening here:
-      // 1. If pretty_links is not enabled, then serve what was requested; or
-      // 2. If the request.url has an extension (e.g., .js), then serve the
-      // requested asset. Since this occurs after the MIME code above, the
-      // client should receive a proper response in the proper format.
-      if (!this.configs.pretty_links || request.url.split(".")[1]) {
-        try {
-          // Try to read the file if it exists
-          response.body = await Deno.readFile(
-            `${this.configs.directory}/${request.url}`,
-          );
-          await this.executeMiddlewareAfterRequest(
-            request,
-            response,
-          );
-        } catch (error) {
-          // If the file doesn't exist, run the middleware just in case
-          // ServeTypeScript is being used. If it's being used, then the
-          // middleware will return a response body.
-          await this.executeMiddlewareAfterRequest(
-            request,
-            response,
-          );
-        }
-        // If there's a response body, then we know the middleware created a
-        // response body and we can send the response
-        if (response.body) {
-          return response.sendStatic();
-        }
-
-        // Otherwise, throw a normal error. We don't really care about the error
-        // type or error message because the catch block below will handle all
-        // of that  -- returning a 404 Not Found error.
-        throw new Error();
-      }
-
-      // If pretty links are enabled (that is, the code above was not executed),
-      // then see if we can read an index.html based on the requested URL. For
-      // example, if the request URL is /hello, then we will check to see if
-      // /hello/index.html exists by trying to read /hello/index.html.
-      response.headers.set("Content-Type", "text/html");
-      const path = `${this.configs.directory}${request.url}`;
-      let contents = await Deno.readFile(
-        `${path}/index.html`,
-      );
-      // If an index.html file does not exist, then maybe the client is trying
-      // to request a different HTML file, so let's try reading the requested
-      // URL instead.
-      if (!contents) {
-        contents = await Deno.readFile(path);
-      }
-      response.body = contents;
-
-      await this.executeMiddlewareAfterRequest(request, response);
-
-      return response.sendStatic();
-    } catch (error) {
-      return await this.handleHttpRequestError(
-        request,
-        new Drash.Exceptions.HttpException(error.code ?? 404, error.message),
-      );
-    }
-  }
-
-  /**
-   * Handle HTTP requests for virtual path assets.
-   *
-   * @param request - The request object.
-   *
-   * @returns The response as stringified JSON. This is only used for unit
-   * testing purposes.
-   */
-  public async handleHttpRequestForVirtualPathAsset(
-    request: Drash.Http.Request,
-  ): Promise<Drash.Interfaces.ResponseOutput> {
-    const response = this.buildResponse(request);
-
-    try {
-      response.headers.set(
-        "Content-Type",
-        this.services.http_service.getMimeType(request.url, true) ||
-          "text/plain",
-      );
-
-      const virtualPath = request.url.split("/")[1];
-      const physicalPath = this.virtual_paths.get("/" + virtualPath);
-      const fullPath = `${await Deno.realPath(".")}/${physicalPath}${
-        request.url.replace("/" + virtualPath, "")
-      }`;
-
-      response.body = await Deno.readFile(fullPath);
-
-      await this.executeMiddlewareAfterRequest(request, response);
-
-      return response.sendStatic();
-    } catch (error) {
-      return await this.handleHttpRequestError(
-        request,
-        new Drash.Exceptions.HttpException(error.code ?? 404, error.message),
-      );
-    }
   }
 
   /**
@@ -608,71 +424,6 @@ export class Server {
         this.addResource(resourceClass);
       },
     );
-  }
-
-  /**
-   * Add a static path for serving static assets like CSS files, JS files,
-   * PDF files, etc.
-   *
-   * @param path - The path where the static assets are located.
-   * @param virtualPath - Is this a virtual path?
-   */
-  protected addStaticPath(
-    path: string,
-    virtualPath?: string,
-  ): void {
-    if (virtualPath) {
-      this.virtual_paths.set(virtualPath, path);
-      return;
-    }
-
-    (this.static_paths as string[]).push(path);
-  }
-
-  /**
-   * Add static paths passed in via configs.
-   */
-  protected addStaticPaths(): void {
-    const paths = this.configs.static_paths;
-
-    if (paths) {
-      if (!this.configs.directory) {
-        throw new Drash.Exceptions.ConfigsException(
-          `Static paths are being used, but a directory config was not specified`,
-        );
-      }
-    }
-
-    // Assume everything in the array is a string
-    if (Array.isArray(paths)) {
-      paths.forEach((path: string) => {
-        if (typeof path != "string") {
-          throw new Drash.Exceptions.ConfigsException(
-            `Static path must be a string`,
-          );
-        }
-        this.addStaticPath(path);
-      });
-      return;
-    }
-
-    // Assume the key is the virtual path and the value is the physical path
-    for (const virtualPath in paths) {
-      if (typeof virtualPath != "string") {
-        throw new Drash.Exceptions.ConfigsException(
-          `Virtual path must be a string`,
-        );
-      }
-
-      const physicalPath = paths[virtualPath];
-      if (typeof physicalPath != "string") {
-        throw new Drash.Exceptions.ConfigsException(
-          `Virtual path must be a string`,
-        );
-      }
-
-      this.addStaticPath(physicalPath, virtualPath);
-    }
   }
 
   /**
@@ -1120,6 +871,10 @@ export class Server {
    * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
    * or Drash.Http.Response.
    *
+   * @param request - See Drash.Http.Request.
+   * @param response - See Drash.Http.Response.
+   * @param resource - See Drash.Http.Resource.
+   *
    * @return If the response returned from a method is what the returned value should be
    */
   protected isValidResponse(
@@ -1187,59 +942,5 @@ export class Server {
     }
 
     this.configs.logger.debug("[syslog] " + message);
-  }
-
-  /**
-   * Is the request targeting a static path?
-   *
-   * @param request - The request object
-   *
-   * @returns Either true or false. If the request targets a static path then it
-   * returns true. Otherwise it returns false.
-   */
-  protected requestTargetsStaticPath(request: Drash.Http.Request): boolean {
-    if (this.static_paths.length <= 0) {
-      return false;
-    }
-
-    // If the request URL is "/public/assets/js/bundle.js", then we take out
-    // "/public" and use that to check against the static paths
-    const staticPath = request.url.split("/")[1];
-
-    // Prefix with a leading slash, so it can be matched properly
-    const requestUrl = `/${staticPath}`;
-
-    if ((this.static_paths as string[]).indexOf(requestUrl) == -1) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Is the request targeting a virtual path?
-   *
-   * @param request - The request object.
-   *
-   * @returns True if yes; false if no or if there are not any virtual paths
-   * defined.
-   */
-  protected requestTargetsVirtualPath(serverRequest: ServerRequest): boolean {
-    if (this.virtual_paths.size <= 0) {
-      return false;
-    }
-
-    // If the request URL is "/public/assets/js/bundle.js", then we take out
-    // "/public" and use that to check against the virtual paths
-    const virtualPath = serverRequest.url.split("/")[1];
-
-    // Prefix with a leading slash, so it can be matched properly
-    const requestUrl = `/${virtualPath}`;
-
-    if (!this.virtual_paths.has(requestUrl)) {
-      return false;
-    }
-
-    return true;
   }
 }

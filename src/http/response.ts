@@ -231,28 +231,6 @@ export class Response {
     return output;
   }
 
-  /**
-   * Send the response of a static asset (e.g., a CSS file, JS file, PDF file,
-   * etc.) to the client making the request.
-   *
-   * @param file - The file that will be served to the client.
-   * @param contents - The content in a `Uint8Array`.
-   *
-   * @returns The final output to be sent.
-   */
-  public sendStatic(): Drash.Interfaces.ResponseOutput {
-    let output: Drash.Interfaces.ResponseOutput = {
-      status: this.status_code,
-      headers: this.headers,
-      body: this.body as Uint8Array,
-    };
-
-    this.request.respond(output);
-
-    output.status_code = this.status_code;
-    return output;
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

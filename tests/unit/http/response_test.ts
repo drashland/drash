@@ -357,28 +357,6 @@ Rhum.testPlan("http/response_test.ts", () => {
     );
   });
 
-  Rhum.testSuite("sendStatic()", () => {
-    Rhum.testCase("Returns the contents if a file is passed in", async () => {
-      const request = members.mockRequest("/");
-      const response = new Drash.Http.Response(request);
-      response.body = Deno.readFileSync("./tests/data/static_file.txt");
-      const actual = response.sendStatic();
-      const headers = new Headers();
-      response.headers.set("content-type", "undefined");
-      headers.set("Content-Type", "undefined");
-      const expected = {
-        status: 200,
-        headers: headers,
-        body: Deno.build.os === "windows"
-          ? new TextEncoder().encode("test\r\n")
-          : new TextEncoder().encode("test\n"),
-      };
-      Rhum.asserts.assertEquals(actual.status, expected.status);
-      Rhum.asserts.assertEquals(actual.headers, expected.headers);
-      Rhum.asserts.assertEquals(actual.body, expected.body);
-    });
-  });
-
   Rhum.testSuite("redirect()", () => {
     Rhum.testCase("Returns the correct data that was sent across", async () => {
       const request = members.mockRequest("/", "get", {

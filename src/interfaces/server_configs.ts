@@ -2,16 +2,7 @@ import type { Drash } from "../../mod.ts";
 import type { ServerMiddleware } from "./server_middleware.ts";
 
 /**
- * Contains the type of ServerConfigs
- * @remarks
- * directory?: string
- *
- *     The path to the directory of the server on the filesystem.  This is
- *     used when resolving static paths, so make sure you have this set
- *     correctly if you are serving static paths. A quick way to implement
- *     this could be the following:
- *
- *         directory: `${await Deno.realpath('.')}`
+ * Below are the configs explained in detail.
  *
  * logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger
  *
@@ -50,13 +41,6 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *           compile_time: []
  *         }
  *
- * pretty_links?: boolean
- *
- *     Enabling pretty links allows your Drash server to check whether or
- *     not an index.html file exists in a static directory. For example, if
- *     /public/app/index.html exists, then you can go to /public/app and it
- *     will serve the index.html in that static directory.
- *
  * resources?: Drash.Interfaces.Resource[]
  *
  *     An array of resources that the server should register. Passing in 0
@@ -70,21 +54,11 @@ import type { ServerMiddleware } from "./server_middleware.ts";
  *     following would have the server default to JSON responses:
  *
  *         response_output: "application/json"
- *
- * static_paths?: string[]
- *
- *     An array of static paths. Static paths are made public to clients.
- *     This means they can access anything in static paths. For example, if
- *     you have /public as a static path, then clients can look at things
- *     under your /path/to/your/server/public directory.
  */
 export interface ServerConfigs {
-  directory?: string;
   logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger;
   memory_allocation?: { multipart_form_data?: number };
   middleware?: ServerMiddleware;
-  pretty_links?: boolean;
   resources?: Drash.Interfaces.Resource[];
   response_output?: string;
-  static_paths?: string[] | { [key: string]: string };
 }
