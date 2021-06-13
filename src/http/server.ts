@@ -833,7 +833,7 @@ export class Server {
    */
   protected async executeMiddlewareBeforeRequest(
     request: Drash.Http.Request,
-    response: Drash.Http.Response
+    response: Drash.Http.Response,
   ): Promise<void> {
     if (this.middleware.before_request != null) {
       for (const middleware of this.middleware.before_request) {
