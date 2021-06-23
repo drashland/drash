@@ -22,7 +22,6 @@ Rhum.testPlan("http/middleware_test.ts", () => {
 
     Rhum.testCase("compile_time", async () => {
       let server = new Drash.Http.Server({
-        directory: ".",
         middleware: {
           compile_time: [
             CompileTimeMiddleware(),

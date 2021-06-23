@@ -185,19 +185,6 @@ Rhum.testPlan("http/server_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("handleHttpRequestForFavicon", () => {
-    Rhum.testCase("Returns the correct response", async () => {
-      const request = members.mockRequest("/favicon.ico", "get");
-      const server = new Drash.Http.Server({});
-      const response = await server.handleHttpRequestForFavicon(request);
-      Rhum.asserts.assertEquals(response.body, new TextEncoder().encode(""));
-      Rhum.asserts.assertEquals(response.status_code, 200);
-      let expectedHeaders = new Headers();
-      expectedHeaders.set("Content-Type", "image/x-icon");
-      Rhum.asserts.assertEquals(response.headers, expectedHeaders);
-    });
-  });
-
   Rhum.testSuite("run()", () => {
     Rhum.testCase("Runs a server", async () => {
       class Resource extends Drash.Http.Resource {
