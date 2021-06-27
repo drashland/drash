@@ -246,7 +246,7 @@ function getBodyFileTests() {
       "--------------------------434049563556637648550474",
       128,
     );
-    const pb: Drash.Interfaces.ParsedRequestBody = {
+    const pb: Drash.Interfaces.IParsedRequestBody = {
       content_type: "multipart/form-data",
       data: form,
     };
@@ -274,7 +274,7 @@ function getBodyFileTests() {
       "--------------------------434049563556637648550474",
       128,
     );
-    const pb: Drash.Interfaces.ParsedRequestBody = {
+    const pb: Drash.Interfaces.IParsedRequestBody = {
       content_type: "multipart/form-data",
       data: form,
     };
@@ -334,7 +334,7 @@ function getBodyParamTests() {
         "--------------------------434049563556637648550474",
         128,
       );
-      const pb: Drash.Interfaces.ParsedRequestBody = {
+      const pb: Drash.Interfaces.IParsedRequestBody = {
         content_type: "multipart/form-data",
         data: form,
       };

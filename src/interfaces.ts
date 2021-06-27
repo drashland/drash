@@ -30,7 +30,7 @@ interface KeyValuePairs {
 }
 
 /**
- * Contains the type of ParsedRequestBody
+ * Contains the type of IParsedRequestBody
  * @remarks
  * content_type: string
  *
@@ -41,7 +41,7 @@ interface KeyValuePairs {
  *
  *     The data passed in the body of the request.
  */
-export interface ParsedRequestBody {
+export interface IParsedRequestBody {
   content_type: string;
   data: undefined | MultipartFormData | KeyValuePairs;
 }

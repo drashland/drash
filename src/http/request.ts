@@ -7,7 +7,7 @@ import {
   ServerRequest,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
-import { ParsedRequestBody, IResponseOutput } from "../interfaces.ts";
+import { IParsedRequestBody, IResponseOutput } from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
 import { Server } from "./server.ts";
@@ -25,7 +25,7 @@ interface IRequest {
 }
 
 export class Request extends ServerRequest implements IRequest {
-  public parsed_body: ParsedRequestBody = {
+  public parsed_body: IParsedRequestBody = {
     content_type: "",
     data: undefined,
   };
@@ -131,7 +131,7 @@ export class Request extends ServerRequest implements IRequest {
    *
    * @return The parsed body as an object
    */
-  public getAllBodyParams(): ParsedRequestBody {
+  public getAllBodyParams(): IParsedRequestBody {
     return this.parsed_body;
   }
 
@@ -436,7 +436,7 @@ export class Request extends ServerRequest implements IRequest {
    */
   public async parseBody(
     options?: IOptions,
-  ): Promise<ParsedRequestBody> {
+  ): Promise<IParsedRequestBody> {
     if ((await this.hasBody()) === false) {
       return {
         content_type: "",
