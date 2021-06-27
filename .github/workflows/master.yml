@@ -21,25 +21,28 @@ jobs:
       - name: Install Deno
         uses: denolib/setup-deno@master
 
-      - name: Unit
-        run: deno test --allow-net --allow-write --allow-read --allow-env --config tsconfig.json tests/unit/
+      - name: Unit Tests: Create App (local)
+        run: |
+          deno cache create_app.ts
+          deno test tests/console/create_app/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
 
-      - name: Integration
+      - name: Unit Tests: Create App (http)
+        run: |
+          deno test tests/unit/console/create_app/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
+
+      - name: Unit Tests: Console
+        run: deno test --allow-net --allow-write --allow-read --allow-env --config tsconfig.json tests/unit/console
+
+      - name: Unit Tests: Core
+        run: deno test --allow-net --allow-write --allow-read --allow-env --config tsconfig.json tests/unit/src/core
+
+      - name: Integration Tests
         run: |
           deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/
           # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/
           deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/
 
-      - name: Create App (local)
-        run: |
-          deno cache create_app.ts
-          deno test tests/cli/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
-
-      - name: Create App (http)
-        run: |
-          deno test tests/cli/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
-
-      - name: Create App API Server Runs
+      - name: Check: `deno run` works on app created by create-app.ts --api
         run: |
           mkdir tmp1
           cd tmp1
@@ -48,7 +51,7 @@ jobs:
           echo "server.close()" >> app.ts
           deno run -A app.ts
 
-      - name: Create App Web App Runs
+      - name: Check: `deno run` works on app created by create_app.ts --web-app
         run: |
           mkdir tmp2
           cd tmp2
@@ -57,7 +60,7 @@ jobs:
           echo "server.close()" >> app.ts
           deno run -A app.ts
 
-      - name: Create App With Vue Builds
+      - name: Check: `npm run buildVue` is available in create_app.ts --web-app --with-vue
         run: |
           mkdir tmp3
           cd tmp3
@@ -65,7 +68,7 @@ jobs:
           npm i
           npm run buildVue
 
-      - name: Create App With React Builds
+      - name: Check: `npm run buildReact` is available in create_app.ts --web-app --with-react
         run: |
           mkdir tmp4
           cd tmp4
