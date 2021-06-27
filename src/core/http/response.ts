@@ -5,7 +5,7 @@ import {
   setCookie,
   Status,
   STATUS_TEXT,
-} from "../../deps.ts";
+} from "../../../deps.ts";
 import { IResponseOutput } from "../interfaces.ts";
 import { Request } from "./request.ts";
 

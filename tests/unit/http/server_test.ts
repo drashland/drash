@@ -170,7 +170,7 @@ Rhum.testPlan("http/server_test.ts", () => {
     Rhum.testCase("Returns the correct response", async () => {
       const request = TestHelpers.mockRequest("/", "get");
       const server = new Drash.Server({});
-      const error = new Drash.HttpError(404, "Some error message");
+      const error = new Drash.Errors.HttpError(404, "Some error message");
       const response = await server.handleHttpRequestError(request, error);
       Rhum.asserts.assertEquals(response.status, 404);
       Rhum.asserts.assertEquals(

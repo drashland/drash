@@ -181,7 +181,7 @@ const CustomHeader = function CustomHeader(
   response: Drash.Response,
 ) {
   if (request.getHeaderParam("csrf_token") == null) {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "'header' not specified.",
     );

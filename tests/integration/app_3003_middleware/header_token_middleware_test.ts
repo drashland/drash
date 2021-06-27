@@ -6,7 +6,7 @@ import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 
 function HeaderTokenMiddleware(req: Drash.Request) {
   if (!req.getHeaderParam("token")) {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "No token, dude.",
     );

@@ -5,7 +5,7 @@ import {
   MultipartFormData,
   MultipartReader,
   ServerRequest,
-} from "../../deps.ts";
+} from "../../../deps.ts";
 type Reader = Deno.Reader;
 import { IParsedRequestBody, IResponseOutput } from "../interfaces.ts";
 import { Response } from "./response.ts";

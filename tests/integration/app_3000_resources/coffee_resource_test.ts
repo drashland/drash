@@ -46,14 +46,14 @@ export class CoffeeResource extends Drash.Resource {
     try {
       coffee = this.coffee.get(coffeeId);
     } catch (error) {
-      throw new Drash.HttpError(
+      throw new Drash.Errors.HttpError(
         400,
         `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`,
       );
     }
 
     if (!coffee) {
-      throw new Drash.HttpError(
+      throw new Drash.Errors.HttpError(
         404,
         `Coffee with ID "${coffeeId}" not found.`,
       );

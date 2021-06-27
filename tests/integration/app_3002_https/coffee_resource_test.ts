@@ -46,7 +46,7 @@ class CoffeeResource extends Drash.Resource {
     const coffee = this.coffee[coffeeId];
 
     if (!coffee) {
-      throw new Drash.HttpError(
+      throw new Drash.Errors.HttpError(
         404,
         `Coffee with ID "${coffeeId}" not found.`,
       );

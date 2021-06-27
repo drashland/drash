@@ -34,14 +34,14 @@ class UsersResource extends Drash.Resource {
       users = JSON.parse(users);
       user = users[userId];
     } catch (error) {
-      throw new Drash.HttpError(
+      throw new Drash.Errors.HttpError(
         400,
         `Error getting user with ID "${userId}". Error: ${error.message}.`,
       );
     }
 
     if (!user) {
-      throw new Drash.HttpError(
+      throw new Drash.Errors.HttpError(
         404,
         `User with ID "${userId}" not found.`,
       );

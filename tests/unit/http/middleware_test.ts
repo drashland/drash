@@ -225,13 +225,13 @@ class ResourceWithCompileTimeMiddleware extends Drash.Resource {
 
 function BeforeRequest(req: Drash.Request) {
   if (!req.getHeaderParam("before")) {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "Missing header, guy.",
     );
   }
   if (req.getHeaderParam("before") != "yesss") {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "Ha... try again. Close though.",
     );
@@ -240,13 +240,13 @@ function BeforeRequest(req: Drash.Request) {
 
 function AfterRequest(req: Drash.Request, res: Drash.Response) {
   if (!req.getHeaderParam("send_response")) {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "Missing header, guy.",
     );
   }
   if (req.getHeaderParam("send_response") != "yes do it") {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "Ha... try again. Close though.",
     );
@@ -255,13 +255,13 @@ function AfterRequest(req: Drash.Request, res: Drash.Response) {
 
 function VerifyCsrfToken(req: Drash.Request) {
   if (!req.getHeaderParam("csrf_token")) {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "No CSRF token, dude.",
     );
   }
   if (req.getHeaderParam("csrf_token") != "all your base") {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "Wrong CSRF token, dude.",
     );

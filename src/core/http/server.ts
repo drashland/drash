@@ -1,12 +1,10 @@
-import { ConfigsError } from "../errors/configs_error.ts";
-import { HttpError } from "../errors/http_error.ts";
-import { HttpMiddlewareError } from "../errors/http_middleware_error.ts";
-import { HttpResponseError } from "../errors/http_response_error.ts";
-import { InvalidPathError } from "../errors/invalid_path_error.ts";
-import { NameCollisionError } from "../errors/name_collision_error.ts";
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
+import {
+  CompileError,
+  HttpError,
+} from "../errors.ts";
 import {
   IResource,
   IResourcePaths,
@@ -23,7 +21,7 @@ import {
   Server as DenoServer,
   ServerRequest,
   serveTLS,
-} from "../../deps.ts";
+} from "../../../deps.ts";
 import { IOptions as IRequestOptions } from "./request.ts";
 
 interface IServices {
@@ -159,17 +157,6 @@ export class Server {
     resource: Resource | null = null,
     response: Response | null = null,
   ): Promise<IResponseOutput> {
-    this.log(
-      `Error occurred while handling request: ${request.method} ${request.url}`,
-    );
-    this.log(error.message);
-    if (error.stack) {
-      this.log("Stack trace below:");
-      this.log(error.stack);
-    }
-
-    this.log("Generating generic error response object.");
-
     // If a resource was found, but an error occurred, then that's most likely
     // due to the HTTP method not being defined in the resource class;
     // therefore, the method is not allowed. In this case, we send a 405
@@ -189,14 +176,6 @@ export class Server {
     response = this.buildResponse(request);
     response.status_code = error.code ? error.code : 500;
     response.body = error.message ? error.message : response.getStatusMessage();
-
-    this.log(
-      `Sending response. Content-Type: ${
-        response.headers.get(
-          "Content-Type",
-        )
-      }. Status: ${response.getStatusMessageFull()}.`,
-    );
 
     try {
       await this.executeMiddlewareAfterRequest(request, response);
@@ -224,10 +203,6 @@ export class Server {
     request: Request,
     response: Response,
   ): Promise<IResponseOutput> {
-    this.log(
-      `Request received: ${request.method.toUpperCase()} ${request.url}`,
-    );
-
     const resource = this.buildResource(request, response);
 
     // TODO(crookse) In v2, this is where the before_request middleware hook
@@ -244,8 +219,6 @@ export class Server {
       throw new HttpError(405);
     }
 
-    this.log("Calling " + request.method.toUpperCase() + "().");
-
     // @ts-ignore
     response = await resource[request.method.toUpperCase()]();
 
@@ -255,7 +228,6 @@ export class Server {
 
     await this.executeMiddlewareAfterRequest(request, response);
 
-    this.log("Sending response. " + response.status_code + ".");
     return response.send();
   }
 
@@ -399,9 +371,7 @@ export class Server {
 
       // Path isn't a string? Don't even add it...
       if (typeof path != "string") {
-        throw new InvalidPathError(
-          `Path '${path as unknown as string}' needs to be a string.`,
-        );
+        throw new CompileError("D1000");
       }
 
       let paths: IResourcePaths;
@@ -926,7 +896,7 @@ export class Server {
       responseIsOfTypeResponseOutput(response) === true;
 
     if (!valid) {
-      throw new HttpResponseError(
+      throw new HttpError(
         418,
         `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
       );
@@ -951,19 +921,5 @@ export class Server {
         }
       }
     })();
-  }
-
-  /**
-   * Log a message. This only works if the server has a logger and it is set to
-   * log "debug" level messages.
-   *
-   * @param message - Message to log
-   */
-  protected log(message: string): void {
-    // if (!this.configs.logger) {
-    //   return;
-    // }
-
-    // this.configs.logger.debug("[syslog] " + message);
   }
 }

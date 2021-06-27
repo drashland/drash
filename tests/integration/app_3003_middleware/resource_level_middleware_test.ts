@@ -15,7 +15,7 @@ function ChangeResponseMiddleware(
 
 function HeaderTokenMiddleware(req: Drash.Request) {
   if (!req.getHeaderParam("token")) {
-    throw new Drash.HttpError(
+    throw new Drash.Errors.HttpError(
       400,
       "No token, dude.",
     );

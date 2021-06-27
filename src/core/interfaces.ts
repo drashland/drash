@@ -1,4 +1,4 @@
-import type { MultipartFormData } from "../deps.ts";
+import type { MultipartFormData } from "../../deps.ts";
 
 import { Request } from "./http/request.ts";
 import { Response } from "./http/response.ts";
