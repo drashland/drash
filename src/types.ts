@@ -27,8 +27,3 @@ export type Middleware = {
   before_request?: MiddlewareFunction[];
   after_request?: MiddlewareFunction[];
 };
-
-export interface Interface {
-  Middleware: Middleware;
-  MiddlewareFunction: MiddlewareFunction;
-}

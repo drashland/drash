@@ -217,13 +217,3 @@ export interface IServerMiddleware {
     | ((request: Request, response: Response) => void)
   >;
 }
-
-export interface Interface {
-  ResponseOutput: ResponseOutput;
-  IResourcePaths: IResourcePaths;
-  KeyValuePairs: KeyValuePairs;
-  ParsedRequestBody: ParsedRequestBody;
-  ServerConfigs: ServerConfigs;
-  IMime: IMime;
-  IServerMiddleware: IServerMiddleware;
-}
