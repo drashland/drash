@@ -1,4 +1,4 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Drash, Rhum, TestHelpers } from "../../../../deps.ts";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 

@@ -5,7 +5,7 @@ import {
   path,
   Rhum,
   TestHelpers,
-} from "../../deps.ts";
+} from "../../../../deps.ts";
 const encoder = new TextEncoder();
 
 // Taken  from https://github.com/denoland/deno/blob/2da084058397efd6f517ba98c9882760ec0a7bd6/cli/tests/unit/fetch_test.ts#L261

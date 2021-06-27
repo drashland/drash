@@ -1,4 +1,4 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Drash, Rhum, TestHelpers } from "../../../../deps.ts";
 const decoder = new TextDecoder();
 
 Rhum.testPlan("http/response_test.ts", () => {
