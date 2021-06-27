@@ -118,7 +118,10 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
       });
       const response = await server.handleHttpRequest(request);
-      TestHelpers.assertResponseJsonEquals(TestHelpers.responseBody(response), "got");
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
+        "got",
+      );
     });
 
     Rhum.testCase("before_request: missing header", async () => {
@@ -169,7 +172,10 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         },
       });
       const response = await server.handleHttpRequest(request);
-      TestHelpers.assertResponseJsonEquals(TestHelpers.responseBody(response), "got");
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
+        "got",
+      );
     });
   });
 });

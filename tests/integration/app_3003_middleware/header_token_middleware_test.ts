@@ -44,17 +44,22 @@ Rhum.testPlan("header_token_middleware_resource_test.ts", () => {
       await TestHelpers.runServer(server, { port: 3003 });
       let response;
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3003/middleware", {
-        headers: {
-          "token": "zeToken",
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3003/middleware",
+        {
+          headers: {
+            "token": "zeToken",
+          },
         },
-      });
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"GET request received!"',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3003/middleware");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3003/middleware",
+      );
       Rhum.asserts.assertEquals(await response.text(), '"No token, dude."');
 
       await server.close();

@@ -49,27 +49,36 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       const cookie = { name: "testCookie", value: "Drash" };
 
       // Post
-      response = await TestHelpers.makeRequest.post("http://localhost:3000/cookie", {
-        headers: {
-          "Content-Type": "application/json",
+      response = await TestHelpers.makeRequest.post(
+        "http://localhost:3000/cookie",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: cookie,
         },
-        body: cookie,
-      });
+      );
       Rhum.asserts.assertEquals(await response.text(), '"Saved your cookie!"');
 
       // Get - Dependent on the above post request saving a cookie
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/cookie", {
-        credentials: "same-origin",
-        headers: {
-          Cookie: "testCookie=Drash",
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/cookie",
+        {
+          credentials: "same-origin",
+          headers: {
+            Cookie: "testCookie=Drash",
+          },
         },
-      });
+      );
       await Rhum.asserts.assertEquals(await response.text(), '"Drash"');
 
       // Remove - Dependent on the above post request saving a cookie
-      response = await TestHelpers.makeRequest.delete("http://localhost:3000/cookie", {
-        headers: {},
-      });
+      response = await TestHelpers.makeRequest.delete(
+        "http://localhost:3000/cookie",
+        {
+          headers: {},
+        },
+      );
       cookies = response.headers.get("set-cookie") || "";
       cookieVal = cookies.split(";")[0].split("=")[1];
       Rhum.asserts.assertEquals(cookieVal, "");

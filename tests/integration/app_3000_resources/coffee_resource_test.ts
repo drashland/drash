@@ -119,7 +119,9 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         `\"Coffee with ID \\\"20\\\" not found.\"`,
       );
 
-      response = await TestHelpers.makeRequest.post("http://localhost:3000/coffee/17/");
+      response = await TestHelpers.makeRequest.post(
+        "http://localhost:3000/coffee/17/",
+      );
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
 
       await server.close();

@@ -60,7 +60,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(
+        TestHelpers.responseBody(response),
+        "<h1>hey</h1>",
+      );
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -80,7 +83,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(
+        TestHelpers.responseBody(response),
+        "<h1>hey</h1>",
+      );
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -137,7 +143,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(
+        TestHelpers.responseBody(response),
+        "<h1>hey</h1>",
+      );
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -156,7 +165,10 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(
+        TestHelpers.responseBody(response),
+        "<h1>hey</h1>",
+      );
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -186,7 +198,7 @@ const CustomHeader = function CustomHeader(
       "'header' not specified.",
     );
   }
-}
+};
 
 const SwapResponseToHtml = function SwapResponseToHtml(
   request: Drash.Request,
@@ -194,14 +206,14 @@ const SwapResponseToHtml = function SwapResponseToHtml(
 ) {
   response.headers.set("Content-Type", "text/html");
   response.body = "<h1>hey</h1>";
-}
+};
 
 const ResponseCustomHeaderAdded = function ResponseCustomHeaderAdded(
   request: Drash.Request,
   response: Drash.Response,
 ) {
   response.headers.set("MYCUSTOM", "hey");
-}
+};
 
 @Drash.Middleware({ before_request: [CustomHeader] })
 class ResourceWithMiddlewareBeforeClass extends Drash.Resource {

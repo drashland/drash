@@ -95,7 +95,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       // Accepts the correct type the resource will give - tests calling the `accepts` method with a string and finds a match
       typeToCheck = "application/json";
       response = await TestHelpers.makeRequest.get(
-        "http://localhost:3000/request-accepts-use-case-one?typeToCheck=" + typeToCheck,
+        "http://localhost:3000/request-accepts-use-case-one?typeToCheck=" +
+          typeToCheck,
         {
           headers: {
             Accept: "application/json",
@@ -109,7 +110,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
 
       // Does not accept the type the resource expects - tests calling the `accepts` method with a string with no match
       response = await TestHelpers.makeRequest.get(
-        "http://localhost:3000/request-accepts-use-case-one?typeToCheck=" + typeToCheck,
+        "http://localhost:3000/request-accepts-use-case-one?typeToCheck=" +
+          typeToCheck,
         {
           headers: {
             Accept: "text/html",

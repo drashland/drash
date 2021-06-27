@@ -51,19 +51,25 @@ Rhum.testPlan("home_resource_test.ts", () => {
         '"GET request received!"',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/home");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/home",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"GET request received!"',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/home/");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/home/",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"GET request received!"',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/home//");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/home//",
+      );
       Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
 
       response = await TestHelpers.makeRequest.post("http://localhost:3000");

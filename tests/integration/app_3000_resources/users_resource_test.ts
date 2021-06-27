@@ -75,34 +75,46 @@ Rhum.testPlan("users_resource_test.ts", () => {
 
       let response;
       Deno.chdir("./tests/integration/app_3000_resources");
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/users");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/users",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"Please specify a user ID."',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/users/",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"Please specify a user ID."',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/users//");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/users//",
+      );
       Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/17");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/users/17",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '{"id":17,"name":"Thor"}',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/17/");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/users/17/",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '{"id":17,"name":"Thor"}',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/18");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3000/users/18",
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         `\"User with ID \\\"18\\\" not found.\"`,

@@ -159,7 +159,10 @@ Rhum.testPlan("http/server_test.ts", () => {
         let request = TestHelpers.mockRequest("/invalid/returning/of/response");
         let response = await server.handleHttpRequest(request);
         Rhum.asserts.assertEquals(response.status_code, 418);
-        request = TestHelpers.mockRequest("/invalid/returning/of/response", "POST");
+        request = TestHelpers.mockRequest(
+          "/invalid/returning/of/response",
+          "POST",
+        );
         response = await server.handleHttpRequest(request);
         Rhum.asserts.assertEquals(response.status_code, 418);
       },
@@ -301,7 +304,6 @@ Rhum.run();
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - DATA //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
 
 class HomeResource extends Drash.Resource {
   static paths = ["/", "/:some_param"];

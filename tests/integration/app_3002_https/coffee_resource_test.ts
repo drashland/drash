@@ -74,47 +74,72 @@ Rhum.testPlan("coffee_resource_test.ts (https)", () => {
       let response;
 
       try {
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee",
+        );
         Rhum.asserts.assertEquals(
           await response.text(),
           '"Please specify a coffee ID."',
         );
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/",
+        );
         Rhum.asserts.assertEquals(
           await response.text(),
           '"Please specify a coffee ID."',
         );
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee//");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee//",
+        );
         Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/17");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/17",
+        );
         Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/17/");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/17/",
+        );
         Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/18");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/18",
+        );
         Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/18/");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/18/",
+        );
         Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/19");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/19",
+        );
         Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/19/");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/19/",
+        );
         Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-        response = await TestHelpers.makeRequest.get("https://localhost:3002/coffee/20");
+        response = await TestHelpers.makeRequest.get(
+          "https://localhost:3002/coffee/20",
+        );
         Rhum.asserts.assertEquals(
           await response.text(),
           `\"Coffee with ID \\\"20\\\" not found.\"`,
         );
 
-        response = await TestHelpers.makeRequest.post("https://localhost:1667/coffee/17/");
-        Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
+        response = await TestHelpers.makeRequest.post(
+          "https://localhost:1667/coffee/17/",
+        );
+        Rhum.asserts.assertEquals(
+          await response.text(),
+          '"Method Not Allowed"',
+        );
 
         let data;
 

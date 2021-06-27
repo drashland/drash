@@ -55,17 +55,22 @@ Rhum.testPlan("middleware_resource_test.ts", () => {
       await TestHelpers.runServer(server, { port: 3005 });
       let response;
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3005/middleware", {
-        headers: {
-          "token": "zeToken",
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3005/middleware",
+        {
+          headers: {
+            "token": "zeToken",
+          },
         },
-      });
+      );
       Rhum.asserts.assertEquals(
         await response.text(),
         '"You got changed from the middleware!"',
       );
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3005/middleware");
+      response = await TestHelpers.makeRequest.get(
+        "http://localhost:3005/middleware",
+      );
       Rhum.asserts.assertEquals(await response.text(), '"No token, dude."');
 
       await server.close();
