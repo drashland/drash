@@ -1,3 +1,5 @@
+export const version = "v1.5.0";
+
 // Errors
 export * as Errors from "./src/core/errors.ts";
 
