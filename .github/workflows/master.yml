@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno
+      - name: Install Deno (master branch)
         uses: denolib/setup-deno@master
 
       - name: Unit Tests: Create App (local)
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno
+      - name: Install Deno (master branch)
         uses: denolib/setup-deno@master
 
       - name: Setup Node 13
@@ -97,21 +97,24 @@ jobs:
       - name: Install Autocannon
         run: npm install -g autocannon
 
-      - name: Run Drash Application
+      - name: Run Drash application
         run: deno run --allow-net ./console/benchmark_app.ts &
 
-      - name: Run Autocannon Benchmarks
+      - name: Run Autocannon against Drash application
         run: autocannon -c 40 -d 10 -j http://localhost:1447
 
-  linter:
+  code_quality:
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno v${{ matrix.deno }}
+      - name: Install Deno (master branch)
         uses: denolib/setup-deno@master
 
-      - name: Formatter
+      - name: Check: `deno lint` passes
+        run: deno lint
+
+      - name: Check: `deno fmt` passes
         run: deno fmt --check
