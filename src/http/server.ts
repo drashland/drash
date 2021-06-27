@@ -1,4 +1,19 @@
-import { Drash } from "../../mod.ts";
+import { ConfigsError } from "../errors/configs_error.ts";
+import { HttpError } from "../errors/http_error.ts";
+import { HttpMiddlewareError } from "../errors/http_middleware_error.ts";
+import { HttpResponseError } from "../errors/http_response_error.ts";
+import { InvalidPathError } from "../errors/invalid_path_error.ts";
+import { NameCollisionError } from "../errors/name_collision_error.ts";
+import { Request } from "./request.ts";
+import { Response } from "./response.ts";
+import { Resource } from "./resource.ts";
+import {
+  IResource,
+  IResourcePaths,
+  IServerMiddleware,
+  ResponseOutput,
+  ServerConfigs,
+} from "../interfaces.ts";
 import {
   ConsoleLogger,
   HTTPOptions,
@@ -9,12 +24,10 @@ import {
   ServerRequest,
   serveTLS,
 } from "../../deps.ts";
-import type { ServerMiddleware } from "../interfaces/server_middleware.ts";
 import { IOptions as IRequestOptions } from "./request.ts";
 
 interface IServices {
-  http_service: Drash.Services.HttpService;
-  resource_index_service: Moogle<Drash.Interfaces.Resource>;
+  resource_index_service: Moogle<IResource>;
 }
 
 /**
@@ -50,7 +63,7 @@ export class Server {
   /**
    * A property to hold this server's configs.
    */
-  protected configs: Drash.Interfaces.ServerConfigs;
+  protected configs: ServerConfigs;
 
   /**
    * A property to hold server-level middleware. This includes the following
@@ -62,12 +75,12 @@ export class Server {
    *     - compile time
    *     - runtime
    */
-  protected middleware: ServerMiddleware = {
+  protected middleware: IServerMiddleware = {
     runtime: new Map<
       number,
       ((
-        request: Drash.Http.Request,
-        response: Drash.Http.Response,
+        request: Request,
+        response: Response,
       ) => Promise<void>)
     >(),
   };
@@ -76,8 +89,7 @@ export class Server {
    * A property to hold this server's services.
    */
   protected services: IServices = {
-    http_service: new Drash.Services.HttpService(),
-    resource_index_service: new Moogle<Drash.Interfaces.Resource>(),
+    resource_index_service: new Moogle<IResource>(),
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -89,7 +101,7 @@ export class Server {
    *
    * @param configs - The config of Drash Server
    */
-  constructor(configs: Drash.Interfaces.ServerConfigs) {
+  constructor(configs: ServerConfigs) {
     this.configs = this.buildConfigs(configs);
 
     this.addMiddleware();
@@ -101,17 +113,21 @@ export class Server {
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  public getAddress(): string {
+    return `${this.hostname}:${this.port}`;
+  }
+
   /**
    * Handle an HTTP request from the Deno server.
    *
    * @param serverRequest - The incoming request object.
    *
-   * @returns A Promise of ResponseOutput. See Drash.Interfaces.ResponseOutput
+   * @returns A Promise of ResponseOutput. See ResponseOutput
    * for more information.
    */
   public async handleHttpRequest(
     serverRequest: ServerRequest,
-  ): Promise<Drash.Interfaces.ResponseOutput> {
+  ): Promise<ResponseOutput> {
     const request = await this.buildRequest(serverRequest);
     let response = this.buildResponse(request);
 
@@ -121,7 +137,7 @@ export class Server {
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
-        new Drash.Exceptions.HttpException(error.code ?? 400, error.message),
+        new HttpError(error.code ?? 400, error.message),
       );
     }
   }
@@ -134,15 +150,15 @@ export class Server {
    * @param resource - (optional) Pass in the resource that threw the error.
    * @param response - (optional) Pass in the response that threw the error.
    *
-   * @returns A Promise of ResponseOutput. See Drash.Interfaces.ResponseOutput
+   * @returns A Promise of ResponseOutput. See ResponseOutput
    * for more information.
    */
   public async handleHttpRequestError(
-    request: Drash.Http.Request,
-    error: Drash.Exceptions.HttpException,
-    resource: Drash.Http.Resource | null = null,
-    response: Drash.Http.Response | null = null,
-  ): Promise<Drash.Interfaces.ResponseOutput> {
+    request: Request,
+    error: HttpError,
+    resource: Resource | null = null,
+    response: Response | null = null,
+  ): Promise<ResponseOutput> {
     this.log(
       `Error occurred while handling request: ${request.method} ${request.url}`,
     );
@@ -162,10 +178,10 @@ export class Server {
       if (!response) {
         const resourceObj =
           // TODO(crookse) Might need to look over this typing again
-          (resource as unknown) as { [key: string]: Drash.Interfaces.Resource };
+          (resource as unknown) as { [key: string]: IResource };
         const method = request.method.toUpperCase();
         if (typeof resourceObj[method] !== "function") {
-          error = new Drash.Exceptions.HttpException(405);
+          error = new HttpError(405);
         }
       }
     }
@@ -198,16 +214,16 @@ export class Server {
   /**
    * Handle an HTTP request to a resource.
    *
-   * @param request - See Drash.Http.Request.
-   * @param response - See Drash.Http.Response.
+   * @param request - See Request.
+   * @param response - See Response.
    *
-   * @returns A Promise of ResponseOutput. See Drash.Interfaces.ResponseOutput
+   * @returns A Promise of ResponseOutput. See ResponseOutput
    * for more information.
    */
   public async handleHttpRequestForResource(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-  ): Promise<Drash.Interfaces.ResponseOutput> {
+    request: Request,
+    response: Response,
+  ): Promise<ResponseOutput> {
     this.log(
       `Request received: ${request.method.toUpperCase()} ${request.url}`,
     );
@@ -225,7 +241,7 @@ export class Server {
         request.method.toUpperCase()
       ] !== "function"
     ) {
-      throw new Drash.Exceptions.HttpException(405);
+      throw new HttpError(405);
     }
 
     this.log("Calling " + request.method.toUpperCase() + "().");
@@ -233,8 +249,8 @@ export class Server {
     // @ts-ignore
     response = await resource[request.method.toUpperCase()]();
 
-    // Check if the response returned is of type Drash.Http.Response, or as
-    // Drash.Interfaces.ResponseOutput
+    // Check if the response returned is of type Response, or as
+    // ResponseOutput
     this.isValidResponse(request, response, resource);
 
     await this.executeMiddlewareAfterRequest(request, response);
@@ -252,7 +268,14 @@ export class Server {
    *
    * @returns A Promise of the Deno server from the serve() call.
    */
-  public async run(options: HTTPOptions): Promise<DenoServer> {
+  public async run(options?: HTTPOptions): Promise<DenoServer> {
+    if (!options) {
+      options = {
+        hostname: this.hostname,
+        port: this.port,
+      };
+    }
+
     if (!options.hostname) {
       options.hostname = this.hostname;
     }
@@ -361,9 +384,9 @@ export class Server {
    * Drash defines an HTTP resource according to the MDN Web docs
    * [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web).
    *
-   * @param resourceClass - A child object of the `Drash.Http.Resource` class.
+   * @param resourceClass - A child object of the `Resource` class.
    */
-  protected addResource(resourceClass: Drash.Interfaces.Resource): void {
+  protected addResource(resourceClass: IResource): void {
     // Define the variable that will hold the data to helping us match path
     // params on the request during runtime
     const resourceParsedPaths = [];
@@ -376,12 +399,12 @@ export class Server {
 
       // Path isn't a string? Don't even add it...
       if (typeof path != "string") {
-        throw new Drash.Exceptions.InvalidPathException(
+        throw new InvalidPathError(
           `Path '${path as unknown as string}' needs to be a string.`,
         );
       }
 
-      let paths: Drash.Interfaces.ResourcePaths;
+      let paths: IResourcePaths;
 
       // Handle wildcard paths
       if (path.includes("*") == true) {
@@ -420,7 +443,7 @@ export class Server {
     }
 
     this.configs.resources.forEach(
-      (resourceClass: Drash.Interfaces.Resource) => {
+      (resourceClass: IResource) => {
         this.addResource(resourceClass);
       },
     );
@@ -435,8 +458,8 @@ export class Server {
    * @return The configs.
    */
   protected buildConfigs(
-    configs: Drash.Interfaces.ServerConfigs,
-  ): Drash.Interfaces.ServerConfigs {
+    configs: ServerConfigs,
+  ): ServerConfigs {
     if (!configs.memory_allocation) {
       configs.memory_allocation = {};
     }
@@ -455,7 +478,7 @@ export class Server {
    */
   protected async buildRequest(
     serverRequest: ServerRequest,
-  ): Promise<Drash.Http.Request> {
+  ): Promise<Request> {
     const options: IRequestOptions = {
       memory_allocation: {
         multipart_form_data: 10,
@@ -473,7 +496,7 @@ export class Server {
 
     // We have to build the request and then parse it's body after because
     // constructors cannot be async
-    const request = new Drash.Http.Request(serverRequest, options);
+    const request = new Request(serverRequest, options);
     await request.parseBody();
 
     return request;
@@ -484,14 +507,14 @@ export class Server {
    *
    * @param request - The request object.
    *
-   * @returns A `Drash.Http.Resource` object if the URL path of the request can
-   * be matched to a `Drash.Http.Resource` object's paths. Otherwise, it returns
-   * `undefined` if a `Drash.Http.Resource` object can't be matched.
+   * @returns A `Resource` object if the URL path of the request can
+   * be matched to a `Resource` object's paths. Otherwise, it returns
+   * `undefined` if a `Resource` object can't be matched.
    */
   protected buildResource(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-  ): Drash.Http.Resource {
+    request: Request,
+    response: Response,
+  ): Resource {
     let resourceClass = this.findResource(request);
 
     // deno-lint-ignore ban-ts-comment
@@ -508,7 +531,7 @@ export class Server {
     // TS2351: Cannot use 'new' with an expression whose type lacks a call or
     // construct signature.
     //
-    const resource = new (resourceClass as Drash.Http.Resource)(
+    const resource = new (resourceClass as Resource)(
       request,
       response,
       this,
@@ -526,8 +549,8 @@ export class Server {
    *
    * @returns A response object.
    */
-  protected buildResponse(request: Drash.Http.Request): Drash.Http.Response {
-    return new Drash.Http.Response(request, {
+  protected buildResponse(request: Request): Response {
+    return new Response(request, {
       default_content_type: this.configs.response_output,
     });
   }
@@ -539,8 +562,8 @@ export class Server {
    * @param resource - The resource object.
    */
   protected async executeMiddlewareAfterRequest(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response | null = null,
+    request: Request,
+    response: Response | null = null,
   ): Promise<void> {
     if (this.middleware.runtime) {
       if (response) {
@@ -566,8 +589,8 @@ export class Server {
    * @param resource - The resource object.
    */
   protected async executeMiddlewareAfterResource(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
+    request: Request,
+    response: Response,
   ): Promise<void> {
     if (this.middleware.after_resource != null) {
       for (const middleware of this.middleware.after_resource) {
@@ -583,7 +606,7 @@ export class Server {
    * @param resource - The resource object.
    */
   protected async executeMiddlewareBeforeRequest(
-    request: Drash.Http.Request,
+    request: Request,
   ): Promise<void> {
     if (this.middleware.before_request != null) {
       for (const middleware of this.middleware.before_request) {
@@ -600,16 +623,16 @@ export class Server {
    * @param response - The response object.
    */
   protected executeMiddlewareRuntime(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
+    request: Request,
+    response: Response,
   ): void {
     let processed: boolean = false;
 
     this.middleware.runtime!.forEach(
       async (
         run: (
-          request: Drash.Http.Request,
-          response: Drash.Http.Response,
+          request: Request,
+          response: Response,
         ) => Promise<void>,
       ) => {
         if (!processed) {
@@ -630,9 +653,9 @@ export class Server {
    * `.buildResource()`.
    */
   protected findResource(
-    request: Drash.Http.Request,
-  ): Drash.Interfaces.Resource {
-    let resource: Drash.Interfaces.Resource | undefined = undefined;
+    request: Request,
+  ): IResource {
+    let resource: IResource | undefined = undefined;
 
     const uri = request.url_path.split("/");
     // Remove the first element which would be ""
@@ -656,7 +679,7 @@ export class Server {
       results = this.services.resource_index_service.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
-        throw new Drash.Exceptions.HttpException(404);
+        throw new HttpError(404);
       }
     }
 
@@ -680,7 +703,7 @@ export class Server {
       // are currently parsing contains the resource we are looking for
       if (matchArray) {
         matchedResource = true;
-        resource = result.item as Drash.Interfaces.Resource;
+        resource = result.item as IResource;
         request.path_params = this.getRequestPathParams(
           resource,
           matchArray,
@@ -689,7 +712,7 @@ export class Server {
     });
 
     if (!resource) {
-      throw new Drash.Exceptions.HttpException(404);
+      throw new HttpError(404);
     }
 
     return resource;
@@ -705,7 +728,7 @@ export class Server {
    * information about the request URL).
    */
   protected getRequestPathParams(
-    resource: Drash.Interfaces.Resource | undefined,
+    resource: IResource | undefined,
     matchArray: RegExpMatchArray | null,
   ): { [key: string]: string } {
     const pathParamsInKvpForm: { [key: string]: string } = {};
@@ -720,7 +743,7 @@ export class Server {
 
     if (resource && resource.paths_parsed) {
       resource.paths_parsed.forEach(
-        (pathObj: Drash.Interfaces.ResourcePaths) => {
+        (pathObj: IResourcePaths) => {
           pathObj.params.forEach((paramName: string, index: number) => {
             pathParamsInKvpForm[paramName] = params[index];
           });
@@ -740,7 +763,7 @@ export class Server {
    */
   protected getResourcePaths(
     path: string,
-  ): Drash.Interfaces.ResourcePaths {
+  ): IResourcePaths {
     return {
       og_path: path,
       regex_path: `^${
@@ -772,7 +795,7 @@ export class Server {
    */
   protected getResourcePathsUsingOptionalParams(
     path: string,
-  ): Drash.Interfaces.ResourcePaths {
+  ): IResourcePaths {
     let tmpPath = path;
     // Replace required params, in preparation to create the `regex_path`, just
     // like how we do in the below else block
@@ -850,7 +873,7 @@ export class Server {
    */
   protected getResourcePathsUsingWildcard(
     path: string,
-  ): Drash.Interfaces.ResourcePaths {
+  ): IResourcePaths {
     return {
       og_path: path,
       regex_path: `^.${
@@ -868,19 +891,19 @@ export class Server {
   }
 
   /**
-   * Used to check if a response object is of type Drash.Interfaces.ResponseOutput
-   * or Drash.Http.Response.
+   * Used to check if a response object is of type ResponseOutput
+   * or Response.
    *
-   * @param request - See Drash.Http.Request.
-   * @param response - See Drash.Http.Response.
-   * @param resource - See Drash.Http.Resource.
+   * @param request - See Request.
+   * @param response - See Response.
+   * @param resource - See Resource.
    *
    * @return If the response returned from a method is what the returned value should be
    */
   protected isValidResponse(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-    resource: Drash.Http.Resource,
+    request: Request,
+    response: Response,
+    resource: Resource,
   ): boolean {
     // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
     function responseIsOfTypeResponseOutput(response: any): boolean {
@@ -899,11 +922,11 @@ export class Server {
       return false;
     }
 
-    const valid = response instanceof Drash.Http.Response ||
+    const valid = response instanceof Response ||
       responseIsOfTypeResponseOutput(response) === true;
 
     if (!valid) {
-      throw new Drash.Exceptions.HttpResponseException(
+      throw new HttpResponseError(
         418,
         `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
       );
@@ -922,8 +945,8 @@ export class Server {
           this.handleHttpRequest(request as ServerRequest);
         } catch (error) {
           this.handleHttpRequestError(
-            request as Drash.Http.Request,
-            new Drash.Exceptions.HttpException(500),
+            request as Request,
+            new HttpError(500),
           );
         }
       }
@@ -937,10 +960,10 @@ export class Server {
    * @param message - Message to log
    */
   protected log(message: string): void {
-    if (!this.configs.logger) {
-      return;
-    }
+    // if (!this.configs.logger) {
+    //   return;
+    // }
 
-    this.configs.logger.debug("[syslog] " + message);
+    // this.configs.logger.debug("[syslog] " + message);
   }
 }

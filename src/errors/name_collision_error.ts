@@ -3,7 +3,7 @@
  * if you try to add two loggers via Drash.addLogger() with the same name,
  * then this exception will be thrown because the names are colliding.
  */
-export class NameCollisionException extends Error {
+export class NameCollisionError extends Error {
   /**
    * A property to hold the error message associated with this
    * exception.

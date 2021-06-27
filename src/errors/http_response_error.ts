@@ -1,4 +1,4 @@
-import { HttpException } from "./http_exception.ts";
+import { HttpError } from "./http_error.ts";
 
 /**
  * This class gives you a way to throw HTTP errors semantically in the
@@ -6,4 +6,4 @@ import { HttpException } from "./http_exception.ts";
  * comes when you want to check which exception was thrown via
  * exception.constructor.name.
  */
-export class HttpResponseException extends HttpException {}
+export class HttpResponseError extends HttpError {}

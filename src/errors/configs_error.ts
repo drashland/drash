@@ -1,7 +1,7 @@
 /**
- * This class is for throwing errors related to resource paths.
+ * Throw semantic errors related to configuration settings.
  */
-export class InvalidPathException extends Error {
+export class ConfigsError extends Error {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ export class InvalidPathException extends Error {
    *
    * @param message - (optional) The exception message.
    */
-  constructor(message: string = "Path must be a string.") {
+  constructor(message: string = "Config is missing or invalid.") {
     super(message);
   }
 }

@@ -1,4 +1,3 @@
-import { Drash } from "../../mod.ts";
 import {
   Cookie,
   deleteCookie,
@@ -7,6 +6,8 @@ import {
   Status,
   STATUS_TEXT,
 } from "../../deps.ts";
+import { ResponseOutput } from "../interfaces.ts";
+import { Request } from "./request.ts";
 
 export interface IOptions {
   default_content_type?: string;
@@ -29,7 +30,7 @@ export class Response {
   /**
    * The request object.
    */
-  public request: Drash.Http.Request;
+  public request: Request;
 
   /**
    * A property to hold this response's status code (e.g., 200 for OK).
@@ -54,7 +55,7 @@ export class Response {
    *
    * @param options - The response options
    */
-  constructor(request: Drash.Http.Request, options: IOptions = {}) {
+  constructor(request: Request, options: IOptions = {}) {
     this.options = options;
     this.request = request;
     this.headers = new Headers();
@@ -190,11 +191,11 @@ export class Response {
   public redirect(
     httpStatusCode: number,
     location: string,
-  ): Drash.Interfaces.ResponseOutput {
+  ): ResponseOutput {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
-    let output: Drash.Interfaces.ResponseOutput = {
+    let output: ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: "",
@@ -214,12 +215,12 @@ export class Response {
    * to be used elsewhere as this call is the last call in the
    * request-resource-response lifecycle.
    */
-  public async send(): Promise<Drash.Interfaces.ResponseOutput> {
+  public async send(): Promise<ResponseOutput> {
     let body = this.generateResponse();
     if (!(body instanceof Uint8Array)) {
       body = encoder.encode(body);
     }
-    let output: Drash.Interfaces.ResponseOutput = {
+    let output: ResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body,

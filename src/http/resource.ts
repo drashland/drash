@@ -1,10 +1,13 @@
-import type { Drash } from "../../mod.ts";
+import { IResource, IResourcePaths } from "../interfaces.ts";
+import { Response } from "./response.ts";
+import { Server } from "./server.ts";
+import { Request } from "./request.ts";
 
 /**
  * This is the base resource class for all resources. All resource classes
  * must be derived from this class.
  */
-export class Resource implements Drash.Interfaces.Resource {
+export class Resource implements IResource {
   /**
      * A property to hold the middleware this resource uses.
      */
@@ -12,7 +15,7 @@ export class Resource implements Drash.Interfaces.Resource {
 
   /**
      * A property to hold the name of this resource. This property is used by
-     * Drash.Http.Server to help it store resources in its resources property
+     * Server to help it store resources in its resources property
      * by name.
      */
   public name: string = "";
@@ -34,22 +37,22 @@ export class Resource implements Drash.Interfaces.Resource {
      *   params: ["id"],
      * ```
      */
-  public paths_parsed: Drash.Interfaces.ResourcePaths[] = [];
+  public paths_parsed: IResourcePaths[] = [];
 
   /**
      * The request object.
      */
-  protected request: Drash.Http.Request;
+  protected request: Request;
 
   /**
      * The response object.
      */
-  protected response: Drash.Http.Response;
+  protected response: Response;
 
   /**
      * The server object.
      */
-  protected server: Drash.Http.Server;
+  protected server: Server;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -65,9 +68,9 @@ export class Resource implements Drash.Interfaces.Resource {
    * @param middleware - Any middleware for the resource
    */
   constructor(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-    server: Drash.Http.Server,
+    request: Request,
+    response: Response,
+    server: Server,
     paths: string[],
     middleware: { after_request?: []; before_request?: [] },
   ) {
