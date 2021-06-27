@@ -25,7 +25,7 @@ export interface IResource {
   paths_parsed?: IResourcePaths[];
 }
 
-interface KeyValuePairs {
+interface IKeyValuePairs {
   [key: string]: unknown;
 }
 
@@ -37,13 +37,13 @@ interface KeyValuePairs {
  *     The Content-Type of the request body. For example, if the body is
  *     JSON, then the Content-Type should be application/json.
  *
- * data: undefined|MultipartFormData|KeyValuePairs
+ * data: undefined|MultipartFormData|IKeyValuePairs
  *
  *     The data passed in the body of the request.
  */
 export interface IParsedRequestBody {
   content_type: string;
-  data: undefined | MultipartFormData | KeyValuePairs;
+  data: undefined | MultipartFormData | IKeyValuePairs;
 }
 
 /**
