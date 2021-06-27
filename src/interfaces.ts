@@ -4,34 +4,43 @@ import { Request } from "./http/request.ts";
 import { Response } from "./http/response.ts";
 import { Resource } from "./http/resource.ts";
 
-export interface IResponseOutput {
-  body: Uint8Array | string | Deno.Reader;
-  headers: Headers;
-  status: number;
-  status_code?: number;
-  send?: () => IResponseOutput | undefined;
-}
-
-export interface IResourcePaths {
-  og_path: string;
-  regex_path: string;
-  params: string[];
-}
-
-export interface IResource {
-  middleware?: { after_request?: []; before_request?: [] };
-  name: string;
-  paths: string[];
-  paths_parsed?: IResourcePaths[];
-}
-
 interface IKeyValuePairs {
   [key: string]: unknown;
 }
 
 /**
- * Contains the type of IParsedRequestBody
- * @remarks
+ * This is used to type a MIME type object. Below are more details on the
+ * members in this interface.
+ *
+ * [key: string]
+ *     The mime type (e.g., application/json).
+ *
+ *     charset?: string;
+ *         The character encoding of the MIME type.
+ *
+ *     compressible?: boolean;
+ *         Is this MIME type compressible?
+ *
+ *     extensions?: string[]
+ *         An array of extensions that match this MIME type.
+ *
+ *     source?: string;
+ *         TODO(crookse) Need to figure out what the source is and how it
+ *         applies to MIME types.
+ */
+export interface IMime {
+  [key: string]: {
+    charset?: string;
+    compressible?: boolean;
+    extensions?: string[];
+    source?: string;
+  };
+}
+
+/**
+ * This is used to type a Request object's parsed body. Below are more details
+ * on the members in this interface.
+ *
  * content_type: string
  *
  *     The Content-Type of the request body. For example, if the body is
@@ -47,22 +56,40 @@ export interface IParsedRequestBody {
 }
 
 /**
- * Below are the configs explained in detail.
- *
- * logger?: Drash.CoreLoggers.ConsoleLogger | Drash.CoreLoggers.FileLogger
- *
- *     The server's logger. For example:
- *
- *         logger: new Drash.CoreLoggers.ConsoleLogger({
- *           enabled: true,
- *           level: "debug",
- *           tag_string: "{date} | {level} |",
- *           tag_string_fns: {
- *             date: function() {
- *               return new Date().toISOString().replace("T", " ");
- *             },
- *           },
- *         })
+ * This is used to type a Resource object.
+ */
+export interface IResource {
+  middleware?: { after_request?: []; before_request?: [] };
+  name: string;
+  paths: string[];
+  paths_parsed?: IResourcePaths[];
+}
+
+/**
+ * This is used to type a Resource object's paths. During the
+ * request-resource lifecycle, the Server object parses the paths in a reosurce
+ * and ends up with the following interface.
+ */
+export interface IResourcePaths {
+  og_path: string;
+  regex_path: string;
+  params: string[];
+}
+
+/**
+ * This is used to type a Response object's output.
+ */
+export interface IResponseOutput {
+  body: Uint8Array | string | Deno.Reader;
+  headers: Headers;
+  status: number;
+  status_code?: number;
+  send?: () => IResponseOutput | undefined;
+}
+
+/**
+ * This is used to type a Server object's configs. Below are more details on the
+ * members in this interface.
  *
  * memory_allocation?: {
  *   multipart_form_data?: number
@@ -108,38 +135,9 @@ export interface IServerConfigs {
 }
 
 /**
- * The interface used for MIME Types
- * ```ts
- *     [key: string]
- *         The mime type.
+ * This is used to type Middleware attached to the Server object. Below are more
+ * details on the members in this interface.
  *
- *         charset?: string;
- *             The character encoding of the MIME type.
- *
- *         compressible?: boolean;
- *             Is this MIME type compressible?
- *
- *         extensions?: string[]
- *             An array of extensions that match this MIME type.
- *
- *         source?: string;
- *             TODO(crookse) Need to figure out what the source is and how it
- *             applies to MIME types.
- * ```
- */
-export interface IMime {
-  [key: string]: {
-    charset?: string;
-    compressible?: boolean;
-    extensions?: string[];
-    source?: string;
-  };
-}
-
-/**
- * Contains the type of IServerMiddleware.
- *
- * @remarks
  * before_request
  *
  *     An array of functions that take a Request as a parameter.
@@ -151,23 +149,25 @@ export interface IMime {
  *     parameter, and a Response as the second parameter.
  *     Method can be async.
  *
- * ```ts
- * function beforeRequestMiddleware (request: Request): void {
- *   ...
- * }
- * async function afterRequestMiddleware (
- *   request: Request,
- *   response: Response
- * ): Promise<void> {
- *   ...
- * }
- * const server = new Server({
- *   middleware: {
- *     before_request: [beforeRequestMiddleware],
- *     afterRequest: [afterRequestMiddleware]
- *   }
- * }
- * ```
+ * For example:
+ *
+ *     function beforeRequestMiddleware (request: Request): void {
+ *       ...
+ *     }
+ *
+ *     async function afterRequestMiddleware (
+ *       request: Request,
+ *       response: Response
+ *     ): Promise<void> {
+ *       ...
+ *     }
+ *
+ *     const server = new Server({
+ *       middleware: {
+ *         before_request: [beforeRequestMiddleware],
+ *         afterRequest: [afterRequestMiddleware]
+ *       }
+ *     }
  */
 export interface IServerMiddleware {
   // Middleware to execute during compile time. The data that's compiled during
