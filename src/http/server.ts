@@ -11,7 +11,7 @@ import {
   IResource,
   IResourcePaths,
   IServerMiddleware,
-  ResponseOutput,
+  IResponseOutput,
   ServerConfigs,
 } from "../interfaces.ts";
 import {
@@ -122,12 +122,12 @@ export class Server {
    *
    * @param serverRequest - The incoming request object.
    *
-   * @returns A Promise of ResponseOutput. See ResponseOutput
+   * @returns A Promise of IResponseOutput. See IResponseOutput
    * for more information.
    */
   public async handleHttpRequest(
     serverRequest: ServerRequest,
-  ): Promise<ResponseOutput> {
+  ): Promise<IResponseOutput> {
     const request = await this.buildRequest(serverRequest);
     let response = this.buildResponse(request);
 
@@ -150,7 +150,7 @@ export class Server {
    * @param resource - (optional) Pass in the resource that threw the error.
    * @param response - (optional) Pass in the response that threw the error.
    *
-   * @returns A Promise of ResponseOutput. See ResponseOutput
+   * @returns A Promise of IResponseOutput. See IResponseOutput
    * for more information.
    */
   public async handleHttpRequestError(
@@ -158,7 +158,7 @@ export class Server {
     error: HttpError,
     resource: Resource | null = null,
     response: Response | null = null,
-  ): Promise<ResponseOutput> {
+  ): Promise<IResponseOutput> {
     this.log(
       `Error occurred while handling request: ${request.method} ${request.url}`,
     );
@@ -217,13 +217,13 @@ export class Server {
    * @param request - See Request.
    * @param response - See Response.
    *
-   * @returns A Promise of ResponseOutput. See ResponseOutput
+   * @returns A Promise of IResponseOutput. See IResponseOutput
    * for more information.
    */
   public async handleHttpRequestForResource(
     request: Request,
     response: Response,
-  ): Promise<ResponseOutput> {
+  ): Promise<IResponseOutput> {
     this.log(
       `Request received: ${request.method.toUpperCase()} ${request.url}`,
     );
@@ -250,7 +250,7 @@ export class Server {
     response = await resource[request.method.toUpperCase()]();
 
     // Check if the response returned is of type Response, or as
-    // ResponseOutput
+    // IResponseOutput
     this.isValidResponse(request, response, resource);
 
     await this.executeMiddlewareAfterRequest(request, response);
@@ -891,7 +891,7 @@ export class Server {
   }
 
   /**
-   * Used to check if a response object is of type ResponseOutput
+   * Used to check if a response object is of type IResponseOutput
    * or Response.
    *
    * @param request - See Request.
@@ -905,7 +905,7 @@ export class Server {
     response: Response,
     resource: Resource,
   ): boolean {
-    // Method to aid inn checking is ann interface (Drash.Interface.ResponseOutput)
+    // Method to aid inn checking is ann interface (Drash.Interface.IResponseOutput)
     function responseIsOfTypeResponseOutput(response: any): boolean {
       if (
         (typeof response === "object") &&

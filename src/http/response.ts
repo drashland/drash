@@ -6,7 +6,7 @@ import {
   Status,
   STATUS_TEXT,
 } from "../../deps.ts";
-import { ResponseOutput } from "../interfaces.ts";
+import { IResponseOutput } from "../interfaces.ts";
 import { Request } from "./request.ts";
 
 export interface IOptions {
@@ -191,11 +191,11 @@ export class Response {
   public redirect(
     httpStatusCode: number,
     location: string,
-  ): ResponseOutput {
+  ): IResponseOutput {
     this.status_code = httpStatusCode;
     this.headers.set("Location", location);
 
-    let output: ResponseOutput = {
+    let output: IResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body: "",
@@ -215,12 +215,12 @@ export class Response {
    * to be used elsewhere as this call is the last call in the
    * request-resource-response lifecycle.
    */
-  public async send(): Promise<ResponseOutput> {
+  public async send(): Promise<IResponseOutput> {
     let body = this.generateResponse();
     if (!(body instanceof Uint8Array)) {
       body = encoder.encode(body);
     }
-    let output: ResponseOutput = {
+    let output: IResponseOutput = {
       status: this.status_code,
       headers: this.headers,
       body,

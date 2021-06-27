@@ -4,12 +4,12 @@ import { Request } from "./http/request.ts";
 import { Response } from "./http/response.ts";
 import { Resource } from "./http/resource.ts";
 
-export interface ResponseOutput {
+export interface IResponseOutput {
   body: Uint8Array | string | Deno.Reader;
   headers: Headers;
   status: number;
   status_code?: number;
-  send?: () => ResponseOutput | undefined;
+  send?: () => IResponseOutput | undefined;
 }
 
 export interface IResourcePaths {

@@ -277,7 +277,7 @@ Rhum.testPlan("http/server_test.ts", () => {
           isValidResponse(request, invalidRes, resource);
         });
       });
-      const responseOutput: Drash.Interfaces.ResponseOutput = {
+      const responseOutput: Drash.Interfaces.IResponseOutput = {
         body: new Uint8Array(1),
         headers: new Headers(),
         status: 69420,

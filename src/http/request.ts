@@ -7,7 +7,7 @@ import {
   ServerRequest,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
-import { ParsedRequestBody, ResponseOutput } from "../interfaces.ts";
+import { ParsedRequestBody, IResponseOutput } from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
 import { Server } from "./server.ts";
@@ -619,7 +619,7 @@ export class Request extends ServerRequest implements IRequest {
    * @param output - The data to respond with.
    */
   public async respond(
-    output: ResponseOutput,
+    output: IResponseOutput,
   ): Promise<void> {
     this.original_request.respond(output);
   }
