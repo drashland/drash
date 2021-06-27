@@ -12,7 +12,7 @@ import {
   IResourcePaths,
   IServerMiddleware,
   IResponseOutput,
-  ServerConfigs,
+  IServerConfigs,
 } from "../interfaces.ts";
 import {
   ConsoleLogger,
@@ -63,7 +63,7 @@ export class Server {
   /**
    * A property to hold this server's configs.
    */
-  protected configs: ServerConfigs;
+  protected configs: IServerConfigs;
 
   /**
    * A property to hold server-level middleware. This includes the following
@@ -101,7 +101,7 @@ export class Server {
    *
    * @param configs - The config of Drash Server
    */
-  constructor(configs: ServerConfigs) {
+  constructor(configs: IServerConfigs) {
     this.configs = this.buildConfigs(configs);
 
     this.addMiddleware();
@@ -458,8 +458,8 @@ export class Server {
    * @return The configs.
    */
   protected buildConfigs(
-    configs: ServerConfigs,
-  ): ServerConfigs {
+    configs: IServerConfigs,
+  ): IServerConfigs {
     if (!configs.memory_allocation) {
       configs.memory_allocation = {};
     }

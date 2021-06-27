@@ -100,7 +100,7 @@ export interface IParsedRequestBody {
  *
  *         response_output: "application/json"
  */
-export interface ServerConfigs {
+export interface IServerConfigs {
   memory_allocation?: { multipart_form_data?: number };
   middleware?: IServerMiddleware;
   resources?: IResource[];
