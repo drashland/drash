@@ -7,7 +7,11 @@ import {
   ServerRequest,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
-import { Drash } from "../../mod.ts";
+import { ParsedRequestBody, ResponseOutput } from "../interfaces.ts";
+import { Response } from "./response.ts";
+import { Resource } from "./resource.ts";
+import { Server } from "./server.ts";
+import { mimeDb } from "../dictionaries/mime_db.ts";
 
 export interface IOptions {
   headers?: Headers;
@@ -16,15 +20,19 @@ export interface IOptions {
   };
 }
 
-export class Request extends ServerRequest {
-  public parsed_body: Drash.Interfaces.ParsedRequestBody = {
+interface IRequest {
+  headers: Headers;
+}
+
+export class Request extends ServerRequest implements IRequest {
+  public parsed_body: ParsedRequestBody = {
     content_type: "",
     data: undefined,
   };
   public path_params: { [key: string]: string } = {};
   public url_query_params: { [key: string]: string } = {};
   public url_path: string;
-  public resource: Drash.Http.Resource | null = null;
+  public resource: Resource | null = null;
   protected original_request: ServerRequest;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +44,7 @@ export class Request extends ServerRequest {
      *
      * @param ServerRequest - originalRequest
      *     The original Deno ServerRequest object that's used to help create this
-     *     Drash.Http.Request object. There are some data members that the
+     *     Request object. There are some data members that the
      *     original request has that can't be attached to this object. Therefore,
      *     we keep track of the original request if we ever want to access data
      *     members from it. An example of a data member that we want to access is
@@ -65,7 +73,57 @@ export class Request extends ServerRequest {
    * @returns Either true or the string of the correct header.
    */
   public accepts(type: string | string[]): boolean | string {
-    return new Drash.Services.HttpService().accepts(this, type);
+    return this.validateAccepts(this, type);
+  }
+
+  /**
+   * Checks if the incoming request accepts the type(s) in the parameter.  This
+   * method will check if the requests `Accept` header contains the passed in
+   * types
+   *
+   * @param request - The request object containing the `Accept` header.
+   * @param type - The content-type/mime-type(s) to check if the request accepts
+   * it.
+   *
+   * @remarks
+   * Below are examples of how this method is called from the request object
+   * and used in resources:
+   *
+   * ```ts
+   * // File: your_resource.ts // assumes the request accepts "text/html"
+   * const val = this.request.accepts("text/html"); // "text/html"
+   *
+   * // or can also pass in an array and will match on the first one found
+   * const val = this.request.accepts(["text/html", "text/xml"]); // "text/html"
+   *
+   * // and will return false if not found
+   * const val = this.request.accepts("text/xml"); // false
+   * ```
+   * @returns False if the request doesn't accept any of the passed in types, or
+   * the content type that was matches
+   */
+  public validateAccepts(
+    request: Request,
+    type: string | string[],
+  ): boolean | string {
+    let acceptHeader = request.headers.get("Accept");
+
+    if (!acceptHeader) {
+      acceptHeader = request.headers.get("accept");
+    }
+
+    if (!acceptHeader) {
+      return false;
+    }
+
+    // for when `type` is a string
+    if (typeof type === "string") {
+      return acceptHeader.indexOf(type) >= 0 ? type : false;
+    }
+
+    // for when `type` is an array
+    const matches = type.filter((t) => acceptHeader!.indexOf(t) >= 0);
+    return matches.length ? matches[0] : false; // return first match
   }
 
   /**
@@ -73,7 +131,7 @@ export class Request extends ServerRequest {
    *
    * @return The parsed body as an object
    */
-  public getAllBodyParams(): Drash.Interfaces.ParsedRequestBody {
+  public getAllBodyParams(): ParsedRequestBody {
     return this.parsed_body;
   }
 
@@ -186,7 +244,7 @@ export class Request extends ServerRequest {
    * @returns The corresponding path parameter or null if not found.
    */
   public getPathParam(input: string): string | null {
-    // request.path_params is set in Drash.Http.Server.getResourceClass()
+    // request.path_params is set in Server.getResourceClass()
     let param = this.path_params[input];
     if (param) {
       return param;
@@ -249,12 +307,79 @@ export class Request extends ServerRequest {
       if (!queryParamsString) {
         queryParamsString = "";
       }
-      queryParams = Drash.Services.StringService.parseQueryParamsString(
+      queryParams = this.parseQueryParamsString(
         queryParamsString,
       );
     } catch (error) {
       // Do absofruitly nothing
     }
+
+    return queryParams;
+  }
+
+  /**
+   * Parse a URL query string in it's raw form.
+   *
+   * If the request body's content type is `application/json`, then:
+   * {"username":"root","password":"alpine"} becomes
+   * { username: "root", password: "alpine" }.
+   *
+   * If the request body's content type is `application/x-www-form-urlencoded`,
+   * then:
+   * `username=root&password=alpine` becomes
+   * `{ username: "root", password: "alpine" }`.
+   *
+   * @param queryParamsString - The query params string (e.g.,
+   * hello=world&ok=then&git=hub)
+   * @param keyFormat - (optional) The format the keys should be mutated to. For
+   * example, if "underscore" is specified, then the keys will be converted from
+   * key-name to key_name. Defaults to "normal", which does not mutate the keys.
+   * @param keyCase - (optional) The case the keys should be mutated to. For
+   * example, if "lowercase" is specified, then the keys will be converted from
+   * Key-Name to key-name. Defaults to "normal", which does not mutate the keys.
+   *
+   * @returns A key-value pair array.  `{ [key: string]: string }`. Returns an
+   * empty object if the first argument is empty.
+   */
+  protected parseQueryParamsString(
+    queryParamsString: string,
+    keyFormat: string = "normal",
+    keyCase: string = "normal",
+  ): { [key: string]: string } {
+    let queryParams: { [key: string]: string } = {};
+
+    if (!queryParamsString) {
+      return queryParams;
+    }
+
+    if (queryParamsString.indexOf("#") != -1) {
+      queryParamsString = queryParamsString.split("#")[0];
+    }
+
+    let queryParamsExploded = queryParamsString.split("&");
+
+    queryParamsExploded.forEach((kvpString) => {
+      let kvpStringSplit = kvpString.split("=");
+      let key: string;
+      if (keyFormat == "normal") {
+        key = kvpStringSplit[0];
+        if (keyCase == "normal") {
+          queryParams[key] = kvpStringSplit[1];
+        }
+        if (keyCase == "lowercase") {
+          queryParams[key.toLowerCase()] = kvpStringSplit[1];
+        }
+      }
+      if (keyFormat == "underscore") {
+        key = kvpStringSplit[0].replace(/-/g, "_");
+        if (keyCase == "normal") {
+          queryParams[key] = kvpStringSplit[1];
+        }
+        if (keyCase == "lowercase") {
+          queryParams[key.toLowerCase()] = kvpStringSplit[1];
+        }
+      }
+    });
 
     return queryParams;
   }
@@ -311,7 +436,7 @@ export class Request extends ServerRequest {
    */
   public async parseBody(
     options?: IOptions,
-  ): Promise<Drash.Interfaces.ParsedRequestBody> {
+  ): Promise<ParsedRequestBody> {
     if ((await this.hasBody()) === false) {
       return {
         content_type: "",
@@ -444,7 +569,7 @@ export class Request extends ServerRequest {
       body = body.split("?")[1];
     }
     body = body.replace(/\"/g, "");
-    return Drash.Services.StringService.parseQueryParamsString(body);
+    return this.parseQueryParamsString(body);
   }
 
   /**
@@ -494,7 +619,7 @@ export class Request extends ServerRequest {
    * @param output - The data to respond with.
    */
   public async respond(
-    output: Drash.Interfaces.ResponseOutput,
+    output: ResponseOutput,
   ): Promise<void> {
     this.original_request.respond(output);
   }
@@ -510,5 +635,48 @@ export class Request extends ServerRequest {
         this.headers.set(key, headers[key]);
       }
     }
+  }
+
+  /**
+   * Get a MIME type for a file based on its extension.
+   *
+   * @param filePath - The file path in question.
+   * @param fileIsUrl - (optional) Is the file path  a URL to a file? Defaults
+   * to false.  If the file path is a URL, then this method will make sure the
+   * URL query string is not included while doing a lookup of the file's
+   * extension.
+   *
+   * @returns The name of the MIME type based on the extension of the file path
+   * .
+   */
+  public getMimeType(
+    filePath: string | undefined,
+    fileIsUrl: boolean = false,
+  ): null | string {
+    let mimeType = null;
+
+    if (fileIsUrl) {
+      filePath = filePath ? filePath.split("?")[0] : undefined;
+    }
+
+    if (filePath) {
+      let fileParts = filePath.split(".");
+      filePath = fileParts.pop();
+
+      for (let key in mimeDb) {
+        if (!mimeType) {
+          const extensions = mimeDb[key].extensions;
+          if (extensions) {
+            extensions.forEach((extension: string) => {
+              if (filePath == extension) {
+                mimeType = key;
+              }
+            });
+          }
+        }
+      }
+    }
+
+    return mimeType;
   }
 }

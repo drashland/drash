@@ -27,10 +27,8 @@ jobs:
       - name: Integration
         run: |
           deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/
-          # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/tests.ts
+          # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/
           deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/
-          deno test --allow-all --config tsconfig.json tests/integration/app_3004_pretty_links/
-          deno test --allow-all --config tsconfig.json tests/integration/app_3005_middleware_resource_level/
 
       - name: Create App (local)
         run: |

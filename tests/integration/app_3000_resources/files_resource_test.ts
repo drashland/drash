@@ -1,10 +1,23 @@
-import members from "../../members.ts";
-import { Rhum } from "../../deps.ts";
-import { Drash } from "../../../mod.ts";
-import FilesResource from "./resources/files_resource.ts";
-import { runServer } from "../test_utils.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 
-const server = new Drash.Http.Server({
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - APP SETUP /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+class FilesResource extends Drash.Resource {
+  static paths = ["/files"];
+
+  public async POST() {
+    this.response.body = this.request.getBodyParam("value_1") ?? null;
+    return this.response;
+  }
+
+  public DELETE() {
+    return this.response;
+  }
+}
+
+const server = new Drash.Server({
   response_output: "application/json",
   memory_allocation: {
     multipart_form_data: 128,
@@ -14,10 +27,14 @@ const server = new Drash.Http.Server({
   ],
 });
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - TESTS /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 Rhum.testPlan("files_resource_test.ts", () => {
   Rhum.testSuite("/files", () => {
     Rhum.testCase("multipart/form-data works", async () => {
-      await runServer(server);
+      await TestHelpers.runServer(server);
 
       let response;
 

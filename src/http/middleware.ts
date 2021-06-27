@@ -1,38 +1,14 @@
-import type { Drash } from "../../mod.ts";
-/**
- * @param request - Contains the instance of the request.
- * @param server - Contains the instance of the server.
- * @param response - Contains the instance of the response.
- */
-export type MiddlewareFunction =
-  | ((
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
-  ) => Promise<void>)
-  | ((request: Drash.Http.Request, response: Drash.Http.Response) => void);
-
-/**
- * @description
- *     before_request?: MiddlewareFunction[]
- *
- *         An array that contains all the functions that will be run before a Drash.Http.Request is handled.
- *
- *     after_request: MiddlewareFunction[]
- *
- *         An array that contains all the functions that will be run after a Drash.Http.Request is handled.
- *
- */
-export type MiddlewareType = {
-  before_request?: MiddlewareFunction[];
-  after_request?: MiddlewareFunction[];
-};
+import { Request } from "./request.ts";
+import { Response } from "./response.ts";
+import { Resource } from "./resource.ts";
+import * as Types from "../types.ts";
 
 /**
  * Function associated to decorate the middleware decorators
  *
  * @param middlewares - Contains middlewares to be executed
  */
-export function Middleware(middlewares: MiddlewareType) {
+export function Middleware(middlewares: Types.Middleware) {
   return function (...args: unknown[]) {
     switch (args.length) {
       case 1:
@@ -61,14 +37,14 @@ export function Middleware(middlewares: MiddlewareType) {
  * @param middlewares - Contains all middleware to be run
  */
 function MethodMiddleware(
-  middlewares: MiddlewareType,
+  middlewares: Types.Middleware,
 ): (
-  target: Drash.Http.Resource,
+  target: Resource,
   propertyKey: string,
   descriptor: PropertyDescriptor,
 ) => any { // The return type should be `PropertyDescriptor` as that is what is returned, but as we modify `descriptor.value`, the actual returned type is slightly different
   return function (
-    target: Drash.Http.Resource,
+    target: Resource,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
@@ -103,7 +79,7 @@ function MethodMiddleware(
  *
  * @param middlewares - Contains all middleware to be run
  */
-function ClassMiddleware(middlewares: MiddlewareType) {
+function ClassMiddleware(middlewares: Types.Middleware) {
   return function <T extends { new (...args: unknown[]): {} }>(constr: T) { // `args` seems to always be `[]`
     const classFunctions = Object.getOwnPropertyDescriptors(constr.prototype);
 

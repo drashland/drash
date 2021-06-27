@@ -1,18 +1,16 @@
-import { Rhum } from "../../deps.ts";
-import members from "../../members.ts";
-import { Drash } from "../../../mod.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 const decoder = new TextDecoder();
 
 Rhum.testPlan("http/middleware_test.ts", () => {
   Rhum.testSuite("http/middleware_test.ts", () => {
     Rhum.testCase("after_resource: can change response.render", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           after_resource: [TemplateEngine],
         },
         resources: [ResourceWithTemplateEngine],
       });
-      const request = members.mockRequest("/template-engine");
+      const request = TestHelpers.mockRequest("/template-engine");
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(
         decoder.decode(response.body as ArrayBuffer),
@@ -21,8 +19,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
     });
 
     Rhum.testCase("compile_time", async () => {
-      let server = new Drash.Http.Server({
-        directory: ".",
+      let server = new Drash.Server({
         middleware: {
           compile_time: [
             CompileTimeMiddleware(),
@@ -32,179 +29,147 @@ Rhum.testPlan("http/middleware_test.ts", () => {
           ResourceWithCompileTimeMiddleware,
         ],
       });
-      const request = members.mockRequest("/hello");
+      const request = TestHelpers.mockRequest("/hello");
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "WE OUT HERE",
       );
     });
 
     Rhum.testCase("before_request: missing CSRF token", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           before_request: [VerifyCsrfToken],
         },
         resources: [ResourceWithMiddleware],
       });
-      const request = members.mockRequest("/users/1");
+      const request = TestHelpers.mockRequest("/users/1");
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "No CSRF token, dude.",
       );
     });
 
     Rhum.testCase("before_request: wrong CSRF token", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           before_request: [VerifyCsrfToken],
         },
         resources: [ResourceWithMiddleware],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "hehe",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "Wrong CSRF token, dude.",
       );
     });
 
     Rhum.testCase("after_request: missing header", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           after_request: [AfterRequest],
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/");
+      const request = TestHelpers.mockRequest("/");
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "Missing header, guy.",
       );
     });
 
     Rhum.testCase("after_request: wrong header", async () => {
-      let server = new Drash.Http.Server({
+      let server = new Drash.Server({
         middleware: {
           after_request: [AfterRequest],
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = TestHelpers.mockRequest("/", "get", {
         headers: {
           send_response: "yes please",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "Ha... try again. Close though.",
       );
     });
 
     Rhum.testCase("after_request: pass", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           after_request: [AfterRequest],
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = TestHelpers.mockRequest("/", "get", {
         headers: {
           send_response: "yes do it",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(members.responseBody(response), "got");
+      TestHelpers.assertResponseJsonEquals(TestHelpers.responseBody(response), "got");
     });
 
     Rhum.testCase("before_request: missing header", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           before_request: [BeforeRequest],
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/");
+      const request = TestHelpers.mockRequest("/");
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "Missing header, guy.",
       );
     });
 
     Rhum.testCase("before_request: wrong header", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         middleware: {
           before_request: [BeforeRequest],
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = TestHelpers.mockRequest("/", "get", {
         headers: {
           before: "yes",
         },
       });
       const response = await server.handleHttpRequest(request);
 
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "Ha... try again. Close though.",
       );
     });
 
     Rhum.testCase("before_request: pass", async () => {
-      let server = new Drash.Http.Server({
+      let server = new Drash.Server({
         middleware: {
           before_request: [BeforeRequest],
         },
         resources: [ResourceWithMiddlewareHooked],
       });
-      const request = members.mockRequest("/", "get", {
+      const request = TestHelpers.mockRequest("/", "get", {
         headers: {
           before: "yesss",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(members.responseBody(response), "got");
-    });
-
-    Rhum.testCase("before_request: static path asset", async () => {
-      let server = new Drash.Http.Server({
-        directory: ".",
-        static_paths: ["/assets"],
-        middleware: {
-          before_request: [BeforeRequestStaticPathAsset],
-        },
-      });
-      const request = members.mockRequest("/assets/test.js", "get");
-      const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
-        "Hello, I'm a static path asset before request middleware.",
-      );
-    });
-
-    Rhum.testCase("after_request: static path asset", async () => {
-      let server = new Drash.Http.Server({
-        directory: ".",
-        static_paths: ["/assets"],
-        middleware: {
-          after_request: [AfterRequestStaticPathAsset],
-        },
-      });
-      const request = members.mockRequest("/assets/test.js", "get");
-      const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        response.body,
-        "this static path asset's contents got changed",
-      );
+      TestHelpers.assertResponseJsonEquals(TestHelpers.responseBody(response), "got");
     });
   });
 });
@@ -219,7 +184,7 @@ interface IUser {
   name: string;
 }
 
-class ResourceWithTemplateEngine extends Drash.Http.Resource {
+class ResourceWithTemplateEngine extends Drash.Resource {
   static paths = ["/template-engine"];
   public GET() {
     this.response.body = this.response.render("hello");
@@ -227,7 +192,7 @@ class ResourceWithTemplateEngine extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithMiddleware extends Drash.Http.Resource {
+class ResourceWithMiddleware extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
@@ -242,7 +207,7 @@ class ResourceWithMiddleware extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithMiddlewareHooked extends Drash.Http.Resource {
+class ResourceWithMiddlewareHooked extends Drash.Resource {
   static paths = ["/"];
   public GET() {
     this.response.body = "got";
@@ -250,7 +215,7 @@ class ResourceWithMiddlewareHooked extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithCompileTimeMiddleware extends Drash.Http.Resource {
+class ResourceWithCompileTimeMiddleware extends Drash.Resource {
   static paths = ["/hello"];
   public GET() {
     this.response.body = "got";
@@ -258,70 +223,54 @@ class ResourceWithCompileTimeMiddleware extends Drash.Http.Resource {
   }
 }
 
-function BeforeRequest(req: Drash.Http.Request) {
+function BeforeRequest(req: Drash.Request) {
   if (!req.getHeaderParam("before")) {
-    throw new Drash.Exceptions.HttpException(
+    throw new Drash.HttpError(
       400,
       "Missing header, guy.",
     );
   }
   if (req.getHeaderParam("before") != "yesss") {
-    throw new Drash.Exceptions.HttpException(
+    throw new Drash.HttpError(
       400,
       "Ha... try again. Close though.",
     );
   }
 }
 
-function AfterRequest(req: Drash.Http.Request, res: Drash.Http.Response) {
+function AfterRequest(req: Drash.Request, res: Drash.Response) {
   if (!req.getHeaderParam("send_response")) {
-    throw new Drash.Exceptions.HttpException(
+    throw new Drash.HttpError(
       400,
       "Missing header, guy.",
     );
   }
   if (req.getHeaderParam("send_response") != "yes do it") {
-    throw new Drash.Exceptions.HttpException(
+    throw new Drash.HttpError(
       400,
       "Ha... try again. Close though.",
     );
   }
 }
 
-function VerifyCsrfToken(req: Drash.Http.Request) {
+function VerifyCsrfToken(req: Drash.Request) {
   if (!req.getHeaderParam("csrf_token")) {
-    throw new Drash.Exceptions.HttpException(
+    throw new Drash.HttpError(
       400,
       "No CSRF token, dude.",
     );
   }
   if (req.getHeaderParam("csrf_token") != "all your base") {
-    throw new Drash.Exceptions.HttpException(
+    throw new Drash.HttpError(
       400,
       "Wrong CSRF token, dude.",
     );
   }
 }
 
-function BeforeRequestStaticPathAsset(req: Drash.Http.Request) {
-  throw new Drash.Exceptions.HttpException(
-    418,
-    "Hello, I'm a static path asset before request middleware.",
-  );
-}
-
-function AfterRequestStaticPathAsset(
-  req: Drash.Http.Request,
-  res?: Drash.Http.Response,
-) {
-  if (res) {
-    res.body = "this static path asset's contents got changed";
-  }
-}
-
 function TemplateEngine(
-  req: Drash.Http.Request,
-  res: Drash.Http.Response,
+  req: Drash.Request,
+  res: Drash.Response,
 ) {
   res.render = (...args: string[]): string | boolean => {
     res.headers.set("Content-Type", "text/html");
@@ -337,8 +286,8 @@ function CompileTimeMiddleware() {
   }
 
   async function run(
-    request: Drash.Http.Request,
-    response: Drash.Http.Response,
+    request: Drash.Request,
+    response: Drash.Response,
   ): Promise<void> {
     if (request.url == "/hello") {
       response.body = compiledStuff[0];

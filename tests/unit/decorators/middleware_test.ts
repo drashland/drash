@@ -1,32 +1,30 @@
-import { Rhum } from "../../deps.ts";
-import members from "../../members.ts";
-import { Drash } from "../../../mod.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 
 Rhum.testPlan("decorators/middleware_test.ts", () => {
   Rhum.testSuite("ResourceWithMiddlewareBeforeClass", () => {
     Rhum.testCase("header not specified", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMiddlewareBeforeClass],
       });
-      const request = members.mockRequest("/users/1");
+      const request = TestHelpers.mockRequest("/users/1");
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         "'header' not specified.",
       );
     });
     Rhum.testCase("valid", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMiddlewareBeforeClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         { name: "Thor" },
       );
     });
@@ -34,17 +32,17 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMultipleMiddlewareBeforeClass", () => {
     Rhum.testCase("correct header, custom response and value", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMultipleMiddlewareBeforeClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         { name: "Thor" },
       );
       Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
@@ -53,16 +51,16 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMultipleMiddlewareAfterClass", () => {
     Rhum.testCase("response is html, custom header and value", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMultipleMiddlewareAfterClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -73,16 +71,16 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMiddlewareClass", () => {
     Rhum.testCase("custom header and swap to html", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMiddlewareClass],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -93,17 +91,17 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMiddlewareBeforeMethod", () => {
     Rhum.testCase("custom header", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMiddlewareBeforeMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         { name: "Thor" },
       );
     });
@@ -111,17 +109,17 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMultipleMiddlewareBeforeMethod", () => {
     Rhum.testCase("custom header", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMultipleMiddlewareBeforeMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      members.assertResponseJsonEquals(
-        members.responseBody(response),
+      TestHelpers.assertResponseJsonEquals(
+        TestHelpers.responseBody(response),
         { name: "Thor" },
       );
       Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
@@ -130,16 +128,16 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMiddlewareAfterMethod", () => {
     Rhum.testCase("swap to html", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMiddlewareAfterMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -149,16 +147,16 @@ Rhum.testPlan("decorators/middleware_test.ts", () => {
 
   Rhum.testSuite("ResourceWithMultipleMiddlewareAfterMethod", () => {
     Rhum.testCase("custom header and swap to html", async () => {
-      const server = new Drash.Http.Server({
+      const server = new Drash.Server({
         resources: [ResourceWithMultipleMiddlewareAfterMethod],
       });
-      const request = members.mockRequest("/users/1", "get", {
+      const request = TestHelpers.mockRequest("/users/1", "get", {
         headers: {
           csrf_token: "all your base",
         },
       });
       const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(members.responseBody(response), "<h1>hey</h1>");
+      Rhum.asserts.assertEquals(TestHelpers.responseBody(response), "<h1>hey</h1>");
       Rhum.asserts.assertEquals(
         response.headers!.get("Content-Type"),
         "text/html",
@@ -178,33 +176,35 @@ interface IUser {
   name: string;
 }
 
-function CustomHeader(
-  request: Drash.Http.Request,
-  response: Drash.Http.Response,
+const CustomHeader = function CustomHeader(
+  request: Drash.Request,
+  response: Drash.Response,
 ) {
   if (request.getHeaderParam("csrf_token") == null) {
-    throw new Drash.Exceptions.HttpMiddlewareException(
+    throw new Drash.HttpError(
       400,
       "'header' not specified.",
     );
   }
 }
-function SwapResponseToHtml(
-  request: Drash.Http.Request,
-  response: Drash.Http.Response,
+
+const SwapResponseToHtml = function SwapResponseToHtml(
+  request: Drash.Request,
+  response: Drash.Response,
 ) {
   response.headers.set("Content-Type", "text/html");
   response.body = "<h1>hey</h1>";
 }
-function ResponseCustomHeaderAdded(
-  request: Drash.Http.Request,
-  response: Drash.Http.Response,
+
+const ResponseCustomHeaderAdded = function ResponseCustomHeaderAdded(
+  request: Drash.Request,
+  response: Drash.Response,
 ) {
   response.headers.set("MYCUSTOM", "hey");
 }
 
-@Drash.Http.Middleware({ before_request: [CustomHeader] })
-class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
+@Drash.Middleware({ before_request: [CustomHeader] })
+class ResourceWithMiddlewareBeforeClass extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
@@ -221,10 +221,10 @@ class ResourceWithMiddlewareBeforeClass extends Drash.Http.Resource {
   }
 }
 
-@Drash.Http.Middleware(
+@Drash.Middleware(
   { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
 )
-class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
@@ -241,10 +241,10 @@ class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Http.Resource {
   }
 }
 
-@Drash.Http.Middleware(
+@Drash.Middleware(
   { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
 )
-class ResourceWithMultipleMiddlewareAfterClass extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareAfterClass extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
@@ -255,13 +255,13 @@ class ResourceWithMultipleMiddlewareAfterClass extends Drash.Http.Resource {
   }
 }
 
-@Drash.Http.Middleware(
+@Drash.Middleware(
   {
     before_request: [SwapResponseToHtml],
     after_request: [ResponseCustomHeaderAdded],
   },
 )
-class ResourceWithMiddlewareClass extends Drash.Http.Resource {
+class ResourceWithMiddlewareClass extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
@@ -272,13 +272,13 @@ class ResourceWithMiddlewareClass extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithMiddlewareBeforeMethod extends Drash.Http.Resource {
+class ResourceWithMiddlewareBeforeMethod extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
     [2, { name: "Hulk" }],
   ]);
-  @Drash.Http.Middleware({ before_request: [CustomHeader] })
+  @Drash.Middleware({ before_request: [CustomHeader] })
   public GET() {
     const param = this.request.getPathParam("id");
     if (param) {
@@ -290,25 +290,25 @@ class ResourceWithMiddlewareBeforeMethod extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithMiddlewareAfterMethod extends Drash.Http.Resource {
+class ResourceWithMiddlewareAfterMethod extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
     [2, { name: "Hulk" }],
   ]);
-  @Drash.Http.Middleware({ after_request: [SwapResponseToHtml] })
+  @Drash.Middleware({ after_request: [SwapResponseToHtml] })
   public GET() {
     return this.response;
   }
 }
 
-class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
     [2, { name: "Hulk" }],
   ]);
-  @Drash.Http.Middleware(
+  @Drash.Middleware(
     { before_request: [ResponseCustomHeaderAdded, CustomHeader] },
   )
   public GET() {
@@ -322,13 +322,13 @@ class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Http.Resource {
   }
 }
 
-class ResourceWithMultipleMiddlewareAfterMethod extends Drash.Http.Resource {
+class ResourceWithMultipleMiddlewareAfterMethod extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
   public users = new Map<number, IUser>([
     [1, { name: "Thor" }],
     [2, { name: "Hulk" }],
   ]);
-  @Drash.Http.Middleware(
+  @Drash.Middleware(
     { after_request: [SwapResponseToHtml, ResponseCustomHeaderAdded] },
   )
   public GET() {

@@ -1,50 +1,108 @@
-import members from "../../members.ts";
-import { Rhum } from "../../deps.ts";
-import { Drash } from "../../../mod.ts";
-import UsersResource from "./resources/users_resource.ts";
-import { runServer } from "../test_utils.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 
-const server = new Drash.Http.Server({
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - APP SETUP /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+class UsersResource extends Drash.Resource {
+  static paths = ["/users", "/users/:id"];
+
+  public GET() {
+    const userId = this.request.getPathParam("id");
+
+    if (!userId) {
+      this.response.body = "Please specify a user ID.";
+      return this.response;
+    }
+
+    this.response.body = this.getUser(parseInt(userId));
+    return this.response;
+  }
+
+  public POST() {
+    this.response.body = "POST request received!";
+    return this.response;
+  }
+
+  protected getUser(userId: number) {
+    let user = null;
+
+    try {
+      let users = this.readFileContents(
+        "users.json",
+      );
+      users = JSON.parse(users);
+      user = users[userId];
+    } catch (error) {
+      throw new Drash.HttpError(
+        400,
+        `Error getting user with ID "${userId}". Error: ${error.message}.`,
+      );
+    }
+
+    if (!user) {
+      throw new Drash.HttpError(
+        404,
+        `User with ID "${userId}" not found.`,
+      );
+    }
+
+    return user;
+  }
+
+  protected readFileContents(file: string) {
+    let fileContentsRaw = Deno.readFileSync(file);
+    const decoder = new TextDecoder();
+    let decoded = decoder.decode(fileContentsRaw);
+    return decoded;
+  }
+}
+
+const server = new Drash.Server({
   resources: [
     UsersResource,
   ],
 });
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - TESTS /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 Rhum.testPlan("users_resource_test.ts", () => {
   Rhum.testSuite("/users", () => {
     Rhum.testCase("user data can be retrieved", async () => {
-      await runServer(server);
+      await TestHelpers.runServer(server);
 
       let response;
-      Deno.chdir("./tests/integration/app_3000_resources/resources");
-      response = await members.fetch.get("http://localhost:3000/users");
+      Deno.chdir("./tests/integration/app_3000_resources");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/users");
       Rhum.asserts.assertEquals(
         await response.text(),
         '"Please specify a user ID."',
       );
 
-      response = await members.fetch.get("http://localhost:3000/users/");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/");
       Rhum.asserts.assertEquals(
         await response.text(),
         '"Please specify a user ID."',
       );
 
-      response = await members.fetch.get("http://localhost:3000/users//");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/users//");
       Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
 
-      response = await members.fetch.get("http://localhost:3000/users/17");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/17");
       Rhum.asserts.assertEquals(
         await response.text(),
         '{"id":17,"name":"Thor"}',
       );
 
-      response = await members.fetch.get("http://localhost:3000/users/17/");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/17/");
       Rhum.asserts.assertEquals(
         await response.text(),
         '{"id":17,"name":"Thor"}',
       );
 
-      response = await members.fetch.get("http://localhost:3000/users/18");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/users/18");
       Rhum.asserts.assertEquals(
         await response.text(),
         `\"User with ID \\\"18\\\" not found.\"`,
