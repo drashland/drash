@@ -1,21 +1,34 @@
-import members from "../../members.ts";
-import { Rhum } from "../../deps.ts";
-import { Drash } from "../../../mod.ts";
-import InvalidReturningOfResponseResource from "./resources/returning_invalid_response_in_resource.ts";
-import { runServer } from "../test_utils.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 
-const server = new Drash.Http.Server({
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - APP SETUP /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+class InvalidReturningOfResponseResource extends Drash.Resource {
+  static paths = ["/invalid/returning/of/response"];
+  public GET() {
+  }
+  public POST() {
+    return "hello";
+  }
+}
+
+const server = new Drash.Server({
   resources: [
     InvalidReturningOfResponseResource,
   ],
 });
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - TESTS /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 Rhum.testPlan("returning_invalid_response_in_resource_test.ts", () => {
   Rhum.testSuite("/invalid/returning/of/response", () => {
     Rhum.testCase("Error is thrown when nothing is returned", async () => {
-      await runServer(server);
+      await TestHelpers.runServer(server);
 
-      const response = await members.fetch.get(
+      const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/invalid/returning/of/response",
       );
       await server.close();
@@ -27,9 +40,9 @@ Rhum.testPlan("returning_invalid_response_in_resource_test.ts", () => {
       Rhum.asserts.assertEquals(response.status, 418);
     });
     Rhum.testCase("Error is thrown when nothing is returned", async () => {
-      await runServer(server);
+      await TestHelpers.runServer(server);
 
-      const response = await members.fetch.post(
+      const response = await TestHelpers.makeRequest.post(
         "http://localhost:3000/invalid/returning/of/response",
       );
       await server.close();

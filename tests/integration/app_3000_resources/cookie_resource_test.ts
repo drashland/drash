@@ -1,19 +1,45 @@
-import members from "../../members.ts";
-import { Rhum } from "../../deps.ts";
-import { Drash } from "../../../mod.ts";
-import CookieResource from "./resources/cookie_resource.ts";
-import { runServer } from "../test_utils.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
 
-const server = new Drash.Http.Server({
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - APP SETUP /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+class CookieResource extends Drash.Resource {
+  static paths = ["/cookie", "/cookie/"];
+
+  public GET() {
+    const cookieValue = this.request.getCookie("testCookie");
+    this.response.body = cookieValue;
+    return this.response;
+  }
+
+  public POST() {
+    this.response.setCookie({ name: "testCookie", value: "Drash" });
+    this.response.body = "Saved your cookie!";
+    return this.response;
+  }
+
+  public DELETE() {
+    this.response.body = "DELETE request received!";
+    this.response.delCookie("testCookie");
+    return this.response;
+  }
+}
+
+const server = new Drash.Server({
   resources: [
     CookieResource,
   ],
 });
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - TESTS /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 Rhum.testPlan("cookie_resource_test.ts", () => {
   Rhum.testSuite("/cookie", () => {
     Rhum.testCase("cookie can be created, retrieved, and deleted", async () => {
-      await runServer(server);
+      await TestHelpers.runServer(server);
 
       let response;
       let cookies;
@@ -23,7 +49,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       const cookie = { name: "testCookie", value: "Drash" };
 
       // Post
-      response = await members.fetch.post("http://localhost:3000/cookie", {
+      response = await TestHelpers.makeRequest.post("http://localhost:3000/cookie", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -32,7 +58,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       Rhum.asserts.assertEquals(await response.text(), '"Saved your cookie!"');
 
       // Get - Dependent on the above post request saving a cookie
-      response = await members.fetch.get("http://localhost:3000/cookie", {
+      response = await TestHelpers.makeRequest.get("http://localhost:3000/cookie", {
         credentials: "same-origin",
         headers: {
           Cookie: "testCookie=Drash",
@@ -41,7 +67,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       await Rhum.asserts.assertEquals(await response.text(), '"Drash"');
 
       // Remove - Dependent on the above post request saving a cookie
-      response = await members.fetch.delete("http://localhost:3000/cookie", {
+      response = await TestHelpers.makeRequest.delete("http://localhost:3000/cookie", {
         headers: {},
       });
       cookies = response.headers.get("set-cookie") || "";
