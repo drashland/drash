@@ -1,0 +1,209 @@
+# ServeTypeScript
+
+ServeTypeScript is a compile time middleware that allows you to write front-end
+TypeScript and serve it as compiled JavaScript during runtime. Since the
+compiling happens during compile time, this doesn't impact your application's
+runtime performance.
+
+_Note: Since this middleware uses `Deno.compile()`, it can only be used with
+Deno's `--unstable` flag (e.g., `deno run --unstable app.ts`)._
+
+## Table of Contents
+
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Tutorial: Writing Front-end TypeScript](#tutorial-writing-front-end-typescript)
+  - [Folder Structure End State](#folder-structure-end-state)
+  - [Steps](#steps)
+  - [Verification](#verification)
+
+## Usage
+
+```typescript
+// Import the ServeTypeScript middleware function
+import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.7.7/serve_typescript/mod.ts";
+
+// Instantiate ServeTypeScript and pass in the files you want compiled during
+// compile time. The compiled output of these files will be used during runtime.
+const serveTs = ServeTypeScript({
+  files: [
+    {
+      source: Deno.realPathSync("./ts/my_ts.ts"), // the path to the actual TypeScript file
+      target: "/ts/my_ts.ts", // the URI this file is accessible at (e.g., localhost:1447/ts/my_ts.ts)
+    },
+  ],
+  // compilerOptions: {
+  //   lib: ["dom", "DOM.Iterable", "esnext"]
+  // }
+});
+```
+
+## Configuration
+
+### `files`
+
+This config is required. ServeTypeScript cannot run unless it is given files to
+compile during compile time. Compile time is when the Drash server is being
+created.
+
+```typescript
+const serveTs = ServeTypeScript({
+  files: [
+    {
+      source: "/path/to/typescript/file.ts",
+      target: "/uri/to/associate/the/typescript/file/to.ts",
+    },
+  ],
+});
+```
+
+The `source` is the filepath to the actual TypeScript file. The `target` is the
+URI that the file is accessible at. For example, if you want to serve your
+TypeScript file at the `/ts/my_ts.ts` URI, then define `target` as
+`/ts/my_ts.ts`. When a request is made to `http://yourserver.com/ts/my_ts.ts`,
+your compiled TypeScript will be returned as the response.
+
+### `compilerOptions`
+
+This property is optional, and is used when the middleware is emitting the
+source file. It is of type `Deno.compilerOptions`, and you can find more
+information in
+[Deno's Documentation](https://doc.deno.land/builtin/unstable#Deno.CompilerOptions).
+
+```ts
+const serverTs = ServerTypeScript({
+  files: [...],
+  compilerOptions: {
+    lib: ["dom", "DOM.Iterable", "esnext"] // most common libs to use when targetting the DOM
+  }
+});
+```
+
+That is just one of the many properties you can specify inside
+`compilerOptions`.
+
+## Tutorial: Writing Front-end TypeScript
+
+This tutorial teaches you how to write front-end TypeScript, which gets compiled
+into JavaScript during server creation.
+
+### Folder Structure End State
+
+```
+▾ /path/to/your/project/
+    ▾ ts/
+        my_ts_file.ts
+    app.ts
+    home_resource.ts
+```
+
+### Steps
+
+1. Create your `app.ts` file.
+
+   ```typescript
+   // File: app.ts
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
+   import { HomeResource } from "./home_resource.ts";
+   import { ServeTypeScript } from "https://deno.land/x/drash_middleware@v0.7.7/serve_typescript/mod.ts";
+
+   const serveTs = ServeTypeScript({
+     files: [
+       {
+         source: "./ts/my_ts_file.ts",
+         target: "/assets/my_compiled_ts_file.ts",
+       },
+     ],
+   });
+
+   const server = new Drash.Http.Server({
+     directory: ".",
+     response_output: "text/html",
+     resources: [
+       HomeResource,
+     ],
+     middleware: {
+       compile_time: [
+         serveTs,
+       ],
+     },
+     static_paths: [
+       "/assets",
+     ],
+   });
+
+   server.run({
+     hostname: "localhost",
+     port: 1447,
+   });
+
+   console.log(`Server running at ${server.hostname}:${server.port}`);
+   ```
+
+2. Create your `home_resource.ts` file.
+
+   ```typescript
+   import { Drash } from "https://deno.land/x/drash@v1.4.4/mod.ts";
+
+   export class HomeResource extends Drash.Http.Resource {
+     static paths = ["/"];
+
+     public GET() {
+       this.response.body = `
+       <!DOCTYPE html>
+       <html>
+         <head>
+           <title>Drash</title>
+         </head>
+         <body>
+           <div id="container"></div>
+           <script src="/assets/my_compiled_ts_file.ts"></script>
+         </body>
+       </html>`;
+
+       return this.response;
+     }
+   }
+   ```
+
+3. Create your `my_ts_file.ts`.
+
+   ```typescript
+   function greet(name: string): string {
+     return "Hello, " + name + "!";
+   }
+
+   const result = greet("TypeScript user");
+
+   document.getElementById("container").innerHTML = result;
+   ```
+
+### Verification
+
+1. Run your `app.ts` file.
+
+   ```sh
+   deno run --allow-net --allow-read --unstable app.ts
+   ```
+
+2. Navigate to `localhost:1447` in your browser. You should see the following
+   response:
+
+   ```text
+   Hello, TypeScript user!
+   ```
+
+3. Check out the Network tab in the browser's inspector. You should see the
+   following when you check the Response tab for the `my_compiled_ts_file.ts`
+   file.
+
+   ```javascript
+   "use strict";
+   function greet(name) {
+     return "Hello, " + name + "!";
+   }
+   const result = greet("TypeScript user");
+   document.getElementById("container").innerHTML = result;
+   ```
+
+   Notice that the TypeScript typings are now gone.
