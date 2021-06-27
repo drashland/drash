@@ -39,5 +39,5 @@ export class HttpError extends Error {
 ////////////////////////////////////////////////////////////////////////////////
 
 const ERROR_CODES: { [k: string]: string } = {
-  "D1000": "Reosurce paths must be strings."
+  "D1000": "Reosurce paths must be strings.",
 };

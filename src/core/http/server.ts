@@ -1,16 +1,13 @@
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
-import {
-  CompileError,
-  HttpError,
-} from "../errors.ts";
+import { CompileError, HttpError } from "../errors.ts";
 import {
   IResource,
   IResourcePaths,
-  IServerMiddleware,
   IResponseOutput,
   IServerConfigs,
+  IServerMiddleware,
 } from "../interfaces.ts";
 import {
   ConsoleLogger,
