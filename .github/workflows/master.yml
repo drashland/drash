@@ -22,7 +22,7 @@ jobs:
         uses: denolib/setup-deno@master
 
       - name: Unit
-        run: deno test tests/unit/tests.ts --config tsconfig.json --allow-net --allow-write --allow-read --allow-env
+        run: deno test --allow-net --allow-write --allow-read --allow-env --config tsconfig.json tests/unit/
 
       - name: Integration
         run: |
