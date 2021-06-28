@@ -1,13 +1,15 @@
 import { Request } from "./request.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
+import { Service } from "./service.ts";
 import { CompileError, HttpError } from "../errors.ts";
 import {
   IResource,
   IResourcePaths,
   IResponseOutput,
   IServerConfigs,
-  IServerMiddleware,
+  IServerConfigsServices,
+  IService,
 } from "../interfaces.ts";
 import {
   ConsoleLogger,
@@ -21,7 +23,7 @@ import {
 } from "../../../deps.ts";
 import { IOptions as IRequestOptions } from "./request.ts";
 
-interface IServices {
+interface IInternalServices {
   resource_index_service: Moogle<IResource>;
 }
 
@@ -61,29 +63,19 @@ export class Server {
   protected configs: IServerConfigs;
 
   /**
-   * A property to hold server-level middleware. This includes the following
-   * middleware types:
-   *
-   *     - after request
-   *     - after resource
-   *     - before request
-   *     - compile time
-   *     - runtime
+   * A property to hold the services related to an application. These services
+   * are specified via configs (provided by an application) and stored in here.
    */
-  protected middleware: IServerMiddleware = {
-    runtime: new Map<
-      number,
-      ((
-        request: Request,
-        response: Response,
-      ) => Promise<void>)
-    >(),
+  protected application_services: IServerConfigsServices = {
+    after_request: [],
+    before_request: [],
   };
 
   /**
-   * A property to hold this server's services.
+   * A property to hold this server's services. This is not to be confused with
+   * the services that are provided in the configs.
    */
-  protected services: IServices = {
+  protected internal_services: IInternalServices = {
     resource_index_service: new Moogle<IResource>(),
   };
 
@@ -99,7 +91,7 @@ export class Server {
   constructor(configs: IServerConfigs) {
     this.configs = this.buildConfigs(configs);
 
-    this.addMiddleware();
+    this.addApplicationService();
 
     this.addResources();
   }
@@ -127,8 +119,29 @@ export class Server {
     let response = this.buildResponse(request);
 
     try {
-      await this.executeMiddlewareBeforeRequest(request);
-      return await this.handleHttpRequestForResource(request, response);
+      const resource = this.buildResource(request, response);
+
+      await this.executeApplicationServicesBeforeRequest(request);
+
+      // Does the HTTP method exist on the resource?
+      if (
+        typeof (resource as unknown as { [key: string]: unknown })[
+          request.method.toUpperCase()
+        ] !== "function"
+      ) {
+        throw new HttpError(405);
+      }
+
+      // @ts-ignore
+      // Make the request. Also, we ignore this because resource doesn't have an
+      // index.
+      response = await resource[request.method.toUpperCase()]();
+
+      this.isValidResponse(request, response, resource);
+
+      await this.executeApplicationServicesAfterRequest(request, response);
+
+      return response.send();
     } catch (error) {
       return await this.handleHttpRequestError(
         request,
@@ -175,55 +188,14 @@ export class Server {
     response.body = error.message ? error.message : response.getStatusMessage();
 
     try {
-      await this.executeMiddlewareAfterRequest(request, response);
+      await this.executeApplicationServicesAfterRequest(request, response);
     } catch (error) {
-      // Do nothing. The `executeMiddlewareAfterRequest()` method is
+      // Do nothing. The `executeServicesAfterRequest()` method is
       // run once in `handleHttpRequest()`. We run this method a second time
-      // here in case the server has middleware that needs to run (e.g.,
-      // logging middleware) without throwing uncaught exceptions. This is a bit
+      // here in case the server has services that needs to run (e.g.,
+      // logging services) without throwing uncaught exceptions. This is a bit
       // hacky, but it works. Refactor when needed.
     }
-
-    return response.send();
-  }
-
-  /**
-   * Handle an HTTP request to a resource.
-   *
-   * @param request - See Request.
-   * @param response - See Response.
-   *
-   * @returns A Promise of IResponseOutput. See IResponseOutput
-   * for more information.
-   */
-  public async handleHttpRequestForResource(
-    request: Request,
-    response: Response,
-  ): Promise<IResponseOutput> {
-    const resource = this.buildResource(request, response);
-
-    // TODO(crookse) In v2, this is where the before_request middleware hook
-    // will be placed. The current location of the before_request middleware
-    // hook will be replaced with a before_resource middleware hook.
-    await this.executeMiddlewareAfterResource(request, response);
-
-    // Does the HTTP method exist on the resource?
-    if (
-      typeof (resource as unknown as { [key: string]: unknown })[
-        request.method.toUpperCase()
-      ] !== "function"
-    ) {
-      throw new HttpError(405);
-    }
-
-    // @ts-ignore
-    response = await resource[request.method.toUpperCase()]();
-
-    // Check if the response returned is of type Response, or as
-    // IResponseOutput
-    this.isValidResponse(request, response, resource);
-
-    await this.executeMiddlewareAfterRequest(request, response);
 
     return response.send();
   }
@@ -300,48 +272,34 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Add the middleware passed in via configs.
+   * Add the services passed in via configs.
    */
-  protected async addMiddleware(): Promise<void> {
-    if (!this.configs.middleware) {
+  protected async addApplicationService(): Promise<void> {
+    if (!this.configs.services) {
       return;
     }
 
-    const middlewares = this.configs.middleware;
+    const services = this.configs.services;
 
-    // Add server-level middleware that executes before requests
-    if (middlewares.before_request != null) {
-      this.middleware.before_request = [];
-      for (const middleware of middlewares.before_request) {
-        this.middleware.before_request.push(middleware);
+    // Add server-level services that execute before all requests
+    if (services.before_request) {
+      for (const service of services.before_request) {
+        // Check if this service needs to be set up
+        if (service.setUp) {
+          await service.setUp();
+        }
+        this.application_services.before_request!.push(service);
       }
     }
 
-    // Add server-level middleware that executes after requests
-    if (middlewares.after_request != null) {
-      this.middleware.after_request = [];
-      for (const middleware of middlewares.after_request) {
-        this.middleware.after_request.push(middleware);
-      }
-    }
-
-    // Add server-level middleware that executes after the resource is found
-    if (middlewares.after_resource != null) {
-      this.middleware.after_resource = [];
-      for (const middleware of middlewares.after_resource) {
-        this.middleware.after_resource.push(middleware);
-      }
-    }
-
-    // Add compile time level middleware that executes right now--processing
-    // data to be used later during runtime
-    if (middlewares.compile_time) {
-      for (const middleware of middlewares.compile_time) {
-        await middleware.compile();
-        this.middleware.runtime!.set(
-          this.middleware.runtime!.size,
-          middleware.run,
-        );
+    // Add server-level services that execute after all requests
+    if (services.after_request) {
+      for (const service of services.after_request) {
+        // Check if this service needs to be set up
+        if (service.setUp) {
+          await service.setUp();
+        }
+        this.application_services.after_request!.push(service);
       }
     }
   }
@@ -390,7 +348,7 @@ export class Server {
 
       // Include the regex path in the index, so we can search for the regex
       // path during runtime in `.buildResource()`
-      this.services.resource_index_service.addItem(
+      this.internal_services.resource_index_service.addItem(
         [paths.regex_path],
         resourceClass,
       );
@@ -503,7 +461,7 @@ export class Server {
       response,
       this,
       resourceClass.paths,
-      resourceClass.middleware,
+      resourceClass.services,
     );
 
     return resource;
@@ -523,91 +481,45 @@ export class Server {
   }
 
   /**
-   * Execute server-level middleware after the request.
+   * Execute server-level services after the request.
    *
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected async executeMiddlewareAfterRequest(
-    request: Request,
-    response: Response | null = null,
-  ): Promise<void> {
-    if (this.middleware.runtime) {
-      if (response) {
-        await this.executeMiddlewareRuntime(
-          request,
-          response,
-        );
-      }
-    }
-
-    if (this.middleware.after_request != null) {
-      for (const middleware of this.middleware.after_request) {
-        await middleware(request, response!);
-      }
-    }
-  }
-
-  /**
-   * Execute server-level middleware after a resource has been found, but before
-   * the resource's HTTP request method is executed.
-   *
-   * @param request - The request object.
-   * @param resource - The resource object.
-   */
-  protected async executeMiddlewareAfterResource(
+  protected async executeApplicationServicesAfterRequest(
     request: Request,
     response: Response,
   ): Promise<void> {
-    if (this.middleware.after_resource != null) {
-      for (const middleware of this.middleware.after_resource) {
-        await middleware(request, response);
-      }
+    if (!this.application_services.after_request) {
+      return;
     }
+
+    this.application_services.after_request.forEach((service: IService) => {
+      if (service.run) {
+        service.run(request, response);
+      }
+    });
   }
 
   /**
-   * Execute server-level middleware before the request.
+   * Execute server-level services before the request.
    *
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected async executeMiddlewareBeforeRequest(
+  protected async executeApplicationServicesBeforeRequest(
     request: Request,
   ): Promise<void> {
-    if (this.middleware.before_request != null) {
-      for (const middleware of this.middleware.before_request) {
-        await middleware(request);
-      }
+    if (!this.application_services.before_request) {
+      return;
     }
-  }
 
-  /**
-   * Execute server level runtime middleware after requests. Runtime middleware
-   * requires compile time data from compile time middleware.
-   *
-   * @param request - The request objecft.
-   * @param response - The response object.
-   */
-  protected executeMiddlewareRuntime(
-    request: Request,
-    response: Response,
-  ): void {
-    let processed: boolean = false;
-
-    this.middleware.runtime!.forEach(
-      async (
-        run: (
-          request: Request,
-          response: Response,
-        ) => Promise<void>,
-      ) => {
-        if (!processed) {
-          await run(request, response);
-          processed = true;
-        }
-      },
-    );
+    this.application_services.before_request!.forEach((service: IService) => {
+      console.log(service);
+      if (service.run) {
+        service.run(request);
+      }
+    });
   }
 
   /**
@@ -637,13 +549,14 @@ export class Server {
     // a URL later.
     const uriWithoutParams = "^/" + uri[0];
 
-    let results = this.services.resource_index_service.search(uriWithoutParams);
+    let results = this.internal_services.resource_index_service
+      .search(uriWithoutParams);
 
     // If no results are found, then check if /:some_param is in the index
     // service's lookup table because there might be a resource with
     // /:some_param as a URI
     if (results.size === 0) {
-      results = this.services.resource_index_service.search("^/");
+      results = this.internal_services.resource_index_service.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
         throw new HttpError(404);
@@ -653,10 +566,12 @@ export class Server {
     // Find the matching resource by comparing the request URL to a regex
     // pattern associated with a resource
     let matchedResource = false;
-    results.forEach((result) => {
-      //result = (result as ISearchResult);
-      // If we already matched a resource, then there is no need to parse any
-      // further
+    // @ts-ignore
+    // TODO(crookse) Export SearchResult type from Moogle so we can use it
+    // instead of using `any`
+    results.forEach((result: any) => {
+      // If we already matched a resource, then there is no need continue
+      // looking
       if (matchedResource) {
         return;
       }

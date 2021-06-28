@@ -3,6 +3,7 @@ import type { MultipartFormData } from "../../deps.ts";
 import { Request } from "./http/request.ts";
 import { Response } from "./http/response.ts";
 import { Resource } from "./http/resource.ts";
+import { Service } from "./http/service.ts";
 
 interface IKeyValuePairs {
   [key: string]: unknown;
@@ -59,7 +60,7 @@ export interface IParsedRequestBody {
  * This is used to type a Resource object.
  */
 export interface IResource {
-  middleware?: { after_request?: []; before_request?: [] };
+  services?: { after_request?: []; before_request?: [] };
   name: string;
   paths: string[];
   paths_parsed?: IResourcePaths[];
@@ -102,12 +103,12 @@ export interface IResponseOutput {
  *           multipart_form_data: 128 // This would be translated to 128MB
  *         }
  *
- * middleware?: IServerMiddleware
+ * services?: IService
  *
- *     The middleware that the server will execute during compile time and
+ *     The services that the server will execute during compile time and
  *     runtime.
  *
- *         middleware: {
+ *         services: {
  *           after_request: []
  *           before_request: []
  *           compile_time: []
@@ -129,13 +130,13 @@ export interface IResponseOutput {
  */
 export interface IServerConfigs {
   memory_allocation?: { multipart_form_data?: number };
-  middleware?: IServerMiddleware;
+  services?: IServerConfigsServices;
   resources?: IResource[];
   response_output?: string;
 }
 
 /**
- * This is used to type Middleware attached to the Server object. Below are more
+ * This is used to type a Service attached to the Server object. Below are more
  * details on the members in this interface.
  *
  * before_request
@@ -151,11 +152,11 @@ export interface IServerConfigs {
  *
  * For example:
  *
- *     function beforeRequestMiddleware (request: Request): void {
+ *     function beforeRequestService (request: Request): void {
  *       ...
  *     }
  *
- *     async function afterRequestMiddleware (
+ *     async function afterRequestService (
  *       request: Request,
  *       response: Response
  *     ): Promise<void> {
@@ -164,56 +165,23 @@ export interface IServerConfigs {
  *
  *     const server = new Server({
  *       middleware: {
- *         before_request: [beforeRequestMiddleware],
- *         afterRequest: [afterRequestMiddleware]
+ *         before_request: [beforeRequestService],
+ *         afterRequest: [afterRequestService]
  *       }
  *     }
  */
-export interface IServerMiddleware {
-  // Middleware to execute during compile time. The data that's compiled during
-  // compile time will be able to be used during runtime.
-  compile_time?: Array<
-    {
-      // The compile time method to run during compile time
-      compile: () => Promise<void>;
-      // The runtime method to run during runtime
-      run: ((
-        request: Request,
-        response: Response,
-      ) => Promise<void>);
-    }
-  >;
+export interface IServerConfigsServices {
+  // Services executed before a request is made (before a resource is found).
+  before_request?: IService[];
 
-  // Middleware to execute during runtime based on compiled data from compile
-  // time level middleware
-  runtime?: Map<
-    number,
-    ((
-      request: Request,
-      response: Response,
-    ) => Promise<void>)
-  >;
+  // Services executed after requests, but before responses are sent
+  after_request?: IService[];
+}
 
-  // Middleware executed before a request is made. That is, before a resource's
-  // HTTP method is called.
-  before_request?: Array<
-    | ((request: Request) => Promise<void>)
-    | ((request: Request) => void)
-  >;
+export interface IService {
+  // The method to run during compile time
+  setUp?: () => Promise<void> | void;
 
-  // Middleware executed after requests, but before responses are sent
-  after_request?: Array<
-    | ((
-      request: Request,
-      response: Response,
-    ) => Promise<void>)
-    | ((request: Request, response: Response) => void)
-  >;
-  after_resource?: Array<
-    | ((
-      request: Request,
-      response: Response,
-    ) => Promise<void>)
-    | ((request: Request, response: Response) => void)
-  >;
+  // The method to run during runtime
+  run?: (request: Request, response?: Response) => Promise<void> | void;
 }
