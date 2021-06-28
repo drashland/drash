@@ -39,5 +39,6 @@ export class HttpError extends Error {
 ////////////////////////////////////////////////////////////////////////////////
 
 const ERROR_CODES: { [k: string]: string } = {
-  "D1000": "Reosurce paths must be strings.",
+  "D1000": "Resource 'paths' property must be an array of strings.",
+  "D1001": "Resource 'paths' property is missing.",
 };
