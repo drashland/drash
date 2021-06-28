@@ -23,8 +23,16 @@ import {
 } from "../../../deps.ts";
 import { IOptions as IRequestOptions } from "./request.ts";
 
-interface IInternalServices {
-  resource_index_service: Moogle<IResource>;
+type TServiceInternal = Moogle<IResource>;
+
+interface IServices {
+  external: {
+    after_request: IService[],
+    before_request: IService[],
+  };
+  internal: {
+    resource_index: Moogle<IResource>
+  };
 }
 
 /**
@@ -48,38 +56,22 @@ export class Server {
   public deno_server: DenoServer | null = null;
 
   /**
-   * The hostname of the Deno server.
+   * A property to hold this server's options.
    */
-  public hostname: string = "localhost";
-
-  /**
-   * The port of the Deno server.
-   */
-  public port: number = 1447;
-
-  /**
-   * A property to hold this server's configs.
-   */
-  protected configs: IServerConfigs;
-
-  /**
-   * A property to hold the services related to an application. These services
-   * are specified via configs (provided by an application) and stored in here.
-   */
-  protected application_services: {
-    before_request: IService[];
-    after_request: IService[];
-  } = {
-    after_request: [],
-    before_request: [],
-  };
+  protected options: IServerConfigs;
 
   /**
    * A property to hold this server's services. This is not to be confused with
-   * the services that are provided in the configs.
+   * the services that are provided in the options.
    */
-  protected internal_services: IInternalServices = {
-    resource_index_service: new Moogle<IResource>(),
+  protected services: IServices = {
+    external: {
+      after_request: [],
+      before_request: [],
+    },
+    internal: {
+      resource_index: new Moogle<IResource>()
+    }
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -89,12 +81,12 @@ export class Server {
   /**
    * Construct an object of this class.
    *
-   * @param configs - The config of Drash Server
+   * @param options - The config of Drash Server
    */
-  constructor(configs: IServerConfigs) {
-    this.configs = this.buildConfigs(configs);
+  constructor(options: IServerConfigs = {}) {
+    this.options = this.buildOptions(options);
 
-    this.addApplicationService();
+    this.addExternalServices();
 
     this.addResources();
   }
@@ -104,7 +96,7 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   public getAddress(): string {
-    return `${this.hostname}:${this.port}`;
+    return `${this.options.hostname}:${this.options.port}`;
   }
 
   /**
@@ -204,7 +196,7 @@ export class Server {
   }
 
   /**
-   * Run the Deno server at the hostname specified in the configs. This method
+   * Run the Deno server at the hostname specified in the options. This method
    * takes each HTTP request and creates a new and more workable request object
    * and passes it to `.handleHttpRequest()`.
    *
@@ -212,32 +204,18 @@ export class Server {
    *
    * @returns A Promise of the Deno server from the serve() call.
    */
-  public async run(options?: HTTPOptions): Promise<DenoServer> {
-    if (!options) {
-      options = {
-        hostname: this.hostname,
-        port: this.port,
-      };
-    }
-
-    if (!options.hostname) {
-      options.hostname = this.hostname;
-    }
-
-    if (!options.port) {
-      options.port = this.port;
-    }
-
-    this.hostname = options.hostname;
-    this.port = options.port;
-    this.deno_server = serve(options);
+  public async run(): Promise<DenoServer> {
+    this.deno_server = serve({
+      hostname: this.options.hostname!,
+      port: this.options.port!,
+    });
 
     await this.listen();
     return this.deno_server;
   }
 
   /**
-   * Run the Deno server at the hostname specified in the configs as an HTTPS
+   * Run the Deno server at the hostname specified in the options as an HTTPS
    * Server. This method takes each HTTP request and creates a new and more
    * workable request object and passes it to `.handleHttpRequest()`.
    *
@@ -245,18 +223,13 @@ export class Server {
    *
    * @returns A Promise of the Deno server from the serve() call.
    */
-  public async runTLS(options: HTTPSOptions): Promise<DenoServer> {
-    if (!options.hostname) {
-      options.hostname = this.hostname;
-    }
-
-    if (!options.port) {
-      options.port = this.port;
-    }
-
-    this.hostname = options.hostname;
-    this.port = options.port;
-    this.deno_server = serveTLS(options);
+  public async runTLS(): Promise<DenoServer> {
+    this.deno_server = serveTLS({
+      hostname: this.options.hostname!,
+      port: this.options.port!,
+      certFile: this.options.cert_file!,
+      keyFile: this.options.key_file!,
+    });
 
     await this.listen();
     return this.deno_server;
@@ -275,14 +248,14 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Add the services passed in via configs.
+   * Add the external services passed in via options.
    */
-  protected async addApplicationService(): Promise<void> {
-    if (!this.configs.services) {
+  protected async addExternalServices(): Promise<void> {
+    if (!this.options.services) {
       return;
     }
 
-    const services = this.configs.services;
+    const services = this.options.services;
 
     // Add server-level services that execute before all requests
     if (services.before_request) {
@@ -293,7 +266,7 @@ export class Server {
         if (service.setUp) {
           await service.setUp();
         }
-        this.application_services.before_request!.push(service);
+        this.services.external.before_request!.push(service);
       }
     }
 
@@ -306,7 +279,7 @@ export class Server {
         if (service.setUp) {
           await service.setUp();
         }
-        this.application_services.after_request!.push(service);
+        this.services.external.after_request!.push(service);
       }
     }
   }
@@ -359,7 +332,7 @@ export class Server {
 
       // Include the regex path in the index, so we can search for the regex
       // path during runtime in `.buildResource()`
-      this.internal_services.resource_index_service.addItem(
+      this.services.internal.resource_index.addItem(
         [paths.regex_path],
         resourceClass,
       );
@@ -371,40 +344,68 @@ export class Server {
   }
 
   /**
-   * Add the resources passed in via configs.
+   * Add the resources passed in via options.
    */
   protected addResources(): void {
-    if (!this.configs.resources) {
+    if (!this.options.resources) {
       return;
     }
 
-    for (const index in this.configs.resources) {
-      this.addResource(this.configs.resources[index] as IResource);
+    for (const index in this.options.resources) {
+      this.addResource(this.options.resources[index] as IResource);
     }
   }
 
   /**
-   * Build the configs for this server -- making sure to set any necessary
-   * defaults.
+   * Build the options for this server -- making sure to set any necessary
+   * defaults in case the user did not provide any options.
    *
-   * @param configs - The configs passed in by the user.
+   * @param options - The options passed in by the user.
    *
-   * @return The configs.
+   * @return The options.
    */
-  protected buildConfigs(
-    configs: IServerConfigs,
+  protected buildOptions(
+    options: IServerConfigs,
   ): IServerConfigs {
-    if (!configs.memory_allocation) {
-      configs.memory_allocation = {};
+    if (!options.default_response_content_type) {
+      options.default_response_content_type = "application/json";
     }
 
-    return configs;
+    if (!options.hostname) {
+      options.hostname = "0.0.0.0";
+    }
+
+    if (!options.memory) {
+      options.memory = {};
+    }
+
+    if (!options.memory.multipart_form_data) {
+      options.memory.multipart_form_data = 10;
+    }
+
+    if (!options.port) {
+      options.port = 1337;
+    }
+
+    if (!options.resources) {
+      options.resources = [];
+    }
+
+    if (!options.services) {
+      options.services = {
+        after_request: [],
+        before_request: [],
+      }
+    }
+
+    return options;
   }
 
   /**
    * Get the request object with more properties and methods.
    *
-   * @param request - The request object.
+   * @param serverRequest - An instance of ServerRequest. This is what we'll use
+   * to create the "Drash-specific" request object.
    *
    * @returns Returns a Drash request object--hydrated with more properties and
    * methods than the ServerRequest object. These properties and methods are
@@ -413,24 +414,20 @@ export class Server {
   protected async buildRequest(
     serverRequest: ServerRequest,
   ): Promise<Request> {
-    const options: IRequestOptions = {
-      memory_allocation: {
-        multipart_form_data: 10,
-      },
-    };
-
-    // Check if memory allocation has been specified in the configs. If so, use
-    // it. We don't want to limit the user to 10MB of memory if they specify a
-    // different value.
-    const config = this.configs.memory_allocation;
-    if (config && config.multipart_form_data) {
-      options.memory_allocation.multipart_form_data =
-        config.multipart_form_data;
-    }
-
-    // We have to build the request and then parse it's body after because
-    // constructors cannot be async
-    const request = new Request(serverRequest, options);
+    // We have to build the request first and then parse its body second. This
+    // is because constructors cannot have the `async` keyword. For example, we
+    // can't do ...
+    //
+    //     async constructor() {
+    //       this.parseBody();
+    //     }
+    //
+    // ... in the request class. It will throw an error.
+    const request = new Request(serverRequest, {
+      memory: {
+        multipart_form_data: this.options.memory!.multipart_form_data!
+      }
+    });
     await request.parseBody();
 
     return request;
@@ -485,7 +482,7 @@ export class Server {
    */
   protected buildResponse(request: Request): Response {
     return new Response(request, {
-      default_content_type: this.configs.response_output,
+      default_content_type: this.options.default_response_content_type,
     });
   }
 
@@ -499,12 +496,12 @@ export class Server {
     request: Request,
     response: Response,
   ): Promise<void> {
-    if (!this.application_services.after_request) {
+    if (!this.services.external.after_request) {
       return;
     }
 
-    for (const index in this.application_services.after_request) {
-      const service = this.application_services.after_request[index];
+    for (const index in this.services.external.after_request) {
+      const service = this.services.external.after_request[index];
       if (service.run) {
         service.run(request);
       }
@@ -520,12 +517,12 @@ export class Server {
   protected async executeApplicationServicesBeforeRequest(
     request: Request,
   ): Promise<void> {
-    if (!this.application_services.before_request) {
+    if (!this.services.external.before_request) {
       return;
     }
 
-    for (const index in this.application_services.before_request) {
-      const service = this.application_services.before_request[index];
+    for (const index in this.services.external.before_request) {
+      const service = this.services.external.before_request[index];
       if (service.run) {
         service.run(request);
       }
@@ -559,14 +556,14 @@ export class Server {
     // a URL later.
     const uriWithoutParams = "^/" + uri[0];
 
-    let results = this.internal_services.resource_index_service
+    let results = this.services.internal.resource_index
       .search(uriWithoutParams);
 
     // If no results are found, then check if /:some_param is in the index
     // service's lookup table because there might be a resource with
     // /:some_param as a URI
     if (results.size === 0) {
-      results = this.internal_services.resource_index_service.search("^/");
+      results = this.services.internal.resource_index.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
         throw new HttpError(404);

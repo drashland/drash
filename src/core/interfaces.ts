@@ -92,17 +92,6 @@ export interface IResponseOutput {
  * This is used to type a Server object's configs. Below are more details on the
  * members in this interface.
  *
- * memory_allocation?: {
- *   multipart_form_data?: number
- * }
- *     The amount of memory to allocate to certain parts of the codebase.
- *     For example, the multipart reader uses a default of 10MB, but you can
- *     override that default by specifying the following:
- *
- *         memory_allocation: {
- *           multipart_form_data: 128 // This would be translated to 128MB
- *         }
- *
  * services?: IService
  *
  *     The services that the server will execute during compile time and
@@ -129,10 +118,14 @@ export interface IResponseOutput {
  *         response_output: "application/json"
  */
 export interface IServerConfigs {
-  memory_allocation?: { multipart_form_data?: number };
-  services?: IServerConfigsServices;
+  cert_file?: string;
+  default_response_content_type?: string;
+  hostname?: string;
+  key_file?: string;
+  memory?: IServerConfigsMemory;
+  port?: number,
   resources?: typeof Resource[];
-  response_output?: string;
+  services?: IServerConfigsServices;
 }
 
 /**
@@ -170,6 +163,18 @@ export interface IServerConfigs {
  *       }
  *     }
  */
+
+/**
+ * The amount of memory to allocate to the server's processes.  For example, the
+ * multipart reader uses a default of 10MB, but you can override that default by
+ * specifying:
+ *
+ *     multipart_form_data: 128 // This would be translated to 128MB
+ */
+export interface IServerConfigsMemory {
+  multipart_form_data?: number;
+}
+
 export interface IServerConfigsServices {
   // Services executed before a request is made (before a resource is found).
   before_request?: typeof Service[];

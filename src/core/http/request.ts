@@ -15,7 +15,7 @@ import { mimeDb } from "../dictionaries/mime_db.ts";
 
 export interface IOptions {
   headers?: Headers;
-  memory_allocation: {
+  memory: {
     multipart_form_data: number;
   };
 }
@@ -33,6 +33,7 @@ export class Request extends ServerRequest implements IRequest {
   public url_query_params: { [key: string]: string } = {};
   public url_path: string;
   public resource: Resource | null = null;
+  protected options: IOptions;
   protected original_request: ServerRequest;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -51,7 +52,7 @@ export class Request extends ServerRequest implements IRequest {
      *     the original request's body.
      * @param IOptions - options to be used in the server
      */
-  constructor(originalRequest: ServerRequest, options?: IOptions) {
+  constructor(originalRequest: ServerRequest, options: IOptions) {
     super();
     this.headers = originalRequest.headers;
     this.method = originalRequest.method;
@@ -59,6 +60,7 @@ export class Request extends ServerRequest implements IRequest {
     this.url = originalRequest.url;
     this.url_path = this.getUrlPath(originalRequest);
     this.url_query_params = this.getUrlQueryParams();
+    this.options = options;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -434,9 +436,7 @@ export class Request extends ServerRequest implements IRequest {
    * @returns The content type of the body, and based on this the body itself in
    * that format. If there is no body, it returns an empty properties
    */
-  public async parseBody(
-    options?: IOptions,
-  ): Promise<IParsedRequestBody> {
+  public async parseBody(): Promise<IParsedRequestBody> {
     if ((await this.hasBody()) === false) {
       return {
         content_type: "",
@@ -488,20 +488,11 @@ export class Request extends ServerRequest implements IRequest {
         );
       }
       try {
-        let maxMemory: number = 10;
-        if (
-          options &&
-          options.memory_allocation &&
-          options.memory_allocation.multipart_form_data &&
-          options.memory_allocation.multipart_form_data > 10
-        ) {
-          maxMemory = options.memory_allocation.multipart_form_data;
-        }
         const ret = {
           data: await this.parseBodyAsMultipartFormData(
             this.original_request.body,
             boundary,
-            maxMemory,
+            this.options.memory.multipart_form_data,
           ),
           content_type: "multipart/form-data",
         };
