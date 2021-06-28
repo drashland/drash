@@ -61,8 +61,8 @@ export interface IParsedRequestBody {
  */
 export interface IResource {
   services?: { after_request?: []; before_request?: [] };
-  name: string;
-  paths: string[];
+  name?: string;
+  paths?: string[];
   paths_parsed?: IResourcePaths[];
 }
 
@@ -131,7 +131,7 @@ export interface IResponseOutput {
 export interface IServerConfigs {
   memory_allocation?: { multipart_form_data?: number };
   services?: IServerConfigsServices;
-  resources?: IResource[];
+  resources?: typeof Resource[];
   response_output?: string;
 }
 
@@ -172,10 +172,10 @@ export interface IServerConfigs {
  */
 export interface IServerConfigsServices {
   // Services executed before a request is made (before a resource is found).
-  before_request?: IService[];
+  before_request?: typeof Service[];
 
   // Services executed after requests, but before responses are sent
-  after_request?: IService[];
+  after_request?: typeof Service[];
 }
 
 export interface IService {

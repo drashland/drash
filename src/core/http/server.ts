@@ -66,7 +66,10 @@ export class Server {
    * A property to hold the services related to an application. These services
    * are specified via configs (provided by an application) and stored in here.
    */
-  protected application_services: IServerConfigsServices = {
+  protected application_services: {
+    before_request: IService[]
+    after_request: IService[]
+  } = {
     after_request: [],
     before_request: [],
   };
@@ -283,7 +286,9 @@ export class Server {
 
     // Add server-level services that execute before all requests
     if (services.before_request) {
-      for (const service of services.before_request) {
+      for (const s of services.before_request) {
+        // @ts-ignore
+        const service = new (s as IService)();
         // Check if this service needs to be set up
         if (service.setUp) {
           await service.setUp();
@@ -294,7 +299,9 @@ export class Server {
 
     // Add server-level services that execute after all requests
     if (services.after_request) {
-      for (const service of services.after_request) {
+      for (const s of services.after_request) {
+        // @ts-ignore
+        const service = new (s as IService)();
         // Check if this service needs to be set up
         if (service.setUp) {
           await service.setUp();
@@ -317,6 +324,10 @@ export class Server {
     // Define the variable that will hold the data to helping us match path
     // params on the request during runtime
     const resourceParsedPaths = [];
+
+    if (!resourceClass.paths) {
+      throw new CompileError("D1001");
+    }
 
     for (let path of resourceClass.paths) {
       // Strip out the trailing slash from paths
@@ -367,11 +378,9 @@ export class Server {
       return;
     }
 
-    this.configs.resources.forEach(
-      (resourceClass: IResource) => {
-        this.addResource(resourceClass);
-      },
-    );
+    for (const index in this.configs.resources) {
+      this.addResource(this.configs.resources[index] as IResource);
+    }
   }
 
   /**
@@ -494,11 +503,12 @@ export class Server {
       return;
     }
 
-    this.application_services.after_request.forEach((service: IService) => {
+    for (const index in this.application_services.after_request) {
+      const service = this.application_services.after_request[index];
       if (service.run) {
-        service.run(request, response);
+        service.run(request);
       }
-    });
+    }
   }
 
   /**
@@ -514,12 +524,12 @@ export class Server {
       return;
     }
 
-    this.application_services.before_request!.forEach((service: IService) => {
-      console.log(service);
+    for (const index in this.application_services.before_request) {
+      const service = this.application_services.before_request[index];
       if (service.run) {
         service.run(request);
       }
-    });
+    }
   }
 
   /**
