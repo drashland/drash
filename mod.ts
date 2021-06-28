@@ -9,6 +9,7 @@ export { Request } from "./src/core/http/request.ts";
 export { Resource } from "./src/core/http/resource.ts";
 export { Response } from "./src/core/http/response.ts";
 export { Server } from "./src/core/http/server.ts";
+export { Service } from "./src/core/http/service.ts";
 
 // Interfaces
 export * as Interfaces from "./src/core/interfaces.ts";
