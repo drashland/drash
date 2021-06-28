@@ -208,47 +208,53 @@ Rhum.testPlan("http/middleware_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("@decorate test | ResourceWithMultipleMiddlewareBeforeClass", () => {
-    Rhum.testCase("correct header, custom response and value", async () => {
-      const server = new Drash.Server({
-        resources: [ResourceWithMultipleMiddlewareBeforeClass],
+  Rhum.testSuite(
+    "@decorate test | ResourceWithMultipleMiddlewareBeforeClass",
+    () => {
+      Rhum.testCase("correct header, custom response and value", async () => {
+        const server = new Drash.Server({
+          resources: [ResourceWithMultipleMiddlewareBeforeClass],
+        });
+        const request = TestHelpers.mockRequest("/users/1", "get", {
+          headers: {
+            csrf_token: "all your base",
+          },
+        });
+        const response = await server.handleHttpRequest(request);
+        TestHelpers.assertResponseJsonEquals(
+          TestHelpers.responseBody(response),
+          { name: "Thor" },
+        );
+        Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
       });
-      const request = TestHelpers.mockRequest("/users/1", "get", {
-        headers: {
-          csrf_token: "all your base",
-        },
-      });
-      const response = await server.handleHttpRequest(request);
-      TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
-        { name: "Thor" },
-      );
-      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
-    });
-  });
+    },
+  );
 
-  Rhum.testSuite("@decorator test | ResourceWithMultipleMiddlewareAfterClass", () => {
-    Rhum.testCase("response is html, custom header and value", async () => {
-      const server = new Drash.Server({
-        resources: [ResourceWithMultipleMiddlewareAfterClass],
+  Rhum.testSuite(
+    "@decorator test | ResourceWithMultipleMiddlewareAfterClass",
+    () => {
+      Rhum.testCase("response is html, custom header and value", async () => {
+        const server = new Drash.Server({
+          resources: [ResourceWithMultipleMiddlewareAfterClass],
+        });
+        const request = TestHelpers.mockRequest("/users/1", "get", {
+          headers: {
+            csrf_token: "all your base",
+          },
+        });
+        const response = await server.handleHttpRequest(request);
+        Rhum.asserts.assertEquals(
+          TestHelpers.responseBody(response),
+          "<h1>hey</h1>",
+        );
+        Rhum.asserts.assertEquals(
+          response.headers!.get("Content-Type"),
+          "text/html",
+        );
+        Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
       });
-      const request = TestHelpers.mockRequest("/users/1", "get", {
-        headers: {
-          csrf_token: "all your base",
-        },
-      });
-      const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(
-        TestHelpers.responseBody(response),
-        "<h1>hey</h1>",
-      );
-      Rhum.asserts.assertEquals(
-        response.headers!.get("Content-Type"),
-        "text/html",
-      );
-      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
-    });
-  });
+    },
+  );
 
   Rhum.testSuite("@decorator test | ResourceWithMiddlewareClass", () => {
     Rhum.testCase("custom header and swap to html", async () => {
@@ -291,24 +297,27 @@ Rhum.testPlan("http/middleware_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("@decorator test | ResourceWithMultipleMiddlewareBeforeMethod", () => {
-    Rhum.testCase("custom header", async () => {
-      const server = new Drash.Server({
-        resources: [ResourceWithMultipleMiddlewareBeforeMethod],
+  Rhum.testSuite(
+    "@decorator test | ResourceWithMultipleMiddlewareBeforeMethod",
+    () => {
+      Rhum.testCase("custom header", async () => {
+        const server = new Drash.Server({
+          resources: [ResourceWithMultipleMiddlewareBeforeMethod],
+        });
+        const request = TestHelpers.mockRequest("/users/1", "get", {
+          headers: {
+            csrf_token: "all your base",
+          },
+        });
+        const response = await server.handleHttpRequest(request);
+        TestHelpers.assertResponseJsonEquals(
+          TestHelpers.responseBody(response),
+          { name: "Thor" },
+        );
+        Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
       });
-      const request = TestHelpers.mockRequest("/users/1", "get", {
-        headers: {
-          csrf_token: "all your base",
-        },
-      });
-      const response = await server.handleHttpRequest(request);
-      TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
-        { name: "Thor" },
-      );
-      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
-    });
-  });
+    },
+  );
 
   Rhum.testSuite("@decorator test | ResourceWithMiddlewareAfterMethod", () => {
     Rhum.testCase("swap to html", async () => {
@@ -332,28 +341,31 @@ Rhum.testPlan("http/middleware_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("@decorator test | ResourceWithMultipleMiddlewareAfterMethod", () => {
-    Rhum.testCase("custom header and swap to html", async () => {
-      const server = new Drash.Server({
-        resources: [ResourceWithMultipleMiddlewareAfterMethod],
+  Rhum.testSuite(
+    "@decorator test | ResourceWithMultipleMiddlewareAfterMethod",
+    () => {
+      Rhum.testCase("custom header and swap to html", async () => {
+        const server = new Drash.Server({
+          resources: [ResourceWithMultipleMiddlewareAfterMethod],
+        });
+        const request = TestHelpers.mockRequest("/users/1", "get", {
+          headers: {
+            csrf_token: "all your base",
+          },
+        });
+        const response = await server.handleHttpRequest(request);
+        Rhum.asserts.assertEquals(
+          TestHelpers.responseBody(response),
+          "<h1>hey</h1>",
+        );
+        Rhum.asserts.assertEquals(
+          response.headers!.get("Content-Type"),
+          "text/html",
+        );
+        Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
       });
-      const request = TestHelpers.mockRequest("/users/1", "get", {
-        headers: {
-          csrf_token: "all your base",
-        },
-      });
-      const response = await server.handleHttpRequest(request);
-      Rhum.asserts.assertEquals(
-        TestHelpers.responseBody(response),
-        "<h1>hey</h1>",
-      );
-      Rhum.asserts.assertEquals(
-        response.headers!.get("Content-Type"),
-        "text/html",
-      );
-      Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
-    });
-  });
+    },
+  );
 });
 
 Rhum.run();
@@ -448,7 +460,7 @@ function DecoratorCustomHeader(
       "'header' not specified.",
     );
   }
-};
+}
 
 function DecoratorSwapResponseToHtml(
   request: Drash.Request,
@@ -456,16 +468,14 @@ function DecoratorSwapResponseToHtml(
 ) {
   response.headers.set("Content-Type", "text/html");
   response.body = "<h1>hey</h1>";
-};
+}
 
 function DecoratorResponseCustomHeaderAdded(
   request: Drash.Request,
   response: Drash.Response,
 ) {
   response.headers.set("MYCUSTOM", "hey");
-};
-
-////////////////////////////////////////////////////////////////////////////////
+}////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - DATA - RESOURCES //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -535,7 +545,9 @@ class ResourceWithMiddlewareBeforeClass extends Drash.Resource {
 }
 
 @Drash.Middleware(
-  { before_request: [DecoratorResponseCustomHeaderAdded, DecoratorCustomHeader] },
+  {
+    before_request: [DecoratorResponseCustomHeaderAdded, DecoratorCustomHeader],
+  },
 )
 class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
@@ -555,7 +567,12 @@ class ResourceWithMultipleMiddlewareBeforeClass extends Drash.Resource {
 }
 
 @Drash.Middleware(
-  { after_request: [DecoratorSwapResponseToHtml, DecoratorResponseCustomHeaderAdded] },
+  {
+    after_request: [
+      DecoratorSwapResponseToHtml,
+      DecoratorResponseCustomHeaderAdded,
+    ],
+  },
 )
 class ResourceWithMultipleMiddlewareAfterClass extends Drash.Resource {
   static paths = ["/users/:id", "/users/:id/"];
@@ -622,7 +639,12 @@ class ResourceWithMultipleMiddlewareBeforeMethod extends Drash.Resource {
     [2, { name: "Hulk" }],
   ]);
   @Drash.Middleware(
-    { before_request: [DecoratorResponseCustomHeaderAdded, DecoratorCustomHeader] },
+    {
+      before_request: [
+        DecoratorResponseCustomHeaderAdded,
+        DecoratorCustomHeader,
+      ],
+    },
   )
   public GET() {
     const param = this.request.getPathParam("id");
@@ -642,7 +664,12 @@ class ResourceWithMultipleMiddlewareAfterMethod extends Drash.Resource {
     [2, { name: "Hulk" }],
   ]);
   @Drash.Middleware(
-    { after_request: [DecoratorSwapResponseToHtml, DecoratorResponseCustomHeaderAdded] },
+    {
+      after_request: [
+        DecoratorSwapResponseToHtml,
+        DecoratorResponseCustomHeaderAdded,
+      ],
+    },
   )
   public GET() {
     return this.response;

@@ -67,8 +67,8 @@ export class Server {
    * are specified via configs (provided by an application) and stored in here.
    */
   protected application_services: {
-    before_request: IService[]
-    after_request: IService[]
+    before_request: IService[];
+    after_request: IService[];
   } = {
     after_request: [],
     before_request: [],
