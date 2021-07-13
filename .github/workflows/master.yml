@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Deno
-        uses: denolib/setup-deno@master
+        uses: denoland/setup-deno@v1
 
       - name: Setup Node 13
         uses: actions/setup-node@v1
@@ -109,8 +109,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno v${{ matrix.deno }}
-        uses: denolib/setup-deno@master
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
 
       - name: Formatter
         run: deno fmt --check
