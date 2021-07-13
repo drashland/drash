@@ -943,15 +943,15 @@ function parseBodyAsMultipartFormDataTests() {
       "--------------------------434049563556637648550474",
       128,
     );
-    Rhum.asserts.assertEquals(form.value("foo"), "foo");
-    Rhum.asserts.assertEquals(form.value("bar"), "bar");
-    let file = form.file("file");
+    Rhum.asserts.assertEquals(form.values("foo"), ["foo"]);
+    Rhum.asserts.assertEquals(form.values("bar"), ["bar"]);
+    let file = form.files("file")![0];
     if (Array.isArray(file)) {
       file = file[0];
     }
     Rhum.asserts.assert(isFormFile(file));
     Rhum.asserts.assert(file!.content !== void 0);
-    let file2 = form.file("file2");
+    let file2 = form.files("file2")![0];
     if (Array.isArray(file2)) {
       file2 = file2[0];
     }
@@ -969,7 +969,7 @@ function parseBodyAsMultipartFormDataTests() {
       "--------------------------434049563556637648550474",
       128,
     );
-    Rhum.asserts.assertEquals(form.value("hello"), "world");
+    Rhum.asserts.assertEquals(form.values("hello"), ["world"]);
     o.close();
   });
   Rhum.testCase("Can parse file sample_3.txt", async () => {
@@ -981,7 +981,7 @@ function parseBodyAsMultipartFormDataTests() {
       "--------------------------434049563556637648550474",
       128,
     );
-    Rhum.asserts.assertEquals(form.value("foo"), "foo");
+    Rhum.asserts.assertEquals(form.values("foo"), ["foo"]);
     o.close();
   });
 }
