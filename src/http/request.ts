@@ -121,7 +121,7 @@ export class Request extends ServerRequest {
   public getBodyFile(input: string): FormFile | undefined {
     if (typeof this.parsed_body.data!.files === "function") {
       const files = this.parsed_body.data!.files(input);
-      return Array.isArray(files) ? files[0] : undefined
+      return Array.isArray(files) ? files[0] : undefined;
     }
     return undefined;
   }
