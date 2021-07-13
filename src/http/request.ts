@@ -119,15 +119,9 @@ export class Request extends ServerRequest {
    * @return The file requested or `undefined` if not available.
    */
   public getBodyFile(input: string): FormFile | undefined {
-    if (typeof this.parsed_body.data!.file === "function") {
-      const file = this.parsed_body.data!.file(input);
-      // `file` can be of types: FormFile | FormFile[] | undefined.
-      // Below, we get pass the TSC error of this not being of
-      // type `FormFile | undefined`
-      if (Array.isArray(file)) {
-        return file[0];
-      }
-      return file;
+    if (typeof this.parsed_body.data!.files === "function") {
+      const files = this.parsed_body.data!.files(input);
+      return Array.isArray(files) ? files[0] : undefined
     }
     return undefined;
   }
@@ -141,9 +135,9 @@ export class Request extends ServerRequest {
     input: string,
   ): string | { [key: string]: unknown } | Array<unknown> | boolean | null {
     let param;
-    if (typeof this.parsed_body.data!.value === "function") {
+    if (typeof this.parsed_body.data!.values === "function") {
       // For when multipart/form-data
-      param = this.parsed_body.data!.value(input);
+      param = this.parsed_body.data!.values(input)[0];
     } else {
       // Anything else. Note we need to use `as` here, to convert it
       // to an object, otherwise it's type is `MultipartFormData | ...`,
