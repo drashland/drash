@@ -1,5 +1,6 @@
 import type { Request } from "./http/request.ts";
 import type { Response } from "./http/response.ts";
+import { Service } from "./http/service.ts";
 /**
  * @param request - Contains the instance of the request.
  * @param server - Contains the instance of the server.
@@ -24,6 +25,6 @@ export type MiddlewareFunction =
  *
  */
 export type Middleware = {
-  before_request?: MiddlewareFunction[];
-  after_request?: MiddlewareFunction[];
+  before_request?: typeof Service[];
+  after_request?: typeof Service[];
 };

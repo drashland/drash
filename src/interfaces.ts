@@ -1,12 +1,37 @@
-import type { MultipartFormData } from "../../deps.ts";
+import type { MultipartFormData } from "../deps.ts";
 
 import { Request } from "./http/request.ts";
+import { Server } from "./http/server.ts";
 import { Response } from "./http/response.ts";
 import { Resource } from "./http/resource.ts";
 import { Service } from "./http/service.ts";
+import { ServerRequest } from "../deps.ts";
 
-interface IKeyValuePairs {
-  [key: string]: unknown;
+export interface ICreateable {
+ create: () => void;
+ addOptions: (options: ICreateableOptions) => void;
+}
+
+export interface ICreateableOptions {}
+
+export interface IRequestOptions extends ICreateableOptions {
+  memory?: {
+    multipart_form_data?: number;
+  },
+  original_request?: ServerRequest;
+}
+
+export interface IResourceOptions extends ICreateableOptions {
+  server?: Server;
+  request?: Request;
+}
+
+export interface IResponseOptions extends ICreateableOptions {
+  default_response_content_type?: string;
+}
+
+export interface IKeyValuePairs<T> {
+  [key: string]: T;
 }
 
 /**
@@ -52,14 +77,14 @@ export interface IMime {
  *     The data passed in the body of the request.
  */
 export interface IParsedRequestBody {
-  content_type: string;
-  data: undefined | MultipartFormData | IKeyValuePairs;
+  content_type: string | undefined;
+  data: undefined | MultipartFormData | IKeyValuePairs<unknown>;
 }
 
 /**
  * This is used to type a Resource object.
  */
-export interface IResource {
+export interface IResource extends ICreateable {
   services?: { after_request?: []; before_request?: [] };
   name?: string;
   paths?: string[];
@@ -117,15 +142,16 @@ export interface IResponseOutput {
  *
  *         response_output: "application/json"
  */
-export interface IServerConfigs {
+export interface IServerOptions extends ICreateableOptions {
   cert_file?: string;
   default_response_content_type?: string;
   hostname?: string;
   key_file?: string;
-  memory?: IServerConfigsMemory;
+  memory?: IServerOptionsMemory;
   port?: number,
+  protocol?: "http" | "https",
   resources?: typeof Resource[];
-  services?: IServerConfigsServices;
+  services?: IServerOptionsServices;
 }
 
 /**
@@ -157,7 +183,7 @@ export interface IServerConfigs {
  *     }
  *
  *     const server = new Server({
- *       middleware: {
+ *       services: {
  *         before_request: [beforeRequestService],
  *         afterRequest: [afterRequestService]
  *       }
@@ -171,11 +197,11 @@ export interface IServerConfigs {
  *
  *     multipart_form_data: 128 // This would be translated to 128MB
  */
-export interface IServerConfigsMemory {
+export interface IServerOptionsMemory {
   multipart_form_data?: number;
 }
 
-export interface IServerConfigsServices {
+export interface IServerOptionsServices {
   // Services executed before a request is made (before a resource is found).
   before_request?: typeof Service[];
 
@@ -188,5 +214,7 @@ export interface IService {
   setUp?: () => Promise<void> | void;
 
   // The method to run during runtime
-  run?: (request: Request, response?: Response) => Promise<void> | void;
+  runAfterRequest?: (request: Request, response: Response) => Promise<void> | void;
+
+  runBeforeRequest?: (request: Request) => Promise<void> | void;
 }

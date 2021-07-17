@@ -5,67 +5,101 @@ import {
   MultipartFormData,
   MultipartReader,
   ServerRequest,
-} from "../../../deps.ts";
+} from "../../deps.ts";
 type Reader = Deno.Reader;
-import { IParsedRequestBody, IResponseOutput } from "../interfaces.ts";
+import { ICreateable, IKeyValuePairs, IRequestOptions, IParsedRequestBody, IResponseOutput } from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
 import { Server } from "./server.ts";
 import { mimeDb } from "../dictionaries/mime_db.ts";
 
-export interface IOptions {
-  headers?: Headers;
-  memory: {
-    multipart_form_data: number;
-  };
-}
-
-interface IRequest {
-  headers: Headers;
-}
-
-export class Request extends ServerRequest implements IRequest {
+export class Request extends ServerRequest implements ICreateable {
   public parsed_body: IParsedRequestBody = {
     content_type: "",
     data: undefined,
   };
   public path_params: { [key: string]: string } = {};
-  public url_query_params: { [key: string]: string } = {};
-  public url_path: string;
   public resource: Resource | null = null;
-  protected options: IOptions;
-  protected original_request: ServerRequest;
+  declare public headers: Headers;
+  declare public method: string;
+  declare public url: string;
+  protected options: IRequestOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  // FILE MARKER - FACTORY METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  /**
-     * Construct an object of this class.
-     *
-     * @param ServerRequest - originalRequest
-     *     The original Deno ServerRequest object that's used to help create this
-     *     Request object. There are some data members that the
-     *     original request has that can't be attached to this object. Therefore,
-     *     we keep track of the original request if we ever want to access data
-     *     members from it. An example of a data member that we want to access is
-     *     the original request's body.
-     * @param IOptions - options to be used in the server
-     */
-  constructor(originalRequest: ServerRequest, options: IOptions) {
-    super();
-    this.headers = originalRequest.headers;
-    this.method = originalRequest.method;
-    this.original_request = originalRequest;
-    this.url = originalRequest.url;
-    this.url_path = this.getUrlPath(originalRequest);
-    this.url_query_params = this.getUrlQueryParams();
+  public create() {
+    this.extractPropertiesFromOriginalRequest();
+  }
+
+  public addOptions(options: IRequestOptions) {
     this.options = options;
+  }
+
+  protected extractPropertiesFromOriginalRequest(): void {
+    this.headers = this.options.original_request!.headers ?? new Headers();
+    this.method = this.options.original_request!.method.toUpperCase();
+    this.url = this.options.original_request!.url;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  public get url_path(): string {
+    let path = this.options.original_request!.url;
+
+    if (path == "/") {
+      return path;
+    }
+
+    if (path.indexOf("?") == -1) {
+      return path;
+    }
+
+    try {
+      path = path.split("?")[0];
+    } catch (error) {
+      // ha.. do nothing
+    }
+
+    return path;
+  }
+
+  public get url_query_params(): IKeyValuePairs<string> {
+    let queryParams: IKeyValuePairs<string> = {};
+
+    try {
+      let queryParamsString = this.url_query_string;
+      if (!queryParamsString) {
+        queryParamsString = "";
+      }
+      queryParams = this.parseQueryParamsString(
+        queryParamsString,
+      );
+    } catch (error) {
+      // Do absofruitly nothing
+    }
+
+    return queryParams;
+  }
+
+  public get url_query_string(): null | string {
+    let queryString = null;
+
+    if (this.url.indexOf("?") == -1) {
+      return queryString;
+    }
+
+    try {
+      queryString = this.url.split("?")[1];
+    } catch (error) {
+      // ha.. do nothing
+    }
+
+    return queryString;
+  }
 
   /**
    * Used to check which headers are accepted.
@@ -178,18 +212,19 @@ export class Request extends ServerRequest implements IRequest {
    *
    * @return The file requested or `undefined` if not available.
    */
-  public getBodyFile(input: string): FormFile | undefined {
-    if (typeof this.parsed_body.data!.file === "function") {
-      const file = this.parsed_body.data!.file(input);
-      // `file` can be of types: FormFile | FormFile[] | undefined.
-      // Below, we get pass the TSC error of this not being of
-      // type `FormFile | undefined`
-      if (Array.isArray(file)) {
-        return file[0];
-      }
-      return file;
-    }
-    return undefined;
+  public async getBodyFile(input: string): Promise<void> {
+    const body = await this.parseBody();
+    // if (typeof this.parsed_body.data!.file === "function") {
+    //   const file = this.parsed_body.data!.file(input);
+    //   // `file` can be of types: FormFile | FormFile[] | undefined.
+    //   // Below, we get pass the TSC error of this not being of
+    //   // type `FormFile | undefined`
+    //   if (Array.isArray(file)) {
+    //     return file[0];
+    //   }
+    //   return file;
+    // }
+    // return undefined;
   }
 
   /**
@@ -197,23 +232,24 @@ export class Request extends ServerRequest implements IRequest {
    *
    * @returns The corresponding parameter or null if not found
    */
-  public getBodyParam(
+  public async getBodyParam(
     input: string,
-  ): string | { [key: string]: unknown } | Array<unknown> | boolean | null {
-    let param;
-    if (typeof this.parsed_body.data!.value === "function") {
-      // For when multipart/form-data
-      param = this.parsed_body.data!.value(input);
-    } else {
-      // Anything else. Note we need to use `as` here, to convert it
-      // to an object, otherwise it's type is `MultipartFormData | ...`,
-      // and typescript did not like us indexing.
-      param = (this.parsed_body.data as { [k: string]: unknown })[input];
-    }
-    if (param || typeof param === "boolean") {
-      return param;
-    }
-    return null;
+  ): Promise<void> {
+    await this.parseBody();
+    // let param;
+    // if (typeof this.parsed_body.data!.value === "function") {
+    //   // For when multipart/form-data
+    //   param = this.parsed_body.data!.value(input);
+    // } else {
+    //   // Anything else. Note we need to use `as` here, to convert it
+    //   // to an object, otherwise it's type is `MultipartFormData | ...`,
+    //   // and typescript did not like us indexing.
+    //   param = (this.parsed_body.data as { [k: string]: unknown })[input];
+    // }
+    // if (param || typeof param === "boolean") {
+    //   return param;
+    // }
+    // return null;
   }
 
   /**
@@ -226,7 +262,7 @@ export class Request extends ServerRequest implements IRequest {
    */
   public getCookie(name: string): string {
     const cookies: { [key: string]: string } = getCookies(
-      this.original_request,
+      this.options.original_request!,
     );
     return cookies[name];
   }
@@ -255,31 +291,6 @@ export class Request extends ServerRequest implements IRequest {
   }
 
   /**
-   * Get this request's URL path.
-   *
-   * @returns The URL path.
-   */
-  public getUrlPath(serverRequest: ServerRequest): string {
-    let path = serverRequest.url;
-
-    if (path == "/") {
-      return path;
-    }
-
-    if (path.indexOf("?") == -1) {
-      return path;
-    }
-
-    try {
-      path = path.split("?")[0];
-    } catch (error) {
-      // ha.. do nothing
-    }
-
-    return path;
-  }
-
-  /**
    * Get the value of one of this request's query params by its input name.
    *
    * @returns The corresponding query parameter from url or null if not found.
@@ -290,33 +301,6 @@ export class Request extends ServerRequest implements IRequest {
       return param;
     }
     return null;
-  }
-
-  /**
-   * Get the request's URL query params by parsing its URL query string.
-   *
-   * @return The URL query string in key-value pair format.
-   *
-   * ```ts
-   * {[key: string]: string}
-   * ```
-   */
-  private getUrlQueryParams(): { [key: string]: string } {
-    let queryParams: { [key: string]: string } = {};
-
-    try {
-      let queryParamsString = this.getUrlQueryString();
-      if (!queryParamsString) {
-        queryParamsString = "";
-      }
-      queryParams = this.parseQueryParamsString(
-        queryParamsString,
-      );
-    } catch (error) {
-      // Do absofruitly nothing
-    }
-
-    return queryParams;
   }
 
   /**
@@ -387,34 +371,11 @@ export class Request extends ServerRequest implements IRequest {
   }
 
   /**
-   * Get the specified HTTP request's URL query string.
+   * Does this request have a body?
    *
-   * @returns The URL query string (e.g., key1=value1&key2=value2) without the
-   * leading "?" character. Could be null if not available
+   * @returns True if this request has a body; false if not.
    */
-  public getUrlQueryString(): null | string {
-    let queryString = null;
-
-    if (this.url.indexOf("?") == -1) {
-      return queryString;
-    }
-
-    try {
-      queryString = this.url.split("?")[1];
-    } catch (error) {
-      // ha.. do nothing
-    }
-
-    return queryString;
-  }
-
-  /**
-   * Does the specified request have a body?
-   *
-   * @returns A boolean `Promise`. `true` if the request has a body, `false` if
-   * not.
-   */
-  public async hasBody(): Promise<boolean> {
+  public hasBody(): boolean {
     let contentLength = this.headers.get("content-length");
 
     if (!contentLength) {
@@ -437,9 +398,9 @@ export class Request extends ServerRequest implements IRequest {
    * that format. If there is no body, it returns an empty properties
    */
   public async parseBody(): Promise<IParsedRequestBody> {
-    if ((await this.hasBody()) === false) {
+    if (this.hasBody()) {
       return {
-        content_type: "",
+        content_type: undefined,
         data: undefined,
       };
     }
@@ -490,9 +451,9 @@ export class Request extends ServerRequest implements IRequest {
       try {
         const ret = {
           data: await this.parseBodyAsMultipartFormData(
-            this.original_request.body,
+            this.options.original_request!.body,
             boundary,
-            this.options.memory.multipart_form_data,
+            this.options!.memory!.multipart_form_data!,
           ),
           content_type: "multipart/form-data",
         };
@@ -554,7 +515,7 @@ export class Request extends ServerRequest implements IRequest {
     { [key: string]: unknown }
   > {
     let body = decoder.decode(
-      await Deno.readAll(this.original_request.body),
+      await Deno.readAll(this.options.original_request!.body),
     );
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
@@ -570,7 +531,7 @@ export class Request extends ServerRequest implements IRequest {
    */
   public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
     const data = decoder.decode(
-      await Deno.readAll(this.original_request.body),
+      await Deno.readAll(this.options.original_request!.body),
     );
     return JSON.parse(data);
   }
@@ -610,9 +571,9 @@ export class Request extends ServerRequest implements IRequest {
    * @param output - The data to respond with.
    */
   public async respond(
-    output: IResponseOutput,
+    output: any,
   ): Promise<void> {
-    this.original_request.respond(output);
+    this.options.original_request!.respond(output);
   }
 
   /**

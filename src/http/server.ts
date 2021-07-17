@@ -1,14 +1,17 @@
-import { Request } from "./request.ts";
+import { Factory } from "../gurus/factory.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
+import { Request } from "./request.ts";
 import { Service } from "./service.ts";
 import { CompileError, HttpError } from "../errors.ts";
 import {
+  ICreateable,
+  ICreateableOptions,
   IResource,
   IResourcePaths,
   IResponseOutput,
-  IServerConfigs,
-  IServerConfigsServices,
+  IServerOptions,
+  IServerOptionsServices,
   IService,
 } from "../interfaces.ts";
 import {
@@ -20,10 +23,9 @@ import {
   Server as DenoServer,
   ServerRequest,
   serveTLS,
-} from "../../../deps.ts";
-import { IOptions as IRequestOptions } from "./request.ts";
+} from "../../deps.ts";
 
-type TServiceInternal = Moogle<IResource>;
+type TServiceInternal = Moogle<ICreateable>;
 
 interface IServices {
   external: {
@@ -31,8 +33,17 @@ interface IServices {
     before_request: IService[],
   };
   internal: {
-    resource_index: Moogle<IResource>
+    resource_index: Moogle<ICreateable>
   };
+}
+
+class HomeResource extends Resource {
+  static paths = ["/"];
+
+  public GET() {
+    this.response.body = "test internal";
+    return this.response;
+  }
 }
 
 /**
@@ -41,7 +52,7 @@ interface IServices {
  * appropriate responses, and handling errors that bubble up within the
  * request-resource-response lifecycle.
  */
-export class Server {
+export class Server implements ICreateable {
   static REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
   static REGEX_URI_REPLACEMENT = "([^/]+)";
 
@@ -58,7 +69,7 @@ export class Server {
   /**
    * A property to hold this server's options.
    */
-  protected options: IServerConfigs;
+  public options: IServerOptions = {};
 
   /**
    * A property to hold this server's services. This is not to be confused with
@@ -70,24 +81,24 @@ export class Server {
       before_request: [],
     },
     internal: {
-      resource_index: new Moogle<IResource>()
+      resource_index: new Moogle<ICreateable>()
     }
   };
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  // FILE MARKER - FACTORY METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Construct an object of this class.
+   * Build the options for this server -- making sure to set any necessary
+   * defaults in case the user did not provide any options.
    *
-   * @param options - The config of Drash Server
+   * @param options - The options passed in by the user.
+   *
+   * @return The options.
    */
-  constructor(options: IServerConfigs = {}) {
-    this.options = this.buildOptions(options);
-
+  public create(): void {
     this.addExternalServices();
-
     this.addResources();
   }
 
@@ -96,7 +107,7 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
 
   public getAddress(): string {
-    return `${this.options.hostname}:${this.options.port}`;
+    return `${this.options.protocol}://${this.options.hostname}:${this.options.port}`;
   }
 
   /**
@@ -107,92 +118,62 @@ export class Server {
    * @returns A Promise of IResponseOutput. See IResponseOutput
    * for more information.
    */
-  public async handleHttpRequest(
-    serverRequest: ServerRequest,
-  ): Promise<IResponseOutput> {
-    const request = await this.buildRequest(serverRequest);
-    let response = this.buildResponse(request);
+  public async handleRequest(originalRequest: ServerRequest): Promise<any> {
+    const request = this.buildRequest(originalRequest);
 
-    try {
-      const resource = this.buildResource(request, response);
+    // if (request.url == "/favicon.ico") {
+    //   return;
+    // }
 
-      await this.executeApplicationServicesBeforeRequest(request);
+    const resource = this.buildResource(request);
 
-      // Does the HTTP method exist on the resource?
-      if (
-        typeof (resource as unknown as { [key: string]: unknown })[
-          request.method.toUpperCase()
-        ] !== "function"
-      ) {
-        throw new HttpError(405);
-      }
+    // // @ts-ignore
+    // const response = await resource[request.method.toUpperCase()]();
 
-      // @ts-ignore
-      // Make the request. Also, we ignore this because resource doesn't have an
-      // index.
-      response = await resource[request.method.toUpperCase()]();
+    // const body = (typeof response.body == "string")
+    //   ? response.body
+    //   : JSON.stringify(response.body);
 
-      this.isValidResponse(request, response, resource);
+    originalRequest.respond({
+      // status_code: response.status_code,
+      // status: response.status,
+      headers: new Headers(),
+      body: "hello world!"
+    });
 
-      await this.executeApplicationServicesAfterRequest(request, response);
+    //   await this.executeApplicationServicesBeforeRequest(request);
 
-      return response.send();
-    } catch (error) {
-      return await this.handleHttpRequestError(
-        request,
-        new HttpError(error.code ?? 400, error.message),
-      );
-    }
-  }
+    //   // Does the HTTP method exist on the resource?
+    //   if (
+    //     typeof (resource as unknown as { [key: string]: unknown })[
+    //       request.method.toUpperCase()
+    //     ] !== "function"
+    //   ) {
+    //     throw new HttpError(405);
+    //   }
 
-  /**
-   * Handle cases when an error is thrown when handling an HTTP request.
-   *
-   * @param request - The request object.
-   * @param error - The error object.
-   * @param resource - (optional) Pass in the resource that threw the error.
-   * @param response - (optional) Pass in the response that threw the error.
-   *
-   * @returns A Promise of IResponseOutput. See IResponseOutput
-   * for more information.
-   */
-  public async handleHttpRequestError(
-    request: Request,
-    error: HttpError,
-    resource: Resource | null = null,
-    response: Response | null = null,
-  ): Promise<IResponseOutput> {
-    // If a resource was found, but an error occurred, then that's most likely
-    // due to the HTTP method not being defined in the resource class;
-    // therefore, the method is not allowed. In this case, we send a 405
-    // (Method Not Allowed) response.
-    if (resource) {
-      if (!response) {
-        const resourceObj =
-          // TODO(crookse) Might need to look over this typing again
-          (resource as unknown) as { [key: string]: IResource };
-        const method = request.method.toUpperCase();
-        if (typeof resourceObj[method] !== "function") {
-          error = new HttpError(405);
-        }
-      }
-    }
+    //   // @ts-ignore
+    //   // Make the request. Also, we ignore this because resource doesn't have an
+    //   // index.
+    //   // const clone = resource;
+    //   // clone.request = request;
+    //   // clone.response = response;
 
-    response = this.buildResponse(request);
-    response.status_code = error.code ? error.code : 500;
-    response.body = error.message ? error.message : response.getStatusMessage();
+    //   // clone[method]();
 
-    try {
-      await this.executeApplicationServicesAfterRequest(request, response);
-    } catch (error) {
-      // Do nothing. The `executeServicesAfterRequest()` method is
-      // run once in `handleHttpRequest()`. We run this method a second time
-      // here in case the server has services that needs to run (e.g.,
-      // logging services) without throwing uncaught exceptions. This is a bit
-      // hacky, but it works. Refactor when needed.
-    }
+    //   response = await resource[request.method.toUpperCase()]();
 
-    return response.send();
+    //   this.isValidResponse(request, response, resource);
+
+    //   await this.executeApplicationServicesAfterRequest(request, response);
+
+    //   return response.send();
+    // } catch (error) {
+    //   return await this.handleHttpRequestError(
+    //     request,
+    //     new HttpError(error.code ?? 400, error.message),
+    //   );
+    // }
   }
 
   /**
@@ -204,13 +185,15 @@ export class Server {
    *
    * @returns A Promise of the Deno server from the serve() call.
    */
-  public async run(): Promise<DenoServer> {
+  public async runHttp(): Promise<DenoServer> {
+    this.options.protocol = "http";
+
     this.deno_server = serve({
       hostname: this.options.hostname!,
       port: this.options.port!,
     });
 
-    await this.listen();
+    await this.listenForRequests();
     return this.deno_server;
   }
 
@@ -223,7 +206,9 @@ export class Server {
    *
    * @returns A Promise of the Deno server from the serve() call.
    */
-  public async runTLS(): Promise<DenoServer> {
+  public async runHttps(): Promise<DenoServer> {
+    this.options.protocol = "https";
+
     this.deno_server = serveTLS({
       hostname: this.options.hostname!,
       port: this.options.port!,
@@ -231,7 +216,7 @@ export class Server {
       keyFile: this.options.key_file!,
     });
 
-    await this.listen();
+    await this.listenForRequests();
     return this.deno_server;
   }
 
@@ -251,36 +236,61 @@ export class Server {
    * Add the external services passed in via options.
    */
   protected async addExternalServices(): Promise<void> {
+    // No services? GTFO.
     if (!this.options.services) {
       return;
     }
 
-    const services = this.options.services;
-
     // Add server-level services that execute before all requests
-    if (services.before_request) {
-      for (const s of services.before_request) {
-        // @ts-ignore
-        const service = new (s as IService)();
-        // Check if this service needs to be set up
-        if (service.setUp) {
-          await service.setUp();
-        }
-        this.services.external.before_request!.push(service);
-      }
+    if (this.options.services.before_request) {
+      await this.addExternalServicesBeforeRequest(
+        this.options.services.before_request
+      );
     }
 
     // Add server-level services that execute after all requests
-    if (services.after_request) {
-      for (const s of services.after_request) {
-        // @ts-ignore
-        const service = new (s as IService)();
-        // Check if this service needs to be set up
-        if (service.setUp) {
-          await service.setUp();
-        }
-        this.services.external.after_request!.push(service);
+    if (this.options.services.after_request) {
+      await this.addExternalServicesAfterRequest(
+        this.options.services.after_request
+      );
+    }
+  }
+
+  /**
+   * Add the external services that should execute after a request.
+   *
+   * @param services - An array of Service types.
+   */
+  protected async addExternalServicesAfterRequest(
+    services: typeof Service[]
+  ): Promise<void> {
+    for (const s of services) {
+      // @ts-ignore
+      const service = new (s as IService)();
+      // Check if this service needs to be set up
+      if (service.setUp) {
+        await service.setUp();
       }
+      this.services.external.after_request!.push(service);
+    }
+  }
+
+  /**
+   * Add the external services that should execute before a request.
+   *
+   * @param services - An array of Service types.
+   */
+  protected async addExternalServicesBeforeRequest(
+    services: typeof Service[]
+  ): Promise<void> {
+    for (const s of services) {
+      // @ts-ignore
+      const service = new (s as IService)();
+      // Check if this service needs to be set up
+      if (service.setUp) {
+        await service.setUp();
+      }
+      this.services.external.before_request!.push(service);
     }
   }
 
@@ -308,7 +318,7 @@ export class Server {
         path = path.substring(-1, path.length - 1);
       }
 
-      // Path isn't a string? Don't even add it...
+      // Path isn't a string? Womp womp.
       if (typeof path != "string") {
         throw new CompileError("D1000");
       }
@@ -316,11 +326,11 @@ export class Server {
       let paths: IResourcePaths;
 
       // Handle wildcard paths
-      if (path.includes("*") == true) {
+      if (path.trim().includes("*")) {
         paths = this.getResourcePathsUsingWildcard(path);
 
         // Handle optional params
-      } else if (path.includes("?") === true) {
+      } else if (path.trim().includes("?")) {
         paths = this.getResourcePathsUsingOptionalParams(path);
 
         // Handle basic paths that don't include wild cards or optional params
@@ -331,7 +341,7 @@ export class Server {
       resourceParsedPaths.push(paths);
 
       // Include the regex path in the index, so we can search for the regex
-      // path during runtime in `.buildResource()`
+      // path during runtime in `.findResource()`
       this.services.internal.resource_index.addItem(
         [paths.regex_path],
         resourceClass,
@@ -347,26 +357,17 @@ export class Server {
    * Add the resources passed in via options.
    */
   protected addResources(): void {
+    // No resources? Lolz. This means the / URI will throw a 404 Not Found.
     if (!this.options.resources) {
       return;
     }
 
     for (const index in this.options.resources) {
-      this.addResource(this.options.resources[index] as IResource);
+      this.addResource(this.options.resources[index] as unknown as ICreateable);
     }
   }
 
-  /**
-   * Build the options for this server -- making sure to set any necessary
-   * defaults in case the user did not provide any options.
-   *
-   * @param options - The options passed in by the user.
-   *
-   * @return The options.
-   */
-  protected buildOptions(
-    options: IServerConfigs,
-  ): IServerConfigs {
+  public addOptions(options: IServerOptions): void {
     if (!options.default_response_content_type) {
       options.default_response_content_type = "application/json";
     }
@@ -398,39 +399,17 @@ export class Server {
       }
     }
 
-    return options;
+    this.options = options;
   }
 
-  /**
-   * Get the request object with more properties and methods.
-   *
-   * @param serverRequest - An instance of ServerRequest. This is what we'll use
-   * to create the "Drash-specific" request object.
-   *
-   * @returns Returns a Drash request object--hydrated with more properties and
-   * methods than the ServerRequest object. These properties and methods are
-   * used throughout the Drash request-resource-response lifecycle.
-   */
-  protected async buildRequest(
-    serverRequest: ServerRequest,
-  ): Promise<Request> {
-    // We have to build the request first and then parse its body second. This
-    // is because constructors cannot have the `async` keyword. For example, we
-    // can't do ...
-    //
-    //     async constructor() {
-    //       this.parseBody();
-    //     }
-    //
-    // ... in the request class. It will throw an error.
-    const request = new Request(serverRequest, {
+
+  protected buildRequest(originalRequest: ServerRequest): Request {
+    return Factory.create(Request, {
+      original_request: originalRequest,
       memory: {
-        multipart_form_data: this.options.memory!.multipart_form_data!
+        multipart_form_data: this.options.memory!.multipart_form_data!,
       }
     });
-    await request.parseBody();
-
-    return request;
   }
 
   /**
@@ -442,47 +421,13 @@ export class Server {
    * be matched to a `Resource` object's paths. Otherwise, it returns
    * `undefined` if a `Resource` object can't be matched.
    */
-  protected buildResource(
-    request: Request,
-    response: Response,
-  ): Resource {
+  protected buildResource(request: Request): void {
     let resourceClass = this.findResource(request);
 
-    // deno-lint-ignore ban-ts-comment
     // @ts-ignore
-    // (crookse)
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    //
-    // We ignore this because `resourceClass` could be `undefined`. `undefined`
-    // doesn't have a construct signature and the compiler will complain about
-    // it with the following error:
-    //
-    // TS2351: Cannot use 'new' with an expression whose type lacks a call or
-    // construct signature.
-    //
-    const resource = new (resourceClass as Resource)(
-      request,
-      response,
-      this,
-      resourceClass.paths,
-      resourceClass.services,
-    );
-
-    return resource;
-  }
-
-  /**
-   * Get a response object.
-   *
-   * @param request - The request object.
-   *
-   * @returns A response object.
-   */
-  protected buildResponse(request: Request): Response {
-    return new Response(request, {
-      default_content_type: this.options.default_response_content_type,
+    return Factory.create(resourceClass, {
+      request: request,
+      server: this,
     });
   }
 
@@ -492,21 +437,21 @@ export class Server {
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected async executeApplicationServicesAfterRequest(
-    request: Request,
-    response: Response,
-  ): Promise<void> {
-    if (!this.services.external.after_request) {
-      return;
-    }
+  // protected async executeApplicationServicesAfterRequest(
+  //   request: any,
+  //   response: Response,
+  // ): Promise<void> {
+  //   if (!this.services.external.after_request) {
+  //     return;
+  //   }
 
-    for (const index in this.services.external.after_request) {
-      const service = this.services.external.after_request[index];
-      if (service.run) {
-        service.run(request);
-      }
-    }
-  }
+  //   for (const index in this.services.external.after_request) {
+  //     const service = this.services.external.after_request[index];
+  //     if (service.runAfterRequest) {
+  //       service.runAfterRequest(request, response);
+  //     }
+  //   }
+  // }
 
   /**
    * Execute server-level services before the request.
@@ -514,20 +459,20 @@ export class Server {
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected async executeApplicationServicesBeforeRequest(
-    request: Request,
-  ): Promise<void> {
-    if (!this.services.external.before_request) {
-      return;
-    }
+  // protected async executeApplicationServicesBeforeRequest(
+  //   request: Request,
+  // ): Promise<void> {
+  //   if (!this.services.external.before_request) {
+  //     return;
+  //   }
 
-    for (const index in this.services.external.before_request) {
-      const service = this.services.external.before_request[index];
-      if (service.run) {
-        service.run(request);
-      }
-    }
-  }
+  //   for (const index in this.services.external.before_request) {
+  //     const service = this.services.external.before_request[index];
+  //     if (service.runBeforeRequest) {
+  //       service.runBeforeRequest(request);
+  //     }
+  //   }
+  // }
 
   /**
    * The the resource that will handled the specified request based on the
@@ -538,10 +483,8 @@ export class Server {
    * @return The resource as a constructor function to be used in
    * `.buildResource()`.
    */
-  protected findResource(
-    request: Request,
-  ): IResource {
-    let resource: IResource | undefined = undefined;
+  protected findResource(request: Request): Resource {
+    let resource: Resource | undefined = undefined;
 
     const uri = request.url_path.split("/");
     // Remove the first element which would be ""
@@ -592,7 +535,7 @@ export class Server {
       // are currently parsing contains the resource we are looking for
       if (matchArray) {
         matchedResource = true;
-        resource = result.item as IResource;
+        resource = result.item;
         request.path_params = this.getRequestPathParams(
           resource,
           matchArray,
@@ -760,9 +703,7 @@ export class Server {
    *
    * @return A resource paths object.
    */
-  protected getResourcePathsUsingWildcard(
-    path: string,
-  ): IResourcePaths {
+  protected getResourcePathsUsingWildcard(path: string): IResourcePaths {
     return {
       og_path: path,
       regex_path: `^.${
@@ -780,65 +721,18 @@ export class Server {
   }
 
   /**
-   * Used to check if a response object is of type IResponseOutput
-   * or Response.
-   *
-   * @param request - See Request.
-   * @param response - See Response.
-   * @param resource - See Resource.
-   *
-   * @return If the response returned from a method is what the returned value should be
-   */
-  protected isValidResponse(
-    request: Request,
-    response: Response,
-    resource: Resource,
-  ): boolean {
-    // Method to aid inn checking is ann interface (Drash.Interface.IResponseOutput)
-    function responseIsOfTypeResponseOutput(response: any): boolean {
-      if (
-        (typeof response === "object") &&
-        (Array.isArray(response) === false) &&
-        (response !== null)
-      ) {
-        return "status" in response &&
-          "headers" in response &&
-          "body" in response &&
-          "send" in response &&
-          "status_code" in response;
-      }
-
-      return false;
-    }
-
-    const valid = response instanceof Response ||
-      responseIsOfTypeResponseOutput(response) === true;
-
-    if (!valid) {
-      throw new HttpError(
-        418,
-        `The response must be returned inside the ${request.method.toUpperCase()} method of the ${resource.constructor.name} class.`,
-      );
-    }
-
-    return true;
-  }
-
-  /**
    * Listens for incoming HTTP connections on the server property
    */
-  protected async listen() {
-    (async () => {
-      for await (const request of this.deno_server!) {
-        try {
-          this.handleHttpRequest(request as ServerRequest);
-        } catch (error) {
-          this.handleHttpRequestError(
-            request as Request,
-            new HttpError(500),
-          );
-        }
+  protected async listenForRequests() {
+    for await (const request of this.deno_server!) {
+      try {
+        this.handleRequest(request);
+      } catch (error) {
+        // this.handleHttpRequestError(
+        //   request as any,
+        //   new HttpError(500),
+        // );
       }
-    })();
+    }
   }
 }

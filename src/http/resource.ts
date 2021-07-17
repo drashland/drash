@@ -1,13 +1,14 @@
-import { IResource, IResourcePaths } from "../interfaces.ts";
+import { ICreateable, IResourceOptions, IResourcePaths } from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Server } from "./server.ts";
 import { Request } from "./request.ts";
+import { Factory } from "../gurus/factory.ts";
 
 /**
  * This is the base resource class for all resources. All resource classes
  * must be derived from this class.
  */
-export class Resource implements IResource {
+export class Resource implements ICreateable {
   /**
      * A property to hold the middleware this resource uses.
      */
@@ -40,44 +41,49 @@ export class Resource implements IResource {
   public paths_parsed: IResourcePaths[] = [];
 
   /**
-     * The request object.
-     */
-  protected request: Request;
+   * The request object.
+   */
+  protected request: Request|null = null;
 
   /**
-     * The response object.
-     */
-  protected response: Response;
+   * The server object.
+   */
+  protected server: Server|null = null;
+
+  /**
+   * The response object.
+   *
+   * This initial value is changed in the `.create()` method. We only initialize
+   * this property so that the compiler does not complain about it not being
+   * initialized.
+   */
+  protected response: Response = new Response();
 
   /**
      * The server object.
      */
-  protected server: Server;
+  protected options: IResourceOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Construct an object of this class.
-   *
-   * @param request - The request object.
-   * @param response - The response object.
-   * @param server - The server object.
-   * @param paths - The paths the resource accepts
-   * @param middleware - Any middleware for the resource
-   */
-  constructor(
-    request: Request,
-    response: Response,
-    server: Server,
-    paths: string[],
-    middleware: { after_request?: []; before_request?: [] },
-  ) {
-    this.request = request;
-    this.response = response;
-    this.server = server;
-    this.paths = paths;
-    this.middleware = middleware;
+  public create(): void {
+    this.server = this.options.server!;
+    this.request = this.options.request!;
+
+    const contentType = this.server.options.default_response_content_type!;
+
+    this.response = Factory.create(Response, {
+      default_response_content_type: contentType
+    });
+  }
+
+  public addOptions(options: IResourceOptions): void {
+    this.options = options;
+  }
+
+  public clone(): this {
+    return Object.create(this);
   }
 }
