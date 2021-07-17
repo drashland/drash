@@ -1,18 +1,29 @@
+import { Factory } from "./src/gurus/factory.ts";
+import { Server } from "./src/http/server.ts";
+import { Service } from "./src/http/service.ts";
+
 export const version = "v1.5.0";
 
 // Errors
-export * as Errors from "./src/core/errors.ts";
+export * as Errors from "./src/errors.ts";
 
 // Http
-export { Middleware } from "./src/core/http/middleware.ts";
-export { Request } from "./src/core/http/request.ts";
-export { Resource } from "./src/core/http/resource.ts";
-export { Response } from "./src/core/http/response.ts";
-export { Server } from "./src/core/http/server.ts";
-export { Service } from "./src/core/http/service.ts";
+export { Request } from "./src/http/request.ts";
+export { Resource } from "./src/http/resource.ts";
+export { Response } from "./src/http/response.ts";
+export {
+  Server,
+  Service
+};
 
 // Interfaces
-export * as Interfaces from "./src/core/interfaces.ts";
+import * as Interfaces from "./src/interfaces.ts";
+export { Interfaces };
 
 // Types
-export * as Types from "./src/core/types.ts";
+export * as Types from "./src/types.ts";
+
+// Functions
+export function createServer(options: Interfaces.IServerOptions = {}): Server {
+  return Factory.create(Server, options);
+}
