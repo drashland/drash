@@ -15,6 +15,7 @@
 // FILE MARKER - IMPORTS ///////////////////////////////////////////////////////
 
 import * as Interfaces from "./src/interfaces.ts";
+import * as Types from "./src/types.ts";
 import { Factory } from "./src/gurus/factory.ts";
 import { Server } from "./src/http/server.ts";
 import { Service } from "./src/http/service.ts";
@@ -23,32 +24,21 @@ import { Service } from "./src/http/service.ts";
 
 export const version = "v1.5.0";
 
-// Dictionaries
-export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
-
-// Dependencies
 export * as Deps from "./deps.ts";
-
-// Errors
 export * as Errors from "./src/errors.ts";
-
-// Gurus
 export { Prototype } from "./src/gurus/prototype.ts";
-export { Factory };
-
-// Http
 export { Request } from "./src/http/request.ts";
 export { Resource } from "./src/http/resource.ts";
 export { Response } from "./src/http/response.ts";
-export { Server, Service };
+export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
+export {
+  Factory,
+  Interfaces,
+  Server,
+  Service,
+  Types,
+};
 
-// Interfaces
-export { Interfaces };
-
-// Types
-export * as Types from "./src/types.ts";
-
-// Functions
 export function createServer(options: Interfaces.IServerOptions = {}): Server {
   return Factory.create(Server, options);
 }
