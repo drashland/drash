@@ -6,7 +6,7 @@ import {
   Status,
   STATUS_TEXT,
 } from "../../deps.ts";
-import { ICreateable, IResponseOptions, IResponseOutput } from "../interfaces.ts";
+import { IResponse, ICreateable, IResponseOptions, IResponseOutput } from "../interfaces.ts";
 import { Request } from "./request.ts";
 
 export interface IOptions {
@@ -16,7 +16,9 @@ export interface IOptions {
 /**
  * Response handles sending a response to the client making the request.
  */
-export class Response implements ICreateable {
+export class Response implements IResponse {
+
+  public status = 200;
 
   public body: unknown = undefined;
 

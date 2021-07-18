@@ -7,45 +7,51 @@ import {
   ServerRequest,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
-import { ICreateable, IKeyValuePairs, IRequestOptions, IParsedRequestBody, IResponseOutput } from "../interfaces.ts";
+import { ICreateable, IKeyValuePairs, IRequestOptions, IRequestParsedBody, IResponseOutput } from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
 import { Server } from "./server.ts";
 import { mimeDb } from "../dictionaries/mime_db.ts";
 
-export class Request extends ServerRequest implements ICreateable {
-  public parsed_body: IParsedRequestBody = {
+export class Request implements ICreateable {
+  public parsed_body: IRequestParsedBody = {
     content_type: "",
     data: undefined,
   };
   public path_params: { [key: string]: string } = {};
   public resource: Resource | null = null;
-  declare public headers: Headers;
-  declare public method: string;
-  declare public url: string;
   protected options: IRequestOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - FACTORY METHODS /////////////////////////////////////////////
+  // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   public create() {
-    this.extractPropertiesFromOriginalRequest();
+    return;
   }
 
   public addOptions(options: IRequestOptions) {
-    this.options = options;
+    return;
   }
 
-  protected extractPropertiesFromOriginalRequest(): void {
-    this.headers = this.options.original_request!.headers ?? new Headers();
-    this.method = this.options.original_request!.method.toUpperCase();
-    this.url = this.options.original_request!.url;
+  public async clone(options: IRequestOptions): Promise<this> {
+    const clone = Object.create(this);
+    clone.options = options;
+
+    if (clone.hasBody()) {
+      await clone.parseBody();
+    }
+
+    return clone;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  public get method(): string {
+    return this.options.original_request!.method;
+  }
 
   public get url_path(): string {
     let path = this.options.original_request!.url;
@@ -88,12 +94,12 @@ export class Request extends ServerRequest implements ICreateable {
   public get url_query_string(): null | string {
     let queryString = null;
 
-    if (this.url.indexOf("?") == -1) {
+    if (this.options.original_request!.url.indexOf("?") == -1) {
       return queryString;
     }
 
     try {
-      queryString = this.url.split("?")[1];
+      queryString = this.options.original_request!.url.split("?")[1];
     } catch (error) {
       // ha.. do nothing
     }
@@ -142,10 +148,10 @@ export class Request extends ServerRequest implements ICreateable {
     request: Request,
     type: string | string[],
   ): boolean | string {
-    let acceptHeader = request.headers.get("Accept");
+    let acceptHeader = request.options.original_request!.headers.get("Accept");
 
     if (!acceptHeader) {
-      acceptHeader = request.headers.get("accept");
+      acceptHeader = request.options.original_request!.headers.get("accept");
     }
 
     if (!acceptHeader) {
@@ -167,7 +173,7 @@ export class Request extends ServerRequest implements ICreateable {
    *
    * @return The parsed body as an object
    */
-  public getAllBodyParams(): IParsedRequestBody {
+  public getAllBodyParams(): IRequestParsedBody {
     return this.parsed_body;
   }
 
@@ -178,7 +184,7 @@ export class Request extends ServerRequest implements ICreateable {
    */
   public getAllHeaderParams(): { [key: string]: string } {
     let headers: { [key: string]: string } = {};
-    for (const pair of this.headers.entries()) {
+    for (const pair of this.options.original_request!.headers.entries()) {
       headers[pair[0]] = pair[1];
     }
     return headers;
@@ -213,6 +219,10 @@ export class Request extends ServerRequest implements ICreateable {
    * @return The file requested or `undefined` if not available.
    */
   public async getBodyFile(input: string): Promise<void> {
+    if (!this.hasBody()) {
+      return;
+    }
+
     const body = await this.parseBody();
     // if (typeof this.parsed_body.data!.file === "function") {
     //   const file = this.parsed_body.data!.file(input);
@@ -232,24 +242,10 @@ export class Request extends ServerRequest implements ICreateable {
    *
    * @returns The corresponding parameter or null if not found
    */
-  public async getBodyParam(
-    input: string,
-  ): Promise<void> {
-    await this.parseBody();
-    // let param;
-    // if (typeof this.parsed_body.data!.value === "function") {
-    //   // For when multipart/form-data
-    //   param = this.parsed_body.data!.value(input);
-    // } else {
-    //   // Anything else. Note we need to use `as` here, to convert it
-    //   // to an object, otherwise it's type is `MultipartFormData | ...`,
-    //   // and typescript did not like us indexing.
-    //   param = (this.parsed_body.data as { [k: string]: unknown })[input];
-    // }
-    // if (param || typeof param === "boolean") {
-    //   return param;
-    // }
-    // return null;
+  public async getBodyParam(input: string): Promise<IRequestParsedBody|void> {
+    // console.log(this.parsed_body);
+    return;
+    // return this.parsed_body[input];
   }
 
   /**
@@ -273,7 +269,7 @@ export class Request extends ServerRequest implements ICreateable {
    * @returns The corresponding header or null if not found.
    */
   public getHeaderParam(input: string): string | null {
-    return this.headers.get(input);
+    return this.options.original_request!.headers.get(input);
   }
 
   /**
@@ -376,10 +372,10 @@ export class Request extends ServerRequest implements ICreateable {
    * @returns True if this request has a body; false if not.
    */
   public hasBody(): boolean {
-    let contentLength = this.headers.get("content-length");
+    let contentLength = this.options.original_request!.headers.get("content-length");
 
     if (!contentLength) {
-      contentLength = this.headers.get("Content-Length");
+      contentLength = this.options.original_request!.headers.get("Content-Length");
     }
 
     if (!contentLength) {
@@ -397,15 +393,8 @@ export class Request extends ServerRequest implements ICreateable {
    * @returns The content type of the body, and based on this the body itself in
    * that format. If there is no body, it returns an empty properties
    */
-  public async parseBody(): Promise<IParsedRequestBody> {
-    if (this.hasBody()) {
-      return {
-        content_type: undefined,
-        data: undefined,
-      };
-    }
-
-    const contentType = this.headers.get("Content-Type");
+  public async parseBody(): Promise<IRequestParsedBody> {
+    const contentType = this.options.original_request!.headers.get("Content-Type");
 
     // No Content-Type header? Default to this.
     if (!contentType) {
@@ -584,7 +573,7 @@ export class Request extends ServerRequest implements ICreateable {
   public setHeaders(headers: { [key: string]: string }): void {
     if (headers) {
       for (let key in headers) {
-        this.headers.set(key, headers[key]);
+        this.options.original_request!.headers.set(key, headers[key]);
       }
     }
   }

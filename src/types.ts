@@ -28,3 +28,16 @@ export type Middleware = {
   before_request?: typeof Service[];
   after_request?: typeof Service[];
 };
+
+export type THttpMethod = 
+  | "CONNECT"
+  | "DELETE"
+  | "GET"
+  | "HEAD"
+  | "OPTIONS"
+  | "PATCH"
+  | "POST"
+  | "PUT"
+  | "TRACE"
+
+export type TConstructor<T extends unknown> = new (...args: unknown[]) => T;

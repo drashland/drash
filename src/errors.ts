@@ -1,14 +1,16 @@
+import { STATUS_TEXT } from "../deps.ts";
+
 /**
- * This class is for throwing errors during compile time.
+ * This class is for throwing Drash-related errors.
  */
-export class CompileError extends Error {
+export class DrashError extends Error {
   /**
    * Construct an object of this class.
    *
-   * @param code - See ERROR_CODES array in this file.
+   * @param code - See DRASH_ERROR_CODES array in this file.
    */
   constructor(code: string) {
-    super(`[${code}] ${ERROR_CODES[code]}`);
+    super(`[${code}] ${DRASH_ERROR_CODES[code]}`);
   }
 }
 
@@ -30,15 +32,21 @@ export class HttpError extends Error {
    */
   constructor(code: number, message?: string) {
     super(message);
+    if (!message) {
+      const statusText = STATUS_TEXT.get(code);
+      if (statusText) {
+        this.message = statusText;
+      }
+    }
     this.code = code;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FILE MARKER - COMILE ERROR CODES ////////////////////////////////////////////
+// FILE MARKER - ERROR CODES ///////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const ERROR_CODES: { [k: string]: string } = {
+const DRASH_ERROR_CODES: { [k: string]: string } = {
   "D1000": "Resource 'paths' property must be an array of strings.",
   "D1001": "Resource 'paths' property is missing.",
 };

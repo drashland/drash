@@ -1,3 +1,15 @@
+// This file contains ALL interfaces used by Drash. As a result, it is a very
+// large file.
+//
+// To make it easier to search this file, each interfaces is preceeded by a FILE
+// MARKER comment. You can jump to each FILE MARKER comment to quickly jump to
+// each interface.
+//
+// This interfaces are sorted in alphabetical order. For example, ICreateable
+// comes before ICreateableOptions.
+
+// TODO(crookse) Alphabetize this file.
+
 import type { MultipartFormData } from "../deps.ts";
 
 import { Request } from "./http/request.ts";
@@ -7,12 +19,30 @@ import { Resource } from "./http/resource.ts";
 import { Service } from "./http/service.ts";
 import { ServerRequest } from "../deps.ts";
 
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
 export interface ICreateable {
- create: () => void;
- addOptions: (options: ICreateableOptions) => void;
+  /**
+   * Build this object.
+   */
+  create: () => void;
+
+  /**
+   * Add the options to this object.
+   *
+   * @param options - This varies depending on the object being created. For
+   * Example, ICreateableOptions is extended by IServerOptions. IServerOptions
+   * contains the options that the Server class can specify when it is being
+   * created.
+   */
+  addOptions: (options: ICreateableOptions) => void;
 }
 
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
 export interface ICreateableOptions {}
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 export interface IRequestOptions extends ICreateableOptions {
   memory?: {
@@ -21,14 +51,39 @@ export interface IRequestOptions extends ICreateableOptions {
   original_request?: ServerRequest;
 }
 
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
 export interface IResourceOptions extends ICreateableOptions {
   server?: Server;
   request?: Request;
+  path_params?: string[];
 }
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 export interface IResponseOptions extends ICreateableOptions {
   default_response_content_type?: string;
 }
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
+export interface IServer extends ICreateable {}
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
+export interface IRequest extends ICreateable {
+  path_params: IKeyValuePairs<string>;
+}
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
+export interface IResponse extends ICreateable {
+  headers: Headers;
+  body: unknown;
+  status: number;
+}
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 export interface IKeyValuePairs<T> {
   [key: string]: T;
@@ -63,6 +118,8 @@ export interface IMime {
   };
 }
 
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
 /**
  * This is used to type a Request object's parsed body. Below are more details
  * on the members in this interface.
@@ -76,31 +133,48 @@ export interface IMime {
  *
  *     The data passed in the body of the request.
  */
-export interface IParsedRequestBody {
+export interface IRequestParsedBody {
   content_type: string | undefined;
   data: undefined | MultipartFormData | IKeyValuePairs<unknown>;
 }
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 /**
  * This is used to type a Resource object.
  */
 export interface IResource extends ICreateable {
+  // Properties
+  paths: string[];
+  paths_parsed: IResourcePathsParsed[];
+  path_params: string[];
   services?: { after_request?: []; before_request?: [] };
-  name?: string;
-  paths?: string[];
-  paths_parsed?: IResourcePaths[];
+  // Methods
+  CONNECT?: () => Promise<IResponse> | IResponse;
+  DELETE?: () => Promise<IResponse> | IResponse;
+  GET?: () => Promise<IResponse> | IResponse;
+  HEAD?: () => Promise<IResponse> | IResponse;
+  OPTIONS?: () => Promise<IResponse> | IResponse;
+  PATCH?: () => Promise<IResponse> | IResponse;
+  POST?: () => Promise<IResponse> | IResponse;
+  PUT?: () => Promise<IResponse> | IResponse;
+  TRACE?: () => Promise<IResponse> | IResponse;
 }
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 /**
  * This is used to type a Resource object's paths. During the
  * request-resource lifecycle, the Server object parses the paths in a reosurce
  * and ends up with the following interface.
  */
-export interface IResourcePaths {
+export interface IResourcePathsParsed {
   og_path: string;
   regex_path: string;
   params: string[];
 }
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 /**
  * This is used to type a Response object's output.
@@ -154,6 +228,8 @@ export interface IServerOptions extends ICreateableOptions {
   services?: IServerOptionsServices;
 }
 
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
 /**
  * This is used to type a Service attached to the Server object. Below are more
  * details on the members in this interface.
@@ -201,6 +277,8 @@ export interface IServerOptionsMemory {
   multipart_form_data?: number;
 }
 
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
 export interface IServerOptionsServices {
   // Services executed before a request is made (before a resource is found).
   before_request?: typeof Service[];
@@ -208,6 +286,8 @@ export interface IServerOptionsServices {
   // Services executed after requests, but before responses are sent
   after_request?: typeof Service[];
 }
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
 
 export interface IService {
   // The method to run during compile time

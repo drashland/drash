@@ -1,4 +1,4 @@
-import { ICreateable, IResourceOptions, IResourcePaths } from "../interfaces.ts";
+import { IResource, IResourceOptions, IResourcePathsParsed } from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Server } from "./server.ts";
 import { Request } from "./request.ts";
@@ -8,60 +8,55 @@ import { Factory } from "../gurus/factory.ts";
  * This is the base resource class for all resources. All resource classes
  * must be derived from this class.
  */
-export class Resource implements ICreateable {
+export class Resource implements IResource {
   /**
      * A property to hold the middleware this resource uses.
      */
   public middleware: { after_request?: []; before_request?: [] } = {};
 
-  /**
-     * A property to hold the name of this resource. This property is used by
-     * Server to help it store resources in its resources property
-     * by name.
-     */
-  public name: string = "";
-
-  /**
-     * A property to hold the paths to access this resource.
-     *
-     * All derived resource classes MUST define this property as static
-     * (e.g., static paths = ["path"];)
-     */
+  // TODO(crookse) Change this to uris.
   public paths: string[] = [];
 
   /**
-     * A property to hold the expanded versions of the paths. An expanded version of a path looks like the following:
-     * ```ts
-     * {
-     *   og_path: "/:id",
-     *   regex_path: "^([^/]+)/?$",
-     *   params: ["id"],
-     * ```
-     */
-  public paths_parsed: IResourcePaths[] = [];
+   * A property to hold the expanded version of this object's URIs. An example
+   * of the expanded version is as follows:
+   *
+   *     {
+   *       og_path: "/:id",
+   *       regex_path: "^([^/]+)/?$",
+   *       params: ["id"],
+   *     }
+   */
+  public paths_parsed: IResourcePathsParsed[] = [];
+
+  /**
+   * The path params, which are taken from this object's URIs (if they have any
+   * path params).
+   */
+  public path_params: string[] = [];
 
   /**
    * The request object.
    */
-  protected request: Request|null = null;
+  // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
+  protected request: Request;
 
   /**
    * The server object.
    */
-  protected server: Server|null = null;
+  // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
+  protected server: Server;
 
   /**
    * The response object.
-   *
-   * This initial value is changed in the `.create()` method. We only initialize
-   * this property so that the compiler does not complain about it not being
-   * initialized.
    */
-  protected response: Response = new Response();
+  // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
+  protected response: Response;
 
   /**
-     * The server object.
-     */
+   * This object's options.
+   */
+  // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
   protected options: IResourceOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
@@ -70,7 +65,6 @@ export class Resource implements ICreateable {
 
   public create(): void {
     this.server = this.options.server!;
-    this.request = this.options.request!;
 
     const contentType = this.server.options.default_response_content_type!;
 
@@ -83,7 +77,11 @@ export class Resource implements ICreateable {
     this.options = options;
   }
 
-  public clone(): this {
-    return Object.create(this);
+  public clone(options: IResourceOptions): this {
+    const clone = Object.create(this);
+    clone.request = options.request!;
+    clone.path_params = options.path_params!;
+    clone.server = options.server!;
+    return clone;
   }
 }

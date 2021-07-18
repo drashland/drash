@@ -1,13 +1,19 @@
-import { ICreateable, ICreateableOptions } from "../interfaces.ts";
+import * as Interfaces from "../interfaces.ts";
+import * as Types from "../types.ts";
 
-
-// @ts-ignore
-type Constructor<T extends unknown> = new (...args: any) => T;
-
+/**
+ * Create a class that implements the ICreateable interface. Classes that
+ * implement the ICreateable interface do not have constructor()
+ * implementations, so this class is in charge of creating those classes.
+ *
+ * This is a modified implementation as shown on the following page:
+ *
+ *     https://refactoring.guru/design-patterns/factory-method
+ */
 export class Factory {
-  static create<T extends ICreateable>(
-    createableProduct: Constructor<T>,
-    createableClassOptions: ICreateableOptions = {}
+  static create<T extends Interfaces.ICreateable>(
+    createableProduct: Types.TConstructor<T>,
+    createableClassOptions: Interfaces.ICreateableOptions = {}
   ): T {
     const product = new createableProduct();
     product.addOptions(createableClassOptions);
