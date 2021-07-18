@@ -138,8 +138,8 @@ export interface IRequestParsedBody {
 export interface IResource extends ICreateable {
   // Properties
   path_params: string[];
-  paths: string[];
-  paths_parsed: IResourcePathsParsed[];
+  uri_paths: string[];
+  uri_paths_parsed: IResourcePathsParsed[];
   services?: { after_request?: []; before_request?: [] };
   // Methods
   CONNECT?: () => Promise<IResponse> | IResponse;

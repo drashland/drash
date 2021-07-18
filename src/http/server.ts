@@ -322,7 +322,7 @@ export class Server implements Drash.Interfaces.IServer {
           server: this,
         });
 
-      resource.paths.forEach((path: string) => {
+      resource.uri_paths.forEach((path: string) => {
         // Remove the trailing slash because we handle URI paths with and without the
         // trailing slash the same. For example, the following URI paths are the same
         //
@@ -346,21 +346,21 @@ export class Server implements Drash.Interfaces.IServer {
         // TODO(crookse) This might be broken. Figure out why.
         if (path.trim() == "*") {
           // TODO(crookse) Put this in the resource class.
-          resource.paths_parsed.push(
+          resource.uri_paths_parsed.push(
             this.getResourcePathsUsingWildcard(path),
           );
 
           // Handle optional params
         } else if (path.trim().includes("?")) {
           // TODO(crookse) Put this in the resource class.
-          resource.paths_parsed.push(
+          resource.uri_paths_parsed.push(
             this.getResourcePathsUsingOptionalParams(path),
           );
 
           // Handle basic paths that don't include wild cards or optional params
         } else {
           // TODO(crookse) Put this in the resource class.
-          resource.paths_parsed.push(
+          resource.uri_paths_parsed.push(
             this.getResourcePaths(path),
           );
         }
@@ -373,7 +373,7 @@ export class Server implements Drash.Interfaces.IServer {
 
       const searchTerms: string[] = [];
 
-      resource.paths_parsed
+      resource.uri_paths_parsed
         .forEach((pathObj: Drash.Interfaces.IResourcePathsParsed) => {
           searchTerms.push(pathObj.regex_path);
         });
@@ -493,7 +493,7 @@ export class Server implements Drash.Interfaces.IServer {
     // matches one of the URI paths defined on the resource. If the request's
     // URI matches one of the URI paths defined on the resource, then the
     // resource can handle the URI. Otherwise, it cannot. Womp.
-    resource.paths_parsed.forEach(
+    resource.uri_paths_parsed.forEach(
       (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
         if (resourceCanHandleUri) {
           return;
@@ -696,7 +696,7 @@ export class Server implements Drash.Interfaces.IServer {
     request: Drash.Interfaces.IRequest,
     resource: Drash.Interfaces.IResource,
   ): void {
-    resource.paths_parsed.forEach(
+    resource.uri_paths_parsed.forEach(
       (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
         pathObj.params.forEach((paramName: string, index: number) => {
           request.path_params[paramName] = resource.path_params[index];

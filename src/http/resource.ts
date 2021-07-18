@@ -23,7 +23,7 @@ export class Resource implements Drash.Interfaces.IResource {
   /**
    * The URI paths that this resource is located at.
    */
-  public paths: string[] = [];
+  public uri_paths: string[] = [];
 
   /**
    * A property to hold the expanded version of this object's URIs. An example
@@ -35,7 +35,7 @@ export class Resource implements Drash.Interfaces.IResource {
    *       params: ["id"],
    *     }
    */
-  public paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
+  public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
 
   /**
    * The request object.
