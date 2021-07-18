@@ -1,6 +1,6 @@
-import { IMime } from "../interfaces.ts";
+import * as Drash from "../../mod.ts";
 
-export const mimeDb: IMime = {
+export const mimeDb: Drash.Interfaces.IMime = {
   "application/1d-interleaved-parityfec": {
     source: "iana",
   },
