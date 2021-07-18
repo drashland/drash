@@ -26,6 +26,9 @@ export const version = "v1.5.0";
 // Dictionaries
 export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
 
+// Dependencies
+export * as Deps from "./deps.ts";
+
 // Errors
 export * as Errors from "./src/errors.ts";
 
@@ -49,6 +52,3 @@ export * as Types from "./src/types.ts";
 export function createServer(options: Interfaces.IServerOptions = {}): Server {
   return Factory.create(Server, options);
 }
-
-// Dependencies
-export * as Deps from "./deps.ts";
