@@ -2,7 +2,12 @@ import { Factory } from "./src/gurus/factory.ts";
 import { Server } from "./src/http/server.ts";
 import { Service } from "./src/http/service.ts";
 
+// FILE MARKER - EXPORTS ///////////////////////////////////////////////////////
+
 export const version = "v1.5.0";
+
+// Gurus
+export { Factory };
 
 // Errors
 export * as Errors from "./src/errors.ts";
