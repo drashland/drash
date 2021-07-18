@@ -1,20 +1,28 @@
-import { IResource, IResourceOptions, IResourcePathsParsed } from "../interfaces.ts";
-import { Response } from "./response.ts";
-import { Server } from "./server.ts";
-import { Request } from "./request.ts";
-import { Factory } from "../gurus/factory.ts";
+import * as Drash from "../../mod.ts";
 
 /**
  * This is the base resource class for all resources. All resource classes
  * must be derived from this class.
+ *
+ * Drash defines a resource according to the MDN at the following page:
+ *
+ *     https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
  */
-export class Resource implements IResource {
+export class Resource implements Drash.Interfaces.IResource {
   /**
      * A property to hold the middleware this resource uses.
      */
   public middleware: { after_request?: []; before_request?: [] } = {};
 
-  // TODO(crookse) Change this to uris.
+  /**
+   * The path params (if any), which are taken from this resource's URIs.
+   */
+  // TODO (crookse) I think this needs to be current path params.
+  public path_params: string[] = [];
+
+  /**
+   * The URI paths that this resource is located at.
+   */
   public paths: string[] = [];
 
   /**
@@ -27,61 +35,60 @@ export class Resource implements IResource {
    *       params: ["id"],
    *     }
    */
-  public paths_parsed: IResourcePathsParsed[] = [];
-
-  /**
-   * The path params, which are taken from this object's URIs (if they have any
-   * path params).
-   */
-  public path_params: string[] = [];
+  public paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
 
   /**
    * The request object.
    */
   // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected request: Request;
+  protected request: Drash.Request;
 
   /**
    * The server object.
    */
   // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected server: Server;
+  protected server: Drash.Server;
 
   /**
    * The response object.
    */
   // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected response: Response;
+  protected response: Drash.Response;
 
   /**
    * This object's options.
    */
   // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected options: IResourceOptions = {};
+  protected options: Drash.Interfaces.IResourceOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * See ICreateable#addOptions.
+   */
+  public addOptions(options: Drash.Interfaces.IResourceOptions): void {
+    this.options = options;
+  }
+
+  /**
+   * See ICreateable#create.
+   */
   public create(): void {
     this.server = this.options.server!;
 
     const contentType = this.server.options.default_response_content_type!;
 
-    this.response = Factory.create(Response, {
-      default_response_content_type: contentType
+    this.response = Drash.Factory.create(Drash.Response, {
+      default_response_content_type: contentType,
     });
   }
 
-  public addOptions(options: IResourceOptions): void {
-    this.options = options;
-  }
-
-  public clone(options: IResourceOptions): this {
-    const clone = Object.create(this);
-    clone.request = options.request!;
-    clone.path_params = options.path_params!;
-    clone.server = options.server!;
-    return clone;
+  /**
+   * See Drash.Prototype.clone().
+   */
+  public clone(options: Drash.Interfaces.IResourceOptions): this {
+    return Drash.Prototype.clone(this, options);
   }
 }

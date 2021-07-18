@@ -7,7 +7,13 @@ import {
   ServerRequest,
 } from "../../deps.ts";
 type Reader = Deno.Reader;
-import { ICreateable, IKeyValuePairs, IRequestOptions, IRequestParsedBody, IResponseOutput } from "../interfaces.ts";
+import {
+  ICreateable,
+  IKeyValuePairs,
+  IRequestOptions,
+  IRequestParsedBody,
+  IResponseOutput,
+} from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
 import { Server } from "./server.ts";
@@ -242,7 +248,7 @@ export class Request implements ICreateable {
    *
    * @returns The corresponding parameter or null if not found
    */
-  public async getBodyParam(input: string): Promise<IRequestParsedBody|void> {
+  public async getBodyParam(input: string): Promise<IRequestParsedBody | void> {
     // console.log(this.parsed_body);
     return;
     // return this.parsed_body[input];
@@ -372,10 +378,14 @@ export class Request implements ICreateable {
    * @returns True if this request has a body; false if not.
    */
   public hasBody(): boolean {
-    let contentLength = this.options.original_request!.headers.get("content-length");
+    let contentLength = this.options.original_request!.headers.get(
+      "content-length",
+    );
 
     if (!contentLength) {
-      contentLength = this.options.original_request!.headers.get("Content-Length");
+      contentLength = this.options.original_request!.headers.get(
+        "Content-Length",
+      );
     }
 
     if (!contentLength) {
@@ -394,7 +404,9 @@ export class Request implements ICreateable {
    * that format. If there is no body, it returns an empty properties
    */
   public async parseBody(): Promise<IRequestParsedBody> {
-    const contentType = this.options.original_request!.headers.get("Content-Type");
+    const contentType = this.options.original_request!.headers.get(
+      "Content-Type",
+    );
 
     // No Content-Type header? Default to this.
     if (!contentType) {

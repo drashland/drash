@@ -1,11 +1,7 @@
-import * as Deps from "../../deps.ts";
 import * as Drash from "../../mod.ts";
-import * as Errors from "../errors.ts";
-import * as Interfaces from "../interfaces.ts";
-import * as Types from "../types.ts";
 
-const RE_URI = /(:[^(/]+|{[^0-9][^}]*})/;
-const RE_URI_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
+const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
+const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
 const RE_URI_REPLACEMENT = "([^/]+)";
 
 // TODO(crookse) Remove this. We don't need this. Just set the services
@@ -13,11 +9,11 @@ const RE_URI_REPLACEMENT = "([^/]+)";
 // that means later.
 interface IServices {
   external: {
-    after_request: Interfaces.IService[],
-    before_request: Interfaces.IService[],
+    after_request: Drash.Interfaces.IService[];
+    before_request: Drash.Interfaces.IService[];
   };
   internal: {
-    resource_index: Deps.Moogle<Interfaces.IResource>
+    resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource>;
   };
 }
 
@@ -28,17 +24,17 @@ interface IServices {
  * It is also in charge of sending error responses that "bubble up" during the
  * request-resource-response lifecycle.
  */
-export class Server implements Interfaces.IServer {
+export class Server implements Drash.Interfaces.IServer {
   /**
-   * See Interfaces.IServerOptions.
+   * See Drash.Interfaces.IServerOptions.
    */
-  public options: Interfaces.IServerOptions = {};
+  public options: Drash.Interfaces.IServerOptions = {};
 
   /**
    * The Deno server object (after calling `serve()`).
    */
   // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected deno_server: Deps.Server;
+  protected deno_server: Drash.Deps.Server;
 
   /**
    * The Deno server request object handler. This handler gets wrapped around
@@ -60,8 +56,8 @@ export class Server implements Interfaces.IServer {
       before_request: [],
     },
     internal: {
-      resource_index: new Deps.Moogle<Interfaces.IResource>()
-    }
+      resource_index: new Drash.Deps.Moogle<Drash.Interfaces.IResource>(),
+    },
   };
 
   //////////////////////////////////////////////////////////////////////////////
@@ -69,9 +65,9 @@ export class Server implements Interfaces.IServer {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * See ICreateable#addOptions.
+   * See Drash.Interfaces.ICreateable.addOptions().
    */
-  public addOptions(options: Interfaces.IServerOptions): void {
+  public addOptions(options: Drash.Interfaces.IServerOptions): void {
     if (!options.default_response_content_type) {
       options.default_response_content_type = "application/json";
     }
@@ -100,14 +96,14 @@ export class Server implements Interfaces.IServer {
       options.services = {
         after_request: [],
         before_request: [],
-      }
+      };
     }
 
     this.options = options;
   }
 
   /**
-   * See ICreateable#create.
+   * See Drash.Interfaces.ICreateable.create().
    */
   public create(): void {
     this.addExternalServices();
@@ -115,8 +111,19 @@ export class Server implements Interfaces.IServer {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Close the server.
+   */
+  public close(): void {
+    try {
+      this.deno_server.close();
+    } catch (_error) {
+      // Do nothing. The server was probably already closed.
+    }
+  }
 
   /**
    * Get the full address that this server is running on.
@@ -134,7 +141,10 @@ export class Server implements Interfaces.IServer {
    * @param request - The request object.
    * @param error - The error that was thrown during runtime.
    */
-  public handleError(request: Deps.ServerRequest, error: Errors.HttpError) {
+  public handleError(
+    request: Drash.Deps.ServerRequest,
+    error: Drash.Errors.HttpError,
+  ) {
     // TODO(crookse) The error should be a response object so we can
     // request.respond(error);
     request.respond({
@@ -148,7 +158,9 @@ export class Server implements Interfaces.IServer {
    *
    * @param originalRequest - The Deno request object.
    */
-  public async handleRequest(originalRequest: Deps.ServerRequest): Promise<any> {
+  public async handleRequest(
+    originalRequest: Drash.Deps.ServerRequest,
+  ): Promise<any> {
     const request = await this.buildRequest(originalRequest);
 
     const resource = this.findResource(request);
@@ -160,10 +172,10 @@ export class Server implements Interfaces.IServer {
     // If the method does not exist on the resource, then the method is not
     // allowed. So, throw that 405 and GTFO.
     if (!(method in resource)) {
-      throw new Errors.HttpError(405);
+      throw new Drash.Errors.HttpError(405);
     }
 
-    const response = await resource![method as Types.THttpMethod]!();
+    const response = await resource![method as Drash.Types.THttpMethod]!();
 
     // Convert the body to a string if it's not already a string. Otherwise, the
     // `.respond()` method will throw the following error:
@@ -184,7 +196,7 @@ export class Server implements Interfaces.IServer {
     originalRequest.respond({
       status: response.status,
       headers: response.headers,
-      body: body
+      body: body,
     });
   }
 
@@ -193,10 +205,10 @@ export class Server implements Interfaces.IServer {
    *
    * @returns The Deno server object.
    */
-  public async runHttp(): Promise<Deps.Server> {
+  public async runHttp(): Promise<Drash.Deps.Server> {
     this.options.protocol = "http";
 
-    this.deno_server = Deps.serve({
+    this.deno_server = Drash.Deps.serve({
       hostname: this.options.hostname!,
       port: this.options.port!,
     });
@@ -211,10 +223,10 @@ export class Server implements Interfaces.IServer {
    *
    * @returns The Deno server object.
    */
-  public async runHttps(): Promise<Deps.Server> {
+  public async runHttps(): Promise<Drash.Deps.Server> {
     this.options.protocol = "https";
 
-    this.deno_server = Deps.serveTLS({
+    this.deno_server = Drash.Deps.serveTLS({
       hostname: this.options.hostname!,
       port: this.options.port!,
       certFile: this.options.cert_file!,
@@ -226,19 +238,8 @@ export class Server implements Interfaces.IServer {
     return this.deno_server;
   }
 
-  /**
-   * Close the server.
-   */
-  public close(): void {
-    try {
-      this.deno_server.close();
-    } catch (_error) {
-      // Do nothing. The server was probably already closed.
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  // FILE MARKER - PROTECTED METHODS ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -253,14 +254,14 @@ export class Server implements Interfaces.IServer {
     // Add server-level services that execute before all requests
     if (this.options.services.before_request) {
       await this.addExternalServicesBeforeRequest(
-        this.options.services.before_request
+        this.options.services.before_request,
       );
     }
 
     // Add server-level services that execute after all requests
     if (this.options.services.after_request) {
       await this.addExternalServicesAfterRequest(
-        this.options.services.after_request
+        this.options.services.after_request,
       );
     }
   }
@@ -271,12 +272,12 @@ export class Server implements Interfaces.IServer {
    * @param services - An array of Service types.
    */
   protected async addExternalServicesAfterRequest(
-    services: typeof Drash.Service[]
+    services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
       // TODO(crookse) Make this new call use the Factory.
       // @ts-ignore
-      const service = new (s as Interfaces.IService)();
+      const service = new (s as Drash.Interfaces.IService)();
       // Check if this service needs to be set up
       if (service.setUp) {
         await service.setUp();
@@ -291,12 +292,12 @@ export class Server implements Interfaces.IServer {
    * @param services - An array of Service types.
    */
   protected async addExternalServicesBeforeRequest(
-    services: typeof Drash.Service[]
+    services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
       // TODO(crookse) Make this new call use the Factory.
       // @ts-ignore
-      const service = new (s as Interfaces.IService)();
+      const service = new (s as Drash.Interfaces.IService)();
       // Check if this service needs to be set up
       if (service.setUp) {
         await service.setUp();
@@ -307,11 +308,6 @@ export class Server implements Interfaces.IServer {
 
   /**
    * Add the resources passed in via options.
-   *
-   * Drash defines an HTTP resource according to the MDN Web docs at the
-   * following:
-   *
-   *     https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
    */
   protected addResources(): void {
     // No resources? Lolz. This means the / URI will throw a 404 Not Found.
@@ -321,18 +317,19 @@ export class Server implements Interfaces.IServer {
 
     this.options.resources.forEach((resourceClass: typeof Drash.Resource) => {
       // @ts-ignore
-      const resource: Interfaces.IResource = Drash.Factory.create(resourceClass, {
-        server: this
-      });
+      const resource: Drash.Interfaces.IResource = Drash.Factory
+        .create(resourceClass, {
+          server: this,
+        });
 
       resource.paths.forEach((path: string) => {
-        // Remove the trailing slash because we handle URIs with and without the
-        // trailing slash the same. For example, the following URIs are the same
+        // Remove the trailing slash because we handle URI paths with and without the
+        // trailing slash the same. For example, the following URI paths are the same
         //
         //     /something
         //     /something/
         //
-        // Some frameworks differentiate these two URIs, but Drash does not. The
+        // Some frameworks differentiate these two URI paths, but Drash does not. The
         // reason is for convenience, so that users do not have to define two
         // routes (one with and one without the trailing slash) in the same
         // resource.
@@ -342,7 +339,7 @@ export class Server implements Interfaces.IServer {
 
         // Path isn't a string? Womp womp.
         if (typeof path != "string") {
-          throw new Errors.DrashError("D1000");
+          throw new Drash.Errors.DrashError("D1000");
         }
 
         // Handle wildcard paths
@@ -350,34 +347,34 @@ export class Server implements Interfaces.IServer {
         if (path.trim() == "*") {
           // TODO(crookse) Put this in the resource class.
           resource.paths_parsed.push(
-            this.getResourcePathsUsingWildcard(path)
+            this.getResourcePathsUsingWildcard(path),
           );
 
-        // Handle optional params
+          // Handle optional params
         } else if (path.trim().includes("?")) {
           // TODO(crookse) Put this in the resource class.
           resource.paths_parsed.push(
-            this.getResourcePathsUsingOptionalParams(path)
+            this.getResourcePathsUsingOptionalParams(path),
           );
 
-        // Handle basic paths that don't include wild cards or optional params
+          // Handle basic paths that don't include wild cards or optional params
         } else {
           // TODO(crookse) Put this in the resource class.
           resource.paths_parsed.push(
-            this.getResourcePaths(path)
+            this.getResourcePaths(path),
           );
         }
       });
 
       // All resources get added to an index (using Mooogle) so that they can be
       // searched for during runtime. The search terms for a resource are its
-      // URIs expanded into regex patterns so that they can be matched to
-      // request URIs. This process happens below.
+      // URI paths expanded into regex patterns so that they can be matched to
+      // request URI paths. This process happens below.
 
       const searchTerms: string[] = [];
 
       resource.paths_parsed
-        .forEach((pathObj: Interfaces.IResourcePathsParsed) => {
+        .forEach((pathObj: Drash.Interfaces.IResourcePathsParsed) => {
           searchTerms.push(pathObj.regex_path);
         });
 
@@ -393,13 +390,13 @@ export class Server implements Interfaces.IServer {
    * @returns See Drash.Request.
    */
   protected async buildRequest(
-    originalRequest: Deps.ServerRequest
+    originalRequest: Drash.Deps.ServerRequest,
   ): Promise<Drash.Request> {
     return await this.request.clone({
       original_request: originalRequest,
       memory: {
         multipart_form_data: this.options.memory!.multipart_form_data!,
-      }
+      },
     });
   }
 
@@ -453,7 +450,7 @@ export class Server implements Interfaces.IServer {
    *
    * @return A clone of the found resource.
    */
-  protected findResource(request: Drash.Request): Interfaces.IResource {
+  protected findResource(request: Drash.Request): Drash.Interfaces.IResource {
     const uri = request.url_path.split("/");
     // Remove the first element because it is an empty string. For example:
     //
@@ -466,7 +463,7 @@ export class Server implements Interfaces.IServer {
     //
     // The resource index will return all resources matching that basic URI.
     // Later down in this method, we make sure the resource can handle the URI
-    // by comparing the full URI with the URIs defined on the resource.
+    // by comparing the full URI with the URI paths defined on the resource.
     const baseUri = "^/" + uri[0];
 
     // Find the resource
@@ -478,7 +475,7 @@ export class Server implements Interfaces.IServer {
       results = this.services.internal.resource_index.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
-        throw new Errors.HttpError(404);
+        throw new Drash.Errors.HttpError(404);
       }
     }
 
@@ -493,25 +490,27 @@ export class Server implements Interfaces.IServer {
     let matched: string[] = [];
 
     // If we matched a resource, then we need to make sure the request's URI
-    // matches one of the URIs defined on the resource. If the request's URI
-    // matches one of the URIs defined on the resource, then the resource can
-    // handle the URI. Otherwise, it cannot. Womp.
-    resource.paths_parsed.forEach((pathObj: Interfaces.IResourcePathsParsed) => {
-      if (resourceCanHandleUri) {
-        return;
-      }
+    // matches one of the URI paths defined on the resource. If the request's
+    // URI matches one of the URI paths defined on the resource, then the
+    // resource can handle the URI. Otherwise, it cannot. Womp.
+    resource.paths_parsed.forEach(
+      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
+        if (resourceCanHandleUri) {
+          return;
+        }
 
-      matched = request.url_path.match(pathObj.regex_path) as string[];
-      if (matched && matched.length > 0) {
-        resourceCanHandleUri = true;
-      }
-    });
+        matched = request.url_path.match(pathObj.regex_path) as string[];
+        if (matched && matched.length > 0) {
+          resourceCanHandleUri = true;
+        }
+      },
+    );
 
     // If the resource does not have a URI defined that matches the request's
     // URI, then the resource cannot handle the request. Ultimately, this is a
     // 404 because there is no resource with the defined URI.
     if (!resourceCanHandleUri) {
-      throw new Errors.HttpError(404);
+      throw new Drash.Errors.HttpError(404);
     }
 
     // If the matched array contains more than 1 item, then we know the request
@@ -532,21 +531,21 @@ export class Server implements Interfaces.IServer {
 
   /**
    * Get resource paths for the path in question. These paths are use to match
-   * request URIs to a resource.
+   * request URI paths to a resource.
    *
    * @param path - The path to parse into parsable pieces.
    *
    * @return A resource paths object.
    */
-  protected getResourcePaths(path: string): Interfaces.IResourcePathsParsed {
+  protected getResourcePaths(
+    path: string,
+  ): Drash.Interfaces.IResourcePathsParsed {
     return {
       og_path: path,
-      regex_path: `^${path.replace(RE_URI_GLOBAL, RE_URI_REPLACEMENT)}/?$`,
-      params: (path.match(RE_URI_GLOBAL) || []).map(
-        (element: string) => {
-          return element.replace(/:|{|}/g, "");
-        },
-      ),
+      regex_path: `^${path.replace(RE_URI_PATH_GLOBAL, RE_URI_REPLACEMENT)}/?$`,
+      params: (path.match(RE_URI_PATH_GLOBAL) || []).map((element: string) => {
+        return element.replace(/:|{|}/g, "");
+      }),
     };
   }
 
@@ -557,7 +556,7 @@ export class Server implements Interfaces.IServer {
    *
    *     /my-path/:id?
    *
-   . These paths are use * to match request URIs to a resource.
+   . These paths are use * to match request URI paths to a resource.
    *
    * @param path - The path to parse into parsable pieces.
    *
@@ -565,7 +564,7 @@ export class Server implements Interfaces.IServer {
    */
   protected getResourcePathsUsingOptionalParams(
     path: string,
-  ): Interfaces.IResourcePathsParsed {
+  ): Drash.Interfaces.IResourcePathsParsed {
     let tmpPath = path;
     // Replace required params, in preparation to create the `regex_path`, just
     // like how we do in the below else block
@@ -578,7 +577,7 @@ export class Server implements Interfaces.IServer {
         !param.includes("?");
     }).length;
     for (let i = 0; i < numberOfRequiredParams; i++) {
-      tmpPath = tmpPath.replace(RE_URI, RE_URI_REPLACEMENT);
+      tmpPath = tmpPath.replace(RE_URI_PATH, RE_URI_REPLACEMENT);
     }
     // Replace optional path params
     const maxOptionalParams = path.split("/").filter((param) => {
@@ -599,8 +598,8 @@ export class Server implements Interfaces.IServer {
     for (let i = 0; i < maxOptionalParams; i++) {
       // We need to mark the start for the first optional param
       if (i === 0) {
-        // The below regex is very similar to `RE_URI_GLOBAL` but this regex
-        // isn't global, and accounts for there being a required parameter
+        // The below regex is very similar to `RE_URI_PATH_GLOBAL` but this
+        // regex isn't global, and accounts for there being a required parameter
         // before
         tmpPath = tmpPath.replace(
           /\/(:[^(/]+|{[^0-9][^}]*}\?)\/?/,
@@ -622,31 +621,32 @@ export class Server implements Interfaces.IServer {
       og_path: path,
       regex_path: `^${tmpPath}$`,
       // Regex is same as other blocks, but we also strip the `?`.
-      params: (path.match(RE_URI_GLOBAL) || []).map(
-        (element: string) => {
-          return element.replace(/:|{|}|\?/g, "");
-        },
-      ),
+      params: (path.match(RE_URI_PATH_GLOBAL) || []).map((element: string) => {
+        return element.replace(/:|{|}|\?/g, "");
+      }),
     };
   }
 
   /**
    * Get resource paths for the wildcard path in question. These paths are use
-   * to match request URIs to a resource.
+   * to match request URI paths to a resource.
    *
    * @param path - The path to parse into parsable pieces.
    *
    * @return A resource paths object.
    */
-  protected getResourcePathsUsingWildcard(path: string): Interfaces.IResourcePathsParsed {
+  protected getResourcePathsUsingWildcard(
+    path: string,
+  ): Drash.Interfaces.IResourcePathsParsed {
+    const rePathReplaced = path.replace(RE_URI_PATH_GLOBAL, RE_URI_REPLACEMENT);
+    const rePath = `^.${rePathReplaced}/?$`;
+
     return {
       og_path: path,
-      regex_path: `^.${path.replace(RE_URI_GLOBAL, RE_URI_REPLACEMENT)}/?$`,
-      params: (path.match(RE_URI_GLOBAL) || []).map(
-        (element: string) => {
-          return element.replace(/:|{|}/g, "");
-        },
-      ),
+      regex_path: rePath,
+      params: (path.match(RE_URI_PATH_GLOBAL) || []).map((element: string) => {
+        return element.replace(/:|{|}/g, "");
+      }),
     };
   }
 
@@ -692,11 +692,16 @@ export class Server implements Interfaces.IServer {
    * @param request - The request object.
    * @param resource - The resource object.
    */
-  protected setRequestPathParams(request: Interfaces.IRequest, resource: Interfaces.IResource): void {
-    resource.paths_parsed.forEach((pathObj: Interfaces.IResourcePathsParsed) => {
-      pathObj.params.forEach((paramName: string, index: number) => {
-        request.path_params[paramName] = resource.path_params[index];
-      });
-    });
+  protected setRequestPathParams(
+    request: Drash.Interfaces.IRequest,
+    resource: Drash.Interfaces.IResource,
+  ): void {
+    resource.paths_parsed.forEach(
+      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
+        pathObj.params.forEach((paramName: string, index: number) => {
+          request.path_params[paramName] = resource.path_params[index];
+        });
+      },
+    );
   }
 }

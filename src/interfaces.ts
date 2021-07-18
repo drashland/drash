@@ -47,16 +47,8 @@ export interface ICreateableOptions {}
 export interface IRequestOptions extends ICreateableOptions {
   memory?: {
     multipart_form_data?: number;
-  },
+  };
   original_request?: ServerRequest;
-}
-
-// FILE MARKER /////////////////////////////////////////////////////////////////
-
-export interface IResourceOptions extends ICreateableOptions {
-  server?: Server;
-  request?: Request;
-  path_params?: string[];
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -145,9 +137,9 @@ export interface IRequestParsedBody {
  */
 export interface IResource extends ICreateable {
   // Properties
+  path_params: string[];
   paths: string[];
   paths_parsed: IResourcePathsParsed[];
-  path_params: string[];
   services?: { after_request?: []; before_request?: [] };
   // Methods
   CONNECT?: () => Promise<IResponse> | IResponse;
@@ -159,6 +151,14 @@ export interface IResource extends ICreateable {
   POST?: () => Promise<IResponse> | IResponse;
   PUT?: () => Promise<IResponse> | IResponse;
   TRACE?: () => Promise<IResponse> | IResponse;
+}
+
+// FILE MARKER /////////////////////////////////////////////////////////////////
+
+export interface IResourceOptions extends ICreateableOptions {
+  server?: Server;
+  request?: Request;
+  path_params?: string[];
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -222,8 +222,8 @@ export interface IServerOptions extends ICreateableOptions {
   hostname?: string;
   key_file?: string;
   memory?: IServerOptionsMemory;
-  port?: number,
-  protocol?: "http" | "https",
+  port?: number;
+  protocol?: "http" | "https";
   resources?: typeof Resource[];
   services?: IServerOptionsServices;
 }
@@ -294,7 +294,10 @@ export interface IService {
   setUp?: () => Promise<void> | void;
 
   // The method to run during runtime
-  runAfterRequest?: (request: Request, response: Response) => Promise<void> | void;
+  runAfterRequest?: (
+    request: Request,
+    response: Response,
+  ) => Promise<void> | void;
 
   runBeforeRequest?: (request: Request) => Promise<void> | void;
 }

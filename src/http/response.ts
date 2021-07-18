@@ -6,7 +6,12 @@ import {
   Status,
   STATUS_TEXT,
 } from "../../deps.ts";
-import { IResponse, ICreateable, IResponseOptions, IResponseOutput } from "../interfaces.ts";
+import {
+  ICreateable,
+  IResponse,
+  IResponseOptions,
+  IResponseOutput,
+} from "../interfaces.ts";
 import { Request } from "./request.ts";
 
 export interface IOptions {
@@ -17,7 +22,6 @@ export interface IOptions {
  * Response handles sending a response to the client making the request.
  */
 export class Response implements IResponse {
-
   public status = 200;
 
   public body: unknown = undefined;
@@ -33,7 +37,7 @@ export class Response implements IResponse {
   public create(): void {
     this.headers.set(
       "Content-Type",
-      this.options.default_response_content_type!
+      this.options.default_response_content_type!,
     );
   }
 
