@@ -32,3 +32,17 @@ export * as Types from "./src/types.ts";
 export function createServer(options: Interfaces.IServerOptions = {}): Server {
   return Factory.create(Server, options);
 }
+
+// FILE MARKER - TS IGNORE NOTES ///////////////////////////////////////////////
+//
+// NOTE 1
+//
+// Class properties are ignored to prevent the following TS error:
+//
+//     Property has no initializer and is not definitely assigned in the
+//     constructor.
+//
+// Class properties are ignored because the class implements ICreateable and is
+// instantiated using the Factory class. ICreateable classes do not have
+// constructor() implementations. Instead they use factory methods that are
+// defined in the ICreateable interface.
