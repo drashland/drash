@@ -156,6 +156,9 @@ export class Server implements Drash.Interfaces.IServer {
   /**
    * Handle an HTTP request from the Deno server.
    *
+   * TODO (crookse) Add in the middleware. Middleware is now called serices. So,
+   * technically, add in the services.
+   *
    * @param originalRequest - The Deno request object.
    */
   public async handleRequest(
