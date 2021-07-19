@@ -149,7 +149,7 @@ export class Server implements Drash.Interfaces.IServer {
     // request.respond(error);
     request.respond({
       status: error.code,
-      body: error.message,
+      body: error.stack,
     });
   }
 
