@@ -621,4 +621,42 @@ export class Request implements Drash.Interfaces.ICreateable {
 
     return mimeType;
   }
+
+  /**
+   * Set the `request.path_params` property after finding the given resource so
+   * the user can access them via `this.request.getPathParamValue()`.
+   *
+   * How it works: If we have the following request URI ...
+   *
+   *     /hello/world/i-love-you
+   *
+   * and it was matched to a resource with the following URI ...
+   *
+   *    /hello/:thing/:greeting
+   *
+   * then we end up with two arrays ...
+   *
+   *     resource's defined path params: [ "thing", "greeting" ]
+   *     request's given path params:    [ "world", "i-love-you" ]
+   *
+   * that get merged merged into key-value pairs ...
+   *
+   *     { thing: "world", greeting: "i-love-you" }
+   *
+   * The first array serves as the keys and the second array serves the value of
+   * the keys.
+   *
+   * @param resource - The resource object.
+   */
+  public setPathParams(
+    resource: Drash.Interfaces.IResource,
+  ): void {
+    resource.uri_paths_parsed.forEach(
+      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
+        pathObj.params.forEach((paramName: string, index: number) => {
+          this.path_params[paramName] = resource.path_params[index];
+        });
+      },
+    );
+  }
 }
