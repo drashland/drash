@@ -39,3 +39,10 @@ export type THttpMethod =
   | "TRACE";
 
 export type TConstructor<T extends unknown> = new (...args: unknown[]) => T;
+
+export type TResponseBody =
+  | unknown
+  | string
+  | Uint8Array
+  | Deno.Reader
+  | undefined;
