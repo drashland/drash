@@ -520,9 +520,16 @@ export class Request implements Drash.Interfaces.ICreateable {
    * @returns A `Promise` of a JSON object decoded from request body.
    */
   public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
-    const data = decoder.decode(
+    let data = Drash.Deps.decoder.decode(
       await Deno.readAll(this.options.original_request!.body),
     );
+
+    // Check if the JSON string contains ' instead of ". We need to convert
+    // those so we can call JSON.parse().
+    if (data.match(/'/g)) {
+      data = data.replace(/'/g, `"`);
+    }
+
     return JSON.parse(data);
   }
 
