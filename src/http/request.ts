@@ -1,32 +1,21 @@
+import * as Drash from "../../mod.ts";
+
 import {
-  decoder,
   FormFile,
-  getCookies,
-  MultipartFormData,
-  MultipartReader,
-  ServerRequest,
 } from "../../deps.ts";
-type Reader = Deno.Reader;
-import {
-  ICreateable,
-  IKeyValuePairs,
-  IRequestOptions,
-  IRequestParsedBody,
-  IResponseOutput,
-} from "../interfaces.ts";
 import { Response } from "./response.ts";
 import { Resource } from "./resource.ts";
 import { Server } from "./server.ts";
 import { mimeDb } from "../dictionaries/mime_db.ts";
 
-export class Request implements ICreateable {
-  public parsed_body: IRequestParsedBody = {
+export class Request implements Drash.Interfaces.ICreateable {
+  public parsed_body: Drash.Interfaces.IRequestParsedBody = {
     content_type: "",
     data: undefined,
   };
   public path_params: { [key: string]: string } = {};
   public resource: Resource | null = null;
-  protected options: IRequestOptions = {};
+  protected options: Drash.Interfaces.IRequestOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
@@ -36,11 +25,11 @@ export class Request implements ICreateable {
     return;
   }
 
-  public addOptions(options: IRequestOptions) {
+  public addOptions(options: Drash.Interfaces.IRequestOptions) {
     return;
   }
 
-  public async clone(options: IRequestOptions): Promise<this> {
+  public async clone(options: Drash.Interfaces.IRequestOptions): Promise<this> {
     const clone = Object.create(this);
     clone.options = options;
 
@@ -79,8 +68,8 @@ export class Request implements ICreateable {
     return path;
   }
 
-  public get url_query_params(): IKeyValuePairs<string> {
-    let queryParams: IKeyValuePairs<string> = {};
+  public get url_query_params(): Drash.Interfaces.IKeyValuePairs<string> {
+    let queryParams: Drash.Interfaces.IKeyValuePairs<string> = {};
 
     try {
       let queryParamsString = this.url_query_string;
@@ -179,7 +168,7 @@ export class Request implements ICreateable {
    *
    * @return The parsed body as an object
    */
-  public getAllBodyParams(): IRequestParsedBody {
+  public getAllBodyParams(): Drash.Interfaces.IRequestParsedBody {
     return this.parsed_body;
   }
 
@@ -248,7 +237,7 @@ export class Request implements ICreateable {
    *
    * @returns The corresponding parameter or null if not found
    */
-  public async getBodyParam(input: string): Promise<IRequestParsedBody | void> {
+  public async getBodyParam(input: string): Promise<Drash.Interfaces.IRequestParsedBody | void> {
     // console.log(this.parsed_body);
     return;
     // return this.parsed_body[input];
@@ -263,7 +252,7 @@ export class Request implements ICreateable {
    * a cookie with that name doesn't exist
    */
   public getCookie(name: string): string {
-    const cookies: { [key: string]: string } = getCookies(
+    const cookies: { [key: string]: string } = Drash.Deps.getCookies(
       this.options.original_request!,
     );
     return cookies[name];
@@ -403,7 +392,7 @@ export class Request implements ICreateable {
    * @returns The content type of the body, and based on this the body itself in
    * that format. If there is no body, it returns an empty properties
    */
-  public async parseBody(): Promise<IRequestParsedBody> {
+  public async parseBody(): Promise<Drash.Interfaces.IRequestParsedBody> {
     const contentType = this.options.original_request!.headers.get(
       "Content-Type",
     );
@@ -477,7 +466,7 @@ export class Request implements ICreateable {
         return this.parsed_body;
       } catch (error) {
         throw new Error(
-          `Error reading request body as application/json.`,
+          `Error reading request body as application/json. ${error.message}`,
         );
       }
     }
@@ -515,7 +504,7 @@ export class Request implements ICreateable {
   public async parseBodyAsFormUrlEncoded(): Promise<
     { [key: string]: unknown }
   > {
-    let body = decoder.decode(
+    let body = Drash.Deps.decoder.decode(
       await Deno.readAll(this.options.original_request!.body),
     );
     if (body.indexOf("?") !== -1) {
@@ -548,10 +537,10 @@ export class Request implements ICreateable {
    * @return A Promise<MultipartFormData>.
    */
   public async parseBodyAsMultipartFormData(
-    body: Reader,
+    body: Deno.Reader,
     boundary: string,
     maxMemory: number,
-  ): Promise<MultipartFormData> {
+  ): Promise<Drash.Deps.MultipartFormData> {
     // Convert memory to megabytes for parsing multipart/form-data. Also,
     // default to 128 megabytes if memory allocation wasn't specified.
     if (!maxMemory) {
@@ -559,7 +548,7 @@ export class Request implements ICreateable {
     } else {
       maxMemory *= 1024 * 1024;
     }
-    const mr = new MultipartReader(body, boundary);
+    const mr = new Drash.Deps.MultipartReader(body, boundary);
     const ret = await mr.readForm(maxMemory);
     // console.log(ret);
     return ret;

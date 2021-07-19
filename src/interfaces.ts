@@ -10,14 +10,7 @@
 
 // TODO(crookse) Alphabetize this file.
 
-import type { MultipartFormData } from "../deps.ts";
-
-import { Request } from "./http/request.ts";
-import { Server } from "./http/server.ts";
-import { Response } from "./http/response.ts";
-import { Resource } from "./http/resource.ts";
-import { Service } from "./http/service.ts";
-import { ServerRequest } from "../deps.ts";
+import * as Drash from "../mod.ts";
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
 
@@ -48,7 +41,7 @@ export interface IRequestOptions extends ICreateableOptions {
   memory?: {
     multipart_form_data?: number;
   };
-  original_request?: ServerRequest;
+  original_request?: Drash.Deps.ServerRequest;
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -73,6 +66,7 @@ export interface IResponse extends ICreateable {
   headers: Headers;
   body: unknown;
   status: number;
+  parseBody: () => Promise<Uint8Array | string | Deno.Reader | undefined>;
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -127,7 +121,7 @@ export interface IMime {
  */
 export interface IRequestParsedBody {
   content_type: string | undefined;
-  data: undefined | MultipartFormData | IKeyValuePairs<unknown>;
+  data: undefined | Drash.Deps.MultipartFormData | IKeyValuePairs<unknown>;
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -156,7 +150,7 @@ export interface IResource extends ICreateable {
 // FILE MARKER /////////////////////////////////////////////////////////////////
 
 export interface IResourceOptions extends ICreateableOptions {
-  server?: Server;
+  server?: Drash.Server;
   request?: Request;
   path_params?: string[];
 }
@@ -224,7 +218,7 @@ export interface IServerOptions extends ICreateableOptions {
   memory?: IServerOptionsMemory;
   port?: number;
   protocol?: "http" | "https";
-  resources?: typeof Resource[];
+  resources?: typeof Drash.Resource[];
   services?: IServerOptionsServices;
 }
 
@@ -281,10 +275,10 @@ export interface IServerOptionsMemory {
 
 export interface IServerOptionsServices {
   // Services executed before a request is made (before a resource is found).
-  before_request?: typeof Service[];
+  before_request?: typeof Drash.Service[];
 
   // Services executed after requests, but before responses are sent
-  after_request?: typeof Service[];
+  after_request?: typeof Drash.Service[];
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -295,9 +289,9 @@ export interface IService {
 
   // The method to run during runtime
   runAfterRequest?: (
-    request: Request,
-    response: Response,
+    request: Drash.Request,
+    response: Drash.Response,
   ) => Promise<void> | void;
 
-  runBeforeRequest?: (request: Request) => Promise<void> | void;
+  runBeforeRequest?: (request: Drash.Request) => Promise<void> | void;
 }

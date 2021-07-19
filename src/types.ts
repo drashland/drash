@@ -1,6 +1,4 @@
-import type { Request } from "./http/request.ts";
-import type { Response } from "./http/response.ts";
-import { Service } from "./http/service.ts";
+import * as Drash from "../mod.ts";
 /**
  * @param request - Contains the instance of the request.
  * @param server - Contains the instance of the server.
@@ -8,10 +6,10 @@ import { Service } from "./http/service.ts";
  */
 export type MiddlewareFunction =
   | ((
-    request: Request,
-    response: Response,
+    request: Drash.Request,
+    response: Drash.Response,
   ) => Promise<void>)
-  | ((request: Request, response: Response) => void);
+  | ((request: Drash.Request, response: Drash.Response) => void);
 
 /**
  * @description
@@ -25,8 +23,8 @@ export type MiddlewareFunction =
  *
  */
 export type Middleware = {
-  before_request?: typeof Service[];
-  after_request?: typeof Service[];
+  before_request?: typeof Drash.Service[];
+  after_request?: typeof Drash.Service[];
 };
 
 export type THttpMethod =
