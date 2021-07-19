@@ -179,22 +179,7 @@ export class Server implements Drash.Interfaces.IServer {
     }
 
     const response = await resource![method as Drash.Types.THttpMethod]!();
-
-    // Convert the body to a string if it's not already a string. Otherwise, the
-    // `.respond()` method will throw the following error:
-    //
-    //     Uncaught (in promise) TypeError: r.read is not a function
-    //
-    // Ultimately, this crashes the server to the point it has to be restarted.
-    //
-    // TODO(crookse) We need to add a response body clean up function so that we
-    // know for sure this won't break. We also need to make sure that we can
-    // handle the following body types:
-    //
-    //     string | Uint8Array | Reader | undefined
-    const body = (typeof response.body == "string")
-      ? response.body
-      : JSON.stringify(response.body);
+    const body = await response.parseBody();
 
     originalRequest.respond({
       status: response.status,
