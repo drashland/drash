@@ -13,11 +13,10 @@ import * as Types from "../types.ts";
 export class Factory {
   static create<T extends Interfaces.ICreateable>(
     createableProduct: Types.TConstructor<T>,
-    createableClassOptions: Interfaces.ICreateableOptions = {},
+    createableOptions: Interfaces.ICreateableOptions = {},
   ): T {
     const product = new createableProduct();
-    product.addOptions(createableClassOptions);
-    product.create();
+    product.create(createableOptions);
     return product;
   }
 }
