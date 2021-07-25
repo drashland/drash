@@ -51,7 +51,9 @@ export interface IRequestOptions extends ICreateableOptions {
   memory?: {
     multipart_form_data?: number;
   };
-  original_request?: Drash.Deps.ServerRequest;
+  original?: Drash.Deps.ServerRequest;
+  server?: Drash.Server;
+  url?: string;
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
@@ -71,6 +73,20 @@ export interface IRequest extends ICreateable {
 }
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
+/**
+ * This interfaces follows the following schema:
+ *
+ *     https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL
+ */
+export interface IRequestUrl {
+  anchor?: string;
+  authority: string;
+  domain: string;
+  parameters?: string;
+  path: string;
+  port: number;
+  scheme: "https" | "http";
+}
 
 export interface IResponse extends ICreateable {
   headers: Headers;
@@ -298,10 +314,10 @@ export interface IService {
   setUp?: () => Promise<void> | void;
 
   // The method to run during runtime
-  runAfterRequest?: (
-    request: Drash.Request,
-    response: Drash.Response,
-  ) => Promise<void> | void;
+  // runAfterRequest?: (
+  //   request: Drash.Request,
+  //   response: Drash.Response,
+  // ) => Promise<void> | void;
 
-  runBeforeRequest?: (request: Drash.Request) => Promise<void> | void;
+  // runBeforeRequest?: (request: Drash.Request) => Promise<void> | void;
 }

@@ -156,7 +156,16 @@ export class Server implements Drash.Interfaces.IServer {
   public async handleRequest(
     originalRequest: Drash.Deps.ServerRequest,
   ): Promise<any> {
-    const request = await this.buildRequest(originalRequest);
+    // Create the request proxy. The purpose of the request proxy is to wrap
+    // itself around the original request. The original request does not have
+    // all of the properties and methods required for Drash to handle a request;
+    // therefore, Drash uses its own request proxy to handle a request and the
+    // allows access to the original request via getters.
+    const request = Drash.Factory.create(Drash.Request, {
+      original: originalRequest,
+      server: this,
+    });
+
     const resource = this.handlers.resource_handler.createResource(
       request,
     );
@@ -289,25 +298,6 @@ export class Server implements Drash.Interfaces.IServer {
       }
       this.services.external.before_request!.push(service);
     }
-  }
-
-
-  /**
-   * Build the request object.
-   *
-   * @param originalRequest - Deno's request object.
-   *
-   * @returns See Drash.Request.
-   */
-  protected async buildRequest(
-    originalRequest: Drash.Deps.ServerRequest,
-  ): Promise<Drash.Request> {
-    return await this.request.clone({
-      original_request: originalRequest,
-      memory: {
-        multipart_form_data: this.options.memory!.multipart_form_data!,
-      },
-    });
   }
 
   /**

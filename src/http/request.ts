@@ -1,106 +1,120 @@
 import * as Drash from "../../mod.ts";
 
-import {
-  FormFile,
-} from "../../deps.ts";
-import { Response } from "./response.ts";
-import { Resource } from "./resource.ts";
-import { Server } from "./server.ts";
-import { mimeDb } from "../dictionaries/mime_db.ts";
+export class Request
+implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
+  public parsed_body: Drash.Interfaces.IRequestParsedBody = {};
 
-export class Request implements Drash.Interfaces.ICreateable {
-  public parsed_body: Drash.Interfaces.IRequestParsedBody = {
-    content_type: "",
-    data: undefined,
-  };
-  public path_params: { [key: string]: string } = {};
-  public resource: Resource | null = null;
-  protected options: Drash.Interfaces.IRequestOptions = {};
+  // @ts-ignore
+  public options: Drash.Interfaces.IRequestOptions;
+
+  // @ts-ignore
+  public request: ServerRequest;
+
+  // @ts-ignore
+  public server: Drash.Server;
+
+  public path_params: URLSearchParams = new URLSearchParams();
+
+  // @ts-ignore
+  public original: Drash.Deps.ServerRequest;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  public create() {
-    return;
+  public create(options: Drash.Interfaces.IRequestOptions): void {
+    this.options = options;
+    this.validateOptions();
+    this.setProperties();
   }
 
-  public addOptions(options: Drash.Interfaces.IRequestOptions) {
-    return;
+  protected setProperties(): void {
+    this.server = this.options.server!;
+    this.original = this.options.original!;
   }
 
-  public async clone(options: Drash.Interfaces.IRequestOptions): Promise<this> {
-    const clone = Object.create(this);
-    clone.options = options;
-
-    if (clone.hasBody()) {
-      await clone.parseBody();
+  public validateOptions(): void {
+    if (!this.options.original) {
+      throw new Drash.Errors.DrashError("D1002");
     }
 
-    return clone;
+    if (!this.options.server) {
+      throw new Drash.Errors.DrashError("D1003");
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - GETTERS AND SETTERS /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  get body(): Deno.Reader {
+    return this.original.body;
+  }
+
+  get has_body(): boolean {
+    let contentLength = this.original.headers.get("content-length");
+
+    if (!contentLength) {
+      contentLength = this.original.headers.get("Content-Length");
+    }
+
+    if (!contentLength) {
+      return false;
+    }
+
+    return +contentLength > 0;
+  }
+
+  get method(): string {
+    return this.original.method;
+  }
+
+  get #original(): Drash.Deps.ServerRequest {
+    return this.options.original!;
+  }
+
+  get url(): Drash.Interfaces.IRequestUrl {
+    const anchorSplit = this.original.url.includes("#")
+      ? this.original.url.split("#")
+      : null;
+    const anchor = anchorSplit
+      ? anchorSplit[anchorSplit.length - 1]
+      : undefined;
+
+    const parametersSplit = this.original.url.includes("?")
+      ? this.original.url.split("?")[1]
+      : null;
+    const parameters = parametersSplit
+      ? parametersSplit.split("#").join("")
+      : undefined;
+
+    const path = this.original.url.split("?")[0];
+
+    const scheme = this.server.options.protocol!;
+
+    let authority = this.original.headers.get("host") ?? "";
+
+    let domain = authority.split(":")[0];
+
+    let port = +authority.split(":")[1];
+    if (!port) {
+      port = scheme == "https" ? 443 : 80;
+    }
+
+    return {
+      anchor,
+      authority,
+      domain,
+      parameters,
+      path,
+      port,
+      scheme,
+    };
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  public get method(): string {
-    return this.options.original_request!.method;
-  }
-
-  public get url_path(): string {
-    let path = this.options.original_request!.url;
-
-    if (path == "/") {
-      return path;
-    }
-
-    if (path.indexOf("?") == -1) {
-      return path;
-    }
-
-    try {
-      path = path.split("?")[0];
-    } catch (error) {
-      // ha.. do nothing
-    }
-
-    return path;
-  }
-
-  public get url_query_params(): Drash.Interfaces.IKeyValuePairs<string> {
-    let queryParams: Drash.Interfaces.IKeyValuePairs<string> = {};
-
-    try {
-      let queryParamsString = this.url_query_string;
-      if (!queryParamsString) {
-        queryParamsString = "";
-      }
-      queryParams = this.parseQueryParamsString(
-        queryParamsString,
-      );
-    } catch (error) {
-      // Do absofruitly nothing
-    }
-
-    return queryParams;
-  }
-
-  public get url_query_string(): null | string {
-    let queryString = null;
-
-    if (this.options.original_request!.url.indexOf("?") == -1) {
-      return queryString;
-    }
-
-    try {
-      queryString = this.options.original_request!.url.split("?")[1];
-    } catch (error) {
-      // ha.. do nothing
-    }
-
-    return queryString;
-  }
 
   /**
    * Used to check which headers are accepted.
@@ -109,100 +123,64 @@ export class Request implements Drash.Interfaces.ICreateable {
    * the Accept Headers.
    * @returns Either true or the string of the correct header.
    */
-  public accepts(type: string | string[]): boolean | string {
-    return this.validateAccepts(this, type);
-  }
-
-  /**
-   * Checks if the incoming request accepts the type(s) in the parameter.  This
-   * method will check if the requests `Accept` header contains the passed in
-   * types
-   *
-   * @param request - The request object containing the `Accept` header.
-   * @param type - The content-type/mime-type(s) to check if the request accepts
-   * it.
-   *
-   * @remarks
-   * Below are examples of how this method is called from the request object
-   * and used in resources:
-   *
-   * ```ts
-   * // File: your_resource.ts // assumes the request accepts "text/html"
-   * const val = this.request.accepts("text/html"); // "text/html"
-   *
-   * // or can also pass in an array and will match on the first one found
-   * const val = this.request.accepts(["text/html", "text/xml"]); // "text/html"
-   *
-   * // and will return false if not found
-   * const val = this.request.accepts("text/xml"); // false
-   * ```
-   * @returns False if the request doesn't accept any of the passed in types, or
-   * the content type that was matches
-   */
-  public validateAccepts(
-    request: Request,
-    type: string | string[],
-  ): boolean | string {
-    let acceptHeader = request.options.original_request!.headers.get("Accept");
+  public accepts(contentTypes: string[]): boolean {
+    let acceptHeader = this.original.headers.get("Accept");
 
     if (!acceptHeader) {
-      acceptHeader = request.options.original_request!.headers.get("accept");
+      acceptHeader = this.original.headers.get("accept");
     }
 
     if (!acceptHeader) {
       return false;
     }
 
-    // for when `type` is a string
-    if (typeof type === "string") {
-      return acceptHeader.indexOf(type) >= 0 ? type : false;
-    }
+    const matches = contentTypes.filter((contentType) => {
+      return acceptHeader!.includes(contentType);
+    });
 
-    // for when `type` is an array
-    const matches = type.filter((t) => acceptHeader!.indexOf(t) >= 0);
-    return matches.length ? matches[0] : false; // return first match
+    return matches.length > 0;
   }
 
   /**
-   * Gets all the body params
+   * Set the `request.path_params` property after finding the given resource so
+   * the user can access them via `this.original.getPathParamValue()`.
    *
-   * @return The parsed body as an object
+   * How it works: If we have the following request URI ...
+   *
+   *     /hello/world/i-love-you
+   *
+   * and it was matched to a resource with the following URI ...
+   *
+   *    /hello/:thing/:greeting
+   *
+   * then we end up with two arrays ...
+   *
+   *     resource's defined path params: [ "thing", "greeting" ]
+   *     request's given path params:    [ "world", "i-love-you" ]
+   *
+   * that get merged merged into key-value pairs ...
+   *
+   *     { thing: "world", greeting: "i-love-you" }
+   *
+   * The first array serves as the keys and the second array serves the value of
+   * the keys.
+   *
+   * @param resource - The resource object.
    */
-  public getAllBodyParams(): Drash.Interfaces.IRequestParsedBody {
-    return this.parsed_body;
-  }
+  public setPathParams(
+    resource: Drash.Interfaces.IResource,
+  ): void {
+    let params = "";
 
-  /**
-   * Gets all header params
-   *
-   * @return Key value pairs for the header name and it's value
-   */
-  public getAllHeaderParams(): { [key: string]: string } {
-    let headers: { [key: string]: string } = {};
-    for (const pair of this.options.original_request!.headers.entries()) {
-      headers[pair[0]] = pair[1];
-    }
-    return headers;
-  }
+    resource.uri_paths_parsed.forEach(
+      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
+        pathObj.params.forEach((paramName: string, index: number) => {
+          params += `${paramName}=${resource.path_params[index]}`;
+        });
+      },
+    );
 
-  /**
-   * Get all the path params.
-   *
-   * @return A key-value pair object where the key is the param name and the
-   * value is the param value.
-   */
-  public getAllPathParams(): { [key: string]: string } {
-    return this.path_params;
-  }
-
-  /**
-   * Gets a record whose keys are the request's url query params specified by inputs
-   * and whose values are the corresponding values of the query params.
-   *
-   * @returns Key value pairs of the query param and its value. Empty object if no query params
-   */
-  public getAllUrlQueryParams(): { [key: string]: string } {
-    return this.url_query_params;
+    this.path_params = new URLSearchParams(params);
   }
 
   /**
@@ -214,33 +192,54 @@ export class Request implements Drash.Interfaces.ICreateable {
    * @return The file requested or `undefined` if not available.
    */
   public async getBodyFile(input: string): Promise<void> {
-    if (!this.hasBody()) {
+    if (!this.has_body) {
       return;
     }
 
     const body = await this.parseBody();
-    // if (typeof this.parsed_body.data!.file === "function") {
-    //   const file = this.parsed_body.data!.file(input);
-    //   // `file` can be of types: FormFile | FormFile[] | undefined.
-    //   // Below, we get pass the TSC error of this not being of
-    //   // type `FormFile | undefined`
-    //   if (Array.isArray(file)) {
-    //     return file[0];
-    //   }
-    //   return file;
-    // }
-    // return undefined;
   }
 
   /**
-   * Get the value of one of this request's body params by its input name.
+   * Get a MIME type for a file based on its extension.
    *
-   * @returns The corresponding parameter or null if not found
+   * @param filePath - The file path in question.
+   * @param fileIsUrl - (optional) Is the file path  a URL to a file? Defaults
+   * to false.  If the file path is a URL, then this method will make sure the
+   * URL query string is not included while doing a lookup of the file's
+   * extension.
+   *
+   * @returns The name of the MIME type based on the extension of the file path
+   * .
    */
-  public async getBodyParam(input: string): Promise<Drash.Interfaces.IRequestParsedBody | void> {
-    // console.log(this.parsed_body);
-    return;
-    // return this.parsed_body[input];
+  public getMimeType(
+    filePath: string | undefined,
+    fileIsUrl: boolean = false,
+  ): null | string {
+    let mimeType = null;
+
+    if (fileIsUrl) {
+      filePath = filePath ? filePath.split("?")[0] : undefined;
+    }
+
+    if (filePath) {
+      let fileParts = filePath.split(".");
+      filePath = fileParts.pop();
+
+      for (let key in Drash.MimeDb) {
+        if (!mimeType) {
+          const extensions = Drash.MimeDb[key].extensions;
+          if (extensions) {
+            extensions.forEach((extension: string) => {
+              if (filePath == extension) {
+                mimeType = key;
+              }
+            });
+          }
+        }
+      }
+    }
+
+    return mimeType;
   }
 
   /**
@@ -253,135 +252,9 @@ export class Request implements Drash.Interfaces.ICreateable {
    */
   public getCookie(name: string): string {
     const cookies: { [key: string]: string } = Drash.Deps.getCookies(
-      this.options.original_request!,
+      this.original,
     );
     return cookies[name];
-  }
-
-  /**
-   * Get the value of one of this request's headers by its input name.
-   *
-   * @returns The corresponding header or null if not found.
-   */
-  public getHeaderParam(input: string): string | null {
-    return this.options.original_request!.headers.get(input);
-  }
-
-  /**
-   * Get the value of one of this request's path params by its input name.
-   *
-   * @returns The corresponding path parameter or null if not found.
-   */
-  public getPathParam(input: string): string | null {
-    // request.path_params is set in Server.getResourceClass()
-    let param = this.path_params[input];
-    if (param) {
-      return param;
-    }
-    return null;
-  }
-
-  /**
-   * Get the value of one of this request's query params by its input name.
-   *
-   * @returns The corresponding query parameter from url or null if not found.
-   */
-  public getUrlQueryParam(input: string): string | null {
-    const param = this.url_query_params[input];
-    if (param) {
-      return param;
-    }
-    return null;
-  }
-
-  /**
-   * Parse a URL query string in it's raw form.
-   *
-   * If the request body's content type is `application/json`, then:
-   * {"username":"root","password":"alpine"} becomes
-   * { username: "root", password: "alpine" }.
-   *
-   * If the request body's content type is `application/x-www-form-urlencoded`,
-   * then:
-   * `username=root&password=alpine` becomes
-   * `{ username: "root", password: "alpine" }`.
-   *
-   * @param queryParamsString - The query params string (e.g.,
-   * hello=world&ok=then&git=hub)
-   * @param keyFormat - (optional) The format the keys should be mutated to. For
-   * example, if "underscore" is specified, then the keys will be converted from
-   * key-name to key_name. Defaults to "normal", which does not mutate the keys.
-   * @param keyCase - (optional) The case the keys should be mutated to. For
-   * example, if "lowercase" is specified, then the keys will be converted from
-   * Key-Name to key-name. Defaults to "normal", which does not mutate the keys.
-   *
-   * @returns A key-value pair array.  `{ [key: string]: string }`. Returns an
-   * empty object if the first argument is empty.
-   */
-  protected parseQueryParamsString(
-    queryParamsString: string,
-    keyFormat: string = "normal",
-    keyCase: string = "normal",
-  ): { [key: string]: string } {
-    let queryParams: { [key: string]: string } = {};
-
-    if (!queryParamsString) {
-      return queryParams;
-    }
-
-    if (queryParamsString.indexOf("#") != -1) {
-      queryParamsString = queryParamsString.split("#")[0];
-    }
-
-    let queryParamsExploded = queryParamsString.split("&");
-
-    queryParamsExploded.forEach((kvpString) => {
-      let kvpStringSplit = kvpString.split("=");
-      let key: string;
-      if (keyFormat == "normal") {
-        key = kvpStringSplit[0];
-        if (keyCase == "normal") {
-          queryParams[key] = kvpStringSplit[1];
-        }
-        if (keyCase == "lowercase") {
-          queryParams[key.toLowerCase()] = kvpStringSplit[1];
-        }
-      }
-      if (keyFormat == "underscore") {
-        key = kvpStringSplit[0].replace(/-/g, "_");
-        if (keyCase == "normal") {
-          queryParams[key] = kvpStringSplit[1];
-        }
-        if (keyCase == "lowercase") {
-          queryParams[key.toLowerCase()] = kvpStringSplit[1];
-        }
-      }
-    });
-
-    return queryParams;
-  }
-
-  /**
-   * Does this request have a body?
-   *
-   * @returns True if this request has a body; false if not.
-   */
-  public hasBody(): boolean {
-    let contentLength = this.options.original_request!.headers.get(
-      "content-length",
-    );
-
-    if (!contentLength) {
-      contentLength = this.options.original_request!.headers.get(
-        "Content-Length",
-      );
-    }
-
-    if (!contentLength) {
-      return false;
-    }
-
-    return parseInt(contentLength) > 0;
   }
 
   /**
@@ -393,7 +266,7 @@ export class Request implements Drash.Interfaces.ICreateable {
    * that format. If there is no body, it returns an empty properties
    */
   public async parseBody(): Promise<Drash.Interfaces.IRequestParsedBody> {
-    const contentType = this.options.original_request!.headers.get(
+    const contentType = this.original.headers.get(
       "Content-Type",
     );
 
@@ -441,7 +314,7 @@ export class Request implements Drash.Interfaces.ICreateable {
       try {
         const ret = {
           data: await this.parseBodyAsMultipartFormData(
-            this.options.original_request!.body,
+            this.original.body,
             boundary,
             this.options!.memory!.multipart_form_data!,
           ),
@@ -496,7 +369,7 @@ export class Request implements Drash.Interfaces.ICreateable {
   }
 
   /**
-   * Parse this request's body as application/x-www-form-url-encoded.
+   * Parse this.original's body as application/x-www-form-url-encoded.
    *
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
@@ -505,23 +378,23 @@ export class Request implements Drash.Interfaces.ICreateable {
     { [key: string]: unknown }
   > {
     let body = Drash.Deps.decoder.decode(
-      await Deno.readAll(this.options.original_request!.body),
+      await Deno.readAll(this.original.body),
     );
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
     }
     body = body.replace(/\"/g, "");
-    return this.parseQueryParamsString(body);
+    return {};
   }
 
   /**
-   * Parse this request's body as application/json.
+   * Parse this.original's body as application/json.
    *
    * @returns A `Promise` of a JSON object decoded from request body.
    */
   public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
     let data = Drash.Deps.decoder.decode(
-      await Deno.readAll(this.options.original_request!.body),
+      await Deno.readAll(this.original.body),
     );
 
     // Check if the JSON string contains ' instead of ". We need to convert
@@ -534,7 +407,7 @@ export class Request implements Drash.Interfaces.ICreateable {
   }
 
   /**
-   * Parse this request's body as multipart/form-data.
+   * Parse this.original's body as multipart/form-data.
    *
    * @param body - The request's body.
    * @param boundary - The boundary of the part (e.g., `----------437192313`)
@@ -559,111 +432,5 @@ export class Request implements Drash.Interfaces.ICreateable {
     const ret = await mr.readForm(maxMemory);
     // console.log(ret);
     return ret;
-  }
-
-  /**
-   * Respond the the client's request by using the original request's
-   * `respond()` method.
-   *
-   * @param output - The data to respond with.
-   */
-  public async respond(
-    output: any,
-  ): Promise<void> {
-    this.options.original_request!.respond(output);
-  }
-
-  /**
-   * Set headers on the request.
-   *
-   * @param headers - Headers in the form of `{[key: string]: string}`.
-   */
-  public setHeaders(headers: { [key: string]: string }): void {
-    if (headers) {
-      for (let key in headers) {
-        this.options.original_request!.headers.set(key, headers[key]);
-      }
-    }
-  }
-
-  /**
-   * Get a MIME type for a file based on its extension.
-   *
-   * @param filePath - The file path in question.
-   * @param fileIsUrl - (optional) Is the file path  a URL to a file? Defaults
-   * to false.  If the file path is a URL, then this method will make sure the
-   * URL query string is not included while doing a lookup of the file's
-   * extension.
-   *
-   * @returns The name of the MIME type based on the extension of the file path
-   * .
-   */
-  public getMimeType(
-    filePath: string | undefined,
-    fileIsUrl: boolean = false,
-  ): null | string {
-    let mimeType = null;
-
-    if (fileIsUrl) {
-      filePath = filePath ? filePath.split("?")[0] : undefined;
-    }
-
-    if (filePath) {
-      let fileParts = filePath.split(".");
-      filePath = fileParts.pop();
-
-      for (let key in mimeDb) {
-        if (!mimeType) {
-          const extensions = mimeDb[key].extensions;
-          if (extensions) {
-            extensions.forEach((extension: string) => {
-              if (filePath == extension) {
-                mimeType = key;
-              }
-            });
-          }
-        }
-      }
-    }
-
-    return mimeType;
-  }
-
-  /**
-   * Set the `request.path_params` property after finding the given resource so
-   * the user can access them via `this.request.getPathParamValue()`.
-   *
-   * How it works: If we have the following request URI ...
-   *
-   *     /hello/world/i-love-you
-   *
-   * and it was matched to a resource with the following URI ...
-   *
-   *    /hello/:thing/:greeting
-   *
-   * then we end up with two arrays ...
-   *
-   *     resource's defined path params: [ "thing", "greeting" ]
-   *     request's given path params:    [ "world", "i-love-you" ]
-   *
-   * that get merged merged into key-value pairs ...
-   *
-   *     { thing: "world", greeting: "i-love-you" }
-   *
-   * The first array serves as the keys and the second array serves the value of
-   * the keys.
-   *
-   * @param resource - The resource object.
-   */
-  public setPathParams(
-    resource: Drash.Interfaces.IResource,
-  ): void {
-    resource.uri_paths_parsed.forEach(
-      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
-        pathObj.params.forEach((paramName: string, index: number) => {
-          this.path_params[paramName] = resource.path_params[index];
-        });
-      },
-    );
   }
 }
