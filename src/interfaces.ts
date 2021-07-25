@@ -36,6 +36,16 @@ export interface ICreateable {
 export interface ICreateableOptions {}
 
 // FILE MARKER /////////////////////////////////////////////////////////////////
+export interface IHandler {
+}
+
+export interface IProxy<T> {
+  original: T;
+}
+
+export interface IHandlers {
+  resource_handler: Drash.ResourceHandler;
+}
 
 export interface IRequestOptions extends ICreateableOptions {
   memory?: {
