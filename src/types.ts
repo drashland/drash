@@ -16,6 +16,9 @@ export type Middleware = {
   after_request?: typeof Drash.Service[];
 };
 
+/**
+ * The allowed types for an HTTP method on a resource.
+ */
 export type THttpMethod =
   | "CONNECT"
   | "DELETE"
@@ -27,8 +30,14 @@ export type THttpMethod =
   | "PUT"
   | "TRACE";
 
+/**
+ * A type to help the Factory class construct objects.
+ */
 export type TConstructor<T extends unknown> = new (...args: unknown[]) => T;
 
+/**
+ * The types that the response body can be.
+ */
 export type TResponseBody =
   | Deno.Reader
   | Uint8Array
@@ -37,17 +46,7 @@ export type TResponseBody =
   | unknown;
 
 /**
- * This is used to type a Request object's parsed body. Below are more details
- * on the members in this interface.
- *
- * content_type: string
- *
- *     The Content-Type of the request body. For example, if the body is
- *     JSON, then the Content-Type should be application/json.
- *
- * data: undefined|MultipartFormData|IKeyValuePairs
- *
- *     The data passed in the body of the request.
+ * The types that the request body can be.
  */
 export type TRequestBody =
   | Drash.Deps.MultipartFormData
