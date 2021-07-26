@@ -59,47 +59,50 @@ export class Server implements Drash.Interfaces.IServer {
   /**
    * See Drash.Interfaces.ICreateable.addOptions().
    */
-  public addOptions(options: Drash.Interfaces.IServerOptions): void {
-    if (!options.default_response_content_type) {
-      options.default_response_content_type = "application/json";
+  public validateOptions(): void {
+    if (!this.options.default_response_content_type) {
+      this.options.default_response_content_type = "application/json";
     }
 
-    if (!options.hostname) {
-      options.hostname = "0.0.0.0";
+    if (!this.options.hostname) {
+      this.options.hostname = "0.0.0.0";
     }
 
-    if (!options.memory) {
-      options.memory = {};
+    if (!this.options.memory) {
+      this.options.memory = {};
     }
 
-    if (!options.memory.multipart_form_data) {
-      options.memory.multipart_form_data = 10;
+    if (!this.options.memory.multipart_form_data) {
+      this.options.memory.multipart_form_data = 10;
     }
 
-    if (!options.port) {
-      options.port = 1337;
+    if (!this.options.port) {
+      this.options.port = 1337;
     }
 
-    if (!options.resources) {
-      options.resources = [];
+    if (!this.options.resources) {
+      this.options.resources = [];
     }
 
-    if (!options.services) {
-      options.services = {
+    if (!this.options.services) {
+      this.options.services = {
         after_request: [],
         before_request: [],
       };
     }
-
-    this.options = options;
   }
 
   /**
    * See Drash.Interfaces.ICreateable.create().
    */
-  public create(): void {
+  public create(options: Drash.Interfaces.IServerOptions): void {
+    this.options = options;
+    this.validateOptions();
     this.addExternalServices();
-    this.addResources();
+    this.handlers.resource_handler.addResources(
+      this.options.resources ?? [],
+      this,
+    );
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -170,28 +173,35 @@ export class Server implements Drash.Interfaces.IServer {
       request,
     );
 
-    // if (!resource) {
-    //   throw new Drash.Errors.HttpError(404);
-    // }
-
-    request.setPathParams(resource);
-
     const method = request.method.toUpperCase();
 
     // If the method does not exist on the resource, then the method is not
     // allowed. So, throw that 405 and GTFO.
-    if (!(method in resource)) {
+    if (!(method in resource!)) {
       throw new Drash.Errors.HttpError(405);
     }
 
+    await request.parseBody();
+
+    // We set the resource on the request as late as possible to keep the
+    // process of this method lean
+    request.setResource(resource as Drash.Resource);
+
+    // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
-    const body = await response.parseBody();
+    // const body = await response.parseBody();
 
     originalRequest.respond({
-      status: response.status,
-      headers: response.headers,
-      body: body,
+      status: 200,
+      headers: new Headers(),
+      body: "",
     });
+
+    // originalRequest.respond({
+    //   status: response.status,
+    //   headers: response.headers,
+    //   body: body,
+    // });
   }
 
   /**

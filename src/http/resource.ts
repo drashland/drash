@@ -17,8 +17,7 @@ export class Resource implements Drash.Interfaces.IResource {
   /**
    * The path params (if any), which are taken from this resource's URIs.
    */
-  // TODO (crookse) I think this needs to be current path params.
-  public path_params: string[] = [];
+  public path_params!: string;
 
   /**
    * The URI paths that this resource is located at.
@@ -66,16 +65,11 @@ export class Resource implements Drash.Interfaces.IResource {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * See ICreateable#addOptions.
-   */
-  public addOptions(options: Drash.Interfaces.IResourceOptions): void {
-    this.options = options;
-  }
-
-  /**
    * See ICreateable#create.
    */
-  public create(): void {
+  public create(options: Drash.Interfaces.IResourceOptions): void {
+    this.options = options;
+
     this.server = this.options.server!;
 
     const contentType = this.server.options.default_response_content_type!;
@@ -83,12 +77,5 @@ export class Resource implements Drash.Interfaces.IResource {
     this.response = Drash.Factory.create(Drash.Response, {
       default_response_content_type: contentType,
     });
-  }
-
-  /**
-   * See Drash.Prototype.clone().
-   */
-  public clone(options: Drash.Interfaces.IResourceOptions): this {
-    return Drash.Prototype.clone(this, options);
   }
 }

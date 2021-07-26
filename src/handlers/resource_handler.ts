@@ -103,7 +103,7 @@ export class ResourceHandler
    */
   public createResource(
     request: Drash.Request,
-  ): Drash.Interfaces.IResource | null {
+  ): Drash.Interfaces.IResource {
     const uri = request.url.path.split("/");
     // Remove the first element because it is an empty string. For example:
     //
@@ -128,7 +128,7 @@ export class ResourceHandler
       results = this.#resource_index.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
-        return null;
+        throw new Drash.Errors.HttpError(404);
       }
     }
 
@@ -141,6 +141,7 @@ export class ResourceHandler
 
     let resourceCanHandleUri = false;
     let matched: string[] = [];
+    let paramNames: string[] = [];
 
     // If we matched a resource, then we need to make sure the request's URI
     // matches one of the URI paths defined on the resource. If the request's
@@ -154,6 +155,7 @@ export class ResourceHandler
 
         matched = request.url.path.match(pathObj.regex_path) as string[];
         if (matched && matched.length > 0) {
+          paramNames = pathObj.params ?? [];
           resourceCanHandleUri = true;
         }
       },
@@ -163,7 +165,7 @@ export class ResourceHandler
     // URI, then the resource cannot handle the request. Ultimately, this is a
     // 404 because there is no resource with the defined URI.
     if (!resourceCanHandleUri) {
-      return null;
+      throw new Drash.Errors.HttpError(404);
     }
 
     // If the matched array contains more than 1 item, then we know the request
@@ -175,9 +177,15 @@ export class ResourceHandler
       pathParams = matched;
     }
 
+    let pathParamsKvpString = "";
+    if (paramNames.length > 0 && pathParams.length > 0) {
+      paramNames.forEach((paramName: string, index: number) => {
+          pathParamsKvpString += `${paramName}=${pathParams[index]}`;
+      });
+    }
 
     return Drash.Prototype.clone(resource, {
-      path_params: pathParams,
+      path_params: pathParamsKvpString,
       request: request,
       server: this,
     });

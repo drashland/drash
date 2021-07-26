@@ -1,15 +1,4 @@
 import * as Drash from "../mod.ts";
-/**
- * @param request - Contains the instance of the request.
- * @param server - Contains the instance of the server.
- * @param response - Contains the instance of the response.
- */
-export type MiddlewareFunction =
-  | ((
-    request: Drash.Request,
-    response: Drash.Response,
-  ) => Promise<void>)
-  | ((request: Drash.Request, response: Drash.Response) => void);
 
 /**
  * @description
@@ -45,4 +34,22 @@ export type TResponseBody =
   | string
   | Uint8Array
   | Deno.Reader
+  | undefined;
+
+/**
+ * This is used to type a Request object's parsed body. Below are more details
+ * on the members in this interface.
+ *
+ * content_type: string
+ *
+ *     The Content-Type of the request body. For example, if the body is
+ *     JSON, then the Content-Type should be application/json.
+ *
+ * data: undefined|MultipartFormData|IKeyValuePairs
+ *
+ *     The data passed in the body of the request.
+ */
+export type TRequestBody =
+  | Drash.Deps.MultipartFormData
+  | Drash.Interfaces.IKeyValuePairs<unknown>
   | undefined;

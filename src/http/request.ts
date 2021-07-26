@@ -1,46 +1,22 @@
 import * as Drash from "../../mod.ts";
 
-export class Request
-implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
-  public parsed_body: Drash.Interfaces.IRequestParsedBody = {};
-
-  // @ts-ignore
-  public options: Drash.Interfaces.IRequestOptions;
-
-  // @ts-ignore
-  public request: ServerRequest;
-
-  // @ts-ignore
-  public server: Drash.Server;
-
-  public path_params: URLSearchParams = new URLSearchParams();
-
-  // @ts-ignore
-  public original: Drash.Deps.ServerRequest;
+export class Request {
+  #parsed_body?: Drash.Types.TRequestBody;
+  #options!: Drash.Interfaces.IRequestOptions;
+  #server!: Drash.Server;
+  #original!: Drash.Deps.ServerRequest;
+  #path_params!: string;
+  #resource!: Drash.Resource;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  public create(options: Drash.Interfaces.IRequestOptions): void {
-    this.options = options;
-    this.validateOptions();
-    this.setProperties();
-  }
-
-  protected setProperties(): void {
-    this.server = this.options.server!;
-    this.original = this.options.original!;
-  }
-
-  public validateOptions(): void {
-    if (!this.options.original) {
-      throw new Drash.Errors.DrashError("D1002");
-    }
-
-    if (!this.options.server) {
-      throw new Drash.Errors.DrashError("D1003");
-    }
+  public async create(
+    options: Drash.Interfaces.IRequestOptions
+  ): Promise<void> {
+    this.#setOptions(options);
+    this.#setProperties();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -48,14 +24,14 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
   //////////////////////////////////////////////////////////////////////////////
 
   get body(): Deno.Reader {
-    return this.original.body;
+    return this.#original.body;
   }
 
   get has_body(): boolean {
-    let contentLength = this.original.headers.get("content-length");
+    let contentLength = this.#original.headers.get("content-length");
 
     if (!contentLength) {
-      contentLength = this.original.headers.get("Content-Length");
+      contentLength = this.#original.headers.get("Content-Length");
     }
 
     if (!contentLength) {
@@ -66,33 +42,39 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
   }
 
   get method(): string {
-    return this.original.method;
+    return this.#original.method;
   }
 
-  get #original(): Drash.Deps.ServerRequest {
-    return this.options.original!;
+  get params(): any {
+    console.log("get params");
+
+    return {
+      query: new URLSearchParams(this.url.parameters),
+      path: new URLSearchParams(this.#resource.path_params),
+      body: this.#parsed_body,
+    };
   }
 
   get url(): Drash.Interfaces.IRequestUrl {
-    const anchorSplit = this.original.url.includes("#")
-      ? this.original.url.split("#")
+    const anchorSplit = this.#original.url.includes("#")
+      ? this.#original.url.split("#")
       : null;
     const anchor = anchorSplit
       ? anchorSplit[anchorSplit.length - 1]
       : undefined;
 
-    const parametersSplit = this.original.url.includes("?")
-      ? this.original.url.split("?")[1]
+    const parametersSplit = this.#original.url.includes("?")
+      ? this.#original.url.split("?")[1]
       : null;
     const parameters = parametersSplit
       ? parametersSplit.split("#").join("")
       : undefined;
 
-    const path = this.original.url.split("?")[0];
+    const path = this.#original.url.split("?")[0];
 
-    const scheme = this.server.options.protocol!;
+    const scheme = this.#server.options.protocol!;
 
-    let authority = this.original.headers.get("host") ?? "";
+    let authority = this.#original.headers.get("host") ?? "";
 
     let domain = authority.split(":")[0];
 
@@ -124,10 +106,10 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
    * @returns Either true or the string of the correct header.
    */
   public accepts(contentTypes: string[]): boolean {
-    let acceptHeader = this.original.headers.get("Accept");
+    let acceptHeader = this.#original.headers.get("Accept");
 
     if (!acceptHeader) {
-      acceptHeader = this.original.headers.get("accept");
+      acceptHeader = this.#original.headers.get("accept");
     }
 
     if (!acceptHeader) {
@@ -143,7 +125,7 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
 
   /**
    * Set the `request.path_params` property after finding the given resource so
-   * the user can access them via `this.original.getPathParamValue()`.
+   * the user can access them via `this.#original.getPathParamValue()`.
    *
    * How it works: If we have the following request URI ...
    *
@@ -167,79 +149,8 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
    *
    * @param resource - The resource object.
    */
-  public setPathParams(
-    resource: Drash.Interfaces.IResource,
-  ): void {
-    let params = "";
-
-    resource.uri_paths_parsed.forEach(
-      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
-        pathObj.params.forEach((paramName: string, index: number) => {
-          params += `${paramName}=${resource.path_params[index]}`;
-        });
-      },
-    );
-
-    this.path_params = new URLSearchParams(params);
-  }
-
-  /**
-   * Get the requested file from the body of a multipart/form-data request, by
-   * it's name.
-   *
-   * @param input - The name of the file to get.
-   *
-   * @return The file requested or `undefined` if not available.
-   */
-  public async getBodyFile(input: string): Promise<void> {
-    if (!this.has_body) {
-      return;
-    }
-
-    const body = await this.parseBody();
-  }
-
-  /**
-   * Get a MIME type for a file based on its extension.
-   *
-   * @param filePath - The file path in question.
-   * @param fileIsUrl - (optional) Is the file path  a URL to a file? Defaults
-   * to false.  If the file path is a URL, then this method will make sure the
-   * URL query string is not included while doing a lookup of the file's
-   * extension.
-   *
-   * @returns The name of the MIME type based on the extension of the file path
-   * .
-   */
-  public getMimeType(
-    filePath: string | undefined,
-    fileIsUrl: boolean = false,
-  ): null | string {
-    let mimeType = null;
-
-    if (fileIsUrl) {
-      filePath = filePath ? filePath.split("?")[0] : undefined;
-    }
-
-    if (filePath) {
-      let fileParts = filePath.split(".");
-      filePath = fileParts.pop();
-
-      for (let key in Drash.MimeDb) {
-        if (!mimeType) {
-          const extensions = Drash.MimeDb[key].extensions;
-          if (extensions) {
-            extensions.forEach((extension: string) => {
-              if (filePath == extension) {
-                mimeType = key;
-              }
-            });
-          }
-        }
-      }
-    }
-
-    return mimeType;
+  public setPathParams(params: string): void {
+    this.#path_params = params;
   }
 
   /**
@@ -252,7 +163,7 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
    */
   public getCookie(name: string): string {
     const cookies: { [key: string]: string } = Drash.Deps.getCookies(
-      this.original,
+      this.#original,
     );
     return cookies[name];
   }
@@ -265,20 +176,25 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
    * @returns The content type of the body, and based on this the body itself in
    * that format. If there is no body, it returns an empty properties
    */
-  public async parseBody(): Promise<Drash.Interfaces.IRequestParsedBody> {
-    const contentType = this.original.headers.get(
+  public async parseBody(): Promise<void> {
+    if (!this.has_body) {
+        return;
+    }
+
+    let contentType = this.#original.headers.get(
       "Content-Type",
     );
+
+    if (!contentType) {
+      contentType = this.#original.headers.get(
+        "content-type",
+      );
+    }
 
     // No Content-Type header? Default to this.
     if (!contentType) {
       try {
-        const ret = {
-          data: await this.parseBodyAsFormUrlEncoded(),
-          content_type: "application/x-www-form-urlencoded",
-        };
-        this.parsed_body = ret;
-        return this.parsed_body;
+        this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
       } catch (error) {
         throw new Error(
           `Error reading request body. No Content-Type header was specified. ` +
@@ -286,6 +202,7 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
             `by default and failed.`,
         );
       }
+      return;
     }
 
     // I want to thank https://github.com/artisonian for pointing me in the
@@ -301,47 +218,39 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
           boundary = match[1];
         }
         if (!boundary) {
-          return {
-            content_type: "",
-            data: undefined,
-          };
+          return;
         }
       } catch (error) {
         throw new Error(
           `Error trying to find boundary.\n` + error.stack,
         );
       }
+
       try {
-        const ret = {
-          data: await this.parseBodyAsMultipartFormData(
-            this.original.body,
-            boundary,
-            this.options!.memory!.multipart_form_data!,
-          ),
-          content_type: "multipart/form-data",
-        };
-        this.parsed_body = ret;
-        return this.parsed_body;
+        this.#parsed_body = await this.parseBodyAsMultipartFormData(
+          this.#original.body,
+          boundary,
+          10, // TODO(crookse) use this.#options.memory
+        );
       } catch (error) {
         throw new Error(
           `Error reading request body as multipart/form-data.`,
         );
       }
+
+      return;
     }
 
     if (contentType && contentType.includes("application/json")) {
       try {
-        const ret = {
-          data: await this.parseBodyAsJson(),
-          content_type: "application/json",
-        };
-        this.parsed_body = ret;
-        return this.parsed_body;
+        this.#parsed_body = await this.parseBodyAsJson();
       } catch (error) {
         throw new Error(
           `Error reading request body as application/json. ${error.message}`,
         );
       }
+
+      return;
     }
 
     if (
@@ -349,36 +258,26 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
       contentType.includes("application/x-www-form-urlencoded")
     ) {
       try {
-        const ret = {
-          data: await this.parseBodyAsFormUrlEncoded(),
-          content_type: "application/x-www-form-urlencoded",
-        };
-        this.parsed_body = ret;
-        return this.parsed_body;
+        this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
       } catch (error) {
         throw new Error(
           `Error reading request body as application/x-www-form-urlencoded.`,
         );
       }
-    }
 
-    return {
-      content_type: "",
-      data: undefined,
-    };
+      return;
+    }
   }
 
   /**
-   * Parse this.original's body as application/x-www-form-url-encoded.
+   * Parse this.#original's body as application/x-www-form-url-encoded.
    *
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
    */
-  public async parseBodyAsFormUrlEncoded(): Promise<
-    { [key: string]: unknown }
-  > {
+  public async parseBodyAsFormUrlEncoded(): Promise<Drash.Interfaces.IKeyValuePairs<unknown>> {
     let body = Drash.Deps.decoder.decode(
-      await Deno.readAll(this.original.body),
+      await Deno.readAll(this.#original.body),
     );
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
@@ -388,13 +287,13 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
   }
 
   /**
-   * Parse this.original's body as application/json.
+   * Parse this.#original's body as application/json.
    *
    * @returns A `Promise` of a JSON object decoded from request body.
    */
   public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
     let data = Drash.Deps.decoder.decode(
-      await Deno.readAll(this.original.body),
+      await Deno.readAll(this.#original.body),
     );
 
     // Check if the JSON string contains ' instead of ". We need to convert
@@ -407,7 +306,7 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
   }
 
   /**
-   * Parse this.original's body as multipart/form-data.
+   * Parse this.#original's body as multipart/form-data.
    *
    * @param body - The request's body.
    * @param boundary - The boundary of the part (e.g., `----------437192313`)
@@ -432,5 +331,30 @@ implements Drash.Interfaces.IProxy<Drash.Deps.ServerRequest> {
     const ret = await mr.readForm(maxMemory);
     // console.log(ret);
     return ret;
+  }
+
+  public setResource(resource: Drash.Resource): void {
+    this.#resource = resource;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  #setOptions(options: Drash.Interfaces.IRequestOptions): void {
+    if (!options.original) {
+      throw new Drash.Errors.DrashError("D1002");
+    }
+
+    if (!options.server) {
+      throw new Drash.Errors.DrashError("D1003");
+    }
+
+    this.#options = options;
+  }
+
+  #setProperties(): void {
+    this.#server = this.#options.server!;
+    this.#original = this.#options.original!;
   }
 }
