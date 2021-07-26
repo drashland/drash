@@ -230,7 +230,7 @@ export class Request {
         this.#parsed_body = await this.parseBodyAsMultipartFormData(
           this.#original.body,
           boundary,
-          10, // TODO(crookse) use this.#options.memory
+          this.#options.memory!.multipart_form_data!,
         );
       } catch (error) {
         throw new Error(
@@ -279,10 +279,13 @@ export class Request {
     let body = Drash.Deps.decoder.decode(
       await Deno.readAll(this.#original.body),
     );
+
     if (body.indexOf("?") !== -1) {
       body = body.split("?")[1];
     }
+
     body = body.replace(/\"/g, "");
+
     return {};
   }
 
@@ -320,16 +323,12 @@ export class Request {
     boundary: string,
     maxMemory: number,
   ): Promise<Drash.Deps.MultipartFormData> {
-    // Convert memory to megabytes for parsing multipart/form-data. Also,
-    // default to 128 megabytes if memory allocation wasn't specified.
-    if (!maxMemory) {
-      maxMemory = 1024 * 1024 * 128;
-    } else {
-      maxMemory *= 1024 * 1024;
-    }
+    // Convert memory to megabytes for parsing multipart/form-data
+    maxMemory *= (1024 * 1024);
+
     const mr = new Drash.Deps.MultipartReader(body, boundary);
     const ret = await mr.readForm(maxMemory);
-    // console.log(ret);
+
     return ret;
   }
 
@@ -348,6 +347,12 @@ export class Request {
 
     if (!options.server) {
       throw new Drash.Errors.DrashError("D1003");
+    }
+
+    if (!options.memory) {
+      options.memory = {
+        multipart_form_data: 128,
+      };
     }
 
     this.#options = options;
