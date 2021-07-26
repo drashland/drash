@@ -196,7 +196,8 @@ export class Request {
       try {
         this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
       } catch (error) {
-        throw new Error(
+        throw new Drash.Errors.HttpError(
+          400,
           `Error reading request body. No Content-Type header was specified. ` +
             `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
             `by default and failed.`,
@@ -210,61 +211,20 @@ export class Request {
     // it incorrectly and couldn't parse a multipart/form-data body. Out of
     // frustration, I filed an issue on deno about my findings; and artisonian
     // gave an example of a working copy. Great work. Thank you!
-    if (contentType && contentType.includes("multipart/form-data")) {
-      let boundary: null | string = null;
-      try {
-        const match = contentType.match(/boundary=([^\s]+)/);
-        if (match) {
-          boundary = match[1];
-        }
-        if (!boundary) {
-          return;
-        }
-      } catch (error) {
-        throw new Error(
-          `Error trying to find boundary.\n` + error.stack,
-        );
-      }
-
-      try {
-        this.#parsed_body = await this.parseBodyAsMultipartFormData(
-          this.#original.body,
-          boundary,
-          this.#options.memory!.multipart_form_data!,
-        );
-      } catch (error) {
-        throw new Error(
-          `Error reading request body as multipart/form-data.`,
-        );
-      }
-
+    if (contentType.includes("multipart/form-data")) {
+      this.#parsed_body = await this.parseBodyAsMultipartFormData(
+        contentType,
+      );
       return;
     }
 
-    if (contentType && contentType.includes("application/json")) {
-      try {
-        this.#parsed_body = await this.parseBodyAsJson();
-      } catch (error) {
-        throw new Error(
-          `Error reading request body as application/json. ${error.message}`,
-        );
-      }
-
+    if (contentType.includes("application/json")) {
+      this.#parsed_body = await this.parseBodyAsJson();
       return;
     }
 
-    if (
-      contentType &&
-      contentType.includes("application/x-www-form-urlencoded")
-    ) {
-      try {
-        this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
-      } catch (error) {
-        throw new Error(
-          `Error reading request body as application/x-www-form-urlencoded.`,
-        );
-      }
-
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
       return;
     }
   }
@@ -276,17 +236,24 @@ export class Request {
    * pair array (e.g., `returnValue['someKey']`).
    */
   public async parseBodyAsFormUrlEncoded(): Promise<Drash.Interfaces.IKeyValuePairs<unknown>> {
-    let body = Drash.Deps.decoder.decode(
-      await Deno.readAll(this.#original.body),
-    );
+    try {
+      let body = Drash.Deps.decoder.decode(
+        await Deno.readAll(this.#original.body),
+      );
 
-    if (body.indexOf("?") !== -1) {
-      body = body.split("?")[1];
+      if (body.indexOf("?") !== -1) {
+        body = body.split("?")[1];
+      }
+
+      body = body.replace(/\"/g, "");
+
+      return {};
+    } catch (error) {
+      throw new Drash.Errors.HttpError(
+        400,
+        `Error reading request body as application/x-www-form-urlencoded. ${error.message}`,
+      );
     }
-
-    body = body.replace(/\"/g, "");
-
-    return {};
   }
 
   /**
@@ -295,17 +262,24 @@ export class Request {
    * @returns A `Promise` of a JSON object decoded from request body.
    */
   public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
-    let data = Drash.Deps.decoder.decode(
-      await Deno.readAll(this.#original.body),
-    );
+    try {
+      let data = Drash.Deps.decoder.decode(
+        await Deno.readAll(this.#original.body),
+      );
 
-    // Check if the JSON string contains ' instead of ". We need to convert
-    // those so we can call JSON.parse().
-    if (data.match(/'/g)) {
-      data = data.replace(/'/g, `"`);
+      // Check if the JSON string contains ' instead of ". We need to convert
+      // those so we can call JSON.parse().
+      if (data.match(/'/g)) {
+        data = data.replace(/'/g, `"`);
+      }
+
+      return JSON.parse(data);
+    } catch (error) {
+      throw new Drash.Errors.HttpError(
+        400,
+        `Error reading request body as application/json. ${error.message}`,
+      );
     }
-
-    return JSON.parse(data);
   }
 
   /**
@@ -319,17 +293,31 @@ export class Request {
    * @return A Promise<MultipartFormData>.
    */
   public async parseBodyAsMultipartFormData(
-    body: Deno.Reader,
-    boundary: string,
-    maxMemory: number,
+    contentType: string,
   ): Promise<Drash.Deps.MultipartFormData> {
+    let boundary: null | string = null;
+
+    try {
+      const match = contentType.match(/boundary=([^\s]+)/);
+      if (match) {
+        boundary = match[1];
+      }
+      if (!boundary) {
+        throw new Drash.Errors.DrashError("D1004");
+      }
+    } catch (error) {
+      throw new Drash.Errors.DrashError("D1004");
+    }
+
     // Convert memory to megabytes for parsing multipart/form-data
-    maxMemory *= (1024 * 1024);
+    const maxMemory = 1024 * 1024 * this.#options.memory!.multipart_form_data!;
 
-    const mr = new Drash.Deps.MultipartReader(body, boundary);
-    const ret = await mr.readForm(maxMemory);
-
-    return ret;
+    try {
+      const mr = new Drash.Deps.MultipartReader(this.#original.body, boundary);
+      return await mr.readForm(maxMemory);
+    } catch (error) {
+      throw new Drash.Errors.DrashError("D1005");
+    }
   }
 
   public setResource(resource: Drash.Resource): void {
