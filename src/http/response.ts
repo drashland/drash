@@ -1,21 +1,5 @@
 import * as Drash from "../../mod.ts";
 
-import {
-  Cookie,
-  deleteCookie,
-  encoder,
-  setCookie,
-  Status,
-  STATUS_TEXT,
-} from "../../deps.ts";
-import {
-  ICreateable,
-  IResponse,
-  IResponseOptions,
-  IResponseOutput,
-} from "../interfaces.ts";
-import { Request } from "./request.ts";
-
 export interface IOptions {
   default_content_type?: string;
 }
@@ -23,14 +7,14 @@ export interface IOptions {
 /**
  * Response handles sending a response to the client making the request.
  */
-export class Response implements IResponse {
+export class Response implements Drash.Interfaces.IResponse {
   public status = 200;
 
   public body: Drash.Types.TResponseBody = undefined;
 
   public headers = new Headers();
 
-  protected options: IResponseOptions = {};
+  protected options: Drash.Interfaces.IResponseOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
@@ -43,11 +27,13 @@ export class Response implements IResponse {
     );
   }
 
-  public addOptions(options: IResponseOptions): void {
+  public addOptions(options: Drash.Interfaces.IResponseOptions): void {
     this.options = options;
   }
 
-  public async parseBody(): Promise<Uint8Array | string | Deno.Reader | undefined> {
+  public async parseBody(): Promise<
+    Uint8Array | string | Deno.Reader | undefined
+  > {
     if (!this.body) {
       return;
     }
@@ -78,7 +64,7 @@ export class Response implements IResponse {
 
     throw new Drash.Errors.HttpError(
       500,
-      "The server could not generate a properly formatted response."
+      "The server could not generate a properly formatted response.",
     );
   }
 }
