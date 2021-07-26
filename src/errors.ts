@@ -49,7 +49,8 @@ export class HttpError extends Error {
 const DRASH_ERROR_CODES: { [k: string]: string } = {
   "D1000": "Resource 'paths' property must be an array of strings.",
   "D1001": "Resource 'paths' property is missing.",
-  "D1002":
-    "Could not create request proxy. Original request was not passed in.",
-  "D1003": "Could not create request proxy. Server was not passed in.",
+  "D1002": "Could not create request. Original request was not specified.",
+  "D1003": "Could not create request. Server was not specified.",
+  "D1004": "Error trying to find boundary in file.",
+  "D1005": "Error reading request body as multipart/form-data.",
 };
