@@ -61,9 +61,9 @@ export interface IRequestUrl {
 
 export interface IResponse extends ICreateable {
   headers: Headers;
-  body: unknown;
+  body: Drash.Types.TResponseBody | unknown;
   status: number;
-  parseBody: () => Promise<Uint8Array | string | Deno.Reader | undefined>;
+  parseBody: () => Drash.Types.TResponseBody;
 }
 
 export interface IKeyValuePairs<T> {
@@ -141,7 +141,7 @@ export interface IResourcePathsParsed {
  * This is used to type a Response object's output.
  */
 export interface IResponseOutput {
-  body: Uint8Array | string | Deno.Reader;
+  body: Drash.Types.TResponseBody;
   headers: Headers;
   status: number;
   status_code?: number;

@@ -59,45 +59,46 @@ export class Server implements Drash.Interfaces.IServer {
   /**
    * See Drash.Interfaces.ICreateable.addOptions().
    */
-  public validateOptions(): void {
-    if (!this.options.default_response_content_type) {
-      this.options.default_response_content_type = "application/json";
+  #setOptions(options: Drash.Interfaces.IServerOptions): void {
+    if (!options.default_response_content_type) {
+      options.default_response_content_type = "application/json";
     }
 
-    if (!this.options.hostname) {
-      this.options.hostname = "0.0.0.0";
+    if (!options.hostname) {
+      options.hostname = "0.0.0.0";
     }
 
-    if (!this.options.memory) {
-      this.options.memory = {};
+    if (!options.memory) {
+      options.memory = {};
     }
 
-    if (!this.options.memory.multipart_form_data) {
-      this.options.memory.multipart_form_data = 10;
+    if (!options.memory.multipart_form_data) {
+      options.memory.multipart_form_data = 10;
     }
 
-    if (!this.options.port) {
-      this.options.port = 1337;
+    if (!options.port) {
+      options.port = 1337;
     }
 
-    if (!this.options.resources) {
-      this.options.resources = [];
+    if (!options.resources) {
+      options.resources = [];
     }
 
-    if (!this.options.services) {
-      this.options.services = {
+    if (!options.services) {
+      options.services = {
         after_request: [],
         before_request: [],
       };
     }
+
+    this.options = options;
   }
 
   /**
    * See Drash.Interfaces.ICreateable.create().
    */
   public create(options: Drash.Interfaces.IServerOptions): void {
-    this.options = options;
-    this.validateOptions();
+    this.#setOptions(options);
     this.addExternalServices();
     this.handlers.resource_handler.addResources(
       this.options.resources ?? [],
@@ -189,19 +190,12 @@ export class Server implements Drash.Interfaces.IServer {
 
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
-    // const body = await response.parseBody();
 
     originalRequest.respond({
       status: 200,
-      headers: new Headers(),
-      body: "",
+      headers: response.headers,
+      body: response.parseBody(),
     });
-
-    // originalRequest.respond({
-    //   status: response.status,
-    //   headers: response.headers,
-    //   body: body,
-    // });
   }
 
   /**

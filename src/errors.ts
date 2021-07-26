@@ -47,10 +47,27 @@ export class HttpError extends Error {
 ////////////////////////////////////////////////////////////////////////////////
 
 const DRASH_ERROR_CODES: { [k: string]: string } = {
+  // This means the user's `paths` property contains something other than an
+  // array of strings.
   "D1000": "Resource 'paths' property must be an array of strings.",
+  // This means the user did not specify the `paths` property in a resource.
   "D1001": "Resource 'paths' property is missing.",
-  "D1002": "Could not create request. Original request was not specified.",
-  "D1003": "Could not create request. Server was not specified.",
-  "D1004": "Error trying to find boundary in file.",
+  // This means we forgot to pass in Deno's ServerRequest object when building
+  // the request in `server.handleRequest()`.
+  "D1002": "Request options require 'original' property.",
+  // This means we forgot to pass in the `server` property when building the
+  // request in `server.handleRequest()`.
+  "D1003": "Request options require 'server' proeprty.",
+  // This means there is an issue with the way we are parsing the Content-Type
+  // header when trying to read request bodies as multipart/form-data. The issue
+  // could be that the request object isn't properly handled or it was changed
+  // on Deno's side.
+  "D1004": "Error trying to find boundary in Content-Type header.",
+  // This means we tried to read the multipart/form-data body using the
+  // MultipartReader from Deno Std, but we were unable to. This is probably an
+  // issue with the MultipartReader.
   "D1005": "Error reading request body as multipart/form-data.",
+  // This means we forgot to pass in the `default_response_content_type`
+  // property when creating the resource.
+  "D1006": "Response options require `default_response_content_type` property.",
 };

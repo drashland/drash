@@ -10,7 +10,7 @@ export interface IOptions {
 export class Response implements Drash.Interfaces.IResponse {
   public status = 200;
 
-  public body: Drash.Types.TResponseBody = undefined;
+  public body: Drash.Types.TResponseBody | unknown = undefined;
 
   public headers = new Headers();
 
@@ -20,20 +20,16 @@ export class Response implements Drash.Interfaces.IResponse {
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  public create(): void {
+  public create(options: Drash.Interfaces.IResponseOptions): void {
     this.headers.set(
       "Content-Type",
-      this.options.default_response_content_type!,
+      options.default_response_content_type!,
     );
-  }
 
-  public addOptions(options: Drash.Interfaces.IResponseOptions): void {
     this.options = options;
   }
 
-  public async parseBody(): Promise<
-    Uint8Array | string | Deno.Reader | undefined
-  > {
+  public parseBody(): Drash.Types.TResponseBody {
     if (!this.body) {
       return;
     }
@@ -54,12 +50,11 @@ export class Response implements Drash.Interfaces.IResponse {
       return this.body as Deno.Reader;
     }
 
-    // Body is JSON? Return it as a JSON string.
-    try {
-      JSON.parse(JSON.stringify(this.body));
+    if (
+      this.headers.get("Content-Type") == "application/json"
+    && typeof this.body == "object"
+    ) {
       return JSON.stringify(this.body);
-    } catch (_error) {
-      // Do nothing... We have no idea what the response format is.
     }
 
     throw new Drash.Errors.HttpError(

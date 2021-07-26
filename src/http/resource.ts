@@ -52,7 +52,7 @@ export class Resource implements Drash.Interfaces.IResource {
    * The response object.
    */
   // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected response: Drash.Response;
+  public response: Drash.Response;
 
   /**
    * This object's options.

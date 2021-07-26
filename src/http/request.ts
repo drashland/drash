@@ -191,17 +191,13 @@ export class Request {
       );
     }
 
-    // No Content-Type header? Default to this.
+    // No Content-Type header? Default to parsing the request body as
+    // aplication/x-www-form-urlencoded.
     if (!contentType) {
       this.#parsed_body = await this.parseBodyAsFormUrlEncoded(true);
       return;
     }
 
-    // I want to thank https://github.com/artisonian for pointing me in the
-    // right direction with using the logic below correctly. I was HELLA using
-    // it incorrectly and couldn't parse a multipart/form-data body. Out of
-    // frustration, I filed an issue on deno about my findings; and artisonian
-    // gave an example of a working copy. Great work. Thank you!
     if (contentType.includes("multipart/form-data")) {
       this.#parsed_body = await this.parseBodyAsMultipartFormData(
         contentType,
@@ -298,6 +294,8 @@ export class Request {
   ): Promise<Drash.Deps.MultipartFormData> {
     let boundary: null | string = null;
 
+    // Special thanks to https://github.com/artisonian for helping parse the
+    // boundary logic below
     try {
       const match = contentType.match(/boundary=([^\s]+)/);
       if (match) {
@@ -342,6 +340,10 @@ export class Request {
       options.memory = {
         multipart_form_data: 128,
       };
+    }
+
+    if (!options.memory.multipart_form_data) {
+        options.memory.multipart_form_data = 128;
     }
 
     this.#options = options;

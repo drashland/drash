@@ -42,8 +42,7 @@ export type TResponseBody =
   | Deno.Reader
   | Uint8Array
   | string
-  | undefined
-  | unknown;
+  | undefined;
 
 /**
  * The types that the request body can be.
