@@ -30,11 +30,11 @@ export type THttpMethod =
 export type TConstructor<T extends unknown> = new (...args: unknown[]) => T;
 
 export type TResponseBody =
-  | unknown
-  | string
-  | Uint8Array
   | Deno.Reader
-  | undefined;
+  | Uint8Array
+  | string
+  | undefined
+  | unknown;
 
 /**
  * This is used to type a Request object's parsed body. Below are more details
