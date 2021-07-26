@@ -13,7 +13,7 @@ export class Request {
   //////////////////////////////////////////////////////////////////////////////
 
   public async create(
-    options: Drash.Interfaces.IRequestOptions
+    options: Drash.Interfaces.IRequestOptions,
   ): Promise<void> {
     this.#setOptions(options);
     this.#setProperties();
@@ -178,7 +178,7 @@ export class Request {
    */
   public async parseBody(): Promise<void> {
     if (!this.has_body) {
-        return;
+      return;
     }
 
     let contentType = this.#original.headers.get(
@@ -193,16 +193,7 @@ export class Request {
 
     // No Content-Type header? Default to this.
     if (!contentType) {
-      try {
-        this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
-      } catch (error) {
-        throw new Drash.Errors.HttpError(
-          400,
-          `Error reading request body. No Content-Type header was specified. ` +
-            `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
-            `by default and failed.`,
-        );
-      }
+      this.#parsed_body = await this.parseBodyAsFormUrlEncoded(true);
       return;
     }
 
@@ -235,7 +226,9 @@ export class Request {
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
    */
-  public async parseBodyAsFormUrlEncoded(): Promise<Drash.Interfaces.IKeyValuePairs<unknown>> {
+  public async parseBodyAsFormUrlEncoded(
+    parseByDefault: boolean = false,
+  ): Promise<Drash.Interfaces.IKeyValuePairs<unknown>> {
     try {
       let body = Drash.Deps.decoder.decode(
         await Deno.readAll(this.#original.body),
@@ -249,6 +242,14 @@ export class Request {
 
       return {};
     } catch (error) {
+      if (parseByDefault) {
+        throw new Drash.Errors.HttpError(
+          400,
+          `Error reading request body. No Content-Type header was specified. ` +
+            `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
+            `by default and failed.`,
+        );
+      }
       throw new Drash.Errors.HttpError(
         400,
         `Error reading request body as application/x-www-form-urlencoded. ${error.message}`,
