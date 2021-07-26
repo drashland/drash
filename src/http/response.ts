@@ -51,8 +51,8 @@ export class Response implements Drash.Interfaces.IResponse {
     }
 
     if (
-      this.headers.get("Content-Type") == "application/json"
-    && typeof this.body == "object"
+      this.headers.get("Content-Type") == "application/json" &&
+      typeof this.body == "object"
     ) {
       return JSON.stringify(this.body);
     }

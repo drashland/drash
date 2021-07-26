@@ -343,7 +343,7 @@ export class Request {
     }
 
     if (!options.memory.multipart_form_data) {
-        options.memory.multipart_form_data = 128;
+      options.memory.multipart_form_data = 128;
     }
 
     this.#options = options;
