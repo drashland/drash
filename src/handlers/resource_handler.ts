@@ -17,10 +17,6 @@ export class ResourceHandler
     return;
   }
 
-  public addOptions(): void {
-    return;
-  }
-
   /**
    * Add the resources passed in via options.
    */
@@ -184,11 +180,13 @@ export class ResourceHandler
       });
     }
 
-    return Drash.Prototype.clone(resource, {
+    const clone = Drash.Prototype.clone(resource, {
       path_params: pathParamsKvpString,
       request: request,
-      server: this,
+      server: resource.server,
     });
+
+    return clone;
   }
 
   /**
