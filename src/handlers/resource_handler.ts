@@ -180,7 +180,7 @@ export class ResourceHandler
     let pathParamsKvpString = "";
     if (paramNames.length > 0 && pathParams.length > 0) {
       paramNames.forEach((paramName: string, index: number) => {
-          pathParamsKvpString += `${paramName}=${pathParams[index]}`;
+        pathParamsKvpString += `${paramName}=${pathParams[index]}`;
       });
     }
 
