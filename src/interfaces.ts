@@ -2,50 +2,145 @@
 // large file.
 //
 // To make it easier to search this file, it is recommended you search for
-// interface to "jump" to each interface quickly.
+// "interface" to "jump" to each interface quickly.
 //
 // This interfaces are sorted in alphabetical order. For example, ICreateable
 // comes before ICreateableOptions.
-
-// TODO(crookse) Alphabetize this file.
+//
+// Interfaces:
+// - ICreateable
+// - ICreateableOptions
+// - IKeyValuePairs
+// - IMime
+// - IRequest
+// - IRequestOptions
+// - IRequestUrl
+// - IResource
+// - IResourceOptions
+// - IResourcePathsParsed
+// - IResponse
+// - IResponseOptions
+// - IServer
+// - IServerOptions
+// - IService
 
 import * as Drash from "../mod.ts";
 
+/**
+ * An interface to determine whether or not a class is creatable using the
+ * Factory guru. See factory.ts to see the Factory guru implementation.
+ *
+ * If a class is to be "createable", it should have its own creatable interface
+ * that extends this interface. For example, the Drash.Server class is
+ * creatable, so it has its own IServer interface that extends this interface --
+ * making it "createable" and meeting the requirements in the Factory guru.
+ */
 export interface ICreateable {
   /**
    * Build this object.
+   *
+   * @param options - Options to help create this object.
    */
   create: (options: ICreateableOptions) => void;
 }
 
+/**
+ * This interface is used in the Factory guru. When the Factory guru creates an
+ * object, it takes options as an argument. Since many objects can be
+ * createable, that means many createable objects can have different variations
+ * of options. To make the process of typing different variations of options, we
+ * define a base ICreatableOptions interface that other options interfaces can
+ * extend. That way, options can be different and still meet the requirements in
+ * the Factory guru.
+ */
 export interface ICreateableOptions {}
 
-export interface IHandler {
+/**
+ * An interface to help type key-value pair objects with different values.
+ *
+ * Examples:
+ *
+ *     const myKvpObject: IKeyValuePairs<string> = {
+ *       some_key: "some string",
+ *     };
+ *
+ *     const myKvpObject: IKeyValuePairs<number> = {
+ *       some_key: 1,
+ *     };
+ *
+ *     interface SomeOtherInterface {
+ *         [key: string]: number;
+ *     }
+ *     const myKvpObject: IKeyValuePairs<SomeOtherInterface> = {
+ *       some_key: {
+ *         some_other_key: 1
+ *       },
+ *     };
+ */
+export interface IKeyValuePairs<T> {
+  [key: string]: T;
 }
 
-export interface IHandlers {
-  resource_handler: Drash.ResourceHandler;
+/**
+ * This is used to type a MIME type object. Below are more details on the
+ * members in this interface.
+ *
+ * [key: string]
+ *     The MIME type (e.g., application/json).
+ *
+ * [key: string].charset?: string;
+ *     The character encoding of the MIME type.
+ *
+ * [key: string].compressible?: boolean;
+ *     Is this MIME type compressible?
+ *
+ * [key: string].extensions?: string[]
+ *     An array of extensions that match this MIME type.
+ *
+ * [key: string].source?: string;
+ *    TODO(crookse) Need to figure out what the source is and how it applies to
+ *    MIME types.
+ */
+export interface IMime {
+  [key: string]: {
+    charset?: string;
+    compressible?: boolean;
+    extensions?: string[];
+    source?: string;
+  };
 }
 
+/**
+ * An interface used by the Drash.Request class to make it createable.
+ */
+export interface IRequest extends ICreateable {}
+
+/**
+ * Options to help create the request object.
+ *
+ * memory.multipart_form_data
+ *     How much memory to allocate (in megabytes) to multipart/form-data body
+ *     parsing.
+ *
+ * original
+ *     The original request object. This is the object that the Drash.Request
+ *     object wraps itself around. Users are able to interact with the original
+ *     request object using the Drash.Request getters.
+ *
+ * server
+ *     The Drash.Server object.
+ */
 export interface IRequestOptions extends ICreateableOptions {
   memory?: {
     multipart_form_data?: number;
   };
   original?: Drash.Deps.ServerRequest;
   server?: Drash.Server;
-  url?: string;
 }
-
-export interface IResponseOptions extends ICreateableOptions {
-  default_response_content_type?: string;
-}
-
-export interface IServer extends ICreateable {}
-
-export interface IRequest extends ICreateable {}
 
 /**
- * This interfaces follows the following schema:
+ * An interface for the Drash.Request object's URL getter. This interfaces
+ * follows the following schema:
  *
  *     https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL
  */
@@ -59,52 +154,38 @@ export interface IRequestUrl {
   scheme: "https" | "http";
 }
 
-export interface IResponse extends ICreateable {
-  headers: Headers;
-  body: Drash.Types.TResponseBody | unknown;
-  status: number;
-  parseBody: () => Drash.Types.TResponseBody;
-}
-
-export interface IKeyValuePairs<T> {
-  [key: string]: T;
-}
-
 /**
- * This is used to type a MIME type object. Below are more details on the
- * members in this interface.
+ * An interface used by the Drash.Resource class to make it createable.
  *
- * [key: string]
- *     The mime type (e.g., application/json).
+ * path_parameters
+ *     A key-value string defining the path parameters that were passed in by
+ *     the request. This value is set in resource_handler.ts#getResource().
  *
- *     charset?: string;
- *         The character encoding of the MIME type.
+ * uri_paths
+ *     The URI paths that this resource is accessible at.
  *
- *     compressible?: boolean;
- *         Is this MIME type compressible?
+ * uri_paths_parsed
+ *     See IResourcePathsParsed.
  *
- *     extensions?: string[]
- *         An array of extensions that match this MIME type.
+ * services
+ *     The services that will be run before or after one of this resource's HTTP
+ *     methods.
  *
- *     source?: string;
- *         TODO(crookse) Need to figure out what the source is and how it
- *         applies to MIME types.
- */
-export interface IMime {
-  [key: string]: {
-    charset?: string;
-    compressible?: boolean;
-    extensions?: string[];
-    source?: string;
-  };
-}
-
-/**
- * This is used to type a Resource object.
+ * CONNECT()
+ * DELETE()
+ * GET()
+ * HEAD()
+ * OPTIONS()
+ * PATCH()
+ * POST()
+ * PUT()
+ * TRACE()
+ *     If a request performs one of the above HTTP methods and the request is
+ *     matched to this resource, then this method will be executed.
  */
 export interface IResource extends ICreateable {
   // Properties
-  path_params: string;
+  path_parameters: string;
   uri_paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
   services?: { after_request?: []; before_request?: [] };
@@ -120,16 +201,59 @@ export interface IResource extends ICreateable {
   TRACE?: () => Promise<IResponse> | IResponse;
 }
 
+/**
+ * Options to help create the resource object.
+ *
+ * path_parameters
+ *     A key-value pair string defining the path parameters that were passed in
+ *     by the request and associated to path parameters on the resource. For
+ *     example, if the resource has `/:id` as a URI path and a request has a URI
+ *     path of `/1`, then the following string would be set in this property:
+ *
+ *         "id=1"
+ *
+ *     Ultimately, this string is used when one of the following calls is made
+ *     in a resource:
+ *
+ *         `this.request.params.path.get("some_param")`
+ *         `this.request.pathParams.get("some_param")`
+ *
+ * request
+ *     The Drash.Request object. This allows resource objects to access the
+ *     request via `this.request`.
+ *
+ * server
+ *     The Drash.Server object. This allows resource objects to access the
+ *     server via `this.server`.
+ */
 export interface IResourceOptions extends ICreateableOptions {
-  server?: Drash.Server;
+  path_parameters?: string[];
   request?: Request;
-  path_params?: string[];
+  server?: Drash.Server;
 }
 
 /**
- * This is used to type a Resource object's paths. During the
- * request-resource lifecycle, the Server object parses the paths in a reosurce
- * and ends up with the following interface.
+ * This is used to type a resource object's paths. During the request-resource
+ * lifecycle, the server object parses the paths on a reosurce and ends up with
+ * the following:
+ *
+ *     {
+ *       og_path: "/:id",
+ *       regex_path: "^([^/]+)/?$",
+ *       params: ["id"],
+ *     }
+ *
+ * og_path
+ *     The original path.
+ *
+ * regex_path
+ *     The original path transformed into a regular expression. This is used to
+ *     help match request URI paths to a resource's URI path.
+ *
+ * params
+ *     The original path can contain path parameters. For example, an original
+ *     path can be defined as /:id. This means the `:id` portion is a path
+ *     parameter. This path parameter would be stored in this `params` array.
  */
 export interface IResourcePathsParsed {
   og_path: string;
@@ -137,111 +261,55 @@ export interface IResourcePathsParsed {
   params: string[];
 }
 
+
 /**
- * This is used to type a Response object's output.
+ * An interface used by the Drash.Response class to make it createable.
  */
-export interface IResponseOutput {
-  body: Drash.Types.TResponseBody;
+export interface IResponse extends ICreateable {
   headers: Headers;
+  body: Drash.Types.TResponseBody | unknown;
   status: number;
-  status_code?: number;
-  send?: () => IResponseOutput | undefined;
+  parseBody: () => Drash.Types.TResponseBody;
 }
 
 /**
- * This is used to type a Server object's configs. Below are more details on the
- * members in this interface.
+ * Options to help create the response object.
  *
- * services?: IService
- *
- *     The services that the server will execute during compile time and
- *     runtime.
- *
- *         services: {
- *           after_request: []
- *           before_request: []
- *           compile_time: []
- *         }
- *
- * resources?: Drash.Interfaces.Resource[]
- *
- *     An array of resources that the server should register. Passing in 0
- *     resources means clients can't access anything on the server--because
- *     there aren't any resources.
- *
- * response_output?: string
- *
- *     The fallback response Content-Type that the server should use. The
- *     response_output MUST be a proper MIME type. For example, the
- *     following would have the server default to JSON responses:
- *
- *         response_output: "application/json"
+ * default_response_content_type
+ *     The default "Content-Type" header to use on all responses. If a resource
+ *     does not change this content type header, then the response will be in
+ *     the format specified by this option.
+ */
+export interface IResponseOptions extends ICreateableOptions {
+  default_response_content_type?: string;
+}
+
+/**
+ * An interface used by the Drash.Server class to make it createable.
+ */
+export interface IServer extends ICreateable {}
+
+/**
+ * Options to help create the server object.
  */
 export interface IServerOptions extends ICreateableOptions {
   cert_file?: string;
   default_response_content_type?: string;
   hostname?: string;
   key_file?: string;
-  memory?: IServerOptionsMemory;
+  memory?: {
+    multipart_form_data?: number,
+  };
   port?: number;
   protocol?: "http" | "https";
   resources?: typeof Drash.Resource[];
-  services?: IServerOptionsServices;
-}
+  services?: {
+    // Services executed before a request is made (before a resource is found).
+    before_request?: typeof Drash.Service[],
 
-/**
- * This is used to type a Service attached to the Server object. Below are more
- * details on the members in this interface.
- *
- * before_request
- *
- *     An array of functions that take a Request as a parameter.
- *     Method can be async.
- *
- * after_request
- *
- *     An array of functions that take in a Request as the first
- *     parameter, and a Response as the second parameter.
- *     Method can be async.
- *
- * For example:
- *
- *     function beforeRequestService (request: Request): void {
- *       ...
- *     }
- *
- *     async function afterRequestService (
- *       request: Request,
- *       response: Response
- *     ): Promise<void> {
- *       ...
- *     }
- *
- *     const server = new Server({
- *       services: {
- *         before_request: [beforeRequestService],
- *         afterRequest: [afterRequestService]
- *       }
- *     }
- */
-
-/**
- * The amount of memory to allocate to the server's processes.  For example, the
- * multipart reader uses a default of 10MB, but you can override that default by
- * specifying:
- *
- *     multipart_form_data: 128 // This would be translated to 128MB
- */
-export interface IServerOptionsMemory {
-  multipart_form_data?: number;
-}
-
-export interface IServerOptionsServices {
-  // Services executed before a request is made (before a resource is found).
-  before_request?: typeof Drash.Service[];
-
-  // Services executed after requests, but before responses are sent
-  after_request?: typeof Drash.Service[];
+    // Services executed after requests, but before responses are sent
+    after_request?: typeof Drash.Service[],
+  };
 }
 
 export interface IService {

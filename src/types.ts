@@ -31,7 +31,8 @@ export type THttpMethod =
   | "TRACE";
 
 /**
- * A type to help the Factory class construct objects.
+ * A type to help pass in constructable classes to other functions which
+ * construct those classes.
  */
 export type TConstructor<T extends unknown> = new (...args: unknown[]) => T;
 
