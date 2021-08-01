@@ -5,13 +5,16 @@ export class Request {
   #options!: Drash.Interfaces.IRequestOptions;
   #server!: Drash.Server;
   #original!: Drash.Deps.ServerRequest;
-  #path_params!: string;
+  #path_parameters!: string;
   #resource!: Drash.Resource;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * See Drash.Interfaces.ICreateable.create().
+   */
   public async create(
     options: Drash.Interfaces.IRequestOptions,
   ): Promise<void> {
@@ -28,11 +31,8 @@ export class Request {
   }
 
   get has_body(): boolean {
-    let contentLength = this.#original.headers.get("content-length");
-
-    if (!contentLength) {
-      contentLength = this.#original.headers.get("Content-Length");
-    }
+    const contentLength = this.#original.headers.get("content-length") ??
+      this.#original.headers.get("Content-Length");
 
     if (!contentLength) {
       return false;
@@ -45,16 +45,11 @@ export class Request {
     return this.#original.method;
   }
 
-  get params(): any {
-    console.log("get params");
-
-    return {
-      query: new URLSearchParams(this.url.parameters),
-      path: new URLSearchParams(this.#resource.path_params),
-      body: this.#parsed_body,
-    };
-  }
-
+  /**
+   * This getter returns an object that matches the object that is returned by
+   * using `new URL()`. The reason this is done manually is because it is faster
+   * than using `new URL()` every time a request is made to the server.
+   */
   get url(): Drash.Interfaces.IRequestUrl {
     const anchorSplit = this.#original.url.includes("#")
       ? this.#original.url.split("#")
@@ -74,7 +69,7 @@ export class Request {
 
     const scheme = this.#server.options.protocol!;
 
-    let authority = this.#original.headers.get("host") ?? "";
+    const authority = this.#original.headers.get("host") ?? "";
 
     let domain = authority.split(":")[0];
 
@@ -99,11 +94,11 @@ export class Request {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Used to check which headers are accepted.
+   * Check if the content type(s) in question are accepted by the request.
    *
-   * @param type - It is either a string or an array of strings that contains
-   * the Accept Headers.
-   * @returns Either true or the string of the correct header.
+   * @param contentType - A proper MIME type.
+   *
+   * @returns True if yes, false if no.
    */
   public accepts(contentTypes: string[]): boolean {
     let acceptHeader = this.#original.headers.get("Accept");
@@ -124,36 +119,6 @@ export class Request {
   }
 
   /**
-   * Set the `request.path_params` property after finding the given resource so
-   * the user can access them via `this.#original.getPathParamValue()`.
-   *
-   * How it works: If we have the following request URI ...
-   *
-   *     /hello/world/i-love-you
-   *
-   * and it was matched to a resource with the following URI ...
-   *
-   *    /hello/:thing/:greeting
-   *
-   * then we end up with two arrays ...
-   *
-   *     resource's defined path params: [ "thing", "greeting" ]
-   *     request's given path params:    [ "world", "i-love-you" ]
-   *
-   * that get merged merged into key-value pairs ...
-   *
-   *     { thing: "world", greeting: "i-love-you" }
-   *
-   * The first array serves as the keys and the second array serves the value of
-   * the keys.
-   *
-   * @param resource - The resource object.
-   */
-  public setPathParams(params: string): void {
-    this.#path_params = params;
-  }
-
-  /**
    * Get a cookie value by the name that is sent in with the request.
    *
    * @param cookie - The name of the cookie to retrieve
@@ -169,12 +134,39 @@ export class Request {
   }
 
   /**
-   * Parse the specified request's body.
+   * TODO(crookse) Cache the parameters so that subsequent calls to this method
+   * are faster.
    *
-   * @param options - See IOptions.
+   * Get the paramters on the request.
    *
-   * @returns The content type of the body, and based on this the body itself in
-   * that format. If there is no body, it returns an empty properties
+   * @param type - (optional) The type of params to return. If no type is
+   * specified, then all of the params will be returned.
+   */
+  public params(
+    type: "body" | "path" | "query" | undefined = undefined
+  ): Drash.Types.TRequestParams {
+    if (!type) {
+      return {
+        body: this.#parsed_body,
+        path: new URLSearchParams(this.#resource.path_parameters),
+        query: new URLSearchParams(this.url.parameters),
+      };
+    }
+
+    switch(type) {
+      case "body":
+        return this.#parsed_body;
+      case "path":
+        return new URLSearchParams(this.#resource.path_parameters);
+      case "query":
+        return new URLSearchParams(this.url.parameters);
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Parse the specified request's body if there is a body.
    */
   public async parseBody(): Promise<void> {
     if (!this.has_body) {
@@ -217,7 +209,7 @@ export class Request {
   }
 
   /**
-   * Parse this.#original's body as application/x-www-form-url-encoded.
+   * Parse the original request's body as application/x-www-form-url-encoded.
    *
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
@@ -327,6 +319,11 @@ export class Request {
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Validate the options and set them on this object.
+   *
+   * @param options
+   */
   #setOptions(options: Drash.Interfaces.IRequestOptions): void {
     if (!options.original) {
       throw new Drash.Errors.DrashError("D1002");
@@ -349,6 +346,9 @@ export class Request {
     this.#options = options;
   }
 
+  /**
+   * Set the properties on this object.
+   */
   #setProperties(): void {
     this.#server = this.#options.server!;
     this.#original = this.#options.original!;
