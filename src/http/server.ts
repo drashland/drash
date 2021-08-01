@@ -105,6 +105,14 @@ export class Server implements Drash.Interfaces.IServer {
     );
   }
 
+  /**
+   * Get the full address that this server is running on.
+   */
+  get address(): string {
+    return `${this.options.protocol}://${this.options.hostname}:${this.options.port}`;
+  }
+
+
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -118,15 +126,6 @@ export class Server implements Drash.Interfaces.IServer {
     } catch (_error) {
       // Do nothing. The server was probably already closed.
     }
-  }
-
-  /**
-   * Get the full address that this server is running on.
-   *
-   * @returns The address (e.g., https://localhost:1337).
-   */
-  public getAddress(): string {
-    return `${this.options.protocol}://${this.options.hostname}:${this.options.port}`;
   }
 
   /**
