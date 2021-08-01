@@ -22,13 +22,8 @@ export class Response implements Drash.Interfaces.IResponse {
    * See Drash.Interfaces.ICreateable.create().
    */
   public create(options: Drash.Interfaces.IResponseOptions): void {
-    // TODO(crookse) this.#setOptions(options);
-    this.headers.set(
-      "Content-Type",
-      options.default_response_content_type!,
-    );
-
-    this.#options = options;
+    this.#setOptions(options);
+    this.#setHeaders();
   }
 
   /**
@@ -90,5 +85,32 @@ export class Response implements Drash.Interfaces.IResponse {
       500,
       "The requested resource could not generate a properly formatted response."
     );
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Set the headers on this response.
+   */
+  #setHeaders(): void {
+    this.headers.set(
+      "Content-Type",
+      this.#options.default_response_content_type!,
+    );
+  }
+
+  /**
+   * Validate the options and set them on this object.
+   *
+   * @param options
+   */
+  #setOptions(options: Drash.Interfaces.IResponseOptions): void {
+    if (!options.default_response_content_type) {
+      throw new Drash.Errors.DrashError("D1008");
+    }
+
+    this.#options = options;
   }
 }
