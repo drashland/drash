@@ -35,7 +35,9 @@ export class Server implements Drash.Interfaces.IServer {
    *
    * The Drash.Request object is not actually a request object. Surprise!
    */
-  protected handlers: Drash.Interfaces.IHandlers = {
+  #handlers: {
+    resource_handler: Drash.ResourceHandler;
+  } = {
     resource_handler: Drash.Factory.create(Drash.ResourceHandler),
   };
 
@@ -44,7 +46,7 @@ export class Server implements Drash.Interfaces.IServer {
    * are ones created by Drash. External services are ones specified by the
    * user.
    */
-  protected services: IServices = {
+  #services: IServices = {
     external: {
       after_request: [],
       before_request: [],
@@ -56,50 +58,12 @@ export class Server implements Drash.Interfaces.IServer {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * See Drash.Interfaces.ICreateable.addOptions().
-   */
-  #setOptions(options: Drash.Interfaces.IServerOptions): void {
-    if (!options.default_response_content_type) {
-      options.default_response_content_type = "application/json";
-    }
-
-    if (!options.hostname) {
-      options.hostname = "0.0.0.0";
-    }
-
-    if (!options.memory) {
-      options.memory = {};
-    }
-
-    if (!options.memory.multipart_form_data) {
-      options.memory.multipart_form_data = 10;
-    }
-
-    if (!options.port) {
-      options.port = 1337;
-    }
-
-    if (!options.resources) {
-      options.resources = [];
-    }
-
-    if (!options.services) {
-      options.services = {
-        after_request: [],
-        before_request: [],
-      };
-    }
-
-    this.options = options;
-  }
-
-  /**
    * See Drash.Interfaces.ICreateable.create().
    */
   public create(options: Drash.Interfaces.IServerOptions): void {
     this.#setOptions(options);
     this.addExternalServices();
-    this.handlers.resource_handler.addResources(
+    this.#handlers.resource_handler.addResources(
       this.options.resources ?? [],
       this,
     );
@@ -122,7 +86,7 @@ export class Server implements Drash.Interfaces.IServer {
    */
   public close(): void {
     try {
-      this.deno_server.close();
+      this.#deno_server.close();
     } catch (_error) {
       // Do nothing. The server was probably already closed.
     }
@@ -139,8 +103,8 @@ export class Server implements Drash.Interfaces.IServer {
     request: Drash.Deps.ServerRequest,
     error: Drash.Errors.HttpError,
   ) {
-    // TODO(crookse) The error should be a response object so we can
-    // request.respond(error);
+    // TODO(crookse TODO-ERRORS) The error should be a response object so we can
+    // just call request.respond(error);
     request.respond({
       status: error.code,
       body: error.stack,
@@ -150,8 +114,8 @@ export class Server implements Drash.Interfaces.IServer {
   /**
    * Handle an HTTP request from the Deno server.
    *
-   * TODO (crookse) Add in the middleware. Middleware is now called serices. So,
-   * technically, add in the services.
+   * TODO (crookse TODO-SERVICES) Add in the middleware. Middleware is now
+   * called services.  So, technically, add in the services.
    *
    * @param originalRequest - The Deno request object.
    */
@@ -168,9 +132,11 @@ export class Server implements Drash.Interfaces.IServer {
       server: this,
     });
 
-    const resource = this.handlers.resource_handler.createResource(
-      request,
-    );
+    const resource = this.#handlers.resource_handler.getResource(request);
+
+    if (!resource) {
+      throw new Drash.Errors.HttpError(404);
+    }
 
     const method = request.method.toUpperCase();
 
@@ -201,10 +167,23 @@ export class Server implements Drash.Interfaces.IServer {
     const response = await resource![method as Drash.Types.THttpMethod]!();
 
     originalRequest.respond({
-      status: 200,
+      status: response.status,
       headers: response.headers,
       body: response.parseBody(),
     });
+  }
+
+  /**
+   * Listen for incoming requests.
+   */
+  public async listenForRequests() {
+    for await (const request of this.#deno_server) {
+      try {
+        await this.handleRequest(request);
+      } catch (error) {
+        await this.handleError(request, error);
+      }
+    }
   }
 
   /**
@@ -215,14 +194,14 @@ export class Server implements Drash.Interfaces.IServer {
   public async runHttp(): Promise<Drash.Deps.Server> {
     this.options.protocol = "http";
 
-    this.deno_server = Drash.Deps.serve({
+    this.#deno_server = Drash.Deps.serve({
       hostname: this.options.hostname!,
       port: this.options.port!,
     });
 
     await this.listenForRequests();
 
-    return this.deno_server;
+    return this.#deno_server;
   }
 
   /**
@@ -233,7 +212,7 @@ export class Server implements Drash.Interfaces.IServer {
   public async runHttps(): Promise<Drash.Deps.Server> {
     this.options.protocol = "https";
 
-    this.deno_server = Drash.Deps.serveTLS({
+    this.#deno_server = Drash.Deps.serveTLS({
       hostname: this.options.hostname!,
       port: this.options.port!,
       certFile: this.options.cert_file!,
@@ -242,7 +221,7 @@ export class Server implements Drash.Interfaces.IServer {
 
     await this.listenForRequests();
 
-    return this.deno_server;
+    return this.#deno_server;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -309,7 +288,7 @@ export class Server implements Drash.Interfaces.IServer {
       if (service.setUp) {
         await service.setUp();
       }
-      this.services.external.before_request!.push(service);
+      this.#services.external.before_request!.push(service);
     }
   }
 
@@ -356,16 +335,42 @@ export class Server implements Drash.Interfaces.IServer {
   //   }
   // }
 
-  /**
-   * Listens for incoming HTTP connections on the server property
-   */
-  protected async listenForRequests() {
-    for await (const request of this.deno_server) {
-      try {
-        await this.handleRequest(request);
-      } catch (error) {
-        await this.handleError(request, error);
-      }
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  #setOptions(options: Drash.Interfaces.IServerOptions): void {
+    if (!options.default_response_content_type) {
+      options.default_response_content_type = "application/json";
     }
+
+    if (!options.hostname) {
+      options.hostname = "0.0.0.0";
+    }
+
+    if (!options.memory) {
+      options.memory = {};
+    }
+
+    if (!options.memory.multipart_form_data) {
+      options.memory.multipart_form_data = 10;
+    }
+
+    if (!options.port) {
+      options.port = 1337;
+    }
+
+    if (!options.resources) {
+      options.resources = [];
+    }
+
+    if (!options.services) {
+      options.services = {
+        after_request: [],
+        before_request: [],
+      };
+    }
+
+    this.options = options;
   }
 }
