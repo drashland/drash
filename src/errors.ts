@@ -68,6 +68,9 @@ const DRASH_ERROR_CODES: { [k: string]: string } = {
   // issue with the MultipartReader.
   "D1005": "Error reading request body as multipart/form-data.",
   // This means we forgot to pass in the `default_response_content_type`
-  // property when creating the resource.
+  // property when creating the response.
   "D1006": "Response options require `default_response_content_type` property.",
+  // This means we forgot to pass in the `server` property when creating the
+  // resource.
+  "D1007": "Resource options require `server` property.",
 };
