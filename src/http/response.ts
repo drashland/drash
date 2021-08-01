@@ -51,8 +51,9 @@ export class Response implements Drash.Interfaces.IResponse {
 
     // Body is a reader? Return it as a Reader.
     if (typeof (this.body as Deno.Reader).read == "function") {
-      // TODO(crookse) Make sure this actually works. For example, put this
-      // method in a resource and request the resource:
+      // TODO(crookse TODO-RESPONSE-BODY-DENO-READER) Make sure this actually
+      // works. For example, put this method in a resource and request the
+      // resource:
       //
       //     GET() {
       //       this.response.body = this.request.body;
