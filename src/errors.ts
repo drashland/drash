@@ -46,6 +46,8 @@ export class HttpError extends Error {
 // FILE MARKER - ERROR CODES ///////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO(crookse TODO-ERRORS) Remove the "D" prefix. Just use numbers.
+// TODO(crookse TODO-ERRORS) Document the error codes in the website.
 const DRASH_ERROR_CODES: { [k: string]: string } = {
   // This means the user's `paths` property contains something other than an
   // array of strings.
@@ -73,4 +75,7 @@ const DRASH_ERROR_CODES: { [k: string]: string } = {
   // This means we forgot to pass in the `server` property when creating the
   // resource.
   "D1007": "Resource options require `server` property.",
+  // This means we forgot to pass in the `default_response_content_type`
+  // property when creating the response.
+  "D1008": "Response options require `default_response_content_type` property.",
 };

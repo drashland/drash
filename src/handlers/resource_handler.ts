@@ -4,6 +4,7 @@ const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
 const RE_URI_REPLACEMENT = "([^/]+)";
 
+// TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class ResourceHandler implements Drash.Interfaces.ICreateable {
   #matches: {[key: string]: Drash.Interfaces.IResource} = {};
   #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash

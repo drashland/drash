@@ -1,8 +1,8 @@
 import * as Drash from "../../mod.ts";
 
-// TODO(crookse) Remove this. We don't need this. Just set the services
-// accordingly. I don't know what that means right now, but maybe I'll know what
-// that means later.
+// TODO(crookse TODO-SERVICES) Remove this. We don't need this. Just set the
+// services accordingly. I don't know what that means right now, but maybe I'll
+// know what that means later.
 interface IServices {
   external: {
     after_request: Drash.Interfaces.IService[];
@@ -26,8 +26,7 @@ export class Server implements Drash.Interfaces.IServer {
   /**
    * The Deno server object (after calling `serve()`).
    */
-  // @ts-ignore: See mod.ts TS IGNORE NOTES > NOTE 1.
-  protected deno_server: Drash.Deps.Server;
+  #deno_server!: Drash.Deps.Server;
 
   /**
    * The Deno server request object handler. This handler gets wrapped around
@@ -182,7 +181,18 @@ export class Server implements Drash.Interfaces.IServer {
       throw new Drash.Errors.HttpError(405);
     }
 
-    await request.parseBody();
+    // Automatically parse the request body for the user.
+    //
+    // Although this call slows down the request-resource-response lifecycle
+    // (removes ~1k req/sec in benchmarks), calling this here makes it more
+    // convenient for the user when writing a resource. For example, if this
+    // call were to be placed in the Drash.Request class and only executed when
+    // a user wants to retrieve body params, then they would have to use
+    // `async-await` in their resource.This means more boilerplate for their
+    // resource, which is something we should prevent.
+    if (request.has_body) {
+      await request.parseBody();
+    }
 
     // We set the resource on the request as late as possible to keep the
     // process of this method lean
@@ -273,14 +283,14 @@ export class Server implements Drash.Interfaces.IServer {
     services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
-      // TODO(crookse) Make this new call use the Factory.
+      // TODO(crookse TODO-SERVICES) Make this new call use the Factory.
       // @ts-ignore
       const service = new (s as Drash.Interfaces.IService)();
       // Check if this service needs to be set up
       if (service.setUp) {
         await service.setUp();
       }
-      this.services.external.after_request!.push(service);
+      this.#services.external.after_request!.push(service);
     }
   }
 
@@ -293,7 +303,7 @@ export class Server implements Drash.Interfaces.IServer {
     services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
-      // TODO(crookse) Make this new call use the Factory.
+      // TODO(crookse TODO-SERVICES) Make this new call use the Factory.
       // @ts-ignore
       const service = new (s as Drash.Interfaces.IService)();
       // Check if this service needs to be set up

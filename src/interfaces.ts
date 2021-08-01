@@ -98,8 +98,8 @@ export interface IKeyValuePairs<T> {
  *     An array of extensions that match this MIME type.
  *
  * [key: string].source?: string;
- *    TODO(crookse) Need to figure out what the source is and how it applies to
- *    MIME types.
+ *    TODO(crookse TODO-INTERFACES) Need to figure out what the source is and
+ *    how it applies to MIME types.
  */
 export interface IMime {
   [key: string]: {

@@ -1,8 +1,8 @@
 import * as Drash from "../../mod.ts";
 
 /**
- * This is the base resource class for all resources. All resource classes
- * must be derived from this class.
+ * This is the base resource class for all resources. All resource classes must
+ * extend this base resource class.
  *
  * Drash defines a resource according to the MDN at the following page:
  *
@@ -11,11 +11,11 @@ import * as Drash from "../../mod.ts";
 export class Resource implements Drash.Interfaces.IResource {
   public middleware: { after_request?: []; before_request?: [] } = {};
   public path_parameters!: string;
+  public request!: Drash.Request;
+  public response!: Drash.Response;
+  public server!: Drash.Server;
   public uri_paths: string[] = [];
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
-  public response!: Drash.Response;
-  public request!: Drash.Request;
-  public server!: Drash.Server;
   #options: Drash.Interfaces.IResourceOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
@@ -37,9 +37,22 @@ export class Resource implements Drash.Interfaces.IResource {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  // TODO(crookse TODO-REDIRECTS) Implement this.
+  public redirect(path: string): void {
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Validate the options and set them on this object.
+   *
+   * @param options
+   */
   #setOptions(options: Drash.Interfaces.IResourceOptions): void {
     if (!options.server) {
       throw new Drash.Errors.DrashError("D1007");
@@ -48,6 +61,9 @@ export class Resource implements Drash.Interfaces.IResource {
     this.#options = options;
   }
 
+  /**
+   * Set thei properties on this object.
+   */
   #setProperties(): void {
     this.server = this.#options.server!;
   }

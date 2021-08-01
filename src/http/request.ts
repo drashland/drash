@@ -1,12 +1,13 @@
 import * as Drash from "../../mod.ts";
 
+// TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class Request {
-  #parsed_body?: Drash.Types.TRequestBody;
   #options!: Drash.Interfaces.IRequestOptions;
-  #server!: Drash.Server;
   #original!: Drash.Deps.ServerRequest;
+  #parsed_body?: Drash.Types.TRequestBody;
   #path_parameters!: string;
   #resource!: Drash.Resource;
+  #server!: Drash.Server;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
@@ -26,10 +27,16 @@ export class Request {
   // FILE MARKER - GETTERS AND SETTERS /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Get the ORIGINAL request's body.
+   */
   get body(): Deno.Reader {
     return this.#original.body;
   }
 
+  /**
+   * Does the ORIGINAL request have a body?
+   */
   get has_body(): boolean {
     const contentLength = this.#original.headers.get("content-length") ??
       this.#original.headers.get("Content-Length");
@@ -41,6 +48,9 @@ export class Request {
     return +contentLength > 0;
   }
 
+  /**
+   * Get the ORIGINAL request's HTTP method.
+   */
   get method(): string {
     return this.#original.method;
   }
@@ -96,7 +106,8 @@ export class Request {
   /**
    * Check if the content type(s) in question are accepted by the request.
    *
-   * @param contentType - A proper MIME type.
+   * @param contentType - A proper MIME type. See mime.ts for proper MIME types
+   * that Drash can handle.
    *
    * @returns True if yes, false if no.
    */
@@ -119,6 +130,8 @@ export class Request {
   }
 
   /**
+   * TODO(crookse TODO-REQUEST-COOKIE) Make sure this still works.
+   *
    * Get a cookie value by the name that is sent in with the request.
    *
    * @param cookie - The name of the cookie to retrieve
@@ -134,8 +147,8 @@ export class Request {
   }
 
   /**
-   * TODO(crookse) Cache the parameters so that subsequent calls to this method
-   * are faster.
+   * TODO(crookse TODO-CACHE) Cache the parameters so that subsequent calls to
+   * this method are faster.
    *
    * Get the paramters on the request.
    *
@@ -246,7 +259,7 @@ export class Request {
   }
 
   /**
-   * Parse this.#original's body as application/json.
+   * Parse the original request's body as application/json.
    *
    * @returns A `Promise` of a JSON object decoded from request body.
    */
@@ -272,7 +285,7 @@ export class Request {
   }
 
   /**
-   * Parse this.#original's body as multipart/form-data.
+   * Parse the original request's body as multipart/form-data.
    *
    * @param body - The request's body.
    * @param boundary - The boundary of the part (e.g., `----------437192313`)
@@ -311,6 +324,9 @@ export class Request {
     }
   }
 
+  /**
+   * Set the resource that is associated with this request on this request.
+   */
   public setResource(resource: Drash.Resource): void {
     this.#resource = resource;
   }
