@@ -52,3 +52,12 @@ export type TRequestBody =
   | Drash.Deps.MultipartFormData
   | Drash.Interfaces.IKeyValuePairs<unknown>
   | undefined;
+
+export type TRequestParams =
+  | URLSearchParams
+  | Drash.Types.TRequestBody
+  | {
+    body: TRequestBody,
+    path: URLSearchParams,
+    query: URLSearchParams,
+  }
