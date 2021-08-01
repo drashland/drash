@@ -106,6 +106,11 @@ export class Request {
   /**
    * Check if the content type(s) in question are accepted by the request.
    *
+   * TODO-REQUEST-ACCEPTS(crookse) Respect the priority of what is accepted. See
+   * q-factor weighting at the following:
+   *
+   *     https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept.
+   *
    * @param contentType - A proper MIME type. See mime.ts for proper MIME types
    * that Drash can handle.
    *
