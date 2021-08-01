@@ -4,8 +4,8 @@ const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
 const RE_URI_REPLACEMENT = "([^/]+)";
 
-export class ResourceHandler
-  implements Drash.Interfaces.ICreateable, Drash.Interfaces.IHandler {
+export class ResourceHandler implements Drash.Interfaces.ICreateable {
+  #matches: {[key: string]: Drash.Interfaces.IResource} = {};
   #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash
     .Deps.Moogle<Drash.Interfaces.IResource>();
 
@@ -13,12 +13,18 @@ export class ResourceHandler
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * See Drash.Interfaces.ICreateable#create.
+   */
   public create(): void {
     return;
   }
 
   /**
-   * Add the resources passed in via options.
+   * Add the given resources.
+   *
+   * @param resources
+   * @param server - The server object to attach to the resources.
    */
   public addResources(
     resources: (typeof Drash.Resource)[],
@@ -31,16 +37,17 @@ export class ResourceHandler
         });
 
       resource.uri_paths.forEach((path: string) => {
-        // Remove the trailing slash because we handle URI paths with and without the
-        // trailing slash the same. For example, the following URI paths are the same
+        // Remove the trailing slash because we handle URI paths with and
+        // without the trailing slash the same. For example, the following URI
+        // paths are the same:
         //
         //     /something
         //     /something/
         //
-        // Some frameworks differentiate these two URI paths, but Drash does not. The
-        // reason is for convenience, so that users do not have to define two
-        // routes (one with and one without the trailing slash) in the same
-        // resource.
+        // Some frameworks differentiate these two URI paths, but Drash does
+        // not. The reason is for convenience so that users do not have to
+        // define two routes (one with and one without the trailing slash) in
+        // the same resource.
         if (path.charAt(path.length - 1) == "/") {
           path = path.substring(-1, path.length - 1);
         }
@@ -50,27 +57,12 @@ export class ResourceHandler
           throw new Drash.Errors.DrashError("D1000");
         }
 
-        // Handle wildcard paths
-        // TODO(crookse) This might be broken. Figure out why.
-        if (path.trim() == "*") {
-          // TODO(crookse) Put this in the resource class.
-          resource.uri_paths_parsed.push(
-            this.getResourcePathsUsingWildcard(path),
-          );
-
-          // Handle optional params
-        } else if (path.trim().includes("?")) {
-          // TODO(crookse) Put this in the resource class.
-          resource.uri_paths_parsed.push(
-            this.getResourcePathsUsingOptionalParams(path),
-          );
-
-          // Handle basic paths that don't include wild cards or optional params
+        if (this.#pathIsWildCardPath(path)) {
+          this.#setPathAsWildCardPath(resource, path);
+        } else if (this.#pathIsOptionalParamPath(path)) {
+          this.#setPathAsOptionalParamPath(resource, path);
         } else {
-          // TODO(crookse) Put this in the resource class.
-          resource.uri_paths_parsed.push(
-            this.getResourcePaths(path),
-          );
+          this.#setPath(resource, path);
         }
       });
 
@@ -91,15 +83,22 @@ export class ResourceHandler
   }
 
   /**
-   * Find the resource that BEST matches the given request.
+   * Get the resource that BEST matches the given request.
    *
-   * @param request - The request object.
+   * @param request - The request object that will be matched to a resource.
    *
-   * @return A clone of the found resource.
+   * @returns A clone of the found resource or undefined if no resource was
+   * matched to the request.
    */
-  public createResource(
+  public getResource(
     request: Drash.Request,
-  ): Drash.Interfaces.IResource {
+  ): Drash.Interfaces.IResource | undefined {
+    // If we already matched the request to a resource, then return the resource
+    // that we matched before
+    if (this.#matches[request.url.path]) {
+      return this.#matches[request.url.path];
+    }
+
     const uri = request.url.path.split("/");
     // Remove the first element because it is an empty string. For example:
     //
@@ -124,7 +123,7 @@ export class ResourceHandler
       results = this.#resource_index.search("^/");
       // Still no resource found? GTFO.
       if (!results) {
-        throw new Drash.Errors.HttpError(404);
+        return;
       }
     }
 
@@ -137,12 +136,12 @@ export class ResourceHandler
 
     let resourceCanHandleUri = false;
     let matched: string[] = [];
-    let paramNames: string[] = [];
+    let pathParams = ""; // e.g., "hello=world&good=bye
 
     // If we matched a resource, then we need to make sure the request's URI
-    // matches one of the URI paths defined on the resource. If the request's
-    // URI matches one of the URI paths defined on the resource, then the
-    // resource can handle the URI. Otherwise, it cannot. Womp.
+    // path matches one of the URI paths defined on the resource. If the
+    // request's URI path matches one of the URI paths defined on the resource,
+    // then the resource can handle the request. Otherwise, it cannot. Womp.
     resource.uri_paths_parsed.forEach(
       (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
         if (resourceCanHandleUri) {
@@ -151,80 +150,102 @@ export class ResourceHandler
 
         matched = request.url.path.match(pathObj.regex_path) as string[];
         if (matched && matched.length > 0) {
-          paramNames = pathObj.params ?? [];
+          const paramNames = pathObj.params ?? [];
           resourceCanHandleUri = true;
+
+          // If we get here, then we need to check if the matched array contains
+          // more than 1 item. If it does, then we know the request's URI path
+          // includes path params. Knowing that, we take off the first item in
+          // the matched array because the 0th item is not a path param.
+          if (matched.length > 1) {
+            matched.shift();
+
+            if (paramNames.length > 0 && matched.length > 0) {
+              paramNames.forEach((paramName: string, index: number) => {
+                pathParams += `${paramName}=${matched[index]}&`;
+              });
+            }
+          }
         }
       },
     );
 
-    // If the resource does not have a URI defined that matches the request's
-    // URI, then the resource cannot handle the request. Ultimately, this is a
-    // 404 because there is no resource with the defined URI.
+    // If the resource does not have a URI path defined that matches the
+    // request's URI path, then the resource cannot handle the request.
+    // Ultimately, this is a 404 because there is no resource with the defined
+    // URI path. In other words, there is no resource that can handle the
+    // request.
     if (!resourceCanHandleUri) {
-      throw new Drash.Errors.HttpError(404);
-    }
-
-    // If the matched array contains more than 1 item, then we know the request
-    // includes path params. So we set those on the resource for the request
-    // object to parse in `.handleRequest()`.
-    let pathParams: string[] = [];
-    if (matched.length > 1) {
-      matched.shift();
-      pathParams = matched;
-    }
-
-    let pathParamsKvpString = "";
-    if (paramNames.length > 0 && pathParams.length > 0) {
-      paramNames.forEach((paramName: string, index: number) => {
-        pathParamsKvpString += `${paramName}=${pathParams[index]}`;
-      });
+      return;
     }
 
     const clone = Drash.Prototype.clone(resource, {
-      path_params: pathParamsKvpString,
+      path_parameters: pathParams,
       request: request,
       server: resource.server,
     });
 
+    // Cache the request so that subsequent requests of the same type are faster
+    this.#matches[request.url.path] = clone;
+
     return clone;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
-   * Get resource paths for the path in question. These paths are use to match
-   * request URI paths to a resource.
+   * Is the path a wild card path? Example:
    *
-   * @param path - The path to parse into parsable pieces.
-   *
-   * @return A resource paths object.
+   * @returns True if yes, false if no.
    */
-  protected getResourcePaths(
+  #pathIsWildCardPath(path: string): boolean {
+    return path.trim() == "*";
+  }
+
+  /**
+   * Is the given path an optional param path? That is, does the path have a
+   * param with a question mark at the end? Example:
+   *
+   *     /some-path/some_uri?
+   *
+   * @returns True if yes, false if no.
+   */
+  #pathIsOptionalParamPath(path: string): boolean {
+    return path.trim().includes("?");
+  }
+
+  /**
+   * Set a normal path object on the given resource.
+   *
+   * @param resource - The resource to set the paths on.
+   * @param path - The path to parse into parsable pieces.
+   */
+  #setPath(
+    resource: Drash.Interfaces.IResource,
     path: string,
-  ): Drash.Interfaces.IResourcePathsParsed {
-    return {
+  ): void {
+    resource.uri_paths_parsed.push({
       og_path: path,
       regex_path: `^${path.replace(RE_URI_PATH_GLOBAL, RE_URI_REPLACEMENT)}/?$`,
       params: (path.match(RE_URI_PATH_GLOBAL) || []).map((element: string) => {
         return element.replace(/:|{|}/g, "");
       }),
-    };
+    });
   }
 
   /**
-   * Get resource paths for the path in question. The path in question should
-   * have at least one optional param. An optiona param is like :id in the
-   * following path:
+   * Set an optional param path object on the given resource.
    *
-   *     /my-path/:id?
-   *
-   . These paths are use * to match request URI paths to a resource.
-   *
+   * @param resource - The resource to set the paths on.
    * @param path - The path to parse into parsable pieces.
-   *
-   * @return A resource paths object.
    */
-  protected getResourcePathsUsingOptionalParams(
+  #setPathAsOptionalParamPath(
+    resource: Drash.Interfaces.IResource,
     path: string,
-  ): Drash.Interfaces.IResourcePathsParsed {
+  ): void {
+    path = path.trim();
     let tmpPath = path;
     // Replace required params, in preparation to create the `regex_path`, just
     // like how we do in the below else block
@@ -277,36 +298,39 @@ export class ResourceHandler
       }
     }
 
-    return {
+    resource.uri_paths_parsed.push({
       og_path: path,
       regex_path: `^${tmpPath}$`,
       // Regex is same as other blocks, but we also strip the `?`.
       params: (path.match(RE_URI_PATH_GLOBAL) || []).map((element: string) => {
         return element.replace(/:|{|}|\?/g, "");
       }),
-    };
+    });
   }
 
   /**
-   * Get resource paths for the wildcard path in question. These paths are use
-   * to match request URI paths to a resource.
+   * TODO(crookse) This method possibly is broken. Investigate.
    *
+   * Set a wild card path object on the given resource.
+   *
+   * @param resource - The resource to set the paths on.
    * @param path - The path to parse into parsable pieces.
-   *
-   * @return A resource paths object.
    */
-  protected getResourcePathsUsingWildcard(
+  #setPathAsWildCardPath(
+    resource: Drash.Interfaces.IResource,
     path: string,
-  ): Drash.Interfaces.IResourcePathsParsed {
+  ): void {
+    path = path.trim();
+
     const rePathReplaced = path.replace(RE_URI_PATH_GLOBAL, RE_URI_REPLACEMENT);
     const rePath = `^.${rePathReplaced}/?$`;
 
-    return {
+    resource.uri_paths_parsed.push({
       og_path: path,
       regex_path: rePath,
       params: (path.match(RE_URI_PATH_GLOBAL) || []).map((element: string) => {
         return element.replace(/:|{|}/g, "");
       }),
-    };
+    });
   }
 }
