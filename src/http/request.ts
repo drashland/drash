@@ -119,9 +119,22 @@ export class Request extends ServerRequest {
    * @return The file requested or `undefined` if not available.
    */
   public getBodyFile(input: string): FormFile | undefined {
+    const files = this.getBodyFiles(input);
+    return files ? files[0] : undefined;
+  }
+
+  /**
+   * Get the requested files from the body of a multipart/form-data request, by
+   * it's name. This should be used an input can allow multiple files.
+   *
+   * @param input - The name of the file to get.
+   *
+   * @return The files requested or `undefined` if not available.
+   */
+  public getBodyFiles(input: string): FormFile[] | undefined {
     if (typeof this.parsed_body.data!.files === "function") {
       const files = this.parsed_body.data!.files(input);
-      return Array.isArray(files) ? files[0] : undefined;
+      return Array.isArray(files) ? files : undefined;
     }
     return undefined;
   }
