@@ -9,36 +9,6 @@ interface IMakeRequestOptions {
   credentials?: any;
 }
 
-export async function runServer(server: Drash.Server, configs: {
-  hostname?: string;
-  port: number;
-} = {
-  hostname: "localhost",
-  port: 3000,
-}) {
-  await server.run({
-    hostname: configs.hostname,
-    port: configs.port,
-  });
-}
-
-export async function runServerTLS(server: Drash.Server, configs: {
-  hostname?: string;
-  port: number;
-  certFile?: string;
-  keyFile?: string;
-} = {
-  hostname: "localhost",
-  port: 1448,
-}) {
-  return await server.runTLS({
-    hostname: configs.hostname,
-    port: configs.port,
-    certFile: "./tests/integration/app_3002_https/tls/localhost.crt",
-    keyFile: "./tests/integration/app_3002_https/tls/localhost.key",
-  });
-}
-
 /**
  * Get a mocked request object.
  *
@@ -84,7 +54,7 @@ export function mockRequest(url = "/", method = "get", options?: any): any {
   //
   //   TypeError: Cannot read property 'write' of undefined
   //
-  request.respond = function respond(output: Drash.Interfaces.IResponseOutput) {
+  request.respond = function respond(output: Drash.Deps.Response & { send?: () => Drash.Deps.Response | undefined}) {
     output.send = function () {
       if (
         output.status === 301 ||
@@ -147,7 +117,3 @@ export const makeRequest = {
     return fetch(url, options);
   },
 };
-
-export function responseBody(response: Drash.Interfaces.IResponseOutput) {
-  return decoder.decode(response.body as ArrayBuffer);
-}

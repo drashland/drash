@@ -1,19 +1,20 @@
-import { Drash, Rhum, TestHelpers } from "../../../../deps.ts";
+import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { createServer } from "../../../mod.ts"
 const decoder = new TextDecoder();
 
 Rhum.testPlan("http/middleware_test.ts", () => {
   Rhum.testSuite("http/middleware_test.ts", () => {
     Rhum.testCase("after_resource: can change response.render", async () => {
-      const server = new Drash.Server({
-        middleware: {
-          after_resource: [TemplateEngine],
+      const server = createServer({
+        services: {
+          after_request: [TemplateEngine],
         },
         resources: [ResourceWithTemplateEngine],
       });
       const request = TestHelpers.mockRequest("/template-engine");
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(
-        decoder.decode(response.body as ArrayBuffer),
+        decoder.decode(response.body),
         "RENDERRRRRRd",
       );
     });
@@ -32,7 +33,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = TestHelpers.mockRequest("/hello");
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "WE OUT HERE",
       );
     });
@@ -47,7 +48,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = TestHelpers.mockRequest("/users/1");
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "No CSRF token, dude.",
       );
     });
@@ -66,7 +67,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "Wrong CSRF token, dude.",
       );
     });
@@ -81,7 +82,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = TestHelpers.mockRequest("/");
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "Missing header, guy.",
       );
     });
@@ -100,7 +101,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "Ha... try again. Close though.",
       );
     });
@@ -119,7 +120,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "got",
       );
     });
@@ -134,7 +135,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = TestHelpers.mockRequest("/");
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "Missing header, guy.",
       );
     });
@@ -154,7 +155,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const response = await server.handleHttpRequest(request);
 
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "Ha... try again. Close though.",
       );
     });
@@ -173,7 +174,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "got",
       );
     });
@@ -187,7 +188,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       const request = TestHelpers.mockRequest("/users/1");
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "'header' not specified.",
       );
     });
@@ -202,7 +203,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         { name: "Thor" },
       );
     });
@@ -222,7 +223,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         });
         const response = await server.handleHttpRequest(request);
         TestHelpers.assertResponseJsonEquals(
-          TestHelpers.responseBody(response),
+          decoder.decode(response.body),
           { name: "Thor" },
         );
         Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
@@ -244,7 +245,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         });
         const response = await server.handleHttpRequest(request);
         Rhum.asserts.assertEquals(
-          TestHelpers.responseBody(response),
+          decoder.decode(response.body),
           "<h1>hey</h1>",
         );
         Rhum.asserts.assertEquals(
@@ -268,7 +269,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "<h1>hey</h1>",
       );
       Rhum.asserts.assertEquals(
@@ -291,7 +292,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       TestHelpers.assertResponseJsonEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         { name: "Thor" },
       );
     });
@@ -311,7 +312,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         });
         const response = await server.handleHttpRequest(request);
         TestHelpers.assertResponseJsonEquals(
-          TestHelpers.responseBody(response),
+          decoder.decode(response.body),
           { name: "Thor" },
         );
         Rhum.asserts.assertEquals(response.headers!.get("MYCUSTOM"), "hey");
@@ -331,7 +332,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
       });
       const response = await server.handleHttpRequest(request);
       Rhum.asserts.assertEquals(
-        TestHelpers.responseBody(response),
+        decoder.decode(response.body),
         "<h1>hey</h1>",
       );
       Rhum.asserts.assertEquals(
@@ -355,7 +356,7 @@ Rhum.testPlan("http/middleware_test.ts", () => {
         });
         const response = await server.handleHttpRequest(request);
         Rhum.asserts.assertEquals(
-          TestHelpers.responseBody(response),
+          decoder.decode(response.body),
           "<h1>hey</h1>",
         );
         Rhum.asserts.assertEquals(

@@ -5,8 +5,7 @@
  * This is only for some tests
  */
 
-import { Rhum } from "../deps.ts";
-import { red } from "../../deps.ts";
+import { Rhum, red } from "../../../deps.ts";
 
 const originalCWD = Deno.cwd();
 const boilerPlatePrefix = "/console/create_app";

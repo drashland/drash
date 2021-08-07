@@ -66,12 +66,12 @@ Rhum.testPlan("http/server_test.ts", () => {
       let response;
       request = TestHelpers.mockRequest("/users/1");
       response = await server.handleHttpRequest(request);
-      TestHelpers.assertResponseJsonEquals(TestHelpers.responseBody(response), {
+      TestHelpers.assertResponseJsonEquals(decoder.decode(response.body), {
         user_id: "1",
       });
       request = TestHelpers.mockRequest("/users/1/");
       response = await server.handleHttpRequest(request);
-      TestHelpers.assertResponseJsonEquals(TestHelpers.responseBody(response), {
+      TestHelpers.assertResponseJsonEquals(decoder.decode(response.body), {
         user_id: "1",
       });
       request = TestHelpers.mockRequest("/notes/1557");
