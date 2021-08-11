@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,10 +24,22 @@
 
 import { DrashRequest } from "../../http/DrashRequest.ts";
 import { DrashResponse } from "../../http/DrashResponse.ts";
-import { ResourceProxy } from "../ResourceProxy.ts";
+import { ControllerProxy } from "../ControllerProxy.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
+import { IContentNegotiationService } from "../../services/IContentNegotiationService.ts";
+import { IController } from "../IController.ts";
 
-export class AcceptResourceProxy extends ResourceProxy {
+export class AcceptControllerProxy extends ControllerProxy {
+  #contentNegotiationService: IContentNegotiationService;
+
+  public constructor(
+    original: IController,
+    contentNegotiationService: IContentNegotiationService,
+  ) {
+    super(original);
+    this.#contentNegotiationService = contentNegotiationService;
+  }
+
   public override CONNECT(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
@@ -68,21 +80,13 @@ export class AcceptResourceProxy extends ResourceProxy {
     request: DrashRequest,
     responsePromise: Promise<DrashResponse>,
   ) {
-    const accept = request.headers.get("Accept") ||
-      request.headers.get("accept");
-    if (accept == null) {
-      // Client doesn't care about content negotiation
-      return responsePromise;
-    }
-    // We await for our original object to handle a response
     const response = await responsePromise;
-    const contentType = response.headers.get("content-type");
-    if (!contentType) {
-      // No Content-Type added, so we error
-      throw new HttpError(406);
-    }
-    if (accept.includes(contentType) === false) {
-      // Content-Type is defined but doesn't have what user wants
+    if (
+      this.#contentNegotiationService.isValidContentNegotiation(
+        request,
+        response,
+      ) === false
+    ) {
       throw new HttpError(406);
     }
     return response;

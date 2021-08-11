@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,26 +23,26 @@
  */
 
 import { ConfigError } from "../domain/errors/ConfigError.ts";
-import { AcceptResourceProxy } from "../resources/concreteProxies/AcceptResourceProxy.ts";
-import { IResource } from "../resources/IResource.ts";
-import { Resource } from "../resources/Resource.ts";
-import { ResourceProxy } from "../resources/ResourceProxy.ts";
+import { AcceptControllerProxy } from "../controllers/concreteProxies/AcceptControllerProxy.ts";
+import { IController } from "../controllers/IController.ts";
+import { Controller } from "../controllers/Controller.ts";
+import { ControllerProxy } from "../controllers/ControllerProxy.ts";
 
 /**
  *
- * The ResourceBuilder class for handling the creation of resources
+ * The ControllerBuilder class for handling the creation of controllers
  *
  * @since 3.0.0
  */
-export class ResourceBuilder {
-  #resource?: IResource;
+export class ControllerBuilder {
+  #resource?: IController;
 
   public constructor() {
     this.reset();
   }
 
-  public setResource<T extends unknown[]>(
-    resource: new (...args: T) => Resource,
+  public setController<T extends unknown[]>(
+    resource: new (...args: T) => Controller,
     ...args: T
   ) {
     this.reset();
@@ -52,7 +52,7 @@ export class ResourceBuilder {
   }
 
   public setProxy<T extends unknown[]>(
-    proxy: new (resource: IResource, ...args: T) => ResourceProxy,
+    proxy: new (resource: IController, ...args: T) => ControllerProxy,
     ...args: T
   ) {
     if (this.#resource == null) {
@@ -65,10 +65,10 @@ export class ResourceBuilder {
   }
 
   /**
-   * @returns {IResource} The built resource
+   * @returns {IController} The built resource
    * @since 3.0.0
    */
-  public get resource(): IResource {
+  public get resource(): IController {
     if (this.#resource == null) {
       throw new ConfigError("You cannot get a non existing resource");
     }
@@ -89,7 +89,7 @@ export class ResourceBuilder {
       }
     > = [
       {
-        class: AcceptResourceProxy,
+        class: AcceptControllerProxy,
       },
     ];
     for (const proxy of nativeProxies) {

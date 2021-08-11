@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,13 +24,13 @@
 
 import { DrashRequest } from "../http/DrashRequest.ts";
 import { DrashResponse } from "../http/DrashResponse.ts";
-import { IResource } from "./IResource.ts";
+import { IController } from "./IController.ts";
 import { HttpError } from "../domain/errors/HttpError.ts";
 
 /**
- * The Resource class is used to create a resource object
+ * The Controller class is used to create a resource object
  *
- *     class Home extends Resource {
+ *     class Home extends Controller {
  *       public uri = ["/user", "/users"]
  *       public async GET(request: DrashRequest) {
  *         const response = new DrashResponse();
@@ -42,7 +42,7 @@ import { HttpError } from "../domain/errors/HttpError.ts";
  *
  * @since 3.0.0
  */
-export abstract class Resource implements IResource {
+export abstract class Controller implements IController {
   /**
    * A property to hold the list of uri where a resource can be found
    *

@@ -22,13 +22,23 @@
  * SOFTWARE.
  */
 
+import { DrashRequest } from "../http/DrashRequest.ts";
+import { DrashResponse } from "../http/DrashResponse.ts";
 
 /**
- * An interface that represents a FileService
+ * An interface that represents a Controller
  *
  * @interface
  * @since 3.0.0
  */
-export interface IFileService {
-  getFilenameExtension(filename: string): string;
+export interface IController {
+  CONNECT(request: DrashRequest): Promise<DrashResponse>;
+  DELETE(request: DrashRequest): Promise<DrashResponse>;
+  GET(request: DrashRequest): Promise<DrashResponse>;
+  HEAD(request: DrashRequest): Promise<DrashResponse>;
+  OPTIONS(request: DrashRequest): Promise<DrashResponse>;
+  PATCH(request: DrashRequest): Promise<DrashResponse>;
+  POST(request: DrashRequest): Promise<DrashResponse>;
+  PUT(request: DrashRequest): Promise<DrashResponse>;
+  TRACE(request: DrashRequest): Promise<DrashResponse>;
 }

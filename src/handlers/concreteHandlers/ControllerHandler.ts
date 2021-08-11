@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,20 +24,20 @@
 
 import { HttpMethod } from "../../domain/types/HttpMethod.ts";
 import { DrashRequest } from "../../http/DrashRequest.ts";
-import { IResource } from "../../resources/IResource.ts";
+import { IController } from "../../controllers/IController.ts";
 import { Handler } from "../Handler.ts";
 import { Moogle } from "../../../deps.ts";
 
 /**
- * The ResourceHandler class that handles resources logic
+ * The ControllerHandler class that handles resources logic
  *
  * @class
  * @since 3.0.0
  */
-export class ResourceHandler extends Handler {
-  #resources: Moogle<IResource>;
+export class ControllerHandler extends Handler {
+  #resources: Moogle<IController>;
 
-  public constructor(resources: Moogle<IResource>) {
+  public constructor(resources: Moogle<IController>) {
     super();
     this.#resources = resources;
   }
@@ -60,8 +60,8 @@ export class ResourceHandler extends Handler {
     const baseUrl = request.baseUrl;
 
     // Try our best to find a resource for that uri
-    const resource = this.findResource(baseUrl, uriWithoutParams) ??
-      this.findResource(baseUrl, "^/");
+    const resource = this.findController(baseUrl, uriWithoutParams) ??
+      this.findController(baseUrl, "^/");
 
     if (resource == null) {
       // No resource found, we delegate to parent
@@ -72,7 +72,7 @@ export class ResourceHandler extends Handler {
     return resource[methodToExecute](request);
   }
 
-  private findResource(baseuri: string, uriWithoutParams: string) {
+  private findController(baseuri: string, uriWithoutParams: string) {
     const results = this.#resources.search(uriWithoutParams);
 
     for (const [, result] of results) {

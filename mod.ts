@@ -1,7 +1,7 @@
-export type { IResource } from "./src/resources/IResource.ts";
-export { Resource } from "./src/resources/Resource.ts";
-export { ResourceProxy } from "./src/resources/ResourceProxy.ts";
-export { AcceptResourceProxy } from "./src/resources/concreteProxies/AcceptResourceProxy.ts";
+export type { IController } from "./src/controllers/IController.ts";
+export { Controller } from "./src/controllers/Controller.ts";
+export { ControllerProxy } from "./src/controllers/ControllerProxy.ts";
+export { AcceptControllerProxy } from "./src/controllers/concreteProxies/AcceptControllerProxy.ts";
 
 export { DrashRequest } from "./src/http/DrashRequest.ts";
 export { DrashResponse } from "./src/http/DrashResponse.ts";

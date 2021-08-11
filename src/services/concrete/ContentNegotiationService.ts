@@ -22,13 +22,30 @@
  * SOFTWARE.
  */
 
+import { DrashRequest } from "../../http/DrashRequest.ts";
+import { DrashResponse } from "../../http/DrashResponse.ts";
+import { IContentNegotiationService } from "../IContentNegotiationService.ts";
 
-/**
- * An interface that represents a FileService
- *
- * @interface
- * @since 3.0.0
- */
-export interface IFileService {
-  getFilenameExtension(filename: string): string;
+export class ContentNegotiationService implements IContentNegotiationService {
+  public isValidContentNegotiation(
+    request: DrashRequest,
+    response: DrashResponse,
+  ) {
+    const accept = request.headers.get("Accept") ||
+      request.headers.get("accept");
+    if (accept == null) {
+      // Client doesn't care about content negotiation
+      return true;
+    }
+    const contentType = response.headers.get("content-type");
+    if (contentType == null) {
+      // No Content-Type added
+      return false;
+    }
+    if (accept.includes(contentType) === false) {
+      // Content-Type is defined but doesn't have what user wants
+      return false;
+    }
+    return true;
+  }
 }

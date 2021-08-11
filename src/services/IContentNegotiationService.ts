@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,19 +26,14 @@ import { DrashRequest } from "../http/DrashRequest.ts";
 import { DrashResponse } from "../http/DrashResponse.ts";
 
 /**
- * An interface that represents a Resource
+ * An interface that represents a ContentNegotiationService
  *
  * @interface
  * @since 3.0.0
  */
-export interface IResource {
-  CONNECT(request: DrashRequest): Promise<DrashResponse>;
-  DELETE(request: DrashRequest): Promise<DrashResponse>;
-  GET(request: DrashRequest): Promise<DrashResponse>;
-  HEAD(request: DrashRequest): Promise<DrashResponse>;
-  OPTIONS(request: DrashRequest): Promise<DrashResponse>;
-  PATCH(request: DrashRequest): Promise<DrashResponse>;
-  POST(request: DrashRequest): Promise<DrashResponse>;
-  PUT(request: DrashRequest): Promise<DrashResponse>;
-  TRACE(request: DrashRequest): Promise<DrashResponse>;
+export interface IContentNegotiationService {
+  isValidContentNegotiation(
+    request: DrashRequest,
+    response: DrashResponse,
+  ): boolean;
 }
