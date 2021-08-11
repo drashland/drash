@@ -23,13 +23,13 @@
  */
 
 import { IHandler } from "./IHandler.ts";
-import { Request } from "../http/Request.ts";
+import { DrashRequest } from "../http/DrashRequest.ts";
 
 /**
  * The HandlerProxy class is used to provide extra functionality to a Handler
  *
  *     class MyHandlerProxy extends HandlerProxy {
- *       public async handle(request: Request) {
+ *       public async handle(request: DrashRequest) {
  *         console.log("Before handling");
  *         const response = super.handle(request);
  *         console.log("After handling");
@@ -38,25 +38,25 @@ import { Request } from "../http/Request.ts";
  *     }
  *
  * @class
- * @since 2.0.0
+ * @since 3.0.0
  */
 export abstract class HandlerProxy implements IHandler {
-  private original: IHandler;
+  #original: IHandler;
 
   /**
    * @param {IHandler} original - The original Resource to add functionality
    *
-   * @since 2.0.0
+   * @since 3.0.0
    */
   public constructor(original: IHandler) {
-    this.original = original;
+    this.#original = original;
   }
 
   public setNext(handler: IHandler) {
-    return this.original.setNext(handler);
+    return this.#original.setNext(handler);
   }
 
-  public handle(request: Request) {
-    return this.original.handle(request);
+  public handle(request: DrashRequest) {
+    return this.#original.handle(request);
   }
 }

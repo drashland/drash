@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-import { IHandler } from "../IHandler.ts";
 import { HandlerProxy } from "../HandlerProxy.ts";
-import { Request } from "../../http/Request.ts";
+import { DrashRequest } from "../../http/DrashRequest.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
 
 export class AcceptHandlerProxy extends HandlerProxy {
-  public async handle(request: Request) {
+  public override async handle(request: DrashRequest) {
     const accept = request.headers.get("Accept") ||
       request.headers.get("accept");
     if (!accept) {
@@ -36,7 +35,7 @@ export class AcceptHandlerProxy extends HandlerProxy {
     }
     // We await for our original object to handle a response
     const response = await super.handle(request);
-    const contentType = response.headers?.get("Content-Type");
+    const contentType = response.headers.get("Content-Type");
     if (!contentType) {
       // No Content-Type added, so we error
       throw new HttpError(406);

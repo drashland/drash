@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { Request } from "../http/Request.ts";
-import { Response } from "../http/Response.ts";
+import { DrashRequest } from "../http/DrashRequest.ts";
+import { DrashResponse } from "../http/DrashResponse.ts";
 import { IResource } from "./IResource.ts";
 import { HttpError } from "../domain/errors/HttpError.ts";
 
@@ -32,90 +32,89 @@ import { HttpError } from "../domain/errors/HttpError.ts";
  *
  *     class Home extends Resource {
  *       public uri = ["/user", "/users"]
- *       public async GET(request: Request) {
- *         const response = new Response();
+ *       public async GET(request: DrashRequest) {
+ *         const response = new DrashResponse();
  *         response.body = "hello world";
  *         response.status = 200;
  *         return response;
  *       }
  *     }
  *
- * @class
- * @since 2.0.0
+ * @since 3.0.0
  */
 export abstract class Resource implements IResource {
   /**
    * A property to hold the list of uri where a resource can be found
    *
-   * @since 2.0.0
+   * @since 3.0.0
    */
   public uri: string[] = [];
 
-  public CONNECT(_request: Request) {
+  public CONNECT(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public DELETE(_request: Request) {
+  public DELETE(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public GET(_request: Request) {
+  public GET(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public HEAD(_request: Request) {
+  public HEAD(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public OPTIONS(_request: Request) {
+  public OPTIONS(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public PATCH(_request: Request) {
+  public PATCH(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public POST(_request: Request) {
+  public POST(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public PUT(_request: Request) {
+  public PUT(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
-  public TRACE(_request: Request) {
+  public TRACE(_request: DrashRequest) {
     const response = this.handleError(new HttpError(405));
-    return new Promise<Response>(function (resolve) {
+    return new Promise<DrashResponse>(function (resolve) {
       resolve(response);
     });
   }
 
   private handleError(error: HttpError | Error) {
-    const response = new Response();
+    const response = new DrashResponse();
     if (error instanceof HttpError) {
       response.status = error["status"];
     } else {

@@ -1,8 +1,19 @@
-export { Rhum } from "https://deno.land/x/rhum@v1.1.7/mod.ts";
-
-export * as path from "https://deno.land/std@0.88.0/path/mod.ts";
+export const { test } = Deno;
 
 export {
-  isFormFile,
-  MultipartReader,
-} from "https://deno.land/std@0.88.0/mime/multipart.ts";
+  assert as assertTrue,
+  assertEquals,
+  assertNotEquals,
+  assertThrows,
+  assertThrowsAsync,
+} from "https://deno.land/std@0.100.0/testing/asserts.ts";
+
+export {
+  getCookies,
+  setCookie,
+} from "https://deno.land/std@0.100.0/http/mod.ts";
+
+export type { Cookie } from "https://deno.land/std@0.100.0/http/mod.ts";
+
+export { render as etaRender } from "https://deno.land/x/eta@v1.6.0/mod.ts";
+export { renderToString as ejsRender } from "https://deno.land/x/dejs/mod.ts";

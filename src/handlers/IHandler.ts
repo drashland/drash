@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-import { Request } from "../http/Request.ts";
-import { Response } from "../http/Response.ts";
+import { DrashRequest } from "../http/DrashRequest.ts";
+import { DrashResponse } from "../http/DrashResponse.ts";
 
 /**
  * An interface that represents a Handler
  *
  * @interface
- * @since 2.0.0
+ * @since 3.0.0
  */
 export interface IHandler {
   setNext(handler: IHandler): IHandler;
-  handle(request: Request): Promise<Response>;
+  handle(request: DrashRequest): Promise<DrashResponse>;
 }

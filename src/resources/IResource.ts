@@ -22,23 +22,23 @@
  * SOFTWARE.
  */
 
-import { Request } from "../http/Request.ts";
-import { Response } from "../http/Response.ts";
+import { DrashRequest } from "../http/DrashRequest.ts";
+import { DrashResponse } from "../http/DrashResponse.ts";
 
 /**
  * An interface that represents a Resource
  *
  * @interface
- * @since 2.0.0
+ * @since 3.0.0
  */
 export interface IResource {
-  CONNECT(request: Request): Promise<Response>;
-  DELETE(request: Request): Promise<Response>;
-  GET(request: Request): Promise<Response>;
-  HEAD(request: Request): Promise<Response>;
-  OPTIONS(request: Request): Promise<Response>;
-  PATCH(request: Request): Promise<Response>;
-  POST(request: Request): Promise<Response>;
-  PUT(request: Request): Promise<Response>;
-  TRACE(request: Request): Promise<Response>;
+  CONNECT(request: DrashRequest): Promise<DrashResponse>;
+  DELETE(request: DrashRequest): Promise<DrashResponse>;
+  GET(request: DrashRequest): Promise<DrashResponse>;
+  HEAD(request: DrashRequest): Promise<DrashResponse>;
+  OPTIONS(request: DrashRequest): Promise<DrashResponse>;
+  PATCH(request: DrashRequest): Promise<DrashResponse>;
+  POST(request: DrashRequest): Promise<DrashResponse>;
+  PUT(request: DrashRequest): Promise<DrashResponse>;
+  TRACE(request: DrashRequest): Promise<DrashResponse>;
 }

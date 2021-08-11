@@ -26,7 +26,7 @@
  * The available http methods
  *
  * {@link https://developer.mozilla.org/docs/Web/HTTP/Methods Mozilla}
- * @since 2.0.0
+ * @since 3.0.0
  */
 export type HttpMethod =
   | "CONNECT"

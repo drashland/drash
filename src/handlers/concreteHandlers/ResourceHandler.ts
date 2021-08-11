@@ -23,7 +23,7 @@
  */
 
 import { HttpMethod } from "../../domain/types/HttpMethod.ts";
-import { Request } from "../../http/Request.ts";
+import { DrashRequest } from "../../http/DrashRequest.ts";
 import { IResource } from "../../resources/IResource.ts";
 import { Handler } from "../Handler.ts";
 import { Moogle } from "../../../deps.ts";
@@ -32,17 +32,17 @@ import { Moogle } from "../../../deps.ts";
  * The ResourceHandler class that handles resources logic
  *
  * @class
- * @since 2.0.0
+ * @since 3.0.0
  */
 export class ResourceHandler extends Handler {
-  private resources: Moogle<IResource>;
+  #resources: Moogle<IResource>;
 
   public constructor(resources: Moogle<IResource>) {
     super();
-    this.resources = resources;
+    this.#resources = resources;
   }
 
-  public handle(request: Request) {
+  public override handle(request: DrashRequest) {
     const uri = request.url.split("/");
     // Remove the first element which would be ""
     uri.shift();
@@ -57,23 +57,23 @@ export class ResourceHandler extends Handler {
      */
     const uriWithoutParams = "^/" + uri[0];
 
-    const baseuri = request.baseuri;
+    const baseUrl = request.baseUrl;
 
     // Try our best to find a resource for that uri
-    const resource = this.findResource(baseuri, uriWithoutParams) ??
-      this.findResource(baseuri, "^/");
+    const resource = this.findResource(baseUrl, uriWithoutParams) ??
+      this.findResource(baseUrl, "^/");
 
-    if (!resource) {
+    if (resource == null) {
       // No resource found, we delegate to parent
       return super.handle(request);
     }
 
-    const methodToExecute = <HttpMethod> request["method"].toUpperCase();
+    const methodToExecute = request["method"].toUpperCase() as HttpMethod;
     return resource[methodToExecute](request);
   }
 
   private findResource(baseuri: string, uriWithoutParams: string) {
-    const results = this.resources.search(uriWithoutParams);
+    const results = this.#resources.search(uriWithoutParams);
 
     for (const [, result] of results) {
       // Take the current result and see if it matches against the request URL

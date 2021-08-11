@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { Request } from "../http/Request.ts";
-import { Response } from "../http/Response.ts";
+import { DrashRequest } from "../http/DrashRequest.ts";
+import { DrashResponse } from "../http/DrashResponse.ts";
 import { IHandler } from "./IHandler.ts";
 import { HttpError } from "../domain/errors/HttpError.ts";
 
@@ -32,8 +32,8 @@ import { HttpError } from "../domain/errors/HttpError.ts";
  *
  *     class MyHandler extends Handler {
  *       public uri = ["/user", "/users"]
- *       public async GET(request: Request) {
- *         const response = new Response();
+ *       public async GET(request: DrashRequest) {
+ *         const response = new DrashResponse();
  *         response.body = "hello world";
  *         response.status = 200;
  *         return response;
@@ -41,10 +41,10 @@ import { HttpError } from "../domain/errors/HttpError.ts";
  *     }
  *
  * @class
- * @since 2.0.0
+ * @since 3.0.0
  */
 export class Handler implements IHandler {
-  private nextHandler?: IHandler;
+  #nextHandler?: IHandler;
 
   /**
    * Use this method to create a chain of handlers
@@ -55,23 +55,23 @@ export class Handler implements IHandler {
    *
    * @param {IHandler} handler - Handler object to be appended to the chain
    * @returns {IHandler} The last handler from the chaing
-   * @since 2.0.0
+   * @since 3.0.0
    */
   public setNext(handler: IHandler): IHandler {
-    this.nextHandler = handler;
+    this.#nextHandler = handler;
     return handler;
   }
 
   /**
    * Use this method to handle an incoming request
    *
-   * @param {Request} request - Request to be handled
-   * @returns {Promise<Response>} The last handler from the chaing
-   * @since 2.0.0
+   * @param {DrashRequest} request - DrashRequest to be handled
+   * @returns {Promise<DrashResponse>} The last handler from the chaing
+   * @since 3.0.0
    */
-  public handle(request: Request): Promise<Response> {
-    if (this.nextHandler) {
-      return this.nextHandler.handle(request);
+  public handle(request: DrashRequest): Promise<DrashResponse> {
+    if (this.#nextHandler) {
+      return this.#nextHandler.handle(request);
     }
     throw new HttpError(404);
   }

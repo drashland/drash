@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-import { Request } from "../http/Request.ts";
+import { DrashRequest } from "../http/DrashRequest.ts";
 import { IResource } from "./IResource.ts";
 
 /**
  * The ResourceProxy class is used to provide extra functionality to a Resource
  *
  *     class Logger extends ResourceProxy{
- *       public async GET(request: Request) {
+ *       public async GET(request: DrashRequest) {
  *         console.log("Before handling");
  *         const response = await super.GET(request);
  *         console.log("After handling");
@@ -39,53 +39,53 @@ import { IResource } from "./IResource.ts";
  *
  *
  * @class
- * @since 2.0.0
+ * @since 3.0.0
  */
 export abstract class ResourceProxy implements IResource {
-  private original: IResource;
+  #original: IResource;
 
   /**
    * @param {IResource} original - The original Resource to add functionality
    *
-   * @since 2.0.0
+   * @since 3.0.0
    */
   public constructor(original: IResource) {
-    this.original = original;
+    this.#original = original;
   }
 
-  public CONNECT(request: Request) {
-    return this.original.CONNECT(request);
+  public CONNECT(request: DrashRequest) {
+    return this.#original.CONNECT(request);
   }
 
-  public DELETE(request: Request) {
-    return this.original.DELETE(request);
+  public DELETE(request: DrashRequest) {
+    return this.#original.DELETE(request);
   }
 
-  public GET(request: Request) {
-    return this.original.GET(request);
+  public GET(request: DrashRequest) {
+    return this.#original.GET(request);
   }
 
-  public HEAD(request: Request) {
-    return this.original.HEAD(request);
+  public HEAD(request: DrashRequest) {
+    return this.#original.HEAD(request);
   }
 
-  public OPTIONS(request: Request) {
-    return this.original.OPTIONS(request);
+  public OPTIONS(request: DrashRequest) {
+    return this.#original.OPTIONS(request);
   }
 
-  public PATCH(request: Request) {
-    return this.original.PATCH(request);
+  public PATCH(request: DrashRequest) {
+    return this.#original.PATCH(request);
   }
 
-  public POST(request: Request) {
-    return this.original.POST(request);
+  public POST(request: DrashRequest) {
+    return this.#original.POST(request);
   }
 
-  public PUT(request: Request) {
-    return this.original.PUT(request);
+  public PUT(request: DrashRequest) {
+    return this.#original.PUT(request);
   }
 
-  public TRACE(request: Request) {
-    return this.original.TRACE(request);
+  public TRACE(request: DrashRequest) {
+    return this.#original.TRACE(request);
   }
 }

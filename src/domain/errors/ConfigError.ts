@@ -32,15 +32,14 @@
  *       }
  *     }
  *
- * @class
- * @since 2.0.0
+ * @since 3.0.0
  */
 export class ConfigError extends Error {
   /**
    * @param {number} status - The status code for this error
    * @param {string} [message] - The custom message for this error
    *
-   * @since 2.0.0
+   * @since 3.0.0
    */
   public constructor(message?: string) {
     super(message);

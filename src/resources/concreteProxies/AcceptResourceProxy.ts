@@ -22,58 +22,61 @@
  * SOFTWARE.
  */
 
-import { Request } from "../../http/Request.ts";
-import { Response } from "../../http/Response.ts";
+import { DrashRequest } from "../../http/DrashRequest.ts";
+import { DrashResponse } from "../../http/DrashResponse.ts";
 import { ResourceProxy } from "../ResourceProxy.ts";
 import { HttpError } from "../../domain/errors/HttpError.ts";
 
 export class AcceptResourceProxy extends ResourceProxy {
-  public CONNECT(request: Request) {
+  public override CONNECT(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public DELETE(request: Request) {
+  public override DELETE(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public GET(request: Request) {
+  public override GET(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public HEAD(request: Request) {
+  public override HEAD(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public OPTIONS(request: Request) {
+  public override OPTIONS(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public PATCH(request: Request) {
+  public override PATCH(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public POST(request: Request) {
+  public override POST(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public PUT(request: Request) {
+  public override PUT(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  public TRACE(request: Request) {
+  public override TRACE(request: DrashRequest) {
     return this.execute(request, super.CONNECT(request));
   }
 
-  private async execute(request: Request, responsePromise: Promise<Response>) {
-    const accept =
-      request.headers.get("Accept") || request.headers.get("accept");
-    if (!accept) {
+  private async execute(
+    request: DrashRequest,
+    responsePromise: Promise<DrashResponse>,
+  ) {
+    const accept = request.headers.get("Accept") ||
+      request.headers.get("accept");
+    if (accept == null) {
       // Client doesn't care about content negotiation
       return responsePromise;
     }
     // We await for our original object to handle a response
     const response = await responsePromise;
-    const contentType = response.headers?.get("Content-Type");
+    const contentType = response.headers.get("content-type");
     if (!contentType) {
       // No Content-Type added, so we error
       throw new HttpError(406);

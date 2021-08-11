@@ -25,9 +25,9 @@
 import { IFileService } from "../IFileService.ts";
 
 /**
+ *
  * The FileService class is responsible for utility methods associated with files
  *
- * @class
  * @since 2.0.0
  */
 export class FileService implements IFileService {
