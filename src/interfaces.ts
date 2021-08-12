@@ -269,7 +269,7 @@ export interface IResponse extends ICreateable {
   headers: Headers;
   body: Drash.Types.TResponseBody | unknown;
   status: number;
-  parseBody: () => Drash.Types.TResponseBody;
+  parseBody: () => string | Uint8Array | null;
 }
 
 /**
@@ -298,7 +298,7 @@ export interface IServerOptions extends ICreateableOptions {
   hostname?: string;
   key_file?: string;
   memory?: {
-    multipart_form_data?: number,
+    multipart_form_data: number,
   };
   port?: number;
   protocol?: "http" | "https";

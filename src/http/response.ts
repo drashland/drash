@@ -33,9 +33,9 @@ export class Response implements Drash.Interfaces.IResponse {
    * @returns The parsed response in a proper format for the request object's
    * `respond()` method.
    */
-  public parseBody(): Drash.Types.TResponseBody {
+  public parseBody(): string | Uint8Array | null {
     if (!this.body) {
-      return;
+      return null;
     }
 
     // Body is a string? Return it as a string.
@@ -61,7 +61,7 @@ export class Response implements Drash.Interfaces.IResponse {
       //     }
       //
       // The above should return whatever is in the request's body.
-      return this.body as Deno.Reader;
+      //return this.body as Deno.Reader; // TODO WHEN WOULD IT BE A READER?
     }
 
     // Automatically stringify JSON-parsable objects.

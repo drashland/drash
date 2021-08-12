@@ -1,4 +1,5 @@
 import * as Drash from "../../mod.ts";
+import { DrashRequest} from "./request.ts"
 
 // TODO(crookse TODO-SERVICES) Remove this. We don't need this. Just set the
 // services accordingly. I don't know what that means right now, but maybe I'll
@@ -17,7 +18,7 @@ interface IServices {
  * It is also in charge of sending error responses that "bubble up" during the
  * request-resource-response lifecycle.
  */
-export class Server implements Drash.Interfaces.IServer {
+export class Server {
   /**
    * See Drash.Interfaces.IServerOptions.
    */
@@ -26,7 +27,7 @@ export class Server implements Drash.Interfaces.IServer {
   /**
    * The Deno server object (after calling `serve()`).
    */
-  #deno_server!: Drash.Deps.Server;
+  #deno_server!: Deno.Listener;
 
   /**
    * The Deno server request object handler. This handler gets wrapped around
@@ -53,14 +54,7 @@ export class Server implements Drash.Interfaces.IServer {
     },
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - FACTORY METHODS /////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * See Drash.Interfaces.ICreateable.create().
-   */
-  public create(options: Drash.Interfaces.IServerOptions): void {
+  constructor(options: Drash.Interfaces.IServerOptions) {
     this.#setOptions(options);
     this.addExternalServices();
     this.#handlers.resource_handler.addResources(
@@ -68,6 +62,10 @@ export class Server implements Drash.Interfaces.IServer {
       this,
     );
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - FACTORY METHODS /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get the full address that this server is running on.
@@ -100,15 +98,14 @@ export class Server implements Drash.Interfaces.IServer {
    * @param error - The error that was thrown during runtime.
    */
   public handleError(
-    request: Drash.Deps.ServerRequest,
     error: Drash.Errors.HttpError,
+    respondWith: (r: Response | Promise<Response>) => Promise<void>
   ) {
     // TODO(crookse TODO-ERRORS) The error should be a response object so we can
     // just call request.respond(error);
-    request.respond({
+    respondWith(new Response(error.stack, {
       status: error.code,
-      body: error.stack,
-    });
+    }));
   }
 
   /**
@@ -120,17 +117,10 @@ export class Server implements Drash.Interfaces.IServer {
    * @param originalRequest - The Deno request object.
    */
   public async handleRequest(
-    originalRequest: Drash.Deps.ServerRequest,
+    originalRequest: Request,
+    responseWith: (r: Response | Promise<Response>) => Promise<void>
   ): Promise<any> {
-    // Create the request proxy. The purpose of the request proxy is to wrap
-    // itself around the original request. The original request does not have
-    // all of the properties and methods required for Drash to handle a request;
-    // therefore, Drash uses its own request proxy to handle a request and the
-    // allows access to the original request via getters.
-    const request = Drash.Factory.create(Drash.Request, {
-      original: originalRequest,
-      server: this,
-    });
+    const request = new DrashRequest(originalRequest, this.options.memory)
 
     const resource = this.#handlers.resource_handler.getResource(request);
 
@@ -155,7 +145,7 @@ export class Server implements Drash.Interfaces.IServer {
     // a user wants to retrieve body params, then they would have to use
     // `async-await` in their resource.This means more boilerplate for their
     // resource, which is something we should prevent.
-    if (request.has_body) {
+    if (request.body) {
       await request.parseBody();
     }
 
@@ -166,22 +156,27 @@ export class Server implements Drash.Interfaces.IServer {
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
 
-    originalRequest.respond({
+    responseWith( new Response(response.parseBody(), {
       status: response.status,
       headers: response.headers,
-      body: response.parseBody(),
-    });
+    }));
   }
 
   /**
    * Listen for incoming requests.
    */
   public async listenForRequests() {
-    for await (const request of this.#deno_server) {
-      try {
-        await this.handleRequest(request);
-      } catch (error) {
-        await this.handleError(request, error);
+    console.log('liteni')
+    for await (const conn of this.#deno_server) {
+        console.log('GOT CONN')
+
+        for await (const { request, respondWith } of Deno.serveHttp(conn)) {
+        try {
+          console.log('got rew')
+          await this.handleRequest(request, respondWith);
+        } catch (error) {
+          await this.handleError(error, respondWith);
+        }
       }
     }
   }
@@ -191,10 +186,10 @@ export class Server implements Drash.Interfaces.IServer {
    *
    * @returns The Deno server object.
    */
-  public async runHttp(): Promise<Drash.Deps.Server> {
+  public async runHttp(): Promise<Deno.Listener> {
     this.options.protocol = "http";
-
-    this.#deno_server = Drash.Deps.serve({
+    console.log(this.options)
+    this.#deno_server = Deno.listen({
       hostname: this.options.hostname!,
       port: this.options.port!,
     });
@@ -209,10 +204,10 @@ export class Server implements Drash.Interfaces.IServer {
    *
    * @returns The Deno server object.
    */
-  public async runHttps(): Promise<Drash.Deps.Server> {
+  public async runHttps(): Promise<Deno.Listener> {
     this.options.protocol = "https";
 
-    this.#deno_server = Drash.Deps.serveTLS({
+    this.#deno_server = Deno.listenTls({
       hostname: this.options.hostname!,
       port: this.options.port!,
       certFile: this.options.cert_file!,
@@ -339,7 +334,7 @@ export class Server implements Drash.Interfaces.IServer {
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  #setOptions(options: Drash.Interfaces.IServerOptions): void {
+  #setOptions(options: Drash.Interfaces.IServerOptions): any {
     if (!options.default_response_content_type) {
       options.default_response_content_type = "application/json";
     }

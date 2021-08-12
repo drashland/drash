@@ -1,4 +1,5 @@
 import * as Drash from "../../mod.ts";
+import { DrashRequest } from "../http/request.ts"
 
 const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -31,13 +32,13 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
     resources: (typeof Drash.Resource)[],
     server: Drash.Server,
   ): void {
-    resources.forEach((resourceClass: typeof Drash.Resource) => {
+    resources.forEach(resourceClass => {
       const resource: Drash.Interfaces.IResource = Drash.Factory
         .create(resourceClass, {
           server: server,
         });
 
-      resource.uri_paths.forEach((path: string) => {
+      resource.uri_paths.forEach(path => {
         // Remove the trailing slash because we handle URI paths with and
         // without the trailing slash the same. For example, the following URI
         // paths are the same:
@@ -92,15 +93,19 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
    * matched to the request.
    */
   public getResource(
-    request: Drash.Request,
+    request: DrashRequest,
   ): Drash.Interfaces.IResource | undefined {
+    const path = new URL(request.url).pathname
     // If we already matched the request to a resource, then return the resource
     // that we matched before
-    if (this.#matches[request.url.path]) {
-      return this.#matches[request.url.path];
+    if (this.#matches[path]) {
+      return this.#matches[path];
     }
+    console.log('DONT MATCH')
+    console.log(this.#matches)
+    console.log(path)
 
-    const uri = request.url.path.split("/");
+    const uri = path.split("/");
     // Remove the first element because it is an empty string. For example:
     //
     //     ["", "uri-part-1", "uri-part-2"]
@@ -116,12 +121,17 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
     const baseUri = "^/" + uri[0];
 
     // Find the resource
+    console.log(this.#resource_index)
+    console.log(baseUri)
     let results = this.#resource_index.search(baseUri);
+    console.log(results)
+    console.log(results.size)
 
     // If no resource was returned, then check if /:some_param is in the
     // resource index. There might be a resource with /:some_param as a URI.
     if (results.size === 0) {
       results = this.#resource_index.search("^/");
+      console.log(results)
       // Still no resource found? GTFO.
       if (!results) {
         return;
@@ -130,7 +140,9 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
 
     // The resource index should only be returning one result, so we grab that
     // first result ...
-    const result = results.entries().next().value[1];
+    const n = results.entries().next()
+    console.log(n)
+    const result = n.value[1];
 
     // ... and the item in that result is the resource.
     const resource = result.item;
@@ -149,7 +161,7 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
           return;
         }
 
-        matched = request.url.path.match(pathObj.regex_path) as string[];
+        matched = path.match(pathObj.regex_path) as string[];
         if (matched && matched.length > 0) {
           const paramNames = pathObj.params ?? [];
           resourceCanHandleUri = true;
@@ -187,7 +199,7 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
     });
 
     // Cache the request so that subsequent requests of the same type are faster
-    this.#matches[request.url.path] = clone;
+    this.#matches[path] = clone;
 
     return clone;
   }

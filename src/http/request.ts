@@ -1,102 +1,30 @@
 import * as Drash from "../../mod.ts";
+import { readAllSync }from "../../deps.ts"
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
-export class Request {
-  #options!: Drash.Interfaces.IRequestOptions;
-  #original!: Drash.Deps.ServerRequest;
-  #parsed_body?: Drash.Types.TRequestBody;
-  #path_parameters!: string;
+export class DrashRequest extends Request {
+  #original!: Request;
+  #parsed_body?: Drash.Types.TRequestBody | null | FormData;
+  #path_params!: string;
   #resource!: Drash.Resource;
-  #server!: Drash.Server;
+  #search_params!: URLSearchParams
+  #memory: { multipart_form_data: number}
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * See Drash.Interfaces.ICreateable.create().
-   */
-  public async create(
-    options: Drash.Interfaces.IRequestOptions,
-  ): Promise<void> {
-    this.#setOptions(options);
-    this.#setProperties();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - GETTERS AND SETTERS /////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Get the ORIGINAL request's body.
-   */
-  get body(): Deno.Reader {
-    return this.#original.body;
-  }
-
-  /**
-   * Does the ORIGINAL request have a body?
-   */
-  get has_body(): boolean {
-    const contentLength = this.#original.headers.get("content-length") ??
-      this.#original.headers.get("Content-Length");
-
-    if (!contentLength) {
-      return false;
+  constructor(
+    originalRequest: Request,
+    memory?: {
+      multipart_form_data: number | undefined
     }
-
-    return +contentLength > 0;
-  }
-
-  /**
-   * Get the ORIGINAL request's HTTP method.
-   */
-  get method(): string {
-    return this.#original.method;
-  }
-
-  /**
-   * This getter returns an object that matches the object that is returned by
-   * using `new URL()`. The reason this is done manually is because it is faster
-   * than using `new URL()` every time a request is made to the server.
-   */
-  get url(): Drash.Interfaces.IRequestUrl {
-    const anchorSplit = this.#original.url.includes("#")
-      ? this.#original.url.split("#")
-      : null;
-    const anchor = anchorSplit
-      ? anchorSplit[anchorSplit.length - 1]
-      : undefined;
-
-    const parametersSplit = this.#original.url.includes("?")
-      ? this.#original.url.split("?")[1]
-      : null;
-    const parameters = parametersSplit
-      ? parametersSplit.split("#").join("")
-      : undefined;
-
-    const path = this.#original.url.split("?")[0];
-
-    const scheme = this.#server.options.protocol!;
-
-    const authority = this.#original.headers.get("host") ?? "";
-
-    let domain = authority.split(":")[0];
-
-    let port = +authority.split(":")[1];
-    if (!port) {
-      port = scheme == "https" ? 443 : 80;
+  ) {
+    super(originalRequest)
+    this.#memory = {
+      multipart_form_data: memory!.multipart_form_data || 128
     }
-
-    return {
-      anchor,
-      authority,
-      domain,
-      parameters,
-      path,
-      port,
-      scheme,
-    };
+    this.#original = originalRequest!;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -127,11 +55,7 @@ export class Request {
       return false;
     }
 
-    const matches = contentTypes.filter((contentType) => {
-      return acceptHeader!.includes(contentType);
-    });
-
-    return matches.length > 0;
+    return contentTypes.includes(acceptHeader);
   }
 
   /**
@@ -145,7 +69,7 @@ export class Request {
    * a cookie with that name doesn't exist
    */
   public getCookie(name: string): string {
-    const cookies: { [key: string]: string } = Drash.Deps.getCookies(
+    const cookies = Drash.Deps.getCookies(
       this.#original,
     );
     return cookies[name];
@@ -162,66 +86,63 @@ export class Request {
    */
   public params(
     type: "body" | "path" | "query" | undefined = undefined
-  ): Drash.Types.TRequestParams {
-    if (!type) {
-      return {
-        body: this.#parsed_body,
-        path: new URLSearchParams(this.#resource.path_parameters),
-        query: new URLSearchParams(this.url.parameters),
-      };
-    }
-
+  ): Drash.Types.TRequestParams | FormData | null {
     switch(type) {
       case "body":
         return this.#parsed_body;
       case "path":
-        return new URLSearchParams(this.#resource.path_parameters);
+        // TODO :: I dont think using urlsearch params will do the trick for `/users/:id/:age`
+        if (!this.#path_params) {
+          this.#path_params = new URLSearchParams(this.#resource.path_parameters)
+        }
+        return this.#path_params;
       case "query":
-        return new URLSearchParams(this.url.parameters);
+        if (!this.#search_params) {
+          this.#search_params = new URLSearchParams(this.#original.url)
+        }
+        return this.#search_params;
       default:
-        break;
+        return {
+          body: this.#parsed_body,
+          path: new URLSearchParams(this.#resource.path_parameters),
+          query: this.#search_params,
+        };
     }
   }
 
   /**
    * Parse the specified request's body if there is a body.
    */
+  // TODO :: Ideally we wouldn't make this accessible to users
   public async parseBody(): Promise<void> {
-    if (!this.has_body) {
+    if (!this.body) {
+      this.#parsed_body = null
       return;
     }
 
-    let contentType = this.#original.headers.get(
+    const contentType = this.#original.headers.get(
       "Content-Type",
     );
-
-    if (!contentType) {
-      contentType = this.#original.headers.get(
-        "content-type",
-      );
-    }
 
     // No Content-Type header? Default to parsing the request body as
     // aplication/x-www-form-urlencoded.
     if (!contentType) {
-      this.#parsed_body = await this.parseBodyAsFormUrlEncoded(true);
+      this.#parsed_body = this.#parseBodyAsFormUrlEncoded(true);
       return;
     }
 
     if (contentType.includes("multipart/form-data")) {
-      this.#parsed_body = await this.parseBodyAsMultipartFormData(
-        contentType,
-      );
+      this.#parsed_body = await this.#original.formData();
       return;
     }
 
     if (contentType.includes("application/json")) {
-      this.#parsed_body = await this.parseBodyAsJson();
+      this.#parsed_body = this.#parseBodyAsJson();
       return;
     }
 
     if (contentType.includes("application/x-www-form-urlencoded")) {
-      this.#parsed_body = await this.parseBodyAsFormUrlEncoded();
+      this.#parsed_body = this.#parseBodyAsFormUrlEncoded();
       return;
     }
   }
@@ -232,12 +153,12 @@ export class Request {
    * @returns A `Promise` of an empty object if no body exists, else a key/value
    * pair array (e.g., `returnValue['someKey']`).
    */
-  public async parseBodyAsFormUrlEncoded(
-    parseByDefault: boolean = false,
-  ): Promise<Drash.Interfaces.IKeyValuePairs<unknown>> {
+  #parseBodyAsFormUrlEncoded(
+    parseByDefault = false,
+  ): Drash.Interfaces.IKeyValuePairs<unknown> {
     try {
       let body = Drash.Deps.decoder.decode(
-        await Deno.readAll(this.#original.body),
+        readAllSync(this.#original.body),
       );
 
       if (body.indexOf("?") !== -1) {
@@ -268,10 +189,10 @@ export class Request {
    *
    * @returns A `Promise` of a JSON object decoded from request body.
    */
-  public async parseBodyAsJson(): Promise<{ [key: string]: unknown }> {
+  #parseBodyAsJson(): { [key: string]: unknown } {
     try {
       let data = Drash.Deps.decoder.decode(
-        await Deno.readAll(this.#original.body),
+        readAllSync(this.#original.body),
       );
 
       // Check if the JSON string contains ' instead of ". We need to convert
@@ -299,7 +220,7 @@ export class Request {
    *
    * @return A Promise<MultipartFormData>.
    */
-  public async parseBodyAsMultipartFormData(
+  async #parseBodyAsMultipartFormData(
     contentType: string,
   ): Promise<Drash.Deps.MultipartFormData> {
     let boundary: null | string = null;
@@ -319,7 +240,7 @@ export class Request {
     }
 
     // Convert memory to megabytes for parsing multipart/form-data
-    const maxMemory = 1024 * 1024 * this.#options.memory!.multipart_form_data!;
+    const maxMemory = 1024 * 1024 * this.#memory!.multipart_form_data!;
 
     try {
       const mr = new Drash.Deps.MultipartReader(this.#original.body, boundary);
@@ -334,44 +255,5 @@ export class Request {
    */
   public setResource(resource: Drash.Resource): void {
     this.#resource = resource;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Validate the options and set them on this object.
-   *
-   * @param options
-   */
-  #setOptions(options: Drash.Interfaces.IRequestOptions): void {
-    if (!options.original) {
-      throw new Drash.Errors.DrashError("D1002");
-    }
-
-    if (!options.server) {
-      throw new Drash.Errors.DrashError("D1003");
-    }
-
-    if (!options.memory) {
-      options.memory = {
-        multipart_form_data: 128,
-      };
-    }
-
-    if (!options.memory.multipart_form_data) {
-      options.memory.multipart_form_data = 128;
-    }
-
-    this.#options = options;
-  }
-
-  /**
-   * Set the properties on this object.
-   */
-  #setProperties(): void {
-    this.#server = this.#options.server!;
-    this.#original = this.#options.original!;
   }
 }
