@@ -39,7 +39,7 @@ export class Server {
   #handlers: {
     resource_handler: Drash.ResourceHandler;
   } = {
-    resource_handler: Drash.Factory.create(Drash.ResourceHandler),
+    resource_handler: new Drash.ResourceHandler(),
   };
 
   /**
@@ -151,7 +151,7 @@ export class Server {
 
     // We set the resource on the request as late as possible to keep the
     // process of this method lean
-    request.setResource(resource as Drash.Resource);
+    request.setResource(resource as Drash.DrashResource);
 
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
@@ -169,8 +169,7 @@ export class Server {
     console.log('liteni')
     // TODO :: Wrap in async annonymosu function to handle multiple reqs
     for await (const conn of this.#deno_server) {
-        console.log('GOT CONN')
-
+      (async () => {
         for await (const { request, respondWith } of Deno.serveHttp(conn)) {
         try {
           console.log('got rew')
@@ -178,7 +177,8 @@ export class Server {
         } catch (error) {
           await this.handleError(error, respondWith);
         }
-      }
+       }
+      })()
     }
   }
 
@@ -344,12 +344,10 @@ export class Server {
       options.hostname = "0.0.0.0";
     }
 
-    if (!options.memory) {
-      options.memory = {};
-    }
-
-    if (!options.memory.multipart_form_data) {
-      options.memory.multipart_form_data = 10;
+    if (!options.memory || (options.memory && !options.memory.multipart_form_data)) {
+      options.memory = {
+       multipart_form_data: 10
+      }
     }
 
     if (!options.port) {

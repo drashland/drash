@@ -6,7 +6,7 @@ export class DrashRequest extends Request {
   #original!: Request;
   #parsed_body?: Drash.Types.TRequestBody | null | FormData;
   #path_params!: string;
-  #resource!: Drash.Resource;
+  #resource!: Drash.DrashResource;
   #search_params!: URLSearchParams
   #memory: { multipart_form_data: number}
 
@@ -93,17 +93,17 @@ export class DrashRequest extends Request {
       case "path":
         // TODO :: I dont think using urlsearch params will do the trick for `/users/:id/:age`
         if (!this.#path_params) {
-          this.#path_params = new URLSearchParams(this.#resource.path_parameters)
+          // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
+          //this.#path_params = new URLSearchParams(this.#resource.path_parameters)
         }
-        return this.#path_params;
+        //return this.#path_params;
       case "query":
-        if (!this.#search_params) {
-          this.#search_params = new URLSearchParams(this.#original.url)
-        }
-        return this.#search_params;
+        // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
+        return this.#search_params ?? (this.#search_params = new URLSearchParams(this.#original.url));
       default:
         return {
           body: this.#parsed_body,
+          // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
           path: new URLSearchParams(this.#resource.path_parameters),
           query: this.#search_params,
         };
@@ -127,93 +127,47 @@ export class DrashRequest extends Request {
     // No Content-Type header? Default to parsing the request body as
     // aplication/x-www-form-urlencoded.
     if (!contentType) {
-      this.#parsed_body = this.#parseBodyAsFormUrlEncoded(true);
+      const formData = await this.#original.formData();
+      const formDataJSON: Record<string, FormDataEntryValue> = {};
+      for (const [key, value] of formData.entries()) {
+        formDataJSON[key] = value;
+      }
+      this.#parsed_body = formDataJSON
       return;
     }
 
     if (contentType.includes("multipart/form-data")) {
-      this.#parsed_body = await this.#original.formData();
+      const formData = await this.#original.formData();
+      const formDataJSON: Record<string, FormDataEntryValue> = {};
+      for (const [key, value] of formData.entries()) {
+        formDataJSON[key] = value;
+      }
+      this.#parsed_body = formDataJSON
       return;
     }
 
     if (contentType.includes("application/json")) {
-      this.#parsed_body = this.#parseBodyAsJson();
+      this.#parsed_body = await this.#original.json();
       return;
     }
 
     if (contentType.includes("application/x-www-form-urlencoded")) {
-      this.#parsed_body = this.#parseBodyAsFormUrlEncoded();
+      const formData = await this.#original.formData();
+      const formDataJSON: Record<string, FormDataEntryValue> = {};
+      for (const [key, value] of formData.entries()) {
+        formDataJSON[key] = value;
+      }
+      this.#parsed_body = formDataJSON
       return;
     }
-  }
 
-  /**
-   * Parse the original request's body as application/x-www-form-url-encoded.
-   *
-   * @returns A `Promise` of an empty object if no body exists, else a key/value
-   * pair array (e.g., `returnValue['someKey']`).
-   */
-  #parseBodyAsFormUrlEncoded(
-    parseByDefault = false,
-  ): Drash.Interfaces.IKeyValuePairs<unknown> {
-    try {
-      let body = Drash.Deps.decoder.decode(
-        readAllSync(this.#original.body),
-      );
-
-      if (body.indexOf("?") !== -1) {
-        body = body.split("?")[1];
-      }
-
-      body = body.replace(/\"/g, "");
-
-      return {};
-    } catch (error) {
-      if (parseByDefault) {
-        throw new Drash.Errors.HttpError(
-          400,
-          `Error reading request body. No Content-Type header was specified. ` +
-            `Therefore, the body was parsed as application/x-www-form-urlencoded ` +
-            `by default and failed.`,
-        );
-      }
-      throw new Drash.Errors.HttpError(
-        400,
-        `Error reading request body as application/x-www-form-urlencoded. ${error.message}`,
-      );
-    }
-  }
-
-  /**
-   * Parse the original request's body as application/json.
-   *
-   * @returns A `Promise` of a JSON object decoded from request body.
-   */
-  #parseBodyAsJson(): { [key: string]: unknown } {
-    try {
-      let data = Drash.Deps.decoder.decode(
-        readAllSync(this.#original.body),
-      );
-
-      // Check if the JSON string contains ' instead of ". We need to convert
-      // those so we can call JSON.parse().
-      if (data.match(/'/g)) {
-        data = data.replace(/'/g, `"`);
-      }
-
-      return JSON.parse(data);
-    } catch (error) {
-      throw new Drash.Errors.HttpError(
-        400,
-        `Error reading request body as application/json. ${error.message}`,
-      );
-    }
+    // TODO :: Handle text plain, eg body: "hello"?
   }
 
   /**
    * Set the resource that is associated with this request on this request.
    */
-  public setResource(resource: Drash.Resource): void {
+  public setResource(resource: Drash.DrashResource): void {
     this.#resource = resource;
   }
 }

@@ -183,7 +183,7 @@ export interface IRequestUrl {
  *     If a request performs one of the above HTTP methods and the request is
  *     matched to this resource, then this method will be executed.
  */
-export interface IResource extends ICreateable {
+export interface IResource {
   // Properties
   path_parameters: string;
   uri_paths: string[];
@@ -302,7 +302,7 @@ export interface IServerOptions extends ICreateableOptions {
   };
   port?: number;
   protocol?: "http" | "https";
-  resources?: typeof Drash.Resource[];
+  resources?: typeof Drash.DrashResource[];
   services?: {
     // Services executed before a request is made (before a resource is found).
     before_request?: typeof Drash.Service[],

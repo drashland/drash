@@ -11,8 +11,8 @@ import * as Drash from "../../mod.ts";
 export class DrashResource {
   public middleware: { after_request?: []; before_request?: [] } = {};
   public path_parameters!: string;
-  public request!: Drash.Request;
-  public response!: Drash.Response;
+  public request!: Drash.DrashRequest;
+  public response!: Drash.DrashResponse;
   public server!: Drash.Server;
   public uri_paths: string[] = [];
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
@@ -26,7 +26,7 @@ export class DrashResource {
     this.#options = options
     this.server = options.server!
     const contentType = this.server.options.default_response_content_type!;
-    this.response = new DrashResponse({
+    this.response = new Drash.DrashResponse({
       default_response_content_type: contentType,
     });
   }

@@ -6,7 +6,7 @@ const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
 const RE_URI_REPLACEMENT = "([^/]+)";
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
-export class ResourceHandler implements Drash.Interfaces.ICreateable {
+export class ResourceHandler {
   #matches: {[key: string]: Drash.Interfaces.IResource} = {};
   #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash
     .Deps.Moogle<Drash.Interfaces.IResource>();
@@ -16,20 +16,13 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * See Drash.Interfaces.ICreateable#create.
-   */
-  public create(): void {
-    return;
-  }
-
-  /**
    * Add the given resources.
    *
    * @param resources
    * @param server - The server object to attach to the resources.
    */
   public addResources(
-    resources: (typeof Drash.Resource)[],
+    resources: (typeof Drash.DrashResource)[],
     server: Drash.Server,
   ): void {
     resources.forEach(resourceClass => {
@@ -95,6 +88,7 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
   public getResource(
     request: DrashRequest,
   ): Drash.Interfaces.IResource | undefined {
+    // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
     const path = new URL(request.url).pathname
     // If we already matched the request to a resource, then return the resource
     // that we matched before
