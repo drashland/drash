@@ -8,7 +8,6 @@ export class DrashRequest extends Request {
   #path_params!: string;
   #resource!: Drash.DrashResource;
   #search_params!: URLSearchParams
-  #memory: { multipart_form_data: number}
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
@@ -16,14 +15,8 @@ export class DrashRequest extends Request {
 
   constructor(
     originalRequest: Request,
-    memory?: {
-      multipart_form_data: number | undefined
-    }
   ) {
     super(originalRequest)
-    this.#memory = {
-      multipart_form_data: memory!.multipart_form_data || 128
-    }
     this.#original = originalRequest!;
   }
 
@@ -127,22 +120,12 @@ export class DrashRequest extends Request {
     // No Content-Type header? Default to parsing the request body as
     // aplication/x-www-form-urlencoded.
     if (!contentType) {
-      const formData = await this.#original.formData();
-      const formDataJSON: Record<string, FormDataEntryValue> = {};
-      for (const [key, value] of formData.entries()) {
-        formDataJSON[key] = value;
-      }
-      this.#parsed_body = formDataJSON
+      this.#parsed_body = await this.#constructFormDataUsingBody()
       return;
     }
 
     if (contentType.includes("multipart/form-data")) {
-      const formData = await this.#original.formData();
-      const formDataJSON: Record<string, FormDataEntryValue> = {};
-      for (const [key, value] of formData.entries()) {
-        formDataJSON[key] = value;
-      }
-      this.#parsed_body = formDataJSON
+      this.#parsed_body = await this.#constructFormDataUsingBody()
       return;
     }
 
@@ -152,12 +135,7 @@ export class DrashRequest extends Request {
     }
 
     if (contentType.includes("application/x-www-form-urlencoded")) {
-      const formData = await this.#original.formData();
-      const formDataJSON: Record<string, FormDataEntryValue> = {};
-      for (const [key, value] of formData.entries()) {
-        formDataJSON[key] = value;
-      }
-      this.#parsed_body = formDataJSON
+      this.#parsed_body = await this.#constructFormDataUsingBody()
       return;
     }
 
@@ -169,5 +147,14 @@ export class DrashRequest extends Request {
    */
   public setResource(resource: Drash.DrashResource): void {
     this.#resource = resource;
+  }
+
+  async #constructFormDataUsingBody(): Promise<Record<string, FormDataEntryValue>> {
+    const formData = await this.#original.formData();
+      const formDataJSON: Record<string, FormDataEntryValue> = {};
+      for (const [key, value] of formData.entries()) {
+        formDataJSON[key] = value;
+      }
+      return formDataJSON
   }
 }

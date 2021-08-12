@@ -120,7 +120,14 @@ export class Server {
     originalRequest: Request,
     respondWith: (r: Response | Promise<Response>) => Promise<void>
   ): Promise<void> {
-    const request = new DrashRequest(originalRequest, this.options.memory)
+    // Ordering of logic matters, because we dont want to spend time calculating
+    // for something the user would never need, eg parsing the body for a user to never use it.
+    // So here is what we do:
+    //
+    // 1. Create the request object (minimal impact)
+    // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
+    // 3. Fail early if resource isnt found
+    const request = new DrashRequest(originalRequest)
 
     const resource = this.#handlers.resource_handler.getResource(request);
 
