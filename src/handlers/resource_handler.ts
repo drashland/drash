@@ -33,8 +33,8 @@ export class ResourceHandler implements Drash.Interfaces.ICreateable {
     server: Drash.Server,
   ): void {
     resources.forEach(resourceClass => {
-      const resource: Drash.Interfaces.IResource = Drash.Factory
-        .create(resourceClass, {
+      const resource: Drash.Interfaces.IResource = new resourceClass
+        ({
           server: server,
         });
 

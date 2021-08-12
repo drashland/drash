@@ -118,8 +118,8 @@ export class Server {
    */
   public async handleRequest(
     originalRequest: Request,
-    responseWith: (r: Response | Promise<Response>) => Promise<void>
-  ): Promise<any> {
+    respondWith: (r: Response | Promise<Response>) => Promise<void>
+  ): Promise<void> {
     const request = new DrashRequest(originalRequest, this.options.memory)
 
     const resource = this.#handlers.resource_handler.getResource(request);
@@ -132,7 +132,7 @@ export class Server {
 
     // If the method does not exist on the resource, then the method is not
     // allowed. So, throw that 405 and GTFO.
-    if (!(method in resource!)) {
+    if (!(method in resource)) {
       throw new Drash.Errors.HttpError(405);
     }
 
@@ -156,7 +156,7 @@ export class Server {
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
 
-    responseWith( new Response(response.parseBody(), {
+    respondWith( new Response(response.parseBody(), {
       status: response.status,
       headers: response.headers,
     }));
@@ -167,6 +167,7 @@ export class Server {
    */
   public async listenForRequests() {
     console.log('liteni')
+    // TODO :: Wrap in async annonymosu function to handle multiple reqs
     for await (const conn of this.#deno_server) {
         console.log('GOT CONN')
 
