@@ -211,46 +211,6 @@ export class DrashRequest extends Request {
   }
 
   /**
-   * Parse the original request's body as multipart/form-data.
-   *
-   * @param body - The request's body.
-   * @param boundary - The boundary of the part (e.g., `----------437192313`)
-   * @param maxMemory - The maximum memory to allocate to this process in
-   * megabytes.
-   *
-   * @return A Promise<MultipartFormData>.
-   */
-  async #parseBodyAsMultipartFormData(
-    contentType: string,
-  ): Promise<Drash.Deps.MultipartFormData> {
-    let boundary: null | string = null;
-
-    // Special thanks to https://github.com/artisonian for helping parse the
-    // boundary logic below
-    try {
-      const match = contentType.match(/boundary=([^\s]+)/);
-      if (match) {
-        boundary = match[1];
-      }
-      if (!boundary) {
-        throw new Drash.Errors.DrashError("D1004");
-      }
-    } catch (error) {
-      throw new Drash.Errors.DrashError("D1004");
-    }
-
-    // Convert memory to megabytes for parsing multipart/form-data
-    const maxMemory = 1024 * 1024 * this.#memory!.multipart_form_data!;
-
-    try {
-      const mr = new Drash.Deps.MultipartReader(this.#original.body, boundary);
-      return await mr.readForm(maxMemory);
-    } catch (error) {
-      throw new Drash.Errors.DrashError("D1005");
-    }
-  }
-
-  /**
    * Set the resource that is associated with this request on this request.
    */
   public setResource(resource: Drash.Resource): void {
