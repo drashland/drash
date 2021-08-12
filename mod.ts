@@ -45,9 +45,9 @@ export { MiddlewareHandler } from "./src/handlers/middleware_handler.ts";
 export { ResourceHandler } from "./src/handlers/resource_handler.ts";
 
 // Http
-export { Request } from "./src/http/request.ts";
-export { Resource } from "./src/http/resource.ts";
-export { Response } from "./src/http/response.ts";
+export { DrashRequest } from "./src/http/request.ts";
+export { DrashResource } from "./src/http/resource.ts";
+export { DrashResponse } from "./src/http/response.ts";
 
 // Export members from the IMPORTS section above
 export {
@@ -57,14 +57,3 @@ export {
   Service,
   Types,
 };
-
-////////////////////////////////////////////////////////////////////////////////
-// FILE MARKER - EXPORTS - FUNCTIONS ///////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Create a Drash HTTP/HTTPS server.
- */
-export function createServer(options: Interfaces.IServerOptions = {}): Server {
-  return Factory.create(Server, options);
-}

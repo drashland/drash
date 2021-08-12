@@ -32,6 +32,8 @@ export type { ReadLineResult } from "https://deno.land/std@0.101.0/io/bufio.ts";
 
 export { StringReader } from "https://deno.land/std@0.101.0/io/readers.ts";
 
+export { readAllSync } from "https://deno.land/std/io/util.ts"
+
 export {
   MultipartReader,
 } from "https://deno.land/std@0.101.0/mime/multipart.ts";
