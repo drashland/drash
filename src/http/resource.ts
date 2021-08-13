@@ -12,22 +12,24 @@ export class DrashResource {
   public middleware: { after_request?: []; before_request?: [] } = {};
   public path_parameters!: string;
   public request!: Drash.DrashRequest;
-  public response!: Drash.DrashResponse;
+  public response: Drash.DrashResponse;
   public server!: Drash.Server;
   public uri_paths: string[] = [];
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
   #options: Drash.Interfaces.IResourceOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(options: Drash.Interfaces.IResourceOptions) {
-    this.#options = options
-    this.server = options.server!
-    const contentType = this.server.options.default_response_content_type!;
-    this.response = new Drash.DrashResponse({
-      default_response_content_type: contentType,
-    });
+  /**
+   *
+   */
+  constructor(
+    server: Drash.Server,
+    defaultResponseContentType: string
+  ) {
+    this.server = server;
+    this.response = new Drash.DrashResponse(defaultResponseContentType);
   }
 }
