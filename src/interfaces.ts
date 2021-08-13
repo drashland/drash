@@ -232,7 +232,7 @@ export interface IServerOptions {
     multipart_form_data: number,
   };
   port?: number;
-  protocol?: "http" | "https";
+  protocol: "http" | "https";
   resources?: typeof Drash.DrashResource[];
   services?: {
     // Services executed before a request is made (before a resource is found).
