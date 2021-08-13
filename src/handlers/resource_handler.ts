@@ -12,7 +12,7 @@ export class ResourceHandler {
     .Deps.Moogle<Drash.Interfaces.IResource>();
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -24,12 +24,13 @@ export class ResourceHandler {
   public addResources(
     resources: (typeof Drash.DrashResource)[],
     server: Drash.Server,
+    serverOptions: Drash.Interfaces.IServerOptions,
   ): void {
     resources.forEach(resourceClass => {
-      const resource: Drash.Interfaces.IResource = new resourceClass
-        ({
-          server: server,
-        });
+      const resource: Drash.Interfaces.IResource = new resourceClass(
+        server,
+        serverOptions.default_response_content_type!,
+      );
 
       resource.uri_paths.forEach(path => {
         // Remove the trailing slash because we handle URI paths with and
@@ -95,9 +96,9 @@ export class ResourceHandler {
     if (this.#matches[path]) {
       return this.#matches[path];
     }
-    console.log('DONT MATCH')
-    console.log(this.#matches)
-    console.log(path)
+    // console.log('DONT MATCH')
+    // console.log(this.#matches)
+    // console.log(path)
 
     const uri = path.split("/");
     // Remove the first element because it is an empty string. For example:
@@ -115,17 +116,17 @@ export class ResourceHandler {
     const baseUri = "^/" + uri[0];
 
     // Find the resource
-    console.log(this.#resource_index)
-    console.log(baseUri)
+    // console.log(this.#resource_index)
+    // console.log(baseUri)
     let results = this.#resource_index.search(baseUri);
-    console.log(results)
-    console.log(results.size)
+    // console.log(results)
+    // console.log(results.size)
 
     // If no resource was returned, then check if /:some_param is in the
     // resource index. There might be a resource with /:some_param as a URI.
     if (results.size === 0) {
       results = this.#resource_index.search("^/");
-      console.log(results)
+      // console.log(results)
       // Still no resource found? GTFO.
       if (!results) {
         return;
@@ -135,7 +136,7 @@ export class ResourceHandler {
     // The resource index should only be returning one result, so we grab that
     // first result ...
     const n = results.entries().next()
-    console.log(n)
+    // console.log(n)
     const result = n.value[1];
 
     // ... and the item in that result is the resource.
@@ -186,11 +187,11 @@ export class ResourceHandler {
       return;
     }
 
-    const clone = Drash.Prototype.clone(resource, {
-      path_parameters: pathParams,
-      request: request,
-      server: resource.server,
-    });
+    const clone = Drash.Prototype.clone(resource);
+
+    clone.path_parameters = pathParams;
+    clone.request = request;
+    clone.server = resource.server;
 
     // Cache the request so that subsequent requests of the same type are faster
     this.#matches[path] = clone;

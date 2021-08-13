@@ -4,12 +4,9 @@
 // To make it easier to search this file, it is recommended you search for
 // "interface" to "jump" to each interface quickly.
 //
-// This interfaces are sorted in alphabetical order. For example, ICreateable
-// comes before ICreateableOptions.
+// This interfaces in this file are sorted in alphabetical order.
 //
 // Interfaces:
-// - ICreateable
-// - ICreateableOptions
 // - IKeyValuePairs
 // - IMime
 // - IRequest
@@ -18,42 +15,11 @@
 // - IResource
 // - IResourceOptions
 // - IResourcePathsParsed
-// - IResponse
-// - IResponseOptions
 // - IServer
 // - IServerOptions
 // - IService
 
 import * as Drash from "../mod.ts";
-
-/**
- * An interface to determine whether or not a class is creatable using the
- * Factory guru. See factory.ts to see the Factory guru implementation.
- *
- * If a class is to be "createable", it should have its own creatable interface
- * that extends this interface. For example, the Drash.Server class is
- * creatable, so it has its own IServer interface that extends this interface --
- * making it "createable" and meeting the requirements in the Factory guru.
- */
-export interface ICreateable {
-  /**
-   * Build this object.
-   *
-   * @param options - Options to help create this object.
-   */
-  create: (options: ICreateableOptions) => void;
-}
-
-/**
- * This interface is used in the Factory guru. When the Factory guru creates an
- * object, it takes options as an argument. Since many objects can be
- * createable, that means many createable objects can have different variations
- * of options. To make the process of typing different variations of options, we
- * define a base ICreatableOptions interface that other options interfaces can
- * extend. That way, options can be different and still meet the requirements in
- * the Factory guru.
- */
-export interface ICreateableOptions {}
 
 /**
  * An interface to help type key-value pair objects with different values.
@@ -111,11 +77,6 @@ export interface IMime {
 }
 
 /**
- * An interface used by the Drash.Request class to make it createable.
- */
-export interface IRequest extends ICreateable {}
-
-/**
  * Options to help create the request object.
  *
  * memory.multipart_form_data
@@ -130,7 +91,7 @@ export interface IRequest extends ICreateable {}
  * server
  *     The Drash.Server object.
  */
-export interface IRequestOptions extends ICreateableOptions {
+export interface IRequestOptions {
   memory?: {
     multipart_form_data?: number;
   };
@@ -155,8 +116,6 @@ export interface IRequestUrl {
 }
 
 /**
- * An interface used by the Drash.Resource class to make it createable.
- *
  * path_parameters
  *     A key-value string defining the path parameters that were passed in by
  *     the request. This value is set in resource_handler.ts#getResource().
@@ -190,15 +149,15 @@ export interface IResource {
   uri_paths_parsed: IResourcePathsParsed[];
   services?: { after_request?: []; before_request?: [] };
   // Methods
-  CONNECT?: () => Promise<IResponse> | IResponse;
-  DELETE?: () => Promise<IResponse> | IResponse;
-  GET?: () => Promise<IResponse> | IResponse;
-  HEAD?: () => Promise<IResponse> | IResponse;
-  OPTIONS?: () => Promise<IResponse> | IResponse;
-  PATCH?: () => Promise<IResponse> | IResponse;
-  POST?: () => Promise<IResponse> | IResponse;
-  PUT?: () => Promise<IResponse> | IResponse;
-  TRACE?: () => Promise<IResponse> | IResponse;
+  CONNECT?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  DELETE?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  GET?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  HEAD?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  OPTIONS?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  PATCH?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  POST?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  PUT?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  TRACE?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
 }
 
 /**
@@ -226,7 +185,7 @@ export interface IResource {
  *     The Drash.Server object. This allows resource objects to access the
  *     server via `this.server`.
  */
-export interface IResourceOptions extends ICreateableOptions {
+export interface IResourceOptions {
   path_parameters?: string[];
   request?: Request;
   server?: Drash.Server;
@@ -261,38 +220,10 @@ export interface IResourcePathsParsed {
   params: string[];
 }
 
-
-/**
- * An interface used by the Drash.Response class to make it createable.
- */
-export interface IResponse extends ICreateable {
-  headers: Headers;
-  body: Drash.Types.TResponseBody | unknown;
-  status: number;
-  parseBody: () => string | Uint8Array | null;
-}
-
-/**
- * Options to help create the response object.
- *
- * default_response_content_type
- *     The default "Content-Type" header to use on all responses. If a resource
- *     does not change this content type header, then the response will be in
- *     the format specified by this option.
- */
-export interface IResponseOptions extends ICreateableOptions {
-  default_response_content_type?: string;
-}
-
-/**
- * An interface used by the Drash.Server class to make it createable.
- */
-export interface IServer extends ICreateable {}
-
 /**
  * Options to help create the server object.
  */
-export interface IServerOptions extends ICreateableOptions {
+export interface IServerOptions {
   cert_file?: string;
   default_response_content_type?: string;
   hostname?: string;

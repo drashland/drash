@@ -10,14 +10,16 @@ export class DrashRequest extends Request {
   #search_params!: URLSearchParams
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - FACTORY ///////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(
-    originalRequest: Request,
-  ) {
+  /**
+   * @param originalRequest - The original request coming in from
+   * `Server.listenForRequests()`.
+   */
+  constructor(originalRequest: Request) {
     super(originalRequest)
-    this.#original = originalRequest!;
+    this.#original = originalRequest;
   }
 
   //////////////////////////////////////////////////////////////////////////////

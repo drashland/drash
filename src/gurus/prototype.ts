@@ -9,13 +9,8 @@ import * as Drash from "../../mod.ts";
  */
 export class Prototype {
   static clone<T extends object>(
-    cloneableProduct: T,
-    cloneableOptions: Drash.Interfaces.ICreateableOptions = {},
+    cloneableProduct: T
   ): T {
-    const clone = Object.create(cloneableProduct);
-    for (const option in cloneableOptions) {
-      clone[option] = cloneableOptions[option as keyof typeof cloneableOptions];
-    }
-    return clone;
+    return Object.create(cloneableProduct);
   }
 }

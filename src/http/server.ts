@@ -22,7 +22,7 @@ export class Server {
   /**
    * See Drash.Interfaces.IServerOptions.
    */
-  public options: Drash.Interfaces.IServerOptions = {};
+  #options: Drash.Interfaces.IServerOptions = {};
 
   /**
    * The Deno server object (after calling `serve()`).
@@ -54,24 +54,32 @@ export class Server {
     },
   };
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @param options - See the interface for the options' schema.
+   */
   constructor(options: Drash.Interfaces.IServerOptions) {
     this.#setOptions(options);
-    this.addExternalServices();
     this.#handlers.resource_handler.addResources(
-      this.options.resources ?? [],
+      this.#options.resources ?? [],
       this,
+      this.#options,
     );
+    this.addExternalServices();
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - FACTORY METHODS /////////////////////////////////////////////
+  // FILE MARKER - GETTERS / SETTERS ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get the full address that this server is running on.
    */
   get address(): string {
-    return `${this.options.protocol}://${this.options.hostname}:${this.options.port}`;
+    return `${this.#options.protocol}://${this.#options.hostname}:${this.#options.port}`;
   }
 
 
@@ -163,8 +171,9 @@ export class Server {
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
 
-    respondWith( new Response(response.parseBody(), {
+    respondWith(new Response(response.body, {
       status: response.status,
+      statusText: response.status_text,
       headers: response.headers,
     }));
   }
@@ -173,13 +182,11 @@ export class Server {
    * Listen for incoming requests.
    */
   public async listenForRequests() {
-    console.log('liteni')
     // TODO :: Wrap in async annonymosu function to handle multiple reqs
     for await (const conn of this.#deno_server) {
       (async () => {
         for await (const { request, respondWith } of Deno.serveHttp(conn)) {
         try {
-          console.log('got rew')
           await this.handleRequest(request, respondWith);
         } catch (error) {
           await this.handleError(error, respondWith);
@@ -195,11 +202,10 @@ export class Server {
    * @returns The Deno server object.
    */
   public async runHttp(): Promise<Deno.Listener> {
-    this.options.protocol = "http";
-    console.log(this.options)
+    this.#options.protocol = "http";
     this.#deno_server = Deno.listen({
-      hostname: this.options.hostname!,
-      port: this.options.port!,
+      hostname: this.#options.hostname!,
+      port: this.#options.port!,
     });
 
     await this.listenForRequests();
@@ -213,13 +219,13 @@ export class Server {
    * @returns The Deno server object.
    */
   public async runHttps(): Promise<Deno.Listener> {
-    this.options.protocol = "https";
+    this.#options.protocol = "https";
 
     this.#deno_server = Deno.listenTls({
-      hostname: this.options.hostname!,
-      port: this.options.port!,
-      certFile: this.options.cert_file!,
-      keyFile: this.options.key_file!,
+      hostname: this.#options.hostname!,
+      port: this.#options.port!,
+      certFile: this.#options.cert_file!,
+      keyFile: this.#options.key_file!,
     });
 
     await this.listenForRequests();
@@ -236,21 +242,21 @@ export class Server {
    */
   protected async addExternalServices(): Promise<void> {
     // No services? GTFO.
-    if (!this.options.services) {
+    if (!this.#options.services) {
       return;
     }
 
     // Add server-level services that execute before all requests
-    if (this.options.services.before_request) {
+    if (this.#options.services.before_request) {
       await this.addExternalServicesBeforeRequest(
-        this.options.services.before_request,
+        this.#options.services.before_request,
       );
     }
 
     // Add server-level services that execute after all requests
-    if (this.options.services.after_request) {
+    if (this.#options.services.after_request) {
       await this.addExternalServicesAfterRequest(
-        this.options.services.after_request,
+        this.#options.services.after_request,
       );
     }
   }
@@ -264,7 +270,6 @@ export class Server {
     services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
-      // TODO(crookse TODO-SERVICES) Make this new call use the Factory.
       // @ts-ignore
       const service = new (s as Drash.Interfaces.IService)();
       // Check if this service needs to be set up
@@ -284,7 +289,6 @@ export class Server {
     services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
-      // TODO(crookse TODO-SERVICES) Make this new call use the Factory.
       // @ts-ignore
       const service = new (s as Drash.Interfaces.IService)();
       // Check if this service needs to be set up
@@ -342,7 +346,7 @@ export class Server {
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  #setOptions(options: Drash.Interfaces.IServerOptions): any {
+  #setOptions(options: Drash.Interfaces.IServerOptions): void {
     if (!options.default_response_content_type) {
       options.default_response_content_type = "application/json";
     }
@@ -372,6 +376,6 @@ export class Server {
       };
     }
 
-    this.options = options;
+    this.#options = options;
   }
 }
