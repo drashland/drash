@@ -233,7 +233,7 @@ export interface IServerOptions {
   };
   port?: number;
   protocol: "http" | "https";
-  resources?: typeof Drash.DrashResource[];
+  resources: typeof Drash.DrashResource[];
   services?: {
     // Services executed before a request is made (before a resource is found).
     before_request?: typeof Drash.Service[],
