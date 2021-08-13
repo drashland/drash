@@ -1,13 +1,14 @@
 import * as Drash from "../../mod.ts";
-import { readAllSync }from "../../deps.ts"
+
+export type ParsedBody = Record<string, FormDataEntryValue> | null | Record<string, unknown>
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class DrashRequest extends Request {
   #original!: Request;
-  #parsed_body?: Drash.Types.TRequestBody | null | FormData;
-  #path_params!: string;
+  #parsed_body?: ParsedBody;
+  #path_params: Map<string, string> = new Map();
   #resource!: Drash.DrashResource;
-  #search_params!: URLSearchParams
+  #search_params: Map<string, string> = new Map()
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -80,28 +81,31 @@ export class DrashRequest extends Request {
    * specified, then all of the params will be returned.
    */
   public params(
-    type: "body" | "path" | "query" | undefined = undefined
-  ): Drash.Types.TRequestParams | FormData | null {
+    type: "body" | "path" | "query"
+  ): ParsedBody | Map<string, string> {
     switch(type) {
       case "body":
-        return this.#parsed_body;
+        return this.#parsed_body ?? null;
       case "path":
         // TODO :: I dont think using urlsearch params will do the trick for `/users/:id/:age`
-        if (!this.#path_params) {
-          // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
-          //this.#path_params = new URLSearchParams(this.#resource.path_parameters)
+        if (!this.#path_params.size) {
+          // todo how do we do this
         }
-        //return this.#path_params;
+        return this.#path_params;
       case "query":
-        // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
-        return this.#search_params ?? (this.#search_params = new URLSearchParams(this.#original.url));
-      default:
-        return {
-          body: this.#parsed_body,
-          // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
-          path: new URLSearchParams(this.#resource.path_parameters),
-          query: this.#search_params,
-        };
+        if (!this.#search_params.size) {
+          const searchStr = this.url.split("?")
+          searchStr.shift()
+          if (!searchStr.length) {
+            this.#search_params = new Map()
+          }
+          const params = searchStr[0].split("&")
+          for (const param of params) {
+            const [name, value] = param.split("=")
+            this.#search_params.set(name, value)
+          }
+        }
+        return this.#search_params;
     }
   }
 

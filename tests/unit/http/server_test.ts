@@ -111,7 +111,7 @@ class HomeResource extends DrashResource {
     return this.response;
   }
   public POST() {
-    this.response.body = this.request.body;
+    this.response.body = JSON.stringify(this.request.params('body'));
     return this.response;
   }
 }
