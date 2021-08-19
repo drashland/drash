@@ -4,11 +4,11 @@ export type ParsedBody = Record<string, FormDataEntryValue> | null | Record<stri
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class DrashRequest extends Request {
-  #original!: Request;
+  #original: Request;
   #parsed_body?: ParsedBody;
   #path_params: Map<string, string> = new Map();
   #resource!: Drash.DrashResource;
-  #search_params: Map<string, string> = new Map()
+  #search_params?: URLSearchParams
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -82,7 +82,7 @@ export class DrashRequest extends Request {
    */
   public params(
     type: "body" | "path" | "query"
-  ): ParsedBody | Map<string, string> {
+  ): ParsedBody | Map<string, string> | URLSearchParams {
     switch(type) {
       case "body":
         return this.#parsed_body ?? null;
@@ -93,17 +93,8 @@ export class DrashRequest extends Request {
         }
         return this.#path_params;
       case "query":
-        if (!this.#search_params.size) {
-          const searchStr = this.url.split("?")
-          searchStr.shift()
-          if (!searchStr.length) {
-            this.#search_params = new Map()
-          }
-          const params = searchStr[0].split("&")
-          for (const param of params) {
-            const [name, value] = param.split("=")
-            this.#search_params.set(name, value)
-          }
+        if (!this.#search_params) {
+          this.#search_params = new URL(this.#original.url).searchParams
         }
         return this.#search_params;
     }
