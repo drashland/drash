@@ -22,7 +22,7 @@ export class Server {
   /**
    * See Drash.Interfaces.IServerOptions.
    */
-  #options: Drash.Interfaces.IServerOptions = {};
+  readonly #options: Drash.Interfaces.IServerOptions;
 
   /**
    * The Deno server object (after calling `serve()`).
@@ -62,13 +62,13 @@ export class Server {
    * @param options - See the interface for the options' schema.
    */
   constructor(options: Drash.Interfaces.IServerOptions) {
-    this.#setOptions(options);
+    this.#options = this.#setOptions(options);
+    this.#addExternalServices();
     this.#handlers.resource_handler.addResources(
       this.#options.resources ?? [],
       this,
       this.#options,
     );
-    this.addExternalServices();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -98,6 +98,20 @@ export class Server {
     }
   }
 
+  public async run() {
+    if (this.#options.protocol === "http") {
+      return await this.#runHttp()
+    }
+    if (this.#options.protocol === "https") {
+      return await this.#runHttps()
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+
   /**
    * Handle errors thrown during runtime. These errors get sent as the response
    * to the client.
@@ -105,7 +119,7 @@ export class Server {
    * @param request - The request object.
    * @param error - The error that was thrown during runtime.
    */
-  public handleError(
+  #handleError(
     error: Drash.Errors.HttpError,
     respondWith: (r: Response | Promise<Response>) => Promise<void>
   ) {
@@ -124,7 +138,7 @@ export class Server {
    *
    * @param originalRequest - The Deno request object.
    */
-  public async handleRequest(
+  async #handleRequest(
     originalRequest: Request,
     respondWith: (r: Response | Promise<Response>) => Promise<void>
   ): Promise<void> {
@@ -181,15 +195,16 @@ export class Server {
   /**
    * Listen for incoming requests.
    */
-  public async listenForRequests() {
-    // TODO :: Wrap in async annonymosu function to handle multiple reqs
+  async #listenForRequests() {
+    console.log('liteni')
     for await (const conn of this.#deno_server) {
       (async () => {
         for await (const { request, respondWith } of Deno.serveHttp(conn)) {
         try {
-          await this.handleRequest(request, respondWith);
+          console.log('got rew')
+          await this.#handleRequest(request, respondWith);
         } catch (error) {
-          await this.handleError(error, respondWith);
+          await this.#handleError(error, respondWith);
         }
        }
       })()
@@ -201,14 +216,13 @@ export class Server {
    *
    * @returns The Deno server object.
    */
-  public async runHttp(): Promise<Deno.Listener> {
-    this.#options.protocol = "http";
+  async #runHttp(): Promise<Deno.Listener> {
     this.#deno_server = Deno.listen({
       hostname: this.#options.hostname!,
       port: this.#options.port!,
     });
 
-    await this.listenForRequests();
+    await this.#listenForRequests();
 
     return this.#deno_server;
   }
@@ -218,9 +232,7 @@ export class Server {
    *
    * @returns The Deno server object.
    */
-  public async runHttps(): Promise<Deno.Listener> {
-    this.#options.protocol = "https";
-
+  async #runHttps(): Promise<Deno.Listener> {
     this.#deno_server = Deno.listenTls({
       hostname: this.#options.hostname!,
       port: this.#options.port!,
@@ -228,19 +240,15 @@ export class Server {
       keyFile: this.#options.key_file!,
     });
 
-    await this.listenForRequests();
+    await this.#listenForRequests();
 
     return this.#deno_server;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - PROTECTED METHODS ///////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
   /**
    * Add the external services passed in via options.
    */
-  protected async addExternalServices(): Promise<void> {
+  async #addExternalServices(): Promise<void> {
     // No services? GTFO.
     if (!this.#options.services) {
       return;
@@ -248,14 +256,14 @@ export class Server {
 
     // Add server-level services that execute before all requests
     if (this.#options.services.before_request) {
-      await this.addExternalServicesBeforeRequest(
+      await this.#addExternalServicesBeforeRequest(
         this.#options.services.before_request,
       );
     }
 
     // Add server-level services that execute after all requests
     if (this.#options.services.after_request) {
-      await this.addExternalServicesAfterRequest(
+      await this.#addExternalServicesAfterRequest(
         this.#options.services.after_request,
       );
     }
@@ -266,7 +274,7 @@ export class Server {
    *
    * @param services - An array of Service types.
    */
-  protected async addExternalServicesAfterRequest(
+  async #addExternalServicesAfterRequest(
     services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
@@ -285,12 +293,14 @@ export class Server {
    *
    * @param services - An array of Service types.
    */
-  protected async addExternalServicesBeforeRequest(
+  async #addExternalServicesBeforeRequest(
     services: typeof Drash.Service[],
   ): Promise<void> {
     for (const s of services) {
       // @ts-ignore
       const service = new (s as Drash.Interfaces.IService)();
+      // TODO :: Regarding the above, i think if we add an empty setUp method to the service class,
+      // and then we could remove the casting here?
       // Check if this service needs to be set up
       if (service.setUp) {
         await service.setUp();
@@ -342,11 +352,7 @@ export class Server {
   //   }
   // }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  #setOptions(options: Drash.Interfaces.IServerOptions): void {
+  #setOptions(options: Drash.Interfaces.IServerOptions): Drash.Interfaces.IServerOptions {
     if (!options.default_response_content_type) {
       options.default_response_content_type = "application/json";
     }
@@ -375,7 +381,6 @@ export class Server {
         before_request: [],
       };
     }
-
-    this.#options = options;
+    return options;
   }
 }
