@@ -9,6 +9,10 @@ import {
 type Reader = Deno.Reader;
 import { Drash } from "../../mod.ts";
 
+function decodeQueryParam(p) {
+  return decodeURIComponent(p.replace(/\+/g, ' '));
+}
+
 export interface IOptions {
   headers?: Headers;
   memory_allocation: {
@@ -149,8 +153,9 @@ export class Request extends ServerRequest {
   ): string | { [key: string]: unknown } | Array<unknown> | boolean | null {
     let param;
     if (typeof this.parsed_body.data!.values === "function") {
-      // For when multipart/form-data
-      param = this.parsed_body.data!.values(input)[0];
+      // For when multipart/form-data and url-encoded
+      let raw_param = this.parsed_body.data!.values(input)[0];
+      param = decodeQueryParam(raw_param); // decoded 
     } else {
       // Anything else. Note we need to use `as` here, to convert it
       // to an object, otherwise it's type is `MultipartFormData | ...`,
