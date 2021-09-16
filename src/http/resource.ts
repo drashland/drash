@@ -8,13 +8,14 @@ import * as Drash from "../../mod.ts";
  *
  *     https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
  */
-export class DrashResource {
+export class DrashResource implements Drash.Interfaces.IResource {
   public middleware: { after_request?: []; before_request?: [] } = {};
   public path_parameters!: string;
   public request!: Drash.DrashRequest;
   public response: Drash.DrashResponse;
   public server!: Drash.Server;
-  public uri_paths: string[] = [];
+  public static paths: string[] = [];
+  public uri_paths: string[] = []
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
   #options: Drash.Interfaces.IResourceOptions = {};
 
@@ -27,9 +28,11 @@ export class DrashResource {
    */
   constructor(
     server: Drash.Server,
-    defaultResponseContentType: string
+    defaultResponseContentType: string,
+    paths: string[]
   ) {
     this.server = server;
+    this.uri_paths = paths
     this.response = new Drash.DrashResponse(defaultResponseContentType);
   }
 }

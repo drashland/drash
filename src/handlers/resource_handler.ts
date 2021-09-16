@@ -30,6 +30,7 @@ export class ResourceHandler {
       const resource: Drash.Interfaces.IResource = new resourceClass(
         server,
         serverOptions.default_response_content_type!,
+        resourceClass.paths
       );
 
       resource.uri_paths.forEach(path => {
@@ -128,7 +129,7 @@ export class ResourceHandler {
       results = this.#resource_index.search("^/");
       // console.log(results)
       // Still no resource found? GTFO.
-      if (!results) {
+      if (!results.size) {
         return;
       }
     }

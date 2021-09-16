@@ -182,6 +182,11 @@ export class Server {
     // process of this method lean
     request.setResource(resource as Drash.DrashResource);
 
+    for (const service of this.#services.external.before_request) {
+      // pass resource req and res if a middleware modifies them
+      await service.run(resource.request, resource.response)
+    }
+
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
 
@@ -196,12 +201,10 @@ export class Server {
    * Listen for incoming requests.
    */
   async #listenForRequests() {
-    console.log('liteni')
     for await (const conn of this.#deno_server) {
       (async () => {
         for await (const { request, respondWith } of Deno.serveHttp(conn)) {
         try {
-          console.log('got rew')
           await this.#handleRequest(request, respondWith);
         } catch (error) {
           await this.#handleError(error, respondWith);

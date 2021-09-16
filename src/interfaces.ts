@@ -148,6 +148,8 @@ export interface IResource {
   uri_paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
   services?: { after_request?: []; before_request?: [] };
+  request: Drash.DrashRequest
+  response: Drash.DrashResponse
   // Methods
   CONNECT?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
   DELETE?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
@@ -246,6 +248,8 @@ export interface IServerOptions {
 export interface IService {
   // The method to run during compile time
   setUp?: () => Promise<void> | void;
+
+  run: (request: Drash.DrashRequest, response: Drash.DrashResponse) => void|Promise<void>
 
   // The method to run during runtime
   // runAfterRequest?: (
