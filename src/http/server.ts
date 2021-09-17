@@ -1,5 +1,6 @@
 import * as Drash from "../../mod.ts";
 import { DrashRequest} from "./request.ts"
+import { parseBody } from "./request.ts"
 
 // TODO(crookse TODO-SERVICES) Remove this. We don't need this. Just set the
 // services accordingly. I don't know what that means right now, but maybe I'll
@@ -98,12 +99,12 @@ export class Server {
     }
   }
 
-  public async run() {
+  public run() {
     if (this.#options.protocol === "http") {
-      return await this.#runHttp()
+      return this.#runHttp()
     }
     if (this.#options.protocol === "https") {
-      return await this.#runHttps()
+      return this.#runHttps()
     }
   }
 
@@ -149,7 +150,22 @@ export class Server {
     // 1. Create the request object (minimal impact)
     // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
     // 3. Fail early if resource isnt found
-    const request = new DrashRequest(originalRequest)
+
+    // Automatically parse the request body for the user.
+    //
+    // Although this call slows down the request-resource-response lifecycle
+    // (removes ~1k req/sec in benchmarks), calling this here makes it more
+    // convenient for the user when writing a resource. For example, if this
+    // call were to be placed in the Drash.Request class and only executed when
+    // a user wants to retrieve body params, then they would have to use
+    // `async-await` in their resource.This means more boilerplate for their
+    // resource, which is something we should prevent.
+    //
+    // Reason why this code is at this specific line is so we dont expose the `parseBody` function on the drash request class to the user, as it
+    // is an internal API method and so it isn't included in the API docs on doc.deno.land
+    const parsedBody = originalRequest.body ? await parseBody(originalRequest) ?? {} : {}
+
+    const request = new DrashRequest(originalRequest, parsedBody)
 
     const resource = this.#handlers.resource_handler.getResource(request);
 
@@ -165,19 +181,6 @@ export class Server {
       throw new Drash.Errors.HttpError(405);
     }
 
-    // Automatically parse the request body for the user.
-    //
-    // Although this call slows down the request-resource-response lifecycle
-    // (removes ~1k req/sec in benchmarks), calling this here makes it more
-    // convenient for the user when writing a resource. For example, if this
-    // call were to be placed in the Drash.Request class and only executed when
-    // a user wants to retrieve body params, then they would have to use
-    // `async-await` in their resource.This means more boilerplate for their
-    // resource, which is something we should prevent.
-    if (request.body) {
-      await request.parseBody();
-    }
-
     for (const service of this.#services.external.before_request) {
       // pass resource req and res if a middleware modifies them
       await service.run(resource.request, resource.response)
@@ -185,6 +188,10 @@ export class Server {
 
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
+
+    for (const service of this.#services.external.after_request) {
+      await service.run(resource.request, response)
+    }
 
     respondWith(new Response(response.body, {
       status: response.status,
@@ -197,6 +204,7 @@ export class Server {
    * Listen for incoming requests.
    */
   async #listenForRequests() {
+    console.log('hello')
     for await (const conn of this.#deno_server) {
       (async () => {
         for await (const { request, respondWith } of Deno.serveHttp(conn)) {
@@ -208,6 +216,7 @@ export class Server {
        }
       })()
     }
+    console.log('bye')
   }
 
   /**
@@ -215,13 +224,13 @@ export class Server {
    *
    * @returns The Deno server object.
    */
-  async #runHttp(): Promise<Deno.Listener> {
+  #runHttp(): Deno.Listener {
     this.#deno_server = Deno.listen({
       hostname: this.#options.hostname!,
       port: this.#options.port!,
     });
 
-    await this.#listenForRequests();
+    this.#listenForRequests();
 
     return this.#deno_server;
   }
@@ -231,7 +240,7 @@ export class Server {
    *
    * @returns The Deno server object.
    */
-  async #runHttps(): Promise<Deno.Listener> {
+  #runHttps(): Deno.Listener {
     this.#deno_server = Deno.listenTls({
       hostname: this.#options.hostname!,
       port: this.#options.port!,
@@ -239,7 +248,7 @@ export class Server {
       keyFile: this.#options.key_file!,
     });
 
-    await this.#listenForRequests();
+    this.#listenForRequests();
 
     return this.#deno_server;
   }
@@ -307,49 +316,6 @@ export class Server {
       this.#services.external.before_request!.push(service);
     }
   }
-
-  /**
-   * Execute server-level services after the request.
-   *
-   * @param request - The request object.
-   * @param resource - The resource object.
-   */
-  // protected async executeApplicationServicesAfterRequest(
-  //   request: any,
-  //   response: Response,
-  // ): Promise<void> {
-  //   if (!this.services.external.after_request) {
-  //     return;
-  //   }
-
-  //   for (const index in this.services.external.after_request) {
-  //     const service = this.services.external.after_request[index];
-  //     if (service.runAfterRequest) {
-  //       service.runAfterRequest(request, response);
-  //     }
-  //   }
-  // }
-
-  /**
-   * Execute server-level services before the request.
-   *
-   * @param request - The request object.
-   * @param resource - The resource object.
-   */
-  // protected async executeApplicationServicesBeforeRequest(
-  //   request: Request,
-  // ): Promise<void> {
-  //   if (!this.services.external.before_request) {
-  //     return;
-  //   }
-
-  //   for (const index in this.services.external.before_request) {
-  //     const service = this.services.external.before_request[index];
-  //     if (service.runBeforeRequest) {
-  //       service.runBeforeRequest(request);
-  //     }
-  //   }
-  // }
 
   #setOptions(options: Drash.Interfaces.IServerOptions): Drash.Interfaces.IServerOptions {
     if (!options.default_response_content_type) {

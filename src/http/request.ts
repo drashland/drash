@@ -1,11 +1,11 @@
 import * as Drash from "../../mod.ts";
 
-export type ParsedBody = Record<string, FormDataEntryValue> | null | Record<string, unknown>
+export type ParsedBody = Record<string, FormDataEntryValue> | null
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class DrashRequest extends Request {
-  #original: Request;
-  #parsed_body?: ParsedBody;
+  readonly #original: Request;
+  readonly #parsed_body: ParsedBody;
   #path_params: Map<string, string> = new Map();
   #search_params?: URLSearchParams
 
@@ -17,9 +17,10 @@ export class DrashRequest extends Request {
    * @param originalRequest - The original request coming in from
    * `Server.listenForRequests()`.
    */
-  constructor(originalRequest: Request) {
+  constructor(originalRequest: Request, parsedBody: Record<string, FormDataEntryValue>) {
     super(originalRequest)
     this.#original = originalRequest;
+    this.#parsed_body = parsedBody
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,10 @@ export class DrashRequest extends Request {
    *
    * @returns True if yes, false if no.
    */
+  // TODO(ebebbington): Really don't think there's a need for this, as
+  //                    all we're really doing is this.request.headers.get('accept')!.includes(["application/json"]),
+  //                    Whilst it's more code than this.accepts(["application/json"]), i wonder if it's worth
+  //                    us keeping?
   public accepts(contentTypes: string[]): boolean {
     let acceptHeader = this.#original.headers.get("Accept");
 
@@ -88,10 +93,7 @@ export class DrashRequest extends Request {
    * 
    * @returns The value of the parameter, or null if not found 
    */
-  public bodyParam<T>(name: string): T | null | unknown {
-    if (!this.#parsed_body) {
-      return null
-    }
+  public bodyParam<T>(name: string): T | null | FormDataEntryValue {
     return this.#parsed_body[name] ?? null
   }
 
@@ -137,52 +139,37 @@ export class DrashRequest extends Request {
     }
     return this.#search_params.get(name)
   }
+}
 
-  /**
-   * Parse the specified request's body if there is a body.
-   */
-  // TODO :: Ideally we wouldn't make this accessible to users
-  public async parseBody(): Promise<void> {
-    if (!this.body) {
-      this.#parsed_body = null
-      return;
+async function constructFormDataUsingBody(request: Request): Promise<Record<string, FormDataEntryValue>> {
+  const formData = await request.formData();
+    const formDataJSON: Record<string, FormDataEntryValue> = {};
+    for (const [key, value] of formData.entries()) {
+      formDataJSON[key] = value;
     }
+    return formDataJSON
+}
 
-    const contentType = this.#original.headers.get(
-      "Content-Type",
-    );
-
-    // No Content-Type header? Default to parsing the request body as
-    // aplication/x-www-form-urlencoded.
-    if (!contentType) {
-      this.#parsed_body = await this.#constructFormDataUsingBody()
-      return;
-    }
-
-    if (contentType.includes("multipart/form-data")) {
-      this.#parsed_body = await this.#constructFormDataUsingBody()
-      return;
-    }
-
-    if (contentType.includes("application/json")) {
-      this.#parsed_body = await this.#original.json();
-      return;
-    }
-
-    if (contentType.includes("application/x-www-form-urlencoded")) {
-      this.#parsed_body = await this.#constructFormDataUsingBody()
-      return;
-    }
-
-    // TODO :: Handle text plain, eg body: "hello"?
+export async function parseBody(request: Request): Promise<Record<string, FormDataEntryValue> | void> {
+  if (!request.body) {
+    return;
   }
-
-  async #constructFormDataUsingBody(): Promise<Record<string, FormDataEntryValue>> {
-    const formData = await this.#original.formData();
-      const formDataJSON: Record<string, FormDataEntryValue> = {};
-      for (const [key, value] of formData.entries()) {
-        formDataJSON[key] = value;
-      }
-      return formDataJSON
+  const contentType = request.headers.get(
+    "Content-Type",
+  );
+  // No Content-Type header? Default to parsing the request body as
+  // aplication/x-www-form-urlencoded.
+  if (!contentType) {
+    return await constructFormDataUsingBody(request)
   }
+  if (contentType.includes("multipart/form-data")) {
+    return await constructFormDataUsingBody(request)
+  }
+  if (contentType.includes("application/json")) {
+    return await request.json()
+  }
+  if (contentType.includes("application/x-www-form-urlencoded")) {
+    return await constructFormDataUsingBody(request)
+  }
+  // TODO :: Handle text plain, eg body: "hello"?
 }

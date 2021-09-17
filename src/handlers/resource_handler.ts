@@ -32,6 +32,8 @@ export class ResourceHandler {
         serverOptions.default_response_content_type!,
         resourceClass.paths
       );
+      console.log('resource paths', resourceClass.paths)
+      console.log('resource uri paths', resource.uri_paths)
 
       resource.uri_paths.forEach(path => {
         // Remove the trailing slash because we handle URI paths with and
@@ -142,6 +144,8 @@ export class ResourceHandler {
 
     // ... and the item in that result is the resource.
     const resource = result.item;
+    console.log(resource.match(results.get(0)!.searchTerm))
+
 
     let resourceCanHandleUri = false;
     let matched: string[] = [];
@@ -237,6 +241,7 @@ export class ResourceHandler {
     resource: Drash.Interfaces.IResource,
     path: string,
   ): void {
+    console.log(path, '<')
     resource.uri_paths_parsed.push({
       og_path: path,
       regex_path: `^${path.replace(RE_URI_PATH_GLOBAL, RE_URI_REPLACEMENT)}/?$`,

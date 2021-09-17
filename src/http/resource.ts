@@ -35,4 +35,8 @@ export class DrashResource implements Drash.Interfaces.IResource {
     this.uri_paths = paths
     this.response = new Drash.DrashResponse(defaultResponseContentType);
   }
+
+  pathParam(name: string) {
+    console.log(this.uri_paths_parsed)
+  }
 }
