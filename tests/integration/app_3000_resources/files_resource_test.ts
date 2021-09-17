@@ -19,9 +19,6 @@ class FilesResource extends Drash.Resource {
 
 const server = new Drash.Server({
   response_output: "application/json",
-  memory_allocation: {
-    multipart_form_data: 128,
-  },
   resources: [
     FilesResource,
   ],

@@ -13,11 +13,9 @@ export class DrashResource implements Drash.Interfaces.IResource {
   public path_parameters!: string;
   public request!: Drash.DrashRequest;
   public response: Drash.DrashResponse;
-  public server!: Drash.Server;
   public static paths: string[] = [];
   public uri_paths: string[] = []
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
-  #options: Drash.Interfaces.IResourceOptions = {};
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -27,11 +25,9 @@ export class DrashResource implements Drash.Interfaces.IResource {
    *
    */
   constructor(
-    server: Drash.Server,
     defaultResponseContentType: string,
     paths: string[]
   ) {
-    this.server = server;
     this.uri_paths = paths
     this.response = new Drash.DrashResponse(defaultResponseContentType);
   }

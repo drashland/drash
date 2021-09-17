@@ -29,35 +29,3 @@ export type THttpMethod =
   | "POST"
   | "PUT"
   | "TRACE";
-
-/**
- * A type to help pass in constructable classes to other functions which
- * construct those classes.
- */
-export type TConstructor<T extends unknown> = new (...args: unknown[]) => T;
-
-/**
- * The types that the response body can be.
- */
-export type TResponseBody =
-  | Deno.Reader
-  | Uint8Array
-  | string
-  | undefined;
-
-/**
- * The types that the request body can be.
- */
-export type TRequestBody =
-  | Drash.Deps.MultipartFormData
-  | Drash.Interfaces.IKeyValuePairs<unknown>
-  | undefined;
-
-export type TRequestParams =
-  | URLSearchParams
-  | Drash.Types.TRequestBody
-  | {
-    body: TRequestBody,
-    path: URLSearchParams,
-    query: URLSearchParams,
-  }

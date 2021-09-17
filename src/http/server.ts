@@ -188,8 +188,12 @@ export class Server {
       await service.run(resource.request, resource.response)
     }
 
+    // todo run before req services for method and class
+
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
+
+    // TODO Run after req services for method and class
 
     for (const service of this.#services.external.after_request) {
       await service.run(resource.request, response)
@@ -326,12 +330,6 @@ export class Server {
 
     if (!options.hostname) {
       options.hostname = "0.0.0.0";
-    }
-
-    if (!options.memory || (options.memory && !options.memory.multipart_form_data)) {
-      options.memory = {
-       multipart_form_data: 10
-      }
     }
 
     if (!options.port) {

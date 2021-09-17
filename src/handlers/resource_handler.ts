@@ -22,12 +22,10 @@ export class ResourceHandler {
    */
   public addResources(
     resources: (typeof Drash.DrashResource)[],
-    server: Drash.Server,
     serverOptions: Drash.Interfaces.IServerOptions,
   ): void {
     resources.forEach(resourceClass => {
       const resource: Drash.Interfaces.IResource = new resourceClass(
-        server,
         serverOptions.default_response_content_type!,
         resourceClass.paths
       );
@@ -210,7 +208,6 @@ export class ResourceHandler {
     }
 
     const clone = Drash.Prototype.clone(resource);
-    clone.server = resource.server;
 
     // TODO :: Maybe add caching based on perf, but we can only cache the resource found, not the params,
     //         hence there is no caching now because still still need to gen the path params

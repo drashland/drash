@@ -13,7 +13,6 @@
 // - IRequestOptions
 // - IRequestUrl
 // - IResource
-// - IResourceOptions
 // - IResourcePathsParsed
 // - IServer
 // - IServerOptions
@@ -77,45 +76,6 @@ export interface IMime {
 }
 
 /**
- * Options to help create the request object.
- *
- * memory.multipart_form_data
- *     How much memory to allocate (in megabytes) to multipart/form-data body
- *     parsing.
- *
- * original
- *     The original request object. This is the object that the Drash.Request
- *     object wraps itself around. Users are able to interact with the original
- *     request object using the Drash.Request getters.
- *
- * server
- *     The Drash.Server object.
- */
-export interface IRequestOptions {
-  memory?: {
-    multipart_form_data?: number;
-  };
-  original?: Drash.Deps.ServerRequest;
-  server?: Drash.Server;
-}
-
-/**
- * An interface for the Drash.Request object's URL getter. This interfaces
- * follows the following schema:
- *
- *     https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_is_a_URL
- */
-export interface IRequestUrl {
-  anchor?: string;
-  authority: string;
-  domain: string;
-  parameters?: string;
-  path: string;
-  port: number;
-  scheme: "https" | "http";
-}
-
-/**
  * path_parameters
  *     A key-value string defining the path parameters that were passed in by
  *     the request. This value is set in resource_handler.ts#getResource().
@@ -163,37 +123,6 @@ export interface IResource {
 }
 
 /**
- * Options to help create the resource object.
- *
- * path_parameters
- *     A key-value pair string defining the path parameters that were passed in
- *     by the request and associated to path parameters on the resource. For
- *     example, if the resource has `/:id` as a URI path and a request has a URI
- *     path of `/1`, then the following string would be set in this property:
- *
- *         "id=1"
- *
- *     Ultimately, this string is used when one of the following calls is made
- *     in a resource:
- *
- *         `this.request.params.path.get("some_param")`
- *         `this.request.pathParams.get("some_param")`
- *
- * request
- *     The Drash.Request object. This allows resource objects to access the
- *     request via `this.request`.
- *
- * server
- *     The Drash.Server object. This allows resource objects to access the
- *     server via `this.server`.
- */
-export interface IResourceOptions {
-  path_parameters?: string[];
-  request?: Request;
-  server?: Drash.Server;
-}
-
-/**
  * This is used to type a resource object's paths. During the request-resource
  * lifecycle, the server object parses the paths on a reosurce and ends up with
  * the following:
@@ -230,9 +159,6 @@ export interface IServerOptions {
   default_response_content_type?: string;
   hostname?: string;
   key_file?: string;
-  memory?: {
-    multipart_form_data: number,
-  };
   port?: number;
   protocol: "http" | "https";
   resources: typeof Drash.DrashResource[];
