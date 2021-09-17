@@ -1,5 +1,3 @@
-import * as Drash from "../../mod.ts";
-
 /**
  * Clone an object.
  *
@@ -8,7 +6,7 @@ import * as Drash from "../../mod.ts";
  *     https://refactoring.guru/design-patterns/prototype
  */
 export class Prototype {
-  static clone<T extends object>(
+  static clone<T extends Record<string, unknown>>(
     cloneableProduct: T
   ): T {
     return Object.create(cloneableProduct);

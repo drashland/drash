@@ -7,7 +7,6 @@ export class DrashRequest extends Request {
   #original: Request;
   #parsed_body?: ParsedBody;
   #path_params: Map<string, string> = new Map();
-  #resource!: Drash.DrashResource;
   #search_params?: URLSearchParams
 
   //////////////////////////////////////////////////////////////////////////////
@@ -72,32 +71,71 @@ export class DrashRequest extends Request {
   }
 
   /**
-   * TODO(crookse TODO-CACHE) Cache the parameters so that subsequent calls to
-   * this method are faster.
-   *
-   * Get the paramters on the request.
-   *
-   * @param type - (optional) The type of params to return. If no type is
-   * specified, then all of the params will be returned.
+   * Get a body parameter of the request by the name
+   * 
+   * @example
+   * ```js
+   * // Assume you've sent a fetch request with:
+   * //   {
+   * //     user: {
+   * //       name: "Drash"
+   * //     }
+   * //   }
+   * const user = this.bodyParam<{ name: string }>("user") // { name: "Drash" }
+   * ```
+   * 
+   * @param name The body parameter name
+   * 
+   * @returns The value of the parameter, or null if not found 
    */
-  public params(
-    type: "body" | "path" | "query"
-  ): ParsedBody | Map<string, string> | URLSearchParams {
-    switch(type) {
-      case "body":
-        return this.#parsed_body ?? null;
-      case "path":
-        // TODO :: I dont think using urlsearch params will do the trick for `/users/:id/:age`
-        if (!this.#path_params.size) {
-          // todo how do we do this
-        }
-        return this.#path_params;
-      case "query":
-        if (!this.#search_params) {
-          this.#search_params = new URL(this.#original.url).searchParams
-        }
-        return this.#search_params;
+  public bodyParam<T>(name: string): T | null | unknown {
+    if (!this.#parsed_body) {
+      return null
     }
+    return this.#parsed_body[name] ?? null
+  }
+
+  /**
+   * Get a path parameter of the request
+   * 
+   * @example
+   * ```js
+   * // Assume a path for your resource is "/users/:id/:city?", and the request is
+   * // "/users/2/"
+   * const id = this.paramParam("id") // 2
+   * const city = this.queryParam("city") // undefined
+   * ```
+   * 
+   * @param name The parameter name, as set in your static paths
+   * 
+   * @returns The value for the parameter, or null if not set
+   */
+  public pathParam(name: string): string | undefined {
+    if (!this.#path_params.size) {
+      // todo set the params
+    }
+    return this.#path_params.get(name)
+  }
+
+  /**
+   * Find a query string parameter
+   * 
+   * @example
+   * ```js
+   * // Assume url is "http://localhost:1336/users?city=London&country=England"
+   * const city = this.queryParam("city") // "London"
+   * const country = this.queryParam("country") // "England"
+   * ```
+   * 
+   * @param name The name of the query string
+   * 
+   * @returns The value if found, or null if not
+   */
+  public queryParam(name: string): string | null {
+    if (!this.#search_params) {
+      this.#search_params = new URL(this.#original.url).searchParams
+    }
+    return this.#search_params.get(name)
   }
 
   /**
@@ -137,13 +175,6 @@ export class DrashRequest extends Request {
     }
 
     // TODO :: Handle text plain, eg body: "hello"?
-  }
-
-  /**
-   * Set the resource that is associated with this request on this request.
-   */
-  public setResource(resource: Drash.DrashResource): void {
-    this.#resource = resource;
   }
 
   async #constructFormDataUsingBody(): Promise<Record<string, FormDataEntryValue>> {

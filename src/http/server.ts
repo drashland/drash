@@ -178,10 +178,6 @@ export class Server {
       await request.parseBody();
     }
 
-    // We set the resource on the request as late as possible to keep the
-    // process of this method lean
-    request.setResource(resource as Drash.DrashResource);
-
     for (const service of this.#services.external.before_request) {
       // pass resource req and res if a middleware modifies them
       await service.run(resource.request, resource.response)

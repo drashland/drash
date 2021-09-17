@@ -7,7 +7,7 @@ const RE_URI_REPLACEMENT = "([^/]+)";
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class ResourceHandler {
-  #matches: {[key: string]: Drash.Interfaces.IResource} = {};
+  #matches: Map<string, Drash.Interfaces.IResource> = new Map();
   #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash
     .Deps.Moogle<Drash.Interfaces.IResource>();
 
@@ -94,8 +94,8 @@ export class ResourceHandler {
     const path = new URL(request.url).pathname
     // If we already matched the request to a resource, then return the resource
     // that we matched before
-    if (this.#matches[path]) {
-      return this.#matches[path];
+    if (this.#matches.has(path)) {
+      return this.#matches.get(path);
     }
     // console.log('DONT MATCH')
     // console.log(this.#matches)
@@ -195,7 +195,7 @@ export class ResourceHandler {
     clone.server = resource.server;
 
     // Cache the request so that subsequent requests of the same type are faster
-    this.#matches[path] = clone;
+    this.#matches.set(path, clone);
 
     return clone;
   }
@@ -231,6 +231,8 @@ export class ResourceHandler {
    * @param resource - The resource to set the paths on.
    * @param path - The path to parse into parsable pieces.
    */
+  // TODO(ebebbington): Think about if this logic can be moved into the resource constructor, mainly so the prop is immutable,
+  //                    and i doubt it'll affect perf because if a resource has paths with params, a user is always going to hit them
   #setPath(
     resource: Drash.Interfaces.IResource,
     path: string,
