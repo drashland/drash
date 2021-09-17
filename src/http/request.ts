@@ -17,10 +17,11 @@ export class DrashRequest extends Request {
    * @param originalRequest - The original request coming in from
    * `Server.listenForRequests()`.
    */
-  constructor(originalRequest: Request, parsedBody: Record<string, FormDataEntryValue>) {
+  constructor(originalRequest: Request, parsedBody: Record<string, FormDataEntryValue>, pathParams: Map<string, string>) {
     super(originalRequest)
     this.#original = originalRequest;
     this.#parsed_body = parsedBody
+    this.#path_params = pathParams
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -94,7 +95,7 @@ export class DrashRequest extends Request {
    * @returns The value of the parameter, or null if not found 
    */
   public bodyParam<T>(name: string): T | null | FormDataEntryValue {
-    return this.#parsed_body[name] ?? null
+    return this.#parsed_body![name] ?? null
   }
 
   /**

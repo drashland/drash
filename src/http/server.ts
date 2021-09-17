@@ -165,13 +165,15 @@ export class Server {
     // is an internal API method and so it isn't included in the API docs on doc.deno.land
     const parsedBody = originalRequest.body ? await parseBody(originalRequest) ?? {} : {}
 
-    const request = new DrashRequest(originalRequest, parsedBody)
+    const result = this.#handlers.resource_handler.getResource(originalRequest);
 
-    const resource = this.#handlers.resource_handler.getResource(request);
-
-    if (!resource) {
+    if (!result) {
       throw new Drash.Errors.HttpError(404);
     }
+
+    const { resource, pathParams } = result
+
+    const request = new DrashRequest(originalRequest, parsedBody, pathParams)
 
     const method = request.method.toUpperCase();
 

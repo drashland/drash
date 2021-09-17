@@ -1,5 +1,4 @@
 import * as Drash from "../../mod.ts";
-import { DrashRequest } from "../http/request.ts"
 
 const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -90,18 +89,67 @@ export class ResourceHandler {
    * matched to the request.
    */
   public getResource(
-    request: DrashRequest,
-  ): Drash.Interfaces.IResource | undefined {
-    // TODO :: Check the perf for this, using NEW URL might decrease perf, if so, we need another way of getting the path
-    const path = new URL(request.url).pathname
-    // If we already matched the request to a resource, then return the resource
-    // that we matched before
-    if (this.#matches.has(path)) {
-      return this.#matches.get(path);
+    request: Request,
+  ): {
+    resource: Drash.Interfaces.IResource,
+    pathParams: Map<string, string>
+  } | void {
+    function tryMatch(uri: string[], path: string[]): { found: boolean, matches: Map<string, string> } {
+      // if url is /, and path is /, its an exACT MATCH
+      if (uri.join("/") === path.join("/")) {
+        return {
+          found: true,
+          matches: new Map()
+        }
+      }
+      // If the url and path dont have the same parts, it isnt meant  to be,
+      // eg url = /users or /users/edit/2, and path = /users/:id.
+      // Also account for optional params by just ignoring them from this check
+      if (uri.length !== path.filter((p: string) => p.includes('?') === false).length) {
+        // this will catch when url = /2/lon/22, and path = /:id/:city/:age?
+        // now include optional params and if the len isn't the same, routes deffo dont match
+        if (uri.length !== path.length) 
+          return {
+            found: false,
+            matches: new Map()
+          }
+      }
+      // But also check that the url isn't too big for the path, eg
+      // url = /users/2/edit/name, path = /users/:id/:action?, those routes dont match
+      if (uri.length > path.length) {
+        return {
+          found: false,
+          matches: new Map()
+        }
+      }
+      // by now, the url and the path is the same length, BUT could contain different values,
+      // eg url = /users/edit/2, path = /users/delete/2
+      let found = true;
+      const matches = new Map()
+      for (const part in uri) {
+        // if part in path isnt a param, it should exactly match the same position in the url, eg
+        // url = /users/edit, path = /users/edit, we're iterating on the second part, both should be "edit",
+        // otherwise url = /users/edit and path = /users/delete shouldn't match right?:)
+        if (path[part].includes(':') === false) {
+          if (uri[part] !== path[part]) {
+            found = false
+            break
+          }
+        }
+
+        // even if we set this for a uri that doesn't match, it doesnt matter
+        // because we always going to check if found is true
+        if (path[part].includes(':')) {
+          matches.set(path[part].replace(':', ''), uri[part]) // todo :: replace ? too
+        }
+      }
+      return {
+        found,
+        matches
+      }
     }
-    // console.log('DONT MATCH')
-    // console.log(this.#matches)
-    // console.log(path)
+
+    const path = new URL(request.url).pathname
 
     const uri = path.split("/");
     // Remove the first element because it is an empty string. For example:
@@ -144,64 +192,36 @@ export class ResourceHandler {
 
     // ... and the item in that result is the resource.
     const resource = result.item;
-    console.log(resource.match(results.get(0)!.searchTerm))
 
-
-    let resourceCanHandleUri = false;
-    let matched: string[] = [];
-    let pathParams = ""; // e.g., "hello=world&good=bye
-
-    // If we matched a resource, then we need to make sure the request's URI
-    // path matches one of the URI paths defined on the resource. If the
-    // request's URI path matches one of the URI paths defined on the resource,
-    // then the resource can handle the request. Otherwise, it cannot. Womp.
-    resource.uri_paths_parsed.forEach(
-      (pathObj: Drash.Interfaces.IResourcePathsParsed) => {
-        if (resourceCanHandleUri) {
-          return;
-        }
-
-        matched = path.match(pathObj.regex_path) as string[];
-        if (matched && matched.length > 0) {
-          const paramNames = pathObj.params ?? [];
-          resourceCanHandleUri = true;
-
-          // If we get here, then we need to check if the matched array contains
-          // more than 1 item. If it does, then we know the request's URI path
-          // includes path params. Knowing that, we take off the first item in
-          // the matched array because the 0th item is not a path param.
-          if (matched.length > 1) {
-            matched.shift();
-
-            if (paramNames.length > 0 && matched.length > 0) {
-              paramNames.forEach((paramName: string, index: number) => {
-                pathParams += `${paramName}=${matched[index]}&`;
-              });
-            }
-          }
-        }
-      },
-    );
-
-    // If the resource does not have a URI path defined that matches the
-    // request's URI path, then the resource cannot handle the request.
-    // Ultimately, this is a 404 because there is no resource with the defined
-    // URI path. In other words, there is no resource that can handle the
-    // request.
-    if (!resourceCanHandleUri) {
-      return;
+    // TODO(ebebbington): By now, are we sure we found a matching resource?
+    let found = true;
+    let par = new Map()
+    console.log(result)
+    for (const resourcePath of resource.uri_paths) {
+     const res = tryMatch(path.split("/"), resourcePath.split("/"))
+     found = res.found
+     par = res.matches
+     if (found) { // break early, if we match first path, no need to check all others
+       break
+     }
+    }
+    if (!found) {
+      return
     }
 
     const clone = Drash.Prototype.clone(resource);
-
-    clone.path_parameters = pathParams;
-    clone.request = request;
     clone.server = resource.server;
 
-    // Cache the request so that subsequent requests of the same type are faster
-    this.#matches.set(path, clone);
+    // TODO :: Maybe add caching based on perf, but we can only cache the resource found, not the params,
+    //         hence there is no caching now because still still need to gen the path params
+    // Example is:
+    // if (this.#matches.has(path)) { return this.#matches.get(path)}
+    // this.#matches.set(path, clone)
 
-    return clone;
+    return {
+      resource: clone,
+      pathParams: par
+    };
   }
 
   //////////////////////////////////////////////////////////////////////////////
