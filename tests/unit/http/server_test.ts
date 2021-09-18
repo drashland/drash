@@ -1,6 +1,4 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+import { Rhum } from "../../deps.ts";
 import { Server } from "../../../src/http/server.ts"
 import { DrashResource } from "../../../src/http/resource.ts"
 import { assertThrowsAsync } from "../../deps.ts"
@@ -42,7 +40,9 @@ Rhum.testPlan("http/server_test.ts", () => {
       await server.run()
       const res = await fetch("http://localhost:1234")
       Rhum.asserts.assertEquals(await res.json(),
-        'Just the response form the home resource'
+        {
+          success: true
+        }
       )
       Rhum.asserts.assertEquals(res.status, 200)
     })
@@ -54,9 +54,6 @@ Rhum.testPlan("http/server_test.ts", () => {
       })
       await server.run()
       const res = await fetch("http://localhost:1234/dont/exist")
-      Rhum.asserts.assertEquals(await res.json(),
-        'Just the response form the home resource'
-      )
       Rhum.asserts.assertEquals(res.status, 404)
     })
     Rhum.testCase("Will throw a 405 if the req method isnt found on the resource", async () => {
@@ -69,9 +66,6 @@ Rhum.testPlan("http/server_test.ts", () => {
       const res = await fetch("http://localhost:1234", {
         method: "OPTIONS"
       })
-      Rhum.asserts.assertEquals(await res.json(),
-        'Just the response form the home resource'
-      )
       Rhum.asserts.assertEquals(res.status, 405)
     })
     Rhum.testCase("Will parse the body if it exists on the request", async () => {
@@ -88,8 +82,8 @@ Rhum.testPlan("http/server_test.ts", () => {
         },
         body: JSON.stringify({ name: "Drash" })
       })
-      Rhum.asserts.assertEquals(await res.json(),
-        'The resource should send the same body back to us'
+      Rhum.asserts.assertEquals(await res.text(),
+        'Drash'
       )
       Rhum.asserts.assertEquals(res.status, 200)
     })
@@ -111,57 +105,7 @@ class HomeResource extends DrashResource {
     return this.response;
   }
   public POST() {
-    this.response.body = JSON.stringify(this.request.params('body'));
-    return this.response;
-  }
-}
-
-// TODO Move the below classes into integration tests
-
-class UsersResource extends Drash.Resource {
-  static paths = ["/users/:id"];
-  public GET() {
-    this.response.body = { user_id: this.request.getPathParam("id") };
-    return this.response;
-  }
-}
-
-class NotesResource extends Drash.Resource {
-  static paths = ["/notes/{id}"];
-  public GET() {
-    const noteId = this.request.getPathParam("id");
-    if (noteId === "123") {
-      return this.response.redirect(302, "/notes/1557");
-    }
-    if (noteId === "1234") {
-      return this.response.redirect(301, "/notes/1667");
-    }
-    this.response.body = { note_id: noteId };
-    return this.response;
-  }
-}
-
-class InvalidReturningOfResponseResource extends Drash.Resource {
-  static paths = ["/invalid/returning/of/response"];
-  public GET() {
-  }
-  public POST() {
-    return "hello";
-  }
-}
-
-class GetHeaderParam extends Drash.Resource {
-  static paths = ["/"];
-  public GET() {
-    this.response.body = { header_param: this.request.getHeaderParam("id") };
-    return this.response;
-  }
-}
-
-class GetUrlQueryParam extends Drash.Resource {
-  static paths = ["/"];
-  public GET() {
-    this.response.body = { query_param: this.request.getUrlQueryParam("id") };
+    this.response.body = JSON.stringify(this.request.bodyParam('name'));
     return this.response;
   }
 }

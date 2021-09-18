@@ -67,7 +67,6 @@ export class Server {
     this.#addExternalServices();
     this.#handlers.resource_handler.addResources(
       this.#options.resources ?? [],
-      this,
       this.#options,
     );
   }

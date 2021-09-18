@@ -24,6 +24,7 @@ export class DrashResource implements Drash.Interfaces.IResource {
   /**
    *
    */
+  // TODO(ebebbington): Only grip is, some props are public
   constructor(
     defaultResponseContentType: string,
     paths: string[]
