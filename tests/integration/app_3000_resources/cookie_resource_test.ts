@@ -1,10 +1,11 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class CookieResource extends Drash.Resource {
+class CookieResource extends Drash.DrashResource {
   static paths = ["/cookie", "/cookie/"];
 
   public GET() {
@@ -30,6 +31,7 @@ const server = new Drash.Server({
   resources: [
     CookieResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,11 +41,10 @@ const server = new Drash.Server({
 Rhum.testPlan("cookie_resource_test.ts", () => {
   Rhum.testSuite("/cookie", () => {
     Rhum.testCase("cookie can be created, retrieved, and deleted", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
       let cookies;
-      let cookieName;
       let cookieVal;
 
       const cookie = { name: "testCookie", value: "Drash" };
@@ -85,7 +86,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       await response.arrayBuffer();
       //await response.body.close()
 
-      await server.close();
+      server.close();
     });
   });
 });

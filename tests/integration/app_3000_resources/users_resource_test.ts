@@ -1,14 +1,15 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class UsersResource extends Drash.Resource {
+class UsersResource extends Drash.DrashResource {
   static paths = ["/users", "/users/:id"];
 
   public GET() {
-    const userId = this.request.getPathParam("id");
+    const userId = this.request.pathParam("id");
 
     if (!userId) {
       this.response.body = "Please specify a user ID.";
@@ -62,6 +63,7 @@ const server = new Drash.Server({
   resources: [
     UsersResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +73,7 @@ const server = new Drash.Server({
 Rhum.testPlan("users_resource_test.ts", () => {
   Rhum.testSuite("/users", () => {
     Rhum.testCase("user data can be retrieved", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
       Deno.chdir("./tests/integration/app_3000_resources");
@@ -120,7 +122,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
         `\"User with ID \\\"18\\\" not found.\"`,
       );
 
-      await server.close();
+      server.close();
     });
   });
 });

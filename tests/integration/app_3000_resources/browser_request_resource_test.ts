@@ -6,26 +6,28 @@
  * this was the first type on the request)
  */
 
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class BrowserRequestResource extends Drash.Resource {
+class BrowserRequestResource extends Drash.DrashResource {
   static paths = ["/browser-request"];
 
   public GET() {
-    this.response.body = {};
+    this.response.body = null;
     return this.response;
   }
 }
 
 const server = new Drash.Server({
-  response_output: "application/json",
+  default_response_content_type: "application/json",
   resources: [
     BrowserRequestResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,19 +37,17 @@ const server = new Drash.Server({
 Rhum.testPlan("browser_request_resource.ts", () => {
   Rhum.testSuite("GET /browser-request", () => {
     Rhum.testCase("Response should be JSON", async () => {
-      await TestHelpers.runServer(server);
-
+      server.run();
       // Example browser request
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/browser-request",
       );
-      Rhum.asserts.assertEquals(await response.text(), "{}"); // would be null
+      Rhum.asserts.assertEquals(await response.text(), "null"); // would be null
       Rhum.asserts.assertEquals(
         response.headers.get("Content-Type"),
         "application/json",
       );
-
-      await server.close();
+      server.close();
     });
   });
 });

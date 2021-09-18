@@ -1,10 +1,11 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class InvalidReturningOfResponseResource extends Drash.Resource {
+class InvalidReturningOfResponseResource extends Drash.DrashResource {
   static paths = ["/invalid/returning/of/response"];
   public GET() {
   }
@@ -17,6 +18,7 @@ const server = new Drash.Server({
   resources: [
     InvalidReturningOfResponseResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,12 +28,12 @@ const server = new Drash.Server({
 Rhum.testPlan("returning_invalid_response_in_resource_test.ts", () => {
   Rhum.testSuite("/invalid/returning/of/response", () => {
     Rhum.testCase("Error is thrown when nothing is returned", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/invalid/returning/of/response",
       );
-      await server.close();
+      server.close();
 
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -40,12 +42,12 @@ Rhum.testPlan("returning_invalid_response_in_resource_test.ts", () => {
       Rhum.asserts.assertEquals(response.status, 418);
     });
     Rhum.testCase("Error is thrown when nothing is returned", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       const response = await TestHelpers.makeRequest.post(
         "http://localhost:3000/invalid/returning/of/response",
       );
-      await server.close();
+      server.close();
 
       Rhum.asserts.assertEquals(
         await response.text(),

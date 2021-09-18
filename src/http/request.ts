@@ -158,8 +158,6 @@ export async function parseBody(request: Request): Promise<Record<string, FormDa
   const contentType = request.headers.get(
     "Content-Type",
   );
-  // No Content-Type header? Default to parsing the request body as
-  // aplication/x-www-form-urlencoded.
   if (!contentType) {
     return await constructFormDataUsingBody(request)
   }

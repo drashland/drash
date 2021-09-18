@@ -1,14 +1,15 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class FilesResource extends Drash.Resource {
+class FilesResource extends Drash.DrashResource {
   static paths = ["/files"];
 
-  public async POST() {
-    this.response.body = this.request.getBodyParam("value_1") ?? null;
+  public POST() {
+    this.response.body = this.request.bodyParam("value_1") ?? null;
     return this.response;
   }
 
@@ -18,10 +19,11 @@ class FilesResource extends Drash.Resource {
 }
 
 const server = new Drash.Server({
-  response_output: "application/json",
+  default_response_content_type: "application/json",
   resources: [
     FilesResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,7 @@ const server = new Drash.Server({
 Rhum.testPlan("files_resource_test.ts", () => {
   Rhum.testSuite("/files", () => {
     Rhum.testCase("multipart/form-data works", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
 
@@ -44,7 +46,7 @@ Rhum.testPlan("files_resource_test.ts", () => {
       });
       Rhum.asserts.assertEquals(await response.text(), '"John"');
 
-      await server.close();
+      server.close();
     });
   });
 });

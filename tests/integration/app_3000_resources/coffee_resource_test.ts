@@ -1,4 +1,5 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -8,7 +9,7 @@ interface ICoffee {
   name: string;
 }
 
-export class CoffeeResource extends Drash.Resource {
+export class CoffeeResource extends Drash.DrashResource {
   static paths = ["/coffee", "/coffee/:id"];
 
   protected coffee = new Map<number, ICoffee>([
@@ -19,11 +20,11 @@ export class CoffeeResource extends Drash.Resource {
 
   public GET() {
     // @ts-ignore Ignoring because we don't care
-    let coffeeId: any = this.request.getPathParam("id");
-    const location = this.request.getUrlQueryParam("location");
+    let coffeeId = this.request.getPathParam("id");
+    const location = this.request.queryParam("location");
     if (location) {
       if (location == "from_query") {
-        coffeeId = this.request.getUrlQueryParam("id");
+        coffeeId = this.request.queryParam("id");
       }
     }
 
@@ -33,10 +34,12 @@ export class CoffeeResource extends Drash.Resource {
     }
 
     if (coffeeId === "123") {
-      return this.response.redirect(302, "/coffee/17");
+      this.response.headers.set('Location', '/coffee/17')
+      this.response.status = 302
+      return this.response;
     }
 
-    this.response.body = this.getCoffee(parseInt(coffeeId));
+    this.response.body = JSON.stringify(this.getCoffee(parseInt(coffeeId)));
     return this.response;
   }
 
@@ -67,6 +70,7 @@ const server = new Drash.Server({
   resources: [
     CoffeeResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +80,7 @@ const server = new Drash.Server({
 Rhum.testPlan("coffee_resource_test.ts", () => {
   Rhum.testSuite("/coffee (path params)", () => {
     Rhum.testCase("works as expected with path params", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
 
@@ -124,13 +128,13 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       );
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
 
-      await server.close();
+      server.close();
     });
   });
 
   Rhum.testSuite("/coffee (url query params)", () => {
     Rhum.testCase("works as expected with URL query params", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       const response = await fetch(
         "http://localhost:3000/coffee/19?location=from_query&id=18",
@@ -141,7 +145,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       const t = await response.text();
       Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
 
-      await server.close();
+      server.close();
     });
   });
 });

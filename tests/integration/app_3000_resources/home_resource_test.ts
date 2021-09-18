@@ -1,10 +1,11 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class HomeResource extends Drash.Resource {
+class HomeResource extends Drash.DrashResource {
   static paths = ["/", "/home"];
 
   public GET() {
@@ -32,6 +33,7 @@ const server = new Drash.Server({
   resources: [
     HomeResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +43,7 @@ const server = new Drash.Server({
 Rhum.testPlan("home_resource_test.ts", () => {
   Rhum.testSuite("/", () => {
     Rhum.testCase("only defined methods are accessible", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
 
@@ -93,7 +95,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
       response = await TestHelpers.makeRequest.patch("http://localhost:3000");
       Rhum.asserts.assertEquals(await response.text(), '"Method Not Allowed"');
 
-      await server.close();
+      server.close();
     });
   });
 });

@@ -1,18 +1,19 @@
-import { Drash, Rhum, TestHelpers } from "../../deps.ts";
+import { Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class RequestAcceptsUseCaseOneResource extends Drash.Resource {
+class RequestAcceptsUseCaseOneResource extends Drash.DrashResource {
   static paths = ["/request-accepts-use-case-one"];
 
   public GET() {
-    const typeToRequest = this.request.getUrlQueryParam("typeToCheck");
+    const typeToRequest = this.request.queryParam("typeToCheck");
 
     let matchedType;
     if (typeToRequest) {
-      matchedType = this.request.accepts(typeToRequest);
+      matchedType = this.request.accepts([typeToRequest]);
     } else {
       matchedType = this.request.accepts(["text/html", "application/json"]);
     }
@@ -30,7 +31,7 @@ class RequestAcceptsUseCaseOneResource extends Drash.Resource {
   }
 }
 
-class RequestAcceptsUseCaseTwoResource extends Drash.Resource {
+class RequestAcceptsUseCaseTwoResource extends Drash. DrashResource {
   static paths = ["/request-accepts-use-case-two"];
 
   public GET() {
@@ -53,19 +54,19 @@ class RequestAcceptsUseCaseTwoResource extends Drash.Resource {
     }
   }
 
-  protected htmlResponse(): Drash.Response {
+  protected htmlResponse(): Drash.DrashResponse {
     this.response.headers.set("Content-Type", "text/html");
     this.response.body = "<div>response: text/html</div>";
     return this.response;
   }
 
-  protected jsonResponse(): Drash.Response {
+  protected jsonResponse(): Drash.DrashResponse {
     this.response.headers.set("Content-Type", "application/json");
-    this.response.body = { response: "application/json" };
+    this.response.body = JSON.stringify({ response: "application/json" });
     return this.response;
   }
 
-  protected xmlResponse(): Drash.Response {
+  protected xmlResponse(): Drash.DrashResponse {
     this.response.headers.set("Content-Type", "text/xml");
     this.response.body = "<response>text/xml</response>";
     return this.response;
@@ -77,6 +78,7 @@ const server = new Drash.Server({
     RequestAcceptsUseCaseOneResource,
     RequestAcceptsUseCaseTwoResource,
   ],
+  protocol: "http"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +88,7 @@ const server = new Drash.Server({
 Rhum.testPlan("request_accepts_resource_test.ts", () => {
   Rhum.testSuite("/request-accepts-use-case-one", () => {
     Rhum.testCase("request accepts one type", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
       let json;
@@ -123,13 +125,13 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       await Rhum.asserts.assertEquals(json.success, false);
       Rhum.asserts.assertEquals(json.message, undefined);
 
-      await server.close();
+      server.close();
     });
 
     Rhum.testCase(
       "request accepts multiple types: text/xml first",
       async () => {
-        await TestHelpers.runServer(server);
+        server.run();
 
         // Accepts the first content type - tests when calling the `accepts` method with an array and finds a match
         const response = await TestHelpers.makeRequest.get(
@@ -143,12 +145,12 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         const json = await response.json();
         Rhum.asserts.assertEquals(json.success, true);
         Rhum.asserts.assertEquals(json.message, "text/html");
-        await server.close();
+        server.close();
       },
     );
 
     Rhum.testCase("request accepts multiple types: text/js first", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       // Accepts the first content type - tests when calling the `accepts` method with an array with no match
       const response = await TestHelpers.makeRequest.get(
@@ -162,13 +164,13 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       const json = await response.json();
       Rhum.asserts.assertEquals(json.success, false);
       Rhum.asserts.assertEquals(json.message, undefined);
-      await server.close();
+      server.close();
     });
   });
 
   Rhum.testSuite("/request-accepts-use-case-two", () => {
     Rhum.testCase("accepts one and multiple types", async () => {
-      await TestHelpers.runServer(server);
+      server.run();
 
       let response;
 
@@ -211,7 +213,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         `<response>text/xml</response>`,
       );
 
-      await server.close();
+      server.close();
     });
   });
 });
