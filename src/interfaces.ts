@@ -162,26 +162,20 @@ export interface IServerOptions {
   port?: number;
   protocol: "http" | "https";
   resources: typeof Drash.DrashResource[];
-  services?: {
-    // Services executed before a request is made (before a resource is found).
-    before_request?: typeof Drash.Service[],
-
-    // Services executed after requests, but before responses are sent
-    after_request?: typeof Drash.Service[],
-  };
+  services?: IService[];
 }
 
-export interface IService {
+interface IService {
   // The method to run during compile time
   setUp?: () => Promise<void> | void;
 
-  run: (request: Drash.DrashRequest, response: Drash.DrashResponse) => void|Promise<void>
+  /**
+   * Method that is ran before a resource is handled
+   */
+  runBeforeResource?: (request: Drash.DrashRequest, response: Drash.DrashResponse) => void|Promise<void>
 
-  // The method to run during runtime
-  // runAfterRequest?: (
-  //   request: Drash.Request,
-  //   response: Drash.Response,
-  // ) => Promise<void> | void;
-
-  // runBeforeRequest?: (request: Drash.Request) => Promise<void> | void;
+  /**
+   * Method that is ran after a reosurce is handled
+   */
+  runAfterResource?: (request: Drash.DrashRequest, response: Drash.DrashResponse) => void|Promise<void>
 }

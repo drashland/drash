@@ -2,16 +2,6 @@ import * as Drash from "../../mod.ts";
 import { DrashRequest} from "./request.ts"
 import { parseBody } from "./request.ts"
 
-// TODO(crookse TODO-SERVICES) Remove this. We don't need this. Just set the
-// services accordingly. I don't know what that means right now, but maybe I'll
-// know what that means later.
-interface IServices {
-  external: {
-    after_request: Drash.Interfaces.IService[];
-    before_request: Drash.Interfaces.IService[];
-  };
-}
-
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
  * charge of handling incoming requests, matching them to resources for further
@@ -48,13 +38,6 @@ export class Server {
    * are ones created by Drash. External services are ones specified by the
    * user.
    */
-  #services: IServices = {
-    external: {
-      after_request: [],
-      before_request: [],
-    },
-  };
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -64,7 +47,6 @@ export class Server {
    */
   constructor(options: Drash.Interfaces.IServerOptions) {
     this.#options = this.#setOptions(options);
-    this.#addExternalServices();
     this.#handlers.resource_handler.addResources(
       this.#options.resources ?? [],
       this.#options,
@@ -182,9 +164,12 @@ export class Server {
       throw new Drash.Errors.HttpError(405);
     }
 
-    for (const service of this.#services.external.before_request) {
+    for (const service of this.#options.services!) {
       // pass resource req and res if a middleware modifies them
-      await service.run(resource.request, resource.response)
+      if (!service.runBeforeResource) {
+        continue
+      }
+      await service.runBeforeResource(resource.request, resource.response)
     }
 
     // todo run before req services for method and class
@@ -194,8 +179,11 @@ export class Server {
 
     // TODO Run after req services for method and class
 
-    for (const service of this.#services.external.after_request) {
-      await service.run(resource.request, response)
+    for (const service of this.#options.services!) {
+      if (!service.runAfterResource) {
+        continue
+      }
+      await service.runAfterResource(resource.request, response)
     }
 
     respondWith(new Response(response.body, {
@@ -258,70 +246,6 @@ export class Server {
     return this.#deno_server;
   }
 
-  /**
-   * Add the external services passed in via options.
-   */
-  async #addExternalServices(): Promise<void> {
-    // No services? GTFO.
-    if (!this.#options.services) {
-      return;
-    }
-
-    // Add server-level services that execute before all requests
-    if (this.#options.services.before_request) {
-      await this.#addExternalServicesBeforeRequest(
-        this.#options.services.before_request,
-      );
-    }
-
-    // Add server-level services that execute after all requests
-    if (this.#options.services.after_request) {
-      await this.#addExternalServicesAfterRequest(
-        this.#options.services.after_request,
-      );
-    }
-  }
-
-  /**
-   * Add the external services that should execute after a request.
-   *
-   * @param services - An array of Service types.
-   */
-  async #addExternalServicesAfterRequest(
-    services: typeof Drash.Service[],
-  ): Promise<void> {
-    for (const s of services) {
-      // @ts-ignore
-      const service = new (s as Drash.Interfaces.IService)();
-      // Check if this service needs to be set up
-      if (service.setUp) {
-        await service.setUp();
-      }
-      this.#services.external.after_request!.push(service);
-    }
-  }
-
-  /**
-   * Add the external services that should execute before a request.
-   *
-   * @param services - An array of Service types.
-   */
-  async #addExternalServicesBeforeRequest(
-    services: typeof Drash.Service[],
-  ): Promise<void> {
-    for (const s of services) {
-      // @ts-ignore
-      const service = new (s as Drash.Interfaces.IService)();
-      // TODO :: Regarding the above, i think if we add an empty setUp method to the service class,
-      // and then we could remove the casting here?
-      // Check if this service needs to be set up
-      if (service.setUp) {
-        await service.setUp();
-      }
-      this.#services.external.before_request!.push(service);
-    }
-  }
-
   #setOptions(options: Drash.Interfaces.IServerOptions): Drash.Interfaces.IServerOptions {
     if (!options.default_response_content_type) {
       options.default_response_content_type = "application/json";
@@ -340,10 +264,7 @@ export class Server {
     }
 
     if (!options.services) {
-      options.services = {
-        after_request: [],
-        before_request: [],
-      };
+      options.services = [];
     }
     return options;
   }

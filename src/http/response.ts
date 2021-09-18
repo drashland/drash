@@ -1,5 +1,3 @@
-import * as Drash from "../../mod.ts";
-
 export class DrashResponse {
 
   public body: BodyInit | null = null;
