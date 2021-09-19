@@ -1,6 +1,5 @@
 import * as Drash from "../../mod.ts";
 import { DrashRequest} from "./request.ts"
-import { parseBody } from "./request.ts"
 
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
@@ -269,12 +268,12 @@ export class Server {
     console.log('hello')
     for await (const conn of this.#deno_server) {
       (async () => {
-        const httpConn = Deno.serveHttp(conn)
-        this.#httpConn = httpConn
-        for await (const { request, respondWith } of httpConn) {
+        this.#httpConn = Deno.serveHttp(conn)
+        for await (const { request, respondWith } of this.#httpConn) {
         try {
           await this.#handleRequest(request, respondWith);
         } catch (error) {
+          console.log('err')
           await this.#handleError(error, respondWith);
         }
        }

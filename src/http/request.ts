@@ -157,7 +157,7 @@ async function constructFormDataUsingBody(request: Request): Promise<Record<stri
     return formDataJSON
 }
 
-export async function parseBody(request: Request): Promise<Record<string, FormDataEntryValue>> {
+async function parseBody(request: Request): Promise<Record<string, FormDataEntryValue>> {
   const contentType = request.headers.get(
     "Content-Type",
   );

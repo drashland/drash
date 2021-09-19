@@ -44,12 +44,12 @@ Rhum.testPlan("browser_request_resource.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/browser-request",
       );
+      server.close();
       Rhum.asserts.assertEquals(await response.text(), "hello");
       Rhum.asserts.assertEquals(
         response.headers.get("Content-Type"),
         "application/json",
       );
-      server.close();
     });
   });
 });

@@ -170,9 +170,9 @@ export interface IResourcePathsParsed {
 export interface IServerOptions {
   cert_file?: string;
   default_response_type?: string;
-  hostname?: string;
+  hostname: string;
   key_file?: string;
-  port?: number;
+  port: number;
   protocol: "http" | "https";
   resources: typeof Drash.DrashResource[];
   services?: typeof Drash.Service[];
