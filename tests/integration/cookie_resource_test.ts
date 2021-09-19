@@ -1,12 +1,12 @@
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
-import { Resource, IContext } from "../../../mod.ts"
+import { Rhum, TestHelpers } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { Resource, IContext } from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class CookieResource extends Drash.DrashResource {
+class CookieResource extends Resource {
   static paths = ["/cookie", "/cookie/"];
 
   public GET(context: IContext) {

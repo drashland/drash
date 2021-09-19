@@ -1,12 +1,12 @@
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
-import { IContext} from "../../../mod.ts"
+import { Rhum, TestHelpers } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { IContext, Resource} from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class OptionalPathParamsResource extends Drash.DrashResource {
+class OptionalPathParamsResource extends Resource {
   static paths = [
     "/oppWithoutRequired/:name?/:age_of_person?/:ci-ty?",
     "/oppWithRequired/:name/:age_of_person?",

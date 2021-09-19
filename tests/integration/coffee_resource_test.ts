@@ -1,5 +1,6 @@
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
+import { Rhum, TestHelpers } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { Resource } from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -9,7 +10,7 @@ interface ICoffee {
   name: string;
 }
 
-export class CoffeeResource extends Drash.DrashResource implements Drash.Interfaces.IResource {
+export class CoffeeResource extends Resource implements Drash.Interfaces.IResource {
   static paths = ["/coffee", "/coffee/:id"];
 
   protected coffee = new Map<number, ICoffee>([

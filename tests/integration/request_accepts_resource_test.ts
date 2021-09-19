@@ -1,12 +1,12 @@
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
-import { IContext } from "../../../mod.ts"
+import { Rhum, TestHelpers } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { IContext, Resource } from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class RequestAcceptsUseCaseOneResource extends Drash.DrashResource {
+class RequestAcceptsUseCaseOneResource extends Resource {
   static paths = ["/request-accepts-use-case-one"];
 
   public GET(context: IContext) {
@@ -35,7 +35,7 @@ class RequestAcceptsUseCaseOneResource extends Drash.DrashResource {
   }
 }
 
-class RequestAcceptsUseCaseTwoResource extends Drash. DrashResource {
+class RequestAcceptsUseCaseTwoResource extends Resource {
   static paths = ["/request-accepts-use-case-two"];
 
   public GET(context: IContext) {

@@ -6,15 +6,15 @@
  * this was the first type on the request)
  */
 
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
-import { IContext } from "../../../mod.ts"
+import { Rhum, TestHelpers } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { IContext, Resource } from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class BrowserRequestResource extends Drash.DrashResource {
+class BrowserRequestResource extends Resource {
   static paths = ["/browser-request"];
 
   public GET(context: IContext) {

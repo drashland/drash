@@ -1,12 +1,12 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
-import { IContext} from "../../../mod.ts"
+import { IContext, Resource} from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class InvalidReturningOfResponseResource extends Drash.DrashResource {
+class InvalidReturningOfResponseResource extends Resource {
   static paths = ["/invalid/returning/of/response"];
   public GET() {
   }

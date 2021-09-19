@@ -1,10 +1,8 @@
 import { Rhum } from "../../deps.ts";
 import { Server } from "../../../src/http/server.ts"
-import { DrashResource } from "../../../src/http/resource.ts"
-import { assertThrowsAsync } from "../../deps.ts"
-import { IContext } from "../../../mod.ts"
+import { IContext, Resource } from "../../../mod.ts"
 
-class HomeResource extends DrashResource {
+class HomeResource extends Resource {
   static paths = ["/"];
   public GET(context: IContext) {
     context.response.body = JSON.stringify({

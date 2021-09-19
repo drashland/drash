@@ -1,12 +1,12 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
-import { IContext } from "../../../mod.ts"
+import { IContext, Resource } from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class UsersResource extends Drash.DrashResource {
+class UsersResource extends Resource {
   static paths = ["/users", "/users/:id"];
 
   public GET(context: IContext) {
