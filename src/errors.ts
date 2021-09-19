@@ -69,13 +69,13 @@ const DRASH_ERROR_CODES: { [k: string]: string } = {
   // MultipartReader from Deno Std, but we were unable to. This is probably an
   // issue with the MultipartReader.
   "D1005": "Error reading request body as multipart/form-data.",
-  // This means we forgot to pass in the `default_response_content_type`
+  // This means we forgot to pass in the `default_response_type`
   // property when creating the response.
-  "D1006": "Response options require `default_response_content_type` property.",
+  "D1006": "Response options require `default_response_type` property.",
   // This means we forgot to pass in the `server` property when creating the
   // resource.
   "D1007": "Resource options require `server` property.",
-  // This means we forgot to pass in the `default_response_content_type`
+  // This means we forgot to pass in the `default_response_type`
   // property when creating the response.
-  "D1008": "Response options require `default_response_content_type` property.",
+  "D1008": "Response options require `default_response_type` property.",
 };

@@ -60,8 +60,6 @@ export class DrashRequest extends Request {
   }
 
   /**
-   * TODO(crookse TODO-REQUEST-COOKIE) Make sure this still works.
-   *
    * Get a cookie value by the name that is sent in with the request.
    *
    * @param cookie - The name of the cookie to retrieve
@@ -114,9 +112,6 @@ export class DrashRequest extends Request {
    * @returns The value for the parameter, or null if not set
    */
   public pathParam(name: string): string | undefined {
-    if (!this.#path_params.size) {
-      // todo set the params
-    }
     return this.#path_params.get(name)
   }
 
@@ -151,10 +146,7 @@ async function constructFormDataUsingBody(request: Request): Promise<Record<stri
     return formDataJSON
 }
 
-export async function parseBody(request: Request): Promise<Record<string, FormDataEntryValue> | void> {
-  if (!request.body) {
-    return;
-  }
+export async function parseBody(request: Request): Promise<Record<string, FormDataEntryValue>> {
   const contentType = request.headers.get(
     "Content-Type",
   );
@@ -170,5 +162,6 @@ export async function parseBody(request: Request): Promise<Record<string, FormDa
   if (contentType.includes("application/x-www-form-urlencoded")) {
     return await constructFormDataUsingBody(request)
   }
+  return await constructFormDataUsingBody(request)
   // TODO :: Handle text plain, eg body: "hello"?
 }

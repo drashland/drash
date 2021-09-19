@@ -107,7 +107,7 @@ export interface IResource {
   path_parameters: string;
   uri_paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
-  services?: { after_request?: []; before_request?: [] };
+  services?: IResourceServices
   request: Drash.DrashRequest
   response: Drash.DrashResponse
   // Methods
@@ -120,6 +120,21 @@ export interface IResource {
   POST?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
   PUT?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
   TRACE?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+}
+
+export interface IResourceServices {
+  
+    CONNECT?: typeof Drash.Service[],
+    DELETE?: typeof Drash.Service[],
+    GET?: typeof Drash.Service[],
+    HEAD?: typeof Drash.Service[],
+    OPTIONS?: typeof Drash.Service[],
+    PATCH?: typeof Drash.Service[],
+    POST?: typeof Drash.Service[],
+    PUT?: typeof Drash.Service[],
+    TRACE?: typeof Drash.Service[],
+    ALL?: typeof Drash.Service[],
+  
 }
 
 /**
@@ -156,16 +171,16 @@ export interface IResourcePathsParsed {
  */
 export interface IServerOptions {
   cert_file?: string;
-  default_response_content_type?: string;
+  default_response_type?: string;
   hostname?: string;
   key_file?: string;
   port?: number;
   protocol: "http" | "https";
   resources: typeof Drash.DrashResource[];
-  services?: IService[];
+  services: typeof Drash.Service[];
 }
 
-interface IService {
+export interface IService {
   // The method to run during compile time
   setUp?: () => Promise<void> | void;
 

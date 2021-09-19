@@ -5,7 +5,6 @@
 import * as Interfaces from "./src/interfaces.ts";
 import * as Types from "./src/types.ts";
 import { Server } from "./src/http/server.ts";
-import { Service } from "./src/http/service.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - EXPORTS - CLASSES /////////////////////////////////////////////
@@ -22,6 +21,9 @@ export * as Deps from "./deps.ts";
 // Errors
 export * as Errors from "./src/errors.ts";
 
+// TODO :: Random place, yes i know, but think about using the accept header on the request to check if the request can accept the header on the response
+// if not, throw a client error?
+
 // Gurus
 export { Prototype } from "./src/gurus/prototype.ts";
 
@@ -32,11 +34,11 @@ export { ResourceHandler } from "./src/handlers/resource_handler.ts";
 export { DrashRequest } from "./src/http/request.ts";
 export { DrashResource } from "./src/http/resource.ts";
 export { DrashResponse } from "./src/http/response.ts";
+export { Service } from "./src/http/service.ts"
 
 // Export members from the IMPORTS section above
 export {
   Interfaces,
   Server,
-  Service,
   Types,
 };

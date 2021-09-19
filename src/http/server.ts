@@ -115,9 +115,6 @@ export class Server {
   /**
    * Handle an HTTP request from the Deno server.
    *
-   * TODO (crookse TODO-SERVICES) Add in the middleware. Middleware is now
-   * called services.  So, technically, add in the services.
-   *
    * @param originalRequest - The Deno request object.
    */
   async #handleRequest(
@@ -144,7 +141,7 @@ export class Server {
     //
     // Reason why this code is at this specific line is so we dont expose the `parseBody` function on the drash request class to the user, as it
     // is an internal API method and so it isn't included in the API docs on doc.deno.land
-    const parsedBody = originalRequest.body ? await parseBody(originalRequest) ?? {} : {}
+    const parsedBody = originalRequest.body ? await parseBody(originalRequest) : {}
 
     const result = this.#handlers.resource_handler.getResource(originalRequest);
 
@@ -156,7 +153,7 @@ export class Server {
 
     const request = new DrashRequest(originalRequest, parsedBody, pathParams)
 
-    const method = request.method.toUpperCase();
+    const method = request.method.toUpperCase() as Drash.Types.THttpMethod;
 
     // If the method does not exist on the resource, then the method is not
     // allowed. So, throw that 405 and GTFO.
@@ -164,7 +161,9 @@ export class Server {
       throw new Drash.Errors.HttpError(405);
     }
 
-    for (const service of this.#options.services!) {
+    // Server before resource middleware
+    for (const Service of this.#options.services) {
+      const service: Drash.Interfaces.IService = new Service()
       // pass resource req and res if a middleware modifies them
       if (!service.runBeforeResource) {
         continue
@@ -172,14 +171,55 @@ export class Server {
       await service.runBeforeResource(resource.request, resource.response)
     }
 
-    // todo run before req services for method and class
+    // Class before resource middleware
+    if (resource.services && resource.services.ALL) {
+      for (const Service of resource.services.ALL) {
+        const service: Drash.Interfaces.IService = new Service()
+        if (!service.runBeforeResource) {
+          continue
+        }
+        await service.runBeforeResource(resource.request, resource.response)
+      }
+    }
+
+    // resource before middleware
+    if (resource.services && resource.services[method]) {
+      for (const Service of resource.services[method] as typeof Drash.Service[]) {
+        const service: Drash.Interfaces.IService = new Service()
+        if (!service.runBeforeResource) {
+          continue
+        }
+        await service.runBeforeResource(resource.request, resource.response)
+      }
+    }
 
     // Execute the HTTP method on the resource
     const response = await resource![method as Drash.Types.THttpMethod]!();
 
-    // TODO Run after req services for method and class
+    // after resource middleware
+    if (resource.services && method in resource.services) {
+      for (const Service of resource.services![method] as typeof Drash.Service[]) {
+        const service: Drash.Interfaces.IService = new Service()
+        if (!service.runAfterResource) {
+          continue
+        }
+        await service.runAfterResource(resource.request, resource.response)
+      }
+    }
 
-    for (const service of this.#options.services!) {
+    // Class after resource middleware
+    if (resource.services && resource.services.ALL) {
+      for (const Service of resource.services!.ALL) {
+        const service: Drash.Interfaces.IService = new Service()
+        if (!service.runAfterResource) {
+          continue
+        }
+        await service.runAfterResource(resource.request, resource.response)
+      }
+    }
+
+    for (const Service of this.#options.services) {
+      const service: Drash.Interfaces.IService = new Service()
       if (!service.runAfterResource) {
         continue
       }
@@ -247,8 +287,12 @@ export class Server {
   }
 
   #setOptions(options: Drash.Interfaces.IServerOptions): Drash.Interfaces.IServerOptions {
-    if (!options.default_response_content_type) {
-      options.default_response_content_type = "application/json";
+    if (!options.default_response_type) {
+      options.default_response_type = "application/json";
+    }
+
+    if (!options.services) {
+      options.services = []
     }
 
     if (!options.hostname) {
@@ -263,9 +307,6 @@ export class Server {
       options.resources = [];
     }
 
-    if (!options.services) {
-      options.services = [];
-    }
     return options;
   }
 }

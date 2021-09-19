@@ -26,7 +26,7 @@ export class ResourceHandler {
   ): void {
     resources.forEach(resourceClass => {
       const resource: Drash.Interfaces.IResource = new resourceClass(
-        serverOptions.default_response_content_type!,
+        serverOptions.default_response_type!,
         resourceClass.paths
       );
       console.log('resource paths', resourceClass.paths)
@@ -138,7 +138,7 @@ export class ResourceHandler {
         // even if we set this for a uri that doesn't match, it doesnt matter
         // because we always going to check if found is true
         if (path[part].includes(':')) {
-          matches.set(path[part].replace(':', ''), uri[part]) // todo :: replace ? too
+          matches.set(path[part].replace(':', '').replace('?', ''), uri[part])
         }
       }
       return {

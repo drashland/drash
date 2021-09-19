@@ -23,7 +23,7 @@ class BrowserRequestResource extends Drash.DrashResource {
 }
 
 const server = new Drash.Server({
-  default_response_content_type: "application/json",
+  default_response_type: "application/json",
   resources: [
     BrowserRequestResource,
   ],

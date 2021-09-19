@@ -2,6 +2,9 @@
 import * as Drash from "../mod.ts"
 import { Server } from "../src/http/server.ts"
 class Res extends Drash.DrashResource {
+  public services = {
+    'GET': [BeforeMiddleware1]
+  }
     static paths = ["/:id"]
     public GET() {
         this.response.body = "hello"
@@ -10,13 +13,13 @@ class Res extends Drash.DrashResource {
     }
 }
 
-class BeforeMiddleware1 extends Drash.Service { // THIS SERVICE remonstrates modifying a response and passing it to the resource
-  public run (request: Drash.DrashRequest, response: Drash.DrashResponse) {
+class BeforeMiddleware1 implements Drash.Interfaces.IService { // THIS SERVICE remonstrates modifying a response and passing it to the resource
+  public runBeforeResource (request: Drash.DrashRequest, response: Drash.DrashResponse) {
     response.headers.set("X-ERIC", "a boss")
   }
 }
-class BeforeMiddleware2 extends Drash.Service { // THIS MIDDLEWARE demonstrates a service sending a response so a resource is never called. 
-  public run (request: Drash.DrashRequest, response: Drash.DrashResponse) {
+class BeforeMiddleware2 implements Drash.Interfaces.IService { // THIS MIDDLEWARE demonstrates a service sending a response so a resource is never called. 
+  public runBeforeResource (request: Drash.DrashRequest, response: Drash.DrashResponse) {
     if (response.headers.get("X-ERIC") === "a boss") {
       // TODO set headers, content type, status and body, send
     }
@@ -27,9 +30,7 @@ const server = new Server({
     port: 1445,
     resources: [Res],
     protocol: "http",
-    services: {
-      before_request: [BeforeMiddleware1]
-    }
+    services: [BeforeMiddleware1]
 })
 console.log('going to run')
 server.run()

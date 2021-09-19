@@ -1,4 +1,4 @@
-import { Cookie, setCookie, delCookie } from "../../deps.ts"
+import { Cookie, setCookie, deleteCookie } from "../../deps.ts"
 
 export class DrashResponse {
 
@@ -35,6 +35,6 @@ export class DrashResponse {
   public delCookie(name: string, attributes?: {
     path?: string, domain: string
   }): void {
-    delCookie(this.headers, name, attributes)
+    deleteCookie({ headers: this.headers}, name, attributes)
   }
 }
