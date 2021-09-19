@@ -9,10 +9,10 @@ on:
       - master
 
 jobs:
-  tests:
+  create-app-tests:
     strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    matrix:
+      os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -29,20 +29,25 @@ jobs:
       - name: Unit Tests: Create App (http)
         run: |
           deno test tests/unit/console/create_app/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
+  tests:
 
-      - name: Unit Tests: Console
-        run: deno test --allow-net --allow-write --allow-read --allow-env --config tsconfig.json tests/unit/console
+    strategy:
+    matrix:
+      os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
-      - name: Unit Tests: Core
-        run: deno test --allow-net --allow-write --allow-read --allow-env --config tsconfig.json tests/unit/src/core
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
 
       - name: Integration Tests
         run: |
           deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/
-          # deno test --allow-all --config tsconfig.json tests/integration/app_3002_https/
           deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/
 
-      - name: Check: `deno run` works on app created by create-app.ts --api
+      - name: Check `deno run` works on app created by create-app.ts --api
         run: |
           mkdir tmp1
           cd tmp1
@@ -51,7 +56,7 @@ jobs:
           echo "server.close()" >> app.ts
           deno run -A app.ts
 
-      - name: Check: `deno run` works on app created by create_app.ts --web-app
+      - name: Check `deno run` works on app created by create_app.ts --web-app
         run: |
           mkdir tmp2
           cd tmp2
@@ -60,7 +65,7 @@ jobs:
           echo "server.close()" >> app.ts
           deno run -A app.ts
 
-      - name: Check: `npm run buildVue` is available in create_app.ts --web-app --with-vue
+      - name: Check `npm run buildVue` is available in create_app.ts --web-app --with-vue
         run: |
           mkdir tmp3
           cd tmp3
@@ -68,7 +73,7 @@ jobs:
           npm i
           npm run buildVue
 
-      - name: Check: `npm run buildReact` is available in create_app.ts --web-app --with-react
+      - name: Check `npm run buildReact` is available in create_app.ts --web-app --with-react
         run: |
           mkdir tmp4
           cd tmp4
@@ -113,8 +118,8 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Check: `deno lint` passes
+      - name: Check `deno lint` passes
         run: deno lint
 
-      - name: Check: `deno fmt` passes
+      - name: Check `deno fmt` passes
         run: deno fmt --check
