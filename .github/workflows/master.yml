@@ -18,8 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno (master branch)
-        uses: denolib/setup-deno@master
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
 
       - name: Unit Tests: Create App (local)
         run: |
@@ -86,8 +86,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno (master branch)
-        uses: denolib/setup-deno@master
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
 
       - name: Setup Node 13
         uses: actions/setup-node@v1
@@ -110,8 +110,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Deno (master branch)
-        uses: denolib/setup-deno@master
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
 
       - name: Check: `deno lint` passes
         run: deno lint
