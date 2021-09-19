@@ -21,12 +21,12 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Unit Tests: Create App (local)
+      - name: Unit Tests Create App (local)
         run: |
           deno cache create_app.ts
           deno test tests/console/create_app/create_app_test_local.ts --allow-read --allow-write --allow-run --allow-env
 
-      - name: Unit Tests: Create App (http)
+      - name: Unit Tests:# Create App (http)
         run: |
           deno test tests/unit/console/create_app/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
   tests:

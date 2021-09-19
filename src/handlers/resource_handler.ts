@@ -1,4 +1,5 @@
 import * as Drash from "../../mod.ts";
+import { Resource } from "../../mod.ts"
 
 const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -22,7 +23,7 @@ export class ResourceHandler {
    * @param server - The server object to attach to the resources.
    */
   public addResources(
-    resources: (typeof Drash.DrashResource)[],
+    resources: (typeof Resource)[],
     serverOptions: Drash.Interfaces.IServerOptions,
   ): void {
     resources.forEach(resourceClass => {
@@ -179,7 +180,7 @@ export class ResourceHandler {
     console.log('pathname', path)
 
     // testing
-    let r: Drash.DrashResource;
+    let r: Resource;
     for (const [reg, res] of this.#resource_list.entries()) {
       console.log('PATH AND REG', path, reg)
       if (`${path}`.match(reg.replace('/', '\\/'))) {

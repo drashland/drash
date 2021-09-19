@@ -162,16 +162,15 @@ export class Server {
     }
     console.log('M BLUBBER', matchedParams)
 
-    const request = await Drash.DrashRequest.create(originalRequest, matchedParams)
-    const response = new Drash.DrashResponse(this.#options.default_response_type as string)
-    response.headers.set('Content-Type', this.#options.default_response_type as string)
-
     const context = {
-      request,
-      response
+      request: await Drash.DrashRequest.create(originalRequest, matchedParams),
+      response: new Drash.DrashResponse(this.#options.default_response_type as string)
     }
+    context.response.headers.set('Content-Type', this.#options.default_response_type as string)
 
-    const method = request.method.toUpperCase() as Drash.Types.THttpMethod;
+
+
+    const method = context.request.method.toUpperCase() as Drash.Types.THttpMethod;
 
     // If the method does not exist on the resource, then the method is not
     // allowed. So, throw that 405 and GTFO.
@@ -217,7 +216,7 @@ export class Server {
     await resource![method as Drash.Types.THttpMethod]!(context);
 
     // Sanity checks
-    if (!response.body) {
+    if (!context.response.body) {
       throw new Drash.Errors.HttpError(418, "The response body must be set from within a resource or service before the response is sent")
     }
 
@@ -253,11 +252,11 @@ export class Server {
     }
   }
 
-  console.log('responding with', response.body)
-    respondWith(new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
+  console.log('responding with', context.response.body)
+    respondWith(new Response(context.response.body, {
+      status: context.response.status,
+      statusText: context.response.statusText,
+      headers: context.response.headers,
     }));
   }
 
@@ -274,6 +273,7 @@ export class Server {
           await this.#handleRequest(request, respondWith);
         } catch (error) {
           console.log('err')
+          console.log(error)
           await this.#handleError(error, respondWith);
         }
        }

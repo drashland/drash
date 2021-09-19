@@ -1,3 +1,5 @@
+import { Resource } from "../mod.ts"
+
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
 //
@@ -174,7 +176,7 @@ export interface IServerOptions {
   key_file?: string;
   port: number;
   protocol: "http" | "https";
-  resources: typeof Drash.DrashResource[];
+  resources: typeof Resource[];
   services?: typeof Drash.Service[];
 }
 

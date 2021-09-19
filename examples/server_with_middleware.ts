@@ -1,7 +1,8 @@
 
 import * as Drash from "../mod.ts"
 import { Server } from "../src/http/server.ts"
-class Res extends Drash.DrashResource {
+import { Resource } from "../mod.ts"
+class Res extends Resource {
   public services = {
     'GET': [BeforeMiddleware1]
   }

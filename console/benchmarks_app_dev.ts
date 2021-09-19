@@ -1,6 +1,7 @@
 import * as Drash from "../mod.ts";
+import { Resource } from "../mod.ts"
 
-export class Resource extends Drash.DrashResource {
+export class Resource extends Resource {
   public uri_paths = ["/", "/:some_param"];
 
   public GET(): Drash.DrashResponse {
@@ -9,7 +10,7 @@ export class Resource extends Drash.DrashResource {
   }
 }
 
-export class CoffeeResource extends Drash.DrashResource {
+export class CoffeeResource extends Resource {
   public paths = ["/coffee", "/coffee/:some_param"];
 
   public async GET(): Promise<Drash.DrashResponse> {
