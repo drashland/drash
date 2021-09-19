@@ -1,5 +1,6 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
+import { IContext} from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -11,12 +12,13 @@ class OptionalPathParamsResource extends Drash.DrashResource {
     "/oppWithRequired/:name/:age_of_person?",
   ];
 
-  public GET() {
-    const name = this.request.pathParam("name");
-    const age_of_person = this.request.pathParam("age_of_person");
-    const city = this.request.pathParam("ci-ty");
+  public GET(context: IContext) {
+    const name = context.request.pathParam("name");
+    const age_of_person = context.request.pathParam("age_of_person");
+    const city = context.request.pathParam("ci-ty");
+    console.log(name, age_of_person, city)
 
-    this.response.body = JSON.stringify({
+    context.response.body = JSON.stringify({
       message: "Successfully handled optional path params",
       data: {
         name,
@@ -24,7 +26,6 @@ class OptionalPathParamsResource extends Drash.DrashResource {
         city,
       },
     });
-    return this.response;
   }
 }
 
@@ -32,7 +33,9 @@ const server = new Drash.Server({
   resources: [
     OptionalPathParamsResource,
   ],
-  protocol: "http"
+  protocol: "http",
+  hostname: "localhost",
+  port:3000,
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,14 +50,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, null);
-      Rhum.asserts.assertEquals(json.data.age_of_person, null);
-      Rhum.asserts.assertEquals(json.data.city, null);
+      Rhum.asserts.assertEquals(json.data.name, undefined);
+      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+      Rhum.asserts.assertEquals(json.data.city, undefined);
 
       server.close();
     });
@@ -66,14 +69,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, null);
-      Rhum.asserts.assertEquals(json.data.age_of_person, null);
-      Rhum.asserts.assertEquals(json.data.city, null);
+      Rhum.asserts.assertEquals(json.data.name, undefined);
+      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+      Rhum.asserts.assertEquals(json.data.city, undefined);
 
       server.close();
     });
@@ -85,14 +88,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, null);
-      Rhum.asserts.assertEquals(json.data.city, null);
+      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+      Rhum.asserts.assertEquals(json.data.city, undefined);
 
       server.close();
     });
@@ -104,14 +107,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, null);
-      Rhum.asserts.assertEquals(json.data.city, null);
+      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+      Rhum.asserts.assertEquals(json.data.city, undefined);
 
       server.close();
     });
@@ -123,14 +126,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
       Rhum.asserts.assertEquals(json.data.age_of_person, "999");
-      Rhum.asserts.assertEquals(json.data.city, null);
+      Rhum.asserts.assertEquals(json.data.city, undefined);
 
       server.close();
     });
@@ -142,14 +145,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
       Rhum.asserts.assertEquals(json.data.age_of_person, "999");
-      Rhum.asserts.assertEquals(json.data.city, null);
+      Rhum.asserts.assertEquals(json.data.city, undefined);
 
       server.close();
     });
@@ -160,7 +163,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/UK",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
@@ -179,7 +182,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/UK/",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
@@ -201,8 +204,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           "http://localhost:3000/oppWithoutRequired/edward/999/UK/other",
         );
         Rhum.asserts.assertEquals(
-          await response.text(),
-          '"Not Found"',
+          (await response.text()).startsWith("Error: Not Found"), true
         );
         server.close();
       });
@@ -217,14 +219,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         const response = await TestHelpers.makeRequest.get(
           "http://localhost:3000/oppWithoutRequired/edward/",
         );
-        const json = JSON.parse(await response.json());
+        const json = await response.json();
         Rhum.asserts.assertEquals(
           json.message,
           "Successfully handled optional path params",
         );
         Rhum.asserts.assertEquals(json.data.name, "edward");
-        Rhum.asserts.assertEquals(json.data.age_of_person, null);
-        Rhum.asserts.assertEquals(json.data.city, null);
+        Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+        Rhum.asserts.assertEquals(json.data.city, undefined);
 
         server.close();
       },
@@ -238,9 +240,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         "http://localhost:3000/oppWithRequired",
       );
       Rhum.asserts.assertEquals(
-        await response.text(),
-        '"Not Found"',
-      );
+        (await response.text()).startsWith("Error: Not Found"), true)
 
       server.close();
     });
@@ -253,9 +253,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         "http://localhost:3000/oppWithRequired/",
       );
       Rhum.asserts.assertEquals(
-        await response.text(),
-        '"Not Found"',
-      );
+        (await response.text()).startsWith("Error: Not Found"), true)
 
       server.close();
     });
@@ -267,13 +265,13 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, null);
+      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
 
       server.close();
     });
@@ -285,13 +283,13 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, null);
+      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
 
       server.close();
     });
@@ -303,7 +301,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/ed-123/22-22",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
@@ -321,7 +319,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward/22/",
       );
-      const json = JSON.parse(await response.json());
+      const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
         "Successfully handled optional path params",
@@ -340,9 +338,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         "http://localhost:3000/oppWithRequired/edward/22/other",
       );
       Rhum.asserts.assertEquals(
-        await response.text(),
-        '"Not Found"',
-      );
+        (await response.text()).startsWith("Error: Not Found"), true)
 
       server.close();
     });

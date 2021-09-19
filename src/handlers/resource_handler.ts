@@ -9,6 +9,7 @@ export class ResourceHandler {
   #matches: Map<string, Drash.Interfaces.IResource> = new Map();
   #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash
     .Deps.Moogle<Drash.Interfaces.IResource>();
+  #resource_list: Map<string, Drash.Interfaces.IResource> = new Map()
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
@@ -26,7 +27,6 @@ export class ResourceHandler {
   ): void {
     resources.forEach(resourceClass => {
       const resource: Drash.Interfaces.IResource = new resourceClass(
-        serverOptions.default_response_type!,
         resourceClass.paths
       );
       console.log('resource paths', resourceClass.paths)
@@ -72,27 +72,16 @@ export class ResourceHandler {
       resource.uri_paths_parsed
         .forEach((pathObj: Drash.Interfaces.IResourcePathsParsed) => {
           searchTerms.push(pathObj.regex_path);
+          this.#resource_list.set(pathObj.regex_path, resource)
         });
 
       this.#resource_index.addItem(searchTerms, resource);
     });
   }
 
-  /**
-   * Get the resource that BEST matches the given request.
-   *
-   * @param request - The request object that will be matched to a resource.
-   *
-   * @returns A clone of the found resource or undefined if no resource was
-   * matched to the request.
-   */
-  public getResource(
-    request: Request,
-  ): {
-    resource: Drash.Interfaces.IResource,
-    pathParams: Map<string, string>
-  } | void {
+  public getMatchedPathAndParams(uri: string, resourcePaths: string[]) {
     function tryMatch(uri: string[], path: string[]): { found: boolean, matches: Map<string, string> } {
+      console.debug('isnide trymatch', uri, path)
       // if url is /, and path is /, its an exACT MATCH
       if (uri.join("/") === path.join("/")) {
         return {
@@ -105,7 +94,8 @@ export class ResourceHandler {
       // Also account for optional params by just ignoring them from this check
       if (uri.length !== path.filter((p: string) => p.includes('?') === false).length) {
         // this will catch when url = /2/lon/22, and path = /:id/:city/:age?
-        // now include optional params and if the len isn't the same, routes deffo dont match
+        // now include optional params and if the len isn't the same, routes deffo dont match.
+        // URI should have a minimum length of the amount of req params
         if (uri.length !== path.length) 
           return {
             found: false,
@@ -146,8 +136,64 @@ export class ResourceHandler {
         matches
       }
     }
+    console.log('inside getmatches', uri, resourcePaths)
+    if (uri[uri.length - 1] === "/") {
+      uri = uri.slice(0, -1)
+    }
+    let found = true;
+    let par = new Map()
+    for (const resourcePath of resourcePaths) {
+      const res = tryMatch(uri.split("/"), resourcePath.split("/"))
+      found = res.found
+      par = res.matches
+      if (found) { // break early, if we match first path, no need to check all others
+        break
+      }
+    }
+    if (!found) {
+      return
+    }
+    return {
+      found,
+      params: par
+    }
+  }
 
-    const path = new URL(request.url).pathname
+  /**
+   * Get the resource that BEST matches the given request.
+   *
+   * @param request - The request object that will be matched to a resource.
+   *
+   * @returns A clone of the found resource or undefined if no resource was
+   * matched to the request.
+   */
+  public getResource(
+    request: Request,
+  ): Drash.Interfaces.IResource | void {
+
+    let path = new URL(request.url).pathname
+    // strip trailing slash
+    // if (path[path.length - 1] === "/") {
+    //   path = path.slice(0, -1)
+    // }
+    console.log('pathname', path)
+
+    // testing
+    let r: Drash.DrashResource;
+    for (const [reg, res] of this.#resource_list.entries()) {
+      console.log('PATH AND REG', path, reg)
+      if (`${path}`.match(reg.replace('/', '\\/'))) {
+        r = res
+        break
+        console.log('OMG WTF WE GOT A RESOURCE,', res)
+      }
+    }
+    // @ts-ignore
+    if (r) {
+      return r
+    } else {
+      return
+    }
 
     const uri = path.split("/");
     // Remove the first element because it is an empty string. For example:
@@ -162,12 +208,15 @@ export class ResourceHandler {
     // The resource index will return all resources matching that basic URI.
     // Later down in this method, we make sure the resource can handle the URI
     // by comparing the full URI with the URI paths defined on the resource.
-    const baseUri = "^/" + uri[0];
+    const baseUri = "^/" + uri.join("/");
 
     // Find the resource
     // console.log(this.#resource_index)
     // console.log(baseUri)
+    console.log('THE RESOURCE INDEX BEFORE SEARCHING', this.#resource_index)
+    console.log(baseUri)
     let results = this.#resource_index.search(baseUri);
+    console.log(results)
     // console.log(results)
     // console.log(results.size)
 
@@ -190,22 +239,7 @@ export class ResourceHandler {
 
     // ... and the item in that result is the resource.
     const resource = result.item;
-
-    // TODO(ebebbington): By now, are we sure we found a matching resource?
-    let found = true;
-    let par = new Map()
-    console.log(result)
-    for (const resourcePath of resource.uri_paths) {
-     const res = tryMatch(path.split("/"), resourcePath.split("/"))
-     found = res.found
-     par = res.matches
-     if (found) { // break early, if we match first path, no need to check all others
-       break
-     }
-    }
-    if (!found) {
-      return
-    }
+    console.log('RESOUCRCE FOUND', resource)
 
     const clone = Drash.Prototype.clone(resource);
 
@@ -215,10 +249,7 @@ export class ResourceHandler {
     // if (this.#matches.has(path)) { return this.#matches.get(path)}
     // this.#matches.set(path, clone)
 
-    return {
-      resource: clone,
-      pathParams: par
-    };
+    return clone;
   }
 
   //////////////////////////////////////////////////////////////////////////////

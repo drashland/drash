@@ -5,7 +5,7 @@ export class DrashResponse {
   public body: BodyInit | null = null;
   public headers: Headers = new Headers();
   public status: number = 200;
-  public status_text: string = "OK";
+  public statusText: string = "OK";
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -21,9 +21,7 @@ export class DrashResponse {
    * @param cookie The cookie data
    */
   public setCookie(cookie: Cookie): void {
-    setCookie({
-      headers: this.headers
-    }, cookie)
+    setCookie(this.headers, cookie)
   }
 
   /**
@@ -35,6 +33,6 @@ export class DrashResponse {
   public delCookie(name: string, attributes?: {
     path?: string, domain: string
   }): void {
-    deleteCookie({ headers: this.headers}, name, attributes)
+    deleteCookie(this.headers, name, attributes)
   }
 }

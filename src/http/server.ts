@@ -20,6 +20,8 @@ export class Server {
    */
   #deno_server!: Deno.Listener;
 
+  #httpConn!: Deno.HttpConn
+
   /**
    * The Deno server request object handler. This handler gets wrapped around
    * the Deno server request object and acts as a proxy to interact with the
@@ -75,6 +77,7 @@ export class Server {
   public close(): void {
     try {
       this.#deno_server.close();
+      this.#httpConn.close()
     } catch (_error) {
       // Do nothing. The server was probably already closed.
     }
@@ -129,29 +132,45 @@ export class Server {
     // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
     // 3. Fail early if resource isnt found
 
-    // Automatically parse the request body for the user.
-    //
-    // Although this call slows down the request-resource-response lifecycle
-    // (removes ~1k req/sec in benchmarks), calling this here makes it more
-    // convenient for the user when writing a resource. For example, if this
-    // call were to be placed in the Drash.Request class and only executed when
-    // a user wants to retrieve body params, then they would have to use
-    // `async-await` in their resource.This means more boilerplate for their
-    // resource, which is something we should prevent.
-    //
-    // Reason why this code is at this specific line is so we dont expose the `parseBody` function on the drash request class to the user, as it
-    // is an internal API method and so it isn't included in the API docs on doc.deno.land
-    const parsedBody = originalRequest.body ? await parseBody(originalRequest) : {}
+    const resource = this.#handlers.resource_handler.getResource(originalRequest);
 
-    const result = this.#handlers.resource_handler.getResource(originalRequest);
-
-    if (!result) {
+    if (!resource) {
+      console.error("NO RESOUCR WOW")
       throw new Drash.Errors.HttpError(404);
     }
 
-    const { resource, pathParams } = result
+    console.log('uri paths', resource.uri_paths)
+    //const matchedParams = this.#handlers.resource_handler.getMatchedPathAndParams(new URL(originalRequest.url).pathname, resource.uri_paths)
+    //console.log('matched params', matchedParams)
 
-    const request = new DrashRequest(originalRequest, parsedBody, pathParams)
+    // What we're going to do here is, we know we have a resource, now we just have to map
+    // the path params on the resource paths to values in the uri
+    const matchedParams = new Map()
+    let pathname = new URL(originalRequest.url).pathname
+    if (pathname[pathname.length - 1] === "/") {
+      pathname = pathname.slice(0, -1)
+    }
+    const pathnameSplit = pathname.split("/")
+    console.log('PATHNAME SPLIT', pathnameSplit, 'URI PATHS', resource.uri_paths)
+    for (const i in pathnameSplit) {
+      // loop through until we reach an `:`, then use that as the name and the value from the uri
+      for (const path of resource.uri_paths) {
+        const aplit = path.split("/")
+        if (aplit[i] && aplit[i].includes(":")) {
+          matchedParams.set(aplit[i].replace(':', '').replace('?', ''), pathnameSplit[i])
+        }
+      }
+    }
+    console.log('M BLUBBER', matchedParams)
+
+    const request = await Drash.DrashRequest.create(originalRequest, matchedParams)
+    const response = new Drash.DrashResponse(this.#options.default_response_type as string)
+    response.headers.set('Content-Type', this.#options.default_response_type as string)
+
+    const context = {
+      request,
+      response
+    }
 
     const method = request.method.toUpperCase() as Drash.Types.THttpMethod;
 
@@ -162,14 +181,16 @@ export class Server {
     }
 
     // Server before resource middleware
+    if (this.#options.services) {
     for (const Service of this.#options.services) {
       const service: Drash.Interfaces.IService = new Service()
       // pass resource req and res if a middleware modifies them
       if (!service.runBeforeResource) {
         continue
       }
-      await service.runBeforeResource(resource.request, resource.response)
+      await service.runBeforeResource(context)
     }
+  }
 
     // Class before resource middleware
     if (resource.services && resource.services.ALL) {
@@ -178,7 +199,7 @@ export class Server {
         if (!service.runBeforeResource) {
           continue
         }
-        await service.runBeforeResource(resource.request, resource.response)
+        await service.runBeforeResource(context)
       }
     }
 
@@ -189,12 +210,17 @@ export class Server {
         if (!service.runBeforeResource) {
           continue
         }
-        await service.runBeforeResource(resource.request, resource.response)
+        await service.runBeforeResource(context)
       }
     }
 
     // Execute the HTTP method on the resource
-    const response = await resource![method as Drash.Types.THttpMethod]!();
+    await resource![method as Drash.Types.THttpMethod]!(context);
+
+    // Sanity checks
+    if (!response.body) {
+      throw new Drash.Errors.HttpError(418, "The response body must be set from within a resource or service before the response is sent")
+    }
 
     // after resource middleware
     if (resource.services && method in resource.services) {
@@ -203,7 +229,7 @@ export class Server {
         if (!service.runAfterResource) {
           continue
         }
-        await service.runAfterResource(resource.request, resource.response)
+        await service.runAfterResource(context)
       }
     }
 
@@ -214,21 +240,24 @@ export class Server {
         if (!service.runAfterResource) {
           continue
         }
-        await service.runAfterResource(resource.request, resource.response)
+        await service.runAfterResource(context)
       }
     }
 
+    if (this.#options.services) {
     for (const Service of this.#options.services) {
       const service: Drash.Interfaces.IService = new Service()
       if (!service.runAfterResource) {
         continue
       }
-      await service.runAfterResource(resource.request, response)
+      await service.runAfterResource(context)
     }
+  }
 
+  console.log('responding with', response.body)
     respondWith(new Response(response.body, {
       status: response.status,
-      statusText: response.status_text,
+      statusText: response.statusText,
       headers: response.headers,
     }));
   }
@@ -240,7 +269,9 @@ export class Server {
     console.log('hello')
     for await (const conn of this.#deno_server) {
       (async () => {
-        for await (const { request, respondWith } of Deno.serveHttp(conn)) {
+        const httpConn = Deno.serveHttp(conn)
+        this.#httpConn = httpConn
+        for await (const { request, respondWith } of httpConn) {
         try {
           await this.#handleRequest(request, respondWith);
         } catch (error) {

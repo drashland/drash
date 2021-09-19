@@ -1,5 +1,6 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
+import { IContext } from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -8,68 +9,70 @@ import * as Drash from "../../../mod.ts"
 class RequestAcceptsUseCaseOneResource extends Drash.DrashResource {
   static paths = ["/request-accepts-use-case-one"];
 
-  public GET() {
-    const typeToRequest = this.request.queryParam("typeToCheck");
+  public GET(context: IContext) {
+    const typeToRequest = context.request.queryParam("typeToCheck");
+
 
     let matchedType;
     if (typeToRequest) {
-      matchedType = this.request.accepts([typeToRequest]);
+      if (context.request.accepts(typeToRequest)) {
+        matchedType = typeToRequest
+      }
     } else {
-      matchedType = this.request.accepts(["text/html", "application/json"]);
+      if (context.request.accepts("text/html")) {
+        matchedType = "text/html"
+      }
     }
 
     if (!matchedType) {
-      this.response.body = JSON.stringify({ success: false });
-      return this.response;
+      context.response.body = JSON.stringify({ success: false });
+      return;
     }
 
-    this.response.body = JSON.stringify(
+    context.response.body = JSON.stringify(
       { success: true, message: matchedType },
     );
-
-    return this.response;
   }
 }
 
 class RequestAcceptsUseCaseTwoResource extends Drash. DrashResource {
   static paths = ["/request-accepts-use-case-two"];
 
-  public GET() {
-    const acceptHeader = this.request.headers.get("Accept");
+  public GET(context: IContext) {
+    const acceptHeader = context.request.headers.get("Accept");
     if (!acceptHeader) {
-      return this.jsonResponse();
+      return this.jsonResponse(context);
     }
     let contentTypes: string[] = acceptHeader.split(";");
     for (let content of contentTypes) {
       content = content.trim();
       if (content.indexOf("application/json") != -1) {
-        return this.jsonResponse();
+        return this.jsonResponse(context);
       }
       if (content.indexOf("text/html") != -1) {
-        return this.htmlResponse();
+        return this.htmlResponse(context);
       }
       if (content.indexOf("text/xml") != -1) {
-        return this.xmlResponse();
+        return this.xmlResponse(context);
       }
     }
   }
 
-  protected htmlResponse(): Drash.DrashResponse {
-    this.response.headers.set("Content-Type", "text/html");
-    this.response.body = "<div>response: text/html</div>";
-    return this.response;
+  protected htmlResponse(context: IContext) {
+    context.response.headers.set("Content-Type", "text/html");
+    context.response.body = "<div>response: text/html</div>";
+    return;
   }
 
-  protected jsonResponse(): Drash.DrashResponse {
-    this.response.headers.set("Content-Type", "application/json");
-    this.response.body = JSON.stringify({ response: "application/json" });
-    return this.response;
+  protected jsonResponse(context: IContext) {
+    context.response.headers.set("Content-Type", "application/json");
+    context.response.body = JSON.stringify({ response: "application/json" });
+    return;
   }
 
-  protected xmlResponse(): Drash.DrashResponse {
-    this.response.headers.set("Content-Type", "text/xml");
-    this.response.body = "<response>text/xml</response>";
-    return this.response;
+  protected xmlResponse(context: IContext) {
+    context.response.headers.set("Content-Type", "text/xml");
+    context.response.body = "<response>text/xml</response>";
   }
 }
 
@@ -78,7 +81,9 @@ const server = new Drash.Server({
     RequestAcceptsUseCaseOneResource,
     RequestAcceptsUseCaseTwoResource,
   ],
-  protocol: "http"
+  protocol: "http",
+  hostname: "localhost",
+  port: 3000
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +111,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         },
       );
       let res = await response.json();
-      json = JSON.parse(res);
+      json = res;
       Rhum.asserts.assertEquals(json.success, true);
       Rhum.asserts.assertEquals(json.message, "application/json");
 
@@ -121,7 +126,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         },
       );
       res = await response.json();
-      json = JSON.parse(res);
+      json = res;
       await Rhum.asserts.assertEquals(json.success, false);
       Rhum.asserts.assertEquals(json.message, undefined);
 

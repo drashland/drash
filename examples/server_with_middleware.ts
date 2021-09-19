@@ -5,22 +5,24 @@ class Res extends Drash.DrashResource {
   public services = {
     'GET': [BeforeMiddleware1]
   }
-    static paths = ["/:id"]
-    public GET() {
-        this.response.body = "hello"
-        console.log(this.request.pathParam('id'))
-        return this.response
+    static paths = ["/user/:id", "/users/edit/:id?"]
+    public GET(context: Drash.Interfaces.Context) {
+        context.response.body = "hello"
+        console.log(context.request.pathParam('id'))
+    }
+    public POST(context: Drash.Interfaces.Context) {
+      context.response.body = "hello"
     }
 }
 
 class BeforeMiddleware1 implements Drash.Interfaces.IService { // THIS SERVICE remonstrates modifying a response and passing it to the resource
-  public runBeforeResource (request: Drash.DrashRequest, response: Drash.DrashResponse) {
-    response.headers.set("X-ERIC", "a boss")
+  public runBeforeResource (context: Drash.Interfaces.Context) {
+    context.response.headers.set("X-ERIC", "a boss")
   }
 }
 class BeforeMiddleware2 implements Drash.Interfaces.IService { // THIS MIDDLEWARE demonstrates a service sending a response so a resource is never called. 
-  public runBeforeResource (request: Drash.DrashRequest, response: Drash.DrashResponse) {
-    if (response.headers.get("X-ERIC") === "a boss") {
+  public runBeforeResource (context: Drash.Interfaces.Context) {
+    if (context.response.headers.get("X-ERIC") === "a boss") {
       // TODO set headers, content type, status and body, send
     }
   }

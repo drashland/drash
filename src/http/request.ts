@@ -4,8 +4,7 @@ export type ParsedBody = Record<string, FormDataEntryValue> | null
 
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class DrashRequest extends Request {
-  readonly #original: Request;
-  readonly #parsed_body: ParsedBody;
+  #parsed_body!: ParsedBody;
   #path_params: Map<string, string> = new Map();
   #search_params?: URLSearchParams
 
@@ -17,11 +16,23 @@ export class DrashRequest extends Request {
    * @param originalRequest - The original request coming in from
    * `Server.listenForRequests()`.
    */
-  constructor(originalRequest: Request, parsedBody: Record<string, FormDataEntryValue>, pathParams: Map<string, string>) {
+  constructor(originalRequest: Request, pathParams: Map<string, string>) {
     super(originalRequest)
-    this.#original = originalRequest;
-    this.#parsed_body = parsedBody
     this.#path_params = pathParams
+  }
+
+  static async create(request: Request, pathParms: Map<string, string>) {
+    const req = new DrashRequest(request, pathParms)
+    // here because as it's async, we cant parse it on the fly as we dont
+    // want users to have to use await when getting a body param
+    if (req.body && req.bodyUsed === false) {
+      await req.parseBody()
+    }
+    return req
+  }
+
+  private async parseBody() {
+    this.#parsed_body = await parseBody(this)
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -29,7 +40,7 @@ export class DrashRequest extends Request {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Check if the content type(s) in question are accepted by the request.
+   * Check if the content type in question are accepted by the request.
    *
    * TODO-REQUEST-ACCEPTS(crookse) Respect the priority of what is accepted. See
    * q-factor weighting at the following:
@@ -45,18 +56,18 @@ export class DrashRequest extends Request {
   //                    all we're really doing is this.request.headers.get('accept')!.includes(["application/json"]),
   //                    Whilst it's more code than this.accepts(["application/json"]), i wonder if it's worth
   //                    us keeping?
-  public accepts(contentTypes: string[]): boolean {
-    let acceptHeader = this.#original.headers.get("Accept");
+  public accepts(contentType: string): boolean {
+    let acceptHeader = this.headers.get("Accept");
 
     if (!acceptHeader) {
-      acceptHeader = this.#original.headers.get("accept");
+      acceptHeader = this.headers.get("accept");
     }
 
     if (!acceptHeader) {
       return false;
     }
 
-    return contentTypes.includes(acceptHeader);
+    return acceptHeader.includes(contentType);
   }
 
   /**
@@ -69,7 +80,7 @@ export class DrashRequest extends Request {
    */
   public getCookie(name: string): string {
     const cookies = Drash.Deps.getCookies(
-      this.#original,
+      this.headers,
     );
     return cookies[name];
   }
@@ -131,7 +142,7 @@ export class DrashRequest extends Request {
    */
   public queryParam(name: string): string | null {
     if (!this.#search_params) {
-      this.#search_params = new URL(this.#original.url).searchParams
+      this.#search_params = new URL(this.url).searchParams
     }
     return this.#search_params.get(name)
   }

@@ -1,5 +1,6 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
+import { Resource, IContext } from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -8,22 +9,19 @@ import * as Drash from "../../../mod.ts"
 class CookieResource extends Drash.DrashResource {
   static paths = ["/cookie", "/cookie/"];
 
-  public GET() {
-    const cookieValue = this.request.getCookie("testCookie");
-    this.response.body = cookieValue;
-    return this.response;
+  public GET(context: IContext) {
+    const cookieValue = context.request.getCookie("testCookie");
+    context.response.body = cookieValue;
   }
 
-  public POST() {
-    this.response.setCookie({ name: "testCookie", value: "Drash" });
-    this.response.body = "Saved your cookie!";
-    return this.response;
+  public POST(context: IContext) {
+    context.response.setCookie({ name: "testCookie", value: "Drash" });
+    context.response.body = "Saved your cookie!";
   }
 
-  public DELETE() {
-    this.response.body = "DELETE request received!";
-    this.response.delCookie("testCookie");
-    return this.response;
+  public DELETE(context: IContext) {
+    context.response.body = "DELETE request received!";
+    context.response.delCookie("testCookie");
   }
 }
 
@@ -31,7 +29,9 @@ const server = new Drash.Server({
   resources: [
     CookieResource,
   ],
-  protocol: "http"
+  protocol: "http",
+  hostname: "localhost",
+  port: 3000
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           body: cookie,
         },
       );
-      Rhum.asserts.assertEquals(await response.text(), '"Saved your cookie!"');
+      Rhum.asserts.assertEquals(await response.text(), 'Saved your cookie!');
 
       // Get - Dependent on the above post request saving a cookie
       response = await TestHelpers.makeRequest.get(
@@ -71,7 +71,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           },
         },
       );
-      await Rhum.asserts.assertEquals(await response.text(), '"Drash"');
+      await Rhum.asserts.assertEquals(await response.text(), 'Drash');
 
       // Remove - Dependent on the above post request saving a cookie
       response = await TestHelpers.makeRequest.delete(

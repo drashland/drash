@@ -8,6 +8,7 @@
 
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
+import { IContext } from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -16,9 +17,8 @@ import * as Drash from "../../../mod.ts"
 class BrowserRequestResource extends Drash.DrashResource {
   static paths = ["/browser-request"];
 
-  public GET() {
-    this.response.body = null;
-    return this.response;
+  public GET(context: IContext) {
+    context.response.body = "hello";
   }
 }
 
@@ -27,7 +27,9 @@ const server = new Drash.Server({
   resources: [
     BrowserRequestResource,
   ],
-  protocol: "http"
+  protocol: "http",
+  hostname: "localhost",
+  port: 3000
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +44,7 @@ Rhum.testPlan("browser_request_resource.ts", () => {
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/browser-request",
       );
-      Rhum.asserts.assertEquals(await response.text(), "null"); // would be null
+      Rhum.asserts.assertEquals(await response.text(), "hello");
       Rhum.asserts.assertEquals(
         response.headers.get("Content-Type"),
         "application/json",

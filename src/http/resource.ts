@@ -11,8 +11,6 @@ import * as Drash from "../../mod.ts";
 export class DrashResource implements Drash.Interfaces.IResource {
   public services?: Drash.Interfaces.IResourceServices;
   public path_parameters!: string;
-  public request!: Drash.DrashRequest;
-  public response: Drash.DrashResponse;
   public static paths: string[] = [];
   public uri_paths: string[] = []
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
@@ -26,10 +24,8 @@ export class DrashResource implements Drash.Interfaces.IResource {
    */
   // TODO(ebebbington): Only grip is, some props are public
   constructor(
-    defaultResponseContentType: string,
     paths: string[]
   ) {
     this.uri_paths = paths
-    this.response = new Drash.DrashResponse(defaultResponseContentType);
   }
 }

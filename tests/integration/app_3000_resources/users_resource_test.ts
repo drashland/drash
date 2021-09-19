@@ -1,5 +1,6 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
+import { IContext } from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -8,21 +9,21 @@ import * as Drash from "../../../mod.ts"
 class UsersResource extends Drash.DrashResource {
   static paths = ["/users", "/users/:id"];
 
-  public GET() {
-    const userId = this.request.pathParam("id");
+  public GET(context: IContext) {
+    const userId = context.request.pathParam("id");
 
     if (!userId) {
-      this.response.body = "Please specify a user ID.";
-      return this.response;
+      context.response.body = "Please specify a user ID.";
+      return;
     }
 
-    this.response.body = this.getUser(parseInt(userId));
-    return this.response;
+    context.response.body = JSON.stringify(this.getUser(parseInt(userId)));
+    return;
   }
 
-  public POST() {
-    this.response.body = "POST request received!";
-    return this.response;
+  public POST(context: IContext) {
+    context.response.body = "POST request received!";
+    return;
   }
 
   protected getUser(userId: number) {
@@ -63,7 +64,9 @@ const server = new Drash.Server({
   resources: [
     UsersResource,
   ],
-  protocol: "http"
+  protocol: "http",
+  hostname: "localhost",
+  port: 3000
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +85,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
       );
       Rhum.asserts.assertEquals(
         await response.text(),
-        '"Please specify a user ID."',
+        'Please specify a user ID.',
       );
 
       response = await TestHelpers.makeRequest.get(
@@ -90,13 +93,13 @@ Rhum.testPlan("users_resource_test.ts", () => {
       );
       Rhum.asserts.assertEquals(
         await response.text(),
-        '"Please specify a user ID."',
+        'Please specify a user ID.',
       );
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users//",
       );
-      Rhum.asserts.assertEquals(await response.text(), '"Not Found"');
+      Rhum.asserts.assertEquals((await response.text()).startsWith("Error: Not Found"), true);
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users/17",
@@ -118,9 +121,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
         "http://localhost:3000/users/18",
       );
       Rhum.asserts.assertEquals(
-        await response.text(),
-        `\"User with ID \\\"18\\\" not found.\"`,
-      );
+        (await response.text()).startsWith(`Error: User with ID "18" not found.`), true);
 
       server.close();
     });

@@ -47,7 +47,7 @@ export {
   deleteCookie,
   getCookies,
   setCookie,
-} from "https://deno.land/std@0.101.0/http/cookie.ts";
+} from "https://deno.land/std@0.107.0/http/cookie.ts";
 export type { Cookie } from "https://deno.land/std@0.101.0/http/cookie.ts";
 
 export { green, red } from "https://deno.land/std@0.101.0/fmt/colors.ts";

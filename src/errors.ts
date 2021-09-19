@@ -78,4 +78,5 @@ const DRASH_ERROR_CODES: { [k: string]: string } = {
   // This means we forgot to pass in the `default_response_type`
   // property when creating the response.
   "D1008": "Response options require `default_response_type` property.",
+  "D1009": "The response body must be set from within a resource or service before the response is sent",
 };

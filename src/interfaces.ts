@@ -108,18 +108,16 @@ export interface IResource {
   uri_paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
   services?: IResourceServices
-  request: Drash.DrashRequest
-  response: Drash.DrashResponse
   // Methods
-  CONNECT?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  DELETE?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  GET?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  HEAD?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  OPTIONS?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  PATCH?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  POST?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  PUT?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
-  TRACE?: () => Promise<Drash.DrashResponse> | Drash.DrashResponse;
+  CONNECT?: (context: Context) => Promise<void> | void;
+  DELETE?: (context: Context) => Promise<void> | void;
+  GET?: (context: Context) => Promise<void> | void;
+  HEAD?: (context: Context) => Promise<void> | void;
+  OPTIONS?: (context: Context) => Promise<void> | void;
+  PATCH?: (context: Context) => Promise<void> | void;
+  POST?: (context: Context) => Promise<void> | void;
+  PUT?: (context: Context) =>Promise<void> | void ;
+  TRACE?: (context: Context) => Promise<void> | void;
 }
 
 export interface IResourceServices {
@@ -177,7 +175,7 @@ export interface IServerOptions {
   port?: number;
   protocol: "http" | "https";
   resources: typeof Drash.DrashResource[];
-  services: typeof Drash.Service[];
+  services?: typeof Drash.Service[];
 }
 
 export interface IService {
@@ -187,10 +185,15 @@ export interface IService {
   /**
    * Method that is ran before a resource is handled
    */
-  runBeforeResource?: (request: Drash.DrashRequest, response: Drash.DrashResponse) => void|Promise<void>
+  runBeforeResource?: (context: Context) => void|Promise<void>
 
   /**
    * Method that is ran after a reosurce is handled
    */
-  runAfterResource?: (request: Drash.DrashRequest, response: Drash.DrashResponse) => void|Promise<void>
+  runAfterResource?: (context: Context) => void|Promise<void>
+}
+
+export interface Context {
+  request: Drash.DrashRequest,
+  response: Drash.DrashResponse
 }

@@ -1,20 +1,16 @@
 import { Rhum, TestHelpers } from "../../deps.ts";
 import * as Drash from "../../../mod.ts"
+import { IContext, Resource } from "../../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class FilesResource extends Drash.DrashResource {
+class FilesResource extends Resource {
   static paths = ["/files"];
 
-  public POST() {
-    this.response.body = this.request.bodyParam("value_1") ?? null;
-    return this.response;
-  }
-
-  public DELETE() {
-    return this.response;
+  public POST(context: IContext) {
+    context.response.body = context.request.bodyParam("value_1") ?? null;
   }
 }
 
@@ -23,7 +19,9 @@ const server = new Drash.Server({
   resources: [
     FilesResource,
   ],
-  protocol: "http"
+  protocol: "http",
+  hostname: "localhost",
+  port: 3000
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +42,7 @@ Rhum.testPlan("files_resource_test.ts", () => {
         method: "POST",
         body: formData,
       });
-      Rhum.asserts.assertEquals(await response.text(), '"John"');
+      Rhum.asserts.assertEquals(await response.text(), 'John');
 
       server.close();
     });
