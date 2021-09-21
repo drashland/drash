@@ -24,9 +24,6 @@ export * as Errors from "./src/errors.ts";
 // TODO :: Random place, yes i know, but think about using the accept header on the request to check if the request can accept the header on the response
 // if not, throw a client error?
 
-// Gurus
-export { Prototype } from "./src/gurus/prototype.ts";
-
 // Handlers
 export { ResourceHandler } from "./src/handlers/resource_handler.ts";
 

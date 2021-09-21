@@ -102,8 +102,6 @@ export interface IMime {
  *     matched to this resource, then this method will be executed.
  */
 export interface IResource {
-  // Properties
-  path_parameters: string;
   paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
   services?: IResourceServices;

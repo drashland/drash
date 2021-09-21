@@ -1,4 +1,11 @@
-import { IContext, IService, Resource, Server, Service } from "../../mod.ts";
+import {
+  IContext,
+  IResource,
+  IService,
+  Resource,
+  Server,
+  Service,
+} from "../../mod.ts";
 import { assertEquals } from "../deps.ts";
 
 class ServerService extends Service implements IService {
@@ -23,7 +30,7 @@ class ClassService extends Service implements IService {
 
 const classService = new ClassService();
 
-class MethodService implements IService {
+class MethodService extends Service implements IService {
   runBeforeResource(context: IContext) {
     context.response.headers.set("X-METHOD-SERVICE-BEFORE", "hi");
   }
@@ -36,7 +43,7 @@ class MethodService implements IService {
 
 const methodService = new MethodService();
 
-class Resource1 extends Resource {
+class Resource1 extends Resource implements IResource {
   paths = ["/"];
 
   public services = {

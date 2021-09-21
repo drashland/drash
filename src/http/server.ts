@@ -46,7 +46,13 @@ export class Server {
    * @param options - See the interface for the options' schema.
    */
   constructor(options: Drash.Interfaces.IServerOptions) {
-    this.#options = this.#setOptions(options);
+    if (!options.default_response_type) {
+      options.default_response_type = "application/json";
+    }
+    if (!options.services) {
+      options.services = [];
+    }
+    this.#options = options;
     this.#handlers.resource_handler.addResources(
       this.#options.resources ?? [],
     );
@@ -80,6 +86,11 @@ export class Server {
   }
 
   public run() {
+    (async () => {
+      for (const service of this.#options.services ?? []) {
+        await service.setUp();
+      }
+    })();
     if (this.#options.protocol === "http") {
       return this.#runHttp();
     }
@@ -91,26 +102,6 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Handle errors thrown during runtime. These errors get sent as the response
-   * to the client.
-   *
-   * @param request - The request object.
-   * @param error - The error that was thrown during runtime.
-   */
-  #handleError(
-    error: Drash.Errors.HttpError,
-    respondWith: (r: Response | Promise<Response>) => Promise<void>,
-  ) {
-    // TODO(crookse TODO-ERRORS) The error should be a response object so we can
-    // just call request.respond(error);
-    respondWith(
-      new Response(error.stack, {
-        status: error.code,
-      }),
-    );
-  }
 
   /**
    * Handle an HTTP request from the Deno server.
@@ -134,32 +125,37 @@ export class Server {
     );
 
     if (!resource) {
-      console.error("NO RESOUCR WOW");
       throw new Drash.Errors.HttpError(404);
     }
 
-    //const matchedParams = this.#handlers.resource_handler.getMatchedPathAndParams(new URL(originalRequest.url).pathname, resource.uri_paths)
-    //console.log('matched params', matchedParams)
-
-    // What we're going to do here is, we know we have a resource, now we just have to map
-    // the path params on the resource paths to values in the uri
-    const matchedParams = new Map();
-    let pathname = new URL(originalRequest.url).pathname;
-    if (pathname[pathname.length - 1] === "/") {
-      pathname = pathname.slice(0, -1);
+    const pathnameSplit = new URL(originalRequest.url).pathname.split("/");
+    if (pathnameSplit[pathnameSplit.length - 1] === "") {
+      pathnameSplit.pop();
     }
-    const pathnameSplit = pathname.split("/");
-    for (const i in pathnameSplit) {
-      // loop through until we reach an `:`, then use that as the name and the value from the uri
-      for (const path of resource.paths) {
-        const aplit = path.split("/");
-        if (aplit[i] && aplit[i].includes(":")) {
-          matchedParams.set(
-            aplit[i].replace(":", "").replace("?", ""),
-            pathnameSplit[i],
-          );
+    const matchedParams = new Map();
+    for (const resourcePath of resource.paths) {
+      const resourcePathSplit = resourcePath.split("/");
+      if (pathnameSplit.length > resourcePathSplit.length) { // uri is too long to match it, so it cant be the right one
+        continue;
+      }
+      // What we're gonna do here is if an index on resource path is param, use the value from the pathname
+      // using the same index, eg uri = /users/2/hello/bye, path = /users/:id/:text:text2 results in path = /users/2/hello/bye,
+      // that way we can exact compare know 100% if its the right path
+      for (const i in pathnameSplit) {
+        const [value, name] = [resourcePathSplit[i], pathnameSplit[i]];
+        if (value.includes(":")) {
+          resourcePathSplit[i] = name;
+          matchedParams.set(value.replace(/:|\?/g, ""), name);
         }
       }
+      if (
+        pathnameSplit.join("/") !==
+          resourcePathSplit.filter((p) => !p.includes("?")).join("/")
+      ) {
+        matchedParams.clear();
+        continue;
+      }
+      break; // we found the right one and have set the params
     }
 
     const context = {
@@ -237,7 +233,11 @@ export class Server {
           try {
             await this.#handleRequest(request, respondWith);
           } catch (error) {
-            await this.#handleError(error, respondWith);
+            respondWith(
+              new Response(error.stack, {
+                status: error.code,
+              }),
+            );
           }
         }
       })();
@@ -276,31 +276,5 @@ export class Server {
     this.#listenForRequests();
 
     return this.#deno_server;
-  }
-
-  #setOptions(
-    options: Drash.Interfaces.IServerOptions,
-  ): Drash.Interfaces.IServerOptions {
-    if (!options.default_response_type) {
-      options.default_response_type = "application/json";
-    }
-
-    if (!options.services) {
-      options.services = [];
-    }
-
-    if (!options.hostname) {
-      options.hostname = "0.0.0.0";
-    }
-
-    if (!options.port) {
-      options.port = 1337;
-    }
-
-    if (!options.resources) {
-      options.resources = [];
-    }
-
-    return options;
   }
 }

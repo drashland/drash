@@ -12,15 +12,15 @@ Rhum.testPlan("http/request_test.ts", () => {
   });
 
   Rhum.testSuite("bodyParam()", () => {
-    getBodyParamTests();
+    bodyTests();
   });
 
   Rhum.testSuite("pathParam()", () => {
-    getPathParamTests();
+    paramTests();
   });
 
   Rhum.testSuite("queryParam()", () => {
-    getUrlQueryParamTests();
+    queryTests();
   });
 });
 
@@ -89,7 +89,11 @@ function getCookieTests() {
   });
 }
 
-function getBodyParamTests() {
+function bodyTests() {
+  Rhum.testCase("Can return multiple files", () => {
+    Rhum.asserts.assertEquals(true, false); // make sure that if a requets has multiple files, we can get each one eh <input type=file name=uploads[] />
+  });
+
   // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
   Rhum.testCase("Returns the file object if the file exists", () => {
     Rhum.asserts.assertEquals("todo", true);
@@ -257,7 +261,7 @@ function getBodyParamTests() {
   });
 }
 
-function getPathParamTests() {
+function paramTests() {
   Rhum.testCase(
     "Returns the value for the header param when it exists",
     () => {
@@ -285,7 +289,7 @@ function getPathParamTests() {
   );
 }
 
-function getUrlQueryParamTests() {
+function queryTests() {
   Rhum.testCase(
     "Returns the value for the query param when it exists",
     () => {

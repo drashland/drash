@@ -10,7 +10,6 @@ import * as Drash from "../../mod.ts";
  */
 export class Resource implements Drash.Interfaces.IResource {
   public services?: Drash.Interfaces.IResourceServices;
-  public path_parameters!: string;
   public paths: string[] = [];
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
 }

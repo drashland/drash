@@ -5,4 +5,6 @@ export class Service implements IService {
   }
   public runBeforeResource(_context: IContext) {
   }
+  public setUp() {
+  }
 }
