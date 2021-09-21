@@ -1,21 +1,19 @@
-import { Rhum } from "../../test_deps.ts";
-import { Dexter } from "../mod.ts";
+import { Rhum } from "../../deps.ts";
+import { DexterService } from "../../../src/services/dexter/dexter.ts";
 
 Rhum.testPlan("Dexter - mod_test.ts", () => {
   Rhum.testSuite("Dexter", () => {
     Rhum.testCase("is configurable", () => {
-      let dexter = Dexter();
+      let dexter = new DexterService();
       Rhum.asserts.assertEquals(dexter.configs.enabled, true);
-      dexter = Dexter({
+      dexter = new DexterService({
         enabled: false,
       });
       Rhum.asserts.assertEquals(dexter.configs.enabled, false);
     });
     Rhum.testCase("logger and all of its log functions are exposed", () => {
-      const dexter = Dexter({
+      const dexter = new DexterService({
         enabled: true,
-        test: true,
-        tag_string: "{level} |",
       });
       Rhum.asserts.assertEquals(typeof dexter.logger.debug, "function");
       Rhum.asserts.assertEquals(typeof dexter.logger.error, "function");
@@ -25,25 +23,22 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
       Rhum.asserts.assertEquals(typeof dexter.logger.warn, "function");
     });
     Rhum.testCase("logger can be used to write messages", () => {
-      const dexter = Dexter({
+      const dexter = new DexterService({
         enabled: true,
-        level: "all",
-        test: true,
-        tag_string: "{level} |",
       });
       let actual;
       actual = dexter.logger.debug("test");
-      Rhum.asserts.assertEquals(actual, "DEBUG | test");
+      Rhum.asserts.assertEquals(actual.match(/.*\[DEBUG\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
       actual = dexter.logger.error("test");
-      Rhum.asserts.assertEquals(actual, "ERROR | test");
+      Rhum.asserts.assertEquals(actual.match(/.*\[ERROR\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
       actual = dexter.logger.fatal("test");
-      Rhum.asserts.assertEquals(actual, "FATAL | test");
+      Rhum.asserts.assertEquals(actual.match(/.*\[FATAL\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
       actual = dexter.logger.info("test");
-      Rhum.asserts.assertEquals(actual, "INFO | test");
+      Rhum.asserts.assertEquals(actual.match(/.*\[INFO\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
       actual = dexter.logger.trace("test");
-      Rhum.asserts.assertEquals(actual, "TRACE | test");
+      Rhum.asserts.assertEquals(actual.match(/.*\[TRACE\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
       actual = dexter.logger.warn("test");
-      Rhum.asserts.assertEquals(actual, "WARN | test");
+      Rhum.asserts.assertEquals(actual.match(/.*\[WARN\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
     });
   });
 });
