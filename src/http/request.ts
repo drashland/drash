@@ -122,7 +122,7 @@ export class DrashRequest extends Request {
    * const city = this.queryParam("city") // undefined
    * ```
    *
-   * @param name The parameter name, as set in your static paths
+   * @param name The parameter name, as set in your paths
    *
    * @returns The value for the parameter, or null if not set
    */

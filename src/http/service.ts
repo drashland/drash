@@ -1,8 +1,8 @@
-import * as Drash from "../../mod.ts";
+import { IContext, IService } from "../../mod.ts";
 
-export class Service implements Drash.Interfaces.IService {
-  public runAfterResource(context: Drash.IContext) {
+export class Service implements IService {
+  public runAfterResource(_context: IContext) {
   }
-  public runBeforeResource(context: Drash.IContext) {
+  public runBeforeResource(_context: IContext) {
   }
 }

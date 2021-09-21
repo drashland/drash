@@ -15,7 +15,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class BrowserRequestResource extends Resource {
-  static paths = ["/browser-request"];
+  paths = ["/browser-request"];
 
   public GET(context: IContext) {
     context.response.body = "hello";

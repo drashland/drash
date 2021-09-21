@@ -11,7 +11,7 @@ const csrfWithCookie = new CSRFService({ cookie: true });
  *     2. On requests MADE to the server,  check the token was passed in
  */
 class ResourceNoCookie extends Resource implements IResource {
-  static paths = ["/"];
+  paths = ["/"];
 
   public services = {
     "POST": [csrfWithoutCookie],
@@ -30,7 +30,7 @@ class ResourceNoCookie extends Resource implements IResource {
 }
 
 class ResourceWithCookie extends Resource {
-  static paths = ["/cookie"];
+  paths = ["/cookie"];
 
   public services = {
     "POST": [csrfWithCookie],

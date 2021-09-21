@@ -3,8 +3,8 @@ import { Cookie, deleteCookie, setCookie } from "../../deps.ts";
 export class DrashResponse {
   public body: BodyInit | null = null;
   public headers: Headers = new Headers();
-  public status: number = 200;
-  public statusText: string = "OK";
+  public status = 200;
+  public statusText = "OK";
   readonly #respondWith: (r: Response | Promise<Response>) => Promise<void>;
 
   //////////////////////////////////////////////////////////////////////////////

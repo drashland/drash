@@ -7,7 +7,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class CookieResource extends Resource {
-  static paths = ["/cookie", "/cookie/"];
+  paths = ["/cookie", "/cookie/"];
 
   public GET(context: IContext) {
     const cookieValue = context.request.getCookie("testCookie");

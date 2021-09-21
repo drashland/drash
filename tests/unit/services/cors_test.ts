@@ -3,7 +3,7 @@ import { IContext, IResource, Resource, Server } from "../../../mod.ts";
 import { CorsService } from "../../../src/services/cors/cors.ts";
 
 class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
-  static paths = ["/cors"];
+  paths = ["/cors"];
   public GET(context: IContext) {
     context.response.body = "GET request received!";
   }

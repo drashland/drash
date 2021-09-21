@@ -7,7 +7,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class UsersResource extends Resource {
-  static paths = ["/users", "/users/:id"];
+  paths = ["/users", "/users/:id"];
 
   public GET(context: IContext) {
     const userId = context.request.pathParam("id");
@@ -53,9 +53,9 @@ class UsersResource extends Resource {
   }
 
   protected readFileContents(file: string) {
-    let fileContentsRaw = Deno.readFileSync(file);
+    const fileContentsRaw = Deno.readFileSync(file);
     const decoder = new TextDecoder();
-    let decoded = decoder.decode(fileContentsRaw);
+    const decoded = decoder.decode(fileContentsRaw);
     return decoded;
   }
 }

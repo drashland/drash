@@ -37,7 +37,7 @@ class MethodService implements IService {
 const methodService = new MethodService();
 
 class Resource1 extends Resource {
-  static paths = ["/"];
+  paths = ["/"];
 
   public services = {
     "ALL": [classService],

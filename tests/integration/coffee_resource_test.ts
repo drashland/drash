@@ -12,7 +12,7 @@ interface ICoffee {
 
 export class CoffeeResource extends Resource
   implements Drash.Interfaces.IResource {
-  static paths = ["/coffee", "/coffee/:id"];
+  paths = ["/coffee", "/coffee/:id"];
 
   protected coffee = new Map<number, ICoffee>([
     [17, { name: "Light" }],

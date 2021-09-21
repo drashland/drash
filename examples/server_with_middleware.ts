@@ -5,7 +5,7 @@ class Res extends Resource {
   public services = {
     "GET": [new BeforeMiddleware1()],
   };
-  static paths = ["/user/:id", "/users/edit/:id?"];
+  paths = ["/user/:id", "/users/edit/:id?"];
   public GET(context: Drash.Interfaces.Context) {
     context.response.body = "hello";
     console.log(context.request.pathParam("id"));

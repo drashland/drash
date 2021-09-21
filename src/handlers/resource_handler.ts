@@ -24,14 +24,11 @@ export class ResourceHandler {
    */
   public addResources(
     resources: (typeof Resource)[],
-    serverOptions: Drash.Interfaces.IServerOptions,
   ): void {
     resources.forEach((resourceClass) => {
-      const resource: Drash.Interfaces.IResource = new resourceClass(
-        resourceClass.paths,
-      );
+      const resource: Drash.Interfaces.IResource = new resourceClass();
 
-      resource.uri_paths.forEach((path) => {
+      resource.paths.forEach((path) => {
         // Remove the trailing slash because we handle URI paths with and
         // without the trailing slash the same. For example, the following URI
         // paths are the same:
@@ -45,11 +42,6 @@ export class ResourceHandler {
         // the same resource.
         if (path.charAt(path.length - 1) == "/") {
           path = path.substring(-1, path.length - 1);
-        }
-
-        // Path isn't a string? Womp womp.
-        if (typeof path != "string") {
-          throw new Drash.Errors.DrashError("D1000");
         }
 
         if (this.#pathIsWildCardPath(path)) {
@@ -94,9 +86,8 @@ export class ResourceHandler {
       // eg url = /users or /users/edit/2, and path = /users/:id.
       // Also account for optional params by just ignoring them from this check
       if (
-        uri.length !== path.filter((p: string) =>
-          p.includes("?") === false
-        ).length
+        uri.length !==
+          path.filter((p: string) => p.includes("?") === false).length
       ) {
         // this will catch when url = /2/lon/22, and path = /:id/:city/:age?
         // now include optional params and if the len isn't the same, routes deffo dont match.

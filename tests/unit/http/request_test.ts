@@ -56,8 +56,7 @@ function acceptsTests() {
         },
       });
       const request = new Drash.DrashRequest(serverRequest, new Map());
-      let actual;
-      actual = request.accepts("text/xml");
+      const actual = request.accepts("text/xml");
       Rhum.asserts.assertEquals(actual, false);
     },
   );
@@ -92,51 +91,53 @@ function getCookieTests() {
 
 function getBodyParamTests() {
   // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
-  Rhum.testCase("Returns the file object if the file exists", async () => {
-    const serverRequest = TestHelpers.mockRequest();
-    const request = new Drash.DrashRequest(serverRequest, new Map());
-    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
-    const form = await request.parseBodyAsMultipartFormData(
-      o,
-      "--------------------------434049563556637648550474",
-      128,
-    );
-    const pb: Drash.Interfaces.IParsedRequestBody = {
-      content_type: "multipart/form-data",
-      data: form,
-    };
-    request.parsed_body = pb;
-    const file = request.getBodyFile("file");
-    Rhum.asserts.assertEquals(file!.filename, "tsconfig.json");
-    Rhum.asserts.assertEquals(file!.type, "application/octet-stream");
-    Rhum.asserts.assertEquals(file!.size, 233);
-    const content = file!.content;
-    if (content !== undefined) {
-      Rhum.asserts.assertEquals(content.constructor === Uint8Array, true);
-    } else {
-      // The content of the file should be set!
-      Rhum.asserts.assertEquals(true, false);
-    }
-    await o.close();
+  Rhum.testCase("Returns the file object if the file exists", () => {
+    Rhum.asserts.assertEquals("todo", true);
+    // const serverRequest = TestHelpers.mockRequest();
+    // const request = new Drash.DrashRequest(serverRequest, new Map());
+    // const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+    // const form = await request.parseBodyAsMultipartFormData(
+    //   o,
+    //   "--------------------------434049563556637648550474",
+    //   128,
+    // );
+    // const pb: Drash.Interfaces.IParsedRequestBody = {
+    //   content_type: "multipart/form-data",
+    //   data: form,
+    // };
+    // request.parsed_body = pb;
+    // const file = request.getBodyFile("file");
+    // Rhum.asserts.assertEquals(file!.filename, "tsconfig.json");
+    // Rhum.asserts.assertEquals(file!.type, "application/octet-stream");
+    // Rhum.asserts.assertEquals(file!.size, 233);
+    // const content = file!.content;
+    // if (content !== undefined) {
+    //   Rhum.asserts.assertEquals(content.constructor === Uint8Array, true);
+    // } else {
+    //   // The content of the file should be set!
+    //   Rhum.asserts.assertEquals(true, false);
+    // }
+    // await o.close();
   });
 
-  Rhum.testCase("Returns undefined if the file does not exist", async () => {
-    const serverRequest = TestHelpers.mockRequest();
-    const request = new Drash.Request(serverRequest);
-    const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
-    const form = await request.parseBodyAsMultipartFormData(
-      o,
-      "--------------------------434049563556637648550474",
-      128,
-    );
-    const pb: Drash.Interfaces.IParsedRequestBody = {
-      content_type: "multipart/form-data",
-      data: form,
-    };
-    request.parsed_body = pb;
-    const file = request.getBodyFile("dontExist");
-    Rhum.asserts.assertEquals(file, undefined);
-    await o.close();
+  Rhum.testCase("Returns undefined if the file does not exist", () => {
+    Rhum.asserts.assertEquals("todo", true);
+    // const serverRequest = TestHelpers.mockRequest();
+    // const request = new Drash.Request(serverRequest);
+    // const o = await Deno.open(path.resolve("./tests/data/sample_1.txt"));
+    // const form = await request.parseBodyAsMultipartFormData(
+    //   o,
+    //   "--------------------------434049563556637648550474",
+    //   128,
+    // );
+    // const pb: Drash.Interfaces.IParsedRequestBody = {
+    //   content_type: "multipart/form-data",
+    //   data: form,
+    // };
+    // request.parsed_body = pb;
+    // const file = request.getBodyFile("dontExist");
+    // Rhum.asserts.assertEquals(file, undefined);
+    // await o.close();
   });
   Rhum.testCase(
     "Returns the value for the parameter when the data exists",

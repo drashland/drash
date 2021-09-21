@@ -1,5 +1,4 @@
 import * as Drash from "../../mod.ts";
-import { DrashRequest } from "./request.ts";
 
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
@@ -50,7 +49,6 @@ export class Server {
     this.#options = this.#setOptions(options);
     this.#handlers.resource_handler.addResources(
       this.#options.resources ?? [],
-      this.#options,
     );
   }
 
@@ -153,7 +151,7 @@ export class Server {
     const pathnameSplit = pathname.split("/");
     for (const i in pathnameSplit) {
       // loop through until we reach an `:`, then use that as the name and the value from the uri
-      for (const path of resource.uri_paths) {
+      for (const path of resource.paths) {
         const aplit = path.split("/");
         if (aplit[i] && aplit[i].includes(":")) {
           matchedParams.set(

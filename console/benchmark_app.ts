@@ -1,7 +1,7 @@
 import { Drash } from "../mod.ts";
 
 class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"];
+  paths = ["/"];
   public GET() {
     this.response.body = "Hello World!";
     return this.response;

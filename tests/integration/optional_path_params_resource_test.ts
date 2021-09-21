@@ -7,7 +7,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class OptionalPathParamsResource extends Resource {
-  static paths = [
+  paths = [
     "/oppWithoutRequired/:name?/:age_of_person?/:ci-ty?",
     "/oppWithRequired/:name/:age_of_person?",
   ];

@@ -2,7 +2,7 @@ import * as Drash from "../mod.ts";
 import { Resource } from "../mod.ts";
 
 export class Resource extends Resource {
-  public uri_paths = ["/", "/:some_param"];
+  static paths = ["/", "/:some_param"];
 
   public GET(): Drash.DrashResponse {
     this.response.body = "test";

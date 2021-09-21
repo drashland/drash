@@ -82,9 +82,6 @@ export interface IMime {
  *     A key-value string defining the path parameters that were passed in by
  *     the request. This value is set in resource_handler.ts#getResource().
  *
- * uri_paths
- *     The URI paths that this resource is accessible at.
- *
  * uri_paths_parsed
  *     See IResourcePathsParsed.
  *
@@ -107,7 +104,7 @@ export interface IMime {
 export interface IResource {
   // Properties
   path_parameters: string;
-  uri_paths: string[];
+  paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
   services?: IResourceServices;
   // Methods

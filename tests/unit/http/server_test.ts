@@ -3,7 +3,7 @@ import { Server } from "../../../src/http/server.ts";
 import { IContext, Resource } from "../../../mod.ts";
 
 class HomeResource extends Resource {
-  static paths = ["/"];
+  paths = ["/"];
   public GET(context: IContext) {
     context.response.body = JSON.stringify({
       success: true,
@@ -60,7 +60,7 @@ Rhum.testPlan("http/server_test.ts", () => {
           hostname: "localhost",
           port: 1234,
         });
-      } catch (e) {
+      } catch (_e) {
         errorThrown = true;
       }
       Rhum.asserts.assertEquals(errorThrown, true);

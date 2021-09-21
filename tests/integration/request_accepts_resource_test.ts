@@ -7,7 +7,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class RequestAcceptsUseCaseOneResource extends Resource {
-  static paths = ["/request-accepts-use-case-one"];
+  paths = ["/request-accepts-use-case-one"];
 
   public GET(context: IContext) {
     const typeToRequest = context.request.queryParam("typeToCheck");
@@ -35,7 +35,7 @@ class RequestAcceptsUseCaseOneResource extends Resource {
 }
 
 class RequestAcceptsUseCaseTwoResource extends Resource {
-  static paths = ["/request-accepts-use-case-two"];
+  paths = ["/request-accepts-use-case-two"];
 
   public GET(context: IContext) {
     const acceptHeader = context.request.headers.get("Accept");

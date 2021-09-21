@@ -7,7 +7,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class FilesResource extends Resource {
-  static paths = ["/files"];
+  paths = ["/files"];
 
   public POST(context: IContext) {
     context.response.body = context.request.bodyParam("value_1") ?? null;

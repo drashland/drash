@@ -3,14 +3,13 @@ import { PaladinService } from "../../../src/services/paladin/paladin.ts";
 import { IContext, IResource, Resource, Server } from "../../../mod.ts";
 
 class Res extends Resource implements IResource {
-  static paths = ["/"];
+  paths = ["/"];
   public GET(context: IContext) {
     context.response.body = "Hello world!";
   }
 }
 
 function runServer(
-  // deno-lint-ignore no-explicit-any
   paladin: PaladinService, // eg `const paladin = new new PaladinService()`, imported from paladin/mod.ts
   port: number,
 ): Server {

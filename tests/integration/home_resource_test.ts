@@ -7,7 +7,7 @@ import { IContext, Resource } from "../../mod.ts";
 ////////////////////////////////////////////////////////////////////////////////
 
 class HomeResource extends Resource {
-  static paths = ["/", "/home"];
+  paths = ["/", "/home"];
 
   public GET(context: IContext) {
     context.response.body = "GET request received!";
