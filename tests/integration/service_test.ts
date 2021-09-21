@@ -10,6 +10,8 @@ class ServerService extends Service implements IService {
     }
 }
 
+const serverService = new ServerService()
+
 class ClassService extends Service implements IService {
     runBeforeResource(context: IContext) {
         context.response.headers.set("X-CLASS-SERVICE-BEFORE", "hi")
@@ -18,6 +20,8 @@ class ClassService extends Service implements IService {
         context.response.headers.set("X-CLASS-SERVICE-AFTER", "hi")
     }
 }
+
+const classService = new ClassService()
 
 class MethodService implements IService {
     runBeforeResource(context: IContext) {
@@ -30,12 +34,14 @@ class MethodService implements IService {
 
 // TODO :: Make paths not static, no need for it to be static anymore right?
 
+const methodService = new MethodService()
+
 class Resource1 extends Resource {
     static paths = ["/"]
 
     public services = {
-        "ALL": [ClassService],
-        "GET": [MethodService]
+        "ALL": [classService],
+        "GET": [methodService]
     }
 
     public GET(context: IContext) {
@@ -49,7 +55,7 @@ const server = new Server({
     port: 1234,
     hostname: "localhost",
     resources: [Resource1],
-    services: [ServerService]
+    services: [serverService]
 })
 
 Deno.test("Class middleware should run", async () => {

@@ -1,6 +1,6 @@
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
-import { IContext, Resource } from "../../../mod.ts"
+import { Rhum, TestHelpers } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { IContext, Resource } from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
       server.run();
 
       let response;
-      Deno.chdir("./tests/integration/app_3000_resources");
+      Deno.chdir("./tests/integration");
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users",
       );

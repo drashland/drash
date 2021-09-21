@@ -1,6 +1,6 @@
-import { Rhum, TestHelpers } from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
-import { IContext, Resource } from "../../../mod.ts"
+import { Rhum } from "../deps.ts";
+import * as Drash from "../../mod.ts"
+import { IContext, Resource } from "../../mod.ts"
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////

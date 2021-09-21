@@ -82,7 +82,7 @@ jobs:
           deno test -A tests/integration
 
       - name: Unit Tests
-        run: deno test -A tests/unit
+        run: deno test -A --unstable tests/unit
 
   benchmarks:
     strategy:

@@ -38,7 +38,7 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
       const serveTs = new ServeTypeScriptService({
         files: [
           {
-            source: "./data/serve_typescript/my_ts.ts",
+            source: "./tests/unit/services/data/serve_typescript/my_ts.ts",
             target: "/assets/compiled.ts",
           },
         ],
