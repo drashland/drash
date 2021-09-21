@@ -30,8 +30,6 @@ export class ResourceHandler {
       const resource: Drash.Interfaces.IResource = new resourceClass(
         resourceClass.paths
       );
-      console.log('resource paths', resourceClass.paths)
-      console.log('resource uri paths', resource.uri_paths)
 
       resource.uri_paths.forEach(path => {
         // Remove the trailing slash because we handle URI paths with and
@@ -82,7 +80,6 @@ export class ResourceHandler {
 
   public getMatchedPathAndParams(uri: string, resourcePaths: string[]) {
     function tryMatch(uri: string[], path: string[]): { found: boolean, matches: Map<string, string> } {
-      console.debug('isnide trymatch', uri, path)
       // if url is /, and path is /, its an exACT MATCH
       if (uri.join("/") === path.join("/")) {
         return {
@@ -137,7 +134,6 @@ export class ResourceHandler {
         matches
       }
     }
-    console.log('inside getmatches', uri, resourcePaths)
     if (uri[uri.length - 1] === "/") {
       uri = uri.slice(0, -1)
     }
@@ -177,16 +173,13 @@ export class ResourceHandler {
     // if (path[path.length - 1] === "/") {
     //   path = path.slice(0, -1)
     // }
-    console.log('pathname', path)
 
     // testing
     let r: Resource;
     for (const [reg, res] of this.#resource_list.entries()) {
-      console.log('PATH AND REG', path, reg)
       if (`${path}`.match(reg.replace('/', '\\/'))) {
         r = res
         break
-        console.log('OMG WTF WE GOT A RESOURCE,', res)
       }
     }
     // @ts-ignore
@@ -214,10 +207,7 @@ export class ResourceHandler {
     // Find the resource
     // console.log(this.#resource_index)
     // console.log(baseUri)
-    console.log('THE RESOURCE INDEX BEFORE SEARCHING', this.#resource_index)
-    console.log(baseUri)
     let results = this.#resource_index.search(baseUri);
-    console.log(results)
     // console.log(results)
     // console.log(results.size)
 
@@ -240,7 +230,6 @@ export class ResourceHandler {
 
     // ... and the item in that result is the resource.
     const resource = result.item;
-    console.log('RESOUCRCE FOUND', resource)
 
     const clone = Drash.Prototype.clone(resource);
 
@@ -290,7 +279,6 @@ export class ResourceHandler {
     resource: Drash.Interfaces.IResource,
     path: string,
   ): void {
-    console.log(path, '<')
     resource.uri_paths_parsed.push({
       og_path: path,
       regex_path: `^${path.replace(RE_URI_PATH_GLOBAL, RE_URI_REPLACEMENT)}/?$`,

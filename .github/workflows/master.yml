@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  create-app-tests:
+  cli-tests:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -29,23 +29,6 @@ jobs:
       - name: Unit Tests:# Create App (http)
         run: |
           deno test tests/unit/console/create_app/create_app_test_http.ts --allow-read --allow-write --allow-run --allow-env --allow-net
-  tests:
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
-
-      - name: Integration Tests
-        run: |
-          deno test --allow-all --config tsconfig.json tests/integration/app_3000_resources/
-          deno test --allow-all --config tsconfig.json tests/integration/app_3003_middleware/
 
       - name: Check `deno run` works on app created by create-app.ts --api
         run: |
@@ -80,6 +63,26 @@ jobs:
           deno run -A ../create_app.ts --web-app --with-react
           npm i
           npm run buildReact
+  
+  api-test:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Integration Tests
+        run: |
+          deno test -A tests/integration
+
+      - name: Unit Tests
+        run: deno test -A tests/unit
 
   benchmarks:
     strategy:

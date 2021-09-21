@@ -113,7 +113,6 @@ export class CorsService extends Service implements IService {
       ) {
         // Simple Cross-Origin Request, Actual Request, and Redirects
         if (this.#config.origin && typeof this.#config.origin === "string") {
-          console.log('setting control header')
           context.response.headers.set("Access-Control-Allow-Origin", this.#config.origin);
         }
   

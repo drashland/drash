@@ -1,10 +1,10 @@
 
 import * as Drash from "../mod.ts"
 import { Server } from "../src/http/server.ts"
-import { Resource } from "../mod.ts"
+import { Resource, Service } from "../mod.ts"
 class Res extends Resource {
   public services = {
-    'GET': [BeforeMiddleware1]
+    'GET': [new BeforeMiddleware1()]
   }
     static paths = ["/user/:id", "/users/edit/:id?"]
     public GET(context: Drash.Interfaces.Context) {
@@ -16,7 +16,7 @@ class Res extends Resource {
     }
 }
 
-class BeforeMiddleware1 implements Drash.Interfaces.IService { // THIS SERVICE remonstrates modifying a response and passing it to the resource
+class BeforeMiddleware1 extends Service implements Drash.Interfaces.IService { // THIS SERVICE remonstrates modifying a response and passing it to the resource
   public runBeforeResource (context: Drash.Interfaces.Context) {
     context.response.headers.set("X-ERIC", "a boss")
   }
@@ -33,7 +33,7 @@ const server = new Server({
     port: 1445,
     resources: [Res],
     protocol: "http",
-    services: [BeforeMiddleware1]
+    services: [new BeforeMiddleware1()]
 })
 console.log('going to run')
 server.run()

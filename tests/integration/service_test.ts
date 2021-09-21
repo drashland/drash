@@ -75,7 +75,6 @@ Deno.test("Server middleware should run", async () => {
     const res = await fetch(server.address)
     await res.text()
     server.close()
-    console.log(server.address)
     assertEquals(res.headers.get("X-SERVER-SERVICE-BEFORE"), "hi")
     assertEquals(res.headers.get("X-SERVER-SERVICE-AFTER"), "hi")
 })

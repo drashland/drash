@@ -16,7 +16,6 @@ class OptionalPathParamsResource extends Resource {
     const name = context.request.pathParam("name");
     const age_of_person = context.request.pathParam("age_of_person");
     const city = context.request.pathParam("ci-ty");
-    console.log(name, age_of_person, city)
 
     context.response.body = JSON.stringify({
       message: "Successfully handled optional path params",

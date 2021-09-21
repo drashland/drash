@@ -138,7 +138,6 @@ export class Server {
       throw new Drash.Errors.HttpError(404);
     }
 
-    console.log('uri paths', resource.uri_paths)
     //const matchedParams = this.#handlers.resource_handler.getMatchedPathAndParams(new URL(originalRequest.url).pathname, resource.uri_paths)
     //console.log('matched params', matchedParams)
 
@@ -150,7 +149,6 @@ export class Server {
       pathname = pathname.slice(0, -1)
     }
     const pathnameSplit = pathname.split("/")
-    console.log('PATHNAME SPLIT', pathnameSplit, 'URI PATHS', resource.uri_paths)
     for (const i in pathnameSplit) {
       // loop through until we reach an `:`, then use that as the name and the value from the uri
       for (const path of resource.uri_paths) {
@@ -160,7 +158,6 @@ export class Server {
         }
       }
     }
-    console.log('M BLUBBER', matchedParams)
 
     const context = {
       request: await Drash.DrashRequest.create(originalRequest, matchedParams),
@@ -219,7 +216,6 @@ export class Server {
     }
   }
 
-  console.log('responding with', context.response.body)
     context.response.send()
   }
 
@@ -227,7 +223,6 @@ export class Server {
    * Listen for incoming requests.
    */
   async #listenForRequests() {
-    console.log('hello')
     for await (const conn of this.#deno_server) {
       (async () => {
         this.#httpConn = Deno.serveHttp(conn)
@@ -235,14 +230,11 @@ export class Server {
         try {
           await this.#handleRequest(request, respondWith);
         } catch (error) {
-          console.log('err')
-          console.log(error)
           await this.#handleError(error, respondWith);
         }
        }
       })()
     }
-    console.log('bye')
   }
 
   /**
