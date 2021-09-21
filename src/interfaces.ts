@@ -124,16 +124,16 @@ export interface IResource {
 
 export interface IResourceServices {
   
-    CONNECT?: typeof Drash.Service[],
-    DELETE?: typeof Drash.Service[],
-    GET?: typeof Drash.Service[],
-    HEAD?: typeof Drash.Service[],
-    OPTIONS?: typeof Drash.Service[],
-    PATCH?: typeof Drash.Service[],
-    POST?: typeof Drash.Service[],
-    PUT?: typeof Drash.Service[],
-    TRACE?: typeof Drash.Service[],
-    ALL?: typeof Drash.Service[],
+    CONNECT?: Drash.Service[],
+    DELETE?: Drash.Service[],
+    GET?: Drash.Service[],
+    HEAD?: Drash.Service[],
+    OPTIONS?: Drash.Service[],
+    PATCH?: Drash.Service[],
+    POST?: Drash.Service[],
+    PUT?: Drash.Service[],
+    TRACE?: Drash.Service[],
+    ALL?: Drash.Service[],
   
 }
 
@@ -177,7 +177,7 @@ export interface IServerOptions {
   port: number;
   protocol: "http" | "https";
   resources: typeof Resource[];
-  services?: typeof Drash.Service[];
+  services?: Drash.Service[];
 }
 
 export interface IService {

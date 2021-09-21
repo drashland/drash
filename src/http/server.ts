@@ -181,74 +181,44 @@ export class Server {
     // Server before resource middleware
     if (this.#options.services) {
     for (const Service of this.#options.services) {
-      const service: Drash.Interfaces.IService = new Service()
-      // pass resource req and res if a middleware modifies them
-      if (!service.runBeforeResource) {
-        continue
-      }
-      await service.runBeforeResource(context)
+      await Service.runBeforeResource(context)
     }
   }
 
     // Class before resource middleware
     if (resource.services && resource.services.ALL) {
       for (const Service of resource.services.ALL) {
-        const service: Drash.Interfaces.IService = new Service()
-        if (!service.runBeforeResource) {
-          continue
-        }
-        await service.runBeforeResource(context)
+        await Service.runBeforeResource(context)
       }
     }
 
     // resource before middleware
     if (resource.services && resource.services[method]) {
-      for (const Service of resource.services[method] as typeof Drash.Service[]) {
-        const service: Drash.Interfaces.IService = new Service()
-        if (!service.runBeforeResource) {
-          continue
-        }
-        await service.runBeforeResource(context)
+      for (const Service of (resource.services[method] ?? [])) {
+        await Service.runBeforeResource(context)
       }
     }
 
     // Execute the HTTP method on the resource
     await resource![method as Drash.Types.THttpMethod]!(context);
 
-    // Sanity checks
-    if (!context.response.body) {
-      throw new Drash.Errors.HttpError(418, "The response body must be set from within a resource or service before the response is sent")
-    }
-
     // after resource middleware
     if (resource.services && method in resource.services) {
-      for (const Service of resource.services![method] as typeof Drash.Service[]) {
-        const service: Drash.Interfaces.IService = new Service()
-        if (!service.runAfterResource) {
-          continue
-        }
-        await service.runAfterResource(context)
+      for (const Service of (resource.services![method] ?? [])) {
+        await Service.runAfterResource(context)
       }
     }
 
     // Class after resource middleware
     if (resource.services && resource.services.ALL) {
       for (const Service of resource.services!.ALL) {
-        const service: Drash.Interfaces.IService = new Service()
-        if (!service.runAfterResource) {
-          continue
-        }
-        await service.runAfterResource(context)
+        await Service.runAfterResource(context)
       }
     }
 
     if (this.#options.services) {
     for (const Service of this.#options.services) {
-      const service: Drash.Interfaces.IService = new Service()
-      if (!service.runAfterResource) {
-        continue
-      }
-      await service.runAfterResource(context)
+      await Service.runAfterResource(context)
     }
   }
 

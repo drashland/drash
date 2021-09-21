@@ -44,5 +44,4 @@ export {
   Types,
 };
 
-import { IService } from "./src/interfaces.ts"
-export type { IService }
+export type { IService, IResource } from "./src/interfaces.ts"

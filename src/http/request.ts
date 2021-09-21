@@ -2,6 +2,10 @@ import * as Drash from "../../mod.ts";
 
 export type ParsedBody = Record<string, FormDataEntryValue> | null
 
+function decodeValue(val: string) {
+  return decodeURIComponent(val.replace(/\+/g, ' '));
+}
+
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class DrashRequest extends Request {
   #parsed_body!: ParsedBody;
