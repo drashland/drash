@@ -6,13 +6,15 @@ export class DrashResponse {
   public headers: Headers = new Headers();
   public status: number = 200;
   public statusText: string = "OK";
+  readonly #respondWith: (r: Response | Promise<Response>) => Promise<void>
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(defaultResponseContentType: string) {
+  constructor(defaultResponseContentType: string, respondWith: (r: Response | Promise<Response>) => Promise<void>) {
     this.headers.set("Content-Type", defaultResponseContentType);
+    this.#respondWith = respondWith
   }
 
   /**
@@ -34,5 +36,25 @@ export class DrashResponse {
     path?: string, domain: string
   }): void {
     deleteCookie(this.headers, name, attributes)
+  }
+
+  public send() {
+    this.#respondWith(new Response(this.body, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: this.headers,
+    }));
+  }
+
+  /**
+   * This method allows users to make `this.response.render()` calls in
+   * resources. This method is also used by Tengine:
+   *
+   *   https://github.com/drashland/deno-drash-middleware/tree/master/tengine
+   */
+   public render(
+    ..._args: unknown[]
+  ): Promise<boolean | string> | boolean | string {
+    return false;
   }
 }

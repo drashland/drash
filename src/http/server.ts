@@ -164,11 +164,8 @@ export class Server {
 
     const context = {
       request: await Drash.DrashRequest.create(originalRequest, matchedParams),
-      response: new Drash.DrashResponse(this.#options.default_response_type as string)
+      response: new Drash.DrashResponse(this.#options.default_response_type as string, respondWith)
     }
-    context.response.headers.set('Content-Type', this.#options.default_response_type as string)
-
-
 
     const method = context.request.method.toUpperCase() as Drash.Types.THttpMethod;
 
@@ -223,11 +220,7 @@ export class Server {
   }
 
   console.log('responding with', context.response.body)
-    respondWith(new Response(context.response.body, {
-      status: context.response.status,
-      statusText: context.response.statusText,
-      headers: context.response.headers,
-    }));
+    context.response.send()
   }
 
   /**
