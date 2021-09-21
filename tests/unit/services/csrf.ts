@@ -1,72 +1,62 @@
-import { CSRF } from "../mod.ts";
-import { Drash } from "../../deps.ts";
-import { Rhum } from "../../test_deps.ts";
+import { CSRFService } from "../../../src/services/csrf/csrf.ts";
+import { Rhum } from "../../deps.ts";
+import { Resource, IResource, Server, IContext } from "../../../mod.ts"
 
-const csrfWithoutCookie = CSRF();
-const csrfWithCookie = CSRF({ cookie: true });
+const csrfWithoutCookie = new CSRFService();
+const csrfWithCookie = new CSRFService({ cookie: true });
 
 /**
  * This resource resembles the following:
  *     1. On any route other than login/register/etc, supply the csrf token on GET requests
  *     2. On requests MADE to the server,  check the token was passed in
  */
-class ResourceNoCookie extends Drash.Http.Resource {
+class ResourceNoCookie extends Resource implements IResource {
   static paths = ["/"];
 
-  public GET() {
-    // Give token to the 'view'
-    this.response.headers.set("X-CSRF-TOKEN", csrfWithoutCookie.token);
-    this.response.body = csrfWithoutCookie.token;
-    return this.response;
+  public services = {
+    'POST': [csrfWithoutCookie]
   }
 
-  @Drash.Http.Middleware({
-    before_request: [csrfWithoutCookie],
-    after_request: [],
-  })
-  public POST() {
+  public GET(context: IContext) {
+    // Give token to the 'view'
+    context.response.headers.set("X-CSRF-TOKEN", csrfWithoutCookie.token);
+    context.response.body = csrfWithoutCookie.token;
+  }
+
+  public POST(context: IContext) {
     // request should have token
-    this.response.body = "Success; " + csrfWithoutCookie.token;
-    return this.response;
+    context.response.body = "Success; " + csrfWithoutCookie.token;
   }
 }
 
-class ResourceWithCookie extends Drash.Http.Resource {
+class ResourceWithCookie extends Resource {
   static paths = ["/cookie"];
 
-  public GET() {
+  public services = {
+    'POST': [csrfWithCookie]
+  }
+
+  public GET(context: IContext) {
     // Give token to the 'view'
-    this.response.setCookie({
+    context.response.setCookie({
       name: "X-CSRF-TOKEN",
       value: csrfWithCookie.token,
     });
-    this.response.body = csrfWithCookie.token;
-    return this.response;
+    context.response.body = csrfWithCookie.token;
   }
 
-  @Drash.Http.Middleware({
-    before_request: [csrfWithCookie],
-    after_request: [],
-  })
-  public POST() {
+  public POST(context: IContext) {
     // request should have token
-    this.response.body = "Success; " + csrfWithCookie.token;
-    return this.response;
+    context.response.body = "Success; " + csrfWithCookie.token;
   }
 }
 
-const server = new Drash.Http.Server({
+const server = new Server({
   resources: [ResourceNoCookie, ResourceWithCookie],
+  protocol: "http",
+  port: 1337,
+  hostname: "localhost"
 });
-
-async function runServer() {
-  await server.run({
-    hostname: "localhost",
-    port: 1337,
-  });
-}
-
-console.log("Server running");
 
 Rhum.testPlan("CSRF - mod_test.ts", () => {
   Rhum.testSuite("csrf", () => {
@@ -79,7 +69,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
     Rhum.testCase(
       "Token should be the same for different requests",
       async () => {
-        await runServer();
+        server.run();
         const firstRes = await fetch("http://localhost:1337");
         await firstRes.arrayBuffer();
         Rhum.asserts.assertEquals(
@@ -96,7 +86,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       },
     );
     Rhum.testCase("Token can be used for other requests", async () => { // eg get it from a route, and use it in the view for sending other requests
-      await runServer();
+      server.run();
       const firstRes = await fetch("http://localhost:1337");
       const token = firstRes.headers.get("X-CSRF-TOKEN");
       await firstRes.arrayBuffer();
@@ -109,21 +99,20 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       Rhum.asserts.assertEquals(secondRes.status, 200);
       Rhum.asserts.assertEquals(
         await secondRes.text(),
-        '"Success; ' + token + '"',
+        'Success; ' + token,
       );
       server.close();
     });
     Rhum.testCase(
       "Route with CSRF should throw a 400 when no token",
       async () => {
-        await runServer();
+        server.run();
         const res = await fetch("http://localhost:1337", {
           method: "POST",
         });
         Rhum.asserts.assertEquals(res.status, 400);
         Rhum.asserts.assertEquals(
-          await res.text(),
-          '"No CSRF token was passed in"',
+         (await res.text()).startsWith('Error: No CSRF token was passed in'), true
         );
         server.close();
       },
@@ -131,7 +120,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
     Rhum.testCase(
       "Route with CSRF should throw 403 for an invalid token",
       async () => {
-        await runServer();
+        server.run();
         const res = await fetch("http://localhost:1337", {
           method: "POST",
           headers: {
@@ -140,8 +129,8 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         });
         Rhum.asserts.assertEquals(res.status, 403);
         Rhum.asserts.assertEquals(
-          await res.text(),
-          '"The CSRF tokens do not match"',
+         (await res.text()).startsWith(
+          'Error: The CSRF tokens do not match'), true
         );
         server.close();
       },
@@ -150,7 +139,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
     Rhum.testCase(
       "Route should respond with success when passing in token",
       async () => {
-        await runServer();
+        server.run();
         const res = await fetch("http://localhost:1337", {
           method: "POST",
           headers: {
@@ -160,15 +149,15 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         Rhum.asserts.assertEquals(res.status, 200);
         Rhum.asserts.assertEquals(
           await res.text(),
-          '"Success; ' + csrfWithoutCookie.token + '"',
+          'Success; ' + csrfWithoutCookie.token,
         );
         server.close();
       },
     );
     Rhum.testCase("Should allow to set the token as a cookie", async () => {
-      await runServer();
+      server.run();
       const res = await fetch("http://localhost:1337/cookie");
-      await res.json();
+      await res.text();
       const headers = res.headers;
       const token = headers.get("set-cookie")!.split("=")[1];
       Rhum.asserts.assertEquals(token, csrfWithCookie.token);
