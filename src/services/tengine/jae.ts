@@ -3,7 +3,6 @@ const decoder = new TextDecoder("utf-8");
 export class Jae {
   /**
    * A property to hold the base path to the template(s).
-   *
    */
   public views_path = "";
 

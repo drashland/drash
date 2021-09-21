@@ -1,4 +1,4 @@
-import { Resource } from "../mod.ts"
+import { Resource } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -109,7 +109,7 @@ export interface IResource {
   path_parameters: string;
   uri_paths: string[];
   uri_paths_parsed: IResourcePathsParsed[];
-  services?: IResourceServices
+  services?: IResourceServices;
   // Methods
   CONNECT?: (context: Context) => Promise<void> | void;
   DELETE?: (context: Context) => Promise<void> | void;
@@ -118,23 +118,21 @@ export interface IResource {
   OPTIONS?: (context: Context) => Promise<void> | void;
   PATCH?: (context: Context) => Promise<void> | void;
   POST?: (context: Context) => Promise<void> | void;
-  PUT?: (context: Context) =>Promise<void> | void ;
+  PUT?: (context: Context) => Promise<void> | void;
   TRACE?: (context: Context) => Promise<void> | void;
 }
 
 export interface IResourceServices {
-  
-    CONNECT?: Drash.Service[],
-    DELETE?: Drash.Service[],
-    GET?: Drash.Service[],
-    HEAD?: Drash.Service[],
-    OPTIONS?: Drash.Service[],
-    PATCH?: Drash.Service[],
-    POST?: Drash.Service[],
-    PUT?: Drash.Service[],
-    TRACE?: Drash.Service[],
-    ALL?: Drash.Service[],
-  
+  CONNECT?: Drash.Service[];
+  DELETE?: Drash.Service[];
+  GET?: Drash.Service[];
+  HEAD?: Drash.Service[];
+  OPTIONS?: Drash.Service[];
+  PATCH?: Drash.Service[];
+  POST?: Drash.Service[];
+  PUT?: Drash.Service[];
+  TRACE?: Drash.Service[];
+  ALL?: Drash.Service[];
 }
 
 /**
@@ -187,15 +185,15 @@ export interface IService {
   /**
    * Method that is ran before a resource is handled
    */
-  runBeforeResource?: (context: Context) => void|Promise<void>
+  runBeforeResource?: (context: Context) => void | Promise<void>;
 
   /**
    * Method that is ran after a reosurce is handled
    */
-  runAfterResource?: (context: Context) => void|Promise<void>
+  runAfterResource?: (context: Context) => void | Promise<void>;
 }
 
 export interface Context {
-  request: Drash.DrashRequest,
-  response: Drash.DrashResponse
+  request: Drash.DrashRequest;
+  response: Drash.DrashResponse;
 }

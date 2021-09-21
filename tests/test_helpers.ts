@@ -54,7 +54,11 @@ export function mockRequest(url = "/", method = "get", options?: any): any {
   //
   //   TypeError: Cannot read property 'write' of undefined
   //
-  request.respond = function respond(output: Drash.Deps.Response & { send?: () => Drash.Deps.Response | undefined}) {
+  request.respond = function respond(
+    output: Drash.Deps.Response & {
+      send?: () => Drash.Deps.Response | undefined;
+    },
+  ) {
     output.send = function () {
       if (
         output.status === 301 ||

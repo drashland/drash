@@ -1,6 +1,6 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts"
-import { IContext, Resource } from "../../mod.ts"
+import * as Drash from "../../mod.ts";
+import { IContext, Resource } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ const server = new Drash.Server({
   ],
   protocol: "http",
   hostname: "localhost",
-  port: 3000
+  port: 3000,
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
       );
       Rhum.asserts.assertEquals(
         await response.text(),
-        'Please specify a user ID.',
+        "Please specify a user ID.",
       );
 
       response = await TestHelpers.makeRequest.get(
@@ -93,13 +93,16 @@ Rhum.testPlan("users_resource_test.ts", () => {
       );
       Rhum.asserts.assertEquals(
         await response.text(),
-        'Please specify a user ID.',
+        "Please specify a user ID.",
       );
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users//",
       );
-      Rhum.asserts.assertEquals((await response.text()).startsWith("Error: Not Found"), true);
+      Rhum.asserts.assertEquals(
+        (await response.text()).startsWith("Error: Not Found"),
+        true,
+      );
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users/17",
@@ -121,7 +124,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
         "http://localhost:3000/users/18",
       );
       Rhum.asserts.assertEquals(
-        (await response.text()).startsWith(`Error: User with ID "18" not found.`), true);
+        (await response.text()).startsWith(
+          `Error: User with ID "18" not found.`,
+        ),
+        true,
+      );
 
       server.close();
     });

@@ -1,6 +1,6 @@
 import { Rhum } from "../../deps.ts";
 import { PaladinService } from "../../../src/services/paladin/paladin.ts";
-import { Resource, IResource, IContext, Server } from "../../../mod.ts";
+import { IContext, IResource, Resource, Server } from "../../../mod.ts";
 
 class Res extends Resource implements IResource {
   static paths = ["/"];
@@ -19,7 +19,7 @@ function runServer(
     services: [paladin],
     protocol: "http",
     hostname: "localhost",
-    port
+    port,
   });
   server.run();
   return server;
@@ -34,7 +34,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, "1; mode=block");
-     server.close();
+      server.close();
     });
     Rhum.testCase("Sets the header when config is true", async () => {
       const paladin = new PaladinService({
@@ -45,7 +45,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, "1; mode=block");
-     server.close();
+      server.close();
     });
     Rhum.testCase("Does not set the header when config is false", async () => {
       const paladin = new PaladinService({
@@ -56,7 +56,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, null);
-     server.close();
+      server.close();
     });
   });
   Rhum.testSuite("Referrer-Policy header", () => {
@@ -67,7 +67,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Referrer-Policy");
       Rhum.asserts.assertEquals(header, null);
-     server.close();
+      server.close();
     });
     Rhum.testCase("Sets the header when passed in", async () => {
       const paladin = new PaladinService({
@@ -78,7 +78,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Referrer-Policy");
       Rhum.asserts.assertEquals(header, "origin");
-     server.close();
+      server.close();
     });
   });
   Rhum.testSuite("X-Content-Type-Options header", () => {
@@ -89,7 +89,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, "nosniff");
-     server.close();
+      server.close();
     });
     Rhum.testCase("Sets the header when config is true", async () => {
       const paladin = new PaladinService({
@@ -100,7 +100,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, "nosniff");
-       server.close();
+      server.close();
     });
     Rhum.testCase("Does not set the header when config is false", async () => {
       const paladin = new PaladinService({
@@ -111,7 +111,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, null);
-     server.close();
+      server.close();
     });
   });
   Rhum.testSuite("Strict-Transport-Security header", () => {
@@ -122,7 +122,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains");
-     server.close();
+      server.close();
     });
     Rhum.testCase("Is set when max_age is set", async () => {
       const paladin = new PaladinService({
@@ -373,7 +373,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "on");
-     server.close();
+      server.close();
     });
   });
   Rhum.testSuite("Content-Security-Policy header", () => {
@@ -384,7 +384,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Content-Security-Policy");
       Rhum.asserts.assertEquals(header, null);
-     server.close();
+      server.close();
     });
     Rhum.testCase("Can be set if config is set", async () => {
       const paladin = new PaladinService({
@@ -395,7 +395,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Content-Security-Policy");
       Rhum.asserts.assertEquals(header, "Something something");
-     server.close();
+      server.close();
     });
   });
 });

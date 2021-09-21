@@ -1,6 +1,6 @@
 import { CSRFService } from "../../../src/services/csrf/csrf.ts";
 import { Rhum } from "../../deps.ts";
-import { Resource, IResource, Server, IContext } from "../../../mod.ts"
+import { IContext, IResource, Resource, Server } from "../../../mod.ts";
 
 const csrfWithoutCookie = new CSRFService();
 const csrfWithCookie = new CSRFService({ cookie: true });
@@ -14,8 +14,8 @@ class ResourceNoCookie extends Resource implements IResource {
   static paths = ["/"];
 
   public services = {
-    'POST': [csrfWithoutCookie]
-  }
+    "POST": [csrfWithoutCookie],
+  };
 
   public GET(context: IContext) {
     // Give token to the 'view'
@@ -33,8 +33,8 @@ class ResourceWithCookie extends Resource {
   static paths = ["/cookie"];
 
   public services = {
-    'POST': [csrfWithCookie]
-  }
+    "POST": [csrfWithCookie],
+  };
 
   public GET(context: IContext) {
     // Give token to the 'view'
@@ -55,7 +55,7 @@ const server = new Server({
   resources: [ResourceNoCookie, ResourceWithCookie],
   protocol: "http",
   port: 1337,
-  hostname: "localhost"
+  hostname: "localhost",
 });
 
 Rhum.testPlan("CSRF - mod_test.ts", () => {
@@ -99,7 +99,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       Rhum.asserts.assertEquals(secondRes.status, 200);
       Rhum.asserts.assertEquals(
         await secondRes.text(),
-        'Success; ' + token,
+        "Success; " + token,
       );
       server.close();
     });
@@ -112,7 +112,8 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         });
         Rhum.asserts.assertEquals(res.status, 400);
         Rhum.asserts.assertEquals(
-         (await res.text()).startsWith('Error: No CSRF token was passed in'), true
+          (await res.text()).startsWith("Error: No CSRF token was passed in"),
+          true,
         );
         server.close();
       },
@@ -129,8 +130,10 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         });
         Rhum.asserts.assertEquals(res.status, 403);
         Rhum.asserts.assertEquals(
-         (await res.text()).startsWith(
-          'Error: The CSRF tokens do not match'), true
+          (await res.text()).startsWith(
+            "Error: The CSRF tokens do not match",
+          ),
+          true,
         );
         server.close();
       },
@@ -149,7 +152,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         Rhum.asserts.assertEquals(res.status, 200);
         Rhum.asserts.assertEquals(
           await res.text(),
-          'Success; ' + csrfWithoutCookie.token,
+          "Success; " + csrfWithoutCookie.token,
         );
         server.close();
       },

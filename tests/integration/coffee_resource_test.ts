@@ -1,6 +1,6 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts"
-import { Resource } from "../../mod.ts"
+import * as Drash from "../../mod.ts";
+import { Resource } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -10,7 +10,8 @@ interface ICoffee {
   name: string;
 }
 
-export class CoffeeResource extends Resource implements Drash.Interfaces.IResource {
+export class CoffeeResource extends Resource
+  implements Drash.Interfaces.IResource {
   static paths = ["/coffee", "/coffee/:id"];
 
   protected coffee = new Map<number, ICoffee>([
@@ -35,8 +36,8 @@ export class CoffeeResource extends Resource implements Drash.Interfaces.IResour
     }
 
     if (coffeeId === "123") {
-      context.response.headers.set('Location', '/coffee/17')
-      context.response.status = 302
+      context.response.headers.set("Location", "/coffee/17");
+      context.response.status = 302;
       return;
     }
 
@@ -72,7 +73,7 @@ const server = new Drash.Server({
   ],
   protocol: "http",
   hostname: "localhost",
-  port: 3000
+  port: 3000,
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,14 +122,19 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
 
       response = await fetch("http://localhost:3000/coffee/20");
       Rhum.asserts.assertEquals(
-        (await response.text()).startsWith("Error: Coffee with ID \"20\" not found."),
+        (await response.text()).startsWith(
+          'Error: Coffee with ID "20" not found.',
+        ),
         true,
       );
 
       response = await TestHelpers.makeRequest.post(
         "http://localhost:3000/coffee/17/",
       );
-      Rhum.asserts.assertEquals((await response.text()).startsWith("Error: Method Not Allowed"), true);
+      Rhum.asserts.assertEquals(
+        (await response.text()).startsWith("Error: Method Not Allowed"),
+        true,
+      );
 
       server.close();
     });

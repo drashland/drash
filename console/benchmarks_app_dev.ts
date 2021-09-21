@@ -1,5 +1,5 @@
 import * as Drash from "../mod.ts";
-import { Resource } from "../mod.ts"
+import { Resource } from "../mod.ts";
 
 export class Resource extends Resource {
   public uri_paths = ["/", "/:some_param"];
@@ -21,13 +21,14 @@ export class CoffeeResource extends Resource {
 const server = new Drash.Server({
   resources: [
     Resource,
-    CoffeeResource
-  ]
+    CoffeeResource,
+  ],
 });
 
 server.runHttp();
 
 console.log(`Server running at ${server.address}`);
 
-Deno.run({ cmd: [ "autocannon", "-c", "40", "-d", "5", "http://localhost:1337", ] });
-
+Deno.run({
+  cmd: ["autocannon", "-c", "40", "-d", "5", "http://localhost:1337"],
+});

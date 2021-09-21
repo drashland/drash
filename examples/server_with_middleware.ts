@@ -1,43 +1,42 @@
-
-import * as Drash from "../mod.ts"
-import { Server } from "../src/http/server.ts"
-import { Resource, Service } from "../mod.ts"
+import * as Drash from "../mod.ts";
+import { Server } from "../src/http/server.ts";
+import { Resource, Service } from "../mod.ts";
 class Res extends Resource {
   public services = {
-    'GET': [new BeforeMiddleware1()]
+    "GET": [new BeforeMiddleware1()],
+  };
+  static paths = ["/user/:id", "/users/edit/:id?"];
+  public GET(context: Drash.Interfaces.Context) {
+    context.response.body = "hello";
+    console.log(context.request.pathParam("id"));
   }
-    static paths = ["/user/:id", "/users/edit/:id?"]
-    public GET(context: Drash.Interfaces.Context) {
-        context.response.body = "hello"
-        console.log(context.request.pathParam('id'))
-    }
-    public POST(context: Drash.Interfaces.Context) {
-      context.response.body = "hello"
-    }
+  public POST(context: Drash.Interfaces.Context) {
+    context.response.body = "hello";
+  }
 }
 
 class BeforeMiddleware1 extends Service implements Drash.Interfaces.IService { // THIS SERVICE remonstrates modifying a response and passing it to the resource
-  public runBeforeResource (context: Drash.Interfaces.Context) {
-    context.response.headers.set("X-ERIC", "a boss")
+  public runBeforeResource(context: Drash.Interfaces.Context) {
+    context.response.headers.set("X-ERIC", "a boss");
   }
 }
-class BeforeMiddleware2 implements Drash.Interfaces.IService { // THIS MIDDLEWARE demonstrates a service sending a response so a resource is never called. 
-  public runBeforeResource (context: Drash.Interfaces.Context) {
+class BeforeMiddleware2 implements Drash.Interfaces.IService { // THIS MIDDLEWARE demonstrates a service sending a response so a resource is never called.
+  public runBeforeResource(context: Drash.Interfaces.Context) {
     if (context.response.headers.get("X-ERIC") === "a boss") {
       // TODO set headers, content type, status and body, send
     }
   }
 }
 const server = new Server({
-    hostname: "localhost",
-    port: 1445,
-    resources: [Res],
-    protocol: "http",
-    services: [new BeforeMiddleware1()]
-})
-console.log('going to run')
-server.run()
-console.log('running')
+  hostname: "localhost",
+  port: 1445,
+  resources: [Res],
+  protocol: "http",
+  services: [new BeforeMiddleware1()],
+});
+console.log("going to run");
+server.run();
+console.log("running");
 
 // const url = "/2/lon/22/hh".split("/")
 // const path = "/:id/:city/:age?".split("/")
@@ -53,7 +52,7 @@ console.log('running')
 // if (url.length !== path.filter(p => p.includes('?') === false).length) {
 //   // this will catch when url = /2/lon/22, and path = /:id/:city/:age?
 //   // now include optional params and if the len isn't the same, routes deffo dont match
-//   if (url.length !== path.length) 
+//   if (url.length !== path.length)
 //     throw new Error('url doesnt match path')
 // }
 // // But also check that the url isn't too big for the path, eg
@@ -89,7 +88,7 @@ console.log('running')
 //         for (const [key, value] of form.entries()) {
 //         formDataJSON[key] = value;
 //                 }
-      
+
 //                 console.log(formDataJSON)
 //         respondWith(new Response("Hello World"));
 //       }

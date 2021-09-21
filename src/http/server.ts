@@ -1,5 +1,5 @@
 import * as Drash from "../../mod.ts";
-import { DrashRequest} from "./request.ts"
+import { DrashRequest } from "./request.ts";
 
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
@@ -19,7 +19,7 @@ export class Server {
    */
   #deno_server!: Deno.Listener;
 
-  #httpConn!: Deno.HttpConn
+  #httpConn!: Deno.HttpConn;
 
   /**
    * The Deno server request object handler. This handler gets wrapped around
@@ -65,7 +65,6 @@ export class Server {
     return `${this.#options.protocol}://${this.#options.hostname}:${this.#options.port}`;
   }
 
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -76,7 +75,7 @@ export class Server {
   public close(): void {
     try {
       this.#deno_server.close();
-      this.#httpConn.close()
+      this.#httpConn.close();
     } catch (_error) {
       // Do nothing. The server was probably already closed.
     }
@@ -84,17 +83,16 @@ export class Server {
 
   public run() {
     if (this.#options.protocol === "http") {
-      return this.#runHttp()
+      return this.#runHttp();
     }
     if (this.#options.protocol === "https") {
-      return this.#runHttps()
+      return this.#runHttps();
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
 
   /**
    * Handle errors thrown during runtime. These errors get sent as the response
@@ -105,13 +103,15 @@ export class Server {
    */
   #handleError(
     error: Drash.Errors.HttpError,
-    respondWith: (r: Response | Promise<Response>) => Promise<void>
+    respondWith: (r: Response | Promise<Response>) => Promise<void>,
   ) {
     // TODO(crookse TODO-ERRORS) The error should be a response object so we can
     // just call request.respond(error);
-    respondWith(new Response(error.stack, {
-      status: error.code,
-    }));
+    respondWith(
+      new Response(error.stack, {
+        status: error.code,
+      }),
+    );
   }
 
   /**
@@ -121,7 +121,7 @@ export class Server {
    */
   async #handleRequest(
     originalRequest: Request,
-    respondWith: (r: Response | Promise<Response>) => Promise<void>
+    respondWith: (r: Response | Promise<Response>) => Promise<void>,
   ): Promise<void> {
     // Ordering of logic matters, because we dont want to spend time calculating
     // for something the user would never need, eg parsing the body for a user to never use it.
@@ -131,10 +131,12 @@ export class Server {
     // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
     // 3. Fail early if resource isnt found
 
-    const resource = this.#handlers.resource_handler.getResource(originalRequest);
+    const resource = this.#handlers.resource_handler.getResource(
+      originalRequest,
+    );
 
     if (!resource) {
-      console.error("NO RESOUCR WOW")
+      console.error("NO RESOUCR WOW");
       throw new Drash.Errors.HttpError(404);
     }
 
@@ -143,28 +145,35 @@ export class Server {
 
     // What we're going to do here is, we know we have a resource, now we just have to map
     // the path params on the resource paths to values in the uri
-    const matchedParams = new Map()
-    let pathname = new URL(originalRequest.url).pathname
+    const matchedParams = new Map();
+    let pathname = new URL(originalRequest.url).pathname;
     if (pathname[pathname.length - 1] === "/") {
-      pathname = pathname.slice(0, -1)
+      pathname = pathname.slice(0, -1);
     }
-    const pathnameSplit = pathname.split("/")
+    const pathnameSplit = pathname.split("/");
     for (const i in pathnameSplit) {
       // loop through until we reach an `:`, then use that as the name and the value from the uri
       for (const path of resource.uri_paths) {
-        const aplit = path.split("/")
+        const aplit = path.split("/");
         if (aplit[i] && aplit[i].includes(":")) {
-          matchedParams.set(aplit[i].replace(':', '').replace('?', ''), pathnameSplit[i])
+          matchedParams.set(
+            aplit[i].replace(":", "").replace("?", ""),
+            pathnameSplit[i],
+          );
         }
       }
     }
 
     const context = {
       request: await Drash.DrashRequest.create(originalRequest, matchedParams),
-      response: new Drash.DrashResponse(this.#options.default_response_type as string, respondWith)
-    }
+      response: new Drash.DrashResponse(
+        this.#options.default_response_type as string,
+        respondWith,
+      ),
+    };
 
-    const method = context.request.method.toUpperCase() as Drash.Types.THttpMethod;
+    const method = context.request.method
+      .toUpperCase() as Drash.Types.THttpMethod;
 
     // If the method does not exist on the resource, then the method is not
     // allowed. So, throw that 405 and GTFO.
@@ -174,22 +183,22 @@ export class Server {
 
     // Server before resource middleware
     if (this.#options.services) {
-    for (const Service of this.#options.services) {
-      await Service.runBeforeResource(context)
+      for (const Service of this.#options.services) {
+        await Service.runBeforeResource(context);
+      }
     }
-  }
 
     // Class before resource middleware
     if (resource.services && resource.services.ALL) {
       for (const Service of resource.services.ALL) {
-        await Service.runBeforeResource(context)
+        await Service.runBeforeResource(context);
       }
     }
 
     // resource before middleware
     if (resource.services && resource.services[method]) {
       for (const Service of (resource.services[method] ?? [])) {
-        await Service.runBeforeResource(context)
+        await Service.runBeforeResource(context);
       }
     }
 
@@ -199,24 +208,24 @@ export class Server {
     // after resource middleware
     if (resource.services && method in resource.services) {
       for (const Service of (resource.services![method] ?? [])) {
-        await Service.runAfterResource(context)
+        await Service.runAfterResource(context);
       }
     }
 
     // Class after resource middleware
     if (resource.services && resource.services.ALL) {
       for (const Service of resource.services!.ALL) {
-        await Service.runAfterResource(context)
+        await Service.runAfterResource(context);
       }
     }
 
     if (this.#options.services) {
-    for (const Service of this.#options.services) {
-      await Service.runAfterResource(context)
+      for (const Service of this.#options.services) {
+        await Service.runAfterResource(context);
+      }
     }
-  }
 
-    context.response.send()
+    context.response.send();
   }
 
   /**
@@ -225,15 +234,15 @@ export class Server {
   async #listenForRequests() {
     for await (const conn of this.#deno_server) {
       (async () => {
-        this.#httpConn = Deno.serveHttp(conn)
+        this.#httpConn = Deno.serveHttp(conn);
         for await (const { request, respondWith } of this.#httpConn) {
-        try {
-          await this.#handleRequest(request, respondWith);
-        } catch (error) {
-          await this.#handleError(error, respondWith);
+          try {
+            await this.#handleRequest(request, respondWith);
+          } catch (error) {
+            await this.#handleError(error, respondWith);
+          }
         }
-       }
-      })()
+      })();
     }
   }
 
@@ -271,13 +280,15 @@ export class Server {
     return this.#deno_server;
   }
 
-  #setOptions(options: Drash.Interfaces.IServerOptions): Drash.Interfaces.IServerOptions {
+  #setOptions(
+    options: Drash.Interfaces.IServerOptions,
+  ): Drash.Interfaces.IServerOptions {
     if (!options.default_response_type) {
       options.default_response_type = "application/json";
     }
 
     if (!options.services) {
-      options.services = []
+      options.services = [];
     }
 
     if (!options.hostname) {

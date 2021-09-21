@@ -1,6 +1,12 @@
-import { IContext, Resource, IResource, Service, IService } from "../../../mod.ts"
+import {
+  IContext,
+  IResource,
+  IService,
+  Resource,
+  Service,
+} from "../../../mod.ts";
 import { createHash, v4 } from "./deps.ts";
-import * as Drash from "../../../mod.ts"
+import * as Drash from "../../../mod.ts";
 
 /**
  * This allows us to pass the TS compiler, so we can add properties to a method that uses it. See `csrf` method below
@@ -23,37 +29,36 @@ const defaultOptions: Options = {
 };
 
 export class CSRFService extends Service implements IService {
+  readonly #options: Options;
 
-    readonly #options: Options
+  public token: string = primaryTokenString; // or const csrf = Object.assign(oldCsrf, { token: primaryToken.toString() })
 
-    public token: string = primaryTokenString // or const csrf = Object.assign(oldCsrf, { token: primaryToken.toString() })
+  constructor(options: Options = defaultOptions) {
+    super();
+    this.#options = options;
+  }
 
-    constructor(options: Options = defaultOptions) {
-        super()
-        this.#options = options
+  runBeforeResource(context: IContext) {
+    let requestToken: string | null = "";
+
+    if (this.#options.cookie === true) {
+      requestToken = context.request.getCookie("X-CSRF-TOKEN");
+    } else {
+      requestToken = context.request.headers.get("X-CSRF-TOKEN");
     }
 
-    runBeforeResource(context: IContext) {
-        let requestToken: string | null = "";
-
-        if (this.#options.cookie === true) {
-          requestToken = context.request.getCookie("X-CSRF-TOKEN");
-        } else {
-          requestToken = context.request.headers.get("X-CSRF-TOKEN");
-        }
-  
-        if (!requestToken) {
-          throw new Drash.Errors.HttpError(
-            400,
-            "No CSRF token was passed in",
-          );
-        }
-  
-        if (requestToken !== primaryTokenString) {
-          throw new Drash.Errors.HttpError(
-            403,
-            "The CSRF tokens do not match",
-          );
-        }
+    if (!requestToken) {
+      throw new Drash.Errors.HttpError(
+        400,
+        "No CSRF token was passed in",
+      );
     }
+
+    if (requestToken !== primaryTokenString) {
+      throw new Drash.Errors.HttpError(
+        403,
+        "The CSRF tokens do not match",
+      );
+    }
+  }
 }

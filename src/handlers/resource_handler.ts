@@ -1,5 +1,5 @@
 import * as Drash from "../../mod.ts";
-import { Resource } from "../../mod.ts"
+import { Resource } from "../../mod.ts";
 
 const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -10,7 +10,7 @@ export class ResourceHandler {
   #matches: Map<string, Drash.Interfaces.IResource> = new Map();
   #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash
     .Deps.Moogle<Drash.Interfaces.IResource>();
-  #resource_list: Map<string, Drash.Interfaces.IResource> = new Map()
+  #resource_list: Map<string, Drash.Interfaces.IResource> = new Map();
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
@@ -26,12 +26,12 @@ export class ResourceHandler {
     resources: (typeof Resource)[],
     serverOptions: Drash.Interfaces.IServerOptions,
   ): void {
-    resources.forEach(resourceClass => {
+    resources.forEach((resourceClass) => {
       const resource: Drash.Interfaces.IResource = new resourceClass(
-        resourceClass.paths
+        resourceClass.paths,
       );
 
-      resource.uri_paths.forEach(path => {
+      resource.uri_paths.forEach((path) => {
         // Remove the trailing slash because we handle URI paths with and
         // without the trailing slash the same. For example, the following URI
         // paths are the same:
@@ -71,7 +71,7 @@ export class ResourceHandler {
       resource.uri_paths_parsed
         .forEach((pathObj: Drash.Interfaces.IResourcePathsParsed) => {
           searchTerms.push(pathObj.regex_path);
-          this.#resource_list.set(pathObj.regex_path, resource)
+          this.#resource_list.set(pathObj.regex_path, resource);
         });
 
       this.#resource_index.addItem(searchTerms, resource);
@@ -79,81 +79,89 @@ export class ResourceHandler {
   }
 
   public getMatchedPathAndParams(uri: string, resourcePaths: string[]) {
-    function tryMatch(uri: string[], path: string[]): { found: boolean, matches: Map<string, string> } {
+    function tryMatch(
+      uri: string[],
+      path: string[],
+    ): { found: boolean; matches: Map<string, string> } {
       // if url is /, and path is /, its an exACT MATCH
       if (uri.join("/") === path.join("/")) {
         return {
           found: true,
-          matches: new Map()
-        }
+          matches: new Map(),
+        };
       }
       // If the url and path dont have the same parts, it isnt meant  to be,
       // eg url = /users or /users/edit/2, and path = /users/:id.
       // Also account for optional params by just ignoring them from this check
-      if (uri.length !== path.filter((p: string) => p.includes('?') === false).length) {
+      if (
+        uri.length !== path.filter((p: string) =>
+          p.includes("?") === false
+        ).length
+      ) {
         // this will catch when url = /2/lon/22, and path = /:id/:city/:age?
         // now include optional params and if the len isn't the same, routes deffo dont match.
         // URI should have a minimum length of the amount of req params
-        if (uri.length !== path.length) 
+        if (uri.length !== path.length) {
           return {
             found: false,
-            matches: new Map()
-          }
+            matches: new Map(),
+          };
+        }
       }
       // But also check that the url isn't too big for the path, eg
       // url = /users/2/edit/name, path = /users/:id/:action?, those routes dont match
       if (uri.length > path.length) {
         return {
           found: false,
-          matches: new Map()
-        }
+          matches: new Map(),
+        };
       }
       // by now, the url and the path is the same length, BUT could contain different values,
       // eg url = /users/edit/2, path = /users/delete/2
       let found = true;
-      const matches = new Map()
+      const matches = new Map();
       for (const part in uri) {
         // if part in path isnt a param, it should exactly match the same position in the url, eg
         // url = /users/edit, path = /users/edit, we're iterating on the second part, both should be "edit",
         // otherwise url = /users/edit and path = /users/delete shouldn't match right?:)
-        if (path[part].includes(':') === false) {
+        if (path[part].includes(":") === false) {
           if (uri[part] !== path[part]) {
-            found = false
-            break
+            found = false;
+            break;
           }
         }
 
         // even if we set this for a uri that doesn't match, it doesnt matter
         // because we always going to check if found is true
-        if (path[part].includes(':')) {
-          matches.set(path[part].replace(':', '').replace('?', ''), uri[part])
+        if (path[part].includes(":")) {
+          matches.set(path[part].replace(":", "").replace("?", ""), uri[part]);
         }
       }
       return {
         found,
-        matches
-      }
+        matches,
+      };
     }
     if (uri[uri.length - 1] === "/") {
-      uri = uri.slice(0, -1)
+      uri = uri.slice(0, -1);
     }
     let found = true;
-    let par = new Map()
+    let par = new Map();
     for (const resourcePath of resourcePaths) {
-      const res = tryMatch(uri.split("/"), resourcePath.split("/"))
-      found = res.found
-      par = res.matches
+      const res = tryMatch(uri.split("/"), resourcePath.split("/"));
+      found = res.found;
+      par = res.matches;
       if (found) { // break early, if we match first path, no need to check all others
-        break
+        break;
       }
     }
     if (!found) {
-      return
+      return;
     }
     return {
       found,
-      params: par
-    }
+      params: par,
+    };
   }
 
   /**
@@ -167,8 +175,7 @@ export class ResourceHandler {
   public getResource(
     request: Request,
   ): Drash.Interfaces.IResource | void {
-
-    let path = new URL(request.url).pathname
+    let path = new URL(request.url).pathname;
     // strip trailing slash
     // if (path[path.length - 1] === "/") {
     //   path = path.slice(0, -1)
@@ -177,16 +184,16 @@ export class ResourceHandler {
     // testing
     let r: Resource;
     for (const [reg, res] of this.#resource_list.entries()) {
-      if (`${path}`.match(reg.replace('/', '\\/'))) {
-        r = res
-        break
+      if (`${path}`.match(reg.replace("/", "\\/"))) {
+        r = res;
+        break;
       }
     }
     // @ts-ignore
     if (r) {
-      return r
+      return r;
     } else {
-      return
+      return;
     }
 
     const uri = path.split("/");
@@ -224,7 +231,7 @@ export class ResourceHandler {
 
     // The resource index should only be returning one result, so we grab that
     // first result ...
-    const n = results.entries().next()
+    const n = results.entries().next();
     // console.log(n)
     const result = n.value[1];
 

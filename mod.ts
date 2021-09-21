@@ -34,14 +34,10 @@ export { ResourceHandler } from "./src/handlers/resource_handler.ts";
 export { DrashRequest } from "./src/http/request.ts";
 export { Resource } from "./src/http/resource.ts";
 export { DrashResponse } from "./src/http/response.ts";
-export { Service } from "./src/http/service.ts"
-export type {Context as IContext } from "./src/interfaces.ts"
+export { Service } from "./src/http/service.ts";
+export type { Context as IContext } from "./src/interfaces.ts";
 
 // Export members from the IMPORTS section above
-export {
-  Interfaces,
-  Server,
-  Types,
-};
+export { Interfaces, Server, Types };
 
-export type { IService, IResource } from "./src/interfaces.ts"
+export type { IResource, IService } from "./src/interfaces.ts";

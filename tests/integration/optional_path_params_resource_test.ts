@@ -1,6 +1,6 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts"
-import { IContext, Resource} from "../../mod.ts"
+import * as Drash from "../../mod.ts";
+import { IContext, Resource } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ const server = new Drash.Server({
   ],
   protocol: "http",
   hostname: "localhost",
-  port:3000,
+  port: 3000,
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +203,8 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           "http://localhost:3000/oppWithoutRequired/edward/999/UK/other",
         );
         Rhum.asserts.assertEquals(
-          (await response.text()).startsWith("Error: Not Found"), true
+          (await response.text()).startsWith("Error: Not Found"),
+          true,
         );
         server.close();
       });
@@ -239,7 +240,9 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         "http://localhost:3000/oppWithRequired",
       );
       Rhum.asserts.assertEquals(
-        (await response.text()).startsWith("Error: Not Found"), true)
+        (await response.text()).startsWith("Error: Not Found"),
+        true,
+      );
 
       server.close();
     });
@@ -252,7 +255,9 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         "http://localhost:3000/oppWithRequired/",
       );
       Rhum.asserts.assertEquals(
-        (await response.text()).startsWith("Error: Not Found"), true)
+        (await response.text()).startsWith("Error: Not Found"),
+        true,
+      );
 
       server.close();
     });
@@ -337,7 +342,9 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         "http://localhost:3000/oppWithRequired/edward/22/other",
       );
       Rhum.asserts.assertEquals(
-        (await response.text()).startsWith("Error: Not Found"), true)
+        (await response.text()).startsWith("Error: Not Found"),
+        true,
+      );
 
       server.close();
     });

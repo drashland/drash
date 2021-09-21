@@ -1,5 +1,5 @@
 import { Rhum } from "../../deps.ts";
-import { Resource, IResource, IContext, Server } from "../../../mod.ts"
+import { IContext, IResource, Resource, Server } from "../../../mod.ts";
 import { CorsService } from "../../../src/services/cors/cors.ts";
 
 class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
@@ -12,7 +12,9 @@ class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
 }
 
 function runServer(allowAll = true): Server {
-  const cors = allowAll ? new CorsService() : new CorsService({ origin: "localhost" });
+  const cors = allowAll
+    ? new CorsService()
+    : new CorsService({ origin: "localhost" });
   const server = new Server({
     default_response_type: "application/json",
     services: [cors],
@@ -21,7 +23,7 @@ function runServer(allowAll = true): Server {
     ],
     port: 1447,
     hostname: "127.0.0.1",
-    protocol: "http"
+    protocol: "http",
   });
   server.run();
   return server;

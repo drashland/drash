@@ -7,8 +7,8 @@
  */
 
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts"
-import { IContext, Resource } from "../../mod.ts"
+import * as Drash from "../../mod.ts";
+import { IContext, Resource } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ const server = new Drash.Server({
   ],
   protocol: "http",
   hostname: "localhost",
-  port: 3000
+  port: 3000,
 });
 
 ////////////////////////////////////////////////////////////////////////////////

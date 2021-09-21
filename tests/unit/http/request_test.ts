@@ -1,10 +1,5 @@
-import {
-  path,
-  Rhum,
-  TestHelpers,
-  Buffer
-} from "../../deps.ts";
-import * as Drash from "../../../mod.ts"
+import { Buffer, path, Rhum, TestHelpers } from "../../deps.ts";
+import * as Drash from "../../../mod.ts";
 const encoder = new TextEncoder();
 
 Rhum.testPlan("http/request_test.ts", () => {
@@ -190,8 +185,8 @@ function getBodyParamTests() {
       const serverRequest = TestHelpers.mockRequest("/", "get", {
         body: form,
         headers: {
-          'Content-Type': "multipart/form-data"
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
       const request = await Drash.DrashRequest.create(serverRequest, new Map());
       Rhum.asserts.assertEquals(request.bodyParam("foo"), "foo");
@@ -266,7 +261,10 @@ function getPathParamTests() {
     "Returns the value for the header param when it exists",
     () => {
       const serverRequest = TestHelpers.mockRequest();
-      const request = new Drash.DrashRequest(serverRequest, new Map().set('hello', 'world'));
+      const request = new Drash.DrashRequest(
+        serverRequest,
+        new Map().set("hello", "world"),
+      );
       const actual = request.pathParam("hello");
       Rhum.asserts.assertEquals("world", actual);
     },
@@ -276,7 +274,10 @@ function getPathParamTests() {
     "Returns null when the path param doesn't exist",
     () => {
       const serverRequest = TestHelpers.mockRequest();
-      const request = new Drash.DrashRequest(serverRequest, new Map().set('hello', 'world'));
+      const request = new Drash.DrashRequest(
+        serverRequest,
+        new Map().set("hello", "world"),
+      );
       const actual = request.pathParam("dont-exist");
       Rhum.asserts.assertEquals(null, actual);
     },

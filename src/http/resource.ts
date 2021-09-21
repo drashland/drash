@@ -12,20 +12,18 @@ export class Resource implements Drash.Interfaces.IResource {
   public services?: Drash.Interfaces.IResourceServices;
   public path_parameters!: string;
   public static paths: string[] = [];
-  public uri_paths: string[] = []
+  public uri_paths: string[] = [];
   public uri_paths_parsed: Drash.Interfaces.IResourcePathsParsed[] = [];
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  /**
-   *
-   */
+  /**/
   // TODO(ebebbington): Only grip is, some props are public
   constructor(
-    paths: string[]
+    paths: string[],
   ) {
-    this.uri_paths = paths
+    this.uri_paths = paths;
   }
 }

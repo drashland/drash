@@ -5,7 +5,7 @@
  * This is only for some tests
  */
 
-import { Rhum, red } from "../../../deps.ts";
+import { red, Rhum } from "../../../deps.ts";
 
 const originalCWD = Deno.cwd();
 const boilerPlatePrefix = "/console/create_app";
@@ -172,7 +172,6 @@ export function testMethods(
      *   - deps.ts
      *   - resources/home_resource_api.ts -> resources/home_resources.ts
      *   - tests/resources/home_resource_test_api.ts -> tests/resources/home_resource_test.ts
-     *
      */
 
     Rhum.testSuite("--api", () => {
@@ -288,7 +287,6 @@ export function testMethods(
      *   - public/views/index.html
      *   - public/css/index.css
      *   - public/img
-     *
      */
 
     Rhum.testSuite("--web-app", () => {

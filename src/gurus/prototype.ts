@@ -7,7 +7,7 @@
  */
 export class Prototype {
   static clone<T extends Record<string, unknown>>(
-    cloneableProduct: T
+    cloneableProduct: T,
   ): T {
     return Object.create(cloneableProduct);
   }

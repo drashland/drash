@@ -1,5 +1,5 @@
 import { Rhum } from "../../deps.ts";
-import { DrashRequest, DrashResponse } from "../../../mod.ts"
+import { DrashRequest, DrashResponse } from "../../../mod.ts";
 import { ServeTypeScriptService } from "../../../src/services/serve_typescript/serve_typescript.ts";
 
 Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
@@ -46,19 +46,25 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
           lib: ["dom", "DOM.Iterable", "esnext"],
         },
       });
-      const request = new Request('http://localhost:1234/assets/compiled.ts')
-      const req = new DrashRequest(request, new Map())
+      const request = new Request("http://localhost:1234/assets/compiled.ts");
+      const req = new DrashRequest(request, new Map());
       let result: Response | null = null;
-      const response = new DrashResponse('text/html', async (r) => {
-        result = await r
-      })
+      const response = new DrashResponse("text/html", async (r) => {
+        result = await r;
+      });
       await serveTs.setUp();
       await serveTs.runBeforeResource({
         request: req,
         response,
       });
-      Rhum.asserts.assertEquals(result!.headers.get('content-type'), 'text/javascript')
-      Rhum.asserts.assertEquals(response!.headers.get('content-type'), 'text/javascript')
+      Rhum.asserts.assertEquals(
+        result!.headers.get("content-type"),
+        "text/javascript",
+      );
+      Rhum.asserts.assertEquals(
+        response!.headers.get("content-type"),
+        "text/javascript",
+      );
       Rhum.asserts.assertEquals(
         response.body,
         "export function greet(name) {\n" +

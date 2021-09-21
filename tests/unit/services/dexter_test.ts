@@ -28,17 +28,47 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
       });
       let actual;
       actual = dexter.logger.debug("test");
-      Rhum.asserts.assertEquals(actual.match(/.*\[DEBUG\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
+      Rhum.asserts.assertEquals(
+        actual.match(
+          /.*\[DEBUG\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+        )?.length,
+        1,
+      );
       actual = dexter.logger.error("test");
-      Rhum.asserts.assertEquals(actual.match(/.*\[ERROR\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
+      Rhum.asserts.assertEquals(
+        actual.match(
+          /.*\[ERROR\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+        )?.length,
+        1,
+      );
       actual = dexter.logger.fatal("test");
-      Rhum.asserts.assertEquals(actual.match(/.*\[FATAL\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
+      Rhum.asserts.assertEquals(
+        actual.match(
+          /.*\[FATAL\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+        )?.length,
+        1,
+      );
       actual = dexter.logger.info("test");
-      Rhum.asserts.assertEquals(actual.match(/.*\[INFO\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
+      Rhum.asserts.assertEquals(
+        actual.match(
+          /.*\[INFO\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+        )?.length,
+        1,
+      );
       actual = dexter.logger.trace("test");
-      Rhum.asserts.assertEquals(actual.match(/.*\[TRACE\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
+      Rhum.asserts.assertEquals(
+        actual.match(
+          /.*\[TRACE\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+        )?.length,
+        1,
+      );
       actual = dexter.logger.warn("test");
-      Rhum.asserts.assertEquals(actual.match(/.*\[WARN\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/)?.length, 1);
+      Rhum.asserts.assertEquals(
+        actual.match(
+          /.*\[WARN\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+        )?.length,
+        1,
+      );
     });
   });
 });
