@@ -5,8 +5,6 @@
  * This is only for some tests
  */
 
-import { Rhum } from "../deps.ts";
-import { green, red } from "../../deps.ts";
 import { testMethods } from "./test_methods.ts";
 
 let branch = Deno.env.get("GITHUB_HEAD_REF");

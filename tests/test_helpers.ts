@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-import { BufReader, ServerRequest } from "../deps.ts";
+import { BufReader, ServerRequest, Response } from "./deps.ts";
 import { Drash, Rhum } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 
@@ -55,8 +55,8 @@ export function mockRequest(url = "/", method = "get", options?: any): any {
   //   TypeError: Cannot read property 'write' of undefined
   //
   request.respond = function respond(
-    output: Drash.Deps.Response & {
-      send?: () => Drash.Deps.Response | undefined;
+    output: Response & {
+      send?: () => Response | undefined;
     },
   ) {
     output.send = function () {
