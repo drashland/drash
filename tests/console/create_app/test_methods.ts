@@ -17,7 +17,7 @@ const decoder = new TextDecoder("utf-8");
  *
  * @param filePathAndName - eg originCWD + "/console/create_app/app.ts" or tmpDir + "/app.ts", or "tmp/app.ts"
  */
-async function getFileContent(filePathAndName: string): Promise<string> {
+function getFileContent(filePathAndName: string): string {
   const fileContent = decoder.decode(
     Deno.readFileSync(filePathAndName),
   ).replace(/\r\n/g, "\n");
@@ -66,8 +66,10 @@ const fileExists = async (filename: string): Promise<boolean> => {
 };
 
 interface ITestOptions {
+  // deno-lint-ignore camelcase
   base_url?: string;
   branch?: string;
+  // deno-lint-ignore camelcase
   github_owner?: string;
   repository?: string;
 }
@@ -182,8 +184,8 @@ export function testMethods(
           const p = runCreateAppScript(createAppLocation, ["--api"]);
           const status = await p.status();
           p.close();
-          const stdout = new TextDecoder("utf-8").decode(await p.output());
-          const stderr = new TextDecoder("utf-8").decode(
+          new TextDecoder("utf-8").decode(await p.output());
+          new TextDecoder("utf-8").decode(
             await p.stderrOutput(),
           );
           Rhum.asserts.assertEquals(status.code, 0);
@@ -195,10 +197,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/app.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/app_api.ts`,
         );
-        copiedFile = await getFileContent(`tmp/app.ts`);
+        copiedFile = getFileContent(`tmp/app.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -207,11 +209,11 @@ export function testMethods(
           await fileExists(`tmp/server.ts`),
         );
 
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/server_api.ts`,
         );
 
-        copiedFile = await getFileContent(`tmp/server.ts`);
+        copiedFile = getFileContent(`tmp/server.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -219,10 +221,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/deps.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/deps.ts`,
         );
-        copiedFile = await getFileContent(`tmp/deps.ts`);
+        copiedFile = getFileContent(`tmp/deps.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -230,10 +232,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/config.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/config.ts`,
         );
-        copiedFile = await getFileContent(`tmp/config.ts`);
+        copiedFile = getFileContent(`tmp/config.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -243,10 +245,10 @@ export function testMethods(
           Rhum.asserts.assert(
             await fileExists(`tmp/resources/home_resource.ts`),
           );
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD + `${boilerPlatePrefix}/resources/home_resource_api.ts`,
           );
-          copiedFile = await getFileContent(
+          copiedFile = getFileContent(
             `tmp/resources/home_resource.ts`,
           );
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -261,11 +263,11 @@ export function testMethods(
               `tmp/tests/resources/home_resource_test.ts`,
             ),
           );
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD +
               `${boilerPlatePrefix}/tests/resources/home_resource_test_api.ts`,
           );
-          copiedFile = await getFileContent(
+          copiedFile = getFileContent(
             `tmp/tests/resources/home_resource_test.ts`,
           );
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -292,7 +294,6 @@ export function testMethods(
     Rhum.testSuite("--web-app", () => {
       let copiedFile: string;
       let boilerPlateFile: string;
-      const bpPrefix = "/console/create_app";
 
       Rhum.testCase(
         "creates a web app",
@@ -302,7 +303,7 @@ export function testMethods(
           const p = runCreateAppScript(createAppLocation, ["--web-app"]);
           const status = await p.status();
           p.close();
-          const stdout = new TextDecoder("utf-8").decode(await p.output());
+          new TextDecoder("utf-8").decode(await p.output());
           const stderr = new TextDecoder("utf-8").decode(
             await p.stderrOutput(),
           );
@@ -316,10 +317,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/app.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/app_web_app.ts`,
         );
-        copiedFile = await getFileContent(`tmp/app.ts`);
+        copiedFile = getFileContent(`tmp/app.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -327,10 +328,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/server.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/server_web_app.ts`,
         );
-        copiedFile = await getFileContent(`tmp/server.ts`);
+        copiedFile = getFileContent(`tmp/server.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -338,10 +339,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/deps.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/deps.ts`,
         );
-        copiedFile = await getFileContent(`tmp/deps.ts`);
+        copiedFile = getFileContent(`tmp/deps.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -349,10 +350,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/config.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/config.ts`,
         );
-        copiedFile = await getFileContent(`tmp/config.ts`);
+        copiedFile = getFileContent(`tmp/config.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -362,11 +363,11 @@ export function testMethods(
           Rhum.asserts.assert(
             await fileExists(`tmp/resources/home_resource.ts`),
           );
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD +
               `${boilerPlatePrefix}/resources/home_resource_web_app.ts`,
           );
-          copiedFile = await getFileContent(
+          copiedFile = getFileContent(
             `tmp/resources/home_resource.ts`,
           );
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -381,11 +382,11 @@ export function testMethods(
               `tmp/tests/resources/home_resource_test.ts`,
             ),
           );
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD +
               `${boilerPlatePrefix}/tests/resources/home_resource_test_web_app.ts`,
           );
-          copiedFile = await getFileContent(
+          copiedFile = getFileContent(
             `tmp/tests/resources/home_resource_test.ts`,
           );
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -396,10 +397,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/public/js/index.js`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/public/js/index.js`,
         );
-        copiedFile = await getFileContent(`tmp/public/js/index.js`);
+        copiedFile = getFileContent(`tmp/public/js/index.js`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -407,10 +408,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/public/css/index.css`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/public/css/index.css`,
         );
-        copiedFile = await getFileContent(`tmp/public/css/index.css`);
+        copiedFile = getFileContent(`tmp/public/css/index.css`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -418,10 +419,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/public/views/index.html`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/public/views/index.html`,
         );
-        copiedFile = await getFileContent(
+        copiedFile = getFileContent(
           `tmp/public/views/index.html`,
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -459,7 +460,7 @@ export function testMethods(
         );
         const status = await p.status();
         p.close();
-        const stdout = new TextDecoder("utf-8").decode(await p.output());
+        new TextDecoder("utf-8").decode(await p.output());
         const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
         Rhum.asserts.assertEquals(stderr, "");
         Rhum.asserts.assertEquals(status.code, 0);
@@ -470,10 +471,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/app.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/app_web_app.ts`,
         );
-        copiedFile = await getFileContent(`tmp/app.ts`);
+        copiedFile = getFileContent(`tmp/app.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -481,10 +482,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/server.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/server_web_app.ts`,
         );
-        copiedFile = await getFileContent(`tmp/server.ts`);
+        copiedFile = getFileContent(`tmp/server.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -492,10 +493,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/deps.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/deps.ts`,
         );
-        copiedFile = await getFileContent(`tmp/deps.ts`);
+        copiedFile = getFileContent(`tmp/deps.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -503,10 +504,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/config.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/config.ts`,
         );
-        copiedFile = await getFileContent(`tmp/config.ts`);
+        copiedFile = getFileContent(`tmp/config.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -516,11 +517,11 @@ export function testMethods(
           Rhum.asserts.assert(
             await fileExists(`tmp/resources/home_resource.ts`),
           );
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD +
               `${boilerPlatePrefix}/resources/home_resource_web_app.ts`,
           );
-          copiedFile = await getFileContent(
+          copiedFile = getFileContent(
             `tmp/resources/home_resource.ts`,
           );
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -537,10 +538,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/webpack.config.js`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/webpack_vue.config.js`,
         );
-        copiedFile = await getFileContent(`tmp/webpack.config.js`);
+        copiedFile = getFileContent(`tmp/webpack.config.js`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -548,10 +549,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/package.json`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/package_vue.json`,
         );
-        copiedFile = await getFileContent(`tmp/package.json`);
+        copiedFile = getFileContent(`tmp/package.json`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -563,11 +564,11 @@ export function testMethods(
           await fileExists(`tmp/vue/App.vue`),
         );
 
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/vue/app.vue`,
         );
 
-        copiedFile = await getFileContent(`tmp/vue/App.vue`);
+        copiedFile = getFileContent(`tmp/vue/App.vue`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -575,10 +576,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/vue/app.js`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/vue/app.js`,
         );
-        copiedFile = await getFileContent(`tmp/vue/app.js`);
+        copiedFile = getFileContent(`tmp/vue/app.js`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         Deno.removeSync("tmp", { recursive: true });
       });
@@ -608,7 +609,7 @@ export function testMethods(
         );
         const status = await p.status();
         p.close();
-        const stdout = new TextDecoder("utf-8").decode(await p.output());
+        new TextDecoder("utf-8").decode(await p.output());
         const stderr = new TextDecoder("utf-8").decode(await p.stderrOutput());
         Rhum.asserts.assertEquals(stderr, "");
         Rhum.asserts.assertEquals(status.code, 0);
@@ -619,10 +620,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/app.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/app_web_app.ts`,
         );
-        copiedFile = await getFileContent(`tmp/app.ts`);
+        copiedFile = getFileContent(`tmp/app.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -630,10 +631,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/server.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/server_web_app.ts`,
         );
-        copiedFile = await getFileContent(`tmp/server.ts`);
+        copiedFile = getFileContent(`tmp/server.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -641,10 +642,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/deps.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/deps.ts`,
         );
-        copiedFile = await getFileContent(`tmp/deps.ts`);
+        copiedFile = getFileContent(`tmp/deps.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -652,10 +653,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/config.ts`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/config.ts`,
         );
-        copiedFile = await getFileContent(`tmp/config.ts`);
+        copiedFile = getFileContent(`tmp/config.ts`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -665,11 +666,11 @@ export function testMethods(
           Rhum.asserts.assert(
             await fileExists(`tmp/resources/home_resource.ts`),
           );
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD +
               `${boilerPlatePrefix}/resources/home_resource_web_app.ts`,
           );
-          copiedFile = await getFileContent(
+          copiedFile = getFileContent(
             `tmp/resources/home_resource.ts`,
           );
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
@@ -686,10 +687,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/webpack.config.js`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/webpack_react.config.js`,
         );
-        copiedFile = await getFileContent(`tmp/webpack.config.js`);
+        copiedFile = getFileContent(`tmp/webpack.config.js`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -697,10 +698,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/package.json`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/package_react.json`,
         );
-        copiedFile = await getFileContent(`tmp/package.json`);
+        copiedFile = getFileContent(`tmp/package.json`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -714,11 +715,11 @@ export function testMethods(
             await fileExists(`tmp/react/App.tsx`),
           );
 
-          boilerPlateFile = await getFileContent(
+          boilerPlateFile = getFileContent(
             originalCWD + `${boilerPlatePrefix}/react/app.tsx`,
           );
 
-          copiedFile = await getFileContent(`tmp/react/App.tsx`);
+          copiedFile = getFileContent(`tmp/react/App.tsx`);
           Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
         },
       );
@@ -727,10 +728,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/tsconfig.json`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/tsconfig_react.json`,
         );
-        copiedFile = await getFileContent(`tmp/tsconfig.json`);
+        copiedFile = getFileContent(`tmp/tsconfig.json`);
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);
       });
 
@@ -738,10 +739,10 @@ export function testMethods(
         Rhum.asserts.assert(
           await fileExists(`tmp/public/views/index.html`),
         );
-        boilerPlateFile = await getFileContent(
+        boilerPlateFile = getFileContent(
           originalCWD + `${boilerPlatePrefix}/public/views/index_react.html`,
         );
-        copiedFile = await getFileContent(
+        copiedFile = getFileContent(
           `tmp/public/views/index.html`,
         );
         Rhum.asserts.assertEquals(boilerPlateFile, copiedFile);

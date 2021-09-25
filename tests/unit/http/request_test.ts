@@ -1,6 +1,5 @@
 import { Rhum } from "../../deps.ts";
 import * as Drash from "../../../mod.ts";
-const encoder = new TextEncoder();
 
 Rhum.testPlan("http/request_test.ts", () => {
   Rhum.testSuite("accepts()", () => {
@@ -244,7 +243,6 @@ function bodyTests() {
     },
   );
 
-  // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
   Rhum.testCase(
     "Returns the value for the parameter when it exists and request is multipart/form-data when using generics",
     async () => {
@@ -262,13 +260,13 @@ function bodyTests() {
         new Map(),
         new URL("https://drash.land"),
       );
-      // const param = request.bodyParam<{
-      //   content: string,
-      //   filename: string,
-      //   size: string,
-      //   type: string
-      // }>('foo') ?? {}
-      // Rhum.asserts.assertEquals(param.content, "");
+      const param = request.bodyParam<{
+        content: string;
+        filename: string;
+        size: string;
+        type: string;
+      }>("foo");
+      Rhum.asserts.assertEquals(param!.content, "");
     },
   );
   // Before the date of 5th, Oct 2020, type errors were thrown for objects because the return value of `getBodyParam` was either a string or null

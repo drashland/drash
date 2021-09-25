@@ -42,7 +42,7 @@ class RequestAcceptsUseCaseTwoResource extends Resource {
     if (!acceptHeader) {
       return this.jsonResponse(context);
     }
-    let contentTypes: string[] = acceptHeader.split(";");
+    const contentTypes: string[] = acceptHeader.split(";");
     for (let content of contentTypes) {
       content = content.trim();
       if (content.indexOf("application/json") != -1) {
@@ -90,14 +90,9 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
   Rhum.testSuite("/request-accepts-use-case-one", () => {
     Rhum.testCase("request accepts one type", async () => {
       server.run();
-
-      let response;
-      let json;
-      let typeToCheck;
-
       // Accepts the correct type the resource will give - tests calling the `accepts` method with a string and finds a match
-      typeToCheck = "application/json";
-      response = await TestHelpers.makeRequest.get(
+      const typeToCheck = "application/json";
+      const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/request-accepts-use-case-one?typeToCheck=" +
           typeToCheck,
         {
@@ -107,7 +102,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         },
       );
       const res = await response.json();
-      json = res;
+      const json = res;
       Rhum.asserts.assertEquals(json.success, true);
       Rhum.asserts.assertEquals(json.message, "application/json");
 

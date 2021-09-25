@@ -103,6 +103,7 @@ export interface IMime {
  */
 export interface IResource {
   paths: string[];
+  // deno-lint-ignore camelcase
   uri_paths_parsed: IResourcePathsParsed[];
   services?: IResourceServices;
   // Methods
@@ -154,7 +155,9 @@ export interface IResourceServices {
  *     parameter. This path parameter would be stored in this `params` array.
  */
 export interface IResourcePathsParsed {
+  // deno-lint-ignore camelcase
   og_path: string;
+  // deno-lint-ignore camelcase
   regex_path: string;
   params: string[];
 }
@@ -163,8 +166,10 @@ export interface IResourcePathsParsed {
  * Options to help create the server object.
  */
 export interface IServerOptions {
+  // deno-lint-ignore camelcase
   cert_file?: string;
   hostname: string;
+  // deno-lint-ignore camelcase
   key_file?: string;
   port: number;
   protocol: "http" | "https";

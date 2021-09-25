@@ -13,7 +13,7 @@ export class Resource extends Resource {
 export class CoffeeResource extends Resource {
   public paths = ["/coffee", "/coffee/:some_param"];
 
-  public async GET(): Promise<Drash.DrashResponse> {
+  public GET(): Promise<Drash.DrashResponse> {
     return this.response;
   }
 }

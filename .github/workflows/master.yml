@@ -122,7 +122,7 @@ jobs:
         uses: denoland/setup-deno@v1
 
       - name: Check `deno lint` passes
-        run: deno lint
+        run: deno lint --ignore=tests/data
 
       - name: Check `deno fmt` passes
         run: deno fmt --check

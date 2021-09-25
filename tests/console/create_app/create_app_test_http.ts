@@ -27,7 +27,7 @@ try {
     drashUrl =
       `https://raw.githubusercontent.com/drashland/deno-drash/${branch}`;
   }
-} catch (err) {
+} catch (_err) {
   // do nothing
 }
 

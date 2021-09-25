@@ -44,9 +44,6 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       server.run();
 
       let response;
-      let cookies;
-      let cookieVal;
-
       const cookie = { name: "testCookie", value: "Drash" };
 
       // Post
@@ -84,8 +81,8 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           },
         },
       );
-      cookies = response.headers.get("set-cookie") || "";
-      cookieVal = cookies.split(";")[0].split("=")[1];
+      const cookies = response.headers.get("set-cookie") || "";
+      const cookieVal = cookies.split(";")[0].split("=")[1];
       Rhum.asserts.assertEquals(cookieVal, "");
       await response.arrayBuffer();
       //await response.body.close()

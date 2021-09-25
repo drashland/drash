@@ -14,6 +14,7 @@ class OptionalPathParamsResource extends Resource {
 
   public GET(context: IContext) {
     const name = context.request.pathParam("name");
+    // deno-lint-ignore camelcase
     const age_of_person = context.request.pathParam("age_of_person");
     const city = context.request.pathParam("ci-ty");
 

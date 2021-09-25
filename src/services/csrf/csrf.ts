@@ -1,10 +1,4 @@
-import {
-  IContext,
-  IResource,
-  IService,
-  Resource,
-  Service,
-} from "../../../mod.ts";
+import { IContext, IService, Service } from "../../../mod.ts";
 import { createHash, v4 } from "./deps.ts";
 import * as Drash from "../../../mod.ts";
 

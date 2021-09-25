@@ -32,12 +32,10 @@ Rhum.testPlan("files_resource_test.ts", () => {
     Rhum.testCase("multipart/form-data works", async () => {
       server.run();
 
-      let response;
-
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append("value_1", "John");
 
-      response = await fetch("http://localhost:3000/files", {
+      const response = await fetch("http://localhost:3000/files", {
         method: "POST",
         body: formData,
         headers: {
