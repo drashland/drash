@@ -251,6 +251,7 @@ function bodyTests() {
         type: "application/json",
       });
       formData.append("foo", file, "hello.json");
+      formData.append("user", "drash");
       const serverRequest = new Request("https://drash.land", {
         body: formData,
         method: "POST",
@@ -266,7 +267,8 @@ function bodyTests() {
         size: string;
         type: string;
       }>("foo");
-      Rhum.asserts.assertEquals(param!.content, "");
+      Rhum.asserts.assertEquals(param!.content, '{\n  "hello": "world"\n}');
+      Rhum.asserts.assertEquals(request.bodyParam("user"), "drash");
     },
   );
   // Before the date of 5th, Oct 2020, type errors were thrown for objects because the return value of `getBodyParam` was either a string or null

@@ -8,7 +8,7 @@ function decodeValue(val: string) {
 }
 
 type BodyFile = {
-  content: string;
+  content: unknown;
   size: number;
   type: string;
   filename: string;
