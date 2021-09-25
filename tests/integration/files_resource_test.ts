@@ -10,12 +10,11 @@ class FilesResource extends Resource {
   paths = ["/files"];
 
   public POST(context: IContext) {
-    context.response.body = context.request.bodyParam("value_1") ?? null;
+    context.response.text(context.request.bodyParam("value_1") ?? null);
   }
 }
 
 const server = new Drash.Server({
-  default_response_type: "application/json",
   resources: [
     FilesResource,
   ],
@@ -41,6 +40,9 @@ Rhum.testPlan("files_resource_test.ts", () => {
       response = await fetch("http://localhost:3000/files", {
         method: "POST",
         body: formData,
+        headers: {
+          Accept: "text/plain",
+        },
       });
       Rhum.asserts.assertEquals(await response.text(), "John");
 

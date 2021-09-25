@@ -164,7 +164,6 @@ export interface IResourcePathsParsed {
  */
 export interface IServerOptions {
   cert_file?: string;
-  default_response_type?: string;
   hostname: string;
   key_file?: string;
   port: number;

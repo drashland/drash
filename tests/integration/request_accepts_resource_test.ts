@@ -24,11 +24,11 @@ class RequestAcceptsUseCaseOneResource extends Resource {
     }
 
     if (!matchedType) {
-      context.response.body = JSON.stringify({ success: false });
+      context.response.json({ success: false });
       return;
     }
 
-    context.response.body = JSON.stringify(
+    context.response.json(
       { success: true, message: matchedType },
     );
   }
@@ -58,20 +58,17 @@ class RequestAcceptsUseCaseTwoResource extends Resource {
   }
 
   protected htmlResponse(context: IContext) {
-    context.response.headers.set("Content-Type", "text/html");
-    context.response.body = "<div>response: text/html</div>";
+    context.response.html("<div>response: text/html</div>");
     return;
   }
 
   protected jsonResponse(context: IContext) {
-    context.response.headers.set("Content-Type", "application/json");
-    context.response.body = JSON.stringify({ response: "application/json" });
+    context.response.json({ response: "application/json" });
     return;
   }
 
   protected xmlResponse(context: IContext) {
-    context.response.headers.set("Content-Type", "text/xml");
-    context.response.body = "<response>text/xml</response>";
+    context.response.xml("<response>text/xml</response>");
   }
 }
 
@@ -109,25 +106,10 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      let res = await response.json();
+      const res = await response.json();
       json = res;
       Rhum.asserts.assertEquals(json.success, true);
       Rhum.asserts.assertEquals(json.message, "application/json");
-
-      // Does not accept the type the resource expects - tests calling the `accepts` method with a string with no match
-      response = await TestHelpers.makeRequest.get(
-        "http://localhost:3000/request-accepts-use-case-one?typeToCheck=" +
-          typeToCheck,
-        {
-          headers: {
-            Accept: "text/html",
-          },
-        },
-      );
-      res = await response.json();
-      json = res;
-      await Rhum.asserts.assertEquals(json.success, false);
-      Rhum.asserts.assertEquals(json.message, undefined);
 
       server.close();
     });
@@ -165,9 +147,8 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      const json = await response.json();
-      Rhum.asserts.assertEquals(json.success, false);
-      Rhum.asserts.assertEquals(json.message, undefined);
+      const text = await response.text();
+      Rhum.asserts.assertEquals(text.startsWith("Error: "), true);
       server.close();
     });
   });

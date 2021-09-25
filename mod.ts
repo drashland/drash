@@ -13,7 +13,18 @@ import { Server } from "./src/http/server.ts";
 export const version = "v1.5.0";
 
 // Dictionaries
-export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
+import { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
+// Set at compile time
+const mimeTypes: Record<string, string> = {};
+Object.keys(MimeDb).forEach((key) => {
+  if (!MimeDb[key].extensions) {
+    return;
+  }
+  MimeDb[key].extensions?.forEach((ext) => {
+    mimeTypes[ext] = key;
+  });
+});
+export { MimeDb, mimeTypes };
 
 // Deps
 export * as Deps from "./deps.ts";

@@ -31,20 +31,14 @@ export class CoffeeResource extends Resource
     }
 
     if (!coffeeId) {
-      context.response.body = "Please specify a coffee ID.";
+      context.response.text("Please specify a coffee ID.");
       return;
     }
 
-    if (coffeeId === "123") {
-      context.response.headers.set("Location", "/coffee/17");
-      context.response.status = 302;
-      return;
-    }
-
-    context.response.body = JSON.stringify(this.getCoffee(parseInt(coffeeId)));
+    context.response.text(JSON.stringify(this.getCoffee(parseInt(coffeeId))));
   }
 
-  protected getCoffee(coffeeId: number) {
+  protected getCoffee(coffeeId: number): ICoffee {
     let coffee = null;
 
     try {
@@ -63,7 +57,7 @@ export class CoffeeResource extends Resource
       );
     }
 
-    return coffee;
+    return coffee as ICoffee;
   }
 }
 
@@ -105,22 +99,46 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       // response = await fetch("http://localhost:3000/coffee/17");
       // Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
 
-      response = await fetch("http://localhost:3000/coffee/17/");
+      response = await fetch("http://localhost:3000/coffee/17/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
 
-      response = await fetch("http://localhost:3000/coffee/18");
+      response = await fetch("http://localhost:3000/coffee/18", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-      response = await fetch("http://localhost:3000/coffee/18/");
+      response = await fetch("http://localhost:3000/coffee/18/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
 
-      response = await fetch("http://localhost:3000/coffee/19");
+      response = await fetch("http://localhost:3000/coffee/19", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-      response = await fetch("http://localhost:3000/coffee/19/");
+      response = await fetch("http://localhost:3000/coffee/19/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
 
-      response = await fetch("http://localhost:3000/coffee/20");
+      response = await fetch("http://localhost:3000/coffee/20", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith(
           'Error: Coffee with ID "20" not found.',
@@ -130,6 +148,11 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.post(
         "http://localhost:3000/coffee/17/",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Method Not Allowed"),
@@ -148,6 +171,9 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         "http://localhost:3000/coffee/19?location=from_query&id=18",
         {
           method: "GET",
+          headers: {
+            Accept: "text/plain",
+          },
         },
       );
       const t = await response.text();

@@ -11,16 +11,16 @@ class CookieResource extends Resource {
 
   public GET(context: IContext) {
     const cookieValue = context.request.getCookie("testCookie");
-    context.response.body = cookieValue;
+    context.response.text(cookieValue);
   }
 
   public POST(context: IContext) {
     context.response.setCookie({ name: "testCookie", value: "Drash" });
-    context.response.body = "Saved your cookie!";
+    context.response.text("Saved your cookie!");
   }
 
   public DELETE(context: IContext) {
-    context.response.body = "DELETE request received!";
+    context.response.text("DELETE request received!");
     context.response.delCookie("testCookie");
   }
 }
@@ -55,6 +55,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Accept: "text/plain",
           },
           body: cookie,
         },
@@ -68,6 +69,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           credentials: "same-origin",
           headers: {
             Cookie: "testCookie=Drash",
+            Accept: "text/plain",
           },
         },
       );
@@ -77,7 +79,9 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       response = await TestHelpers.makeRequest.delete(
         "http://localhost:3000/cookie",
         {
-          headers: {},
+          headers: {
+            Accept: "text/plain",
+          },
         },
       );
       cookies = response.headers.get("set-cookie") || "";

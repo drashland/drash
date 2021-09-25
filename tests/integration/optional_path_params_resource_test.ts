@@ -17,7 +17,7 @@ class OptionalPathParamsResource extends Resource {
     const age_of_person = context.request.pathParam("age_of_person");
     const city = context.request.pathParam("ci-ty");
 
-    context.response.body = JSON.stringify({
+    context.response.json({
       message: "Successfully handled optional path params",
       data: {
         name,
@@ -48,6 +48,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -67,6 +72,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -86,6 +96,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -105,6 +120,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -124,6 +144,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -143,6 +168,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -161,6 +191,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       server.run();
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/UK",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -180,6 +215,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/UK/",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -201,6 +241,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
         const response = await TestHelpers.makeRequest.get(
           "http://localhost:3000/oppWithoutRequired/edward/999/UK/other",
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          },
         );
         Rhum.asserts.assertEquals(
           (await response.text()).startsWith("Error: Not Found"),
@@ -218,6 +263,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
         const response = await TestHelpers.makeRequest.get(
           "http://localhost:3000/oppWithoutRequired/edward/",
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          },
         );
         const json = await response.json();
         Rhum.asserts.assertEquals(
@@ -238,6 +288,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
@@ -253,6 +308,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
@@ -268,6 +328,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -286,6 +351,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -304,6 +374,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/ed-123/22-22",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -322,6 +397,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward/22/",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       const json = await response.json();
       Rhum.asserts.assertEquals(
@@ -340,6 +420,11 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
 
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithRequired/edward/22/other",
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Not Found"),

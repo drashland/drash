@@ -18,12 +18,11 @@ class BrowserRequestResource extends Resource {
   paths = ["/browser-request"];
 
   public GET(context: IContext) {
-    context.response.body = "hello";
+    context.response.text("hello");
   }
 }
 
 const server = new Drash.Server({
-  default_response_type: "application/json",
   resources: [
     BrowserRequestResource,
   ],
@@ -43,12 +42,17 @@ Rhum.testPlan("browser_request_resource.ts", () => {
       // Example browser request
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/browser-request",
+        {
+          headers: {
+            Accept: "*/*",
+          },
+        },
       );
       server.close();
       Rhum.asserts.assertEquals(await response.text(), "hello");
       Rhum.asserts.assertEquals(
         response.headers.get("Content-Type"),
-        "application/json",
+        "text/plain",
       );
     });
   });

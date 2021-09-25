@@ -10,19 +10,19 @@ class HomeResource extends Resource {
   paths = ["/", "/home"];
 
   public GET(context: IContext) {
-    context.response.body = "GET request received!";
+    context.response.text("GET request received!");
   }
 
   public POST(context: IContext) {
-    context.response.body = "POST request received!";
+    context.response.text("POST request received!");
   }
 
   public PUT(context: IContext) {
-    context.response.body = "PUT request received!";
+    context.response.text("PUT request received!");
   }
 
   public DELETE(context: IContext) {
-    context.response.body = "DELETE request received!";
+    context.response.text("DELETE request received!");
   }
 }
 
@@ -46,7 +46,11 @@ Rhum.testPlan("home_resource_test.ts", () => {
 
       let response;
 
-      response = await TestHelpers.makeRequest.get("http://localhost:3000");
+      response = await TestHelpers.makeRequest.get("http://localhost:3000", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(
         await response.text(),
         "GET request received!",
@@ -54,6 +58,11 @@ Rhum.testPlan("home_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/home",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -62,6 +71,11 @@ Rhum.testPlan("home_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/home/",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -70,31 +84,52 @@ Rhum.testPlan("home_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/home//",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
         true,
       );
 
-      response = await TestHelpers.makeRequest.post("http://localhost:3000");
+      response = await TestHelpers.makeRequest.post("http://localhost:3000", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(
         await response.text(),
         "POST request received!",
       );
 
-      response = await TestHelpers.makeRequest.put("http://localhost:3000");
+      response = await TestHelpers.makeRequest.put("http://localhost:3000", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(
         await response.text(),
         "PUT request received!",
       );
 
-      response = await TestHelpers.makeRequest.delete("http://localhost:3000");
+      response = await TestHelpers.makeRequest.delete("http://localhost:3000", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(
         await response.text(),
         "DELETE request received!",
       );
 
-      response = await TestHelpers.makeRequest.patch("http://localhost:3000");
+      response = await TestHelpers.makeRequest.patch("http://localhost:3000", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Method Not Allowed"),
         true,

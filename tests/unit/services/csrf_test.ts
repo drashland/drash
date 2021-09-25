@@ -20,12 +20,12 @@ class ResourceNoCookie extends Resource implements IResource {
   public GET(context: IContext) {
     // Give token to the 'view'
     context.response.headers.set("X-CSRF-TOKEN", csrfWithoutCookie.token);
-    context.response.body = csrfWithoutCookie.token;
+    context.response.text(csrfWithoutCookie.token);
   }
 
   public POST(context: IContext) {
     // request should have token
-    context.response.body = "Success; " + csrfWithoutCookie.token;
+    context.response.text("Success; " + csrfWithoutCookie.token);
   }
 }
 
@@ -42,12 +42,12 @@ class ResourceWithCookie extends Resource {
       name: "X-CSRF-TOKEN",
       value: csrfWithCookie.token,
     });
-    context.response.body = csrfWithCookie.token;
+    context.response.text(csrfWithCookie.token);
   }
 
   public POST(context: IContext) {
     // request should have token
-    context.response.body = "Success; " + csrfWithCookie.token;
+    context.response.text("Success; " + csrfWithCookie.token);
   }
 }
 
@@ -70,13 +70,21 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       "Token should be the same for different requests",
       async () => {
         server.run();
-        const firstRes = await fetch("http://localhost:1337");
+        const firstRes = await fetch("http://localhost:1337", {
+          headers: {
+            Accept: "text/plain",
+          },
+        });
         await firstRes.arrayBuffer();
         Rhum.asserts.assertEquals(
           firstRes.headers.get("X-CSRF-TOKEN") === csrfWithoutCookie.token,
           true,
         );
-        const secondRes = await fetch("http://localhost:1337");
+        const secondRes = await fetch("http://localhost:1337", {
+          headers: {
+            Accept: "text/plain",
+          },
+        });
         await secondRes.arrayBuffer();
         Rhum.asserts.assertEquals(
           secondRes.headers.get("X-CSRF-TOKEN") === csrfWithoutCookie.token,
@@ -87,20 +95,25 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
     );
     Rhum.testCase("Token can be used for other requests", async () => { // eg get it from a route, and use it in the view for sending other requests
       server.run();
-      const firstRes = await fetch("http://localhost:1337");
+      const firstRes = await fetch("http://localhost:1337", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       const token = firstRes.headers.get("X-CSRF-TOKEN");
       await firstRes.arrayBuffer();
       const secondRes = await fetch("http://localhost:1337", {
         method: "POST",
         headers: {
           "X-CSRF-TOKEN": token || "", // bypass annoying tsc warnings
+          Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(secondRes.status, 200);
       Rhum.asserts.assertEquals(
         await secondRes.text(),
         "Success; " + token,
       );
+      Rhum.asserts.assertEquals(secondRes.status, 200);
       server.close();
     });
     Rhum.testCase(
@@ -109,6 +122,9 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         server.run();
         const res = await fetch("http://localhost:1337", {
           method: "POST",
+          headers: {
+            Accept: "text/plain",
+          },
         });
         Rhum.asserts.assertEquals(res.status, 400);
         Rhum.asserts.assertEquals(
@@ -126,6 +142,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           method: "POST",
           headers: {
             "X-CSRF-TOKEN": csrfWithoutCookie.token.substr(1),
+            Accept: "text/plain",
           },
         });
         Rhum.asserts.assertEquals(res.status, 403);
@@ -147,6 +164,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           method: "POST",
           headers: {
             "X-CSRF-TOKEN": csrfWithoutCookie.token,
+            Accept: "text/plain",
           },
         });
         Rhum.asserts.assertEquals(res.status, 200);
@@ -159,7 +177,11 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
     );
     Rhum.testCase("Should allow to set the token as a cookie", async () => {
       server.run();
-      const res = await fetch("http://localhost:1337/cookie");
+      const res = await fetch("http://localhost:1337/cookie", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.text();
       const headers = res.headers;
       const token = headers.get("set-cookie")!.split("=")[1];

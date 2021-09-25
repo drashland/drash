@@ -5,7 +5,7 @@ import { IContext, IResource, Resource, Server } from "../../../mod.ts";
 class Res extends Resource implements IResource {
   paths = ["/"];
   public GET(context: IContext) {
-    context.response.body = "Hello world!";
+    context.response.text("Hello world!");
   }
 }
 
@@ -29,7 +29,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Sets the header by Default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1667);
-      const res = await fetch("http://localhost:1667/");
+      const res = await fetch("http://localhost:1667/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, "1; mode=block");
@@ -40,7 +44,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-XSS-Protection": true,
       });
       const server = runServer(paladin, 1668);
-      const res = await fetch("http://localhost:1668/");
+      const res = await fetch("http://localhost:1668/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, "1; mode=block");
@@ -51,7 +59,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-XSS-Protection": false,
       });
       const server = runServer(paladin, 1669);
-      const res = await fetch("http://localhost:1669/");
+      const res = await fetch("http://localhost:1669/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, null);
@@ -62,7 +74,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Does not set the header by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1670);
-      const res = await fetch("http://localhost:1670/");
+      const res = await fetch("http://localhost:1670/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Referrer-Policy");
       Rhum.asserts.assertEquals(header, null);
@@ -73,7 +89,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "Referrer-Policy": "origin",
       });
       const server = runServer(paladin, 1670);
-      const res = await fetch("http://localhost:1670/");
+      const res = await fetch("http://localhost:1670/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Referrer-Policy");
       Rhum.asserts.assertEquals(header, "origin");
@@ -84,7 +104,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Sets the header by Default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1650);
-      const res = await fetch("http://localhost:1650/");
+      const res = await fetch("http://localhost:1650/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, "nosniff");
@@ -95,7 +119,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-Content-Type-Options": true,
       });
       const server = runServer(paladin, 1651);
-      const res = await fetch("http://localhost:1651/");
+      const res = await fetch("http://localhost:1651/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, "nosniff");
@@ -106,7 +134,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-Content-Type-Options": false,
       });
       const server = runServer(paladin, 1652);
-      const res = await fetch("http://localhost:1652/");
+      const res = await fetch("http://localhost:1652/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, null);
@@ -117,7 +149,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Is set by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1671);
-      const res = await fetch("http://localhost:1671/");
+      const res = await fetch("http://localhost:1671/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains");
@@ -130,7 +166,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1671);
-      const res = await fetch("http://localhost:1671/");
+      const res = await fetch("http://localhost:1671/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=101; include_sub_domains");
@@ -143,7 +183,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1671);
-      const res = await fetch("http://localhost:1671/");
+      const res = await fetch("http://localhost:1671/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, null);
@@ -156,7 +200,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1672);
-      const res = await fetch("http://localhost:1672/");
+      const res = await fetch("http://localhost:1672/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000");
@@ -169,7 +217,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1673);
-      const res = await fetch("http://localhost:1673/");
+      const res = await fetch("http://localhost:1673/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains");
@@ -184,7 +236,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
           },
         });
         const server = runServer(paladin, 1674);
-        const res = await fetch("http://localhost:1674/");
+        const res = await fetch("http://localhost:1674/", {
+          headers: {
+            Accept: "text/plain",
+          },
+        });
         await res.arrayBuffer();
         const header = res.headers.get("Strict-Transport-Security");
         Rhum.asserts.assertEquals(
@@ -201,7 +257,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1675);
-      const res = await fetch("http://localhost:1675/");
+      const res = await fetch("http://localhost:1675/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(
@@ -215,7 +275,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Header removed by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1675);
-      const res = await fetch("http://localhost:1675/");
+      const res = await fetch("http://localhost:1675/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Powered-By");
       Rhum.asserts.assertEquals(header, null);
@@ -226,7 +290,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-Powered-By": false,
       });
       const server = runServer(paladin, 1675);
-      const res = await fetch("http://localhost:1675/");
+      const res = await fetch("http://localhost:1675/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Powered-By");
       Rhum.asserts.assertEquals(header, null);
@@ -237,7 +305,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-Powered-By": "You will never know, mwuahaha",
       });
       const server = runServer(paladin, 1676);
-      const res = await fetch("http://localhost:1676/");
+      const res = await fetch("http://localhost:1676/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Powered-By");
       Rhum.asserts.assertEquals(header, "You will never know, mwuahaha");
@@ -261,7 +333,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Sets the header by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1677);
-      const res = await fetch("http://localhost:1677/");
+      const res = await fetch("http://localhost:1677/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Frame-Options");
       Rhum.asserts.assertEquals(header, "SAMEORIGIN");
@@ -272,7 +348,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-Frame-Options": false,
       });
       const server = runServer(paladin, 1678);
-      const res = await fetch("http://localhost:1678/");
+      const res = await fetch("http://localhost:1678/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Frame-Options");
       Rhum.asserts.assertEquals(header, null);
@@ -283,7 +363,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-Frame-Options": "DENY",
       });
       const server = runServer(paladin, 1679);
-      const res = await fetch("http://localhost:1679/");
+      const res = await fetch("http://localhost:1679/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-Frame-Options");
       Rhum.asserts.assertEquals(header, "DENY");
@@ -294,7 +378,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Does not set the header by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1680);
-      const res = await fetch("http://localhost:1680/");
+      const res = await fetch("http://localhost:1680/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, null);
@@ -307,7 +395,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1681);
-      const res = await fetch("http://localhost:1681/");
+      const res = await fetch("http://localhost:1681/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, "max-age=30");
@@ -321,7 +413,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1682);
-      const res = await fetch("http://localhost:1682/");
+      const res = await fetch("http://localhost:1682/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, "max-age=30; enforce");
@@ -335,7 +431,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         },
       });
       const server = runServer(paladin, 1683);
-      const res = await fetch("http://localhost:1683/");
+      const res = await fetch("http://localhost:1683/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, "max-age=30; hello");
@@ -346,7 +446,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Is set by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1684);
-      const res = await fetch("http://localhost:1684/");
+      const res = await fetch("http://localhost:1684/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "off");
@@ -357,7 +461,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-DNS-Prefetch-Control": false,
       });
       const server = runServer(paladin, 1685);
-      const res = await fetch("http://localhost:1685/");
+      const res = await fetch("http://localhost:1685/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "off");
@@ -368,7 +476,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "X-DNS-Prefetch-Control": true,
       });
       const server = runServer(paladin, 1686);
-      const res = await fetch("http://localhost:1686/");
+      const res = await fetch("http://localhost:1686/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "on");
@@ -379,7 +491,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
     Rhum.testCase("Is not set by default", async () => {
       const paladin = new PaladinService();
       const server = runServer(paladin, 1687);
-      const res = await fetch("http://localhost:1687/");
+      const res = await fetch("http://localhost:1687/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Content-Security-Policy");
       Rhum.asserts.assertEquals(header, null);
@@ -390,7 +506,11 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         "Content-Security-Policy": "Something something",
       });
       const server = runServer(paladin, 1688);
-      const res = await fetch("http://localhost:1688/");
+      const res = await fetch("http://localhost:1688/", {
+        headers: {
+          Accept: "text/plain",
+        },
+      });
       await res.arrayBuffer();
       const header = res.headers.get("Content-Security-Policy");
       Rhum.asserts.assertEquals(header, "Something something");

@@ -52,7 +52,7 @@ class Resource1 extends Resource implements IResource {
   };
 
   public GET(context: IContext) {
-    context.response.body = "done";
+    context.response.text("done");
   }
 }
 
@@ -66,7 +66,11 @@ const server = new Server({
 
 Deno.test("Class middleware should run", async () => {
   server.run();
-  const res = await fetch(server.address);
+  const res = await fetch(server.address, {
+    headers: {
+      Accept: "text/plain",
+    },
+  });
   await res.text();
   server.close();
   assertEquals(res.headers.get("X-CLASS-SERVICE-BEFORE"), "hi");
@@ -75,7 +79,11 @@ Deno.test("Class middleware should run", async () => {
 
 Deno.test("Method middleware should run", async () => {
   server.run();
-  const res = await fetch(server.address);
+  const res = await fetch(server.address, {
+    headers: {
+      Accept: "text/plain",
+    },
+  });
   await res.text();
   server.close();
   assertEquals(res.headers.get("X-METHOD-SERVICE-BEFORE"), "hi");
@@ -84,7 +92,11 @@ Deno.test("Method middleware should run", async () => {
 
 Deno.test("Server middleware should run", async () => {
   server.run();
-  const res = await fetch(server.address);
+  const res = await fetch(server.address, {
+    headers: {
+      Accept: "text/plain",
+    },
+  });
   await res.text();
   server.close();
   assertEquals(res.headers.get("X-SERVER-SERVICE-BEFORE"), "hi");

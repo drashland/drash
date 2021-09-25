@@ -13,16 +13,16 @@ class UsersResource extends Resource {
     const userId = context.request.pathParam("id");
 
     if (!userId) {
-      context.response.body = "Please specify a user ID.";
+      context.response.text("Please specify a user ID.");
       return;
     }
 
-    context.response.body = JSON.stringify(this.getUser(parseInt(userId)));
+    context.response.text(JSON.stringify(this.getUser(parseInt(userId))));
     return;
   }
 
   public POST(context: IContext) {
-    context.response.body = "POST request received!";
+    context.response.text("POST request received!");
     return;
   }
 
@@ -82,6 +82,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
       Deno.chdir("./tests/integration");
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -90,6 +95,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users/",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -98,6 +108,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users//",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
@@ -106,6 +121,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users/17",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -114,6 +134,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users/17/",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         await response.text(),
@@ -122,6 +147,11 @@ Rhum.testPlan("users_resource_test.ts", () => {
 
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users/18",
+        {
+          headers: {
+            Accept: "text/plain",
+          },
+        },
       );
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith(

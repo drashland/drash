@@ -5,12 +5,12 @@ import { IContext, Resource } from "../../../mod.ts";
 class HomeResource extends Resource {
   paths = ["/"];
   public GET(context: IContext) {
-    context.response.body = JSON.stringify({
+    context.response.json({
       success: true,
     });
   }
   public POST(context: IContext) {
-    context.response.body = JSON.stringify(context.request.bodyParam("name"));
+    context.response.text(context.request.bodyParam("name"));
   }
 }
 
@@ -78,7 +78,11 @@ Rhum.testPlan("http/server_test.ts", () => {
       "Will listen correctly and send the proper response",
       async () => {
         server.run();
-        const res = await fetch("http://localhost:1234");
+        const res = await fetch("http://localhost:1234", {
+          headers: {
+            Accept: "application/json",
+          },
+        });
         server.close();
         Rhum.asserts.assertEquals(await res.json(), {
           success: true,
@@ -116,11 +120,12 @@ Rhum.testPlan("http/server_test.ts", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Accept: "text/plain",
           },
           body: JSON.stringify({ name: "Drash" }),
         });
         server.close();
-        Rhum.asserts.assertEquals(await res.text(), '"Drash"');
+        Rhum.asserts.assertEquals(await res.text(), "Drash");
         Rhum.asserts.assertEquals(res.status, 200);
       },
     );

@@ -5,9 +5,10 @@ import { CorsService } from "../../../src/services/cors/cors.ts";
 class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
   paths = ["/cors"];
   public GET(context: IContext) {
-    context.response.body = "GET request received!";
+    context.response.text("GET request received!");
   }
-  public OPTIONS(_context: IContext) {
+  public OPTIONS(context: IContext) {
+    context.response.headers.set("content-type", "text/plain");
   }
 }
 
@@ -16,7 +17,6 @@ function runServer(allowAll = true): Server {
     ? new CorsService()
     : new CorsService({ origin: "localhost" });
   const server = new Server({
-    default_response_type: "application/json",
     services: [cors],
     resources: [
       FailedOptionCorsMiddlewareResource,
@@ -39,6 +39,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         headers: {
           "Origin": "localhost",
           "Access-Control-Request-Method": "GET",
+          Accept: "text/plain",
         },
       });
       Rhum.asserts.assertEquals(
@@ -64,6 +65,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         headers: {
           "Origin": "localhost",
           "Access-Control-Request-Method": "GET",
+          Accept: "text/plain",
         },
       });
       server.close();
@@ -77,6 +79,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           method: "OPTIONS",
           headers: {
             "Access-Control-Request-Method": "GET",
+            Accept: "text/plain",
           },
         });
         await response.arrayBuffer();
@@ -101,6 +104,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           headers: {
             "Origin": "the big bang",
             "Access-Control-Request-Method": "GET",
+            Accept: "text/plain",
           },
         });
         await response.arrayBuffer();
@@ -122,6 +126,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
             "Origin": "localhost",
             "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "hello world",
+            Accept: "text/plain",
           },
         });
         await response.arrayBuffer();
@@ -141,6 +146,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           method: "GET",
           headers: {
             Origin: "https://google.com",
+            Accept: "text/plain",
           },
         });
         await res.text();
@@ -159,7 +165,8 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         const res = await fetch("http://localhost:1447/cors", {
           method: "GET",
           headers: {
-            Origin: "localhost", // As server two is setting cors origin as localhost
+            Origin: "localhost",
+            Accept: "text/plain", // As server two is setting cors origin as localhost
           },
         });
         await res.text();
@@ -179,6 +186,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           method: "GET",
           headers: {
             Origin: "https://anything.com",
+            Accept: "text/plain",
           },
         });
         await res.text();

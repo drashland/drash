@@ -46,9 +46,6 @@ export class Server {
    * @param options - See the interface for the options' schema.
    */
   constructor(options: Drash.Interfaces.IServerOptions) {
-    if (!options.default_response_type) {
-      options.default_response_type = "application/json";
-    }
     if (!options.services) {
       options.services = [];
     }
@@ -120,21 +117,20 @@ export class Server {
     // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
     // 3. Fail early if resource isnt found
 
+    const url = new URL(originalRequest.url);
+
     const resource = this.#handlers.resource_handler.getResource(
-      originalRequest,
+      url.pathname,
     );
 
     if (!resource) {
       throw new Drash.Errors.HttpError(404);
     }
 
-    const pathnameSplit = new URL(originalRequest.url).pathname.split("/");
-    if (pathnameSplit[pathnameSplit.length - 1] === "") {
-      pathnameSplit.pop();
-    }
+    const pathnameSplit = url.pathname.split("/").filter((p) => p);
     const matchedParams = new Map();
     for (const resourcePath of resource.paths) {
-      const resourcePathSplit = resourcePath.split("/");
+      const resourcePathSplit = resourcePath.split("/").filter((p) => p);
       if (pathnameSplit.length > resourcePathSplit.length) { // uri is too long to match it, so it cant be the right one
         continue;
       }
@@ -159,9 +155,12 @@ export class Server {
     }
 
     const context = {
-      request: await Drash.DrashRequest.create(originalRequest, matchedParams),
+      request: await Drash.DrashRequest.create(
+        originalRequest,
+        matchedParams,
+        url,
+      ),
       response: new Drash.DrashResponse(
-        this.#options.default_response_type as string,
         respondWith,
       ),
     };
@@ -216,6 +215,18 @@ export class Server {
     if (this.#options.services) {
       for (const Service of this.#options.services) {
         await Service.runAfterResource(context);
+      }
+    }
+
+    const accept = context.request.headers.get("accept") ?? "";
+    const contentType = context.response.headers.get("content-type") ?? "";
+    console.log(accept, contentType);
+    if (accept.includes("*/*") === false) {
+      if (accept.includes(contentType) === false) {
+        throw new Drash.Errors.HttpError(
+          406,
+          Drash.Errors.DRASH_ERROR_CODES["D1009"],
+        );
       }
     }
 
@@ -276,5 +287,28 @@ export class Server {
     this.#listenForRequests();
 
     return this.#deno_server;
+  }
+
+  #getMimeType(body: BodyInit) {
+    // check html and json first, as they are the most likely, no point in using time to
+    // check xml, then plain, then pdf, THEN html and json
+
+    // checks for strings
+    if (typeof body === "string") {
+      // html
+      if (/<\/?[a-z][\s\S]*>/i.test(body)) {
+        return "text/html";
+      }
+      // json
+      try {
+        JSON.parse(body);
+        return "application/json";
+      } catch (_e) {
+        // do nothing
+      }
+      // javascript
+      // css
+      //xml
+    }
   }
 }

@@ -79,9 +79,8 @@ export class ResourceHandler {
    * matched to the request.
    */
   public getResource(
-    request: Request,
+    path: string,
   ): Drash.Interfaces.IResource | void {
-    const path = new URL(request.url).pathname;
     let r: Resource | null = null;
     for (const [reg, res] of this.#resource_list.entries()) {
       if (`${path}`.match(reg.replace("/", "\\/"))) {

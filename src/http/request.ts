@@ -1,16 +1,24 @@
 import * as Drash from "../../mod.ts";
+import { deferred } from "../../deps.ts";
 
-export type ParsedBody = Record<string, FormDataEntryValue> | null;
+export type ParsedBody = Record<string, string | BodyFile | BodyFile[]> | null;
 
 function decodeValue(val: string) {
   return decodeURIComponent(val.replace(/\+/g, " "));
 }
 
+type BodyFile = {
+  content: any;
+  size: number;
+  type: string;
+  filename: string;
+};
+
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class DrashRequest extends Request {
   #parsed_body!: ParsedBody;
   #path_params: Map<string, string> = new Map();
-  #search_params?: URLSearchParams;
+  readonly #url: URL;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -20,23 +28,28 @@ export class DrashRequest extends Request {
    * @param originalRequest - The original request coming in from
    * `Server.listenForRequests()`.
    */
-  constructor(originalRequest: Request, pathParams: Map<string, string>) {
+  constructor(
+    originalRequest: Request,
+    pathParams: Map<string, string>,
+    url: URL,
+  ) {
     super(originalRequest);
     this.#path_params = pathParams;
+    this.#url = url;
   }
 
-  static async create(request: Request, pathParms: Map<string, string>) {
-    const req = new DrashRequest(request, pathParms);
+  static async create(
+    request: Request,
+    pathParms: Map<string, string>,
+    url: URL,
+  ) {
+    const req = new DrashRequest(request, pathParms, url);
     // here because as it's async, we cant parse it on the fly as we dont
     // want users to have to use await when getting a body param
     if (req.body && req.bodyUsed === false) {
-      await req.parseBody();
+      req.#parsed_body = await parseBody(req);
     }
     return req;
-  }
-
-  private async parseBody() {
-    this.#parsed_body = await parseBody(this);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -100,15 +113,18 @@ export class DrashRequest extends Request {
    * //       name: "Drash"
    * //     }
    * //   }
-   * const user = this.bodyParam<{ name: string }>("user") // { name: "Drash" }
+   * const user = request.bodyParam<{ name: string }>("user") // { name: "Drash" }
+   * // More examples:
+   * request.bodyParam<BodyFile[]>('uploads')
    * ```
    *
    * @param name The body parameter name
    *
    * @returns The value of the parameter, or null if not found
    */
-  public bodyParam<T>(name: string): T | null | FormDataEntryValue {
-    return this.#parsed_body![name] ?? null;
+  public bodyParam<T>(name: string): T | null {
+    console.log(this.#parsed_body);
+    return this.#parsed_body![name] as unknown as T ?? null;
   }
 
   /**
@@ -127,7 +143,11 @@ export class DrashRequest extends Request {
    * @returns The value for the parameter, or null if not set
    */
   public pathParam(name: string): string | undefined {
-    return this.#path_params.get(name);
+    const param = this.#path_params.get(name);
+    if (!param) {
+      return undefined;
+    }
+    return decodeValue(param);
   }
 
   /**
@@ -145,27 +165,59 @@ export class DrashRequest extends Request {
    * @returns The value if found, or null if not
    */
   public queryParam(name: string): string | null {
-    if (!this.#search_params) {
-      this.#search_params = new URL(this.url).searchParams;
+    const param = this.#url.searchParams.get(name);
+    if (!param) {
+      return null;
     }
-    return this.#search_params.get(name);
+    return decodeValue(param);
   }
 }
 
 async function constructFormDataUsingBody(
   request: Request,
-): Promise<Record<string, FormDataEntryValue>> {
+): Promise<ParsedBody> {
   const formData = await request.formData();
-  const formDataJSON: Record<string, FormDataEntryValue> = {};
+  const formDataJSON: ParsedBody = {};
   for (const [key, value] of formData.entries()) {
-    formDataJSON[key] = value;
+    if (value instanceof File) {
+      const reader = new FileReader();
+      const p = deferred();
+      reader.readAsText(value);
+      reader.onload = () => {
+        p.resolve(reader.result);
+      };
+      const content = await p;
+      if (key.endsWith("[]")) {
+        const name = key.slice(0, -2);
+        if (!formDataJSON[name]) {
+          formDataJSON[name] = [];
+        }
+        (formDataJSON[name] as BodyFile[]).push({
+          size: value.size,
+          type: value.type,
+          content,
+          filename: value.name,
+        });
+      } else {
+        formDataJSON[key] = {
+          size: value.size,
+          type: value.type,
+          content,
+          filename: value.name,
+        };
+      }
+      continue;
+    }
+    formDataJSON[key] = value as string;
   }
+  console.log("FORMDATAJSON");
+  console.log(formDataJSON);
   return formDataJSON;
 }
 
 async function parseBody(
   request: Request,
-): Promise<Record<string, FormDataEntryValue>> {
+): Promise<ParsedBody> {
   const contentType = request.headers.get(
     "Content-Type",
   );

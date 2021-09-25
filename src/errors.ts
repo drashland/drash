@@ -48,7 +48,7 @@ export class HttpError extends Error {
 
 // TODO(crookse TODO-ERRORS) Remove the "D" prefix. Just use numbers.
 // TODO(crookse TODO-ERRORS) Document the error codes in the website.
-const DRASH_ERROR_CODES: { [k: string]: string } = {
+export const DRASH_ERROR_CODES: { [k: string]: string } = {
   // This means the user's `paths` property contains something other than an
   // array of strings.
   "D1000": "Resource 'paths' property must be an array of strings.",
@@ -69,13 +69,9 @@ const DRASH_ERROR_CODES: { [k: string]: string } = {
   // MultipartReader from Deno Std, but we were unable to. This is probably an
   // issue with the MultipartReader.
   "D1005": "Error reading request body as multipart/form-data.",
-  // This means we forgot to pass in the `default_response_type`
-  // property when creating the response.
-  "D1006": "Response options require `default_response_type` property.",
   // This means we forgot to pass in the `server` property when creating the
   // resource.
   "D1007": "Resource options require `server` property.",
-  // This means we forgot to pass in the `default_response_type`
-  // property when creating the response.
-  "D1008": "Response options require `default_response_type` property.",
+  "D1009":
+    "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request",
 };
