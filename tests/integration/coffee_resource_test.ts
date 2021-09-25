@@ -20,7 +20,7 @@ export class CoffeeResource extends Resource
     [19, { name: "Dark" }],
   ]);
 
-  public GET(context: Drash.Interfaces.Context) {
+  public GET(context: Drash.Interfaces.IContext) {
     // @ts-ignore Ignoring because we don't care
     let coffeeId: string | null | undefined = context.request.pathParam("id");
     const location = context.request.queryParam("location");

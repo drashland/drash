@@ -1,5 +1,6 @@
 import * as Drash from "../../mod.ts";
 import { Resource } from "../../mod.ts";
+import { Moogle } from "../../deps.ts";
 
 const RE_URI_PATH = /(:[^(/]+|{[^0-9][^}]*})/;
 const RE_URI_PATH_GLOBAL = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -8,8 +9,9 @@ const RE_URI_REPLACEMENT = "([^/]+)";
 // TODO(crookse TODO-DOCBLOCK) Add docblock.
 export class ResourceHandler {
   #matches: Map<string, Drash.Interfaces.IResource> = new Map();
-  #resource_index: Drash.Deps.Moogle<Drash.Interfaces.IResource> = new Drash
-    .Deps.Moogle<Drash.Interfaces.IResource>();
+  #resource_index: Moogle<Drash.Interfaces.IResource> = new Moogle<
+    Drash.Interfaces.IResource
+  >();
   #resource_list: Map<string, Drash.Interfaces.IResource> = new Map();
 
   //////////////////////////////////////////////////////////////////////////////

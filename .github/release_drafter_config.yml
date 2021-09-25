@@ -39,7 +39,7 @@ template: |
     ```
 
     ```
-    import { SomeService } from "https://deno.land/x/drash@v$RESOLVED_VERSION/<service_module>/services.ts";
+    import { SomeService } from "https://deno.land/x/drash@v$RESOLVED_VERSION/src/services/<service>/<service>.ts";
     ```
 
     _Note: Change `SomeService` and `<service_module>` to reflect the service you want to import._

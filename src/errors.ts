@@ -1,4 +1,4 @@
-import * as Drash from "../mod.ts";
+import { STATUS_TEXT } from "../deps.ts";
 
 /**
  * This class is for throwing Drash-related errors.
@@ -33,7 +33,7 @@ export class HttpError extends Error {
   constructor(code: number, message?: string) {
     super(message);
     if (!message) {
-      const statusText = Drash.Deps.STATUS_TEXT.get(code);
+      const statusText = STATUS_TEXT.get(code);
       if (statusText) {
         this.message = statusText;
       }

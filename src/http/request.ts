@@ -1,5 +1,5 @@
 import * as Drash from "../../mod.ts";
-import { deferred } from "../../deps.ts";
+import { deferred, getCookies } from "../../deps.ts";
 
 export type ParsedBody = Record<string, string | BodyFile | BodyFile[]> | null;
 
@@ -96,7 +96,7 @@ export class DrashRequest extends Request {
    * a cookie with that name doesn't exist
    */
   public getCookie(name: string): string {
-    const cookies = Drash.Deps.getCookies(
+    const cookies = getCookies(
       this.headers,
     );
     return cookies[name];
@@ -123,7 +123,6 @@ export class DrashRequest extends Request {
    * @returns The value of the parameter, or null if not found
    */
   public bodyParam<T>(name: string): T | null {
-    console.log(this.#parsed_body);
     return this.#parsed_body![name] as unknown as T ?? null;
   }
 
@@ -210,8 +209,6 @@ async function constructFormDataUsingBody(
     }
     formDataJSON[key] = value as string;
   }
-  console.log("FORMDATAJSON");
-  console.log(formDataJSON);
   return formDataJSON;
 }
 

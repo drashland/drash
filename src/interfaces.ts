@@ -107,15 +107,15 @@ export interface IResource {
   uri_paths_parsed: IResourcePathsParsed[];
   services?: IResourceServices;
   // Methods
-  CONNECT?: (context: Context) => Promise<void> | void;
-  DELETE?: (context: Context) => Promise<void> | void;
-  GET?: (context: Context) => Promise<void> | void;
-  HEAD?: (context: Context) => Promise<void> | void;
-  OPTIONS?: (context: Context) => Promise<void> | void;
-  PATCH?: (context: Context) => Promise<void> | void;
-  POST?: (context: Context) => Promise<void> | void;
-  PUT?: (context: Context) => Promise<void> | void;
-  TRACE?: (context: Context) => Promise<void> | void;
+  CONNECT?: (context: IContext) => Promise<void> | void;
+  DELETE?: (context: IContext) => Promise<void> | void;
+  GET?: (context: IContext) => Promise<void> | void;
+  HEAD?: (context: IContext) => Promise<void> | void;
+  OPTIONS?: (context: IContext) => Promise<void> | void;
+  PATCH?: (context: IContext) => Promise<void> | void;
+  POST?: (context: IContext) => Promise<void> | void;
+  PUT?: (context: IContext) => Promise<void> | void;
+  TRACE?: (context: IContext) => Promise<void> | void;
 }
 
 export interface IResourceServices {
@@ -184,15 +184,15 @@ export interface IService {
   /**
    * Method that is ran before a resource is handled
    */
-  runBeforeResource?: (context: Context) => void | Promise<void>;
+  runBeforeResource?: (context: IContext) => void | Promise<void>;
 
   /**
    * Method that is ran after a reosurce is handled
    */
-  runAfterResource?: (context: Context) => void | Promise<void>;
+  runAfterResource?: (context: IContext) => void | Promise<void>;
 }
 
-export interface Context {
+export interface IContext {
   request: Drash.DrashRequest;
   response: Drash.DrashResponse;
 }

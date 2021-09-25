@@ -124,7 +124,6 @@ function bodyTests() {
       new Map(),
       new URL("https://drash.land"),
     );
-    console.log(request.bodyParam("foo[]"));
     Rhum.asserts.assertEquals(request.bodyParam("foo"), [
       {
         content: '{\n  "hello": "world"\n}',
