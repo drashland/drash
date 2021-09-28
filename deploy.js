@@ -4,7 +4,6 @@ class Res extends Resource {
      paths = ["/"]
 
      GET(context) {
-        console.log('hello')
         context.response.text("hi fromres :)")
     }
 }
@@ -16,7 +15,4 @@ const server = new Server({
     resources: [Res]
 })
 
-server.run()
-console.log('running')
-const res = await fetch("http://localhost:1334")
-console.log(await res.text())
+server.runDeploy()

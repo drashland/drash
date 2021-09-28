@@ -96,6 +96,21 @@ export class Server {
     }
   }
 
+  public runDeploy() {
+    (async () => {
+      for (const service of this.#options.services ?? []) {
+        await service.setUp();
+      }
+    })();
+    addEventListener("fetch", async (event) => {
+      const evt = event as unknown as {
+        request: Request,
+        respondWith: (request: Response | Promise<Response>) => Promise<void>
+      }
+      await this.#handleRequest(evt.request, evt.respondWith)
+    })
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
