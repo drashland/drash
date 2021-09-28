@@ -1,9 +1,9 @@
-import { Server, IContext, Resource, IResource } from "./mod.ts"
+import { Server, Resource } from "./mod.ts"
 
-class Res extends Resource implements IResource {
-    public paths = ["/"]
+class Res extends Resource {
+     paths = ["/"]
 
-    public GET(context: IContext) {
+     GET(context) {
         console.log('hello')
         context.response.text("hi fromres :)")
     }
