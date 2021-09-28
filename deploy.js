@@ -1,6 +1,6 @@
-import { Server } from "./mod.ts"
+import { Server, Resource } from "./mod.ts"
 
-class Res {
+class Res extends Resource {
      paths = ["/"]
 
      GET(context) {
