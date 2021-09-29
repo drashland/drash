@@ -18,9 +18,6 @@ export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
 // Errors
 export * as Errors from "./src/errors.ts";
 
-// Handlers
-export { ResourceHandler } from "./src/handlers/resource_handler.ts";
-
 // Http
 export { DrashRequest } from "./src/http/request.ts";
 export { Resource } from "./src/http/resource.ts";

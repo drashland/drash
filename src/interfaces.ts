@@ -15,7 +15,6 @@ import { Resource } from "../mod.ts";
 // - IRequestOptions
 // - IRequestUrl
 // - IResource
-// - IResourcePathsParsed
 // - IServer
 // - IServerOptions
 // - IService
@@ -103,8 +102,6 @@ export interface IMime {
  */
 export interface IResource {
   paths: string[];
-  // deno-lint-ignore camelcase
-  uri_paths_parsed: IResourcePathsParsed[];
   services?: IResourceServices;
   // Methods
   CONNECT?: (context: IContext) => Promise<void> | void;
@@ -129,37 +126,6 @@ export interface IResourceServices {
   PUT?: Drash.Service[];
   TRACE?: Drash.Service[];
   ALL?: Drash.Service[];
-}
-
-/**
- * This is used to type a resource object's paths. During the request-resource
- * lifecycle, the server object parses the paths on a reosurce and ends up with
- * the following:
- *
- *     {
- *       og_path: "/:id",
- *       regex_path: "^([^/]+)/?$",
- *       params: ["id"],
- *     }
- *
- * og_path
- *     The original path.
- *
- * regex_path
- *     The original path transformed into a regular expression. This is used to
- *     help match request URI paths to a resource's URI path.
- *
- * params
- *     The original path can contain path parameters. For example, an original
- *     path can be defined as /:id. This means the `:id` portion is a path
- *     parameter. This path parameter would be stored in this `params` array.
- */
-export interface IResourcePathsParsed {
-  // deno-lint-ignore camelcase
-  og_path: string;
-  // deno-lint-ignore camelcase
-  regex_path: string;
-  params: string[];
 }
 
 /**

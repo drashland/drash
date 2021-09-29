@@ -8,7 +8,7 @@ import { IContext, Resource } from "../../mod.ts";
 
 class OptionalPathParamsResource extends Resource {
   paths = [
-    "/oppWithoutRequired/:name?/:age_of_person?/:ci-ty?",
+    "/oppWithoutRequired/:name?/:age_of_person?/:city?",
     "/oppWithRequired/:name/:age_of_person?",
   ];
 
@@ -16,7 +16,7 @@ class OptionalPathParamsResource extends Resource {
     const name = context.request.pathParam("name");
     // deno-lint-ignore camelcase
     const age_of_person = context.request.pathParam("age_of_person");
-    const city = context.request.pathParam("ci-ty");
+    const city = context.request.pathParam("city");
 
     context.response.json({
       message: "Successfully handled optional path params",

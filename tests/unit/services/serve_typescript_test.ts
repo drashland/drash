@@ -48,7 +48,7 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
       });
       const url = new URL("http://localhost:1234/assets/compiled.ts");
       const request = new Request(url.href);
-      const req = new DrashRequest(request, new Map(), url);
+      const req = new DrashRequest(request, new Map(), url.searchParams);
       let result: Response | null = null;
       const response = new DrashResponse(async (r) => {
         result = await r;

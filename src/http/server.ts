@@ -21,17 +21,14 @@ export class Server {
   #httpConn!: Deno.HttpConn;
 
   /**
-   * The Deno server request object handler. This handler gets wrapped around
-   * the Deno server request object and acts as a proxy to interact with the
-   * Deno server request object.
-   *
-   * The Drash.Request object is not actually a request object. Surprise!
+   * A list of all instanced resources the user specified, and
+   * a url pattern for every path specified. This means when a request
+   * comes in, the paths are already converted to patterns, saving us time
    */
-  #handlers: {
-    resource_handler: Drash.ResourceHandler;
-  } = {
-    resource_handler: new Drash.ResourceHandler(),
-  };
+  #resources: Map<number, {
+    resource: Drash.Resource;
+    patterns: URLPattern[];
+  }> = new Map();
 
   /**
    * The internal and external services used by this server. Internal services
@@ -50,9 +47,17 @@ export class Server {
       options.services = [];
     }
     this.#options = options;
-    this.#handlers.resource_handler.addResources(
-      this.#options.resources ?? [],
-    );
+    this.#options.resources.forEach((resourceClass) => {
+      const resource = new resourceClass();
+      const patterns: URLPattern[] = [];
+      resource.paths.forEach((path) => {
+        patterns.push(new URLPattern({ pathname: path + "{/}?" })); // match possible trailing slashes too
+      });
+      this.#resources.set(this.#resources.size, {
+        resource,
+        patterns,
+      });
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -104,16 +109,50 @@ export class Server {
     })();
     addEventListener("fetch", async (event) => {
       const evt = event as unknown as {
-        request: Request,
-        respondWith: (request: Response | Promise<Response>) => Promise<void>
-      }
-      await this.#handleRequest(evt.request, evt.respondWith)
-    })
+        request: Request;
+        respondWith: (request: Response | Promise<Response>) => Promise<void>;
+      };
+      await this.#handleRequest(evt.request, evt.respondWith);
+    });
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  #getResourceAndParams(
+    url: string,
+  ): {
+    resource: Drash.Resource;
+    pathParams: Map<string, string>;
+    searchParams: URLSearchParams;
+  } | undefined {
+    let resourceAndParams: {
+      resource: Drash.Resource;
+      pathParams: Map<string, string>;
+      searchParams: URLSearchParams;
+    } | undefined = undefined;
+    for (const { resource, patterns } of this.#resources.values()) {
+      for (const pattern of patterns) {
+        const result = pattern.exec(url);
+        if (result === null) {
+          continue;
+        }
+        // this is the resource we need, and below are the params
+        const params = new Map();
+        for (const key in result.pathname.groups) {
+          params.set(key, result.pathname.groups[key]);
+        }
+        resourceAndParams = {
+          resource,
+          pathParams: params,
+          searchParams: new URL(url).searchParams,
+        };
+        break;
+      }
+    }
+    return resourceAndParams;
+  }
 
   /**
    * Handle an HTTP request from the Deno server.
@@ -132,48 +171,19 @@ export class Server {
     // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
     // 3. Fail early if resource isnt found
 
-    const url = new URL(originalRequest.url);
+    const resourceAndParams = this.#getResourceAndParams(originalRequest.url);
 
-    const resource = this.#handlers.resource_handler.getResource(
-      url.pathname,
-    );
-
-    if (!resource) {
+    if (!resourceAndParams) {
       throw new Drash.Errors.HttpError(404);
     }
 
-    const pathnameSplit = url.pathname.split("/").filter((p) => p);
-    const matchedParams = new Map();
-    for (const resourcePath of resource.paths) {
-      const resourcePathSplit = resourcePath.split("/").filter((p) => p);
-      if (pathnameSplit.length > resourcePathSplit.length) { // uri is too long to match it, so it cant be the right one
-        continue;
-      }
-      // What we're gonna do here is if an index on resource path is param, use the value from the pathname
-      // using the same index, eg uri = /users/2/hello/bye, path = /users/:id/:text:text2 results in path = /users/2/hello/bye,
-      // that way we can exact compare know 100% if its the right path
-      for (const i in pathnameSplit) {
-        const [value, name] = [resourcePathSplit[i], pathnameSplit[i]];
-        if (value.includes(":")) {
-          resourcePathSplit[i] = name;
-          matchedParams.set(value.replace(/:|\?/g, ""), name);
-        }
-      }
-      if (
-        pathnameSplit.join("/") !==
-          resourcePathSplit.filter((p) => !p.includes("?")).join("/")
-      ) {
-        matchedParams.clear();
-        continue;
-      }
-      break; // we found the right one and have set the params
-    }
+    const { resource, pathParams, searchParams } = resourceAndParams;
 
     const context = {
       request: await Drash.DrashRequest.create(
         originalRequest,
-        matchedParams,
-        url,
+        pathParams,
+        searchParams, // we dont need to do this, i think its uneccesary, because a user might not be using query params BUT we're still gonna construct the url :S move this into the queryparam method, eg if params not set, use url from request to construct it
       ),
       response: new Drash.DrashResponse(
         respondWith,
@@ -211,7 +221,10 @@ export class Server {
     }
 
     // Execute the HTTP method on the resource
-    await resource![method as Drash.Types.THttpMethod]!(context);
+    // Ignoring because we know by now the method exists due to the above check
+    // deno-lint-ignore ban-ts-comment
+    // @ts-ignore
+    await resource[method](context);
 
     // after resource middleware
     if (resource.services && method in resource.services) {
@@ -301,28 +314,5 @@ export class Server {
     this.#listenForRequests();
 
     return this.#deno_server;
-  }
-
-  #getMimeType(body: BodyInit) {
-    // check html and json first, as they are the most likely, no point in using time to
-    // check xml, then plain, then pdf, THEN html and json
-
-    // checks for strings
-    if (typeof body === "string") {
-      // html
-      if (/<\/?[a-z][\s\S]*>/i.test(body)) {
-        return "text/html";
-      }
-      // json
-      try {
-        JSON.parse(body);
-        return "application/json";
-      } catch (_e) {
-        // do nothing
-      }
-      // javascript
-      // css
-      //xml
-    }
   }
 }
