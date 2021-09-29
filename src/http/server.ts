@@ -1,5 +1,11 @@
 import * as Drash from "../../mod.ts";
 
+interface ResourceAndParams {
+  resource: Drash.Resource,
+  pathParams: Map<string, string>,
+  searchParams: URLSearchParams
+}
+
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
  * charge of handling incoming requests, matching them to resources for further
@@ -122,16 +128,8 @@ export class Server {
 
   #getResourceAndParams(
     url: string,
-  ): {
-    resource: Drash.Resource;
-    pathParams: Map<string, string>;
-    searchParams: URLSearchParams;
-  } | undefined {
-    let resourceAndParams: {
-      resource: Drash.Resource;
-      pathParams: Map<string, string>;
-      searchParams: URLSearchParams;
-    } | undefined = undefined;
+  ): ResourceAndParams | undefined {
+    let resourceAndParams: ResourceAndParams | undefined = undefined;
     for (const { resource, patterns } of this.#resources.values()) {
       for (const pattern of patterns) {
         const result = pattern.exec(url);
@@ -240,6 +238,7 @@ export class Server {
       }
     }
 
+    // Server after resource services
     if (this.#options.services) {
       for (const Service of this.#options.services) {
         await Service.runAfterResource(context);
