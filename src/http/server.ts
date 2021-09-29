@@ -3,7 +3,6 @@ import * as Drash from "../../mod.ts";
 interface ResourceAndParams {
   resource: Drash.Resource;
   pathParams: Map<string, string>;
-  searchParams: URLSearchParams;
 }
 
 /**
@@ -144,7 +143,6 @@ export class Server {
         resourceAndParams = {
           resource,
           pathParams: params,
-          searchParams: new URL(url).searchParams,
         };
         break;
       }
@@ -175,12 +173,11 @@ export class Server {
       throw new Drash.Errors.HttpError(404);
     }
 
-    const { resource, pathParams, searchParams } = resourceAndParams;
+    const { resource, pathParams } = resourceAndParams;
 
     const request = await Drash.Request.create(
       originalRequest,
       pathParams,
-      searchParams,
     );
     const response = new Drash.Response(respondWith);
 
@@ -222,14 +219,14 @@ export class Server {
 
     // after resource middleware
     if (resource.services && method in resource.services) {
-      for (const Service of (resource.services![method] ?? [])) {
+      for (const Service of (resource.services[method] ?? [])) {
         await Service.runAfterResource(request, response);
       }
     }
 
     // Class after resource middleware
     if (resource.services && resource.services.ALL) {
-      for (const Service of resource.services!.ALL) {
+      for (const Service of resource.services.ALL) {
         await Service.runAfterResource(request, response);
       }
     }
@@ -264,7 +261,7 @@ export class Server {
         this.#httpConn = Deno.serveHttp(conn);
         for await (const { request, respondWith } of this.#httpConn) {
           try {
-            await this.#handleRequest(request, respondWith);
+            this.#handleRequest(request, respondWith);
           } catch (error) {
             respondWith(
               new Response(error.stack, {
@@ -284,8 +281,8 @@ export class Server {
    */
   #runHttp(): Deno.Listener {
     this.#deno_server = Deno.listen({
-      hostname: this.#options.hostname!,
-      port: this.#options.port!,
+      hostname: this.#options.hostname,
+      port: this.#options.port,
     });
 
     this.#listenForRequests();
@@ -300,8 +297,8 @@ export class Server {
    */
   #runHttps(): Deno.Listener {
     this.#deno_server = Deno.listenTls({
-      hostname: this.#options.hostname!,
-      port: this.#options.port!,
+      hostname: this.#options.hostname,
+      port: this.#options.port,
       certFile: this.#options.cert_file!,
       keyFile: this.#options.key_file!,
     });

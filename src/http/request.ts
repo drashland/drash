@@ -17,7 +17,7 @@ type BodyFile = {
 export class DrashRequest extends Request {
   #parsed_body!: ParsedBody;
   readonly #path_params: Map<string, string>;
-  readonly #search_params: URLSearchParams;
+  #search_params!: URLSearchParams;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -30,19 +30,16 @@ export class DrashRequest extends Request {
   constructor(
     originalRequest: Request,
     pathParams: Map<string, string>,
-    searchParams: URLSearchParams,
   ) {
     super(originalRequest);
     this.#path_params = pathParams;
-    this.#search_params = searchParams;
   }
 
   static async create(
     request: Request,
     pathParms: Map<string, string>,
-    searchParams: URLSearchParams,
   ) {
-    const req = new DrashRequest(request, pathParms, searchParams);
+    const req = new DrashRequest(request, pathParms);
     // here because as it's async, we cant parse it on the fly as we dont
     // want users to have to use await when getting a body param
     if (req.body && req.bodyUsed === false) {
@@ -163,6 +160,9 @@ export class DrashRequest extends Request {
    * @returns The value if found, or null if not
    */
   public queryParam(name: string): string | null {
+    if (!this.#search_params) {
+      this.#search_params = new URL(this.url).searchParams;
+    }
     const param = this.#search_params.get(name);
     if (!param) {
       return null;
