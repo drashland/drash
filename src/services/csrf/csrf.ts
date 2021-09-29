@@ -1,6 +1,5 @@
-import { IContext, IService, Service } from "../../../mod.ts";
+import { Errors, IService, Request, Response, Service } from "../../../mod.ts";
 import { createHash, v4 } from "./deps.ts";
-import * as Drash from "../../../mod.ts";
 
 /**
  * This allows us to pass the TS compiler, so we can add properties to a method that uses it. See `csrf` method below
@@ -32,24 +31,24 @@ export class CSRFService extends Service implements IService {
     this.#options = options;
   }
 
-  runBeforeResource(context: IContext) {
+  runBeforeResource(request: Request, _response: Response) {
     let requestToken: string | null = "";
 
     if (this.#options.cookie === true) {
-      requestToken = context.request.getCookie("X-CSRF-TOKEN");
+      requestToken = request.getCookie("X-CSRF-TOKEN");
     } else {
-      requestToken = context.request.headers.get("X-CSRF-TOKEN");
+      requestToken = request.headers.get("X-CSRF-TOKEN");
     }
 
     if (!requestToken) {
-      throw new Drash.Errors.HttpError(
+      throw new Errors.HttpError(
         400,
         "No CSRF token was passed in",
       );
     }
 
     if (requestToken !== primaryTokenString) {
-      throw new Drash.Errors.HttpError(
+      throw new Errors.HttpError(
         403,
         "The CSRF tokens do not match",
       );

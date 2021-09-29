@@ -1,5 +1,5 @@
 import { ConsoleLogger, LoggerConfigs } from "./deps.ts";
-import { IContext, IService, Service } from "../../../mod.ts";
+import { IService, Request, Response, Service } from "../../../mod.ts";
 
 /**
  * See
@@ -68,22 +68,22 @@ export class DexterService extends Service implements IService {
     this.logger = new ConsoleLogger(loggerConfigs);
   }
 
-  runBeforeResource(context: IContext) {
+  runBeforeResource(request: Request, _response: Response) {
     if (this.configs.enabled === false) {
       return;
     }
     this.#timeStart = new Date().getTime();
     let message = "Request received";
     if (this.configs.url) {
-      message = context.request.url + " | " + message;
+      message = request.url + " | " + message;
     }
     if (this.configs.method) {
-      message = context.request.method.toUpperCase + " | " + message;
+      message = request.method.toUpperCase + " | " + message;
     }
     this.logger.info(message);
   }
 
-  runAfterResource(context: IContext) {
+  runAfterResource(request: Request, _response: Response) {
     if (!this.configs.response_time) {
       return;
     }
@@ -94,10 +94,10 @@ export class DexterService extends Service implements IService {
     let message = "Response sent [" + getTime(this.#timeEnd, this.#timeStart) +
       "]";
     if (this.configs.url) {
-      message = context.request.url + " | " + message;
+      message = request.url + " | " + message;
     }
     if (this.configs.method) {
-      message = context.request.method.toUpperCase + " | " + message;
+      message = request.method.toUpperCase + " | " + message;
     }
     this.logger.info(message);
   }

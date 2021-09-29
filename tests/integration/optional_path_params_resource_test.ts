@@ -1,6 +1,5 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -12,13 +11,13 @@ class OptionalPathParamsResource extends Resource {
     "/oppWithRequired/:name/:age_of_person?",
   ];
 
-  public GET(context: IContext) {
-    const name = context.request.pathParam("name");
+  public GET(request: Request, response: Response) {
+    const name = request.pathParam("name");
     // deno-lint-ignore camelcase
-    const age_of_person = context.request.pathParam("age_of_person");
-    const city = context.request.pathParam("city");
+    const age_of_person = request.pathParam("age_of_person");
+    const city = request.pathParam("city");
 
-    context.response.json({
+    response.json({
       message: "Successfully handled optional path params",
       data: {
         name,
@@ -29,7 +28,7 @@ class OptionalPathParamsResource extends Resource {
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     OptionalPathParamsResource,
   ],

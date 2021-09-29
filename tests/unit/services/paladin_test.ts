@@ -1,11 +1,17 @@
 import { Rhum } from "../../deps.ts";
 import { PaladinService } from "../../../src/services/paladin/paladin.ts";
-import { IContext, IResource, Resource, Server } from "../../../mod.ts";
+import {
+  IResource,
+  Request,
+  Resource,
+  Response,
+  Server,
+} from "../../../mod.ts";
 
 class Res extends Resource implements IResource {
   paths = ["/"];
-  public GET(context: IContext) {
-    context.response.text("Hello world!");
+  public GET(_request: Request, response: Response) {
+    response.text("Hello world!");
   }
 }
 

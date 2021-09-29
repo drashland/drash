@@ -1,4 +1,4 @@
-import { IContext, IService, Service } from "../../../mod.ts";
+import { IService, Request, Response, Service } from "../../../mod.ts";
 import { Jae } from "./jae.ts";
 
 interface IOptions {
@@ -18,8 +18,8 @@ export class TengineService extends Service implements IService {
     this.#options = options;
   }
 
-  runAfterResource(context: IContext) {
-    context.response.headers.set("Content-Type", "text/html");
+  runAfterResource(_request: Request, response: Response) {
+    response.headers.set("Content-Type", "text/html");
 
     if (this.#options.views_path) {
       if (!this.#templateEngine) {
@@ -33,8 +33,8 @@ export class TengineService extends Service implements IService {
       };
     }
 
-    if (context.response.render) {
-      context.response.render = this.#options.render;
+    if (response.render) {
+      response.render = this.#options.render;
       return;
     }
   }

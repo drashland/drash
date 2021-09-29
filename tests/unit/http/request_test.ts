@@ -38,7 +38,7 @@ function acceptsTests() {
           Accept: "application/json;text/html",
         },
       });
-      const request = new Drash.DrashRequest(
+      const request = new Drash.Request(
         req,
         new Map(),
         new URL("https://drash.land").searchParams,
@@ -58,7 +58,7 @@ function acceptsTests() {
           Accept: "application/json;text/html",
         },
       });
-      const request = new Drash.DrashRequest(
+      const request = new Drash.Request(
         req,
         new Map(),
         new URL("https://drash.land").searchParams,
@@ -78,7 +78,7 @@ function getCookieTests() {
         credentials: "include",
       },
     });
-    const request = new Drash.DrashRequest(
+    const request = new Drash.Request(
       req,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -94,7 +94,7 @@ function getCookieTests() {
         credentials: "include",
       },
     });
-    const request = new Drash.DrashRequest(
+    const request = new Drash.Request(
       req,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -119,7 +119,7 @@ function bodyTests() {
       body: formData,
       method: "POST",
     });
-    const request = await Drash.DrashRequest.create(
+    const request = await Drash.Request.create(
       serverRequest,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -151,7 +151,7 @@ function bodyTests() {
       body: formData,
       method: "POST",
     });
-    const request = await Drash.DrashRequest.create(
+    const request = await Drash.Request.create(
       serverRequest,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -173,7 +173,7 @@ function bodyTests() {
         body: formData,
         method: "POST",
       });
-      const request = await Drash.DrashRequest.create(
+      const request = await Drash.Request.create(
         req,
         new Map(),
         new URL("https://drash.land").searchParams,
@@ -192,7 +192,7 @@ function bodyTests() {
       body: formData,
       method: "POST",
     });
-    const request = await Drash.DrashRequest.create(
+    const request = await Drash.Request.create(
       serverRequest,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -211,7 +211,7 @@ function bodyTests() {
         }),
         method: "POST",
       });
-      const request = await Drash.DrashRequest.create(
+      const request = await Drash.Request.create(
         req,
         new Map(),
         new URL("https://drash.land").searchParams,
@@ -232,7 +232,7 @@ function bodyTests() {
         }),
         method: "POST",
       });
-      const request = await Drash.DrashRequest.create(
+      const request = await Drash.Request.create(
         serverRequest,
         new Map(),
         new URL("https://drash.land").searchParams,
@@ -255,7 +255,7 @@ function bodyTests() {
         body: formData,
         method: "POST",
       });
-      const request = await Drash.DrashRequest.create(
+      const request = await Drash.Request.create(
         serverRequest,
         new Map(),
         new URL("https://drash.land").searchParams,
@@ -284,7 +284,7 @@ function bodyTests() {
       }),
       method: "POST",
     });
-    const request = await Drash.DrashRequest.create(
+    const request = await Drash.Request.create(
       serverRequest,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -310,7 +310,7 @@ function bodyTests() {
       }),
       method: "POST",
     });
-    const request = await Drash.DrashRequest.create(
+    const request = await Drash.Request.create(
       serverRequest,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -333,7 +333,7 @@ function bodyTests() {
       }),
       method: "POST",
     });
-    const request = await Drash.DrashRequest.create(
+    const request = await Drash.Request.create(
       serverRequest,
       new Map(),
       new URL("https://drash.land").searchParams,
@@ -350,7 +350,7 @@ function paramTests() {
     "Returns the value for the header param when it exists",
     () => {
       const serverRequest = new Request("https://drash.land");
-      const request = new Drash.DrashRequest(
+      const request = new Drash.Request(
         serverRequest,
         new Map().set("hello", "world"),
         new URL("https://drash.land").searchParams,
@@ -364,7 +364,7 @@ function paramTests() {
     "Returns null when the path param doesn't exist",
     () => {
       const serverRequest = new Request("https://drash.land");
-      const request = new Drash.DrashRequest(
+      const request = new Drash.Request(
         serverRequest,
         new Map().set("hello", "world"),
         new URL("https://drash.land").searchParams,
@@ -380,7 +380,7 @@ function queryTests() {
     "Returns the value for the query param when it exists",
     () => {
       const serverRequest = new Request("https://drash.land/?hello=world");
-      const request = new Drash.DrashRequest(
+      const request = new Drash.Request(
         serverRequest,
         new Map(),
         new URL("https://drash.land/?hello=world").searchParams,
@@ -394,7 +394,7 @@ function queryTests() {
     "Returns null when the query data doesn't exist",
     () => {
       const serverRequest = new Request("https://drash.land/?hello=world");
-      const request = new Drash.DrashRequest(
+      const request = new Drash.Request(
         serverRequest,
         new Map(),
         new URL("https://drash.land/?hello=world").searchParams,

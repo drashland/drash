@@ -7,8 +7,7 @@
  */
 
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -17,12 +16,12 @@ import { IContext, Resource } from "../../mod.ts";
 class BrowserRequestResource extends Resource {
   paths = ["/browser-request"];
 
-  public GET(context: IContext) {
-    context.response.text("hello");
+  public GET(_request: Request, response: Response) {
+    response.text("hello");
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     BrowserRequestResource,
   ],

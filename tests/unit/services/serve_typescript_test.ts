@@ -1,6 +1,6 @@
 import { Rhum } from "../../deps.ts";
-import { DrashRequest, DrashResponse } from "../../../mod.ts";
 import { ServeTypeScriptService } from "../../../src/services/serve_typescript/serve_typescript.ts";
+import * as Drash from "../../../mod.ts";
 
 Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
   Rhum.testSuite("ServeTypeScript", () => {
@@ -48,16 +48,16 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
       });
       const url = new URL("http://localhost:1234/assets/compiled.ts");
       const request = new Request(url.href);
-      const req = new DrashRequest(request, new Map(), url.searchParams);
+      const req = new Drash.Request(request, new Map(), url.searchParams);
       let result: Response | null = null;
-      const response = new DrashResponse(async (r) => {
+      const response = new Drash.Response(async (r) => {
         result = await r;
       });
       await serveTs.setUp();
-      await serveTs.runBeforeResource({
-        request: req,
+      await serveTs.runBeforeResource(
+        req,
         response,
-      });
+      );
       Rhum.asserts.assertEquals(
         result!.headers.get("content-type"),
         "text/javascript",

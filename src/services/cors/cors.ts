@@ -1,4 +1,4 @@
-import { IContext, IService, Service } from "../../../mod.ts";
+import { IService, Request, Response, Service } from "../../../mod.ts";
 import { vary } from "./deps.ts";
 
 type ValueOrArray<T> = T | Array<ValueOrArray<T>>;
@@ -64,7 +64,7 @@ export class CorsService extends Service implements IService {
     };
   }
 
-  runAfterResource(context: IContext) {
+  runAfterResource(request: Request, response: Response) {
     if (Array.isArray(this.#config.exposeHeaders)) {
       this.#config.exposeHeaders = this.#config.exposeHeaders.join(",");
     }
@@ -81,16 +81,16 @@ export class CorsService extends Service implements IService {
     // Always set Vary header
     // https://github.com/rs/cors/issues/10
     vary(
-      (header: string) => context.response.headers.get(header) || "",
+      (header: string) => response.headers.get(header) || "",
       (header: string, value: string) => {
-        context.response.headers.set(header, value);
+        response.headers.set(header, value);
       },
       "origin",
     );
 
     // If the Origin header is not present terminate this set of steps.
     // The request would be outside the scope of this specification.
-    const requestOrigin = context.request.headers.get("Origin");
+    const requestOrigin = request.headers.get("Origin");
     if (!requestOrigin) {
       return;
     }
@@ -109,19 +109,19 @@ export class CorsService extends Service implements IService {
     // do not set any additional headers and terminate this set of steps.
     // The request would be outside the scope of this specification.
     if (
-      context.request.method !== "OPTIONS" ||
-      !context.request.headers.get("Access-Control-Request-Method")
+      request.method !== "OPTIONS" ||
+      !request.headers.get("Access-Control-Request-Method")
     ) {
       // Simple Cross-Origin Request, Actual Request, and Redirects
       if (this.#config.origin && typeof this.#config.origin === "string") {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Allow-Origin",
           this.#config.origin,
         );
       }
 
       if (this.#config.credentials && this.#config.credentials === true) {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Allow-Credentials",
           "true",
         );
@@ -131,7 +131,7 @@ export class CorsService extends Service implements IService {
         this.#config.exposeHeaders &&
         typeof this.#config.exposeHeaders === "string"
       ) {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Expose-Headers",
           this.#config.exposeHeaders,
         );
@@ -139,21 +139,21 @@ export class CorsService extends Service implements IService {
     } else if (this.#config.preflight) {
       // Preflight Request
       if (this.#config.origin && typeof this.#config.origin === "string") {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Allow-Origin",
           this.#config.origin,
         );
       }
 
       if (this.#config.credentials && this.#config.credentials === true) {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Allow-Credentials",
           "true",
         );
       }
 
       if (this.#config.maxAge) {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Max-Age",
           this.#config.maxAge.toString(),
         );
@@ -163,7 +163,7 @@ export class CorsService extends Service implements IService {
         this.#config.allowMethods &&
         typeof this.#config.allowMethods === "string"
       ) {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Allow-Methods",
           this.#config.allowMethods,
         );
@@ -171,18 +171,18 @@ export class CorsService extends Service implements IService {
 
       if (!this.#config.allowHeaders) {
         this.#config.allowHeaders =
-          context.request.headers.get("Access-Control-Request-Headers") ||
+          request.headers.get("Access-Control-Request-Headers") ||
           undefined;
       }
 
       if (this.#config.allowHeaders) {
-        context.response.headers.set(
+        response.headers.set(
           "Access-Control-Allow-Headers",
           this.#config.allowHeaders,
         );
       }
 
-      context.response.status = 204;
+      response.status = 204;
     }
   }
 }

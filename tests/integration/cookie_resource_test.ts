@@ -1,6 +1,5 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -9,23 +8,23 @@ import { IContext, Resource } from "../../mod.ts";
 class CookieResource extends Resource {
   paths = ["/cookie", "/cookie/"];
 
-  public GET(context: IContext) {
-    const cookieValue = context.request.getCookie("testCookie");
-    context.response.text(cookieValue);
+  public GET(request: Request, response: Response) {
+    const cookieValue = request.getCookie("testCookie");
+    response.text(cookieValue);
   }
 
-  public POST(context: IContext) {
-    context.response.setCookie({ name: "testCookie", value: "Drash" });
-    context.response.text("Saved your cookie!");
+  public POST(_request: Request, response: Response) {
+    response.setCookie({ name: "testCookie", value: "Drash" });
+    response.text("Saved your cookie!");
   }
 
-  public DELETE(context: IContext) {
-    context.response.text("DELETE request received!");
-    context.response.delCookie("testCookie");
+  public DELETE(_request: Request, response: Response) {
+    response.text("DELETE request received!");
+    response.delCookie("testCookie");
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     CookieResource,
   ],

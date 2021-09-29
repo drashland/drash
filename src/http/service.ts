@@ -1,9 +1,9 @@
-import { IContext, IService } from "../../mod.ts";
+import { IService, Request, Response } from "../../mod.ts";
 
 export class Service implements IService {
-  public runAfterResource(_context: IContext) {
+  public runAfterResource(_request: Request, _response: Response) {
   }
-  public runBeforeResource(_context: IContext) {
+  public runBeforeResource(_request: Request, _response: Response) {
   }
   public setUp() {
   }

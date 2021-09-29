@@ -1,14 +1,20 @@
 import { Rhum } from "../../deps.ts";
-import { IContext, IResource, Resource, Server } from "../../../mod.ts";
+import {
+  IResource,
+  Request,
+  Resource,
+  Response,
+  Server,
+} from "../../../mod.ts";
 import { CorsService } from "../../../src/services/cors/cors.ts";
 
 class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
   paths = ["/cors"];
-  public GET(context: IContext) {
-    context.response.text("GET request received!");
+  public GET(_request: Request, response: Response) {
+    response.text("GET request received!");
   }
-  public OPTIONS(context: IContext) {
-    context.response.headers.set("content-type", "text/plain");
+  public OPTIONS(_request: Request, response: Response) {
+    response.headers.set("content-type", "text/plain");
   }
 }
 

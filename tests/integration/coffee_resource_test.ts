@@ -1,6 +1,12 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { Resource } from "../../mod.ts";
+import {
+  Errors,
+  IResource,
+  Request,
+  Resource,
+  Response,
+  Server,
+} from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -10,8 +16,7 @@ interface ICoffee {
   name: string;
 }
 
-export class CoffeeResource extends Resource
-  implements Drash.Interfaces.IResource {
+export class CoffeeResource extends Resource implements IResource {
   paths = ["/coffee", "/coffee/:id"];
 
   protected coffee = new Map<number, ICoffee>([
@@ -20,22 +25,22 @@ export class CoffeeResource extends Resource
     [19, { name: "Dark" }],
   ]);
 
-  public GET(context: Drash.Interfaces.IContext) {
+  public GET(request: Request, response: Response) {
     // @ts-ignore Ignoring because we don't care
-    let coffeeId: string | null | undefined = context.request.pathParam("id");
-    const location = context.request.queryParam("location");
+    let coffeeId: string | null | undefined = request.pathParam("id");
+    const location = request.queryParam("location");
     if (location) {
       if (location == "from_query") {
-        coffeeId = context.request.queryParam("id");
+        coffeeId = request.queryParam("id");
       }
     }
 
     if (!coffeeId) {
-      context.response.text("Please specify a coffee ID.");
+      response.text("Please specify a coffee ID.");
       return;
     }
 
-    context.response.text(JSON.stringify(this.getCoffee(parseInt(coffeeId))));
+    response.text(JSON.stringify(this.getCoffee(parseInt(coffeeId))));
   }
 
   protected getCoffee(coffeeId: number): ICoffee {
@@ -44,14 +49,14 @@ export class CoffeeResource extends Resource
     try {
       coffee = this.coffee.get(coffeeId);
     } catch (error) {
-      throw new Drash.Errors.HttpError(
+      throw new Errors.HttpError(
         400,
         `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`,
       );
     }
 
     if (!coffee) {
-      throw new Drash.Errors.HttpError(
+      throw new Errors.HttpError(
         404,
         `Coffee with ID "${coffeeId}" not found.`,
       );
@@ -61,7 +66,7 @@ export class CoffeeResource extends Resource
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     CoffeeResource,
   ],

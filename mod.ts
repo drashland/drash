@@ -19,11 +19,10 @@ export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
 export * as Errors from "./src/errors.ts";
 
 // Http
-export { DrashRequest } from "./src/http/request.ts";
+export { DrashRequest as Request } from "./src/http/request.ts";
 export { Resource } from "./src/http/resource.ts";
-export { DrashResponse } from "./src/http/response.ts";
+export { DrashResponse as Response } from "./src/http/response.ts";
 export { Service } from "./src/http/service.ts";
-export type { IContext } from "./src/interfaces.ts";
 
 // Export members from the IMPORTS section above
 export { Interfaces, Server, Types };

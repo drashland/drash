@@ -1,4 +1,4 @@
-import { IContext, IService, Service } from "../../../mod.ts";
+import { IService, Request, Response, Service } from "../../../mod.ts";
 
 interface IFile {
   source: string;
@@ -25,17 +25,17 @@ export class ServeTypeScriptService extends Service implements IService {
     this.#options = options;
   }
 
-  runBeforeResource(context: IContext) {
-    if (!context.request.url.includes(".ts")) {
+  runBeforeResource(request: Request, response: Response) {
+    if (!request.url.includes(".ts")) {
       return;
     }
-    context.response.headers.set("Content-Type", "text/javascript");
-    const uri = new URL(context.request.url).pathname;
+    response.headers.set("Content-Type", "text/javascript");
+    const uri = new URL(request.url).pathname;
     const filepath = uri.split("?")[0];
     const contents = this.#compiledFiles.get(filepath);
     if (contents) {
-      context.response.body = contents;
-      context.response.send();
+      response.body = contents;
+      response.send();
     }
   }
 

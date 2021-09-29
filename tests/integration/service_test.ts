@@ -1,41 +1,42 @@
 import {
-  IContext,
   IResource,
   IService,
+  Request,
   Resource,
+  Response,
   Server,
   Service,
 } from "../../mod.ts";
 import { assertEquals } from "../deps.ts";
 
 class ServerService extends Service implements IService {
-  runBeforeResource(context: IContext) {
-    context.response.headers.set("X-SERVER-SERVICE-BEFORE", "hi");
+  runBeforeResource(_request: Request, response: Response) {
+    response.headers.set("X-SERVER-SERVICE-BEFORE", "hi");
   }
-  runAfterResource(context: IContext) {
-    context.response.headers.set("X-SERVER-SERVICE-AFTER", "hi");
+  runAfterResource(_request: Request, response: Response) {
+    response.headers.set("X-SERVER-SERVICE-AFTER", "hi");
   }
 }
 
 const serverService = new ServerService();
 
 class ClassService extends Service implements IService {
-  runBeforeResource(context: IContext) {
-    context.response.headers.set("X-CLASS-SERVICE-BEFORE", "hi");
+  runBeforeResource(_request: Request, response: Response) {
+    response.headers.set("X-CLASS-SERVICE-BEFORE", "hi");
   }
-  runAfterResource(context: IContext) {
-    context.response.headers.set("X-CLASS-SERVICE-AFTER", "hi");
+  runAfterResource(_request: Request, response: Response) {
+    response.headers.set("X-CLASS-SERVICE-AFTER", "hi");
   }
 }
 
 const classService = new ClassService();
 
 class MethodService extends Service implements IService {
-  runBeforeResource(context: IContext) {
-    context.response.headers.set("X-METHOD-SERVICE-BEFORE", "hi");
+  runBeforeResource(_request: Request, response: Response) {
+    response.headers.set("X-METHOD-SERVICE-BEFORE", "hi");
   }
-  runAfterResource(context: IContext) {
-    context.response.headers.set("X-METHOD-SERVICE-AFTER", "hi");
+  runAfterResource(_request: Request, response: Response) {
+    response.headers.set("X-METHOD-SERVICE-AFTER", "hi");
   }
 }
 
@@ -51,8 +52,8 @@ class Resource1 extends Resource implements IResource {
     "GET": [methodService],
   };
 
-  public GET(context: IContext) {
-    context.response.text("done");
+  public GET(_request: Request, response: Response) {
+    response.text("done");
   }
 }
 

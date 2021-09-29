@@ -1,16 +1,16 @@
 import { Rhum } from "../../deps.ts";
 import { Server } from "../../../src/http/server.ts";
-import { IContext, Resource } from "../../../mod.ts";
+import { Request, Resource, Response } from "../../../mod.ts";
 
 class HomeResource extends Resource {
   paths = ["/"];
-  public GET(context: IContext) {
-    context.response.json({
+  public GET(_request: Request, response: Response) {
+    response.json({
       success: true,
     });
   }
-  public POST(context: IContext) {
-    context.response.text(context.request.bodyParam("name"));
+  public POST(request: Request, response: Response) {
+    response.text(request.bodyParam("name"));
   }
 }
 

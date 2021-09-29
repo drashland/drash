@@ -1,9 +1,9 @@
 import * as Drash from "../../mod.ts";
 
 interface ResourceAndParams {
-  resource: Drash.Resource,
-  pathParams: Map<string, string>,
-  searchParams: URLSearchParams
+  resource: Drash.Resource;
+  pathParams: Map<string, string>;
+  searchParams: URLSearchParams;
 }
 
 /**
@@ -177,18 +177,14 @@ export class Server {
 
     const { resource, pathParams, searchParams } = resourceAndParams;
 
-    const context = {
-      request: await Drash.DrashRequest.create(
-        originalRequest,
-        pathParams,
-        searchParams, // we dont need to do this, i think its uneccesary, because a user might not be using query params BUT we're still gonna construct the url :S move this into the queryparam method, eg if params not set, use url from request to construct it
-      ),
-      response: new Drash.DrashResponse(
-        respondWith,
-      ),
-    };
+    const request = await Drash.Request.create(
+      originalRequest,
+      pathParams,
+      searchParams,
+    );
+    const response = new Drash.Response(respondWith);
 
-    const method = context.request.method
+    const method = request.method
       .toUpperCase() as Drash.Types.THttpMethod;
 
     // If the method does not exist on the resource, then the method is not
@@ -200,21 +196,21 @@ export class Server {
     // Server before resource middleware
     if (this.#options.services) {
       for (const Service of this.#options.services) {
-        await Service.runBeforeResource(context);
+        await Service.runBeforeResource(request, response);
       }
     }
 
     // Class before resource middleware
     if (resource.services && resource.services.ALL) {
       for (const Service of resource.services.ALL) {
-        await Service.runBeforeResource(context);
+        await Service.runBeforeResource(request, response);
       }
     }
 
     // resource before middleware
     if (resource.services && resource.services[method]) {
       for (const Service of (resource.services[method] ?? [])) {
-        await Service.runBeforeResource(context);
+        await Service.runBeforeResource(request, response);
       }
     }
 
@@ -222,31 +218,31 @@ export class Server {
     // Ignoring because we know by now the method exists due to the above check
     // deno-lint-ignore ban-ts-comment
     // @ts-ignore
-    await resource[method](context);
+    await resource[method](request, response);
 
     // after resource middleware
     if (resource.services && method in resource.services) {
       for (const Service of (resource.services![method] ?? [])) {
-        await Service.runAfterResource(context);
+        await Service.runAfterResource(request, response);
       }
     }
 
     // Class after resource middleware
     if (resource.services && resource.services.ALL) {
       for (const Service of resource.services!.ALL) {
-        await Service.runAfterResource(context);
+        await Service.runAfterResource(request, response);
       }
     }
 
     // Server after resource services
     if (this.#options.services) {
       for (const Service of this.#options.services) {
-        await Service.runAfterResource(context);
+        await Service.runAfterResource(request, response);
       }
     }
 
-    const accept = context.request.headers.get("accept") ?? "";
-    const contentType = context.response.headers.get("content-type") ?? "";
+    const accept = request.headers.get("accept") ?? "";
+    const contentType = response.headers.get("content-type") ?? "";
     if (accept.includes("*/*") === false) {
       if (accept.includes(contentType) === false) {
         throw new Drash.Errors.HttpError(
@@ -256,7 +252,7 @@ export class Server {
       }
     }
 
-    context.response.send();
+    response.send();
   }
 
   /**

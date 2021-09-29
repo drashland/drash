@@ -1,6 +1,6 @@
 import { Rhum, TestHelpers } from "../deps.ts";
 import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -9,20 +9,20 @@ import { IContext, Resource } from "../../mod.ts";
 class UsersResource extends Resource {
   paths = ["/users", "/users/:id"];
 
-  public GET(context: IContext) {
-    const userId = context.request.pathParam("id");
+  public GET(request: Request, response: Response) {
+    const userId = request.pathParam("id");
 
     if (!userId) {
-      context.response.text("Please specify a user ID.");
+      response.text("Please specify a user ID.");
       return;
     }
 
-    context.response.text(JSON.stringify(this.getUser(parseInt(userId))));
+    response.text(JSON.stringify(this.getUser(parseInt(userId))));
     return;
   }
 
-  public POST(context: IContext) {
-    context.response.text("POST request received!");
+  public POST(_request: Request, response: Response) {
+    response.text("POST request received!");
     return;
   }
 

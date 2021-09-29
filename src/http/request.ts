@@ -1,4 +1,3 @@
-import * as Drash from "../../mod.ts";
 import { deferred, getCookies } from "../../deps.ts";
 
 export type ParsedBody = Record<string, string | BodyFile | BodyFile[]> | null;

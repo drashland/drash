@@ -1,6 +1,5 @@
 import { Rhum } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -9,12 +8,12 @@ import { IContext, Resource } from "../../mod.ts";
 class FilesResource extends Resource {
   paths = ["/files"];
 
-  public POST(context: IContext) {
-    context.response.text(context.request.bodyParam("value_1") ?? null);
+  public POST(request: Request, response: Response) {
+    response.text(request.bodyParam("value_1") ?? null);
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     FilesResource,
   ],

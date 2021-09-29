@@ -1,6 +1,5 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -9,26 +8,26 @@ import { IContext, Resource } from "../../mod.ts";
 class RequestAcceptsUseCaseOneResource extends Resource {
   paths = ["/request-accepts-use-case-one"];
 
-  public GET(context: IContext) {
-    const typeToRequest = context.request.queryParam("typeToCheck");
+  public GET(request: Request, response: Response) {
+    const typeToRequest = request.queryParam("typeToCheck");
 
     let matchedType;
     if (typeToRequest) {
-      if (context.request.accepts(typeToRequest)) {
+      if (request.accepts(typeToRequest)) {
         matchedType = typeToRequest;
       }
     } else {
-      if (context.request.accepts("text/html")) {
+      if (request.accepts("text/html")) {
         matchedType = "text/html";
       }
     }
 
     if (!matchedType) {
-      context.response.json({ success: false });
+      response.json({ success: false });
       return;
     }
 
-    context.response.json(
+    response.json(
       { success: true, message: matchedType },
     );
   }
@@ -37,42 +36,42 @@ class RequestAcceptsUseCaseOneResource extends Resource {
 class RequestAcceptsUseCaseTwoResource extends Resource {
   paths = ["/request-accepts-use-case-two"];
 
-  public GET(context: IContext) {
-    const acceptHeader = context.request.headers.get("Accept");
+  public GET(request: Request, response: Response) {
+    const acceptHeader = request.headers.get("Accept");
     if (!acceptHeader) {
-      return this.jsonResponse(context);
+      return this.jsonResponse(response);
     }
     const contentTypes: string[] = acceptHeader.split(";");
     for (let content of contentTypes) {
       content = content.trim();
       if (content.indexOf("application/json") != -1) {
-        return this.jsonResponse(context);
+        return this.jsonResponse(response);
       }
       if (content.indexOf("text/html") != -1) {
-        return this.htmlResponse(context);
+        return this.htmlResponse(response);
       }
       if (content.indexOf("text/xml") != -1) {
-        return this.xmlResponse(context);
+        return this.xmlResponse(response);
       }
     }
   }
 
-  protected htmlResponse(context: IContext) {
-    context.response.html("<div>response: text/html</div>");
+  protected htmlResponse(response: Response) {
+    response.html("<div>response: text/html</div>");
     return;
   }
 
-  protected jsonResponse(context: IContext) {
-    context.response.json({ response: "application/json" });
+  protected jsonResponse(response: Response) {
+    response.json({ response: "application/json" });
     return;
   }
 
-  protected xmlResponse(context: IContext) {
-    context.response.xml("<response>text/xml</response>");
+  protected xmlResponse(response: Response) {
+    response.xml("<response>text/xml</response>");
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     RequestAcceptsUseCaseOneResource,
     RequestAcceptsUseCaseTwoResource,

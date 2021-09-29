@@ -1,4 +1,4 @@
-import { IContext, IService, Service } from "../../../mod.ts";
+import { IService, Request, Response, Service } from "../../../mod.ts";
 
 type ReferrerPolicy =
   | ""
@@ -57,14 +57,14 @@ export class PaladinService extends Service implements IService {
     this.#configs = configs;
   }
 
-  runAfterResource(context: IContext) {
+  runAfterResource(_request: Request, response: Response) {
     // Set "X-XSS-Protection" header. See https://helmetjs.github.io/docs/xss-filter/
     // if user explicitely enabled it, or left it
     if (
       this.#configs["X-XSS-Protection"] === true ||
       this.#configs["X-XSS-Protection"] !== false
     ) {
-      context.response.headers.set(
+      response.headers.set(
         "X-XSS-Protection",
         "1; mode=block",
       );
@@ -72,7 +72,7 @@ export class PaladinService extends Service implements IService {
 
     // Set "Referrer-Policy" header if passed in. See https://helmetjs.github.io/docs/referrer-policy/
     if (this.#configs["Referrer-Policy"]) {
-      context.response.headers.set(
+      response.headers.set(
         "Referrer-Policy",
         this.#configs["Referrer-Policy"],
       );
@@ -83,7 +83,7 @@ export class PaladinService extends Service implements IService {
       this.#configs["X-Content-Type-Options"] === true ||
       this.#configs["X-Content-Type-Options"] !== false
     ) {
-      context.response.headers.set(
+      response.headers.set(
         "X-Content-Type-Options",
         "nosniff",
       );
@@ -107,27 +107,27 @@ export class PaladinService extends Service implements IService {
       hstsHeader += "; preload";
     }
     if (hstsHeader) {
-      context.response.headers.set("Strict-Transport-Security", hstsHeader);
+      response.headers.set("Strict-Transport-Security", hstsHeader);
     }
 
     // Delete or modify the "X-Powered-By" header. See https://helmetjs.github.io/docs/hide-powered-by/
     if (typeof this.#configs["X-Powered-By"] === "string") { // user wants to modify the header
-      context.response.headers.set(
+      response.headers.set(
         "X-Powered-By",
         this.#configs["X-Powered-By"] as string,
       );
     } else if (this.#configs["X-Powered-By"] !== true) {
-      context.response.headers.delete("X-Powered-By");
+      response.headers.delete("X-Powered-By");
     }
 
     // Set the "X-Frame-Options" header. See https://helmetjs.github.io/docs/frameguard/
     if (typeof this.#configs["X-Frame-Options"] === "string") {
-      context.response.headers.set(
+      response.headers.set(
         "X-Frame-Options",
         this.#configs["X-Frame-Options"] as string,
       );
     } else if (this.#configs["X-Frame-Options"] !== false) {
-      context.response.headers.set(
+      response.headers.set(
         "X-Frame-Options",
         "SAMEORIGIN",
       );
@@ -145,19 +145,19 @@ export class PaladinService extends Service implements IService {
       expectCTHeader += "; " + this.#configs.expect_ct!.report_uri;
     }
     if (expectCTHeader) {
-      context.response.headers.set("Expect-CT", expectCTHeader);
+      response.headers.set("Expect-CT", expectCTHeader);
     }
 
     // Set the "X-DNS-Prefetch-Control" header. See https://helmetjs.github.io/docs/dns-prefetch-control/
     if (this.#configs["X-DNS-Prefetch-Control"] === true) {
-      context.response.headers.set("X-DNS-Prefetch-Control", "on");
+      response.headers.set("X-DNS-Prefetch-Control", "on");
     } else {
-      context.response.headers.set("X-DNS-Prefetch-Control", "off");
+      response.headers.set("X-DNS-Prefetch-Control", "off");
     }
 
     // Set the "Content-Security-Policy" header. See https://helmetjs.github.io/docs/csp/
     if (this.#configs["Content-Security-Policy"]) {
-      context.response.headers.set(
+      response.headers.set(
         "Content-Security-Policy",
         this.#configs["Content-Security-Policy"],
       );

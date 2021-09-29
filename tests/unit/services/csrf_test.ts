@@ -1,6 +1,12 @@
 import { CSRFService } from "../../../src/services/csrf/csrf.ts";
 import { Rhum } from "../../deps.ts";
-import { IContext, IResource, Resource, Server } from "../../../mod.ts";
+import {
+  IResource,
+  Request,
+  Resource,
+  Response,
+  Server,
+} from "../../../mod.ts";
 
 const csrfWithoutCookie = new CSRFService();
 const csrfWithCookie = new CSRFService({ cookie: true });
@@ -17,15 +23,15 @@ class ResourceNoCookie extends Resource implements IResource {
     "POST": [csrfWithoutCookie],
   };
 
-  public GET(context: IContext) {
+  public GET(_request: Request, response: Response) {
     // Give token to the 'view'
-    context.response.headers.set("X-CSRF-TOKEN", csrfWithoutCookie.token);
-    context.response.text(csrfWithoutCookie.token);
+    response.headers.set("X-CSRF-TOKEN", csrfWithoutCookie.token);
+    response.text(csrfWithoutCookie.token);
   }
 
-  public POST(context: IContext) {
+  public POST(_request: Request, response: Response) {
     // request should have token
-    context.response.text("Success; " + csrfWithoutCookie.token);
+    response.text("Success; " + csrfWithoutCookie.token);
   }
 }
 
@@ -36,18 +42,18 @@ class ResourceWithCookie extends Resource {
     "POST": [csrfWithCookie],
   };
 
-  public GET(context: IContext) {
+  public GET(_request: Request, response: Response) {
     // Give token to the 'view'
-    context.response.setCookie({
+    response.setCookie({
       name: "X-CSRF-TOKEN",
       value: csrfWithCookie.token,
     });
-    context.response.text(csrfWithCookie.token);
+    response.text(csrfWithCookie.token);
   }
 
-  public POST(context: IContext) {
+  public POST(_request: Request, response: Response) {
     // request should have token
-    context.response.text("Success; " + csrfWithCookie.token);
+    response.text("Success; " + csrfWithCookie.token);
   }
 }
 

@@ -1,6 +1,5 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import * as Drash from "../../mod.ts";
-import { IContext, Resource } from "../../mod.ts";
+import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
@@ -9,24 +8,24 @@ import { IContext, Resource } from "../../mod.ts";
 class HomeResource extends Resource {
   paths = ["/", "/home"];
 
-  public GET(context: IContext) {
-    context.response.text("GET request received!");
+  public GET(_request: Request, response: Response) {
+    response.text("GET request received!");
   }
 
-  public POST(context: IContext) {
-    context.response.text("POST request received!");
+  public POST(_request: Request, response: Response) {
+    response.text("POST request received!");
   }
 
-  public PUT(context: IContext) {
-    context.response.text("PUT request received!");
+  public PUT(_request: Request, response: Response) {
+    response.text("PUT request received!");
   }
 
-  public DELETE(context: IContext) {
-    context.response.text("DELETE request received!");
+  public DELETE(_request: Request, response: Response) {
+    response.text("DELETE request received!");
   }
 }
 
-const server = new Drash.Server({
+const server = new Server({
   resources: [
     HomeResource,
   ],

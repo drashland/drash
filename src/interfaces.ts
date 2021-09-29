@@ -1,4 +1,4 @@
-import { Resource } from "../mod.ts";
+import { Request, Resource, Response, Service } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -18,8 +18,6 @@ import { Resource } from "../mod.ts";
 // - IServer
 // - IServerOptions
 // - IService
-
-import * as Drash from "../mod.ts";
 
 /**
  * An interface to help type key-value pair objects with different values.
@@ -104,28 +102,28 @@ export interface IResource {
   paths: string[];
   services?: IResourceServices;
   // Methods
-  CONNECT?: (context: IContext) => Promise<void> | void;
-  DELETE?: (context: IContext) => Promise<void> | void;
-  GET?: (context: IContext) => Promise<void> | void;
-  HEAD?: (context: IContext) => Promise<void> | void;
-  OPTIONS?: (context: IContext) => Promise<void> | void;
-  PATCH?: (context: IContext) => Promise<void> | void;
-  POST?: (context: IContext) => Promise<void> | void;
-  PUT?: (context: IContext) => Promise<void> | void;
-  TRACE?: (context: IContext) => Promise<void> | void;
+  CONNECT?: (request: Request, response: Response) => Promise<void> | void;
+  DELETE?: (request: Request, response: Response) => Promise<void> | void;
+  GET?: (request: Request, response: Response) => Promise<void> | void;
+  HEAD?: (request: Request, response: Response) => Promise<void> | void;
+  OPTIONS?: (request: Request, response: Response) => Promise<void> | void;
+  PATCH?: (request: Request, response: Response) => Promise<void> | void;
+  POST?: (request: Request, response: Response) => Promise<void> | void;
+  PUT?: (request: Request, response: Response) => Promise<void> | void;
+  TRACE?: (request: Request, response: Response) => Promise<void> | void;
 }
 
 export interface IResourceServices {
-  CONNECT?: Drash.Service[];
-  DELETE?: Drash.Service[];
-  GET?: Drash.Service[];
-  HEAD?: Drash.Service[];
-  OPTIONS?: Drash.Service[];
-  PATCH?: Drash.Service[];
-  POST?: Drash.Service[];
-  PUT?: Drash.Service[];
-  TRACE?: Drash.Service[];
-  ALL?: Drash.Service[];
+  CONNECT?: Service[];
+  DELETE?: Service[];
+  GET?: Service[];
+  HEAD?: Service[];
+  OPTIONS?: Service[];
+  PATCH?: Service[];
+  POST?: Service[];
+  PUT?: Service[];
+  TRACE?: Service[];
+  ALL?: Service[];
 }
 
 /**
@@ -140,7 +138,7 @@ export interface IServerOptions {
   port: number;
   protocol: "http" | "https";
   resources: typeof Resource[];
-  services?: Drash.Service[];
+  services?: Service[];
 }
 
 export interface IService {
@@ -150,15 +148,16 @@ export interface IService {
   /**
    * Method that is ran before a resource is handled
    */
-  runBeforeResource?: (context: IContext) => void | Promise<void>;
+  runBeforeResource?: (
+    request: Request,
+    response: Response,
+  ) => void | Promise<void>;
 
   /**
    * Method that is ran after a reosurce is handled
    */
-  runAfterResource?: (context: IContext) => void | Promise<void>;
-}
-
-export interface IContext {
-  request: Drash.DrashRequest;
-  response: Drash.DrashResponse;
+  runAfterResource?: (
+    request: Request,
+    response: Response,
+  ) => void | Promise<void>;
 }
