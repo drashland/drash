@@ -49,18 +49,11 @@ Rhum.testPlan("ServeTypeScript - mod_test.ts", () => {
       const url = new URL("http://localhost:1234/assets/compiled.ts");
       const request = new Request(url.href);
       const req = new Drash.Request(request, new Map());
-      let result: Response | null = null;
-      const response = new Drash.Response(async (r) => {
-        result = await r;
-      });
+      const response = new Drash.Response();
       await serveTs.setUp();
       await serveTs.runBeforeResource(
         req,
         response,
-      );
-      Rhum.asserts.assertEquals(
-        result!.headers.get("content-type"),
-        "text/javascript",
       );
       Rhum.asserts.assertEquals(
         response!.headers.get("content-type"),

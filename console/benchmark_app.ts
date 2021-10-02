@@ -10,7 +10,7 @@ class HomeResource extends Drash.Resource {
 const server = new Drash.Server({
   port: 1447,
   protocol: "http",
-  hostname: "localhost",
+  hostname: "127.0.0.1",
   resources: [HomeResource],
 });
 

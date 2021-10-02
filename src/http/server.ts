@@ -1,8 +1,57 @@
 import * as Drash from "../../mod.ts";
+import { StdServer } from "../../deps.ts";
 
 interface ResourceAndParams {
   resource: Drash.Resource;
   pathParams: Map<string, string>;
+}
+
+type ResourcesAndPatterns = Map<number, {
+  resource: Drash.Resource;
+  patterns: URLPattern[];
+}>;
+
+function getResourceAndParams(
+  url: string,
+  resources: ResourcesAndPatterns,
+): ResourceAndParams | undefined {
+  let resourceAndParams: ResourceAndParams | undefined = undefined;
+  for (const { resource, patterns } of resources.values()) {
+    for (const pattern of patterns) {
+      const result = pattern.exec(url);
+      if (result === null) {
+        continue;
+      }
+      // this is the resource we need, and below are the params
+      const params = new Map();
+      for (const key in result.pathname.groups) {
+        params.set(key, result.pathname.groups[key]);
+      }
+      resourceAndParams = {
+        resource,
+        pathParams: params,
+      };
+      break;
+    }
+  }
+  return resourceAndParams;
+}
+
+async function runServices(
+  Services: Drash.Service[],
+  request: Drash.Request,
+  response: Drash.Response,
+  serviceMethod: "runBeforeResource" | "runAfterResource",
+): Promise<boolean> {
+  let respond = false;
+  for (const Service of Services) {
+    await Service[serviceMethod](request, response);
+    if (response.respond) {
+      respond = true;
+      break;
+    }
+  }
+  return respond;
 }
 
 /**
@@ -19,21 +68,21 @@ export class Server {
   readonly #options: Drash.Interfaces.IServerOptions;
 
   /**
-   * The Deno server object (after calling `serve()`).
-   */
-  #deno_server!: Deno.Listener;
-
-  #httpConn!: Deno.HttpConn;
-
-  /**
    * A list of all instanced resources the user specified, and
    * a url pattern for every path specified. This means when a request
    * comes in, the paths are already converted to patterns, saving us time
    */
-  #resources: Map<number, {
-    resource: Drash.Resource;
-    patterns: URLPattern[];
-  }> = new Map();
+  readonly #resources: ResourcesAndPatterns = new Map();
+
+  /**
+   * Our server instance that is serving the app
+   */
+  #server!: StdServer;
+
+  /**
+   * A promise we need to await after calling close() on #server
+   */
+  #serverPromise!: Promise<void>;
 
   /**
    * The internal and external services used by this server. Internal services
@@ -83,10 +132,10 @@ export class Server {
   /**
    * Close the server.
    */
-  public close(): void {
+  public async close(): Promise<void> {
     try {
-      this.#deno_server.close();
-      this.#httpConn.close();
+      this.#server.close();
+      await this.#serverPromise;
     } catch (_error) {
       // Do nothing. The server was probably already closed.
     }
@@ -98,11 +147,16 @@ export class Server {
         await service.setUp();
       }
     })();
+    const addr = `${this.#options.hostname}:${this.#options.port}`;
+    this.#server = new StdServer({ addr, handler: this.#getHandler() });
     if (this.#options.protocol === "http") {
-      return this.#runHttp();
+      this.#serverPromise = this.#server.listenAndServe();
     }
     if (this.#options.protocol === "https") {
-      return this.#runHttps();
+      this.#serverPromise = this.#server.listenAndServeTls(
+        this.#options.cert_file as string,
+        this.#options.key_file as string,
+      );
     }
   }
 
@@ -117,7 +171,7 @@ export class Server {
         request: Request;
         respondWith: (request: Response | Promise<Response>) => Promise<void>;
       };
-      await this.#handleRequest(evt.request, evt.respondWith);
+      await this.#getHandler()(evt.request);
     });
   }
 
@@ -125,186 +179,173 @@ export class Server {
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  #getResourceAndParams(
-    url: string,
-  ): ResourceAndParams | undefined {
-    let resourceAndParams: ResourceAndParams | undefined = undefined;
-    for (const { resource, patterns } of this.#resources.values()) {
-      for (const pattern of patterns) {
-        const result = pattern.exec(url);
-        if (result === null) {
-          continue;
-        }
-        // this is the resource we need, and below are the params
-        const params = new Map();
-        for (const key in result.pathname.groups) {
-          params.set(key, result.pathname.groups[key]);
-        }
-        resourceAndParams = {
-          resource,
-          pathParams: params,
-        };
-        break;
-      }
-    }
-    return resourceAndParams;
-  }
+  #getHandler(): (r: Request) => Promise<Response> {
+    const resources = this.#resources;
+    const serverServices = this.#options.services ?? [];
+    return async function (originalRequest: Request) {
+      try {
+        // Ordering of logic matters, because we dont want to spend time calculating
+        // for something the user would never need, eg parsing the body for a user to never use it.
+        // So here is what we do:
+        //
+        // 1. Create the request object (minimal impact)
+        // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
+        // 3. Fail early if resource isnt found
 
-  /**
-   * Handle an HTTP request from the Deno server.
-   *
-   * @param originalRequest - The Deno request object.
-   */
-  async #handleRequest(
-    originalRequest: Request,
-    respondWith: (r: Response | Promise<Response>) => Promise<void>,
-  ): Promise<void> {
-    // Ordering of logic matters, because we dont want to spend time calculating
-    // for something the user would never need, eg parsing the body for a user to never use it.
-    // So here is what we do:
-    //
-    // 1. Create the request object (minimal impact)
-    // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
-    // 3. Fail early if resource isnt found
-
-    const resourceAndParams = this.#getResourceAndParams(originalRequest.url);
-
-    if (!resourceAndParams) {
-      throw new Drash.Errors.HttpError(404);
-    }
-
-    const { resource, pathParams } = resourceAndParams;
-
-    const request = await Drash.Request.create(
-      originalRequest,
-      pathParams,
-    );
-    const response = new Drash.Response(respondWith);
-
-    const method = request.method
-      .toUpperCase() as Drash.Types.THttpMethod;
-
-    // If the method does not exist on the resource, then the method is not
-    // allowed. So, throw that 405 and GTFO.
-    if (!(method in resource)) {
-      throw new Drash.Errors.HttpError(405);
-    }
-
-    // Server before resource middleware
-    if (this.#options.services) {
-      for (const Service of this.#options.services) {
-        await Service.runBeforeResource(request, response);
-      }
-    }
-
-    // Class before resource middleware
-    if (resource.services && resource.services.ALL) {
-      for (const Service of resource.services.ALL) {
-        await Service.runBeforeResource(request, response);
-      }
-    }
-
-    // resource before middleware
-    if (resource.services && resource.services[method]) {
-      for (const Service of (resource.services[method] ?? [])) {
-        await Service.runBeforeResource(request, response);
-      }
-    }
-
-    // Execute the HTTP method on the resource
-    // Ignoring because we know by now the method exists due to the above check
-    // deno-lint-ignore ban-ts-comment
-    // @ts-ignore
-    await resource[method](request, response);
-
-    // after resource middleware
-    if (resource.services && method in resource.services) {
-      for (const Service of (resource.services[method] ?? [])) {
-        await Service.runAfterResource(request, response);
-      }
-    }
-
-    // Class after resource middleware
-    if (resource.services && resource.services.ALL) {
-      for (const Service of resource.services.ALL) {
-        await Service.runAfterResource(request, response);
-      }
-    }
-
-    // Server after resource services
-    if (this.#options.services) {
-      for (const Service of this.#options.services) {
-        await Service.runAfterResource(request, response);
-      }
-    }
-
-    const accept = request.headers.get("accept") ?? "";
-    const contentType = response.headers.get("content-type") ?? "";
-    if (accept.includes("*/*") === false) {
-      if (accept.includes(contentType) === false) {
-        throw new Drash.Errors.HttpError(
-          406,
-          Drash.Errors.DRASH_ERROR_CODES["D1009"],
+        const resourceAndParams = getResourceAndParams(
+          originalRequest.url,
+          resources,
         );
-      }
-    }
 
-    response.send();
-  }
+        if (!resourceAndParams) {
+          throw new Drash.Errors.HttpError(404);
+        }
 
-  /**
-   * Listen for incoming requests.
-   */
-  async #listenForRequests() {
-    for await (const conn of this.#deno_server) {
-      (async () => {
-        this.#httpConn = Deno.serveHttp(conn);
-        for await (const { request, respondWith } of this.#httpConn) {
-          try {
-            this.#handleRequest(request, respondWith);
-          } catch (error) {
-            respondWith(
-              new Response(error.stack, {
-                status: error.code,
-              }),
+        const { resource, pathParams } = resourceAndParams;
+
+        const request = await Drash.Request.create(
+          originalRequest,
+          pathParams,
+        );
+        const response = new Drash.Response();
+
+        const method = request.method
+          .toUpperCase() as Drash.Types.THttpMethod;
+
+        // If the method does not exist on the resource, then the method is not
+        // allowed. So, throw that 405 and GTFO.
+        if (!(method in resource)) {
+          throw new Drash.Errors.HttpError(405);
+        }
+
+        // Server before resource middleware
+        if (
+          await runServices(
+            serverServices,
+            request,
+            response,
+            "runBeforeResource",
+          )
+        ) {
+          throw new Drash.Errors.HttpError(404);
+        }
+
+        // Class before resource middleware
+        if (resource.services && resource.services.ALL) {
+          if (
+            await runServices(
+              resource.services.ALL ?? [],
+              request,
+              response,
+              "runBeforeResource",
+            )
+          ) {
+            return new Response(response.body, {
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+            });
+          }
+        }
+
+        // resource before middleware
+        if (resource.services && resource.services[method]) {
+          if (
+            await runServices(
+              resource.services[method] ?? [],
+              request,
+              response,
+              "runBeforeResource",
+            )
+          ) {
+            return new Response(response.body, {
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+            });
+          }
+        }
+
+        // Execute the HTTP method on the resource
+        // Ignoring because we know by now the method exists due to the above check
+        // deno-lint-ignore ban-ts-comment
+        // @ts-ignore
+        await resource[method](request, response);
+
+        // after resource middleware
+        if (resource.services && method in resource.services) {
+          if (
+            await runServices(
+              resource.services[method] ?? [],
+              request,
+              response,
+              "runAfterResource",
+            )
+          ) {
+            return new Response(response.body, {
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+            });
+          }
+        }
+
+        // Class after resource middleware
+        if (resource.services && resource.services.ALL) {
+          if (
+            await runServices(
+              resource.services.ALL ?? [],
+              request,
+              response,
+              "runAfterResource",
+            )
+          ) {
+            return new Response(response.body, {
+              headers: response.headers,
+              status: response.status,
+              statusText: response.statusText,
+            });
+          }
+        }
+
+        // Server after resource services
+        if (
+          await runServices(
+            serverServices,
+            request,
+            response,
+            "runAfterResource",
+          )
+        ) {
+          return new Response(response.body, {
+            headers: response.headers,
+            status: response.status,
+            statusText: response.statusText,
+          });
+        }
+
+        const accept = request.headers.get("accept") ?? "";
+        const contentType = response.headers.get("content-type") ?? "";
+        if (accept.includes("*/*") === false) {
+          if (accept.includes(contentType) === false) {
+            throw new Drash.Errors.HttpError(
+              406,
+              Drash.Errors.DRASH_ERROR_CODES["D1009"],
             );
           }
         }
-      })();
-    }
-  }
 
-  /**
-   * Run the server in HTTP mode.
-   *
-   * @returns The Deno server object.
-   */
-  #runHttp(): Deno.Listener {
-    this.#deno_server = Deno.listen({
-      hostname: this.#options.hostname,
-      port: this.#options.port,
-    });
-
-    this.#listenForRequests();
-
-    return this.#deno_server;
-  }
-
-  /**
-   * Run the server in HTTPS mode.
-   *
-   * @returns The Deno server object.
-   */
-  #runHttps(): Deno.Listener {
-    this.#deno_server = Deno.listenTls({
-      hostname: this.#options.hostname,
-      port: this.#options.port,
-      certFile: this.#options.cert_file!,
-      keyFile: this.#options.key_file!,
-    });
-
-    this.#listenForRequests();
-
-    return this.#deno_server;
+        response.send();
+        return new Response(response.body, {
+          headers: response.headers,
+          statusText: response.statusText,
+          status: response.status,
+        });
+      } catch (e) {
+        return new Response(e.stack, {
+          status: e.code,
+        });
+      }
+    };
   }
 }

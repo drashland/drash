@@ -17,7 +17,7 @@ export class CoffeeResource extends Resource {
 
 const server = new Drash.Server({
   protocol: "http",
-  hostname: "localhost",
+  hostname: "127.0.0.1",
   port: 1337,
   resources: [
     Resource,

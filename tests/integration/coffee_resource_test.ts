@@ -164,7 +164,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         true,
       );
 
-      server.close();
+      await server.close();
     });
   });
 
@@ -184,7 +184,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
       const t = await response.text();
       Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
 
-      server.close();
+      await server.close();
     });
   });
 });

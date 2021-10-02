@@ -36,7 +36,7 @@ jobs:
           cd tmp1
           echo "export { Drash } from '../mod.ts'" > ../console/create_app/deps.ts # so the create app can target the local version instead of a versioned one
           deno run -A ../create_app.ts --api
-          echo "server.close()" >> app.ts
+          echo "await server.close()" >> app.ts
           deno run -A app.ts
 
       - name: Check `deno run` works on app created by create_app.ts --web-app
@@ -45,7 +45,7 @@ jobs:
           cd tmp2
           echo "export { Drash } from '../mod.ts'" > ../console/create_app/deps.ts # so the create app can target the local version instead of a versioned one
           deno run -A ../create_app.ts --web-app
-          echo "server.close()" >> app.ts
+          echo "await server.close()" >> app.ts
           deno run -A app.ts
 
       - name: Check `npm run buildVue` is available in create_app.ts --web-app --with-vue

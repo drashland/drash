@@ -7,16 +7,14 @@ export class DrashResponse {
   public headers: Headers = new Headers();
   public status = 200;
   public statusText = "OK";
-  readonly #respondWith: (r: Response | Promise<Response>) => Promise<void>;
+  #respond = false;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(
-    respondWith: (r: Response | Promise<Response>) => Promise<void>,
-  ) {
-    this.#respondWith = respondWith;
+  get respond() {
+    return this.#respond;
   }
 
   /**
@@ -119,13 +117,7 @@ export class DrashResponse {
    * Respond to the client, ending this requests lifecycle
    */
   public send() {
-    this.#respondWith(
-      new Response(this.body, {
-        status: this.status,
-        statusText: this.statusText,
-        headers: this.headers,
-      }),
-    );
+    this.#respond = true;
   }
 
   /**
