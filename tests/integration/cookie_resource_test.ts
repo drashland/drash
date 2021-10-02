@@ -86,7 +86,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       await response.arrayBuffer();
       //await response.body.close()
 
-      server.close();
+      await server.close();
     });
   });
 });

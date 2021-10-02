@@ -53,7 +53,7 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       conn.close();
       // and then close
-      server.close();
+      await server.close();
       let errorThrown = false;
       try {
         await Deno.connect({
@@ -83,7 +83,7 @@ Rhum.testPlan("http/server_test.ts", () => {
             Accept: "application/json",
           },
         });
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(await res.json(), {
           success: true,
         });
@@ -96,7 +96,7 @@ Rhum.testPlan("http/server_test.ts", () => {
         server.run();
         const res = await fetch("http://localhost:1234/dont/exist");
         await res.text();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(res.status, 404);
       },
     );
@@ -108,7 +108,7 @@ Rhum.testPlan("http/server_test.ts", () => {
           method: "OPTIONS",
         });
         await res.text();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(res.status, 405);
       },
     );
@@ -124,7 +124,7 @@ Rhum.testPlan("http/server_test.ts", () => {
           },
           body: JSON.stringify({ name: "Drash" }),
         });
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(await res.text(), "Drash");
         Rhum.asserts.assertEquals(res.status, 200);
       },

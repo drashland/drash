@@ -134,7 +134,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
         true,
       );
 
-      server.close();
+      await server.close();
     });
   });
 });

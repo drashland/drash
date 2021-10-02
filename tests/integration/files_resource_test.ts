@@ -43,7 +43,7 @@ Rhum.testPlan("files_resource_test.ts", () => {
       });
       Rhum.asserts.assertEquals(await response.text(), "John");
 
-      server.close();
+      await server.close();
     });
   });
 });

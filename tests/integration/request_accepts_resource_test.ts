@@ -105,7 +105,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       Rhum.asserts.assertEquals(json.success, true);
       Rhum.asserts.assertEquals(json.message, "application/json");
 
-      server.close();
+      await server.close();
     });
 
     Rhum.testCase(
@@ -125,7 +125,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         const json = await response.json();
         Rhum.asserts.assertEquals(json.success, true);
         Rhum.asserts.assertEquals(json.message, "text/html");
-        server.close();
+        await server.close();
       },
     );
 
@@ -143,7 +143,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       );
       const text = await response.text();
       Rhum.asserts.assertEquals(text.startsWith("Error: "), true);
-      server.close();
+      await server.close();
     });
   });
 
@@ -192,7 +192,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         `<response>text/xml</response>`,
       );
 
-      server.close();
+      await server.close();
     });
   });
 });

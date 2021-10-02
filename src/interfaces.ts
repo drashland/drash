@@ -142,9 +142,6 @@ export interface IServerOptions {
 }
 
 export interface IService {
-  // The method to run during compile time
-  setUp?: () => Promise<void> | void;
-
   /**
    * Method that is ran before a resource is handled
    */

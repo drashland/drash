@@ -43,7 +43,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, "1; mode=block");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Sets the header when config is true", async () => {
       const paladin = new PaladinService({
@@ -58,7 +58,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, "1; mode=block");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Does not set the header when config is false", async () => {
       const paladin = new PaladinService({
@@ -73,7 +73,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-XSS-Protection");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("Referrer-Policy header", () => {
@@ -88,7 +88,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Referrer-Policy");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Sets the header when passed in", async () => {
       const paladin = new PaladinService({
@@ -103,7 +103,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Referrer-Policy");
       Rhum.asserts.assertEquals(header, "origin");
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("X-Content-Type-Options header", () => {
@@ -118,7 +118,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, "nosniff");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Sets the header when config is true", async () => {
       const paladin = new PaladinService({
@@ -133,7 +133,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, "nosniff");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Does not set the header when config is false", async () => {
       const paladin = new PaladinService({
@@ -148,7 +148,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Content-Type-Options");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("Strict-Transport-Security header", () => {
@@ -163,7 +163,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Is set when max_age is set", async () => {
       const paladin = new PaladinService({
@@ -180,7 +180,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=101; include_sub_domains");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Not set when max_age is false", async () => {
       const paladin = new PaladinService({
@@ -197,7 +197,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Set header but disable include_sub_domains", async () => {
       const paladin = new PaladinService({
@@ -214,7 +214,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Set and explicitly enable include_sub_domains", async () => {
       const paladin = new PaladinService({
@@ -231,7 +231,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Strict-Transport-Security");
       Rhum.asserts.assertEquals(header, "max-age=5184000; include_sub_domains");
-      server.close();
+      await server.close();
     });
     Rhum.testCase(
       "Set header and explicitly set preload to false",
@@ -253,7 +253,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
           header,
           "max-age=5184000; include_sub_domains",
         );
-        server.close();
+        await server.close();
       },
     );
     Rhum.testCase("Set header and set preload", async () => {
@@ -274,7 +274,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
         header,
         "max-age=5184000; include_sub_domains; preload",
       );
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("X-Powered-By header", () => {
@@ -289,7 +289,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Powered-By");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Header removed when explicitly asked to", async () => {
       const paladin = new PaladinService({
@@ -304,7 +304,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Powered-By");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Header can be modified", async () => {
       const paladin = new PaladinService({
@@ -319,7 +319,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Powered-By");
       Rhum.asserts.assertEquals(header, "You will never know, mwuahaha");
-      server.close();
+      await server.close();
     });
     // We don't set it so it cannot be tested
     // TODO(ebebbington) Maybe we could try set the header in some hacky way, to test this?
@@ -347,7 +347,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Frame-Options");
       Rhum.asserts.assertEquals(header, "SAMEORIGIN");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Will not set the header if config is false", async () => {
       const paladin = new PaladinService({
@@ -362,7 +362,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Frame-Options");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Sets the head when explicitly done so", async () => {
       const paladin = new PaladinService({
@@ -377,7 +377,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-Frame-Options");
       Rhum.asserts.assertEquals(header, "DENY");
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("Expect-CT header", () => {
@@ -392,7 +392,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Set the header and set the max age", async () => {
       const paladin = new PaladinService({
@@ -409,7 +409,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, "max-age=30");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Set the header and set enforce", async () => {
       const paladin = new PaladinService({
@@ -427,7 +427,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, "max-age=30; enforce");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("set the header and set report_uri", async () => {
       const paladin = new PaladinService({
@@ -445,7 +445,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Expect-CT");
       Rhum.asserts.assertEquals(header, "max-age=30; hello");
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("X-DNS-Prefetch-Control header", () => {
@@ -460,7 +460,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "off");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Can explicitly be set to off", async () => {
       const paladin = new PaladinService({
@@ -475,7 +475,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "off");
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Can be set to on", async () => {
       const paladin = new PaladinService({
@@ -490,7 +490,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("X-DNS-Prefetch-Control");
       Rhum.asserts.assertEquals(header, "on");
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("Content-Security-Policy header", () => {
@@ -505,7 +505,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Content-Security-Policy");
       Rhum.asserts.assertEquals(header, null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Can be set if config is set", async () => {
       const paladin = new PaladinService({
@@ -520,7 +520,7 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       await res.arrayBuffer();
       const header = res.headers.get("Content-Security-Policy");
       Rhum.asserts.assertEquals(header, "Something something");
-      server.close();
+      await server.close();
     });
   });
 });

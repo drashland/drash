@@ -47,7 +47,7 @@ Rhum.testPlan("browser_request_resource.ts", () => {
           },
         },
       );
-      server.close();
+      await server.close();
       Rhum.asserts.assertEquals(await response.text(), "hello");
       Rhum.asserts.assertEquals(
         response.headers.get("Content-Type"),

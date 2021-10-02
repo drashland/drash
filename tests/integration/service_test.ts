@@ -73,7 +73,7 @@ Deno.test("Class middleware should run", async () => {
     },
   });
   await res.text();
-  server.close();
+  await server.close();
   assertEquals(res.headers.get("X-CLASS-SERVICE-BEFORE"), "hi");
   assertEquals(res.headers.get("X-CLASS-SERVICE-AFTER"), "hi");
 });
@@ -86,7 +86,7 @@ Deno.test("Method middleware should run", async () => {
     },
   });
   await res.text();
-  server.close();
+  await server.close();
   assertEquals(res.headers.get("X-METHOD-SERVICE-BEFORE"), "hi");
   assertEquals(res.headers.get("X-METHOD-SERVICE-AFTER"), "hi");
 });
@@ -99,7 +99,7 @@ Deno.test("Server middleware should run", async () => {
     },
   });
   await res.text();
-  server.close();
+  await server.close();
   assertEquals(res.headers.get("X-SERVER-SERVICE-BEFORE"), "hi");
   assertEquals(res.headers.get("X-SERVER-SERVICE-AFTER"), "hi");
 });

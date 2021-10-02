@@ -62,7 +62,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       );
       Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
       Rhum.asserts.assertEquals(response.headers.get("content-length"), null);
-      server.close();
+      await server.close();
     });
     Rhum.testCase("Should always set the vary header", async () => {
       const server = runServer();
@@ -74,7 +74,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      server.close();
+      await server.close();
       Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
     });
     Rhum.testCase(
@@ -89,7 +89,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           },
         });
         await response.arrayBuffer();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
         Rhum.asserts.assertEquals(
           response.headers.get("access-control-allow-origin"),
@@ -114,7 +114,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           },
         });
         await response.arrayBuffer();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
         Rhum.asserts.assertEquals(
           response.headers.get("access-control-allow-origin"),
@@ -136,7 +136,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           },
         });
         await response.arrayBuffer();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(
           response.headers.get("access-control-allow-headers"),
           "hello world",
@@ -156,7 +156,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           },
         });
         await res.text();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(
           res.headers.get("access-control-allow-origin"),
           null,
@@ -176,7 +176,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           },
         });
         await res.text();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(
           res.headers.get("access-control-allow-origin"),
           "localhost",
@@ -196,7 +196,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           },
         });
         await res.text();
-        server.close();
+        await server.close();
         Rhum.asserts.assertEquals(
           res.headers.get("access-control-allow-origin"),
           "*",

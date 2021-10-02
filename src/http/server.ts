@@ -46,7 +46,7 @@ async function runServices(
   let respond = false;
   for (const Service of Services) {
     await Service[serviceMethod](request, response);
-    if (response.respond) {
+    if (Service.send) {
       respond = true;
       break;
     }
@@ -142,11 +142,6 @@ export class Server {
   }
 
   public run() {
-    (async () => {
-      for (const service of this.#options.services ?? []) {
-        await service.setUp();
-      }
-    })();
     const addr = `${this.#options.hostname}:${this.#options.port}`;
     this.#server = new StdServer({ addr, handler: this.#getHandler() });
     if (this.#options.protocol === "http") {
@@ -161,11 +156,6 @@ export class Server {
   }
 
   public runDeploy() {
-    (async () => {
-      for (const service of this.#options.services ?? []) {
-        await service.setUp();
-      }
-    })();
     addEventListener("fetch", async (event) => {
       const evt = event as unknown as {
         request: Request;
@@ -215,8 +205,10 @@ export class Server {
         // If the method does not exist on the resource, then the method is not
         // allowed. So, throw that 405 and GTFO.
         if (!(method in resource)) {
-          throw new Drash.Errors.HttpError(405);
+          throw new Drash.Errors.HttpError(405); // But still run services
         }
+
+        let serviceCalledEnd = false;
 
         // Server before resource middleware
         if (
@@ -227,102 +219,64 @@ export class Server {
             "runBeforeResource",
           )
         ) {
-          throw new Drash.Errors.HttpError(404);
+          serviceCalledEnd = true;
         }
 
         // Class before resource middleware
-        if (resource.services && resource.services.ALL) {
-          if (
-            await runServices(
-              resource.services.ALL ?? [],
-              request,
-              response,
-              "runBeforeResource",
-            )
-          ) {
-            return new Response(response.body, {
-              headers: response.headers,
-              status: response.status,
-              statusText: response.statusText,
-            });
-          }
+        if (
+          await runServices(
+            resource.services.ALL ?? [],
+            request,
+            response,
+            "runBeforeResource",
+          )
+        ) {
+          serviceCalledEnd = true;
         }
 
         // resource before middleware
-        if (resource.services && resource.services[method]) {
-          if (
-            await runServices(
-              resource.services[method] ?? [],
-              request,
-              response,
-              "runBeforeResource",
-            )
-          ) {
-            return new Response(response.body, {
-              headers: response.headers,
-              status: response.status,
-              statusText: response.statusText,
-            });
-          }
-        }
-
-        // Execute the HTTP method on the resource
-        // Ignoring because we know by now the method exists due to the above check
-        // deno-lint-ignore ban-ts-comment
-        // @ts-ignore
-        await resource[method](request, response);
-
-        // after resource middleware
-        if (resource.services && method in resource.services) {
-          if (
-            await runServices(
-              resource.services[method] ?? [],
-              request,
-              response,
-              "runAfterResource",
-            )
-          ) {
-            return new Response(response.body, {
-              headers: response.headers,
-              status: response.status,
-              statusText: response.statusText,
-            });
-          }
-        }
-
-        // Class after resource middleware
-        if (resource.services && resource.services.ALL) {
-          if (
-            await runServices(
-              resource.services.ALL ?? [],
-              request,
-              response,
-              "runAfterResource",
-            )
-          ) {
-            return new Response(response.body, {
-              headers: response.headers,
-              status: response.status,
-              statusText: response.statusText,
-            });
-          }
-        }
-
-        // Server after resource services
         if (
           await runServices(
-            serverServices,
+            resource.services[method] ?? [],
             request,
             response,
-            "runAfterResource",
+            "runBeforeResource",
           )
         ) {
-          return new Response(response.body, {
-            headers: response.headers,
-            status: response.status,
-            statusText: response.statusText,
-          });
+          serviceCalledEnd = true;
         }
+
+        if (serviceCalledEnd === false) {
+          // Execute the HTTP method on the resource
+          // Ignoring because we know by now the method exists due to the above check
+          // deno-lint-ignore ban-ts-comment
+          // @ts-ignore
+          await resource[method](request, response);
+        }
+
+        // after resource middleware. always run
+        await runServices(
+          resource.services[method] ?? [],
+          request,
+          response,
+          "runAfterResource",
+        );
+
+        // Class after resource middleware. always run
+        await runServices(
+          resource.services.ALL ?? [],
+          request,
+          response,
+          "runAfterResource",
+        );
+
+        // Server after resource services. always run
+        await runServices(
+          serverServices,
+          request,
+          response,
+          "runAfterResource",
+        );
 
         const accept = request.headers.get("accept") ?? "";
         const contentType = response.headers.get("content-type") ?? "";
@@ -335,7 +289,6 @@ export class Server {
           }
         }
 
-        response.send();
         return new Response(response.body, {
           headers: response.headers,
           statusText: response.statusText,

@@ -63,7 +63,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
       Rhum.asserts.assertEquals(json.data.city, undefined);
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/", () => {
@@ -87,7 +87,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
       Rhum.asserts.assertEquals(json.data.city, undefined);
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/:name", () => {
@@ -111,7 +111,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
       Rhum.asserts.assertEquals(json.data.city, undefined);
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/:name/", () => {
@@ -135,7 +135,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
       Rhum.asserts.assertEquals(json.data.city, undefined);
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person", () => {
@@ -159,7 +159,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, "999");
       Rhum.asserts.assertEquals(json.data.city, undefined);
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/", () => {
@@ -183,7 +183,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, "999");
       Rhum.asserts.assertEquals(json.data.city, undefined);
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/:city", () => {
@@ -206,7 +206,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, "999");
       Rhum.asserts.assertEquals(json.data.city, "UK");
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/:city/", () => {
@@ -230,7 +230,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.age_of_person, "999");
       Rhum.asserts.assertEquals(json.data.city, "UK");
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite(
@@ -251,7 +251,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           (await response.text()).startsWith("Error: Not Found"),
           true,
         );
-        server.close();
+        await server.close();
       });
     },
   );
@@ -278,7 +278,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
         Rhum.asserts.assertEquals(json.data.city, undefined);
 
-        server.close();
+        await server.close();
       },
     );
   });
@@ -299,7 +299,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         true,
       );
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithRequired/", () => {
@@ -319,7 +319,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         true,
       );
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithRequired/edward", () => {
@@ -334,6 +334,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           },
         },
       );
+      await server.close();
       const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
@@ -341,8 +342,6 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
       Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-
-      server.close();
     });
   });
   Rhum.testSuite("/oppWithRequired/edward/", () => {
@@ -350,13 +349,14 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
-        "http://localhost:3000/oppWithRequired/edward",
+        "http://localhost:3000/oppWithRequired/edward/",
         {
           headers: {
             Accept: "application/json",
           },
         },
       );
+      await server.close();
       const json = await response.json();
       Rhum.asserts.assertEquals(
         json.message,
@@ -364,8 +364,6 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       );
       Rhum.asserts.assertEquals(json.data.name, "edward");
       Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-
-      server.close();
     });
   });
   Rhum.testSuite("/oppWithRequired/ed-123/22", () => {
@@ -388,7 +386,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.name, "ed-123");
       Rhum.asserts.assertEquals(json.data.age_of_person, "22-22");
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithRequired/edward/22/", () => {
@@ -411,7 +409,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       Rhum.asserts.assertEquals(json.data.name, "edward");
       Rhum.asserts.assertEquals(json.data.age_of_person, "22");
 
-      server.close();
+      await server.close();
     });
   });
   Rhum.testSuite("/oppWithRequired/edward/22/other", () => {
@@ -431,7 +429,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         true,
       );
 
-      server.close();
+      await server.close();
     });
   });
 });

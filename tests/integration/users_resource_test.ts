@@ -160,7 +160,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
         true,
       );
 
-      server.close();
+      await server.close();
     });
   });
 });

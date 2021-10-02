@@ -7,15 +7,6 @@ export class DrashResponse {
   public headers: Headers = new Headers();
   public status = 200;
   public statusText = "OK";
-  #respond = false;
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  get respond() {
-    return this.#respond;
-  }
 
   /**
    * Set a cookie on the response to be set when sent to the client
@@ -112,13 +103,6 @@ export class DrashResponse {
   }
 
   // TODO :: Add download method
-
-  /**
-   * Respond to the client, ending this requests lifecycle
-   */
-  public send() {
-    this.#respond = true;
-  }
 
   /**
    * This method allows users to make `this.response.render()` calls in

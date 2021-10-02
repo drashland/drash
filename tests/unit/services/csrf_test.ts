@@ -96,7 +96,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           secondRes.headers.get("X-CSRF-TOKEN") === csrfWithoutCookie.token,
           true,
         );
-        server.close();
+        await server.close();
       },
     );
     Rhum.testCase("Token can be used for other requests", async () => { // eg get it from a route, and use it in the view for sending other requests
@@ -120,7 +120,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
         "Success; " + token,
       );
       Rhum.asserts.assertEquals(secondRes.status, 200);
-      server.close();
+      await server.close();
     });
     Rhum.testCase(
       "Route with CSRF should throw a 400 when no token",
@@ -137,7 +137,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           (await res.text()).startsWith("Error: No CSRF token was passed in"),
           true,
         );
-        server.close();
+        await server.close();
       },
     );
     Rhum.testCase(
@@ -158,7 +158,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           ),
           true,
         );
-        server.close();
+        await server.close();
       },
     );
     // This test asserts that the token is consistent when passed about, and will not change
@@ -178,7 +178,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           await res.text(),
           "Success; " + csrfWithoutCookie.token,
         );
-        server.close();
+        await server.close();
       },
     );
     Rhum.testCase("Should allow to set the token as a cookie", async () => {
@@ -192,7 +192,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       const headers = res.headers;
       const token = headers.get("set-cookie")!.split("=")[1];
       Rhum.asserts.assertEquals(token, csrfWithCookie.token);
-      server.close();
+      await server.close();
     });
   });
 });

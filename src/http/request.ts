@@ -66,7 +66,7 @@ export class DrashRequest extends Request {
    * @returns True if yes, false if no.
    */
   // TODO(ebebbington): Really don't think there's a need for this, as
-  //                    all we're really doing is this.request.headers.get('accept')!.includes(["application/json"]),
+  //                    all we're really doing is request.headers.get('accept')!.includes(["application/json"]),
   //                    Whilst it's more code than this.accepts(["application/json"]), i wonder if it's worth
   //                    us keeping?
   public accepts(contentType: string): boolean {
