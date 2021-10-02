@@ -41,10 +41,9 @@ export class CSRFService extends Service implements IService {
     }
 
     if (!requestToken) {
-      throw new Errors.HttpError(
-        400,
-        "No CSRF token was passed in",
-      );
+      _response.status = 400;
+      _response.statusText = "No CSRF token was passed in";
+      this.end();
     }
 
     if (requestToken !== primaryTokenString) {

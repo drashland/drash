@@ -16,7 +16,14 @@ class MethodService extends Service implements IService {
   }
 }
 
+class ServerService extends Service implements IService {
+  runAfterResource(_request: Request, response: Response) {
+    response.headers.set("x-server-service", "gday");
+  }
+}
+
 const methodService = new MethodService();
+const serverService = new ServerService();
 
 class Resource1 extends Resource implements IResource {
   paths = ["/"];
@@ -35,6 +42,7 @@ const server = new Server({
   port: 1234,
   hostname: "localhost",
   resources: [Resource1],
+  services: [serverService],
 });
 
 Deno.test("Class middleware should run", async () => {
@@ -45,5 +53,6 @@ Deno.test("Class middleware should run", async () => {
     },
   });
   await server.close();
-  assertEquals(await res.text(), "hi");
+  assertEquals(res.headers.get("x-server-service"), "gday");
+  assertEquals(await res.text(), "goodbye");
 });

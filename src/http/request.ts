@@ -1,6 +1,9 @@
 import { deferred, getCookies } from "../../deps.ts";
 
-export type ParsedBody = Record<string, string | BodyFile | BodyFile[]> | null;
+export type ParsedBody =
+  | Record<string, string | BodyFile | BodyFile[]>
+  | null
+  | string;
 
 function decodeValue(val: string) {
   return decodeURIComponent(val.replace(/\+/g, " "));
@@ -13,7 +16,9 @@ type BodyFile = {
   filename: string;
 };
 
-// TODO(crookse TODO-DOCBLOCK) Add docblock.
+/**
+ * A class that holds the representation of an incoming request
+ */
 export class DrashRequest extends Request {
   #parsed_body!: ParsedBody;
   readonly #path_params: Map<string, string>;
@@ -55,31 +60,16 @@ export class DrashRequest extends Request {
   /**
    * Check if the content type in question are accepted by the request.
    *
-   * TODO-REQUEST-ACCEPTS(crookse) Respect the priority of what is accepted. See
-   * q-factor weighting at the following:
-   *
-   *     https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept.
-   *
    * @param contentType - A proper MIME type. See mime.ts for proper MIME types
    * that Drash can handle.
    *
    * @returns True if yes, false if no.
    */
-  // TODO(ebebbington): Really don't think there's a need for this, as
-  //                    all we're really doing is request.headers.get('accept')!.includes(["application/json"]),
-  //                    Whilst it's more code than this.accepts(["application/json"]), i wonder if it's worth
-  //                    us keeping?
   public accepts(contentType: string): boolean {
-    let acceptHeader = this.headers.get("Accept");
-
-    if (!acceptHeader) {
-      acceptHeader = this.headers.get("accept");
-    }
-
+    const acceptHeader = this.headers.get("Accept");
     if (!acceptHeader) {
       return false;
     }
-
     return acceptHeader.includes(contentType);
   }
 
@@ -119,6 +109,9 @@ export class DrashRequest extends Request {
    * @returns The value of the parameter, or null if not found
    */
   public bodyParam<T>(name: string): T | null {
+    if (typeof this.#parsed_body !== "object") {
+      return null;
+    }
     return this.#parsed_body![name] as unknown as T ?? null;
   }
 
@@ -229,6 +222,8 @@ async function parseBody(
   if (contentType.includes("application/x-www-form-urlencoded")) {
     return await constructFormDataUsingBody(request);
   }
+  if (contentType.includes("text/plain")) {
+    return await request.text();
+  }
   return await constructFormDataUsingBody(request);
-  // TODO :: Handle text plain, eg body: "hello"?
 }

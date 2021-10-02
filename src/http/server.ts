@@ -42,16 +42,18 @@ async function runServices(
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
-): Promise<boolean> {
-  let respond = false;
+): Promise<Error | null> {
+  let err: Error | null = null;
   for (const Service of Services) {
-    await Service[serviceMethod](request, response);
-    if (Service.send) {
-      respond = true;
-      break;
+    try {
+      await Service[serviceMethod](request, response);
+    } catch (e) {
+      if (!e) {
+        err = e;
+      }
     }
   }
-  return respond;
+  return err;
 }
 
 /**
@@ -141,6 +143,9 @@ export class Server {
     }
   }
 
+  /**
+   * Start the server using the p
+   */
   public run() {
     const addr = `${this.#options.hostname}:${this.#options.port}`;
     this.#server = new StdServer({ addr, handler: this.#getHandler() });
@@ -174,79 +179,89 @@ export class Server {
     const serverServices = this.#options.services ?? [];
     return async function (originalRequest: Request) {
       try {
-        // Ordering of logic matters, because we dont want to spend time calculating
-        // for something the user would never need, eg parsing the body for a user to never use it.
-        // So here is what we do:
-        //
-        // 1. Create the request object (minimal impact)
-        // 2. Get the resource using the request (minimal-medium impact, cant be avoided)
-        // 3. Fail early if resource isnt found
+        // If a service wants to respond early, then allow it but dont run the resource method and still
+        // allow services to run eg csrf, paladin
+        let serviceError: Error | null = null;
 
+        // Grab resource and path params
         const resourceAndParams = getResourceAndParams(
           originalRequest.url,
           resources,
-        );
-
-        if (!resourceAndParams) {
-          throw new Drash.Errors.HttpError(404);
-        }
-
+        ) ?? {
+          resource: null,
+          pathParams: new Map(),
+        };
         const { resource, pathParams } = resourceAndParams;
 
+        // Construct request and response objects to pass to services and resource
         const request = await Drash.Request.create(
           originalRequest,
           pathParams,
         );
         const response = new Drash.Response();
 
-        const method = request.method
-          .toUpperCase() as Drash.Types.THttpMethod;
-
-        // If the method does not exist on the resource, then the method is not
-        // allowed. So, throw that 405 and GTFO.
-        if (!(method in resource)) {
-          throw new Drash.Errors.HttpError(405); // But still run services
+        // Server level services, run before resource
+        const serverBeforeServicesError = await runServices(
+          serverServices,
+          request,
+          response,
+          "runBeforeResource",
+        );
+        if (serverBeforeServicesError) {
+          serviceError = serverBeforeServicesError;
         }
 
-        let serviceCalledEnd = false;
-
-        // Server before resource middleware
-        if (
+        // If no resource found, then still run server level services for after resource eg paladin,
+        // then throw a 404
+        if (!resource) {
           await runServices(
             serverServices,
             request,
             response,
-            "runBeforeResource",
-          )
-        ) {
-          serviceCalledEnd = true;
+            "runAfterResource",
+          );
+          throw new Drash.Errors.HttpError(404);
         }
 
-        // Class before resource middleware
-        if (
+        // If the method does not exist on the resource, then the method is not
+        // allowed. So, throw that 405 and GTFO and still allow after reosurce server services to run
+        const method = request.method
+          .toUpperCase() as Drash.Types.THttpMethod;
+        if (!(method in resource)) {
           await runServices(
-            resource.services.ALL ?? [],
+            serverServices,
             request,
             response,
-            "runBeforeResource",
-          )
-        ) {
-          serviceCalledEnd = true;
+            "runAfterResource",
+          );
+          throw new Drash.Errors.HttpError(405);
+        }
+
+        // By now, we all gucci, do run services and resource method as usual
+
+        // Class before resource services
+        const classBeforeServicesError = await runServices(
+          resource.services.ALL ?? [],
+          request,
+          response,
+          "runBeforeResource",
+        );
+        if (classBeforeServicesError && !serviceError) {
+          serviceError = classBeforeServicesError;
         }
 
         // resource before middleware
-        if (
-          await runServices(
-            resource.services[method] ?? [],
-            request,
-            response,
-            "runBeforeResource",
-          )
-        ) {
-          serviceCalledEnd = true;
+        const resourceBeforeServicesError = await runServices(
+          resource.services[method] ?? [],
+          request,
+          response,
+          "runBeforeResource",
+        );
+        if (resourceBeforeServicesError && !serviceError) {
+          serviceError = resourceBeforeServicesError;
         }
 
-        if (serviceCalledEnd === false) {
+        if (serviceError == null) {
           // Execute the HTTP method on the resource
           // Ignoring because we know by now the method exists due to the above check
           // deno-lint-ignore ban-ts-comment
@@ -255,28 +270,37 @@ export class Server {
         }
 
         // after resource middleware. always run
-        await runServices(
+        const resourceAfterServicesError = await runServices(
           resource.services[method] ?? [],
           request,
           response,
           "runAfterResource",
         );
+        if (resourceAfterServicesError && !serviceError) {
+          serviceError = resourceAfterServicesError;
+        }
 
         // Class after resource middleware. always run
-        await runServices(
+        const classAfterServicesError = await runServices(
           resource.services.ALL ?? [],
           request,
           response,
           "runAfterResource",
         );
+        if (classAfterServicesError && !serviceError) {
+          serviceError = classAfterServicesError;
+        }
 
         // Server after resource services. always run
-        await runServices(
+        const serverAfterServicesError = await runServices(
           serverServices,
           request,
           response,
           "runAfterResource",
         );
+        if (serverAfterServicesError && !serviceError) {
+          serviceError = serverAfterServicesError;
+        }
 
         const accept = request.headers.get("accept") ?? "";
         const contentType = response.headers.get("content-type") ?? "";
@@ -284,9 +308,13 @@ export class Server {
           if (accept.includes(contentType) === false) {
             throw new Drash.Errors.HttpError(
               406,
-              Drash.Errors.DRASH_ERROR_CODES["D1009"],
+              "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request",
             );
           }
+        }
+
+        if (serviceError) {
+          throw serviceError;
         }
 
         return new Response(response.body, {

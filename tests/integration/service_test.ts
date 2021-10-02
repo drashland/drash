@@ -40,8 +40,6 @@ class MethodService extends Service implements IService {
   }
 }
 
-// TODO :: Make paths not static, no need for it to be static anymore right?
-
 const methodService = new MethodService();
 
 class Resource1 extends Resource implements IResource {

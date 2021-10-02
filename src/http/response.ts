@@ -102,7 +102,23 @@ export class DrashResponse {
     this.headers.set("content-type", "text/xml");
   }
 
-  // TODO :: Add download method
+  /**
+   * Send a file to be downloaded to the client.
+   * Ends the request lifecycle
+   *
+   * @param path - The path of the file to download, relative to the cwd that executed the entrypoint script
+   * @param filename - The filename given when the file is downloaded
+   * @param contentType - The content type of the associated file
+   *
+   * @example
+   * ```js
+   * response.download("./images/user_1_profile_pic.png", "Profile Picture.png", "image/png")
+   */
+  public download(path: string, filename: string, contentType: string) {
+    this.headers.set("Content-Disposition", `attachment; filename${filename}`);
+    this.headers.set("Content-Type", contentType);
+    this.body = Deno.readFileSync(path);
+  }
 
   /**
    * This method allows users to make `this.response.render()` calls in

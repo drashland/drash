@@ -321,19 +321,6 @@ Rhum.testPlan("Paladin - mod_test.ts", () => {
       Rhum.asserts.assertEquals(header, "You will never know, mwuahaha");
       await server.close();
     });
-    // We don't set it so it cannot be tested
-    // TODO(ebebbington) Maybe we could try set the header in some hacky way, to test this?
-    // Rhum.testCase("Header is still set when set to true", async () => {
-    //   const paladin = new PaladinService({
-    //     "X-Powered-By": true
-    //   })
-    //   const server = runServer(paladin, 1675)
-    //   const res = await fetch("http://localhost:1675/");
-    //   await res.arrayBuffer()
-    //   const header = res.headers.get("X-Powered-By")
-    //   Rhum.asserts.assertEquals(header, "i should still be set")
-    //   server.close()
-    // })
   });
   Rhum.testSuite("X-Frame-Options header", () => {
     Rhum.testCase("Sets the header by default", async () => {

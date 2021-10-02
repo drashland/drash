@@ -62,8 +62,10 @@ export interface IKeyValuePairs<T> {
  *     An array of extensions that match this MIME type.
  *
  * [key: string].source?: string;
- *    TODO(crookse TODO-INTERFACES) Need to figure out what the source is and
- *    how it applies to MIME types.
+ *    where the mime type is defined. If not set, it's probably a custom media type.
+ *      - apache - Apache common media types
+ *      - iana - IANA-defined media types
+ *      - nginx - nginx media types
  */
 export interface IMime {
   [key: string]: {
