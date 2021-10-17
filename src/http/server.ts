@@ -308,7 +308,7 @@ export class Server {
           if (accept.includes(contentType) === false) {
             throw new Drash.Errors.HttpError(
               406,
-              "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request",
+              "The requested resource is only capable of returning content that is not acceptable according to the request's Accept headers.",
             );
           }
         }
