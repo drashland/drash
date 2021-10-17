@@ -18,10 +18,13 @@ export class DrashResponse {
    * @param name The name of the cookie
    * @param attributes Path and domain, can be used to pass the exact same attributes that were used to set the cookie
    */
-  public delCookie(name: string, attributes?: {
-    path?: string;
-    domain: string;
-  }): void {
+  public deleteCookie(
+    name: string,
+    attributes?: {
+      domain: string;
+      path?: string;
+    }
+  ): void {
     deleteCookie(this.headers, name, attributes);
   }
 
