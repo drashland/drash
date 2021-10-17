@@ -2,7 +2,7 @@ import { deferred, getCookies } from "../../deps.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
-  | null
+  | undefined
   | string;
 
 function decodeValue(val: string) {
