@@ -107,7 +107,9 @@ export class Server {
       const resource = new resourceClass();
       const patterns: URLPattern[] = [];
       resource.paths.forEach((path) => {
-        patterns.push(new URLPattern({ pathname: path + "{/}?" })); // match possible trailing slashes too
+        // Add "{/}?" to match possible trailing slashes too
+        patterns.push(new URLPattern({ pathname: path + "{/}?" }));
+
       });
       this.#resources.set(this.#resources.size, {
         resource,
@@ -144,7 +146,7 @@ export class Server {
   }
 
   /**
-   * Start the server using the p
+   * Run the server.
    */
   public run() {
     const addr = `${this.#options.hostname}:${this.#options.port}`;
