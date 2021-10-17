@@ -64,7 +64,7 @@ export class DrashRequest extends Request {
     // body on the fly as we dont want users to have to use await when getting a
     // body param.
     if (req.body && req.bodyUsed === false) {
-      req.#parsed_body = await req.parseBody(req);
+      req.#parsed_body = await req.parseBody();
     }
     return req;
   }
@@ -134,32 +134,28 @@ export class DrashRequest extends Request {
   /**
    * Parse the request body.
    *
-   * @param request - The request with the body.
-   *
    * @returns A parsed body based on the content type of the request body.
    */
-  public async parseBody(
-    request: Request,
-  ): Promise<ParsedBody> {
-    const contentType = request.headers.get(
+  public async parseBody(): Promise<ParsedBody> {
+    const contentType = this.headers.get(
       "Content-Type",
     );
     if (!contentType) {
-      return await this.#constructFormDataUsingBody(request);
+      return await this.#constructFormDataUsingBody();
     }
     if (contentType.includes("multipart/form-data")) {
-      return await this.#constructFormDataUsingBody(request);
+      return await this.#constructFormDataUsingBody();
     }
     if (contentType.includes("application/json")) {
-      return await request.json();
+      return await this.json();
     }
     if (contentType.includes("application/x-www-form-urlencoded")) {
-      return await this.#constructFormDataUsingBody(request);
+      return await this.#constructFormDataUsingBody();
     }
     if (contentType.includes("text/plain")) {
-      return await request.text();
+      return await this.text();
     }
-    return await this.#constructFormDataUsingBody(request);
+    return await this.#constructFormDataUsingBody();
   }
 
   /**
@@ -218,14 +214,10 @@ export class DrashRequest extends Request {
   /**
    * Construct the form data of a request body.
    *
-   * @param request - The request with the form data body.
-   *
    * @returns The form data body as a key-value pair object.
    */
-  async #constructFormDataUsingBody(
-    request: Request,
-  ): Promise<ParsedBody> {
-    const formData = await request.formData();
+  async #constructFormDataUsingBody(): Promise<ParsedBody> {
+    const formData = await this.formData();
     const formDataJSON: ParsedBody = {};
     for (const [key, value] of formData.entries()) {
       if (value instanceof File) {
