@@ -8,14 +8,6 @@ export class DrashResponse {
   public status = 200;
   public statusText = "OK";
 
-  /**
-   * Set a cookie on the response to be set when sent to the client
-   *
-   * @param cookie The cookie data
-   */
-  public setCookie(cookie: Cookie): void {
-    setCookie(this.headers, cookie);
-  }
 
   /**
    * Delete a cookie for the response
@@ -130,5 +122,14 @@ export class DrashResponse {
     ..._args: unknown[]
   ): Promise<boolean | string> | boolean | string {
     return false;
+  }
+
+  /**
+   * Set a cookie on the response to be handled by the client.
+   *
+   * @param cookie The cookie data.
+   */
+  public setCookie(cookie: Cookie): void {
+    setCookie(this.headers, cookie);
   }
 }
