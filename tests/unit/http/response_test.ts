@@ -8,14 +8,14 @@ Deno.test("tests/unit/http/response_test.ts | setCookie()", () => {
   });
   assertEquals(response.headers.get("Set-cookie"), "Repo=Drash");
 });
-Deno.test("delCookie", () => {
+Deno.test("deleteCookie", () => {
   const response = new Drash.Response();
   response.setCookie({
     name: "Repo",
     value: "Drash",
   });
   assertEquals(response.headers.get("Set-cookie"), "Repo=Drash");
-  response.delCookie("Repo");
+  response.deleteCookie("Repo");
   assertEquals(
     response.headers.get("Set-cookie")?.includes("Repo=Drash, Repo=; Expires="),
     true,
