@@ -10,7 +10,7 @@ class HomeResource extends Resource {
     });
   }
   public POST(request: Request, response: Response) {
-    response.text(request.bodyParam("name"));
+    response.text(request.bodyParam("name") ?? "No body param passed in.");
   }
 }
 
