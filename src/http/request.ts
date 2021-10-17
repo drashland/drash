@@ -104,11 +104,11 @@ export class DrashRequest extends Request {
    *
    * @returns The value of the parameter, or null if not found
    */
-  public bodyParam<T>(name: string): T | null {
+  public bodyParam<T>(name: string): T | undefined {
     if (typeof this.#parsed_body !== "object") {
-      return null;
+      return undefined;
     }
-    return this.#parsed_body![name] as unknown as T ?? null;
+    return this.#parsed_body![name] as unknown as T ?? undefined;
   }
 
   /**
@@ -176,13 +176,13 @@ export class DrashRequest extends Request {
    *
    * @returns The value if found, or null if not
    */
-  public queryParam(name: string): string | null {
+  public queryParam(name: string): string | undefined {
     if (!this.#search_params) {
       this.#search_params = new URL(this.url).searchParams;
     }
     const param = this.#search_params.get(name);
     if (!param) {
-      return null;
+      return undefined;
     }
     return this.#decodeValue(param);
   }
