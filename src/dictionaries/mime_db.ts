@@ -1,33 +1,6 @@
-/**
- * The interface used for MIME Types
- * ```ts
- *     [key: string]
- *         The mime type.
- *
- *         charset?: string;
- *             The character encoding of the MIME type.
- *
- *         compressible?: boolean;
- *             Is this MIME type compressible?
- *
- *         extensions?: string[]
- *             An array of extensions that match this MIME type.
- *
- *         source?: string;
- *             TODO(crookse) Need to figure out what the source is and how it
- *             applies to MIME types.
- * ```
- */
-interface IMime {
-  [key: string]: {
-    charset?: string;
-    compressible?: boolean;
-    extensions?: string[];
-    source?: string;
-  };
-}
+import * as Drash from "../../mod.ts";
 
-export const mime_db: IMime = {
+export const mimeDb: Drash.Interfaces.IMime = {
   "application/1d-interleaved-parityfec": {
     source: "iana",
   },

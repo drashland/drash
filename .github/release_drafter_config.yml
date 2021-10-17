@@ -38,6 +38,12 @@ template: |
     import { Drash } from "https://deno.land/x/drash@v$RESOLVED_VERSION/mod.ts";
     ```
 
+    ```
+    import { SomeService } from "https://deno.land/x/drash@v$RESOLVED_VERSION/src/services/<service>/<service>.ts";
+    ```
+
+    _Note: Change `SomeService` and `<service_module>` to reflect the service you want to import._
+
   __Updates__
 
   $CHANGES

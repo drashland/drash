@@ -1,20 +1,19 @@
-import { Drash } from "../mod.ts";
+import * as Drash from "../mod.ts";
 
-class HomeResource extends Drash.Http.Resource {
-  static paths = ["/"];
-  public GET() {
-    this.response.body = "Hello World!";
-    return this.response;
+class HomeResource extends Drash.Resource {
+  paths = ["/"];
+  public GET(_request: Drash.Request, response: Drash.Response) {
+    response.body = "Hello World!";
   }
 }
 
-const server = new Drash.Http.Server({
+const server = new Drash.Server({
+  port: 1447,
+  protocol: "http",
+  hostname: "127.0.0.1",
   resources: [HomeResource],
 });
 
-server.run({
-  hostname: "0.0.0.0",
-  port: 1447,
-});
+server.run();
 
-console.log(`App running at http://${server.hostname}:${server.port}.`);
+console.log(`App running at ${server.address}.`);
