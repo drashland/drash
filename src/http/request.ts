@@ -1,4 +1,5 @@
 import { deferred, getCookies } from "../../deps.ts";
+import { Errors } from "../../mod.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
@@ -137,25 +138,32 @@ export class DrashRequest extends Request {
    * @returns A parsed body based on the content type of the request body.
    */
   async #parseBody(): Promise<ParsedBody> {
-    const contentType = this.headers.get(
-      "Content-Type",
-    );
-    if (!contentType) {
+    try {
+      const contentType = this.headers.get(
+        "Content-Type",
+      );
+      if (!contentType) {
+        return await this.#constructFormDataUsingBody();
+      }
+      if (contentType.includes("multipart/form-data")) {
+        return await this.#constructFormDataUsingBody();
+      }
+      if (contentType.includes("application/json")) {
+        return await this.json();
+      }
+      if (contentType.includes("application/x-www-form-urlencoded")) {
+        return await this.#constructFormDataUsingBody();
+      }
+      if (contentType.includes("text/plain")) {
+        return await this.text();
+      }
       return await this.#constructFormDataUsingBody();
+    } catch (_e) {
+      throw new Errors.HttpError(
+        422,
+        "Unprocessable entity. The request body seems to be invalid as there was an error parsing it",
+      );
     }
-    if (contentType.includes("multipart/form-data")) {
-      return await this.#constructFormDataUsingBody();
-    }
-    if (contentType.includes("application/json")) {
-      return await this.json();
-    }
-    if (contentType.includes("application/x-www-form-urlencoded")) {
-      return await this.#constructFormDataUsingBody();
-    }
-    if (contentType.includes("text/plain")) {
-      return await this.text();
-    }
-    return await this.#constructFormDataUsingBody();
   }
 
   /**
