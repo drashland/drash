@@ -8,116 +8,118 @@ export class DrashResponse {
   public status = 200;
   public statusText = "OK";
 
-  /**
-   * Set a cookie on the response to be set when sent to the client
-   *
-   * @param cookie The cookie data
-   */
-  public setCookie(cookie: Cookie): void {
-    setCookie(this.headers, cookie);
-  }
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Delete a cookie for the response
+   * Delete a cookie for the response.
    *
-   * @param name The name of the cookie
-   * @param attributes Path and domain, can be used to pass the exact same attributes that were used to set the cookie
+   * @param name - The name of the cookie.
+   * @param attributes - Path and domain, can be used to pass the exact same
+   * attributes that were used to set the cookie.
    */
-  public delCookie(name: string, attributes?: {
-    path?: string;
-    domain: string;
-  }): void {
+  public deleteCookie(
+    name: string,
+    attributes?: {
+      domain: string;
+      path?: string;
+    }
+  ): void {
     deleteCookie(this.headers, name, attributes);
   }
 
   /**
-   * Used when the resource will respond with JSON. Sets the body
-   * and content type appropriately
+   * Set the body of this response as a downloaded type given the filepath,
+   * filename, and content type of the downloadable type.
    *
-   * @param json The object to assign to the body
-   */
-  // Because this means a user can do `const user: IUSer = ...; response.json(user)`, which isn't possible with Record<string, unknown>
-  // deno-lint-ignore ban-types
-  public json(json: object) {
-    this.body = JSON.stringify(json);
-    this.headers.set("content-type", "application/json");
-  }
-
-  /**
-   * Used when wanting to send plain text to the client
-   *
-   * @param text The text to assign to the body
-   */
-  // Because the user can pass whatever they want
-  // deno-lint-ignore no-explicit-any
-  public text(text: any) {
-    this.body = text;
-    this.headers.set("content-type", "text/plain");
-  }
-
-  /**
-   * Used to set a raw HTML string as the body, and sets the content type
-   * appropriately
-   *
-   * @param html The html string to set to the body
-   */
-  public html(html: string) {
-    this.body = html;
-    this.headers.set("content-type", "text/html");
-  }
-
-  /**
-   * Set the contents of a file by the filepath as the body.
-   * Sets the content type header appropriately
-   *
-   * @param path The path relative to your cwd
-   */
-  public file(path: string): void {
-    const ext = path.split(".").at(-1);
-    if (!ext) {
-      throw new Drash.Errors.HttpError(
-        415,
-        "`path` passed into response.file()` must contain a valid extension.",
-      );
-    }
-    const type = mimeTypes.get(ext);
-    if (!type) {
-      throw new Drash.Errors.HttpError(
-        500,
-        "Unable to retrieve content type for " + path +
-          ", please submit an issue.",
-      );
-    }
-    this.body = Deno.readTextFileSync(path);
-    this.headers.set("content-type", type);
-  }
-
-  /**
-   * Used to respond with XML. Sets the content type header appropriately
-   *
-   * @param xml The xml string to assign to the body
-   */
-  public xml(xml: string) {
-    this.body = xml;
-    this.headers.set("content-type", "text/xml");
-  }
-
-  /**
-   * Send a file to be downloaded to the client.
-   * Ends the request lifecycle
-   *
-   * @param path - The path of the file to download, relative to the cwd that executed the entrypoint script
-   * @param filename - The filename given when the file is downloaded
-   * @param contentType - The content type of the associated file
+   * @param filepath - The filepath of the file to download, relative to the CWD
+   * that executed the entrypoint script.
+   * @param contentType - The content type of the associated file.
    *
    * @example
    * ```js
-   * response.download("./images/user_1_profile_pic.png", "Profile Picture.png", "image/png")
+   * response.download(
+   *   "./images/user_1_profile_pic.png",
+   *   "image/png"
+   * );
+   * ```
    */
-  public download(path: string, filename: string, contentType: string) {
+  public download(
+    filepath: string,
+    contentType: string
+  ): void {
+    const filepathSplit = filepath.split("/");
+    const filename = filepathSplit[filepathSplit.length - 1];
     this.headers.set("Content-Disposition", `attachment; filename${filename}`);
     this.headers.set("Content-Type", contentType);
-    this.body = Deno.readFileSync(path);
+    this.body = Deno.readFileSync(filepath);
+  }
+
+  /**
+   * Set the body of this response as the contents of the given filepath. The
+   * Content-Type header will be set automatically based on the extension of the
+   * filepath.
+   *
+   * @param filepath - The filepath of the file to download, relative to the CWD
+   * that executed the entrypoint script.
+   */
+  public file(filepath: string): void {
+    // Get the extension of the file
+    const extension = filepath.split(".").at(-1);
+    if (!extension) {
+      throw new Drash.Errors.HttpError(
+        415,
+        "`filepath` passed into response.file()` must contain a valid extension.",
+      );
+    }
+
+    // Get the MIME type of the file
+    const type = mimeTypes.get(extension);
+    if (!type) {
+      throw new Drash.Errors.HttpError(
+        500,
+        "Unable to retrieve content type for " + filepath +
+          ", please submit an issue.",
+      );
+    }
+
+    this.body = Deno.readTextFileSync(filepath);
+    this.headers.set("Content-Type", type);
+  }
+
+  /**
+   * Set the body of this response as HTML.
+   *
+   * @param html - The HTML string to assign to the body.
+   */
+  public html(html: string): void {
+    this.body = html;
+    this.headers.set("Content-Type", "text/html");
+  }
+
+  /**
+   * Set the body of this response as JSON.
+   *
+   * @param json - The object to assign to the body.
+   */
+  // We ignore the following because this means a user can do
+  // `const user: IUSer = ...; response.json(user)`, which isn't possible with
+  // Record<string, unknown>
+  // deno-lint-ignore ban-types
+  public json(json: object) {
+    this.body = JSON.stringify(json);
+    this.headers.set("Content-Type", "application/json");
+  }
+
+  /**
+   * Set the body of this response as XML.
+   *
+   * @param xml - The XML string to assign to the body.
+   */
+  public xml(xml: string) {
+    this.body = xml;
+    this.headers.set("Content-Type", "text/xml");
   }
 
   /**
@@ -130,5 +132,35 @@ export class DrashResponse {
     ..._args: unknown[]
   ): Promise<boolean | string> | boolean | string {
     return false;
+  }
+
+  /**
+   * Set a cookie on the response to be handled by the client.
+   *
+   * @param cookie The cookie data.
+   */
+  public setCookie(cookie: Cookie): void {
+    setCookie(this.headers, cookie);
+  }
+
+  /**
+   * Set thie body of this response.
+   *
+   * @param contentType - The content type to use in the Content-Type header.
+   * @param body - The body of the response.
+   */
+  public send<T extends BodyInit>(contentType: string, body: T): void {
+    this.body = body;
+    this.headers.set("Content-Type", contentType);
+  }
+
+  /**
+   * Set the body of this response as text.
+   *
+   * @param text - The text to assign to the body.
+   */
+  public text(text: string) {
+    this.body = text;
+    this.headers.set("Content-Type", "text/plain");
   }
 }

@@ -9,7 +9,7 @@ class FilesResource extends Resource {
   paths = ["/files"];
 
   public POST(request: Request, response: Response) {
-    response.text(request.bodyParam("value_1") ?? null);
+    response.text(request.bodyParam("value_1") ?? "No body param was set.");
   }
 }
 

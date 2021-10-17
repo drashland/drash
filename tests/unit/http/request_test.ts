@@ -189,7 +189,7 @@ function bodyTests() {
       serverRequest,
       new Map(),
     );
-    Rhum.asserts.assertEquals(request.bodyParam("dontexist"), null);
+    Rhum.asserts.assertEquals(request.bodyParam("dontexist"), undefined);
   });
   Rhum.testCase(
     "Returns the value for the parameter when the data exists for application/json",
@@ -228,7 +228,7 @@ function bodyTests() {
         new Map(),
       );
       const actual = request.bodyParam("dont_exist");
-      Rhum.asserts.assertEquals(null, actual);
+      Rhum.asserts.assertEquals(undefined, actual);
     },
   );
 
@@ -382,7 +382,7 @@ function queryTests() {
         new Map(),
       );
       const actual = request.queryParam("dont_exist");
-      Rhum.asserts.assertEquals(null, actual);
+      Rhum.asserts.assertEquals(undefined, actual);
     },
   );
 }

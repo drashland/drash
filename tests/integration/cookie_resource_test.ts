@@ -20,7 +20,7 @@ class CookieResource extends Resource {
 
   public DELETE(_request: Request, response: Response) {
     response.text("DELETE request received!");
-    response.delCookie("testCookie");
+    response.deleteCookie("testCookie");
   }
 }
 

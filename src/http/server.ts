@@ -48,7 +48,7 @@ async function runServices(
     try {
       await Service[serviceMethod](request, response);
     } catch (e) {
-      if (!e) {
+      if (!err) {
         err = e;
       }
     }
@@ -107,7 +107,9 @@ export class Server {
       const resource = new resourceClass();
       const patterns: URLPattern[] = [];
       resource.paths.forEach((path) => {
-        patterns.push(new URLPattern({ pathname: path + "{/}?" })); // match possible trailing slashes too
+        // Add "{/}?" to match possible trailing slashes too
+        patterns.push(new URLPattern({ pathname: path + "{/}?" }));
+
       });
       this.#resources.set(this.#resources.size, {
         resource,
@@ -144,14 +146,16 @@ export class Server {
   }
 
   /**
-   * Start the server using the p
+   * Run the server.
    */
   public run() {
     const addr = `${this.#options.hostname}:${this.#options.port}`;
     this.#server = new StdServer({ addr, handler: this.#getHandler() });
+
     if (this.#options.protocol === "http") {
       this.#serverPromise = this.#server.listenAndServe();
     }
+
     if (this.#options.protocol === "https") {
       this.#serverPromise = this.#server.listenAndServeTls(
         this.#options.cert_file as string,
@@ -308,7 +312,7 @@ export class Server {
           if (accept.includes(contentType) === false) {
             throw new Drash.Errors.HttpError(
               406,
-              "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request",
+              "The requested resource is only capable of returning content that is not acceptable according to the request's Accept headers.",
             );
           }
         }
