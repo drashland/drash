@@ -48,7 +48,7 @@ async function runServices(
     try {
       await Service[serviceMethod](request, response);
     } catch (e) {
-      if (!e) {
+      if (!err) {
         err = e;
       }
     }
