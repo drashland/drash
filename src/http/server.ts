@@ -149,9 +149,11 @@ export class Server {
   public run() {
     const addr = `${this.#options.hostname}:${this.#options.port}`;
     this.#server = new StdServer({ addr, handler: this.#getHandler() });
+
     if (this.#options.protocol === "http") {
       this.#serverPromise = this.#server.listenAndServe();
     }
+
     if (this.#options.protocol === "https") {
       this.#serverPromise = this.#server.listenAndServeTls(
         this.#options.cert_file as string,
