@@ -24,7 +24,7 @@ export class DrashResponse {
     attributes?: {
       domain: string;
       path?: string;
-    }
+    },
   ): void {
     deleteCookie(this.headers, name, attributes);
   }
@@ -47,7 +47,7 @@ export class DrashResponse {
    */
   public download(
     filepath: string,
-    contentType: string
+    contentType: string,
   ): void {
     const filepathSplit = filepath.split("/");
     const filename = filepathSplit[filepathSplit.length - 1];

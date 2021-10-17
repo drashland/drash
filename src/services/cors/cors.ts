@@ -68,15 +68,15 @@ export class CorsService extends Service implements IService {
     if (Array.isArray(this.#config.exposeHeaders)) {
       this.#config.exposeHeaders = this.#config.exposeHeaders.join(",");
     }
-    this.#config.exposeHeaders = (this.#config.exposeHeaders as string); // To tell the tsc it is 100% a string now
+    this.#config.exposeHeaders = this.#config.exposeHeaders as string; // To tell the tsc it is 100% a string now
     if (Array.isArray(this.#config.allowMethods)) {
       this.#config.allowMethods = this.#config.allowMethods.join(",");
     }
-    this.#config.allowMethods = (this.#config.allowMethods as string); // To tell the tsc it is 100% a string now
+    this.#config.allowMethods = this.#config.allowMethods as string; // To tell the tsc it is 100% a string now
     if (Array.isArray(this.#config.allowHeaders)) {
       this.#config.allowHeaders = this.#config.allowHeaders.join(",");
     }
-    this.#config.allowHeaders = (this.#config.allowHeaders as string); // To tell the tsc it is 100% a string now
+    this.#config.allowHeaders = this.#config.allowHeaders as string; // To tell the tsc it is 100% a string now
 
     // Always set Vary header
     // https://github.com/rs/cors/issues/10
@@ -103,7 +103,7 @@ export class CorsService extends Service implements IService {
         ? requestOrigin
         : false;
     }
-    this.#config.origin = (this.#config.origin as string | boolean); // To tell the tsc it is 100% a string or boolean now
+    this.#config.origin = this.#config.origin as string | boolean; // To tell the tsc it is 100% a string or boolean now
 
     // If there is no Access-Control-Request-Method header or if parsing failed,
     // do not set any additional headers and terminate this set of steps.

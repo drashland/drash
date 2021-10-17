@@ -109,7 +109,6 @@ export class Server {
       resource.paths.forEach((path) => {
         // Add "{/}?" to match possible trailing slashes too
         patterns.push(new URLPattern({ pathname: path + "{/}?" }));
-
       });
       this.#resources.set(this.#resources.size, {
         resource,
