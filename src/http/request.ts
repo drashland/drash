@@ -5,10 +5,6 @@ export type ParsedBody =
   | undefined
   | string;
 
-function decodeValue(val: string) {
-  return decodeURIComponent(val.replace(/\+/g, " "));
-}
-
 type BodyFile = {
   content: unknown;
   size: number;
@@ -48,7 +44,7 @@ export class DrashRequest extends Request {
     // here because as it's async, we cant parse it on the fly as we dont
     // want users to have to use await when getting a body param
     if (req.body && req.bodyUsed === false) {
-      req.#parsed_body = await parseBody(req);
+      req.#parsed_body = await req.parseBody(req);
     }
     return req;
   }
@@ -116,7 +112,35 @@ export class DrashRequest extends Request {
   }
 
   /**
-   * Get a path parameter of the request
+   * Parse the request body.
+   *
+   * @param request - The request with the body.
+   *
+   * @returns A parsed body based on the content type of the request body.
+   */
+  public async parseBody(
+    request: Request,
+  ): Promise<ParsedBody> {
+    const contentType = request.headers.get(
+      "Content-Type",
+    );
+    if (!contentType) {
+      return await this.#constructFormDataUsingBody(request);
+    }
+    if (contentType.includes("multipart/form-data")) {
+      return await this.#constructFormDataUsingBody(request);
+    }
+    if (contentType.includes("application/json")) {
+      return await request.json();
+    }
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      return await this.#constructFormDataUsingBody(request);
+    }
+    if (contentType.includes("text/plain")) {
+      return await request.text();
+    }
+    return await this.#constructFormDataUsingBody(request);
+  }
    *
    * @example
    * ```js
@@ -135,7 +159,7 @@ export class DrashRequest extends Request {
     if (!param) {
       return undefined;
     }
-    return decodeValue(param);
+    return this.#decodeValue(param);
   }
 
   /**
@@ -160,70 +184,69 @@ export class DrashRequest extends Request {
     if (!param) {
       return null;
     }
-    return decodeValue(param);
+    return this.#decodeValue(param);
   }
-}
 
-async function constructFormDataUsingBody(
-  request: Request,
-): Promise<ParsedBody> {
-  const formData = await request.formData();
-  const formDataJSON: ParsedBody = {};
-  for (const [key, value] of formData.entries()) {
-    if (value instanceof File) {
-      const reader = new FileReader();
-      const p = deferred();
-      reader.readAsText(value);
-      reader.onload = () => {
-        p.resolve(reader.result);
-      };
-      const content = await p;
-      if (key.endsWith("[]")) {
-        const name = key.slice(0, -2);
-        if (!formDataJSON[name]) {
-          formDataJSON[name] = [];
-        }
-        (formDataJSON[name] as BodyFile[]).push({
-          size: value.size,
-          type: value.type,
-          content,
-          filename: value.name,
-        });
-      } else {
-        formDataJSON[key] = {
-          size: value.size,
-          type: value.type,
-          content,
-          filename: value.name,
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Construct the form data of a request body.
+   *
+   * @param request - The request with the form data body.
+   *
+   * @returns The form data body as a key-value pair object.
+   */
+  async #constructFormDataUsingBody(
+    request: Request,
+  ): Promise<ParsedBody> {
+    const formData = await request.formData();
+    const formDataJSON: ParsedBody = {};
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        const reader = new FileReader();
+        const p = deferred();
+        reader.readAsText(value);
+        reader.onload = () => {
+          p.resolve(reader.result);
         };
+        const content = await p;
+        if (key.endsWith("[]")) {
+          const name = key.slice(0, -2);
+          if (!formDataJSON[name]) {
+            formDataJSON[name] = [];
+          }
+          (formDataJSON[name] as BodyFile[]).push({
+            size: value.size,
+            type: value.type,
+            content,
+            filename: value.name,
+          });
+        } else {
+          formDataJSON[key] = {
+            size: value.size,
+            type: value.type,
+            content,
+            filename: value.name,
+          };
+        }
+        continue;
       }
-      continue;
+      formDataJSON[key] = value as string;
     }
-    formDataJSON[key] = value as string;
+    return formDataJSON;
   }
-  return formDataJSON;
-}
 
-async function parseBody(
-  request: Request,
-): Promise<ParsedBody> {
-  const contentType = request.headers.get(
-    "Content-Type",
-  );
-  if (!contentType) {
-    return await constructFormDataUsingBody(request);
+  /**
+   * Decode a URI component -- netrualizing the string by replacing characters
+   * not required.
+   *
+   * @param value - The string to decode.
+   *
+   * @returns The neutralized string.
+   */
+  #decodeValue(value: string): string {
+    return decodeURIComponent(value.replace(/\+/g, " "));
   }
-  if (contentType.includes("multipart/form-data")) {
-    return await constructFormDataUsingBody(request);
-  }
-  if (contentType.includes("application/json")) {
-    return await request.json();
-  }
-  if (contentType.includes("application/x-www-form-urlencoded")) {
-    return await constructFormDataUsingBody(request);
-  }
-  if (contentType.includes("text/plain")) {
-    return await request.text();
-  }
-  return await constructFormDataUsingBody(request);
 }
