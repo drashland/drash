@@ -64,7 +64,7 @@ export class DrashRequest extends Request {
     // body on the fly as we dont want users to have to use await when getting a
     // body param.
     if (req.body && req.bodyUsed === false) {
-      req.#parsed_body = await req.parseBody();
+      req.#parsed_body = await req.#parseBody();
     }
     return req;
   }
@@ -136,7 +136,7 @@ export class DrashRequest extends Request {
    *
    * @returns A parsed body based on the content type of the request body.
    */
-  public async parseBody(): Promise<ParsedBody> {
+  async #parseBody(): Promise<ParsedBody> {
     const contentType = this.headers.get(
       "Content-Type",
     );
