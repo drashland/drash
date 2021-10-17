@@ -138,4 +138,14 @@ export class DrashResponse {
   public setCookie(cookie: Cookie): void {
     setCookie(this.headers, cookie);
   }
+  /**
+   * Set thie body of this response.
+   *
+   * @param contentType - The content type to use in the Content-Type header.
+   * @param body - The body of the response.
+   */
+  public send<T extends BodyInit>(contentType: string, body: T): void {
+    this.body = body;
+    this.headers.set("Content-Type", contentType);
+  }
 }
