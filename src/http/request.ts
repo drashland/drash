@@ -25,8 +25,16 @@ export class DrashRequest extends Request {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
+   * Construct an object of this class.
+   *
+   * This class is just a wrapper around the native Request object. The only
+   * reason we wrap around the native Request object is so we can add more
+   * methods to interact with the native Request object (e.g., req.bodyParam()).
+   *
    * @param originalRequest - The original request coming in from
    * `Server.listenForRequests()`.
+   * @param pathParams - The path params to match the request's URL to. The path
+   * params come from a resource's path(s).
    */
   constructor(
     originalRequest: Request,
@@ -36,13 +44,25 @@ export class DrashRequest extends Request {
     this.#path_params = pathParams;
   }
 
+  /**
+   * Create a Drash request object. We use this method to create request objects
+   * because we need to use `async-await` and cannot use them in constructor
+   * methods. This is the only reason for this abstraction.
+   *
+   * @param request - The original request.
+   * @param pathParams - The path params to match the request's URL to. The path
+   * params come from a resource's path(s).
+   *
+   * @returns A Drash request object.
+   */
   static async create(
     request: Request,
     pathParms: Map<string, string>,
   ) {
     const req = new DrashRequest(request, pathParms);
-    // here because as it's async, we cant parse it on the fly as we dont
-    // want users to have to use await when getting a body param
+    // This is here because `parseBody` is async. We can't parse the request
+    // body on the fly as we dont want users to have to use await when getting a
+    // body param.
     if (req.body && req.bodyUsed === false) {
       req.#parsed_body = await req.parseBody(req);
     }
@@ -102,7 +122,7 @@ export class DrashRequest extends Request {
    *
    * @param name The body parameter name
    *
-   * @returns The value of the parameter, or null if not found
+   * @returns The value of the parameter if found, or undefined if not found.
    */
   public bodyParam<T>(name: string): T | undefined {
     if (typeof this.#parsed_body !== "object") {
@@ -141,18 +161,22 @@ export class DrashRequest extends Request {
     }
     return await this.#constructFormDataUsingBody(request);
   }
+
+  /**
+   * Get a path parameter from the request based on the request's URL and the
+   * resource path it matched to.
    *
    * @example
    * ```js
-   * // Assume a path for your resource is "/users/:id/:city?", and the request is
-   * // "/users/2/"
-   * const id = this.paramParam("id") // 2
-   * const city = this.queryParam("city") // undefined
+   * // Assume a path for your resource is "/users/:id/:city?", and the request
+   * // is "/users/2/".
+   * const id = this.paramParam("id") // Returns 2
+   * const city = this.queryParam("city") // Returns undefined
    * ```
    *
-   * @param name The parameter name, as set in your paths
+   * @param name - The parameter name in the resource path.
    *
-   * @returns The value for the parameter, or null if not set
+   * @returns The value for the parameter if found, or undefined if not set.
    */
   public pathParam(name: string): string | undefined {
     const param = this.#path_params.get(name);
@@ -163,18 +187,18 @@ export class DrashRequest extends Request {
   }
 
   /**
-   * Find a query string parameter
+   * Find a query string parameter.
    *
    * @example
    * ```js
    * // Assume url is "http://localhost:1336/users?city=London&country=England"
-   * const city = this.queryParam("city") // "London"
-   * const country = this.queryParam("country") // "England"
+   * const city = this.queryParam("city") // Returns "London"
+   * const country = this.queryParam("country") // Returns "England"
    * ```
    *
-   * @param name The name of the query string
+   * @param name - The name of the query string.
    *
-   * @returns The value if found, or null if not
+   * @returns The value of the param if found, or undefined if not.
    */
   public queryParam(name: string): string | undefined {
     if (!this.#search_params) {
