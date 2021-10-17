@@ -79,6 +79,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
       server.run();
 
       let response;
+      const currentDir = Deno.cwd();
       Deno.chdir("./tests/integration");
       response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/users",
@@ -160,6 +161,10 @@ Rhum.testPlan("users_resource_test.ts", () => {
         true,
       );
 
+      // Change back to what the current working directory was so that other
+      // tests that try to open files use the current working directory and
+      // not "./tests/integration".
+      Deno.chdir(currentDir);
       await server.close();
     });
   });

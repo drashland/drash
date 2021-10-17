@@ -51,7 +51,8 @@ Deno.test("json()", () => {
 
 Deno.test("file()", () => {
   const response = new Drash.Response();
-  response.file("./tests/data/index.html");
+  const filepath = Deno.cwd() + "/tests/data/index.html";
+  response.file(filepath);
   assertEquals(
     (response.body as string).startsWith(
       `This is the index.html file for testing pretty links`,
