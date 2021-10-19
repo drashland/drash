@@ -11,4 +11,21 @@ import * as Drash from "../../mod.ts";
 export class Resource implements Drash.Interfaces.IResource {
   public services: Drash.Interfaces.IResourceServices = {};
   public paths: string[] = [];
+
+  /**
+   * Redirect the incoming request to another resource
+   *
+   * @example
+   * ```js
+   * this.redirect("http://localhost/login", response);
+   * return;
+   * ```
+   *
+   * @param location - The location or resource uri of where you want to redirect the request to
+   * @param response - The response object, to set the related headers and status code on
+   */
+  public redirect(location: string, response: Drash.Response): void {
+    response.headers.set("Location", location);
+    response.status = 302;
+  }
 }
