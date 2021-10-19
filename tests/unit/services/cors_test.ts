@@ -6,9 +6,9 @@ import {
   Response,
   Server,
 } from "../../../mod.ts";
-import { CorsService } from "../../../src/services/cors/cors.ts";
+import { CORSService } from "../../../src/services/cors/cors.ts";
 
-class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
+class FailedOptionCORSMiddlewareResource extends Resource implements IResource {
   paths = ["/cors"];
   public GET(_request: Request, response: Response) {
     response.text("GET request received!");
@@ -20,12 +20,12 @@ class FailedOptionCorsMiddlewareResource extends Resource implements IResource {
 
 function runServer(allowAll = true): Server {
   const cors = allowAll
-    ? new CorsService()
-    : new CorsService({ origin: "localhost" });
+    ? new CORSService()
+    : new CORSService({ origin: "localhost" });
   const server = new Server({
     services: [cors],
     resources: [
-      FailedOptionCorsMiddlewareResource,
+      FailedOptionCORSMiddlewareResource,
     ],
     port: 1447,
     hostname: "127.0.0.1",
@@ -144,7 +144,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       },
     );
     Rhum.testCase(
-      "Realworld example - Cors not enabled for request",
+      "Realworld example - CORS not enabled for request",
       async () => {
         // Failed request - access control header is not present
         const server = runServer(false);
@@ -164,7 +164,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       },
     );
     Rhum.testCase(
-      "Realworld example - Cors enabled for a single origin",
+      "Realworld example - CORS enabled for a single origin",
       async () => {
         // Successful request - access control header is present and the value of the origin
         const server = runServer(false);
@@ -184,7 +184,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
       },
     );
     Rhum.testCase(
-      "Realworld example - Cors enabled for every origin",
+      "Realworld example - CORS enabled for every origin",
       async () => {
         // Another successful request, but the origin allows anything
         const server = runServer(true);
