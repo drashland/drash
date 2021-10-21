@@ -4,7 +4,7 @@ import { vary } from "./deps.ts";
 type ValueOrArray<T> = T | Array<ValueOrArray<T>>;
 type OriginOption = ValueOrArray<string | boolean | RegExp>;
 
-type CorsMiddlewareConfig = {
+type CORSMiddlewareConfig = {
   origin?: OriginOption;
   credentials?: boolean;
   exposeHeaders?: string | string[];
@@ -40,8 +40,8 @@ const isOriginAllowed = (reqOrigin: string, origin: OriginOption): boolean => {
   }
 };
 
-export class CorsService extends Service implements IService {
-  #config: CorsMiddlewareConfig;
+export class CORSService extends Service implements IService {
+  #config: CORSMiddlewareConfig;
 
   constructor({
     origin = "*",
@@ -51,7 +51,7 @@ export class CorsService extends Service implements IService {
     allowHeaders,
     maxAge,
     preflight = true,
-  }: CorsMiddlewareConfig = {}) {
+  }: CORSMiddlewareConfig = {}) {
     super();
     this.#config = {
       origin,
