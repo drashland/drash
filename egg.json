@@ -3,7 +3,7 @@
   "description": "A REST microframework for Deno's HTTP server with zero dependencies.",
   "version": "1.5.1",
   "stable": true,
-  "repository": "https://github.com/drashland/deno-drash",
+  "repository": "https://github.com/drashland/drash",
   "files": [
     "./mod.ts",
     "./deps.ts",
@@ -17,6 +17,6 @@
   "unlisted": false,
   "checkTests": false,
   "check": true,
-  "homepage": "https://github.com/drashland/deno-drash",
+  "homepage": "https://github.com/drashland/drash",
   "ignore": []
 }
