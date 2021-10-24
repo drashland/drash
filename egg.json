@@ -1,5 +1,5 @@
 {
-  "name": "deno-drash",
+  "name": "drash",
   "description": "A REST microframework for Deno's HTTP server with zero dependencies.",
   "version": "1.5.1",
   "stable": true,
