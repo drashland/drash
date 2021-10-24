@@ -10,6 +10,6 @@
 
 Drash is a microframework for <a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero third-party depdencies.
 
-* [View Full Documentation](https://drash.land/drash)
-* [Join Discord](https://discord.gg/RFsCSaHRWK)
-* [Contribute](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md)
+- [View Full Documentation](https://drash.land/drash)
+- [Join Discord](https://discord.gg/RFsCSaHRWK)
+- [Contribute](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md)
