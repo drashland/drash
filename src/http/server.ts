@@ -163,16 +163,6 @@ export class Server {
     }
   }
 
-  public runDeploy() {
-    addEventListener("fetch", async (event) => {
-      const evt = event as unknown as {
-        request: Request;
-        respondWith: (request: Response | Promise<Response>) => Promise<void>;
-      };
-      await this.#getHandler()(evt.request);
-    });
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
