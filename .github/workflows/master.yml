@@ -25,7 +25,7 @@ jobs:
 
       - name: Integration Tests
         run: |
-          deno test -A tests/integration
+          deno test -A --unsafely-ignore-certificate-errors tests/integration
 
       - name: Unit Tests
         run: deno test -A tests/unit
