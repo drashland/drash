@@ -22,14 +22,14 @@ version-resolver:
     labels:
       - 'Type: Patch'
       - 'Type: Chore' # allow our chore PR's to just be patches too
-  default: patch
+  default: 'Type: Patch'
 
 # What our release will look like. If no draft has been created, then this will be used, otherwise $CHANGES just gets addedd
 template: |
   ## Compatibility
 
-  Requires Deno 1.15.3
-  Uses Deno Standard Modules 0.113.0
+  Requires Deno v<version>
+  Uses Deno Standard Modules <version>
 
   ## Documentation
 
