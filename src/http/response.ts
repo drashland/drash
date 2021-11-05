@@ -7,6 +7,8 @@ export class DrashResponse {
   public headers: Headers = new Headers();
   public status = 200;
   public statusText = "OK";
+  public upgraded = false;
+  public upgraded_response: Response|null = null;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
@@ -162,5 +164,16 @@ export class DrashResponse {
   public text(text: string) {
     this.body = text;
     this.headers.set("Content-Type", "text/plain");
+  }
+
+  /**
+   * Upgrade the response.
+   *
+   * @param response - The upgraded response (e.g. a WebSocket connection
+   * response via Deno.upgradeWebSocket()).
+   */
+  public upgrade(response: Response): void {
+    this.upgraded = true;
+    this.upgraded_response = response;
   }
 }
