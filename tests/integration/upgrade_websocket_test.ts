@@ -54,6 +54,7 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
     globalResolve = resolve;
     socket.onopen = () => {
       socket.send("this is a message from the client");
+      // Close the connection so that this test doesn't leak async ops
       socket.close();
     };
   });
