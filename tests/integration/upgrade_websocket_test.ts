@@ -63,5 +63,4 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
     "this is a message from the client",
   );
   await server.close();
-
 });
