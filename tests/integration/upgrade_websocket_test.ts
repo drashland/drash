@@ -17,12 +17,7 @@ class HomeResource extends Resource {
       response: upgradedResponse,
     } = Deno.upgradeWebSocket(request);
 
-    socket.onopen = () => {
-      console.log("server connected");
-    };
-
     socket.onmessage = (message) => {
-      console.log(`message`, message.data);
       messages.push(message.data);
       if (globalResolve) {
         globalResolve(messages);
