@@ -8,7 +8,7 @@ export class DrashResponse {
   public status = 200;
   public statusText = "OK";
   public upgraded = false;
-  public upgraded_response: Response|null = null;
+  public upgraded_response: Response | null = null;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
