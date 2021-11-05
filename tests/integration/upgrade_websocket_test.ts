@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { Rhum } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 const messages: MessageEvent[] = [];
@@ -46,7 +46,7 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
 
   const socket = new WebSocket("ws://localhost:3000");
 
-  const p = new Promise((resolve, reject) => {
+  const p = new Promise((resolve, _reject) => {
     // We pass the `resolve` function to the `r` variable so that the
     // `socket.onmessage()` call in the `GET()` method in the resource can use
     // it to resolve. This makes the `Promise` truly wait until the `messages`
