@@ -46,23 +46,22 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
 
   const socket = new WebSocket("ws://localhost:3000");
 
-  const p = new Promise((resolve, _reject) => {
-    // We pass the `resolve` function to the `r` variable so that the
-    // `socket.onmessage()` call in the `GET()` method in the resource can use
-    // it to resolve. This makes the `Promise` truly wait until the `messages`
-    // array has the message that was sent from the client.
+  const hydratedMessages = await new Promise((resolve, _reject) => {
+    // We pass the `resolve` function to the `globalResolve` variable so that
+    // the `socket.onmessage()` call in the `GET()` method in the resource can
+    // use it to resolve the `Promise`. This makes the `Promise` truly wait
+    // until the `messages` array has the message that was sent from the client.
     globalResolve = resolve;
     socket.onopen = () => {
       socket.send("this is a message from the client");
+      socket.close();
     };
   });
 
-  p.then((messages) => {
-    Rhum.asserts.assertEquals(
-      (messages as MessageEvent[])[0],
-      "this is a message from the client",
-    );
-  });
-
+  Rhum.asserts.assertEquals(
+    (hydratedMessages as MessageEvent[])[0],
+    "this is a message from the client",
+  );
   await server.close();
+
 });
