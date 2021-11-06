@@ -170,7 +170,7 @@ export class Server {
   #getHandler(): (r: Request) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    return async function (originalRequest: Request) {
+    return async function (originalRequest: Request): Promise<Response> {
       try {
         // If a service wants to respond early, then allow it but dont run the resource method and still
         // allow services to run eg csrf, paladin
@@ -308,6 +308,10 @@ export class Server {
 
         if (serviceError) {
           throw serviceError;
+        }
+
+        if (response.upgraded && response.upgraded_response) {
+          return response.upgraded_response;
         }
 
         return new Response(response.body, {
