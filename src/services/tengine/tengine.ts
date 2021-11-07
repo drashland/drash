@@ -18,7 +18,7 @@ export class TengineService extends Service implements IService {
     this.#options = options;
   }
 
-  runAfterResource(_request: Request, response: Response) {
+  runBeforeResource(_request: Request, response: Response) {
     response.headers.set("Content-Type", "text/html");
 
     if (this.#options.views_path) {
