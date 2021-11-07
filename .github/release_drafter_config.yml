@@ -22,7 +22,7 @@ version-resolver:
     labels:
       - 'Type: Patch'
       - 'Type: Chore' # allow our chore PR's to just be patches too
-  default: 'Type: Patch'
+  default: 'patch'
 
 # What our release will look like. If no draft has been created, then this will be used, otherwise $CHANGES just gets addedd
 template: |
