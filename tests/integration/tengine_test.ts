@@ -53,7 +53,7 @@ Rhum.testPlan("tengine_test.ts", () => {
       const res = await fetch(`${server.address}/tengine`);
       await server.close();
       Rhum.asserts.assertEquals(res.headers.get("content-type"), "text/html");
-      Rhum.asserts.assertEquals(await res.text(), "Gday");
+      Rhum.asserts.assertEquals(await res.text(), "Gday ");
     });
   });
 });
