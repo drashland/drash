@@ -2,6 +2,13 @@ import { IService, Request, Response, Service } from "../../../mod.ts";
 import { createHash } from "./deps.ts";
 
 export class EtagService extends Service implements IService {
+  #options: { weak: boolean };
+
+  constructor(options: { weak: boolean } = { weak: false }) {
+    super();
+    this.#options = options;
+  }
+
   runAfterResource(_request: Request, response: Response) {
     if (
       response.body === null ||
@@ -16,6 +23,10 @@ export class EtagService extends Service implements IService {
     const hash = createHash("sha1").update(body, "utf8").digest("base64")
       .toString().substring(0, 27);
     const len = body.byteLength;
-    response.headers.set("etag", `"${len.toString(16)}-${hash}"`);
+    let header = `"${len.toString(16)}-${hash}"`;
+    if (this.#options.weak === true) {
+      header = "W/" + header;
+    }
+    response.headers.set("Etag", header);
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import { Rhum } from "../deps.ts";
-import { Request, Resource, Response, Server } from "../../mod.ts";
+import { Interfaces, Request, Resource, Response, Server } from "../../mod.ts";
 import { EtagService } from "../../src/services/etag/etag.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,34 +22,56 @@ class EtagResource extends Resource {
   }
 }
 
-const server = new Server({
+const configs: Interfaces.IServerOptions = {
   resources: [
     EtagResource,
   ],
   protocol: "http",
   hostname: "localhost",
   port: 3000,
+};
+
+const strongServer = new Server({
+  ...configs,
   services: [new EtagService()],
+});
+
+const weakServer = new Server({
+  ...configs,
+  services: [new EtagService({ weak: true })],
 });
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("browser_request_resource.ts", () => {
-  Rhum.testSuite("GET /browser-request", () => {
-    Rhum.testCase("Response should be JSON", async () => {
-      server.run();
+Rhum.testPlan("etag_test.ts", () => {
+  Rhum.testSuite("GET /etag", () => {
+    Rhum.testCase("Should set the header and default to strong", async () => {
+      strongServer.run();
       // Example browser request
       const response = await fetch(
-        `${server.address}/etag`,
+        `${strongServer.address}/etag`,
       );
-      await server.close();
+      await strongServer.close();
       Rhum.asserts.assertEquals(await response.text(), "hello");
       const header = response.headers.get("etag") ?? "";
-      console.log(header);
       Rhum.asserts.assert(header.match(/\"\d-.*\"/));
     });
+    Rhum.testCase(
+      "Should set the header and be weak if specified",
+      async () => {
+        weakServer.run();
+        // Example browser request
+        const response = await fetch(
+          `${weakServer.address}/etag`,
+        );
+        await weakServer.close();
+        Rhum.asserts.assertEquals(await response.text(), "hello");
+        const header = response.headers.get("etag") ?? "";
+        Rhum.asserts.assert(header.match(/W\/\"\d-.*\"/));
+      },
+    );
   });
 });
 
