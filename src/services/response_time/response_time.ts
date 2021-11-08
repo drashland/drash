@@ -5,10 +5,6 @@ export class ResponseTimeService extends Service implements IService {
 
   #endTime = 0;
 
-  constructor() {
-    super();
-  }
-
   runBeforeResource() {
     this.#startTime = new Date().getTime();
   }
