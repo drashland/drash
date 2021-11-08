@@ -1,5 +1,5 @@
 import * as Drash from "../../mod.ts";
-import { StdServer } from "../../deps.ts";
+import { ConnInfo, StdServer } from "../../deps.ts";
 
 interface ResourceAndParams {
   resource: Drash.Resource;
@@ -42,11 +42,12 @@ async function runServices(
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
+  connInfo: ConnInfo,
 ): Promise<Error | null> {
   let err: Error | null = null;
   for (const Service of Services) {
     try {
-      await Service[serviceMethod](request, response);
+      await Service[serviceMethod](request, response, connInfo);
     } catch (e) {
       if (!err) {
         err = e;
@@ -167,31 +168,33 @@ export class Server {
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  #getHandler(): (r: Request) => Promise<Response> {
+  #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    return async function (originalRequest: Request): Promise<Response> {
+    return async function (
+      originalRequest: Request,
+      connInfo: ConnInfo,
+    ): Promise<Response> {
+      // Grab resource and path params
+      const resourceAndParams = getResourceAndParams(
+        originalRequest.url,
+        resources,
+      ) ?? {
+        resource: null,
+        pathParams: new Map(),
+      };
+      const { resource, pathParams } = resourceAndParams;
+
+      // Construct request and response objects to pass to services and resource
+      const request = await Drash.Request.create(
+        originalRequest,
+        pathParams,
+      );
+      const response = new Drash.Response();
       try {
         // If a service wants to respond early, then allow it but dont run the resource method and still
         // allow services to run eg csrf, paladin
         let serviceError: Error | null = null;
-
-        // Grab resource and path params
-        const resourceAndParams = getResourceAndParams(
-          originalRequest.url,
-          resources,
-        ) ?? {
-          resource: null,
-          pathParams: new Map(),
-        };
-        const { resource, pathParams } = resourceAndParams;
-
-        // Construct request and response objects to pass to services and resource
-        const request = await Drash.Request.create(
-          originalRequest,
-          pathParams,
-        );
-        const response = new Drash.Response();
 
         // Server level services, run before resource
         const serverBeforeServicesError = await runServices(
@@ -199,6 +202,7 @@ export class Server {
           request,
           response,
           "runBeforeResource",
+          connInfo,
         );
         if (serverBeforeServicesError) {
           serviceError = serverBeforeServicesError;
@@ -212,6 +216,7 @@ export class Server {
             request,
             response,
             "runAfterResource",
+            connInfo,
           );
           throw new Drash.Errors.HttpError(404);
         }
@@ -226,6 +231,7 @@ export class Server {
             request,
             response,
             "runAfterResource",
+            connInfo,
           );
           throw new Drash.Errors.HttpError(405);
         }
@@ -238,6 +244,7 @@ export class Server {
           request,
           response,
           "runBeforeResource",
+          connInfo,
         );
         if (classBeforeServicesError && !serviceError) {
           serviceError = classBeforeServicesError;
@@ -249,6 +256,7 @@ export class Server {
           request,
           response,
           "runBeforeResource",
+          connInfo,
         );
         if (resourceBeforeServicesError && !serviceError) {
           serviceError = resourceBeforeServicesError;
@@ -268,6 +276,7 @@ export class Server {
           request,
           response,
           "runAfterResource",
+          connInfo,
         );
         if (resourceAfterServicesError && !serviceError) {
           serviceError = resourceAfterServicesError;
@@ -279,6 +288,7 @@ export class Server {
           request,
           response,
           "runAfterResource",
+          connInfo,
         );
         if (classAfterServicesError && !serviceError) {
           serviceError = classAfterServicesError;
@@ -290,6 +300,7 @@ export class Server {
           request,
           response,
           "runAfterResource",
+          connInfo,
         );
         if (serverAfterServicesError && !serviceError) {
           serviceError = serverAfterServicesError;
@@ -322,6 +333,7 @@ export class Server {
       } catch (e) {
         return new Response(e.stack, {
           status: e.code,
+          headers: response.headers,
         });
       }
     };
