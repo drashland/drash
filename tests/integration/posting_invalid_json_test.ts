@@ -48,7 +48,6 @@ Rhum.testPlan("posting_invlaid_json_test.ts", () => {
           body: '{"name": "ed"}},,',
         },
       );
-      console.log(response);
       await server.close();
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith(
