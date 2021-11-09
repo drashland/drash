@@ -1,5 +1,5 @@
 import * as Drash from "../../mod.ts";
-import { StdServer } from "../../deps.ts";
+import { ConnInfo, StdServer } from "../../deps.ts";
 
 interface ResourceAndParams {
   resource: Drash.Resource;
@@ -167,31 +167,36 @@ export class Server {
   // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  #getHandler(): (r: Request) => Promise<Response> {
+  #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    return async function (originalRequest: Request): Promise<Response> {
+    return async function (
+      originalRequest: Request,
+      connInfo: ConnInfo,
+    ): Promise<Response> {
+      // Grab resource and path params
+      const resourceAndParams = getResourceAndParams(
+        originalRequest.url,
+        resources,
+      ) ?? {
+        resource: null,
+        pathParams: new Map(),
+      };
+      const { resource, pathParams } = resourceAndParams;
+
+      // Construct request and response objects to pass to services and resource
+      // Keep response top level so we can reuse the headers should an error be thrown
+      // in the try
+      const response = new Drash.Response();
       try {
-        // If a service wants to respond early, then allow it but dont run the resource method and still
-        // allow services to run eg csrf, paladin
-        let serviceError: Error | null = null;
-
-        // Grab resource and path params
-        const resourceAndParams = getResourceAndParams(
-          originalRequest.url,
-          resources,
-        ) ?? {
-          resource: null,
-          pathParams: new Map(),
-        };
-        const { resource, pathParams } = resourceAndParams;
-
-        // Construct request and response objects to pass to services and resource
         const request = await Drash.Request.create(
           originalRequest,
           pathParams,
+          connInfo,
         );
-        const response = new Drash.Response();
+        // If a service wants to respond early, then allow it but dont run the resource method and still
+        // allow services to run eg csrf, paladin
+        let serviceError: Error | null = null;
 
         // Server level services, run before resource
         const serverBeforeServicesError = await runServices(
@@ -322,6 +327,7 @@ export class Server {
       } catch (e) {
         return new Response(e.stack, {
           status: e.code,
+          headers: response.headers,
         });
       }
     };

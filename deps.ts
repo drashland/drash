@@ -14,4 +14,7 @@ export type { Cookie } from "https://deno.land/std@0.113.0/http/cookie.ts";
 
 export { deferred } from "https://deno.land/std@0.113.0/async/deferred.ts";
 
-export { Server as StdServer } from "https://deno.land/std@0.113.0/http/server.ts";
+export {
+  Server as StdServer,
+} from "https://deno.land/std@0.113.0/http/server.ts";
+export type { ConnInfo } from "https://deno.land/std@0.113.0/http/server.ts";

@@ -1,5 +1,19 @@
 import { Rhum } from "../../deps.ts";
 import * as Drash from "../../../mod.ts";
+import type { ConnInfo } from "../../../deps.ts";
+
+const connInfo: ConnInfo = {
+  localAddr: {
+    transport: "tcp",
+    hostname: "localhost",
+    port: 1337,
+  },
+  remoteAddr: {
+    transport: "udp",
+    hostname: "localhost",
+    port: 1337,
+  },
+};
 
 Rhum.testPlan("http/request_test.ts", () => {
   Rhum.testSuite("accepts()", () => {
@@ -41,6 +55,7 @@ function acceptsTests() {
       const request = new Drash.Request(
         req,
         new Map(),
+        connInfo,
       );
       let actual;
       actual = request.accepts("application/json");
@@ -60,6 +75,7 @@ function acceptsTests() {
       const request = new Drash.Request(
         req,
         new Map(),
+        connInfo,
       );
       const actual = request.accepts("text/xml");
       Rhum.asserts.assertEquals(actual, false);
@@ -79,6 +95,7 @@ function getCookieTests() {
     const request = new Drash.Request(
       req,
       new Map(),
+      connInfo,
     );
     const cookieValue = request.getCookie("test_cookie");
     Rhum.asserts.assertEquals(cookieValue, "test_cookie_value");
@@ -94,6 +111,7 @@ function getCookieTests() {
     const request = new Drash.Request(
       req,
       new Map(),
+      connInfo,
     );
     const cookieValue = request.getCookie("cookie_doesnt_exist");
     Rhum.asserts.assertEquals(cookieValue, undefined);
@@ -118,6 +136,7 @@ function bodyTests() {
     const request = await Drash.Request.create(
       serverRequest,
       new Map(),
+      connInfo,
     );
     Rhum.asserts.assertEquals(request.bodyParam("foo"), [
       {
@@ -149,6 +168,7 @@ function bodyTests() {
     const request = await Drash.Request.create(
       serverRequest,
       new Map(),
+      connInfo,
     );
     Rhum.asserts.assertEquals(request.bodyParam("foo"), {
       content: '{\n  "hello": "world"\n}',
@@ -170,6 +190,7 @@ function bodyTests() {
       const request = await Drash.Request.create(
         req,
         new Map(),
+        connInfo,
       );
       Rhum.asserts.assertEquals(request.bodyParam("user"), "Drash");
     },
@@ -188,6 +209,7 @@ function bodyTests() {
     const request = await Drash.Request.create(
       serverRequest,
       new Map(),
+      connInfo,
     );
     Rhum.asserts.assertEquals(request.bodyParam("dontexist"), undefined);
   });
@@ -206,6 +228,7 @@ function bodyTests() {
       const request = await Drash.Request.create(
         req,
         new Map(),
+        connInfo,
       );
       const actual = request.bodyParam("hello");
       Rhum.asserts.assertEquals("world", actual);
@@ -226,6 +249,7 @@ function bodyTests() {
       const request = await Drash.Request.create(
         serverRequest,
         new Map(),
+        connInfo,
       );
       const actual = request.bodyParam("dont_exist");
       Rhum.asserts.assertEquals(undefined, actual);
@@ -248,6 +272,7 @@ function bodyTests() {
       const request = await Drash.Request.create(
         serverRequest,
         new Map(),
+        connInfo,
       );
       const param = request.bodyParam<{
         content: string;
@@ -276,6 +301,7 @@ function bodyTests() {
     const request = await Drash.Request.create(
       serverRequest,
       new Map(),
+      connInfo,
     );
     const actual = request.bodyParam<{
       name: string;
@@ -301,6 +327,7 @@ function bodyTests() {
     const request = await Drash.Request.create(
       serverRequest,
       new Map(),
+      connInfo,
     );
     const actual = request.bodyParam("usernames");
     Rhum.asserts.assertEquals(
@@ -323,6 +350,7 @@ function bodyTests() {
     const request = await Drash.Request.create(
       serverRequest,
       new Map(),
+      connInfo,
     );
     const actual = request.bodyParam("authenticated");
     Rhum.asserts.assertEquals(actual, false);
@@ -339,6 +367,7 @@ function paramTests() {
       const request = new Drash.Request(
         serverRequest,
         new Map().set("hello", "world"),
+        connInfo,
       );
       const actual = request.pathParam("hello");
       Rhum.asserts.assertEquals("world", actual);
@@ -352,6 +381,7 @@ function paramTests() {
       const request = new Drash.Request(
         serverRequest,
         new Map().set("hello", "world"),
+        connInfo,
       );
       const actual = request.pathParam("dont-exist");
       Rhum.asserts.assertEquals(actual, undefined);
@@ -367,6 +397,7 @@ function queryTests() {
       const request = new Drash.Request(
         serverRequest,
         new Map(),
+        connInfo,
       );
       const actual = request.queryParam("hello");
       Rhum.asserts.assertEquals(actual, "world");
@@ -380,6 +411,7 @@ function queryTests() {
       const request = new Drash.Request(
         serverRequest,
         new Map(),
+        connInfo,
       );
       const actual = request.queryParam("dont_exist");
       Rhum.asserts.assertEquals(undefined, actual);
