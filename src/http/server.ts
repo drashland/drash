@@ -188,6 +188,7 @@ export class Server {
       const request = await Drash.Request.create(
         originalRequest,
         pathParams,
+        connInfo,
       );
       const response = new Drash.Response();
       try {
