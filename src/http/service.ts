@@ -11,9 +11,15 @@ export class Service implements IService {
     this.#send = true;
   }
 
-  public runAfterResource(_request: Request, _response: Response) {
+  public runAfterResource(
+    _request: Request,
+    _response: Response,
+  ) {
   }
 
-  public runBeforeResource(_request: Request, _response: Response) {
+  public runBeforeResource(
+    _request: Request,
+    _response: Response,
+  ) {
   }
 }
