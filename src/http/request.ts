@@ -21,7 +21,7 @@ export class DrashRequest extends Request {
   #parsed_body!: ParsedBody;
   readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
-  public connInfo: ConnInfo;
+  public conn_info: ConnInfo;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -46,7 +46,7 @@ export class DrashRequest extends Request {
   ) {
     super(originalRequest);
     this.#path_params = pathParams;
-    this.connInfo = connInfo;
+    this.conn_info = connInfo;
   }
 
   /**
