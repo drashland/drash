@@ -4,6 +4,8 @@ import { createHash } from "./deps.ts";
 export class EtagService extends Service implements IService {
   #options: { weak: boolean };
 
+  #lastEtag = "";
+
   constructor(options: { weak: boolean } = { weak: false }) {
     super();
     this.#options = options;
@@ -24,6 +26,10 @@ export class EtagService extends Service implements IService {
       .toString().substring(0, 27);
     const len = body.byteLength;
     let header = `"${len.toString(16)}-${hash}"`;
+    if (header !== this.#lastEtag) {
+      this.#lastEtag = header;
+      response.headers.set("Last-Modified", new Date().toUTCString());
+    }
     if (this.#options.weak === true) {
       header = "W/" + header;
     }
