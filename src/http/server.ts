@@ -185,13 +185,15 @@ export class Server {
       const { resource, pathParams } = resourceAndParams;
 
       // Construct request and response objects to pass to services and resource
-      const request = await Drash.Request.create(
-        originalRequest,
-        pathParams,
-        connInfo,
-      );
+      // Keep response top level so we can reuse the headers should an error be thrown
+      // in the try
       const response = new Drash.Response();
       try {
+        const request = await Drash.Request.create(
+          originalRequest,
+          pathParams,
+          connInfo,
+        );
         // If a service wants to respond early, then allow it but dont run the resource method and still
         // allow services to run eg csrf, paladin
         let serviceError: Error | null = null;
