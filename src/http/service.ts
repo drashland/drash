@@ -1,7 +1,5 @@
 import { IService, Request, Response } from "../../mod.ts";
 
-import { ConnInfo } from "../../deps.ts";
-
 export class Service implements IService {
   #send = false;
 
@@ -16,14 +14,12 @@ export class Service implements IService {
   public runAfterResource(
     _request: Request,
     _response: Response,
-    _connInfo: ConnInfo,
   ) {
   }
 
   public runBeforeResource(
     _request: Request,
     _response: Response,
-    _connInfo: ConnInfo,
   ) {
   }
 }

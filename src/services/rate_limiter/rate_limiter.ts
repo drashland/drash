@@ -1,5 +1,4 @@
 import { Errors, IService, Request, Response, Service } from "../../../mod.ts";
-import { ConnInfo } from "../../../deps.ts";
 
 /**
  * This allows us to pass the TS compiler, so we can add properties to a method that uses it. See `csrf` method below
@@ -102,8 +101,8 @@ export class RateLimiterService extends Service implements IService {
     this.#memoryStore.cleanup();
   }
 
-  runBeforeResource(_request: Request, response: Response, connInfo: ConnInfo) {
-    const key = (connInfo.remoteAddr as Deno.NetAddr).hostname;
+  runBeforeResource(request: Request, response: Response) {
+    const key = (request.connInfo.remoteAddr as Deno.NetAddr).hostname;
     const { current, resetTime } = this.#memoryStore.increment(key);
     const requestsRemaining = Math.max(this.#options.maxRequests - current, 0);
 

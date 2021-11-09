@@ -1,5 +1,4 @@
 import { Request, Resource, Response, Service } from "../mod.ts";
-import { ConnInfo } from "../deps.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -151,7 +150,6 @@ export interface IService {
   runBeforeResource?: (
     request: Request,
     response: Response,
-    connInfo: ConnInfo,
   ) => void | Promise<void>;
 
   /**
@@ -160,6 +158,5 @@ export interface IService {
   runAfterResource?: (
     request: Request,
     response: Response,
-    connInfo: ConnInfo,
   ) => void | Promise<void>;
 }

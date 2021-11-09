@@ -1,5 +1,6 @@
 import { deferred, getCookies } from "../../deps.ts";
 import { Errors } from "../../mod.ts";
+import type { ConnInfo } from "../../deps.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
@@ -20,6 +21,7 @@ export class DrashRequest extends Request {
   #parsed_body!: ParsedBody;
   readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
+  public connInfo: ConnInfo;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -40,9 +42,11 @@ export class DrashRequest extends Request {
   constructor(
     originalRequest: Request,
     pathParams: Map<string, string>,
+    connInfo: ConnInfo,
   ) {
     super(originalRequest);
     this.#path_params = pathParams;
+    this.connInfo = connInfo;
   }
 
   /**
@@ -59,8 +63,9 @@ export class DrashRequest extends Request {
   static async create(
     request: Request,
     pathParms: Map<string, string>,
+    connInfo: ConnInfo,
   ) {
-    const req = new DrashRequest(request, pathParms);
+    const req = new DrashRequest(request, pathParms, connInfo);
     // This is here because `parseBody` is async. We can't parse the request
     // body on the fly as we dont want users to have to use await when getting a
     // body param.

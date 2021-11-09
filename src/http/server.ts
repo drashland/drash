@@ -42,12 +42,11 @@ async function runServices(
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
-  connInfo: ConnInfo,
 ): Promise<Error | null> {
   let err: Error | null = null;
   for (const Service of Services) {
     try {
-      await Service[serviceMethod](request, response, connInfo);
+      await Service[serviceMethod](request, response);
     } catch (e) {
       if (!err) {
         err = e;
@@ -202,7 +201,6 @@ export class Server {
           request,
           response,
           "runBeforeResource",
-          connInfo,
         );
         if (serverBeforeServicesError) {
           serviceError = serverBeforeServicesError;
@@ -216,7 +214,6 @@ export class Server {
             request,
             response,
             "runAfterResource",
-            connInfo,
           );
           throw new Drash.Errors.HttpError(404);
         }
@@ -231,7 +228,6 @@ export class Server {
             request,
             response,
             "runAfterResource",
-            connInfo,
           );
           throw new Drash.Errors.HttpError(405);
         }
@@ -244,7 +240,6 @@ export class Server {
           request,
           response,
           "runBeforeResource",
-          connInfo,
         );
         if (classBeforeServicesError && !serviceError) {
           serviceError = classBeforeServicesError;
@@ -256,7 +251,6 @@ export class Server {
           request,
           response,
           "runBeforeResource",
-          connInfo,
         );
         if (resourceBeforeServicesError && !serviceError) {
           serviceError = resourceBeforeServicesError;
@@ -276,7 +270,6 @@ export class Server {
           request,
           response,
           "runAfterResource",
-          connInfo,
         );
         if (resourceAfterServicesError && !serviceError) {
           serviceError = resourceAfterServicesError;
@@ -288,7 +281,6 @@ export class Server {
           request,
           response,
           "runAfterResource",
-          connInfo,
         );
         if (classAfterServicesError && !serviceError) {
           serviceError = classAfterServicesError;
@@ -300,7 +292,6 @@ export class Server {
           request,
           response,
           "runAfterResource",
-          connInfo,
         );
         if (serverAfterServicesError && !serviceError) {
           serviceError = serverAfterServicesError;
