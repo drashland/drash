@@ -47,8 +47,9 @@ export class GraphQLService extends Drash.Service
 
     // Execute the request/query
     const query = request.bodyParam<string>("query");
-    const operationName = request.bodyParam<string>('operationName') ?? null;
-    const variables = request.bodyParam<Record<string, unknown>>('variables') ?? null
+    const operationName = request.bodyParam<string>("operationName") ?? null;
+    const variables = request.bodyParam<Record<string, unknown>>("variables") ??
+      null;
     if (typeof query !== "string") {
       throw new Drash.Errors.HttpError(
         422,
@@ -61,10 +62,13 @@ export class GraphQLService extends Drash.Service
       this.#options.rootValue,
       null,
       variables,
-      operationName
+      operationName,
     ) as ExecutionResult;
     if (result.errors) {
-      throw new Drash.Errors.HttpError(400, result.errors[0] as unknown as string);
+      throw new Drash.Errors.HttpError(
+        400,
+        result.errors[0] as unknown as string,
+      );
     }
     response.json(result); // { data: { hello: "Hello world!" } }
   }

@@ -32,12 +32,7 @@ class GraphQLResource extends Drash.Resource {
   public POST() {
   }
 }
-const server = new Drash.Server({
-  resources: [GraphQLResource],
-  protocol: "http",
-  port: 1337,
-  hostname: "localhost",
-});
+
 async function serverAction(
   action: "close",
   server: Drash.Server,
@@ -93,7 +88,7 @@ Rhum.testPlan("graphql_test.ts", () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-              query: '{ hello }'
+            query: "{ hello }",
           }),
         });
         await serverAction("close", server);
