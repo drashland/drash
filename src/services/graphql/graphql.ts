@@ -14,58 +14,6 @@ interface GraphQLOptions {
   rootValue: Record<string, () => string>;
 }
 
-function getPlaygroundEndpoint(graphiql: GraphiQLValue): string | undefined {
-  const playgroundEndpoint = graphiql === true
-    ? "/graphql"
-    : typeof graphiql === "string"
-    ? graphiql
-    : undefined;
-  return playgroundEndpoint;
-}
-
-function requestIsForPlayground(
-  graphiql: GraphiQLValue,
-  request: Drash.Request,
-): false | string {
-  const playgroundEndpoint = getPlaygroundEndpoint(graphiql);
-  if (
-    playgroundEndpoint && request.method === "GET" &&
-    (request.headers.get("Accept")?.includes("text/html") ||
-      request.headers.get("Accept")?.includes("*/*"))
-  ) {
-    return playgroundEndpoint;
-  }
-  return false;
-}
-
-function handleRequestForPlayground(
-  playgroundEndpoint: string,
-  response: Drash.Response,
-) {
-  response.headers.set("Content-Type", "text/html");
-  response.html(renderPlaygroundPage({ endpoint: playgroundEndpoint }));
-}
-
-async function executeRequest(
-  options: GraphQLOptions,
-  request: Drash.Request,
-  response: Drash.Response,
-): Promise<void> {
-  const body = request.bodyAll() as Record<string, unknown>;
-  console.log(body)
-  const query = Object.keys(body)[0]; // Because drash by default will parse body as application www form url encoded, so the `body` looks like `{ "{ hello }": undefined }`, which is not the correct format
-  const result = await graphql(
-    options.schema,
-    query,
-    options.rootValue,
-  ) as ExecutionResult;
-  console.log(result)
-  if ("errors" in result) {
-    throw new Drash.Errors.HttpError(400, "Malformed request body");
-  }
-  return response.json(result);
-}
-
 /**
  * Taken from https://github.com/deno-libs/gql/blob/master/http.ts but heavily modified to suit drash's needs,
  * and to utilise as much of graphql's own code instead
@@ -78,25 +26,48 @@ export class GraphQLService extends Drash.Service
     this.#options = options;
   }
   async runBeforeResource(request: Drash.Request, response: Drash.Response) {
-      console.log('service called')
-    const playgroundEndpoint = requestIsForPlayground(
-      this.#options.graphiql,
-      request,
-    );
-    if (playgroundEndpoint) {
-        console.log('is for playground endpoint')
-      return handleRequestForPlayground(playgroundEndpoint, response);
+    // Handle gets. the expectation should be that on a get, the configs
+    // allow a playground
+    if (request.method === "GET") {
+      const playgroundEndpoint = this.#options.graphiql === true
+        ? "/graphql"
+        : typeof this.#options.graphiql === "string"
+        ? this.#options.graphiql
+        : undefined;
+      if (!playgroundEndpoint) {
+        throw new Drash.Errors.HttpError(
+          500,
+          "The request method is GET, but the server has not enabled a playground",
+        );
+      }
+      return response.html(
+        renderPlaygroundPage({ endpoint: playgroundEndpoint }),
+      );
     }
 
-    if (!["PUT", "POST", "PATCH"].includes(request.method)) {
-        console.log('method not allowed')
-      throw new Drash.Errors.HttpError(405, "Method Not Allowed");
+    // Execute the request/query
+    const query = request.bodyParam<string>("query");
+    const operationName = request.bodyParam<string>('operationName') ?? null;
+    const variables = request.bodyParam<Record<string, unknown>>('variables') ?? null
+    if (typeof query !== "string") {
+      throw new Drash.Errors.HttpError(
+        422,
+        "The query is not of the expected type, it should be a string",
+      );
     }
-    console.log('executing')
-
-    await executeRequest(this.#options, request, response);
+    const result = await graphql(
+      this.#options.schema,
+      query,
+      this.#options.rootValue,
+      null,
+      variables,
+      operationName
+    ) as ExecutionResult;
+    if (result.errors) {
+      throw new Drash.Errors.HttpError(400, result.errors[0] as unknown as string);
+    }
+    response.json(result); // { data: { hello: "Hello world!" } }
   }
 }
 
-//await graphql(schema, "{ hello }", root)
-//curl -X POST localhost:1337/graphql -d '{ hello }'
+//var res = await fetch("/graphql", { method: "POST", body: JSON.stringify({ query: '{ hello }' }) }), must be application/json, and accept header allows json
