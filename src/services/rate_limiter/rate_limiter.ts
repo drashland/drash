@@ -38,7 +38,9 @@ export class RateLimiterService extends Service {
 
   public runBeforeResource(request: Request, response: Response): void {
     const key = (request.conn_info.remoteAddr as Deno.NetAddr).hostname;
-    const { current, reset_time: resetTime } = this.#memory_store.increment(key);
+    const { current, reset_time: resetTime } = this.#memory_store.increment(
+      key,
+    );
     const requestsRemaining = Math.max(this.#options.max_requests - current, 0);
 
     response.headers.set(

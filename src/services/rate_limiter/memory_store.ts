@@ -75,10 +75,9 @@ export class MemoryStore {
    * Start an interval to reset the hits and reset time based on the timeframe.
    */
   #queueReset() {
-    this.#interval_id= setInterval(() => {
+    this.#interval_id = setInterval(() => {
       this.#hits = {};
       this.#reset_time = this.#calculateNextResetTime(this.#timeframe);
     }, this.#timeframe);
   }
 }
-
