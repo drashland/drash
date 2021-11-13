@@ -3,20 +3,24 @@ import { buildSchema } from "../deps.ts";
 import * as Drash from "../../mod.ts";
 import { GraphQLService } from "../../src/services/graphql/graphql.ts";
 
-//
-// DATA
-//
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - TEST DATA /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 const schema = buildSchema(`
   type Query {
     hello: String
   }
 `);
+
 const root = {
   hello: () => {
     return "Hello world!";
   },
 };
+
 const graphQL = new GraphQLService({ schema, graphiql: true, rootValue: root });
+
 class GraphQLResource extends Drash.Resource {
   paths = ["/graphql"];
 
@@ -37,7 +41,9 @@ async function serverAction(
   action: "close",
   server: Drash.Server,
 ): Promise<void>;
+
 async function serverAction(action: "run"): Promise<Drash.Server>;
+
 async function serverAction(
   action: "run" | "close",
   server?: Drash.Server,
@@ -57,9 +63,10 @@ async function serverAction(
   }
 }
 
-//
-// TESTS
-//
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - TESTS /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 Rhum.testPlan("graphql_test.ts", () => {
   Rhum.testSuite("GraphQL", () => {
     Rhum.testCase(
