@@ -16,7 +16,7 @@ Rhum.testPlan("rate_limiter_test", () => {
       async () => {
         const rateLimiter = new RateLimiterService({
           timeframe: 15 * 60 * 1000,
-          maxRequests: 3,
+          max_requests: 3,
         });
         const server = new Drash.Server({
           resources: [Resource],
@@ -57,7 +57,7 @@ Rhum.testPlan("rate_limiter_test", () => {
       async () => {
         const rateLimiter = new RateLimiterService({
           timeframe: 15 * 60 * 1000,
-          maxRequests: 3,
+          max_requests: 3,
         });
         const server = new Drash.Server({
           resources: [Resource],
