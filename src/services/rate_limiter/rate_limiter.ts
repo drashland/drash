@@ -61,13 +61,15 @@ export class RateLimiterService extends Service {
     );
 
     if (this.#options.max_requests && current > this.#options.max_requests) {
+      const retryAfter = Math.ceil(this.#options.timeframe / 1000).toString() +
+        "s";
       response.headers.set(
         "X-Retry-After",
-        Math.ceil(this.#options.timeframe / 1000).toString() + "s",
+        retryAfter,
       );
       throw new Errors.HttpError(
         429,
-        "Too many requests, please try again later.",
+        `Too Many Requests. Please try again after ${retryAfter}.`,
       );
     }
   }
