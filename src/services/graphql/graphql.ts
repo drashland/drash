@@ -1,5 +1,5 @@
 import * as Drash from "../../../mod.ts";
-import { GraphQL, ExecutionResult, renderPlaygroundPage } from "./deps.ts";
+import { ExecutionResult, GraphQL, renderPlaygroundPage } from "./deps.ts";
 export { GraphQL };
 
 type GraphiQLValue = boolean | string;
@@ -20,7 +20,6 @@ interface GraphQLOptions {
  * GraphQLs's own code instead.
  */
 export class GraphQLService extends Drash.Service {
-
   #options: GraphQLOptions;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -38,7 +37,7 @@ export class GraphQLService extends Drash.Service {
 
   async runBeforeResource(
     request: Drash.Request,
-    response: Drash.Response
+    response: Drash.Response,
   ): Promise<void> {
     // Handle GET requests. The expectation should be that on a GET request, the
     // configs allow a playground.
@@ -86,7 +85,7 @@ export class GraphQLService extends Drash.Service {
    */
   async #handleAllOtherRequests(
     request: Drash.Request,
-    response: Drash.Response
+    response: Drash.Response,
   ): Promise<void> {
     const query = request.bodyParam<string>("query");
 
