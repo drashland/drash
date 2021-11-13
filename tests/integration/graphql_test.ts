@@ -1,13 +1,13 @@
 import { Rhum } from "../deps.ts";
 import { buildSchema } from "../deps.ts";
 import * as Drash from "../../mod.ts";
-import { GraphQLService } from "../../src/services/graphql/graphql.ts";
+import { GraphQL, GraphQLService } from "../../src/services/graphql/graphql.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - TEST DATA /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const schema = buildSchema(`
+const schema = GraphQL.buildSchema(`
   type Query {
     hello: String
   }
