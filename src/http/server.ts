@@ -319,7 +319,6 @@ export class Server {
           return response.upgraded_response;
         }
 
-        console.log('responding ins server with ' + response.status)
         return new Response(response.body, {
           headers: response.headers,
           statusText: response.statusText,

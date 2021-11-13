@@ -18,9 +18,9 @@ export class EtagService extends Service implements IService {
       // when it's empty, we want to set a default etag
 
       // but if etag is already present on request, send a 304
-      if (request.headers.get('if-none-match')) {
-        response.status = 304
-        response.body = null
+      if (request.headers.get("if-none-match")) {
+        response.status = 304;
+        response.body = null;
       } else { // set the NEW default etag
         response.headers.set("Last-Modified", new Date().toUTCString());
       }
@@ -44,12 +44,14 @@ export class EtagService extends Service implements IService {
 
     // check if request already has an etag, if so,
     // if its the same as the generated etag from the response body
-    const incomingRequestIfNoneMatchValue = request.headers.get('if-none-match')
+    const incomingRequestIfNoneMatchValue = request.headers.get(
+      "if-none-match",
+    );
     if (incomingRequestIfNoneMatchValue) { // request inc already has an etag set
       // so check if body hash matches
       if (header === incomingRequestIfNoneMatchValue) {
         // no need to send body, send not modified
-        response.status = 304
+        response.status = 304;
         response.body = null;
         response.headers.set("etag", header);
         return;
@@ -57,7 +59,7 @@ export class EtagService extends Service implements IService {
     }
 
     // else it isn't the same, so set a NEW etag on res
-    response.status = 200
+    response.status = 200;
     response.headers.set("etag", header);
     response.headers.set("Last-Modified", new Date().toUTCString());
   }
