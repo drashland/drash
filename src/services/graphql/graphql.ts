@@ -1,17 +1,14 @@
 import * as Drash from "../../../mod.ts";
-import {
-  ExecutionResult,
-  graphql,
-  GraphQLSchema,
-  renderPlaygroundPage,
-} from "./deps.ts";
+import { GraphQL, ExecutionResult, renderPlaygroundPage } from "./deps.ts";
+export { GraphQL };
 
 type GraphiQLValue = boolean | string;
 
 interface GraphQLOptions {
-  schema: GraphQLSchema;
+  schema: GraphQL.GraphQLSchema;
   graphiql: GraphiQLValue;
-  rootValue: Record<string, () => string>;
+  // TODO(crookse) Figure out how to add typings for the args
+  rootValue: Record<string, (...args: any) => string>;
 }
 
 /**
@@ -42,14 +39,14 @@ export class GraphQLService extends Drash.Service {
   async runBeforeResource(
     request: Drash.Request,
     response: Drash.Response
-  ): void {
+  ): Promise<void> {
     // Handle GET requests. The expectation should be that on a GET request, the
     // configs allow a playground.
     if (request.method.toUpperCase() === "GET") {
-      return this.#handleGet(request, response);
+      return this.#handleGetRequests(request, response);
     }
 
-    return this.#handleAllOtherRequests(request, response);
+    return await this.#handleAllOtherRequests(request, response);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +59,7 @@ export class GraphQLService extends Drash.Service {
    * @param request
    * @param response
    */
-  #handlGetRequests(request: Drash.Request, Drash.Response): void {
+  #handleGetRequests(request: Drash.Request, response: Drash.Response): void {
     const playgroundEndpoint = this.#options.graphiql === true
       ? "/graphql"
       : typeof this.#options.graphiql === "string"
@@ -87,10 +84,10 @@ export class GraphQLService extends Drash.Service {
    * @param request
    * @param response
    */
-  #handleOtherThanGetRequests(
+  async #handleAllOtherRequests(
     request: Drash.Request,
     response: Drash.Response
-  ): void {
+  ): Promise<void> {
     const query = request.bodyParam<string>("query");
 
     if (typeof query !== "string") {
@@ -105,7 +102,7 @@ export class GraphQLService extends Drash.Service {
     const variables = request.bodyParam<Record<string, unknown>>("variables") ??
       null;
 
-    const result = await graphql(
+    const result = await GraphQL.graphql(
       this.#options.schema,
       query,
       this.#options.rootValue,
@@ -115,10 +112,8 @@ export class GraphQLService extends Drash.Service {
     ) as ExecutionResult;
 
     if (result.errors) {
-      throw new Drash.Errors.HttpError(
-        400,
-        result.errors[0] as unknown as string,
-      );
+      response.status = 400;
+      return response.json(result.errors);
     }
 
     response.json(result);
