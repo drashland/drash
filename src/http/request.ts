@@ -137,6 +137,10 @@ export class DrashRequest extends Request {
     return this.#parsed_body![name] as unknown as T ?? undefined;
   }
 
+  public bodyAll<T>(): ParsedBody | T {
+    return this.#parsed_body;
+  }
+
   /**
    * Parse the request body.
    *

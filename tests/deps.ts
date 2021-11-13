@@ -12,3 +12,4 @@ export { ServerRequest } from "https://deno.land/std@0.106.0/http/server.ts";
 export type { Response } from "https://deno.land/std@0.106.0/http/server.ts";
 export { green, red } from "https://deno.land/std@0.106.0/fmt/colors.ts";
 export { delay } from "https://deno.land/std@0.113.0/async/delay.ts";
+export { buildSchema } from "https://cdn.skypack.dev/graphql@15.5.0?dts"; // TODO ENSURE DMM UPDATES THIS
