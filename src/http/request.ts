@@ -147,8 +147,8 @@ export class DrashRequest extends Request {
    * @returns A parsed body based on the content type of the request body.
    */
   async #parseBody(): Promise<ParsedBody> {
-    const contentLength = this.headers.get("Content-Length")
-      ?? this.headers.get("content-length");
+    const contentLength = this.headers.get("Content-Length") ??
+      this.headers.get("content-length");
 
     // The Content-Length header indicates that the client is sending a body.
     // Some clients send a Content-Length header of "0", which indicates that
@@ -163,13 +163,13 @@ export class DrashRequest extends Request {
     // body, we need to know the Content-Type of the body. Otherwise, we have
     // no way of knowing how to parse it. We can assume, but let's just tell the
     // client to modify their request to include the Content-Type header.
-    const contentType = this.headers.get("Content-Type")
-      ?? this.headers.get("content-type");
+    const contentType = this.headers.get("Content-Type") ??
+      this.headers.get("content-type");
 
     if (!contentType) {
       throw new Errors.HttpError(
         400,
-        "Bad Request. The request body cannot be parsed due to the Content-Type header missing."
+        "Bad Request. The request body cannot be parsed due to the Content-Type header missing.",
       );
     }
 

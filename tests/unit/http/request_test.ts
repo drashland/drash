@@ -175,7 +175,7 @@ function bodyTests() {
         // a request body. This is a hack just for unit testing. In the real
         // world, the Content-Length header will be defined (at least it
         // should be) by the client.
-        "Content-Length": "1"
+        "Content-Length": "1",
       },
       body: formData,
       method: "POST",
@@ -204,7 +204,7 @@ function bodyTests() {
           // a request body. This is a hack just for unit testing. In the real
           // world, the Content-Length header will be defined (at least it
           // should be) by the client.
-          "Content-Length": "1"
+          "Content-Length": "1",
         },
         body: formData,
         method: "POST",
