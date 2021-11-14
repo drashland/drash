@@ -1,4 +1,4 @@
-import { Errors, IService, Request, Response, Service } from "../../../mod.ts";
+import { Errors, Request, Response, Service } from "../../../mod.ts";
 import { MemoryStore } from "./memory_store.ts";
 
 interface IOptions {
@@ -10,6 +10,7 @@ interface IOptions {
   /**
    * Number of requests an IP is allowed within the `timeframe`.
    */
+  // deno-lint-ignore camelcase
   max_requests: number;
 }
 
