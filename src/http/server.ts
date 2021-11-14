@@ -325,6 +325,9 @@ export class Server {
           status: response.status,
         });
       } catch (e) {
+        if (isNaN(e.code)) {
+          e.code = 500;
+        }
         return new Response(e.stack, {
           status: e.code,
           headers: response.headers,
