@@ -35,7 +35,7 @@ export class MemoryStore {
    *
    * @param key - The IP of the request
    *
-   * @returns The current amount of requests recieved for `key` (`hits`) and
+   * @returns The current amount of requests received for `key` (`hits`) and
    * the reset time
    */
   public increment(key: string): {
