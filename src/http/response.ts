@@ -130,9 +130,7 @@ export class DrashResponse {
    *
    *   https://github.com/drashland/deno-drash-middleware/tree/master/tengine
    */
-  public render(
-    ..._args: unknown[]
-  ): Promise<boolean | string> | boolean | string {
+  public render(_filepath: string, _data: unknown): boolean | string {
     return false;
   }
 

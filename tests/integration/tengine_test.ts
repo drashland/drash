@@ -12,7 +12,6 @@ import { TengineService } from "../../src/services/tengine/tengine.ts";
 
 const tengine = new TengineService({
   views_path: "./tests/data/views",
-  render: (..._args: unknown[]) => false,
 });
 
 ////////////////////////////////////////////////////////////////////////////////
