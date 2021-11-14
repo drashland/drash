@@ -8,6 +8,7 @@ interface GraphQLOptions {
   schema: GraphQL.GraphQLSchema;
   graphiql: GraphiQLValue;
   // TODO(crookse) Figure out how to add typings for the args
+  // deno-lint-ignore no-explicit-any
   rootValue: Record<string, (...args: any) => string>;
 }
 
@@ -58,7 +59,7 @@ export class GraphQLService extends Drash.Service {
    * @param request
    * @param response
    */
-  #handleGetRequests(request: Drash.Request, response: Drash.Response): void {
+  #handleGetRequests(_request: Drash.Request, response: Drash.Response): void {
     const playgroundEndpoint = this.#options.graphiql === true
       ? "/graphql"
       : typeof this.#options.graphiql === "string"

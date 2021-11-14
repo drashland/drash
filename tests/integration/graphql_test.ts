@@ -1,5 +1,4 @@
 import { Rhum } from "../deps.ts";
-import { buildSchema } from "../deps.ts";
 import * as Drash from "../../mod.ts";
 import { GraphQL, GraphQLService } from "../../src/services/graphql/graphql.ts";
 

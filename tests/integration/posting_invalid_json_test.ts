@@ -51,7 +51,7 @@ Rhum.testPlan("posting_invlaid_json_test.ts", () => {
       await server.close();
       Rhum.asserts.assertEquals(
         (await response.text()).startsWith(
-          "Error: Unprocessable entity. The request body seems to be invalid as there was an error parsing it",
+          "Error: Unprocessable Entity. The request body seems to be invalid as there was an error parsing it.",
         ),
         true,
       );
