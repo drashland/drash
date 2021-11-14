@@ -89,35 +89,42 @@ export const makeRequest = {
     options = Object.assign(options, {
       method: "GET",
     });
-    options.body = JSON.stringify(options.body);
     return fetch(url, options);
   },
   post(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "POST",
     });
-    options.body = JSON.stringify(options.body);
+    if (options.body) {
+      options.body = JSON.stringify(options.body);
+    }
     return fetch(url, options);
   },
   put(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "PUT",
     });
-    options.body = JSON.stringify(options.body);
+    if (options.body) {
+      options.body = JSON.stringify(options.body);
+    }
     return fetch(url, options);
   },
   delete(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "DELETE",
     });
-    options.body = JSON.stringify(options.body);
+    if (options.body) {
+      options.body = JSON.stringify(options.body);
+    }
     return fetch(url, options);
   },
   patch(url: string, options: IMakeRequestOptions = {}) {
     options = Object.assign(options, {
       method: "PATCH",
     });
-    options.body = JSON.stringify(options.body);
+    if (options.body) {
+      options.body = JSON.stringify(options.body);
+    }
     return fetch(url, options);
   },
 };

@@ -130,6 +130,13 @@ function bodyTests() {
     formData.append("foo[]", file1, "hello.json");
     formData.append("foo[]", file2, "world.json");
     const serverRequest = new Request("https://drash.land", {
+      headers: {
+        // We use `"Content-Length": "1"` to tell Drash.Request that there is
+        // a request body. This is a hack just for unit testing. In the real
+        // world, the Content-Length header will be defined (at least it
+        // should be) by the client.
+        "Content-Length": "1",
+      },
       body: formData,
       method: "POST",
     });
@@ -138,6 +145,7 @@ function bodyTests() {
       new Map(),
       connInfo,
     );
+
     Rhum.asserts.assertEquals(request.bodyParam("foo"), [
       {
         content: '{\n  "hello": "world"\n}',
@@ -162,6 +170,13 @@ function bodyTests() {
     });
     formData.append("foo", file, "hello.json");
     const serverRequest = new Request("https://drash.land", {
+      headers: {
+        // We use `"Content-Length": "1"` to tell Drash.Request that there is
+        // a request body. This is a hack just for unit testing. In the real
+        // world, the Content-Length header will be defined (at least it
+        // should be) by the client.
+        "Content-Length": "1",
+      },
       body: formData,
       method: "POST",
     });
@@ -184,6 +199,13 @@ function bodyTests() {
       const formData = new FormData();
       formData.append("user", "Drash");
       const req = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
+        },
         body: formData,
         method: "POST",
       });
@@ -203,6 +225,13 @@ function bodyTests() {
     });
     formData.append("foo[]", file, "hello.json");
     const serverRequest = new Request("https://drash.land", {
+      headers: {
+        // We use `"Content-Length": "1"` to tell Drash.Request that there is
+        // a request body. This is a hack just for unit testing. In the real
+        // world, the Content-Length header will be defined (at least it
+        // should be) by the client.
+        "Content-Length": "1",
+      },
       body: formData,
       method: "POST",
     });
@@ -218,6 +247,11 @@ function bodyTests() {
     async () => {
       const req = new Request("https://drash.land", {
         headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -239,6 +273,11 @@ function bodyTests() {
     async () => {
       const serverRequest = new Request("https://drash.land", {
         headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -266,6 +305,13 @@ function bodyTests() {
       formData.append("foo", file, "hello.json");
       formData.append("user", "drash");
       const serverRequest = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
+        },
         body: formData,
         method: "POST",
       });
@@ -288,6 +334,11 @@ function bodyTests() {
   Rhum.testCase("Can handle when a body param is an object", async () => {
     const serverRequest = new Request("https://drash.land", {
       headers: {
+        // We use `"Content-Length": "1"` to tell Drash.Request that there is
+        // a request body. This is a hack just for unit testing. In the real
+        // world, the Content-Length header will be defined (at least it
+        // should be) by the client.
+        "Content-Length": "1",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -317,6 +368,11 @@ function bodyTests() {
   Rhum.testCase("Can handle when a body param is an array", async () => {
     const serverRequest = new Request("https://drash.land", {
       headers: {
+        // We use `"Content-Length": "1"` to tell Drash.Request that there is
+        // a request body. This is a hack just for unit testing. In the real
+        // world, the Content-Length header will be defined (at least it
+        // should be) by the client.
+        "Content-Length": "1",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -340,6 +396,11 @@ function bodyTests() {
   Rhum.testCase("Can handle when a body param is a boolean", async () => {
     const serverRequest = new Request("https://drash.land", {
       headers: {
+        // We use `"Content-Length": "1"` to tell Drash.Request that there is
+        // a request body. This is a hack just for unit testing. In the real
+        // world, the Content-Length header will be defined (at least it
+        // should be) by the client.
+        "Content-Length": "1",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

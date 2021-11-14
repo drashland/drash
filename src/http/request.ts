@@ -138,19 +138,41 @@ export class DrashRequest extends Request {
     return this.#parsed_body![name] as unknown as T ?? undefined;
   }
 
+  public bodyAll<T>(): ParsedBody | T {
+    return this.#parsed_body;
+  }
+
   /**
    * Parse the request body.
    *
    * @returns A parsed body based on the content type of the request body.
    */
   async #parseBody(): Promise<ParsedBody> {
-    try {
-      const contentType = this.headers.get(
-        "Content-Type",
+    const contentLength = this.headers.get("content-length");
+
+    // The Content-Length header indicates that the client is sending a body.
+    // Some clients send a Content-Length header of "0", which indicates that
+    // there is in fact no body present with the request. We need to check for
+    // this or else we try to parse a body for no reason.
+    if (!contentLength || contentLength === "0") {
+      return undefined;
+    }
+
+    // If we get to this point, then that means there is a body (since the
+    // Content-Length header is greater than 0). In order for us to parse the
+    // body, we need to know the Content-Type of the body. Otherwise, we have
+    // no way of knowing how to parse it. We can assume, but let's just tell the
+    // client to modify their request to include the Content-Type header.
+    const contentType = this.headers.get("content-type");
+
+    if (!contentType) {
+      throw new Errors.HttpError(
+        400,
+        "Bad Request. The request body cannot be parsed due to the Content-Type header missing.",
       );
-      if (!contentType) {
-        return await this.#constructFormDataUsingBody();
-      }
+    }
+
+    try {
       if (contentType.includes("multipart/form-data")) {
         return await this.#constructFormDataUsingBody();
       }
@@ -163,11 +185,13 @@ export class DrashRequest extends Request {
       if (contentType.includes("text/plain")) {
         return await this.text();
       }
+
+      // If all else fails, then try to parse the body using FormData
       return await this.#constructFormDataUsingBody();
     } catch (_e) {
       throw new Errors.HttpError(
         422,
-        "Unprocessable entity. The request body seems to be invalid as there was an error parsing it",
+        "Unprocessable Entity. The request body seems to be invalid as there was an error parsing it.",
       );
     }
   }
