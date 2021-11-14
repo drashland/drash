@@ -16,7 +16,7 @@ Rhum.testPlan("rate_limiter_test", () => {
       async () => {
         const rateLimiter = new RateLimiterService({
           timeframe: 15 * 60 * 1000,
-          maxRequests: 3,
+          max_requests: 3,
         });
         const server = new Drash.Server({
           resources: [Resource],
@@ -57,7 +57,7 @@ Rhum.testPlan("rate_limiter_test", () => {
       async () => {
         const rateLimiter = new RateLimiterService({
           timeframe: 15 * 60 * 1000,
-          maxRequests: 3,
+          max_requests: 3,
         });
         const server = new Drash.Server({
           resources: [Resource],
@@ -86,8 +86,11 @@ Rhum.testPlan("rate_limiter_test", () => {
         await server.close();
         Rhum.asserts.assertEquals(res4.status, 429);
         const text = await res4.text();
+        const retryAfter = res4.headers.get("x-retry-after");
         Rhum.asserts.assert(
-          text.startsWith("Error: Too many requests, please try again later."),
+          text.startsWith(
+            "Error: Too Many Requests. Please try again after " + retryAfter,
+          ),
         );
         Rhum.asserts.assert(res4.headers.get("date"));
         Rhum.asserts.assertEquals(res4.headers.get("x-ratelimit-limit"), "3");
