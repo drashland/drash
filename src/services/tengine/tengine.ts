@@ -1,7 +1,8 @@
-import { IService, Request, Response, Service } from "../../../mod.ts";
+import { Request, Response, Service } from "../../../mod.ts";
 import { Jae } from "./jae.ts";
 
 interface IOptions {
+  // deno-lint-ignore camelcase
   views_path: string;
 }
 
