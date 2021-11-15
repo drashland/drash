@@ -22,7 +22,7 @@ export class EtagService extends Service implements IService {
         response.status = 304;
         response.body = null;
       } else { // set the NEW default etag
-        response.headers.set("Last-Modified", new Date().toUTCString());
+        response.headers.set("last-modified", new Date().toUTCString());
       }
       response.headers.set("etag", '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"');
       return;
@@ -61,6 +61,6 @@ export class EtagService extends Service implements IService {
     // else it isn't the same, so set a NEW etag on res
     response.status = 200;
     response.headers.set("etag", header);
-    response.headers.set("Last-Modified", new Date().toUTCString());
+    response.headers.set("last-modified", new Date().toUTCString());
   }
 }
