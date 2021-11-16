@@ -10,7 +10,14 @@ import { Server } from "./src/http/server.ts";
 // FILE MARKER - EXPORTS - CLASSES /////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-export const version = "v2.0.0";
+function getVersion() {
+  const url = import.meta.url;
+  if (url.match(/v\d/) === null) {
+    return null;
+  }
+  return "v" + url.split("v")[1].split("/")[0];
+}
+export const version = getVersion();
 
 // Dictionaries
 export { mimeDb as MimeDb } from "./src/dictionaries/mime_db.ts";
