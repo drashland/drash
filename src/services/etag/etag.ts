@@ -1,7 +1,7 @@
 import { IService, Request, Response, Service } from "../../../mod.ts";
 import { createHash } from "./deps.ts";
 
-export class EtagService extends Service implements IService {
+export class ETagService extends Service implements IService {
   #options: { weak: boolean };
 
   #etags: Map<string, string> = new Map();

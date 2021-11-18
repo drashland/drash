@@ -8,13 +8,13 @@
 
 import { assertNotEquals, delay, Rhum } from "../deps.ts";
 import { Interfaces, Request, Resource, Response, Server } from "../../mod.ts";
-import { EtagService } from "../../src/services/etag/etag.ts";
+import { ETagService } from "../../src/services/etag/etag.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class EtagResource extends Resource {
+class ETagResource extends Resource {
   paths = ["/etag/:name?"];
 
   public GET(request: Request, response: Response) {
@@ -25,7 +25,7 @@ class EtagResource extends Resource {
 
 const configs: Interfaces.IServerOptions = {
   resources: [
-    EtagResource,
+    ETagResource,
   ],
   protocol: "http",
   hostname: "localhost",
@@ -35,7 +35,7 @@ const configs: Interfaces.IServerOptions = {
 function makeServer(weak = false) {
   return new Server({
     ...configs,
-    services: [new EtagService({ weak })],
+    services: [new ETagService({ weak })],
   });
 }
 
