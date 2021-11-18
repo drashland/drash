@@ -20,16 +20,16 @@ export class EtagService extends Service implements IService {
       // when it's empty, we want to set a default etag
 
       // but if etag is already present on request, send a 304
-      const header = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"'
+      const header = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       if (request.headers.get("if-none-match")) {
         response.status = 304;
         response.body = null;
-        const existingModifiedDate = this.#etags.get(header) as string // it will always be set due to this conditional
-        response.headers.set('last-modified', existingModifiedDate)
+        const existingModifiedDate = this.#etags.get(header) as string; // it will always be set due to this conditional
+        response.headers.set("last-modified", existingModifiedDate);
       } else { // set the NEW default etag
-        const date = new Date().toUTCString()
+        const date = new Date().toUTCString();
         response.headers.set("last-modified", date);
-        this.#etags.set(header, date)
+        this.#etags.set(header, date);
       }
       response.headers.set("etag", header);
       return;
@@ -62,22 +62,25 @@ export class EtagService extends Service implements IService {
         // no need to send body, send not modified
         response.status = 304;
         response.body = null;
-        response.headers.set('last-modified', this.#etags.get(header) as string)
+        response.headers.set(
+          "last-modified",
+          this.#etags.get(header) as string,
+        );
         return;
       } else {
         // res body is new
         response.status = 200;
-        const date = new Date().toUTCString()
-        this.#etags.set(header, date)
-        response.headers.set('last-modified', date)
+        const date = new Date().toUTCString();
+        this.#etags.set(header, date);
+        response.headers.set("last-modified", date);
         return;
       }
     }
 
     // else request doesnt have a new one so generate everything from scratch
     response.status = 200;
-    const date = new Date().toUTCString()
-    this.#etags.set(header, date)
+    const date = new Date().toUTCString();
+    this.#etags.set(header, date);
     response.headers.set("last-modified", date);
   }
 }
