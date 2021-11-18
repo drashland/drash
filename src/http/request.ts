@@ -69,7 +69,8 @@ export class DrashRequest extends Request {
     // This is here because `parseBody` is async. We can't parse the request
     // body on the fly as we dont want users to have to use await when getting a
     // body param.
-    if (req.body && req.bodyUsed === false) {
+    const contentLength = req.headers.get("content-length") ?? "0";
+    if (req.body && req.bodyUsed === false && contentLength !== "0") {
       req.#parsed_body = await req.#parseBody();
     }
     return req;

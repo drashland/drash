@@ -4,6 +4,7 @@ export * as path from "https://deno.land/std@0.99.0/path/mod.ts";
 export * as TestHelpers from "./test_helpers.ts";
 export {
   assertEquals,
+  assertNotEquals,
   assertThrowsAsync,
 } from "https://deno.land/std@0.104.0/testing/asserts.ts";
 export { BufReader } from "https://deno.land/std@0.106.0/io/bufio.ts";
