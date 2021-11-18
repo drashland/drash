@@ -4,6 +4,8 @@ import { createHash } from "./deps.ts";
 export class EtagService extends Service implements IService {
   #options: { weak: boolean };
 
+  #etags: Map<string, string> = new Map();
+
   constructor(options: { weak: boolean } = { weak: false }) {
     super();
     this.#options = options;
@@ -18,13 +20,18 @@ export class EtagService extends Service implements IService {
       // when it's empty, we want to set a default etag
 
       // but if etag is already present on request, send a 304
+      const header = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"'
       if (request.headers.get("if-none-match")) {
         response.status = 304;
         response.body = null;
+        const existingModifiedDate = this.#etags.get(header) as string // it will always be set due to this conditional
+        response.headers.set('last-modified', existingModifiedDate)
       } else { // set the NEW default etag
-        response.headers.set("last-modified", new Date().toUTCString());
+        const date = new Date().toUTCString()
+        response.headers.set("last-modified", date);
+        this.#etags.set(header, date)
       }
-      response.headers.set("etag", '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"');
+      response.headers.set("etag", header);
       return;
     }
 
@@ -42,6 +49,8 @@ export class EtagService extends Service implements IService {
       header = "W/" + header;
     }
 
+    response.headers.set("etag", header);
+
     // check if request already has an etag, if so,
     // if its the same as the generated etag from the response body
     const incomingRequestIfNoneMatchValue = request.headers.get(
@@ -53,14 +62,22 @@ export class EtagService extends Service implements IService {
         // no need to send body, send not modified
         response.status = 304;
         response.body = null;
-        response.headers.set("etag", header);
+        response.headers.set('last-modified', this.#etags.get(header) as string)
+        return;
+      } else {
+        // res body is new
+        response.status = 200;
+        const date = new Date().toUTCString()
+        this.#etags.set(header, date)
+        response.headers.set('last-modified', date)
         return;
       }
     }
 
-    // else it isn't the same, so set a NEW etag on res
+    // else request doesnt have a new one so generate everything from scratch
     response.status = 200;
-    response.headers.set("etag", header);
-    response.headers.set("last-modified", new Date().toUTCString());
+    const date = new Date().toUTCString()
+    this.#etags.set(header, date)
+    response.headers.set("last-modified", date);
   }
 }
