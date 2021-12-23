@@ -10,7 +10,7 @@ import { IService, Request, Response, Service } from "../../../mod.ts";
  *
  *     Are response times enabled?
  */
-interface IDexterConfigs {
+interface IDexterConfigs extends LoggerConfigs {
   // deno-lint-ignore camelcase
   response_time?: boolean;
   url?: boolean;
@@ -44,42 +44,47 @@ export class DexterService extends Service implements IService {
 
   constructor(configs: IDexterConfigs = {}) {
     super();
+
     configs = {
+      level: configs.level ?? "all",
       datetime: configs.datetime || true,
       url: configs.url || false,
       method: configs.method || false,
       response_time: configs.response_time || false,
       enabled: configs.enabled === undefined ? true : configs.enabled,
+      tag_string: configs.tag_string ?? "",
+      tag_string_fns: configs.tag_string_fns ?? {},
     };
+
     this.configs = configs;
-    const loggerConfigs: LoggerConfigs = {
-      // deno-lint-ignore camelcase
-      tag_string: "",
-      // deno-lint-ignore camelcase
-      tag_string_fns: {},
-    };
-    // If a user has defined specific strings we allow, ensure they are set before we had it off to unilogger to process into a log statement
+
+    // If a user has defined specific strings we allow, ensure they are set
+    // before we hand it off to unilogger to process into a log statement
     if (configs?.datetime !== false) {
-      loggerConfigs.tag_string += "{datetime} |";
-      loggerConfigs.tag_string_fns!.datetime = () =>
+      this.configs.tag_string += "{datetime} |";
+      this.configs.tag_string_fns!.datetime = () =>
         new Date().toISOString().replace("T", " ").split(".")[0];
     }
 
-    this.logger = new ConsoleLogger(loggerConfigs);
+    this.logger = new ConsoleLogger(this.configs);
   }
 
   runBeforeResource(request: Request, _response: Response) {
     if (this.configs.enabled === false) {
       return;
     }
+
     this.#timeStart = new Date().getTime();
     let message = "Request received";
+
     if (this.configs.url) {
       message = request.url + " | " + message;
     }
+
     if (this.configs.method) {
-      message = request.method.toUpperCase + " | " + message;
+      message = request.method.toUpperCase() + " | " + message;
     }
+
     this.logger.info(message);
   }
 
