@@ -146,9 +146,8 @@ export interface ReferenceObject {
   $ref: string;
 }
 
-export interface SchemaObject extends ItemsObject, JsonSchema{
+export interface SchemaObject extends ItemsObject, JsonSchema, JsonSchemaValidation {
   $ref?: string;
-  title?: string;
 }
 
 export interface JsonSchema {
@@ -204,6 +203,7 @@ export interface ItemsObject extends JsonSchemaValidation {
 }
 
 export interface JsonSchemaValidation {
+  title?: string;
   maximum?: number;
   exclusive_maximum?: boolean;
   minimum?: number;

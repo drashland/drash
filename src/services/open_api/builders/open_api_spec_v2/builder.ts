@@ -59,10 +59,10 @@ export class Builder {
   public parameter(
     location: Types.ParameterInTypes,
     name: string,
-    parameterObjectFields: {[field: string]: unknown} = {}
+    fields: {[field: string]: unknown} | Types.SchemaObject = {}
   ): Types.ParameterObject {
     return {
-      ...parameterObjectFields,
+      ...fields,
       in: location,
       name,
     };
@@ -70,6 +70,26 @@ export class Builder {
 
   public basePath(basePath: string): void {
     this.spec.basePath = basePath;
+  }
+
+  public schema(
+    type: Types.PrimitiveTypes,
+    fields: {[field: string]: unknown} = {},
+  ): Types.SchemaObject {
+    return {
+      ...fields,
+      type,
+    };
+  }
+
+  public property(
+    type: Types.PrimitiveTypes,
+    fields: {[field: string]: unknown} = {},
+  ): Types.SchemaObject {
+    return {
+      ...fields,
+      type,
+    };
   }
 
   public schemes(schemes: Types.SchemeTypes[]): void {

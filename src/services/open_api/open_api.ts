@@ -106,12 +106,14 @@ export class OpenAPIService extends Drash.Service {
                 return;
               }
 
+              const methodSpecs = specs[method as Drash.Types.THttpMethod]!;
+
               this.#spec_2_builder.pathItemObject(
                 path,
-                method.toLowerCase(),
-                specs[method as Drash.Types.THttpMethod]!.description ?? "",
-                specs[method as Drash.Types.THttpMethod]!.responses,
-                specs[method as Drash.Types.THttpMethod]!.parameters ?? [],
+                method.toLowerCase(), // Spec requires method be lowercased
+                methodSpecs.description ?? "",
+                methodSpecs.responses,
+                methodSpecs.parameters ?? [],
               );
             }
           }
