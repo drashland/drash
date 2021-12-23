@@ -148,8 +148,11 @@ export class Server {
    * Run the server.
    */
   public run() {
-    const addr = `${this.#options.hostname}:${this.#options.port}`;
-    this.#server = new StdServer({ addr, handler: this.#getHandler() });
+    this.#server = new StdServer({
+      hostname: this.#options.hostname,
+      port: this.#options.port,
+      handler: this.#getHandler()
+    });
 
     if (this.#options.protocol === "http") {
       this.#serverPromise = this.#server.listenAndServe();

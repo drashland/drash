@@ -64,12 +64,6 @@ Rhum.testPlan("http/server_test.ts", () => {
         errorThrown = true;
       }
       Rhum.asserts.assertEquals(errorThrown, true);
-      // assertThrowsAsync(async () => {
-      //   await Deno.connect({
-      //   hostname: "localhost",
-      //   port: 1234
-      // })
-      //})
     });
   });
 
