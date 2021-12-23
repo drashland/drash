@@ -151,7 +151,7 @@ export class Server {
     this.#server = new StdServer({
       hostname: this.#options.hostname,
       port: this.#options.port,
-      handler: this.#getHandler()
+      handler: this.#getHandler(),
     });
 
     if (this.#options.protocol === "http") {
