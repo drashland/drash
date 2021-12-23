@@ -27,45 +27,45 @@ Rhum.testPlan("Dexter - mod_test.ts", () => {
         enabled: true,
       });
       let actual;
-      actual = dexter.logger.debug("test");
+      actual = dexter.logger.debug("test") as string;
       Rhum.asserts.assertEquals(
         actual.match(
-          /.*\[DEBUG\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+          /.*\[DEBUG\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| test/,
         )?.length,
         1,
       );
-      actual = dexter.logger.error("test");
+      actual = dexter.logger.error("test") as string;
       Rhum.asserts.assertEquals(
         actual.match(
-          /.*\[ERROR\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+          /.*\[ERROR\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| test/,
         )?.length,
         1,
       );
-      actual = dexter.logger.fatal("test");
+      actual = dexter.logger.fatal("test") as string;
       Rhum.asserts.assertEquals(
         actual.match(
-          /.*\[FATAL\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+          /.*\[FATAL\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| test/,
         )?.length,
         1,
       );
-      actual = dexter.logger.info("test");
+      actual = dexter.logger.info("test") as string;
       Rhum.asserts.assertEquals(
         actual.match(
-          /.*\[INFO\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+          /.*\[INFO\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| test/,
         )?.length,
         1,
       );
-      actual = dexter.logger.trace("test");
+      actual = dexter.logger.trace("test") as string;
       Rhum.asserts.assertEquals(
         actual.match(
-          /.*\[TRACE\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+          /.*\[TRACE\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| test/,
         )?.length,
         1,
       );
-      actual = dexter.logger.warn("test");
+      actual = dexter.logger.warn("test") as string;
       Rhum.asserts.assertEquals(
         actual.match(
-          /.*\[WARN\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| \stest/,
+          /.*\[WARN\].*\s\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d \| test/,
         )?.length,
         1,
       );
