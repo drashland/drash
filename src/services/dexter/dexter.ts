@@ -102,7 +102,7 @@ export class DexterService extends Service implements IService {
       message = request.url + " | " + message;
     }
     if (this.configs.method) {
-      message = request.method.toUpperCase + " | " + message;
+      message = request.method.toUpperCase() + " | " + message;
     }
     this.logger.info(message);
   }
