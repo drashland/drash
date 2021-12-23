@@ -95,11 +95,13 @@ export class Builder {
   public pathItemObject(
     path: string,
     method: string,
+    description: string,
     responses: Types.ResponsesObject,
-    parameters?: Types.ParameterObject[],
+    parameters: Types.ParameterObject[],
   ): void {
     this.spec.paths[path][method.toLowerCase()] = {
-      parameters: parameters ?? [],
+      description,
+      parameters,
       responses,
     };
   }

@@ -26,7 +26,7 @@ export interface OpenAPIServiceOptions {
 export type SpecResource = {
   specs?: {
     [key in Drash.Types.THttpMethod]?: {
-      description: string;
+      description?: string;
       parameters?: SpecTypes.ParameterObject[];
       responses: SpecTypes.ResponsesObject;
     }
@@ -38,7 +38,7 @@ export class OpenAPIService extends Drash.Service {
 
   #models = new Map<string, unknown>();
 
-  #spec_builder = new OpenAPISpecV2Builder();
+  #spec_2_builder = new OpenAPISpecV2Builder();
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -50,19 +50,10 @@ export class OpenAPIService extends Drash.Service {
 
     // Set the path to the Swagger UI page so that the resource can use it
     pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
-
-    if (this.#options.spec) {
-      switch (this.#options.spec) {
-        case "swagger v2.0":
-        default:
-          this.#spec_builder = new OpenAPISpecV2Builder();
-          break;
-      }
-    }
   }
 
   public spec2(): OpenAPISpecV2Builder {
-    return new OpenAPISpecV2Builder();
+    return this.#spec_2_builder;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -84,13 +75,13 @@ export class OpenAPIService extends Drash.Service {
     server: Drash.Server,
     resources: ResourcesAndPatterns
   ): void {
-    this.#spec_builder.host(server.address);
+    this.#spec_2_builder.host(server.address);
 
     for (const { resource, patterns } of resources.values()) {
       const specResource: SpecResource = resource;
 
       specResource.paths.forEach((path: string) => {
-        this.#spec_builder.pathsObject(path);
+        this.#spec_2_builder.pathsObject(path);
 
 
         HttpMethodArray.forEach((method: string) => {
@@ -101,21 +92,24 @@ export class OpenAPIService extends Drash.Service {
               // If the method is not documented, then define some basic
               // documentation so it is included in the spec
               if (!(method in specs)) {
-                this.#spec_builder.pathItemObject(
+                this.#spec_2_builder.pathItemObject(
                   path,
                   method.toLowerCase(),
+                  "",
                   {
                     200: {
                       description: "Successful",
                     },
                   },
+                  [],
                 );
                 return;
               }
 
-              this.#spec_builder.pathItemObject(
+              this.#spec_2_builder.pathItemObject(
                 path,
                 method.toLowerCase(),
+                specs[method as Drash.Types.THttpMethod]!.description ?? "",
                 specs[method as Drash.Types.THttpMethod]!.responses,
                 specs[method as Drash.Types.THttpMethod]!.parameters ?? [],
               );
@@ -125,7 +119,7 @@ export class OpenAPIService extends Drash.Service {
       });
     }
 
-    openApiSpec = this.#spec_builder.build();
+    openApiSpec = this.#spec_2_builder.build();
     console.log(openApiSpec);
   }
 }
