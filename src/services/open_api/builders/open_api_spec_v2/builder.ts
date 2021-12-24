@@ -56,17 +56,93 @@ export class Builder {
     };
   }
 
-  public parameter(
-    location: Types.ParameterInTypes,
-    name: string,
-    fields: {[field: string]: unknown} | Types.SchemaObject = {}
+  public query(
+    fields: Partial<Types.ParameterObjectInQuery> & {
+      // Required fields
+      name: string,
+      type: Types.ParameterTypes
+      // Optional because we set these in the returned object
+      in?: "query",
+    }
+  ): Types.ParameterObjectInQuery {
+    if (fields.type === "array") {
+      if (!fields.collection_format) {
+        fields.collection_format = "csv";
+      }
+      if (fields.items && fields.items.type === "array") {
+        if (!fields.items.collection_format) {
+          fields.items.collection_format = "csv";
+        }
+      }
+    }
+
+    return {
+      ...fields,
+      in: "query",
+    };
+  }
+
+  public formData(
+    fields: Partial<Types.ParameterObjectInQuery> & {
+      // Required fields
+      name: string,
+      type: Types.ParameterTypes
+      // Optional because we set these in the returned object
+      in?: "formData",
+    }
+  ): Types.ParameterObjectInFormData {
+    return {
+      ...fields,
+      in: "formData",
+    };
+  }
+
+  public body(
+    fields: Partial<Types.SchemaObject> & {
+      // Required fields
+      // Optional because we set these in the returned object
+      in?: "body",
+      name?: string,
+    }
   ): Types.ParameterObject {
     return {
       ...fields,
-      in: location,
-      name,
+      name: "Payload",
+      in: "body",
     };
   }
+
+  public items(
+    type: "string" | "number" | "integer" | "boolean" | "array",
+    fields: Partial<Types.ItemsObject> = {}
+  ): Types.ItemsObject {
+    return {
+      ...fields,
+      type,
+    }
+  }
+
+  public itemsString(
+    fields: Partial<Types.ItemsObject> = {}
+  ): Types.ItemsObject {
+    return {
+      ...fields,
+      type: "string",
+    };
+  }
+
+  // public itemsArray(
+  //   items: Partial<Types.ItemsObject>
+  // ): Types.ItemsObject {
+  //   if (!items.collection_format) {
+  //     items.collection_format = "csv";
+  //   }
+
+  //   return {
+  //     items: {...items},
+  //     type: "array",
+  //   };
+  // }
 
   public basePath(basePath: string): void {
     this.spec.basePath = basePath;
