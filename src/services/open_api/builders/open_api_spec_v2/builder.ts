@@ -103,8 +103,36 @@ export class Builder {
   }
 
   public build(): string {
-    return JSON.stringify(this.spec, null, 2);
+    const camelized = this.camelize(this.spec);
+    return JSON.stringify(camelized, null, 2);
   }
+
+  public camelize(o: any): any {
+    const toCamel = (s: string) => {
+      return s.replace(/([-_][a-z])/ig, ($1) => {
+        return $1.toUpperCase()
+          .replace('-', '')
+          .replace('_', '');
+      });
+    };
+
+    if (typeof o === "object" && !Array.isArray(o)) {
+      const n: any = {};
+  
+      Object.keys(o)
+        .forEach((k) => {
+          n[toCamel(k)] = this.camelize(o[k]);
+        });
+  
+      return n;
+    } else if (Array.isArray(o)) {
+      return o.map((i) => {
+        return this.camelize(i);
+      });
+    }
+  
+    return o;
+  };
 
   public pathsObject(
     path: string
