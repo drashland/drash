@@ -12,6 +12,7 @@ export type ParameterInTypes = "body" | "query" | "header" | "path" | "formData"
 export type SchemeTypes = "http"|"https"|"ws"|"wss";
 
 export type PrimitiveTypes = "string" | "number" | "integer" | "boolean" | "array" | "object";
+export type ParameterTypes = "string" | "number" | "integer" | "boolean" | "array" | "file";
 
 export type CollectionFormatTypes = "csv" | "ssv" | "tsv" | "pipes" | "multi";
 
@@ -25,25 +26,59 @@ export interface TagObject {
   external_docs?: ExternalDocumentationObject;
 }
 
-export interface ParameterObject extends JsonSchemaValidation {
+export interface ParameterObject {
   name: string;
   in: ParameterInTypes;
   description?: string;
-  /** Required if `in` is other than "body". */
-  type?: string;
-  /** If `in` is other than "body". */
-  format?: DataTypeFormats;
-  /** Only applicable to `in` of type "query" or "formData". */
-  allow_empty_value?: boolean;
-  /** Required if `in` is "array". */
-  items?: ItemsObject;
-  /** Only applicable if `type` is "array". */
-  collection_format?: CollectionFormatTypes;
-  default?: unknown;
   required?: boolean;
-  /** Required if `in` is "body". */
-  schema?: SchemaObject;
 }
+
+export interface ParmaterObjectInBody extends ParameterObject {
+  schema: SchemaObject;
+}
+
+export interface ParameterObjectInHeader extends ParameterObject, JsonSchemaValidation {
+  default?: unknown;
+  format?: DataTypeFormats;
+  in: "path";
+  type: "string" | "number" | "integer" | "boolean"
+}
+
+export interface ParameterObjectInPath extends ParameterObject, JsonSchemaValidation {
+  default?: unknown;
+  format?: DataTypeFormats;
+  in: "path";
+  type: "string" | "number" | "integer" | "boolean"
+}
+
+export type ParameterObjectInFormData = ParameterObjectType & {
+  allow_empty_value?: boolean;
+  default?: unknown;
+  format?: DataTypeFormats;
+  in: "formData";
+  type: ParameterTypes
+} & JsonSchemaValidation;
+
+export type ParameterObjectType = {
+  name: string;
+  in: ParameterInTypes;
+  description?: string;
+  required?: boolean;
+}
+
+export type ParameterObjectInQuery = ParameterObjectType & {
+  in: "query";
+  type: ParameterTypes;
+  format?: DataTypeFormats;
+  items?: ItemsObject;
+  allow_empty_value?: boolean;
+  collection_format?: CollectionFormatTypes;
+} & JsonSchemaValidation;
+
+// export type ParameterTypeArray =  {
+//   items: ItemsObject;
+//   collection_format?: CollectionFormatTypes;
+// }
 
 export interface IUserRequestBody {
   description?: string;
@@ -125,7 +160,7 @@ export interface SecurityRequirementsObject {
 export interface InfoObject {
   title: string;
   description?: string;
-  termsOfService?: string;
+  terms_of_service?: string;
   contact?: ContactObject;
   license?: LicenseObject;
   version: string;
@@ -146,9 +181,11 @@ export interface ReferenceObject {
   $ref: string;
 }
 
-export interface SchemaObject extends ItemsObject, JsonSchema, JsonSchemaValidation {
+export type SchemaObject = {
   $ref?: string;
-}
+  items?: ItemsObject;
+  type: PrimitiveTypes;
+} & JsonSchema & JsonSchemaValidation & {};
 
 export interface JsonSchema {
   items?: ItemsObject;
@@ -193,14 +230,14 @@ type DataTypeFormats =
   | "date_time"
   | "password";
 
-export interface ItemsObject extends JsonSchemaValidation {
-  type: PrimitiveTypes;
+export type ItemsObject = {
+  type: "string" | "number" | "integer" | "boolean" | "array";
   format?: DataTypeFormats;
   /** Required if `type` is "array". */
   items?: ItemsObject;
   /** Determines the format of the array if `type` is "array". */
   collection_format?: CollectionFormatTypes;
-}
+} & JsonSchemaValidation;
 
 export interface JsonSchemaValidation {
   title?: string;
