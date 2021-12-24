@@ -17,7 +17,7 @@ export type ParameterTypes = "string" | "number" | "integer" | "boolean" | "arra
 export type CollectionFormatTypes = "csv" | "ssv" | "tsv" | "pipes" | "multi";
 
 export interface ResponsesObject {
-  [code: string]: ResponseObject;
+  [code: string | "default"]: ResponseObject;
 }
 
 export interface TagObject {
@@ -37,7 +37,7 @@ export interface ParameterObjectInBody extends ParameterObject {
   schema: SchemaObject;
 }
 
-export type Operation = {
+export type OperationObject = {
   /**
    * A short summary of what the operation does. For maximum readability in the swagger-ui, this field SHOULD be less than 120 characters.
    */
@@ -47,13 +47,19 @@ export type Operation = {
    */
   description?: string;
   /** Parameters used in this operation. */
-  parameters: ParameterObject[];
+  parameters?: ParameterObject[];
   /** Response returned by this operation. */
   responses: ResponsesObject;
   /** A proper MIME type. */
   consumes?: string[];
   /** Tags to group the operation into. */
   tags?: string[];
+  external_docs?: ExternalDocumentationObject;
+  sumamry?: string;
+  operation_id?: string;
+  produces?: string[];
+  schemes?: SchemeTypes[];
+  security?: SecurityRequirementsObject[];
 }
 
 export interface ParameterObjectInHeader extends ParameterObject, JsonSchemaValidation {
@@ -156,20 +162,6 @@ export interface ExternalDocumentationObject {
 
 export interface PathsObject {
   [path: string]: PathItemObject;
-}
-
-export interface OperationObject {
-  tags?: string[];
-  sumamry?: string;
-  description?: string;
-  external_docs?: ExternalDocumentationObject;
-  operation_id?: string;
-  consumes?: string[];
-  produces?: string[];
-  parameters?: (ParameterObject|ReferenceObject)[];
-  responses?: ResponseObject;
-  schemes: SchemeTypes[];
-  security: SecurityRequirementsObject[];
 }
 
 export interface SecurityRequirementsObject {

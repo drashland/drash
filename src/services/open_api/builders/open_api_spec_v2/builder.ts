@@ -6,6 +6,16 @@ type HttpMethodHandler = (
   response: Drash.Response
 ) => Promise<void> | void;
 
+export type ResourceWithSpecs = {
+  swagger?: ResourceSpecsProperty;
+} & Drash.Resource;
+
+export type ResourceSpecsProperty = {
+  operations?: {
+    [key in Drash.Types.THttpMethod]?: Types.OperationObject;
+  };
+};
+
 export class Builder {
   public spec: any = {
     swagger: "2.0",
@@ -13,25 +23,63 @@ export class Builder {
     paths: {},
   };
 
+  current_resource?: ResourceWithSpecs;
+
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - HTTP METHODS ////////////////////////////////////////////////
+  // FILE MARKER - HTTP METHODS / OPERATION OBJECT METHODS /////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   public post(
-    documentation: any,
-    httpMethodHandler: HttpMethodHandler
+    operation: Types.OperationObject,
+    handler: HttpMethodHandler
   ): HttpMethodHandler {
-    return async function (
-      request: Drash.Request,
-      response: Drash.Response,
+    return this.operation("POST", operation, handler);
+  }
+
+  public operation(
+    method: Drash.Types.THttpMethod,
+    operation: Types.OperationObject,
+    handler: HttpMethodHandler,
+  ): HttpMethodHandler {
+    // If this resource does not call `spec.document()`, then we cannot document
+    // this operation. Reason being `spec.document()` sets
+    // `this.current_resource`. If `this.current_resource` is not set, then we
+    // have no idea what resource this operation applies to.
+    if (
+      !this.current_resource
+      || !this.current_resource.swagger
+      || !this.current_resource.swagger.operations
     ) {
-      return await httpMethodHandler(request, response);
+      return handler;
     }
+
+    this.current_resource.swagger.operations[method] = operation;
+
+    return handler;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+
+  /**
+   * Document this resource as much as possible.
+   *
+   * @param resource The resource the document.
+   * @returns 
+   */
+   public document(resource: Drash.Resource): ResourceSpecsProperty {
+     // We cannot document things like request and response bodies because we
+     // have no idea what those look like at this time. Request and response
+     // documentation are added using `this.operation()`. However, we can
+     // document things like path params and what HTTP methods are in the
+     // resource -- those we have access to.
+    this.current_resource = resource;
+    return {
+      operations: {}
+    };
+  }
 
   public swagger(info: Types.InfoObject): void {
     this.spec.info = info;
@@ -243,7 +291,6 @@ class BodyBuilder {
     name: "Body",
     schema: {
       type: "object",
-      properties: {},
     }
   };
 
@@ -254,12 +301,26 @@ class BodyBuilder {
    */
   public property(
     property: string,
-    schema: Types.SchemaObject
+    schema: Types.PrimitiveTypes | Types.SchemaObject,
+    required: boolean = false,
   ): this {
     this.spec.schema.type = "object";
 
-    // @ts-ignore
-    this.spec.schema.properties[property] = schema;
+    if (!this.spec.schema.properties) {
+      this.spec.schema.properties = {};
+    }
+
+    if (typeof schema === "string") {
+      this.spec.schema.properties[property] = {
+        type: schema
+      }
+    } else if (typeof schema === "object") {
+      this.spec.schema.properties[property] = schema;
+    }
+
+    if (required === true) {
+
+    }
 
     return this;
   }

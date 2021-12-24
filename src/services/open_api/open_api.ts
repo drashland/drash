@@ -5,8 +5,10 @@ import {
 } from "./deps.ts";
 import { SwaggerUIResource } from "./swagger_ui_resource.ts";
 import {
-  Builder as OpenAPISpecV2Builder
+  Builder as OpenAPISpecV2Builder,
+  ResourceWithSpecs
 } from "./builders/open_api_spec_v2/builder.ts";
+export { SwaggerUIResource };
 
 import * as OpenAPISpecV2Types from "./builders/open_api_spec_v2/types.ts";
 
@@ -21,16 +23,6 @@ export interface OpenAPIServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
   path?: string;
   spec?: string;
-}
-
-export type ResourceWithSpecs = {
-  specs?: Specs;
-} & Drash.Resource;
-
-export type Specs = {
-  operations?: {
-    [key in Drash.Types.THttpMethod]?: SpecTypes.Operation;
-  };
 }
 
 export class OpenAPIService extends Drash.Service {
@@ -62,7 +54,7 @@ export class OpenAPIService extends Drash.Service {
 
   runAtStartup(
     server: Drash.Server,
-    resources: ResourcesAndPatterns
+    resources: Drash.Types.TResourcesAndPatterns,
   ): void {
     console.log("Building spec");
     this.buildSpec(server, resources);
@@ -73,7 +65,7 @@ export class OpenAPIService extends Drash.Service {
 
   buildSpec(
     server: Drash.Server,
-    resources: ResourcesAndPatterns
+    resources: Drash.Types.TResourcesAndPatterns,
   ): void {
     this.#spec_2_builder.host(server.address);
 
@@ -86,16 +78,16 @@ export class OpenAPIService extends Drash.Service {
 
         HttpMethodArray.forEach((method: string) => {
           if (method in specResource) {
-            if (specResource.specs) {
-              const { specs } = specResource;
+            if (specResource.swagger) {
+              const { swagger } = specResource;
 
-              if (!specs.operations) {
+              if (!swagger.operations) {
                 return;
               }
 
               // If the method is not documented, then define some basic
               // documentation so it is included in the spec
-              if (!(method in specs.operations)) {
+              if (!(method in swagger.operations)) {
                 this.#spec_2_builder.pathItemObject(
                   path,
                   method.toLowerCase(),
@@ -111,15 +103,15 @@ export class OpenAPIService extends Drash.Service {
                 return;
               }
 
-              const methodSpecs = specs.operations[method as Drash.Types.THttpMethod]!;
+              const operation = swagger.operations[method as Drash.Types.THttpMethod]!;
 
               this.#spec_2_builder.pathItemObject(
                 path,
                 method.toLowerCase(), // Spec requires method be lowercased
-                methodSpecs.summary ?? "",
-                methodSpecs.description ?? "",
-                methodSpecs.responses,
-                methodSpecs.parameters ?? [],
+                operation.summary ?? "",
+                operation.description ?? "",
+                operation.responses,
+                operation.parameters ?? [],
               );
             }
           }
