@@ -46,12 +46,12 @@ export class Builder {
 
   public response(
     description: string,
-    responseObject: Types.ResponseObject = {
+    fields: Types.ResponseObject = {
       description: "",
     },
   ): Types.ResponseObject {
     return {
-      ...responseObject,
+      ...fields,
       description,
     };
   }
@@ -97,20 +97,24 @@ export class Builder {
     };
   }
 
-  public body(
-    fields: Partial<Types.SchemaObject> & {
-      // Required fields
-      // Optional because we set these in the returned object
-      in?: "body",
-      name?: string,
-    }
-  ): Types.ParameterObject {
-    return {
-      ...fields,
-      name: "Payload",
-      in: "body",
-    };
+  public body(): BodyBuilder {
+    return new BodyBuilder();
   }
+
+  // public body(
+  //   fields: Partial<Types.SchemaObject> & {
+  //     // Required fields
+  //     // Optional because we set these in the returned object
+  //     in?: "body",
+  //     name?: string,
+  //   }
+  // ): Types.ParameterObject {
+  //   return {
+  //     ...fields,
+  //     name: "Payload",
+  //     in: "body",
+  //   };
+  // }
 
   public items(
     type: "string" | "number" | "integer" | "boolean" | "array",
@@ -219,14 +223,65 @@ export class Builder {
   public pathItemObject(
     path: string,
     method: string,
+    summary: string,
     description: string,
     responses: Types.ResponsesObject,
     parameters: Types.ParameterObject[],
   ): void {
     this.spec.paths[path][method.toLowerCase()] = {
+      summary,
       description,
       parameters,
       responses,
     };
+  }
+}
+
+class BodyBuilder {
+  public spec: Types.ParameterObjectInBody = {
+    in: "body",
+    name: "Body",
+    schema: {
+      type: "object",
+      properties: {},
+    }
+  };
+
+  /**
+   * Use only if the body is of type "object". Otherwise, this has no effect.
+   * @param properties
+   * @returns 
+   */
+  public property(
+    property: string,
+    schema: Types.SchemaObject
+  ): this {
+    this.spec.schema.type = "object";
+
+    // @ts-ignore
+    this.spec.schema.properties[property] = schema;
+
+    return this;
+  }
+
+  public required(required: string[]): this {
+    this.spec.schema.required = required;
+    return this;
+  }
+
+  /**
+   * 
+   * Use only if the body is of type "array". Otherwise, this has no effect.
+   * @param items 
+   * @returns 
+   */
+  public items(items: {[key: string]: Types.ItemsObject}) {
+    return {
+      items,
+    }
+  }
+
+  public build(): Types.ParameterObjectInBody {
+    return this.spec;
   }
 }

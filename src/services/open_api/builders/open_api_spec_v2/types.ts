@@ -33,8 +33,27 @@ export interface ParameterObject {
   required?: boolean;
 }
 
-export interface ParmaterObjectInBody extends ParameterObject {
+export interface ParameterObjectInBody extends ParameterObject {
   schema: SchemaObject;
+}
+
+export type Operation = {
+  /**
+   * A short summary of what the operation does. For maximum readability in the swagger-ui, this field SHOULD be less than 120 characters.
+   */
+  summary?: string;
+  /**
+   * A verbose explanation of the operation behavior. GFM syntax can be used for rich text representation.
+   */
+  description?: string;
+  /** Parameters used in this operation. */
+  parameters: ParameterObject[];
+  /** Response returned by this operation. */
+  responses: ResponsesObject;
+  /** A proper MIME type. */
+  consumes?: string[];
+  /** Tags to group the operation into. */
+  tags?: string[];
 }
 
 export interface ParameterObjectInHeader extends ParameterObject, JsonSchemaValidation {
@@ -182,10 +201,24 @@ export interface ReferenceObject {
 }
 
 export type SchemaObject = {
+  type: PrimitiveTypes;
   $ref?: string;
   items?: ItemsObject;
-  type: PrimitiveTypes;
-} & JsonSchema & JsonSchemaValidation & {};
+  discriminator?: string;
+  read_only?: boolean;
+  xml?: XMLObject;
+  external_docs?: ExternalDocumentationObject;
+  example?: unknown;
+  required?: string[];
+} & JsonSchema & JsonSchemaValidation;
+
+export type XMLObject = {
+  name?: string;
+  namespace: string;
+  prefix: string;
+  attribute: boolean;
+  wrapped: boolean;
+}
 
 export interface JsonSchema {
   items?: ItemsObject;

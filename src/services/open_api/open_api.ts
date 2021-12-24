@@ -5,7 +5,7 @@ import {
 } from "./deps.ts";
 import { SwaggerUIResource } from "./swagger_ui_resource.ts";
 import {
-  Builder as OpenAPISpecV2Builder,
+  Builder as OpenAPISpecV2Builder
 } from "./builders/open_api_spec_v2/builder.ts";
 
 import * as OpenAPISpecV2Types from "./builders/open_api_spec_v2/types.ts";
@@ -23,15 +23,15 @@ export interface OpenAPIServiceOptions {
   spec?: string;
 }
 
-export type SpecResource = {
-  specs?: {
-    [key in Drash.Types.THttpMethod]?: {
-      description?: string;
-      parameters?: SpecTypes.ParameterObject[];
-      responses: SpecTypes.ResponsesObject;
-    }
-  }
+export type ResourceWithSpecs = {
+  specs?: Specs;
 } & Drash.Resource;
+
+export type Specs = {
+  operations?: {
+    [key in Drash.Types.THttpMethod]?: SpecTypes.Operation;
+  };
+}
 
 export class OpenAPIService extends Drash.Service {
   #options: OpenAPIServiceOptions;
@@ -78,7 +78,7 @@ export class OpenAPIService extends Drash.Service {
     this.#spec_2_builder.host(server.address);
 
     for (const { resource, patterns } of resources.values()) {
-      const specResource: SpecResource = resource;
+      const specResource: ResourceWithSpecs = resource;
 
       specResource.paths.forEach((path: string) => {
         this.#spec_2_builder.pathsObject(path);
@@ -89,28 +89,34 @@ export class OpenAPIService extends Drash.Service {
             if (specResource.specs) {
               const { specs } = specResource;
 
+              if (!specs.operations) {
+                return;
+              }
+
               // If the method is not documented, then define some basic
               // documentation so it is included in the spec
-              if (!(method in specs)) {
+              if (!(method in specs.operations)) {
                 this.#spec_2_builder.pathItemObject(
                   path,
                   method.toLowerCase(),
-                  "",
+                  "", // No summary womp womp
+                  "", // No description womp womp
                   {
-                    200: {
+                    200: { // Default to a 200 response (hopefully a 200 is returned)
                       description: "Successful",
                     },
                   },
-                  [],
+                  [], // No params... hopefully this is correct.
                 );
                 return;
               }
 
-              const methodSpecs = specs[method as Drash.Types.THttpMethod]!;
+              const methodSpecs = specs.operations[method as Drash.Types.THttpMethod]!;
 
               this.#spec_2_builder.pathItemObject(
                 path,
                 method.toLowerCase(), // Spec requires method be lowercased
+                methodSpecs.summary ?? "",
                 methodSpecs.description ?? "",
                 methodSpecs.responses,
                 methodSpecs.parameters ?? [],
