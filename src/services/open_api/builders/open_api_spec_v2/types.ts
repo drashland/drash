@@ -1,18 +1,60 @@
 import { Drash } from "../../deps.ts";
 
-export type PathItemObject = {
-  [key in Drash.Types.THttpMethod]?: OperationObject;
-} & {
-  $ref?: string;
-  parameters?: (ParameterObject|ReferenceObject)[];
-}
+export type OpenAPISpecV2 = {
+  swagger: string;
+  info: InfoObject;
+  host: string;
+  base_path?: string;
+  schemes?: SchemeTypes[];
+  consumes?: string[];
+  produces?: string[];
+  security_definitions?: SecurityDefinitionsObject;
+  security?: SecurityRequirementsObject[];
+  tags?: TagObject[];
+  external_docs?: ExternalDocumentationObject;
+  paths: PathsObject;
+  definitions?: DefinitionsObject;
+  responses?: ResponsesObject;
+};
 
-export type ParameterInTypes = "body" | "query" | "header" | "path" | "formData";
+export type DefinitionsObject = {
+  [definitionName: string]: DefinitionObject;
+};
 
-export type SchemeTypes = "http"|"https"|"ws"|"wss";
+export type DefinitionObject = SchemaObject;
 
-export type PrimitiveTypes = "string" | "number" | "integer" | "boolean" | "array" | "object";
-export type ParameterTypes = "string" | "number" | "integer" | "boolean" | "array" | "file";
+export type PathItemObject =
+  & {
+    [key in Drash.Types.THttpMethod]?: OperationObject;
+  }
+  & {
+    $ref?: string;
+    parameters?: (ParameterObject | ReferenceObject)[];
+  };
+
+export type ParameterInTypes =
+  | "body"
+  | "query"
+  | "header"
+  | "path"
+  | "formData";
+
+export type SchemeTypes = "http" | "https" | "ws" | "wss";
+
+export type PrimitiveTypes =
+  | "string"
+  | "number"
+  | "integer"
+  | "boolean"
+  | "array"
+  | "object";
+export type ParameterTypes =
+  | "string"
+  | "number"
+  | "integer"
+  | "boolean"
+  | "array"
+  | "file";
 
 export type CollectionFormatTypes = "csv" | "ssv" | "tsv" | "pipes" | "multi";
 
@@ -31,6 +73,7 @@ export interface ParameterObject {
   in: ParameterInTypes;
   description?: string;
   required?: boolean;
+  schema?: SchemaObject;
 }
 
 export interface ParameterObjectInBody extends ParameterObject {
@@ -60,20 +103,22 @@ export type OperationObject = {
   produces?: string[];
   schemes?: SchemeTypes[];
   security?: SecurityRequirementsObject[];
-}
+};
 
-export interface ParameterObjectInHeader extends ParameterObject, JsonSchemaValidation {
+export interface ParameterObjectInHeader
+  extends ParameterObject, JsonSchemaValidation {
   default?: unknown;
   format?: DataTypeFormats;
   in: "path";
-  type: "string" | "number" | "integer" | "boolean"
+  type: "string" | "number" | "integer" | "boolean";
 }
 
-export interface ParameterObjectInPath extends ParameterObject, JsonSchemaValidation {
+export interface ParameterObjectInPath
+  extends ParameterObject, JsonSchemaValidation {
   default?: unknown;
   format?: DataTypeFormats;
   in: "path";
-  type: "string" | "number" | "integer" | "boolean"
+  type: "string" | "number" | "integer" | "boolean";
 }
 
 export type ParameterObjectInFormData = ParameterObjectType & {
@@ -81,7 +126,7 @@ export type ParameterObjectInFormData = ParameterObjectType & {
   default?: unknown;
   format?: DataTypeFormats;
   in: "formData";
-  type: ParameterTypes
+  type: ParameterTypes;
 } & JsonSchemaValidation;
 
 export type ParameterObjectType = {
@@ -89,7 +134,7 @@ export type ParameterObjectType = {
   in: ParameterInTypes;
   description?: string;
   required?: boolean;
-}
+};
 
 export type ParameterObjectInQuery = ParameterObjectType & {
   in: "query";
@@ -110,6 +155,10 @@ export interface IUserRequestBody {
   schema: unknown;
 }
 
+export type SecurityDefinitionsObject = {
+  [name: string]: SecuritySchemeObject
+}
+
 export interface SwaggerObject {
   swagger: string;
   info: InfoObject;
@@ -118,11 +167,11 @@ export interface SwaggerObject {
   schemes?: SchemeTypes[];
   consumes?: string[];
   produces?: string[];
-  paths: {[path: string]: PathsObject};
-  definitions?: {[definition: string]: SchemaObject};
-  parameters?: {[name: string]: ParameterObject};
+  paths: { [path: string]: PathsObject };
+  definitions?: { [definition: string]: SchemaObject };
+  parameters?: { [name: string]: ParameterObject };
   responses?: ResponsesObject;
-  security_definitions?: {[name: string]: SecuritySchemeObject};
+  security_definitions?: SecurityDefinitionsObject;
   security?: SecurityRequirementsObject[];
   tags?: TagObject[];
   external_docs?: ExternalDocumentationObject;
@@ -192,17 +241,20 @@ export interface ReferenceObject {
   $ref: string;
 }
 
-export type SchemaObject = {
-  type: PrimitiveTypes;
-  $ref?: string;
-  items?: ItemsObject;
-  discriminator?: string;
-  read_only?: boolean;
-  xml?: XMLObject;
-  external_docs?: ExternalDocumentationObject;
-  example?: unknown;
-  required?: string[];
-} & JsonSchema & JsonSchemaValidation;
+export type SchemaObject =
+  & {
+    type?: PrimitiveTypes;
+    $ref?: string;
+    items?: ItemsObject;
+    discriminator?: string;
+    read_only?: boolean;
+    xml?: XMLObject;
+    external_docs?: ExternalDocumentationObject;
+    example?: unknown;
+    required?: string[];
+  }
+  & JsonSchema
+  & JsonSchemaValidation;
 
 export type XMLObject = {
   name?: string;
@@ -210,13 +262,13 @@ export type XMLObject = {
   prefix: string;
   attribute: boolean;
   wrapped: boolean;
-}
+};
 
 export interface JsonSchema {
   items?: ItemsObject;
   all_of?: unknown[]; // TODO(crookse) What is this?
-  properties?: {[property: string]: SchemaObject};
-  additional_properties?: {[property: string]: SchemaObject};
+  properties?: { [property: string]: SchemaObject };
+  additional_properties?: { [property: string]: SchemaObject };
 }
 
 export interface ResponseObject {
@@ -227,7 +279,7 @@ export interface ResponseObject {
 }
 
 export interface ExampleObject {
-  [mime_type: string]: unknown
+  [mime_type: string]: unknown;
 }
 
 export interface HeadersObject {
@@ -243,7 +295,7 @@ export interface HeaderObject {
 }
 
 type DataTypeFormats =
-  "integer"
+  | "integer"
   | "long"
   | "float"
   | "double"
@@ -279,5 +331,3 @@ export interface JsonSchemaValidation {
   enum?: unknown[];
   multiple_of?: number;
 }
-
-

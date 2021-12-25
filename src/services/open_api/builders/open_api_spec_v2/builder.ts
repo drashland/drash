@@ -3,32 +3,56 @@ import * as Types from "./types.ts";
 
 type HttpMethodHandler = (
   request: Drash.Request,
-  response: Drash.Response
+  response: Drash.Response,
 ) => Promise<void> | void;
 
-export type OpenAPIResource = {
-  spec: Builder;
-} & Drash.Resource & OpenAPISpec;
+export type OpenAPIResource =
+  & {
+    spec: Builder;
+  }
+  & Drash.Resource
+  & OpenAPISpec;
 
 export type OpenAPISpec = {
   oas_operations: {
-     [key in Drash.Types.THttpMethod]?: Types.OperationObject & {
-       responses?: Types.ResponsesObject
-     };
+    [key in Drash.Types.THttpMethod]?: Types.OperationObject & {
+      responses?: Types.ResponsesObject;
+    };
   };
 };
 
+export type ObjectToCamelize = {[k: string]: unknown | unknown[]} | unknown[];
+
 export class Builder {
-  public spec: any = {
+  public spec: Partial<Types.OpenAPISpecV2> & {
+    // This is the only required field needed to produce documentation for resources
+    paths: Types.PathsObject
+  }= {
     swagger: "2.0",
     schemes: ["http"],
+    base_path: "/",
     paths: {},
+    definitions: {},
+    responses: {},
+    tags: [],
+    security_definitions: {},
+    security: [],
+    consumes: [],
+    produces: [],
   };
-
-  current_tags: string[] = [];
 
   current_resource?: OpenAPIResource;
 
+  current_tags: string[] = [];
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Construct an object of this class and set the given Info Object.
+   * @param info The Info Object to set in the Spec's `info` property. This argument requires the `title` and `version` fields at the very least.
+   */
   constructor(info: Types.InfoObject) {
     this.spec.info = info;
   }
@@ -39,62 +63,24 @@ export class Builder {
 
   public post(
     operation: Partial<Types.OperationObject>,
-    handler: HttpMethodHandler
+    handler: HttpMethodHandler,
   ): HttpMethodHandler {
     return this.#operation(
       "POST",
       operation,
-      handler
+      handler,
     );
-  }
-
-  setRequiredOperationObjectFields(operation: Partial<Types.OperationObject>): void {
-    if (Object.keys(operation).length === 0) {
-      operation = {
-        responses: {
-          200: {
-            description: "Successful"
-          },
-        }
-      }
-    }
   }
 
   public get(
     operation: Partial<Types.OperationObject>,
-    handler: HttpMethodHandler
+    handler: HttpMethodHandler,
   ): HttpMethodHandler {
     return this.#operation(
       "GET",
       operation,
-      handler
+      handler,
     );
-  }
-
-  #operation(
-    method: Drash.Types.THttpMethod,
-    operation: Partial<Types.OperationObject>,
-    handler: HttpMethodHandler,
-  ): HttpMethodHandler {
-    this.setRequiredOperationObjectFields(operation);
-
-    if (
-      // If this resource does not call `spec.document()`, then we cannot
-      // document this operation. Reason being `spec.document()` sets
-      // `this.current_resource`. If `this.current_resource` is not set, then we
-      // have no idea what resource this operation belongs to.
-      !this.current_resource
-      // `spec.document()` needs to be called on the `spec` property on the
-      // resource. Otherwise, we cannot proceed to document the resource.
-      || !this.current_resource.spec
-    ) {
-      return handler;
-    }
-
-    // By this time, the Operation Object will have all required fields because `this.setRequiredOperationObjectFields()` will add them
-    this.current_resource.oas_operations[method] = operation as Types.OperationObject;
-
-    return handler;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -102,21 +88,35 @@ export class Builder {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
+   * Get the `spec` property.
+   * @param resource
+   */
+  public getSpec(): Partial<Types.OpenAPISpecV2> {
+    return this.spec;
+  }
+
+  /**
    * Document this resource as much as possible.
    *
    * @param resource The resource the document.
-   * @returns 
+   * @returns
    */
-   public document(resource: Drash.Resource): void {
-     // We cannot document things like request and response bodies because we
-     // have no idea what those look like at this time. Request and response
-     // documentation are added using `this.operation()`. However, we can
-     // document things like path params and what HTTP methods are in the
-     // resource -- those we have access to.
+  public setCurrentResource(resource: Drash.Resource): void {
+    // We cannot document things like request and response bodies because we
+    // have no idea what those look like at this time. Request and response
+    // documentation are added using `this.#operation()`. However, we can
+    // document things like path params and what HTTP methods are in the
+    // resource -- those we have access to.
     this.current_resource = resource as OpenAPIResource;
     this.current_resource.oas_operations = {};
   }
 
+  /**
+   * Apply all given tags to all operations in a resource.
+   *
+   * @param tags The tags to apply to all operations.
+   * @returns
+   */
   public allTags(tags: string[]): this {
     this.current_tags = tags;
     return this;
@@ -148,11 +148,11 @@ export class Builder {
   public query(
     fields: Partial<Types.ParameterObjectInQuery> & {
       // Required fields
-      name: string,
-      type: Types.ParameterTypes
+      name: string;
+      type: Types.ParameterTypes;
       // Optional because we set these in the returned object
-      in?: "query",
-    }
+      in?: "query";
+    },
   ): Types.ParameterObjectInQuery {
     if (fields.type === "array") {
       if (!fields.collection_format) {
@@ -174,11 +174,11 @@ export class Builder {
   public formData(
     fields: Partial<Types.ParameterObjectInQuery> & {
       // Required fields
-      name: string,
-      type: Types.ParameterTypes
+      name: string;
+      type: Types.ParameterTypes;
       // Optional because we set these in the returned object
-      in?: "formData",
-    }
+      in?: "formData";
+    },
   ): Types.ParameterObjectInFormData {
     return {
       ...fields,
@@ -207,16 +207,43 @@ export class Builder {
 
   public items(
     type: "string" | "number" | "integer" | "boolean" | "array",
-    fields: Partial<Types.ItemsObject> = {}
+    fields: Partial<Types.ItemsObject> = {},
   ): Types.ItemsObject {
     return {
       ...fields,
       type,
+    };
+  }
+
+  public definitions(
+    definitions: {[definitionName: string]: Types.DefinitionObject}
+  ): this {
+    if (!this.spec.definitions) {
+      this.spec.definitions = {};
     }
+
+    this.spec.definitions = {
+      ...this.spec.definitions,
+      ...definitions
+    };
+
+    return this;
+  }
+
+  /**
+   * Create a Definition Object, which is the same thing as a Schema Object. This method only exists to introduce a semantic method name when creating definitions.
+   * @param fields
+   * @returns
+   */
+  public definition(
+    type: Types.PrimitiveTypes,
+    fields: Partial<Types.DefinitionObject> = {}
+  ): Types.DefinitionObject {
+    return this.schema(type, fields);
   }
 
   public itemsString(
-    fields: Partial<Types.ItemsObject> = {}
+    fields: Partial<Types.ItemsObject> = {},
   ): Types.ItemsObject {
     return {
       ...fields,
@@ -243,12 +270,18 @@ export class Builder {
   }
 
   public basePath(basePath: string): void {
-    this.spec.basePath = basePath;
+    this.spec.base_path = basePath;
   }
 
+  /**
+   *
+   * @param type
+   * @param fields
+   * @returns
+   */
   public schema(
     type: Types.PrimitiveTypes,
-    fields: {[field: string]: unknown} = {},
+    fields: Partial<Types.SchemaObject> = {},
   ): Types.SchemaObject {
     return {
       ...fields,
@@ -256,20 +289,32 @@ export class Builder {
     };
   }
 
+  /**
+   * Create a Schema Object to be set in the a `property` field.
+   * @param type
+   * @param fields
+   * @returns
+   */
   public property(
     type: Types.PrimitiveTypes,
-    fields: {[field: string]: unknown} = {},
+    fields: Partial<Types.SchemaObject> = {},
   ): Types.SchemaObject {
-    return {
-      ...fields,
-      type,
-    };
+    return this.schema(type, fields);
   }
 
+  /**
+   * Add the `schemes` to the spec.
+   *
+   * @param schemes An array of acceptable OpenAPI 2.0 Spec schemes.
+   */
   public schemes(schemes: Types.SchemeTypes[]): void {
     this.spec.schemes = schemes;
   }
 
+  /**
+   *
+   * @param host The `host` field in the OpenAPI Spec.
+   */
   public host(host: string): void {
     if (!this.spec.host) {
       this.spec.host = host
@@ -278,44 +323,65 @@ export class Builder {
     }
   }
 
-  public build(): string {
-    const camelized = this.camelize(this.spec);
-    return JSON.stringify(camelized, null, 2);
+  /**
+   * Build the OpenAPI Spec JSON string.
+   *
+   * @returns A JSON string representation of the OpenAPI Spec object.
+   */
+  public toJson(): string {
+    const spec = this.convertFieldNamesToSpec(this.spec);
+    return JSON.stringify(spec, null, 2);
   }
 
-  public camelize(o: any): any {
-    const toCamel = (s: string) => {
-      return s.replace(/([-_][a-z])/ig, ($1) => {
-        return $1.toUpperCase()
-          .replace('-', '')
-          .replace('_', '');
+  /**
+   * Convert the given object's field names to meet Spec.
+   *
+   * @param objectToConvert The object to convert to Spec.
+   * @returns The `objectToConvert` with field names meeting Spec.
+   */
+  public convertFieldNamesToSpec(objectToConvert: ObjectToCamelize): ObjectToCamelize {
+    const convertField = (s: string) => {
+      // Convert HTTP method name to lowercase. Spec requires lowercase HTTP method names.
+      if (Drash.Types.THttpMethodArray.includes(s)) {
+        return s.toLowerCase();
+      }
+
+      return s.replace(/([-_][a-z])/ig, (field: string) => {
+        // Convert field to camel case. Spec requires camel case field names.
+        return field.toUpperCase()
+          .replace("-", "")
+          .replace("_", "");
       });
     };
 
-    if (typeof o === "object" && !Array.isArray(o)) {
-      const n: any = {};
-  
-      Object.keys(o)
-        .forEach((k) => {
-          n[toCamel(k)] = this.camelize(o[k]);
+    if (typeof objectToConvert === "object" && !Array.isArray(objectToConvert)) {
+      const convertedObject: {[key: string]: ObjectToCamelize} = {};
+
+      Object.keys(objectToConvert)
+        .forEach((field: string) => {
+          convertedObject[convertField(field)] = this.convertFieldNamesToSpec(
+            objectToConvert[field] as ObjectToCamelize
+          );
         });
-  
-      return n;
-    } else if (Array.isArray(o)) {
-      return o.map((i) => {
-        return this.camelize(i);
+
+      return convertedObject;
+    }
+
+    if (Array.isArray(objectToConvert)) {
+      return objectToConvert.map((nestedObject: ObjectToCamelize) => {
+        return this.convertFieldNamesToSpec(nestedObject);
       });
     }
-  
-    return o;
-  };
+
+    return objectToConvert;
+  }
 
   /**
    * Create a Paths Object with an empty Path Item Object. Use `this.pathItemObject()` to insert a Path Item Object into this Paths Object.
    * @param path
    */
   public pathsObject(
-    path: string
+    path: string,
   ): void {
     this.spec.paths[path] = {};
   }
@@ -326,7 +392,7 @@ export class Builder {
     operation: Types.OperationObject,
     parameters: Types.ParameterObject[],
   ): void {
-    this.spec.paths[path][method.toLowerCase()] = {
+    this.spec.paths[path][method as Drash.Types.THttpMethod] = {
       ...operation,
       tags: [
         ...operation.tags ?? [],
@@ -334,6 +400,60 @@ export class Builder {
       ],
       parameters,
     };
+  }
+
+  /**
+   * Create an Operation Object for the given method on the current resource.
+   *
+   * @param method An HTTP method (capitalized).
+   * @param operation The Operation Object the given method is associated with.
+   * @param handler The request-response handler for a Drash resource.
+   * @returns The request-response handler for the Drash resource. This handler is what Drash performs in `Drash.Server`.
+   */
+  #operation(
+    method: Drash.Types.THttpMethod,
+    operation: Partial<Types.OperationObject>,
+    handler: HttpMethodHandler,
+  ): HttpMethodHandler {
+    this.#setRequiredOperationObjectFields(operation);
+
+    if (
+      // If this resource does not call `spec.document()`, then we cannot
+      // document this operation. Reason being `spec.document()` sets
+      // `this.current_resource`. If `this.current_resource` is not set, then we
+      // have no idea what resource this operation belongs to.
+      !this.current_resource ||
+      // `spec.document()` needs to be called on the `spec` property on the
+      // resource. Otherwise, we cannot proceed to document the resource.
+      !this.current_resource.spec
+    ) {
+      return handler;
+    }
+
+    // By this time, the Operation Object will have all required fields because `this.setRequiredOperationObjectFields()` will add them
+    this.current_resource.oas_operations[method] =
+      operation as Types.OperationObject;
+
+    return handler;
+  }
+
+  /**
+   * Set the required fields on the given Operation Object. At the very least, an Operation Object requires the `responses` field.
+   *
+   * @param operation The operation to have fields set on it.
+   */
+  #setRequiredOperationObjectFields(
+    operation: Partial<Types.OperationObject>,
+  ): void {
+    if (Object.keys(operation).length === 0) {
+      operation = {
+        responses: {
+          200: {
+            description: "Successful",
+          },
+        },
+      };
+    }
   }
 }
 
@@ -343,13 +463,13 @@ class BodyBuilder {
     name: "Body",
     schema: {
       type: "object",
-    }
+    },
   };
 
   /**
    * Use only if the body is of type "object". Otherwise, this has no effect.
    * @param properties
-   * @returns 
+   * @returns
    */
   public property(
     property: string,
@@ -364,14 +484,13 @@ class BodyBuilder {
 
     if (typeof schema === "string") {
       this.spec.schema.properties[property] = {
-        type: schema
-      }
+        type: schema,
+      };
     } else if (typeof schema === "object") {
       this.spec.schema.properties[property] = schema;
     }
 
     if (required === true) {
-
     }
 
     return this;
@@ -383,15 +502,14 @@ class BodyBuilder {
   }
 
   /**
-   * 
    * Use only if the body is of type "array". Otherwise, this has no effect.
-   * @param items 
-   * @returns 
+   * @param items
+   * @returns
    */
-  public items(items: {[key: string]: Types.ItemsObject}) {
+  public items(items: { [key: string]: Types.ItemsObject }) {
     return {
       items,
-    }
+    };
   }
 
   public build(): Types.ParameterObjectInBody {
