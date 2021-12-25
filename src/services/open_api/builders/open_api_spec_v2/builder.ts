@@ -25,6 +25,8 @@ export class Builder {
     paths: {},
   };
 
+  current_tags: string[] = [];
+
   current_resource?: OpenAPIResource;
 
   constructor(info: Types.InfoObject) {
@@ -99,7 +101,6 @@ export class Builder {
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-
   /**
    * Document this resource as much as possible.
    *
@@ -114,6 +115,11 @@ export class Builder {
      // resource -- those we have access to.
     this.current_resource = resource as OpenAPIResource;
     this.current_resource.oas_operations = {};
+  }
+
+  public allTags(tags: string[]): this {
+    this.current_tags = tags;
+    return this;
   }
 
   public app(info: Types.InfoObject): void {
@@ -231,6 +237,11 @@ export class Builder {
   //   };
   // }
 
+  resetCurrentFields(): void {
+    this.current_resource = undefined;
+    this.current_tags = [];
+  }
+
   public basePath(basePath: string): void {
     this.spec.basePath = basePath;
   }
@@ -317,6 +328,10 @@ export class Builder {
   ): void {
     this.spec.paths[path][method.toLowerCase()] = {
       ...operation,
+      tags: [
+        ...operation.tags ?? [],
+        ...this.current_tags,
+      ],
       parameters,
     };
   }

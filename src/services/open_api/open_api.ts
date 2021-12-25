@@ -163,6 +163,8 @@ export class OpenAPIService extends Drash.Service {
           }
         });
       });
+
+      oasResource.spec.resetCurrentFields();
     }
   }
 }
