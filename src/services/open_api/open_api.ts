@@ -6,7 +6,7 @@ import {
 import { SwaggerUIResource } from "./swagger_ui_resource.ts";
 import {
   Builder as OpenAPISpecV2Builder,
-  ResourceWithSpecs
+  OpenAPIResource
 } from "./builders/open_api_spec_v2/builder.ts";
 export { SwaggerUIResource };
 
@@ -17,7 +17,7 @@ type HttpMethod = Drash.Types.THttpMethod;
 const HttpMethodArray = Drash.Types.THttpMethodArray;
 
 export let pathToSwaggerUI: string;
-export let openApiSpec: string;
+export let specs = new Map<string, string>();
 
 export interface OpenAPIServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
@@ -28,24 +28,49 @@ export interface OpenAPIServiceOptions {
 export class OpenAPIService extends Drash.Service {
   #options: OpenAPIServiceOptions;
 
-  #models = new Map<string, unknown>();
+  #specs_v2 = new Map<string, OpenAPISpecV2Builder>();
 
-  #spec_2_builder = new OpenAPISpecV2Builder();
+  #models = new Map<string, unknown>();
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(options: OpenAPIServiceOptions) {
+  constructor(options?: OpenAPIServiceOptions) {
     super();
-    this.#options = options;
+    this.#options = options ?? {};
 
     // Set the path to the Swagger UI page so that the resource can use it
     pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
   }
 
-  public spec2(): OpenAPISpecV2Builder {
-    return this.#spec_2_builder;
+  /**
+   * Create a new app to be spec'd with OpenAPI documentation.
+   */
+  public addSpecV2(info: SpecTypes.InfoObject): void {
+    const builder = new OpenAPISpecV2Builder(info);
+    this.#specs_v2.set(
+      info.title + info.version,
+      builder
+    );
+  }
+
+  public getSpecV2(apiTitle: string, apiVersion: string): OpenAPISpecV2Builder {
+    if (!this.#specs_v2.has(apiTitle + apiVersion)) {
+      throw new Error(
+        `Spec for "${apiTitle} ${apiVersion}" does not exist.\n` +
+        `To create one, use \`oas.addSpecV2({ title, version })\`.`
+      );
+    }
+
+    return this.#specs_v2.get(apiTitle + apiVersion)!;
+  }
+
+  /**
+   * Get an OpenAPI Spec 3.0 builder.
+   */
+  public spec3(): void {
+    // Not implemented yet.
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -57,69 +82,87 @@ export class OpenAPIService extends Drash.Service {
     resources: Drash.Types.TResourcesAndPatterns,
   ): void {
     console.log("Building spec");
-    this.buildSpec(server, resources);
+    this.addHostToAllSpecs(server);
+    this.addPathObjectToAllResources(resources);
+    this.buildSpecs();
 
     // This comes after `buildSpec()` to prevent the OpenAPI spec from having the Swagger endpoint
     server.addResource(SwaggerUIResource);
   }
 
-  buildSpec(
-    server: Drash.Server,
+  buildSpecs(): void {
+    this.#specs_v2.forEach((spec: OpenAPISpecV2Builder) => {
+      const key = "swagger-ui-" + spec.spec.info.title + "-" + spec.spec.info.version;
+      specs.set(key, spec.build());
+    });
+    console.log(specs);
+  }
+
+  addHostToAllSpecs(server: Drash.Server): void {
+    this.#specs_v2.forEach((spec: OpenAPISpecV2Builder) => {
+      spec.host(server.address);
+    })
+  }
+
+  addPathObject(resource: OpenAPIResource, path: string): void {
+    resource.open_api_spec_builder.pathsObject(path);
+  }
+
+  addPathObjectToAllResources(
     resources: Drash.Types.TResourcesAndPatterns,
   ): void {
-    this.#spec_2_builder.host(server.address);
 
     for (const { resource, patterns } of resources.values()) {
-      const specResource: ResourceWithSpecs = resource;
 
-      specResource.paths.forEach((path: string) => {
-        this.#spec_2_builder.pathsObject(path);
+      // By this time, the resource should have all members from the `OpenAPIResource` type
+      const oasResource = resource as OpenAPIResource;
+      // ... however, let's check before continuing.
+      if (!oasResource.open_api_spec) {
+        continue;
+      }
 
+      oasResource.paths.forEach((path: string) => {
 
+        this.addPathObject(oasResource, path);
+
+        // For each HTTP method, check if it exists in the resource. If it does, try to document it.
         HttpMethodArray.forEach((method: string) => {
-          if (method in specResource) {
-            if (specResource.swagger) {
-              const { swagger } = specResource;
+          if (method in oasResource) {
+            const {
+              open_api_spec: spec,
+              open_api_spec_builder: builder,
+            } = oasResource;
 
-              if (!swagger.operations) {
-                return;
-              }
-
-              // If the method is not documented, then define some basic
-              // documentation so it is included in the spec
-              if (!(method in swagger.operations)) {
-                this.#spec_2_builder.pathItemObject(
-                  path,
-                  method.toLowerCase(),
-                  "", // No summary womp womp
-                  "", // No description womp womp
-                  {
+            // If the method is not documented, then define some basic
+            // documentation so it is included in the spec
+            if (!(method in spec.operations)) {
+              builder.pathItemObject(
+                path,
+                method,
+                {
+                  description: "", // No description! Womp womp.
+                  summary: "", // No summary! Womp womp.
+                  responses: {
                     200: { // Default to a 200 response (hopefully a 200 is returned)
                       description: "Successful",
                     },
                   },
-                  [], // No params... hopefully this is correct.
-                );
-                return;
-              }
-
-              const operation = swagger.operations[method as Drash.Types.THttpMethod]!;
-
-              this.#spec_2_builder.pathItemObject(
-                path,
-                method.toLowerCase(), // Spec requires method be lowercased
-                operation.summary ?? "",
-                operation.description ?? "",
-                operation.responses,
-                operation.parameters ?? [],
+                },
+                [], // No params... hopefully this is correct.
               );
+              return;
             }
+
+            builder.pathItemObject(
+              path,
+              method,
+              // We know the method exists by this time since we check for it in the `if` block above
+              spec.operations[method as Drash.Types.THttpMethod]!,
+              [], // TODO(crookse) Need to implement this.
+            );
           }
         });
       });
     }
-
-    openApiSpec = this.#spec_2_builder.build();
-    console.log(openApiSpec);
   }
 }

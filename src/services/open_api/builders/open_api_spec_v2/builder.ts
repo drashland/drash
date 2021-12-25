@@ -6,13 +6,16 @@ type HttpMethodHandler = (
   response: Drash.Response
 ) => Promise<void> | void;
 
-export type ResourceWithSpecs = {
-  swagger?: ResourceSpecsProperty;
+export type OpenAPIResource = {
+  open_api_spec: OpenAPISpec;
+  open_api_spec_builder: Builder;
 } & Drash.Resource;
 
-export type ResourceSpecsProperty = {
-  operations?: {
-    [key in Drash.Types.THttpMethod]?: Types.OperationObject;
+export type OpenAPISpec = {
+  operations: {
+     [key in Drash.Types.THttpMethod]?: Types.OperationObject & {
+       responses?: Types.ResponsesObject
+     };
   };
 };
 
@@ -23,37 +26,56 @@ export class Builder {
     paths: {},
   };
 
-  current_resource?: ResourceWithSpecs;
+  current_resource?: OpenAPIResource;
+
+  constructor(info: Types.InfoObject) {
+    this.spec.info = info;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - HTTP METHODS / OPERATION OBJECT METHODS /////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   public post(
-    operation: Types.OperationObject,
+    operation: Partial<Types.OperationObject>,
     handler: HttpMethodHandler
   ): HttpMethodHandler {
-    return this.operation("POST", operation, handler);
+    if (Object.keys(operation).length === 0) {
+      operation = {
+        responses: {
+          200: {
+            description: "Successful"
+          },
+        }
+      }
+    }
+
+    return this.#operation(
+      "POST",
+      operation as Types.OperationObject,
+      handler
+    );
   }
 
-  public operation(
+  #operation(
     method: Drash.Types.THttpMethod,
     operation: Types.OperationObject,
     handler: HttpMethodHandler,
   ): HttpMethodHandler {
-    // If this resource does not call `spec.document()`, then we cannot document
-    // this operation. Reason being `spec.document()` sets
-    // `this.current_resource`. If `this.current_resource` is not set, then we
-    // have no idea what resource this operation applies to.
     if (
+      // If this resource does not call `spec.document()`, then we cannot
+      // document this operation. Reason being `spec.document()` sets
+      // `this.current_resource`. If `this.current_resource` is not set, then we
+      // have no idea what resource this operation belongs to.
       !this.current_resource
-      || !this.current_resource.swagger
-      || !this.current_resource.swagger.operations
+      // `spec.document()` needs to be called on the `open_api_spec` property on the
+      // resource. Otherwise, we cannot proceed to document the resource.
+      || !this.current_resource.open_api_spec
     ) {
       return handler;
     }
 
-    this.current_resource.swagger.operations[method] = operation;
+    this.current_resource.open_api_spec.operations[method] = operation;
 
     return handler;
   }
@@ -69,19 +91,21 @@ export class Builder {
    * @param resource The resource the document.
    * @returns 
    */
-   public document(resource: Drash.Resource): ResourceSpecsProperty {
+   public document(resource: Drash.Resource): OpenAPISpec {
      // We cannot document things like request and response bodies because we
      // have no idea what those look like at this time. Request and response
      // documentation are added using `this.operation()`. However, we can
      // document things like path params and what HTTP methods are in the
      // resource -- those we have access to.
-    this.current_resource = resource;
+    this.current_resource = resource as OpenAPIResource;
+    (resource as OpenAPIResource).open_api_spec_builder = this;
+
     return {
       operations: {}
     };
   }
 
-  public swagger(info: Types.InfoObject): void {
+  public app(info: Types.InfoObject): void {
     this.spec.info = info;
   }
 
@@ -225,9 +249,11 @@ export class Builder {
   }
 
   public host(host: string): void {
-    this.spec.host = host
-      .replace(/^(http|https)\:\/\//g, "")
-      .replace("0.0.0.0", "localhost");
+    if (!this.spec.host) {
+      this.spec.host = host
+        .replace(/^(http|https)\:\/\//g, "")
+        .replace("0.0.0.0", "localhost");
+    }
   }
 
   public build(): string {
@@ -262,6 +288,10 @@ export class Builder {
     return o;
   };
 
+  /**
+   * Create a Paths Object with an empty Path Item Object. Use `this.pathItemObject()` to insert a Path Item Object into this Paths Object.
+   * @param path
+   */
   public pathsObject(
     path: string
   ): void {
@@ -271,16 +301,12 @@ export class Builder {
   public pathItemObject(
     path: string,
     method: string,
-    summary: string,
-    description: string,
-    responses: Types.ResponsesObject,
+    operation: Types.OperationObject,
     parameters: Types.ParameterObject[],
   ): void {
     this.spec.paths[path][method.toLowerCase()] = {
-      summary,
-      description,
+      ...operation,
       parameters,
-      responses,
     };
   }
 }

@@ -3,18 +3,28 @@ const css = Deno.readFileSync("/var/src/drashland/deno-drash/src/services/open_a
 const bundle = Deno.readFileSync("/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/swagger-ui-bundle.js");
 const standalone = Deno.readFileSync("/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/swagger-ui-standalone-preset.js");
 const decoder = new TextDecoder();
-import { pathToSwaggerUI, openApiSpec } from "./open_api.ts";
+import {
+  pathToSwaggerUI,
+  specs,
+} from "./open_api.ts";
 
 export class SwaggerUIResource extends Drash.Resource {
   public paths = [
     pathToSwaggerUI,
-    "/swagger-ui(\.js|\.json|\.css|-bundle\.js|-standalone-preset\.js)?"
+    "/swagger-ui(.+|\.js|\.json|\.css|-bundle\.js|-standalone-preset\.js)?"
   ];
 
   public GET(request: Drash.Request, response: Drash.Response) {
     console.log(request.url);
-    if (request.url.includes("swagger-ui.json")) {
-      return response.send<string>("application/json", openApiSpec);
+    if (
+      request.url.includes("swagger-ui")
+      && request.url.includes(".json")
+    ) {
+      const url = new URL(request.url);
+      const filename = url.pathname.replace("/", "").replace(".json", "");
+      console.log(filename);
+      console.log(specs.get(filename));
+      return response.send<string>("application/json", specs.get(filename) ?? "{}");
     }
     if (request.url.includes(".css")) {
       return response.send<string>("text/css", decoder.decode(css));
