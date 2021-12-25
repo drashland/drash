@@ -55,7 +55,7 @@ export class OpenAPIService extends Drash.Service {
     );
   }
 
-  public getSpecV2(apiTitle: string, apiVersion: string): OpenAPISpecV2Builder {
+  public setSpecV2(resource: Drash.Resource, apiTitle: string, apiVersion: string): OpenAPISpecV2Builder {
     if (!this.#specs_v2.has(apiTitle + apiVersion)) {
       throw new Error(
         `Spec for "${apiTitle} ${apiVersion}" does not exist.\n` +
@@ -63,7 +63,9 @@ export class OpenAPIService extends Drash.Service {
       );
     }
 
-    return this.#specs_v2.get(apiTitle + apiVersion)!;
+    const builder = this.#specs_v2.get(apiTitle + apiVersion)!;
+    builder.document(resource);
+    return builder;
   }
 
   /**
@@ -105,7 +107,7 @@ export class OpenAPIService extends Drash.Service {
   }
 
   addPathObject(resource: OpenAPIResource, path: string): void {
-    resource.open_api_spec_builder.pathsObject(path);
+    resource.spec.pathsObject(path);
   }
 
   addPathObjectToAllResources(
@@ -117,7 +119,7 @@ export class OpenAPIService extends Drash.Service {
       // By this time, the resource should have all members from the `OpenAPIResource` type
       const oasResource = resource as OpenAPIResource;
       // ... however, let's check before continuing.
-      if (!oasResource.open_api_spec) {
+      if (!oasResource.spec) {
         continue;
       }
 
@@ -128,15 +130,12 @@ export class OpenAPIService extends Drash.Service {
         // For each HTTP method, check if it exists in the resource. If it does, try to document it.
         HttpMethodArray.forEach((method: string) => {
           if (method in oasResource) {
-            const {
-              open_api_spec: spec,
-              open_api_spec_builder: builder,
-            } = oasResource;
+            const { spec } = oasResource;
 
             // If the method is not documented, then define some basic
             // documentation so it is included in the spec
-            if (!(method in spec.operations)) {
-              builder.pathItemObject(
+            if (!(method in oasResource.oas_operations)) {
+              spec.pathItemObject(
                 path,
                 method,
                 {
@@ -150,14 +149,15 @@ export class OpenAPIService extends Drash.Service {
                 },
                 [], // No params... hopefully this is correct.
               );
+
               return;
             }
 
-            builder.pathItemObject(
+            spec.pathItemObject(
               path,
               method,
               // We know the method exists by this time since we check for it in the `if` block above
-              spec.operations[method as Drash.Types.THttpMethod]!,
+              oasResource.oas_operations[method as Drash.Types.THttpMethod]!,
               [], // TODO(crookse) Need to implement this.
             );
           }

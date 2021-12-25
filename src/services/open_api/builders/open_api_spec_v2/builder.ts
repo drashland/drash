@@ -7,12 +7,11 @@ type HttpMethodHandler = (
 ) => Promise<void> | void;
 
 export type OpenAPIResource = {
-  open_api_spec: OpenAPISpec;
-  open_api_spec_builder: Builder;
-} & Drash.Resource;
+  spec: Builder;
+} & Drash.Resource & OpenAPISpec;
 
 export type OpenAPISpec = {
-  operations: {
+  oas_operations: {
      [key in Drash.Types.THttpMethod]?: Types.OperationObject & {
        responses?: Types.ResponsesObject
      };
@@ -40,6 +39,14 @@ export class Builder {
     operation: Partial<Types.OperationObject>,
     handler: HttpMethodHandler
   ): HttpMethodHandler {
+    return this.#operation(
+      "POST",
+      operation,
+      handler
+    );
+  }
+
+  setRequiredOperationObjectFields(operation: Partial<Types.OperationObject>): void {
     if (Object.keys(operation).length === 0) {
       operation = {
         responses: {
@@ -49,33 +56,41 @@ export class Builder {
         }
       }
     }
+  }
 
+  public get(
+    operation: Partial<Types.OperationObject>,
+    handler: HttpMethodHandler
+  ): HttpMethodHandler {
     return this.#operation(
-      "POST",
-      operation as Types.OperationObject,
+      "GET",
+      operation,
       handler
     );
   }
 
   #operation(
     method: Drash.Types.THttpMethod,
-    operation: Types.OperationObject,
+    operation: Partial<Types.OperationObject>,
     handler: HttpMethodHandler,
   ): HttpMethodHandler {
+    this.setRequiredOperationObjectFields(operation);
+
     if (
       // If this resource does not call `spec.document()`, then we cannot
       // document this operation. Reason being `spec.document()` sets
       // `this.current_resource`. If `this.current_resource` is not set, then we
       // have no idea what resource this operation belongs to.
       !this.current_resource
-      // `spec.document()` needs to be called on the `open_api_spec` property on the
+      // `spec.document()` needs to be called on the `spec` property on the
       // resource. Otherwise, we cannot proceed to document the resource.
-      || !this.current_resource.open_api_spec
+      || !this.current_resource.spec
     ) {
       return handler;
     }
 
-    this.current_resource.open_api_spec.operations[method] = operation;
+    // By this time, the Operation Object will have all required fields because `this.setRequiredOperationObjectFields()` will add them
+    this.current_resource.oas_operations[method] = operation as Types.OperationObject;
 
     return handler;
   }
@@ -91,18 +106,14 @@ export class Builder {
    * @param resource The resource the document.
    * @returns 
    */
-   public document(resource: Drash.Resource): OpenAPISpec {
+   public document(resource: Drash.Resource): void {
      // We cannot document things like request and response bodies because we
      // have no idea what those look like at this time. Request and response
      // documentation are added using `this.operation()`. However, we can
      // document things like path params and what HTTP methods are in the
      // resource -- those we have access to.
     this.current_resource = resource as OpenAPIResource;
-    (resource as OpenAPIResource).open_api_spec_builder = this;
-
-    return {
-      operations: {}
-    };
+    this.current_resource.oas_operations = {};
   }
 
   public app(info: Types.InfoObject): void {
