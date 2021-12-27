@@ -1,4 +1,4 @@
-import { ComputedTypes, Drash, SpecTypes } from "./deps.ts";
+import { Drash, SpecTypes } from "./deps.ts";
 import { SwaggerUIResource } from "./swagger_ui_resource.ts";
 import {
   Builder as OpenAPISpecV2Builder,

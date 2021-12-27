@@ -55,6 +55,12 @@ export type ParameterTypes =
   | "boolean"
   | "array"
   | "file";
+export type ItemsObjectTypes =
+| "string"
+| "number"
+| "integer"
+| "boolean"
+| "array";
 
 export type CollectionFormatTypes = "csv" | "ssv" | "tsv" | "pipes" | "multi";
 
@@ -308,7 +314,7 @@ type DataTypeFormats =
   | "password";
 
 export type ItemsObject = {
-  type: "string" | "number" | "integer" | "boolean" | "array";
+  type: ItemsObjectTypes;
   format?: DataTypeFormats;
   /** Required if `type` is "array". */
   items?: ItemsObject;

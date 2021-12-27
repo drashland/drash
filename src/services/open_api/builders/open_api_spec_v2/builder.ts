@@ -6,6 +6,10 @@ type HttpMethodHandler = (
   response: Drash.Response,
 ) => Promise<void> | void;
 
+export type PrimitiveTypeBuilders = {
+  [key: string]: PrimitiveTypeBuilder | Types.PrimitiveTypes
+}
+
 export type OpenAPIResource =
   & {
     spec: Builder;
@@ -21,13 +25,18 @@ export type OpenAPISpec = {
   };
 };
 
+type PropertyString  = {
+  type: "string";
+  required?: boolean;
+}
+
 export type ObjectToCamelize = {[k: string]: unknown | unknown[]} | unknown[];
 
 export class Builder {
   public spec: Partial<Types.OpenAPISpecV2> & {
     // This is the only required field needed to produce documentation for resources
     paths: Types.PathsObject
-  }= {
+  } = {
     swagger: "2.0",
     schemes: ["http"],
     base_path: "/",
@@ -81,6 +90,26 @@ export class Builder {
       operation,
       handler,
     );
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - PRIMITIVE BUILDERS //////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  public array(items: PrimitiveTypeBuilder): ArrayBuilder {
+    return new ArrayBuilder(items);
+  }
+
+  public boolean(): BooleanBuilder {
+    return new BooleanBuilder();
+  }
+
+  public string(): StringBuilder {
+    return new StringBuilder();
+  }
+
+  public object(properties: PrimitiveTypeBuilders): ObjectBuilder {
+    return new ObjectBuilder(properties);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -386,6 +415,49 @@ export class Builder {
     this.spec.paths[path] = {};
   }
 
+  // public array(fields: {
+  //   type: Types.ItemsObjectTypes,
+  //   required?: boolean,
+  // }): PropertyArray {
+  //   return {
+  //     ...fields,
+  //     type: "array",
+  //     required: fields.required ?? false,
+  //     items: {
+  //       type: fields.type
+  //     }
+  //   }
+  // }
+
+  public requestBody(
+    builders: ObjectBuilder
+  ): Types.ParameterObjectInBody {
+
+    const schema = new SchemaObjectBuilder(builders).build();
+
+    return {
+      name: "Body Payload",
+      in: "body",
+      schema,
+    }
+  }
+  //   const schema: Types.SchemaObject = {};
+
+  //   for (const field in fields) {
+  //     const value = fields[field];
+  //     if (typeof value === "object") {
+  //       if (Array.isArray(value)) {
+  //         schema[field] =
+  //       }
+
+  //     }
+  //     if () {
+  //       continue;
+  //     }
+  //     schema[field] = fields[field];
+  //   }
+  // }
+
   public pathItemObject(
     path: string,
     method: string,
@@ -514,5 +586,131 @@ class BodyBuilder {
 
   public build(): Types.ParameterObjectInBody {
     return this.spec;
+  }
+}
+
+type Meta = {
+  required: boolean;
+}
+
+abstract class PrimitiveTypeBuilder {
+  #meta: Meta = {
+    required: false,
+  }
+
+  get meta(): Meta {
+    return this.#meta;
+  }
+
+  public required(): this {
+    this.#meta.required = true;
+    return this;
+  }
+
+  abstract toJson(): Types.SchemaObject;
+}
+
+class ArrayBuilder extends PrimitiveTypeBuilder {
+  #items: PrimitiveTypeBuilder;
+
+  constructor(items: PrimitiveTypeBuilder) {
+    super();
+    this.#items = items;
+  }
+
+  public toJson(): Types.SchemaObject {
+    return {
+      type: "array",
+      items: this.itemsToSpec(),
+    };
+  }
+
+  public itemsToSpec(): Types.ItemsObject {
+    if (this.#items instanceof ArrayBuilder) {
+      return {
+        type: "array",
+        items: this.#items.itemsToSpec(),
+      }
+    }
+
+    if (this.#items instanceof StringBuilder) {
+      return {
+        type: "string"
+      }
+    }
+
+    throw new Error("`items` is an unknown type.");
+  }
+}
+
+class BooleanBuilder extends PrimitiveTypeBuilder {
+  public toJson(): Types.SchemaObject {
+    return {
+      type: "boolean",
+    }
+  }
+}
+
+class StringBuilder extends PrimitiveTypeBuilder {
+  public toJson(): Types.SchemaObject {
+    return {
+      type: "string",
+    }
+  }
+}
+
+type JsonObject = Record<string, string | object>
+
+class ObjectBuilder extends PrimitiveTypeBuilder {
+  properties: PrimitiveTypeBuilders;
+
+  constructor(properties: PrimitiveTypeBuilders = {}) {
+    super();
+    this.properties = properties;
+  }
+
+  toJson(): Types.SchemaObject {
+    const ret: Types.SchemaObject = {
+      type: "object",
+      required: [],
+      properties: {},
+    };
+
+    for (const key in this.properties) {
+      const value = this.properties[key] as PrimitiveTypeBuilder;
+      if (value.meta.required) {
+        ret.required!.push(key);
+      }
+      ret.properties![key] = value.toJson();
+    }
+
+    return ret;
+  }
+}
+
+export type PropertyObject = {
+  type: string;
+}
+
+class SchemaObjectBuilder {
+  #builder: ObjectBuilder;
+
+  constructor(builder: ObjectBuilder) {
+    this.#builder = builder;
+  }
+
+  build(schema?: Types.SchemaObject) {
+    if (!schema) {
+      schema = {};
+    }
+
+    if (this.#builder instanceof ObjectBuilder) {
+      schema = {
+        ...schema,
+        ...this.#builder.toJson()
+      };
+    }
+
+    return schema;
   }
 }

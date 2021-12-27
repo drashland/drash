@@ -9,6 +9,7 @@ doc_blocks_output_actual.json
 package-lock.json
 
 # directories
+.vscode/
 .sass-cache
 tmp*/*
 tmp/*
