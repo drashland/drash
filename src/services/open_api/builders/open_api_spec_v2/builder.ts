@@ -1,14 +1,12 @@
 import { Drash } from "../../deps.ts";
 import * as Types from "./types.ts";
+import * as OpenAPIService from "../../open_api.ts";
+import * as PropertyBuilders from "./property_builder.ts";
 
 type HttpMethodHandler = (
   request: Drash.Request,
   response: Drash.Response,
 ) => Promise<void> | void;
-
-export type PrimitiveTypeBuilders = {
-  [key: string]: PrimitiveTypeBuilder | Types.PrimitiveTypes
-}
 
 export type OpenAPIResource =
   & {
@@ -95,22 +93,6 @@ export class Builder {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PRIMITIVE BUILDERS //////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  public array(items: PrimitiveTypeBuilder): ArrayBuilder {
-    return new ArrayBuilder(items);
-  }
-
-  public boolean(): BooleanBuilder {
-    return new BooleanBuilder();
-  }
-
-  public string(): StringBuilder {
-    return new StringBuilder();
-  }
-
-  public object(properties: PrimitiveTypeBuilders): ObjectBuilder {
-    return new ObjectBuilder(properties);
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
@@ -430,7 +412,7 @@ export class Builder {
   // }
 
   public requestBody(
-    builders: ObjectBuilder
+    builders: PropertyBuilders.ObjectBuilder
   ): Types.ParameterObjectInBody {
 
     const schema = new SchemaObjectBuilder(builders).build();
@@ -589,113 +571,10 @@ class BodyBuilder {
   }
 }
 
-type Meta = {
-  required: boolean;
-}
-
-abstract class PrimitiveTypeBuilder {
-  #meta: Meta = {
-    required: false,
-  }
-
-  get meta(): Meta {
-    return this.#meta;
-  }
-
-  public required(): this {
-    this.#meta.required = true;
-    return this;
-  }
-
-  abstract toJson(): Types.SchemaObject;
-}
-
-class ArrayBuilder extends PrimitiveTypeBuilder {
-  #items: PrimitiveTypeBuilder;
-
-  constructor(items: PrimitiveTypeBuilder) {
-    super();
-    this.#items = items;
-  }
-
-  public toJson(): Types.SchemaObject {
-    return {
-      type: "array",
-      items: this.itemsToSpec(),
-    };
-  }
-
-  public itemsToSpec(): Types.ItemsObject {
-    if (this.#items instanceof ArrayBuilder) {
-      return {
-        type: "array",
-        items: this.#items.itemsToSpec(),
-      }
-    }
-
-    if (this.#items instanceof StringBuilder) {
-      return {
-        type: "string"
-      }
-    }
-
-    throw new Error("`items` is an unknown type.");
-  }
-}
-
-class BooleanBuilder extends PrimitiveTypeBuilder {
-  public toJson(): Types.SchemaObject {
-    return {
-      type: "boolean",
-    }
-  }
-}
-
-class StringBuilder extends PrimitiveTypeBuilder {
-  public toJson(): Types.SchemaObject {
-    return {
-      type: "string",
-    }
-  }
-}
-
-type JsonObject = Record<string, string | object>
-
-class ObjectBuilder extends PrimitiveTypeBuilder {
-  properties: PrimitiveTypeBuilders;
-
-  constructor(properties: PrimitiveTypeBuilders = {}) {
-    super();
-    this.properties = properties;
-  }
-
-  toJson(): Types.SchemaObject {
-    const ret: Types.SchemaObject = {
-      type: "object",
-      required: [],
-      properties: {},
-    };
-
-    for (const key in this.properties) {
-      const value = this.properties[key] as PrimitiveTypeBuilder;
-      if (value.meta.required) {
-        ret.required!.push(key);
-      }
-      ret.properties![key] = value.toJson();
-    }
-
-    return ret;
-  }
-}
-
-export type PropertyObject = {
-  type: string;
-}
-
 class SchemaObjectBuilder {
-  #builder: ObjectBuilder;
+  #builder: PropertyBuilders.ObjectBuilder;
 
-  constructor(builder: ObjectBuilder) {
+  constructor(builder: PropertyBuilders.ObjectBuilder) {
     this.#builder = builder;
   }
 
@@ -704,7 +583,7 @@ class SchemaObjectBuilder {
       schema = {};
     }
 
-    if (this.#builder instanceof ObjectBuilder) {
+    if (this.#builder instanceof PropertyBuilders.ObjectBuilder) {
       schema = {
         ...schema,
         ...this.#builder.toJson()

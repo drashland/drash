@@ -9,7 +9,8 @@ const standalone = Deno.readFileSync(
   "/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/swagger-ui-standalone-preset.js",
 );
 const decoder = new TextDecoder();
-import { pathToSwaggerUI, specs } from "./open_api.ts";
+
+import { pathToSwaggerUI, specs, getSpecURLS } from "./open_api.ts";
 
 export class SwaggerUIResource extends Drash.Resource {
   public paths = [
@@ -18,7 +19,6 @@ export class SwaggerUIResource extends Drash.Resource {
   ];
 
   public GET(request: Drash.Request, response: Drash.Response) {
-    console.log(request.url);
     if (
       request.url.includes("swagger-ui") &&
       request.url.includes(".json")
@@ -52,6 +52,10 @@ export class SwaggerUIResource extends Drash.Resource {
       "/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/index.html",
     );
 
-    return response.html(decoder.decode(html));
+    let decodedHtml = decoder.decode(html);
+
+    decodedHtml = decodedHtml.replace(/\{\{ var_urls \}\}/g, getSpecURLS())
+
+    return response.html(decodedHtml);
   }
 }

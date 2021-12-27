@@ -14,6 +14,23 @@ const HttpMethodArray = Drash.Types.THttpMethodArray;
 
 export let pathToSwaggerUI: string;
 export let specs = new Map<string, string>();
+export function getSpecURLS(): string {
+  const urls: {
+    url: string;
+    name: string;
+  }[] = [];
+  specs.forEach((spec: string) => {
+    const json = JSON.parse(spec) as SpecTypes.OpenAPISpecV2;
+    urls.push({
+      name: `${json.info.title} ${json.info.version}`,
+      url: `/swagger-ui-${json.info.title}-${json.info.version}.json`
+    })
+  });
+
+  return JSON.stringify(urls);
+}
+
+export * as PropertyBuilder from "./builders/open_api_spec_v2/property_builder.ts"
 
 export interface OpenAPIServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
@@ -43,10 +60,18 @@ export class OpenAPIService extends Drash.Service {
   /**
    * Create a new app to be spec'd with OpenAPI documentation.
    */
-  public addSpecV2(info: SpecTypes.InfoObject): OpenAPISpecV2Builder {
+  public createSpecV2(info: SpecTypes.InfoObject): OpenAPISpecV2Builder {
+    const key = info.title + info.version;
+
+    if (this.#specs_v2.has(key)) {
+      throw new Error(
+        `Spec for "${info.title} ${info.version}" already exists.`
+      );
+    }
+
     const builder = new OpenAPISpecV2Builder(info);
     this.#specs_v2.set(
-      info.title + info.version,
+      key,
       builder,
     );
     return builder;
