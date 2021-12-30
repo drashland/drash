@@ -332,7 +332,7 @@ export class Server {
         if (isNaN(e.code)) {
           e.code = 500;
         }
-        const errorResponse = errorService.runAfterResource(e, response);
+        const errorResponse = errorService.runOnError(e, response);
         return new Response(errorResponse.body, errorResponse);
       }
     };

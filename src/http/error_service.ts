@@ -1,7 +1,7 @@
 import { IErrorService, Errors, Response } from "../../mod.ts";
 
 export class ErrorService implements IErrorService {
-    public runAfterResource(
+    public runOnError(
         error: Errors.HttpError,
         response: Response
     ): Response {

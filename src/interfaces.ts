@@ -163,7 +163,7 @@ export interface IService {
 }
 
 export interface IErrorService {
-  runAfterResource: (
+  runOnError: (
     error: Errors.HttpError,
     response: Response
   ) => Response;

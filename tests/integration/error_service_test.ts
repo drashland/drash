@@ -2,7 +2,7 @@ import { Rhum, TestHelpers } from "../deps.ts";
 import { ErrorService, Errors, Response, Server } from "../../mod.ts";
 
 class MyErrorService extends ErrorService {
-  runAfterResource(error: Errors.HttpError, response: Response): Response {
+  runOnError(error: Errors.HttpError, response: Response): Response {
     response.status = error.code;
     response.json({error: error.message});
     return response;
