@@ -30,6 +30,7 @@ Rhum.testPlan("error_service_test.ts", () => {
         serverWithoutErrorService.run();
         const response = await TestHelpers.makeRequest.get("http://localhost:3000/inexistent_path");
         await serverWithoutErrorService.close();
+        Rhum.asserts.assertEquals(response.status, 404);
         Rhum.asserts.assertEquals(await response.text(),
           `Error: Not Found
     at Server.<anonymous> (file:///home/tom/drash/src/http/server.ts:225:17)
@@ -41,6 +42,7 @@ Rhum.testPlan("error_service_test.ts", () => {
         serverWithErrorService.run();
         const response = await TestHelpers.makeRequest.get("http://localhost:3000/inexistent_path");
         await serverWithErrorService.close();
+        Rhum.asserts.assertEquals(response.status, 404);
         Rhum.asserts.assertEquals(await response.json(), {error: "Not Found"});
       });
     });
