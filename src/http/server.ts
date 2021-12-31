@@ -56,6 +56,29 @@ async function runServices(
   return err;
 }
 
+async function runServicesError(
+  Services: Drash.Service[],
+  response: Drash.Response,
+  error: Drash.Errors.HttpError
+): Promise<Drash.Response | void> {
+  for (const Service of Services) {
+    try {
+      const result = await Service.runOnError(error, response);
+      if (result != null) {
+        return result;
+      }
+    } catch (e) {
+      if (isNaN(e.code)) {
+        e.code = 500;
+      }
+      response.status = e.code;
+      response.text(e.stack ?? "Error: Unknown Error");
+      return response;
+    }
+  }
+  return;
+}
+
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
  * charge of handling incoming requests, matching them to resources for further
@@ -173,7 +196,6 @@ export class Server {
   #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    const errorService = this.#options.error_service ?? new Drash.ErrorService();
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
@@ -332,7 +354,36 @@ export class Server {
         if (isNaN(e.code)) {
           e.code = 500;
         }
-        const errorResponse = errorService.runOnError(e, response);
+
+        // on error, run service runOnError function
+        let errorResponse: void | Drash.Response;
+        if (resource) {
+          // first run method services
+          errorResponse = await runServicesError(
+            resource.services[originalRequest.method.toUpperCase() as Drash.Types.THttpMethod] ?? [],
+            response,
+            e
+          );
+          if (!errorResponse) {
+            // if no response receive from method services, run class services
+            errorResponse = await runServicesError(
+              resource.services.ALL??[],
+              response,
+              e
+            );
+          }
+        }
+        if (!errorResponse) {
+          // if no response receive from class services, run server services
+          errorResponse = await runServicesError(serverServices, response, e);
+          if (!errorResponse) {
+            // if no response from server services, run default error response
+            errorResponse = response;
+            errorResponse.status = e.code;
+            errorResponse.text(e.stack ?? "Error: Unknown Error");
+          }
+        }
+
         return new Response(errorResponse.body, errorResponse);
       }
     };
