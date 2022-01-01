@@ -1,5 +1,5 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import { Errors, Response, Server, Service } from "../../mod.ts";
+import { Server } from "../../mod.ts";
 import { ErrorsToJsonService } from "../../src/services/errors_to_json/errors_to_json.ts";
 
 const server = new Server({
