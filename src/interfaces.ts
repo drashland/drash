@@ -1,4 +1,4 @@
-import { Request, Resource, Response, Service, ErrorService, Errors } from "../mod.ts";
+import { Request, Resource, Response, Service, ExceptionLayer, Errors } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -141,7 +141,7 @@ export interface IServerOptions {
   protocol: "http" | "https";
   resources: typeof Resource[];
   services?: Service[];
-  error_service?: ErrorService;
+  exception?: ExceptionLayer;
 }
 
 export interface IService {
@@ -162,9 +162,10 @@ export interface IService {
   ) => void | Promise<void>;
 }
 
-export interface IErrorService {
-  runOnError: (
+export interface IExceptionLayer {
+  catch: (
     error: Errors.HttpError,
+    request: Request,
     response: Response
-  ) => Response;
+  ) => void | Promise<void>;
 }

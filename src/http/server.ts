@@ -173,7 +173,7 @@ export class Server {
   #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    const errorService = this.#options.error_service ?? new Drash.ErrorService();
+    const exception = this.#options.exception;
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
@@ -332,8 +332,18 @@ export class Server {
         if (isNaN(e.code)) {
           e.code = 500;
         }
-        const errorResponse = errorService.runOnError(e, response);
-        return new Response(errorResponse.body, errorResponse);
+
+        if (exception) {
+          try {
+            await exception.catch(e, originalRequest, response);
+          } catch (error) {
+            await new Drash.ExceptionLayer().catch(error, originalRequest, response);
+          }
+        } else {
+          await new Drash.ExceptionLayer().catch(e, originalRequest, response);
+        }
+
+        return new Response(response.body, response);
       }
     };
   }
