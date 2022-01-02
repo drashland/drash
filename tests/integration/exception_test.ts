@@ -37,7 +37,7 @@ Rhum.testPlan("exception_test.ts", () => {
         hostname: "localhost",
         port: 3000,
         resources: [],
-        exception: new MyExceptionLayer()
+        exception: MyExceptionLayer
       });
       server.run();
       const res = await TestHelpers.makeRequest.get(server.address)
@@ -53,7 +53,7 @@ Rhum.testPlan("exception_test.ts", () => {
         hostname: "localhost",
         port: 3000,
         resources: [],
-        exception: new MyErrorExceptionLayer()
+        exception: MyErrorExceptionLayer
       });
       server.run();
       const res = await TestHelpers.makeRequest.get(server.address)

@@ -335,7 +335,7 @@ export class Server {
 
         if (exception) {
           try {
-            await exception.catch(e, originalRequest, response);
+            await (new exception()).catch(e, originalRequest, response);
           } catch (error) {
             if (isNaN(error.code)) {
               error.code = 500;

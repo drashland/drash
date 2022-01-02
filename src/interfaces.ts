@@ -141,7 +141,7 @@ export interface IServerOptions {
   protocol: "http" | "https";
   resources: typeof Resource[];
   services?: Service[];
-  exception?: ExceptionLayer;
+  exception?: typeof ExceptionLayer;
 }
 
 export interface IService {
