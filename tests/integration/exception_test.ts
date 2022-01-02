@@ -1,14 +1,5 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import { Errors, Response, Server, Resource, ExceptionLayer } from "../../mod.ts";
-
-
-class Resource1 extends Resource {
-  paths = ["/"];
-
-  public GET(_request: Request, _response: Response) {
-    throw new Errors.HttpError(400, "request invalid");
-  }
-}
+import { Errors, Response, Server, ExceptionLayer } from "../../mod.ts";
 
 class MyExceptionLayer extends ExceptionLayer {
   public catch(error: Errors.HttpError, _request: Request, response: Response) {
@@ -25,35 +16,35 @@ class MyErrorExceptionLayer extends ExceptionLayer {
 
 Rhum.testPlan("exception_test.ts", () => {
   Rhum.testSuite("GET /", () => {
-    Rhum.testCase("default error response", async () => {
+    Rhum.testCase("default exceptionLayer", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
         port: 3000,
-        resources: [Resource1]
+        resources: []
       });
       server.run();
       const res = await TestHelpers.makeRequest.get(server.address)
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 400);
-      Rhum.asserts.assertEquals((await res.text()).startsWith('Error: request invalid\n'), true);
+      Rhum.asserts.assertEquals(res.status, 404);
+      Rhum.asserts.assertEquals((await res.text()).startsWith('Error: Not Found\n'), true);
     });
 
-    Rhum.testCase("custom error response", async () => {
+    Rhum.testCase("custom exceptionLayer", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
         port: 3000,
-        resources: [Resource1],
+        resources: [],
         exception: new MyExceptionLayer()
       });
       server.run();
       const res = await TestHelpers.makeRequest.get(server.address)
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 400);
-      Rhum.asserts.assertEquals(await res.json(), {error: "request invalid"});
+      Rhum.asserts.assertEquals(res.status, 404);
+      Rhum.asserts.assertEquals(await res.json(), {error: "Not Found"});
     });
 
     Rhum.testCase("custom exceptionLayer thrown error", async () => {
@@ -61,7 +52,7 @@ Rhum.testPlan("exception_test.ts", () => {
         protocol: "http",
         hostname: "localhost",
         port: 3000,
-        resources: [Resource1],
+        resources: [],
         exception: new MyErrorExceptionLayer()
       });
       server.run();
