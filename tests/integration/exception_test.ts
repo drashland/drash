@@ -10,23 +10,15 @@ class Resource1 extends Resource {
   }
 }
 
-export class MyExceptionLayer implements ExceptionLayer {
-  public catch(
-    error: Errors.HttpError,
-    _request: Request,
-    response: Response
-  ): void {
+class MyExceptionLayer extends ExceptionLayer {
+  public catch(error: Errors.HttpError, _request: Request, response: Response) {
     response.status = error.code;
     response.json({error: error.message});
   }
 }
 
-export class MyErrorExceptionLayer implements ExceptionLayer {
-  public catch(
-    _error: Errors.HttpError,
-    _request: Request,
-    _response: Response
-  ): void {
+class MyErrorExceptionLayer extends ExceptionLayer {
+  public catch(_error: Errors.HttpError, _request: Request, _response: Response) {
     throw new Errors.HttpError(500, "error on exceptionLayer");
   }
 }
