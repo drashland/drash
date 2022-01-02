@@ -337,6 +337,9 @@ export class Server {
           try {
             await exception.catch(e, originalRequest, response);
           } catch (error) {
+            if (isNaN(error.code)) {
+              error.code = 500;
+            }
             await new Drash.ExceptionLayer().catch(error, originalRequest, response);
           }
         } else {
