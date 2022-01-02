@@ -31,18 +31,6 @@ class ServiceError extends Service {
   }
 }
 
-class ServiceError2 extends Service {
-  runBeforeResource(_request: Request, _response: Response) {
-    throw new Errors.HttpError(500, "runBeforeResource error");
-  }
-}
-
-class ServiceError3 extends Service {
-  runAfterResource(_request: Request, _response: Response) {
-    throw new Errors.HttpError(500, "runAfterResource error");
-  }
-}
-
 class Resource1 extends Resource {
   paths = ["/"];
 
@@ -76,17 +64,9 @@ class Resource3 extends Resource {
   }
 }
 
-class Resource4 extends Resource {
-  paths = ["/"];
-
-  public GET(_request: Request, response: Response) {
-    return response.text("ok");
-  }
-}
-
 Rhum.testPlan("service_error_test.ts", () => {
   Rhum.testSuite("GET /", () => {
-    Rhum.testCase("First runOnError is in MethodService", async () => {
+    Rhum.testCase("First serviceError is MethodService", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -102,7 +82,7 @@ Rhum.testPlan("service_error_test.ts", () => {
       Rhum.asserts.assertEquals(await res.json(), {error: "request invalid", service: "MethodService"});
     });
 
-    Rhum.testCase("Second runOnError is in ClassService", async () => {
+    Rhum.testCase("Second serviceError is ClassService", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -118,7 +98,7 @@ Rhum.testPlan("service_error_test.ts", () => {
       Rhum.asserts.assertEquals(await res.json(), {error: "request invalid", service: "ClassService"});
     });
 
-    Rhum.testCase("Third runOnError is in ServerService", async () => {
+    Rhum.testCase("Third serviceError is ServerService", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -149,7 +129,7 @@ Rhum.testPlan("service_error_test.ts", () => {
       Rhum.asserts.assertEquals((await res.text()).startsWith('Error: request invalid\n'), true);
     });
 
-    Rhum.testCase("error on runOnError()", async () => {
+    Rhum.testCase("error on ServiceError", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -163,38 +143,6 @@ Rhum.testPlan("service_error_test.ts", () => {
 
       Rhum.asserts.assertEquals(res.status, 500);
       Rhum.asserts.assertEquals((await res.text()).startsWith('Error: error on serviceError\n'), true);
-    });
-
-    Rhum.testCase("error on runBeforeResource()", async () => {
-      const server = new Server({
-        protocol: "http",
-        hostname: "localhost",
-        port: 3000,
-        resources: [Resource4],
-        services: [new ServiceError2(),new ServerService()]
-      });
-      server.run();
-      const res = await TestHelpers.makeRequest.get(server.address)
-      await server.close();
-
-      Rhum.asserts.assertEquals(res.status, 500);
-      Rhum.asserts.assertEquals(await res.json(), {error:"runBeforeResource error", service:"ServerService"});
-    });
-
-    Rhum.testCase("error on runAfterResource()", async () => {
-      const server = new Server({
-        protocol: "http",
-        hostname: "localhost",
-        port: 3000,
-        resources: [Resource4],
-        services: [new ServiceError3(),new ServerService()]
-      });
-      server.run();
-      const res = await TestHelpers.makeRequest.get(server.address)
-      await server.close();
-
-      Rhum.asserts.assertEquals(res.status, 500);
-      Rhum.asserts.assertEquals(await res.json(), {error:"runAfterResource error", service:"ServerService"});
     });
   });
 });

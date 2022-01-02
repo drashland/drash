@@ -1,4 +1,4 @@
-import { Request, Resource, Response, Service, Errors } from "../mod.ts";
+import { Request, Resource, Response, Service, ErrorService, Errors } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -141,6 +141,7 @@ export interface IServerOptions {
   protocol: "http" | "https";
   resources: typeof Resource[];
   services?: Service[];
+  error_service?: ErrorService;
 }
 
 export interface IService {
@@ -153,18 +154,17 @@ export interface IService {
   ) => void | Promise<void>;
 
   /**
-   * Method that is ran after a resource is handled
+   * Method that is ran after a reosurce is handled
    */
   runAfterResource?: (
     request: Request,
     response: Response,
   ) => void | Promise<void>;
+}
 
-  /**
-   * Method that is ran after an error is thrown
-   */
-   runOnError?: (
+export interface IErrorService {
+  runOnError: (
     error: Errors.HttpError,
-    response: Response,
-  ) => void | Response | Promise<void | Response>;
+    response: Response
+  ) => Response;
 }
