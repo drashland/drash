@@ -86,6 +86,8 @@ export class Server {
    */
   #serverPromise!: Promise<void>;
 
+  #exception: Drash.ExceptionLayer | null = null;
+
   /**
    * The internal and external services used by this server. Internal services
    * are ones created by Drash. External services are ones specified by the
@@ -115,6 +117,9 @@ export class Server {
         patterns,
       });
     });
+    if (options.exception) {
+      this.#exception = new options.exception();
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -173,7 +178,7 @@ export class Server {
   #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    const exception = this.#options.exception;
+    const exception = this.#exception;
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
@@ -335,7 +340,7 @@ export class Server {
 
         if (exception) {
           try {
-            await (new exception()).catch(e, originalRequest, response);
+            await exception.catch(e, originalRequest, response);
           } catch (error) {
             if (isNaN(error.code)) {
               error.code = 500;
