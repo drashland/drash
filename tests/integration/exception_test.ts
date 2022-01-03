@@ -14,6 +14,13 @@ class MyErrorExceptionLayer extends ExceptionLayer {
   }
 }
 
+class MyOwnExceptionLayer {
+  public catch(error: Errors.HttpError, _request: Request, response: Response) {
+    response.status = error.code;
+    response.json({error: error.message});
+  }
+}
+
 Rhum.testPlan("exception_test.ts", () => {
   Rhum.testSuite("GET /", () => {
     Rhum.testCase("default exceptionLayer", async () => {
@@ -61,6 +68,22 @@ Rhum.testPlan("exception_test.ts", () => {
 
       Rhum.asserts.assertEquals(res.status, 500);
       Rhum.asserts.assertEquals((await res.text()).startsWith('Error: error on exceptionLayer\n'), true);
+    });
+
+    Rhum.testCase("custom exceptionLayer without extends", async () => {
+      const server = new Server({
+        protocol: "http",
+        hostname: "localhost",
+        port: 3000,
+        resources: [],
+        exception: MyOwnExceptionLayer
+      });
+      server.run();
+      const res = await TestHelpers.makeRequest.get(server.address)
+      await server.close();
+
+      Rhum.asserts.assertEquals(res.status, 404);
+      Rhum.asserts.assertEquals(await res.json(), {error: "Not Found"});
     });
   });
 });
