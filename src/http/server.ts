@@ -86,6 +86,9 @@ export class Server {
    */
   #serverPromise!: Promise<void>;
 
+  /**
+   * A custom ExceptionLayer
+   */
   #exception: Drash.ExceptionLayer | null = null;
 
   /**
