@@ -30,9 +30,9 @@ export { DrashRequest as Request } from "./src/http/request.ts";
 export { Resource } from "./src/http/resource.ts";
 export { DrashResponse as Response } from "./src/http/response.ts";
 export { Service } from "./src/http/service.ts";
-export { ExceptionLayer } from "./src/http/exception.ts";
+export { ErrorHandler } from "./src/http/error_handler.ts";
 
 // Export members from the IMPORTS section above
 export { Interfaces, Server, Types };
 
-export type { IResource, IService, IExceptionLayer } from "./src/interfaces.ts";
+export type { IResource, IService, IErrorHandler } from "./src/interfaces.ts";

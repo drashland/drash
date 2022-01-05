@@ -141,7 +141,8 @@ export interface IServerOptions {
   protocol: "http" | "https";
   resources: typeof Resource[];
   services?: Service[];
-  exception?: typeof ExceptionLayer;
+  // deno-lint-ignore no-explicit-any camelcase
+  error_handler?: new(...args: any[]) => IErrorHandler;
 }
 
 export interface IService {
@@ -162,7 +163,11 @@ export interface IService {
   ) => void | Promise<void>;
 }
 
-export interface IExceptionLayer {
+export interface IErrorHandler {
+  /**
+   * Method that gets executed during the request-resource-response lifecycle in
+   * the event an error is thrown.
+   */
   catch: (
     error: Errors.HttpError,
     request: Request,

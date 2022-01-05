@@ -87,9 +87,9 @@ export class Server {
   #serverPromise!: Promise<void>;
 
   /**
-   * A custom ExceptionLayer
+   * A custom Error object handler.
    */
-  #exception: Drash.ExceptionLayer | null = null;
+  #error_handler!: Drash.Interfaces.IErrorHandler;
 
   /**
    * The internal and external services used by this server. Internal services
@@ -120,8 +120,9 @@ export class Server {
         patterns,
       });
     });
-    if (options.exception) {
-      this.#exception = new options.exception();
+
+    if (options.error_handler) {
+      this.#error_handler = new options.error_handler();
     }
   }
 
@@ -181,7 +182,9 @@ export class Server {
   #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
-    const exception = this.#exception;
+    const errorHandler = this.#error_handler;
+    const defaultErrorHandler = new Drash.ErrorHandler();
+
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
