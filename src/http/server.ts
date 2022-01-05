@@ -340,21 +340,14 @@ export class Server {
           status: response.status,
         });
       } catch (e) {
-        if (isNaN(e.code)) {
-          e.code = 500;
-        }
-
-        if (exception) {
+        if (errorHandler) {
           try {
-            await exception.catch(e, originalRequest, response);
-          } catch (error) {
-            if (isNaN(error.code)) {
-              error.code = 500;
-            }
-            await new Drash.ExceptionLayer().catch(error, originalRequest, response);
+            await errorHandler.catch(e, originalRequest, response);
+          } catch (e) {
+            await defaultErrorHandler.catch(e, originalRequest, response);
           }
         } else {
-          await new Drash.ExceptionLayer().catch(e, originalRequest, response);
+          await defaultErrorHandler.catch(e, originalRequest, response);
         }
 
         return new Response(response.body, response);
