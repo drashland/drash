@@ -1,4 +1,4 @@
-import { Request, Resource, Response, Service, ExceptionLayer, Errors } from "../mod.ts";
+import { Request as DrashRequest, Resource, Response, Service, Errors } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -104,15 +104,15 @@ export interface IResource {
   paths: string[];
   services?: IResourceServices;
   // Methods
-  CONNECT?: (request: Request, response: Response) => Promise<void> | void;
-  DELETE?: (request: Request, response: Response) => Promise<void> | void;
-  GET?: (request: Request, response: Response) => Promise<void> | void;
-  HEAD?: (request: Request, response: Response) => Promise<void> | void;
-  OPTIONS?: (request: Request, response: Response) => Promise<void> | void;
-  PATCH?: (request: Request, response: Response) => Promise<void> | void;
-  POST?: (request: Request, response: Response) => Promise<void> | void;
-  PUT?: (request: Request, response: Response) => Promise<void> | void;
-  TRACE?: (request: Request, response: Response) => Promise<void> | void;
+  CONNECT?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  DELETE?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  GET?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  HEAD?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  OPTIONS?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  PATCH?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  POST?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  PUT?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  TRACE?: (request: DrashRequest, response: Response) => Promise<void> | void;
 }
 
 export interface IResourceServices {
@@ -150,7 +150,7 @@ export interface IService {
    * Method that is ran before a resource is handled
    */
   runBeforeResource?: (
-    request: Request,
+    request: DrashRequest,
     response: Response,
   ) => void | Promise<void>;
 
@@ -158,7 +158,7 @@ export interface IService {
    * Method that is ran after a reosurce is handled
    */
   runAfterResource?: (
-    request: Request,
+    request: DrashRequest,
     response: Response,
   ) => void | Promise<void>;
 }
