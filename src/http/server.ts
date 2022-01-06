@@ -121,9 +121,7 @@ export class Server {
       });
     });
 
-    if (options.error_handler) {
-      this.#error_handler = new options.error_handler();
-    }
+    this.#error_handler = new (options.error_handler || Drash.ErrorHandler);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -340,13 +338,9 @@ export class Server {
           status: response.status,
         });
       } catch (e) {
-        if (errorHandler) {
-          try {
-            await errorHandler.catch(e, originalRequest, response);
-          } catch (e) {
-            await defaultErrorHandler.catch(e, originalRequest, response);
-          }
-        } else {
+        try {
+          await errorHandler.catch(e, originalRequest, response);
+        } catch (e) {
           await defaultErrorHandler.catch(e, originalRequest, response);
         }
 
