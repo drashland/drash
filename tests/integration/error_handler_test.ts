@@ -16,6 +16,16 @@ class MyErrorErrorHandler extends ErrorHandler {
   }
 }
 
+class MyAsyncErrorHandler extends ErrorHandler {
+  public async catch(error: Error, _request: Request, response: Response) {
+    if (error instanceof Errors.HttpError) {
+      response.status = error.code;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    response.json({ error: error.message });
+  }
+}
+
 class MyOwnErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
     if (error instanceof Errors.HttpError) {
@@ -87,6 +97,22 @@ Rhum.testPlan("error_handler_test.ts", () => {
         port: 3000,
         resources: [],
         error_handler: MyOwnErrorHandler,
+      });
+      server.run();
+      const res = await TestHelpers.makeRequest.get(server.address);
+      await server.close();
+
+      Rhum.asserts.assertEquals(res.status, 404);
+      Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
+    });
+
+    Rhum.testCase("custom ErrorHandler with async catch", async () => {
+      const server = new Server({
+        protocol: "http",
+        hostname: "localhost",
+        port: 3000,
+        resources: [],
+        error_handler: MyAsyncErrorHandler,
       });
       server.run();
       const res = await TestHelpers.makeRequest.get(server.address);
