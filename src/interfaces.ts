@@ -1,4 +1,10 @@
-import { Request as DrashRequest, Resource, Response, Service, Errors } from "../mod.ts";
+import {
+  Errors,
+  Request as DrashRequest,
+  Resource,
+  Response,
+  Service,
+} from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -142,7 +148,7 @@ export interface IServerOptions {
   resources: typeof Resource[];
   services?: Service[];
   // deno-lint-ignore no-explicit-any camelcase
-  error_handler?: new(...args: any[]) => IErrorHandler;
+  error_handler?: new (...args: any[]) => IErrorHandler;
 }
 
 export interface IService {
@@ -171,6 +177,6 @@ export interface IErrorHandler {
   catch: (
     error: Errors.HttpError,
     request: Request,
-    response: Response
+    response: Response,
   ) => void | Promise<void>;
 }

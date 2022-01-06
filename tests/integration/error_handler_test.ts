@@ -1,12 +1,12 @@
 import { Rhum, TestHelpers } from "../deps.ts";
-import { Errors, Response, Server, ErrorHandler } from "../../mod.ts";
+import { ErrorHandler, Errors, Response, Server } from "../../mod.ts";
 
 class MyErrorHandler extends ErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
     if (error instanceof Errors.HttpError) {
       response.status = error.code;
     }
-    response.json({error: error.message});
+    response.json({ error: error.message });
   }
 }
 
@@ -21,7 +21,7 @@ class MyOwnErrorHandler {
     if (error instanceof Errors.HttpError) {
       response.status = error.code;
     }
-    response.json({error: error.message});
+    response.json({ error: error.message });
   }
 }
 
@@ -32,14 +32,17 @@ Rhum.testPlan("error_handler_test.ts", () => {
         protocol: "http",
         hostname: "localhost",
         port: 3000,
-        resources: []
+        resources: [],
       });
       server.run();
-      const res = await TestHelpers.makeRequest.get(server.address)
+      const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
       Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals((await res.text()).includes('Error: Not Found\n'), true);
+      Rhum.asserts.assertEquals(
+        (await res.text()).includes("Error: Not Found\n"),
+        true,
+      );
     });
 
     Rhum.testCase("custom ErrorHandler", async () => {
@@ -48,14 +51,14 @@ Rhum.testPlan("error_handler_test.ts", () => {
         hostname: "localhost",
         port: 3000,
         resources: [],
-        error_handler: MyErrorHandler
+        error_handler: MyErrorHandler,
       });
       server.run();
-      const res = await TestHelpers.makeRequest.get(server.address)
+      const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
       Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals(await res.json(), {error: "Not Found"});
+      Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
     });
 
     Rhum.testCase("custom ErrorHandler thrown error", async () => {
@@ -64,14 +67,17 @@ Rhum.testPlan("error_handler_test.ts", () => {
         hostname: "localhost",
         port: 3000,
         resources: [],
-        error_handler: MyErrorErrorHandler
+        error_handler: MyErrorErrorHandler,
       });
       server.run();
-      const res = await TestHelpers.makeRequest.get(server.address)
+      const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
       Rhum.asserts.assertEquals(res.status, 500);
-      Rhum.asserts.assertEquals((await res.text()).includes('Error: error on ErrorHandler\n'), true);
+      Rhum.asserts.assertEquals(
+        (await res.text()).includes("Error: error on ErrorHandler\n"),
+        true,
+      );
     });
 
     Rhum.testCase("custom ErrorHandler without extends", async () => {
@@ -80,14 +86,14 @@ Rhum.testPlan("error_handler_test.ts", () => {
         hostname: "localhost",
         port: 3000,
         resources: [],
-        error_handler: MyOwnErrorHandler
+        error_handler: MyOwnErrorHandler,
       });
       server.run();
-      const res = await TestHelpers.makeRequest.get(server.address)
+      const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
       Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals(await res.json(), {error: "Not Found"});
+      Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
     });
   });
 });

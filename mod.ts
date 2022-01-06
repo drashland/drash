@@ -35,4 +35,4 @@ export { ErrorHandler } from "./src/http/error_handler.ts";
 // Export members from the IMPORTS section above
 export { Interfaces, Server, Types };
 
-export type { IResource, IService, IErrorHandler } from "./src/interfaces.ts";
+export type { IErrorHandler, IResource, IService } from "./src/interfaces.ts";

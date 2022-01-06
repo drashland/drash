@@ -121,7 +121,7 @@ export class Server {
       });
     });
 
-    this.#error_handler = new (options.error_handler || Drash.ErrorHandler);
+    this.#error_handler = new (options.error_handler || Drash.ErrorHandler)();
   }
 
   //////////////////////////////////////////////////////////////////////////////

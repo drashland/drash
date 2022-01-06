@@ -1,4 +1,4 @@
-import { IErrorHandler, Errors, Response } from "../../mod.ts";
+import { Errors, IErrorHandler, Response } from "../../mod.ts";
 
 export class ErrorHandler implements IErrorHandler {
   /**
@@ -13,7 +13,7 @@ export class ErrorHandler implements IErrorHandler {
   public catch(
     error: Errors.HttpError,
     _request: Request,
-    response: Response
+    response: Response,
   ): void {
     response.status = error.code ?? 500;
     response.text(error.stack ?? "Error: Unknown Error");
