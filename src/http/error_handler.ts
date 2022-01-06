@@ -11,11 +11,15 @@ export class ErrorHandler implements IErrorHandler {
    * @param response - The `Drash.Response` object.
    */
   public catch(
-    error: Errors.HttpError,
+    error: Error,
     _request: Request,
     response: Response,
   ): void {
-    response.status = error.code ?? 500;
+    if (error instanceof Errors.HttpError) {
+      response.status = error.code;
+    } else {
+      response.status = 500;
+    }
     response.text(error.stack ?? "Error: Unknown Error");
   }
 }
