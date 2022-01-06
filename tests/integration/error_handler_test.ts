@@ -5,24 +5,16 @@ class MyErrorHandler extends ErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
     if (error instanceof Errors.HttpError) {
       response.status = error.code;
+    } else {
+      response.status = 500;
     }
     response.json({ error: error.message });
   }
 }
 
-class MyErrorErrorHandler extends ErrorHandler {
+class MyHttpErrorErrorHandler extends ErrorHandler {
   public catch(_error: Error, _request: Request, _response: Response) {
     throw new Errors.HttpError(500, "error on ErrorHandler");
-  }
-}
-
-class MyAsyncErrorHandler extends ErrorHandler {
-  public async catch(error: Error, _request: Request, response: Response) {
-    if (error instanceof Errors.HttpError) {
-      response.status = error.code;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    response.json({ error: error.message });
   }
 }
 
@@ -30,8 +22,28 @@ class MyOwnErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
     if (error instanceof Errors.HttpError) {
       response.status = error.code;
+    } else {
+      response.status = 500;
     }
     response.json({ error: error.message });
+  }
+}
+
+class MyAsyncErrorHandler extends ErrorHandler {
+  public async catch(error: Error, _request: Request, response: Response) {
+    if (error instanceof Errors.HttpError) {
+      response.status = error.code;
+    } else {
+      response.status = 500;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    response.json({ error: error.message });
+  }
+}
+
+class MySimpleErrorErrorHandler {
+  public catch(_error: Error, _request: Request, _response: Response) {
+    throw new Error("My Simple Error");
   }
 }
 
@@ -77,7 +89,7 @@ Rhum.testPlan("error_handler_test.ts", () => {
         hostname: "localhost",
         port: 3000,
         resources: [],
-        error_handler: MyErrorErrorHandler,
+        error_handler: MyHttpErrorErrorHandler,
       });
       server.run();
       const res = await TestHelpers.makeRequest.get(server.address);
@@ -120,6 +132,25 @@ Rhum.testPlan("error_handler_test.ts", () => {
 
       Rhum.asserts.assertEquals(res.status, 404);
       Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
+    });
+
+    Rhum.testCase("custom ErrorHandler simple Error thrown", async () => {
+      const server = new Server({
+        protocol: "http",
+        hostname: "localhost",
+        port: 3000,
+        resources: [],
+        error_handler: MySimpleErrorErrorHandler,
+      });
+      server.run();
+      const res = await TestHelpers.makeRequest.get(server.address);
+      await server.close();
+
+      Rhum.asserts.assertEquals(res.status, 500);
+      Rhum.asserts.assertEquals(
+        (await res.text()).includes("Error: My Simple Error\n"),
+        true,
+      );
     });
   });
 });
