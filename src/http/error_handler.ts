@@ -34,7 +34,7 @@ export class ErrorHandler implements IErrorHandler {
     // If the error has a code, then we need to make sure it is within the range
     // of HTTP status codes. Otherwise, we cannot convert this to a response.
     if ("code" in error) {
-      const errorWithCode = error as unknown as {code: unknown};
+      const errorWithCode = error as unknown as { code: unknown };
 
       // Start off with 500 as the default
       let code = 500;
@@ -43,8 +43,8 @@ export class ErrorHandler implements IErrorHandler {
       // it is a number AND it is within the range of HTTP status codes, then we
       // replace the default 500 with it.
       if (
-        typeof errorWithCode.code === "number"
-        && STATUS_TEXT.get(errorWithCode.code)
+        typeof errorWithCode.code === "number" &&
+        STATUS_TEXT.get(errorWithCode.code)
       ) {
         code = errorWithCode.code;
       }
