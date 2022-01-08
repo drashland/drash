@@ -1,4 +1,5 @@
 import { Errors, IErrorHandler, Response } from "../../mod.ts";
+import { STATUS_TEXT } from "../../deps.ts";
 
 export class ErrorHandler implements IErrorHandler {
   /**
@@ -15,11 +16,41 @@ export class ErrorHandler implements IErrorHandler {
     _request: Request,
     response: Response,
   ): void {
+    const errorMessage = error.stack ?? "Error: Unknown Error";
+
+    // Built-in Drash HTTP error object? Use the error code as the HTTP status
+    // code. The error code is always in the range of HTTP status codes.
     if (error instanceof Errors.HttpError) {
       response.status = error.code;
-    } else {
-      response.status = 500;
+      return response.text(errorMessage);
     }
-    response.text(error.stack ?? "Error: Unknown Error");
+
+    // No code? Default to 500.
+    if (!("code" in error)) {
+      response.status = 500;
+      return response.text(errorMessage);
+    }
+
+    // If the error has a code, then we need to make sure it is within the range
+    // of HTTP status codes. Otherwise, we cannot convert this to a response.
+    if ("code" in error) {
+      const errorWithCode = error as unknown as {code: unknown};
+
+      // Start off with 500 as the default
+      let code = 500;
+
+      // Status codes should be a number. Not a string, not a boolean, etc. If
+      // it is a number AND it is within the range of HTTP status codes, then we
+      // replace the default 500 with it.
+      if (
+        typeof errorWithCode.code === "number"
+        && STATUS_TEXT.get(errorWithCode.code)
+      ) {
+        code = errorWithCode.code;
+      }
+      response.status = code;
+    }
+
+    return response.text(errorMessage);
   }
 }
