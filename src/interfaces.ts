@@ -1,4 +1,10 @@
-import { Request, Resource, Response, Service } from "../mod.ts";
+import {
+  Errors,
+  Request as DrashRequest,
+  Resource,
+  Response,
+  Service,
+} from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -104,15 +110,15 @@ export interface IResource {
   paths: string[];
   services?: IResourceServices;
   // Methods
-  CONNECT?: (request: Request, response: Response) => Promise<void> | void;
-  DELETE?: (request: Request, response: Response) => Promise<void> | void;
-  GET?: (request: Request, response: Response) => Promise<void> | void;
-  HEAD?: (request: Request, response: Response) => Promise<void> | void;
-  OPTIONS?: (request: Request, response: Response) => Promise<void> | void;
-  PATCH?: (request: Request, response: Response) => Promise<void> | void;
-  POST?: (request: Request, response: Response) => Promise<void> | void;
-  PUT?: (request: Request, response: Response) => Promise<void> | void;
-  TRACE?: (request: Request, response: Response) => Promise<void> | void;
+  CONNECT?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  DELETE?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  GET?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  HEAD?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  OPTIONS?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  PATCH?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  POST?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  PUT?: (request: DrashRequest, response: Response) => Promise<void> | void;
+  TRACE?: (request: DrashRequest, response: Response) => Promise<void> | void;
 }
 
 export interface IResourceServices {
@@ -141,6 +147,8 @@ export interface IServerOptions {
   protocol: "http" | "https";
   resources: typeof Resource[];
   services?: Service[];
+  // deno-lint-ignore no-explicit-any camelcase
+  error_handler?: new (...args: any[]) => IErrorHandler;
 }
 
 export interface IService {
@@ -148,7 +156,7 @@ export interface IService {
    * Method that is ran before a resource is handled
    */
   runBeforeResource?: (
-    request: Request,
+    request: DrashRequest,
     response: Response,
   ) => void | Promise<void>;
 
@@ -156,6 +164,18 @@ export interface IService {
    * Method that is ran after a reosurce is handled
    */
   runAfterResource?: (
+    request: DrashRequest,
+    response: Response,
+  ) => void | Promise<void>;
+}
+
+export interface IErrorHandler {
+  /**
+   * Method that gets executed during the request-resource-response lifecycle in
+   * the event an error is thrown.
+   */
+  catch: (
+    error: Errors.HttpError,
     request: Request,
     response: Response,
   ) => void | Promise<void>;

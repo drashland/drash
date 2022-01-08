@@ -87,6 +87,11 @@ export class Server {
   #serverPromise!: Promise<void>;
 
   /**
+   * A custom Error object handler.
+   */
+  #error_handler!: Drash.Interfaces.IErrorHandler;
+
+  /**
    * The internal and external services used by this server. Internal services
    * are ones created by Drash. External services are ones specified by the
    * user.
@@ -115,6 +120,8 @@ export class Server {
         patterns,
       });
     });
+
+    this.#error_handler = new (options.error_handler || Drash.ErrorHandler)();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -173,6 +180,9 @@ export class Server {
   #getHandler(): (r: Request, connInfo: ConnInfo) => Promise<Response> {
     const resources = this.#resources;
     const serverServices = this.#options.services ?? [];
+    const errorHandler = this.#error_handler;
+    const defaultErrorHandler = new Drash.ErrorHandler();
+
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
@@ -328,13 +338,13 @@ export class Server {
           status: response.status,
         });
       } catch (e) {
-        if (isNaN(e.code)) {
-          e.code = 500;
+        try {
+          await errorHandler.catch(e, originalRequest, response);
+        } catch (e) {
+          await defaultErrorHandler.catch(e, originalRequest, response);
         }
-        return new Response(e.stack, {
-          status: e.code,
-          headers: response.headers,
-        });
+
+        return new Response(response.body, response);
       }
     };
   }
