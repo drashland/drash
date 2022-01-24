@@ -70,12 +70,12 @@ export class DrashResponse {
    *
    * @param filepath - The filepath of the file to download, relative to the CWD
    * that executed the entrypoint script.
-   * @param status - The status ot respond with. Defaults to 200.
+   * @param status - The status ot respond with.
    * @param headers - Any extra headers you wish to specify apart of the content-type header
    */
   public file(
     filepath: string,
-    status = 200,
+    status?: number,
     headers: Record<string, string> = {},
   ): void {
     // Get the extension of the file
@@ -102,24 +102,28 @@ export class DrashResponse {
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
     });
-    this.status = status;
+    if (status) {
+      this.status = status;
+    }
   }
 
   /**
    * Set the body of this response as HTML.
    *
    * @param html - The HTML string to assign to the body.
-   * @param status - Status to respond with. Defaults to 200.
+   * @param status - Status to respond with.
    * @param headers - Any extra headers you wish to specify apart of the content-type header.
    */
   public html(
     html: string,
-    status = 200,
+    status?: number,
     headers: Record<string, string> = {},
   ): void {
     this.body = html;
     this.headers.set("Content-Type", "text/html");
-    this.status = status;
+    if (status) {
+      this.status = status;
+    }
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
     });
@@ -129,7 +133,7 @@ export class DrashResponse {
    * Set the body of this response as JSON.
    *
    * @param json - The object to assign to the body.
-   * @param status - The status to respond with. Defaults to 200.
+   * @param status - The status to respond with.
    * @param headers - Any extra headers you wish to specify apart of the content-type header
    */
   public json(
@@ -138,7 +142,7 @@ export class DrashResponse {
     // Record<string, unknown>
     // deno-lint-ignore ban-types
     json: object,
-    status = 200,
+    status?: number,
     headers: Record<string, string> = {},
   ) {
     this.body = JSON.stringify(json);
@@ -146,23 +150,23 @@ export class DrashResponse {
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
     });
-    this.status = status;
+    if (status) this.status = status;
   }
 
   /**
    * Set the body of this response as XML.
    *
    * @param xml - The XML string to assign to the body.
-   * @param status - The status to respond with. Defaults to 200.
+   * @param status - The status to respond with.
    * @param headers - Any extra headers you wish to specify apart of the content-type header
    */
-  public xml(xml: string, status = 200, headers: Record<string, string> = {}) {
+  public xml(xml: string, status?: number, headers: Record<string, string> = {}) {
     this.body = xml;
     this.headers.set("Content-Type", "text/xml");
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
     });
-    this.status = status;
+    if (status) this.status = status;
   }
 
   /**
@@ -199,12 +203,12 @@ export class DrashResponse {
    * Set the body of this response as text.
    *
    * @param text - The text to assign to the body.
-   * @param status - The status to respond with. Defaults to 200
+   * @param status - The status to respond with.
    * @param headers - Any extra headers you wish to specify apart of the content-type header
    */
   public text(
     text: string,
-    status = 200,
+    status?: number,
     headers: Record<string, string> = {},
   ) {
     this.body = text;
@@ -212,7 +216,7 @@ export class DrashResponse {
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
     });
-    this.status = status;
+    if (status) this.status = status;
   }
 
   /**

@@ -112,8 +112,7 @@ export class GraphQLService extends Drash.Service {
     ) as ExecutionResult;
 
     if (result.errors) {
-      response.status = 400;
-      return response.json(result.errors);
+      return response.json(result.errors, 400);
     }
 
     response.json(result);

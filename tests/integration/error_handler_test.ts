@@ -3,12 +3,13 @@ import { ErrorHandler, Errors, Response, Server } from "../../mod.ts";
 
 class MyErrorHandler extends ErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
+    let code = 0;
     if (error instanceof Errors.HttpError) {
-      response.status = error.code;
+      code = error.code;
     } else {
-      response.status = 500;
+      code = 500;
     }
-    response.json({ error: error.message });
+    response.json({ error: error.message }, code);
   }
 }
 
@@ -20,24 +21,26 @@ class MyHttpErrorErrorHandler extends ErrorHandler {
 
 class MyOwnErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
+    let code = 0;
     if (error instanceof Errors.HttpError) {
-      response.status = error.code;
+      code = error.code;
     } else {
-      response.status = 500;
+      code = 500;
     }
-    response.json({ error: error.message });
+    response.json({ error: error.message }, code);
   }
 }
 
 class MyAsyncErrorHandler extends ErrorHandler {
   public async catch(error: Error, _request: Request, response: Response) {
+    let code = 0;
     if (error instanceof Errors.HttpError) {
-      response.status = error.code;
+      code = error.code;
     } else {
-      response.status = 500;
+      code = 500;
     }
     await new Promise((resolve) => setTimeout(resolve, 200));
-    response.json({ error: error.message });
+    response.json({ error: error.message }, code);
   }
 }
 

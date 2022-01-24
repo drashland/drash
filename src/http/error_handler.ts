@@ -21,14 +21,12 @@ export class ErrorHandler implements IErrorHandler {
     // Built-in Drash HTTP error object? Use the error code as the HTTP status
     // code. The error code is always in the range of HTTP status codes.
     if (error instanceof Errors.HttpError) {
-      response.status = error.code;
-      return response.text(errorMessage);
+      return response.text(errorMessage, error.code);
     }
 
     // No code? Default to 500.
     if (!("code" in error)) {
-      response.status = 500;
-      return response.text(errorMessage);
+      return response.text(errorMessage, 500);
     }
 
     // If the error has a code, then we need to make sure it is within the range
@@ -48,7 +46,7 @@ export class ErrorHandler implements IErrorHandler {
       ) {
         code = errorWithCode.code;
       }
-      response.status = code;
+      return response.text(errorMessage, code)
     }
 
     return response.text(errorMessage);
