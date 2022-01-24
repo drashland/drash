@@ -46,7 +46,7 @@ export class ErrorHandler implements IErrorHandler {
       ) {
         code = errorWithCode.code;
       }
-      return response.text(errorMessage, code)
+      return response.text(errorMessage, code);
     }
 
     return response.text(errorMessage);

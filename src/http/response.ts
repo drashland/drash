@@ -160,7 +160,11 @@ export class DrashResponse {
    * @param status - The status to respond with.
    * @param headers - Any extra headers you wish to specify apart of the content-type header
    */
-  public xml(xml: string, status?: number, headers: Record<string, string> = {}) {
+  public xml(
+    xml: string,
+    status?: number,
+    headers: Record<string, string> = {},
+  ) {
     this.body = xml;
     this.headers.set("Content-Type", "text/xml");
     Object.keys(headers).forEach((key) => {
