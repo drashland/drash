@@ -6,7 +6,6 @@ export {
   assertEquals,
   assertNotEquals,
 } from "https://deno.land/std@0.120.0/testing/asserts.ts";
-export { BufReader } from "https://deno.land/std@0.120.0/io/bufio.ts";
 
 export { green, red } from "https://deno.land/std@0.120.0/fmt/colors.ts";
 export { delay } from "https://deno.land/std@0.120.0/async/delay.ts";
