@@ -72,7 +72,7 @@ Deno.test("file()", () => {
     user: "name",
   });
   assertEquals(
-    (response.body as string).startsWith(
+    (new TextDecoder().decode(response.body as Uint8Array)).startsWith(
       `This is the index.html file for testing pretty links`,
     ),
     true,
