@@ -97,7 +97,7 @@ export class DrashResponse {
       );
     }
 
-    this.body = Deno.readTextFileSync(filepath);
+    this.body = Deno.readFileSync(filepath);
     this.headers.set("Content-Type", type);
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
