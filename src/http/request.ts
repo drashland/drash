@@ -1,18 +1,12 @@
-import { deferred, getCookies } from "../../deps.ts";
+import { getCookies } from "../../deps.ts";
 import { Errors } from "../../mod.ts";
 import type { ConnInfo } from "../../deps.ts";
+import { BodyFile } from "../types.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
   | undefined
   | string;
-
-type BodyFile = {
-  content: unknown;
-  size: number;
-  type: string;
-  filename: string;
-};
 
 /**
  * A class that holds the representation of an incoming request
@@ -259,31 +253,21 @@ export class DrashRequest extends Request {
     const formDataJSON: ParsedBody = {};
     for (const [key, value] of formData.entries()) {
       if (value instanceof File) {
-        const reader = new FileReader();
-        const p = deferred();
-        reader.readAsText(value);
-        reader.onload = () => {
-          p.resolve(reader.result);
+        const content = new Uint8Array(await value.arrayBuffer());
+        const file = {
+          size: value.size,
+          type: value.type,
+          content,
+          filename: value.name,
         };
-        const content = await p;
         if (key.endsWith("[]")) {
           const name = key.slice(0, -2);
           if (!formDataJSON[name]) {
             formDataJSON[name] = [];
           }
-          (formDataJSON[name] as BodyFile[]).push({
-            size: value.size,
-            type: value.type,
-            content,
-            filename: value.name,
-          });
+          (formDataJSON[name] as BodyFile[]).push(file);
         } else {
-          formDataJSON[key] = {
-            size: value.size,
-            type: value.type,
-            content,
-            filename: value.name,
-          };
+          formDataJSON[key] = file;
         }
         continue;
       }

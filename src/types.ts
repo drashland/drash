@@ -11,3 +11,10 @@ export type THttpMethod =
   | "POST"
   | "PUT"
   | "TRACE";
+
+export type BodyFile = {
+  content: Uint8Array;
+  size: number;
+  type: string;
+  filename: string;
+};

@@ -121,14 +121,18 @@ function getCookieTests() {
 function bodyTests() {
   Rhum.testCase("Can return multiple files", async () => {
     const formData = new FormData();
-    const file1 = new Blob([JSON.stringify({ hello: "world" }, null, 2)], {
-      type: "application/json",
+    const file1 = new Blob([
+      new File([Deno.readFileSync("./mod.ts")], "mod.ts"),
+    ], {
+      type: "application/javascript",
     });
-    const file2 = new Blob([JSON.stringify({ hello: "world" }, null, 2)], {
-      type: "application/json",
+    const file2 = new Blob([
+      new File([Deno.readFileSync("./mod.ts")], "mod.ts"),
+    ], {
+      type: "application/javascript",
     });
-    formData.append("foo[]", file1, "hello.json");
-    formData.append("foo[]", file2, "world.json");
+    formData.append("foo[]", file1, "mod.ts");
+    formData.append("foo[]", file2, "mod2.ts");
     const serverRequest = new Request("https://drash.land", {
       headers: {
         // We use `"Content-Length": "1"` to tell Drash.Request that there is
@@ -146,18 +150,19 @@ function bodyTests() {
       connInfo,
     );
 
+    const size = Deno.build.os === "windows" ? 1471 : 1433;
     Rhum.asserts.assertEquals(request.bodyParam("foo"), [
       {
-        content: '{\n  "hello": "world"\n}',
-        size: 22,
-        type: "application/json",
-        filename: "hello.json",
+        content: Deno.readFileSync("./mod.ts"),
+        size,
+        type: "application/javascript",
+        filename: "mod.ts",
       },
       {
-        content: '{\n  "hello": "world"\n}',
-        size: 22,
-        type: "application/json",
-        filename: "world.json",
+        content: Deno.readFileSync("./mod.ts"),
+        size,
+        type: "application/javascript",
+        filename: "mod2.ts",
       },
     ]); // make sure that if a requets has multiple files, we can get each one eh <input type=file name=uploads[] />
   });
@@ -165,10 +170,12 @@ function bodyTests() {
   // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
   Rhum.testCase("Returns the file object if the file exists", async () => {
     const formData = new FormData();
-    const file = new Blob([JSON.stringify({ hello: "world" }, null, 2)], {
-      type: "application/json",
+    const file = new Blob([
+      new File([Deno.readFileSync("./logo.svg")], "logo.svg"),
+    ], {
+      type: "image/svg",
     });
-    formData.append("foo", file, "hello.json");
+    formData.append("foo", file, "logo.svg");
     const serverRequest = new Request("https://drash.land", {
       headers: {
         // We use `"Content-Length": "1"` to tell Drash.Request that there is
@@ -185,12 +192,18 @@ function bodyTests() {
       new Map(),
       connInfo,
     );
-    Rhum.asserts.assertEquals(request.bodyParam("foo"), {
-      content: '{\n  "hello": "world"\n}',
-      size: 22,
-      type: "application/json",
-      filename: "hello.json",
-    });
+    // deno-lint-ignore no-explicit-any
+    const bodyFile = request.bodyParam<Drash.Types.BodyFile>("foo") as any;
+    Rhum.asserts.assertEquals(
+      bodyFile.content,
+      Deno.readFileSync("./logo.svg"),
+    );
+    Rhum.asserts.assertEquals(bodyFile.type, "image/svg");
+    Rhum.asserts.assertEquals(bodyFile.filename, "logo.svg");
+    Rhum.asserts.assertEquals(
+      bodyFile.size > 3000 && bodyFile.size < 3200,
+      true,
+    ); // Should be 3099, but on windows it 3119, so just do a basic check on size to avoid bloated test code
   });
 
   Rhum.testCase(
@@ -299,10 +312,12 @@ function bodyTests() {
     "Returns the value for the parameter when it exists and request is multipart/form-data when using generics",
     async () => {
       const formData = new FormData();
-      const file = new Blob([JSON.stringify({ hello: "world" }, null, 2)], {
-        type: "application/json",
+      const file = new Blob([
+        new File([Deno.readFileSync("./logo.svg")], "logo.svg"),
+      ], {
+        type: "image/svg",
       });
-      formData.append("foo", file, "hello.json");
+      formData.append("foo", file, "logo.svg");
       formData.append("user", "drash");
       const serverRequest = new Request("https://drash.land", {
         headers: {
@@ -326,7 +341,10 @@ function bodyTests() {
         size: string;
         type: string;
       }>("foo");
-      Rhum.asserts.assertEquals(param!.content, '{\n  "hello": "world"\n}');
+      Rhum.asserts.assertEquals(
+        param!.content,
+        Deno.readFileSync("./logo.svg"),
+      );
       Rhum.asserts.assertEquals(request.bodyParam("user"), "drash");
     },
   );
