@@ -192,6 +192,7 @@ function bodyTests() {
       new Map(),
       connInfo,
     );
+    // deno-lint-ignore no-explicit-any
     const bodyFile = request.bodyParam<Drash.Types.BodyFile>("foo") as any;
     Rhum.asserts.assertEquals(
       bodyFile.content,
