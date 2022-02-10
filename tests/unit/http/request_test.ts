@@ -150,16 +150,17 @@ function bodyTests() {
       connInfo,
     );
 
+    const size = Deno.build.os === "windows" ? 1471 : 1433;
     Rhum.asserts.assertEquals(request.bodyParam("foo"), [
       {
         content: Deno.readFileSync("./mod.ts"),
-        size: 1433,
+        size,
         type: "application/javascript",
         filename: "mod.ts",
       },
       {
         content: Deno.readFileSync("./mod.ts"),
-        size: 1433,
+        size,
         type: "application/javascript",
         filename: "mod2.ts",
       },
