@@ -191,12 +191,17 @@ function bodyTests() {
       new Map(),
       connInfo,
     );
-    Rhum.asserts.assertEquals(request.bodyParam("foo"), {
-      content: Deno.readFileSync("./logo.svg"),
-      size: 3099,
-      type: "image/svg",
-      filename: "logo.svg",
-    });
+    const bodyFile = request.bodyParam<Drash.Types.BodyFile>("foo") as any;
+    Rhum.asserts.assertEquals(
+      bodyFile.content,
+      Deno.readFileSync("./logo.svg"),
+    );
+    Rhum.asserts.assertEquals(bodyFile.type, "image/svg");
+    Rhum.asserts.assertEquals(bodyFile.filename, "logo.svg");
+    Rhum.asserts.assertEquals(
+      bodyFile.size > 3000 && bodyFile.size < 3200,
+      true,
+    ); // Should be 3099, but on windows it 3119, so just do a basic check on size to avoid bloated test code
   });
 
   Rhum.testCase(
