@@ -14,6 +14,18 @@ export type THttpMethod =
   | "PUT"
   | "TRACE";
 
+export const THttpMethodArray = [
+  "CONNECT",
+  "DELETE",
+  "GET",
+  "HEAD",
+  "OPTIONS",
+  "PATCH",
+  "POST",
+  "PUT",
+  "TRACE",
+];
+
 export type BodyFile = {
   content: Uint8Array;
   size: number;
