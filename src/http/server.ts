@@ -127,8 +127,8 @@ export class Server {
       port: this.#options.port,
       handler: async (originalRequest: Request, connInfo: ConnInfo) => {
         return await this.#handleRequest(originalRequest, connInfo);
-      }}
-    );
+      },
+    });
 
     if (this.#options.protocol === "http") {
       this.#serverPromise = this.#server.listenAndServe();
@@ -191,8 +191,10 @@ export class Server {
    * @param connInfo The connection info from Deno's internals.
    * @returns A native response.
    */
-
-  async #handleRequest(originalRequest: Request, connInfo: ConnInfo): Promise<Response> {
+  async #handleRequest(
+    originalRequest: Request,
+    connInfo: ConnInfo,
+  ): Promise<Response> {
     const serverServices = this.#options.services ?? [];
 
     // Grab resource and path params

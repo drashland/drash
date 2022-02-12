@@ -1,39 +1,14 @@
-import { Drash } from "../../deps.ts";
-import * as Types from "./types.ts";
-import * as OpenAPIService from "../../open_api.ts";
-import * as PropertyBuilders from "./property_builder.ts";
+import * as Drash from "../../../../../mod.ts";
+import * as Types from "../types.ts";
+import * as PrimitiveTypeBuilders from "./primitive_type_builders.ts";
+import { SchemaObjectBuilder } from "./schema_object_builder.ts";
 
-type HttpMethodHandler = (
-  request: Drash.Request,
-  response: Drash.Response,
-) => Promise<void> | void;
+export type ObjectToCamelize = { [k: string]: unknown | unknown[] } | unknown[];
 
-export type OpenAPIResource =
-  & {
-    spec: Builder;
-  }
-  & Drash.Resource
-  & OpenAPISpec;
-
-export type OpenAPISpec = {
-  oas_operations: {
-    [key in Drash.Types.THttpMethod]?: Types.OperationObject & {
-      responses?: Types.ResponsesObject;
-    };
-  };
-};
-
-type PropertyString  = {
-  type: "string";
-  required?: boolean;
-}
-
-export type ObjectToCamelize = {[k: string]: unknown | unknown[]} | unknown[];
-
-export class Builder {
+export class SpecBuilder {
   public spec: Partial<Types.OpenAPISpecV2> & {
     // This is the only required field needed to produce documentation for resources
-    paths: Types.PathsObject
+    paths: Types.PathsObject;
   } = {
     swagger: "2.0",
     schemes: ["http"],
@@ -48,7 +23,7 @@ export class Builder {
     produces: [],
   };
 
-  current_resource?: OpenAPIResource;
+  current_resource?: Types.OpenAPIResource;
 
   current_tags: string[] = [];
 
@@ -62,32 +37,6 @@ export class Builder {
    */
   constructor(info: Types.InfoObject) {
     this.spec.info = info;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - HTTP METHODS / OPERATION OBJECT METHODS /////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  public post(
-    operation: Partial<Types.OperationObject>,
-    handler: HttpMethodHandler,
-  ): HttpMethodHandler {
-    return this.#operation(
-      "POST",
-      operation,
-      handler,
-    );
-  }
-
-  public get(
-    operation: Partial<Types.OperationObject>,
-    handler: HttpMethodHandler,
-  ): HttpMethodHandler {
-    return this.#operation(
-      "GET",
-      operation,
-      handler,
-    );
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -118,7 +67,7 @@ export class Builder {
     // documentation are added using `this.#operation()`. However, we can
     // document things like path params and what HTTP methods are in the
     // resource -- those we have access to.
-    this.current_resource = resource as OpenAPIResource;
+    this.current_resource = resource as Types.OpenAPIResource;
     this.current_resource.oas_operations = {};
   }
 
@@ -227,7 +176,7 @@ export class Builder {
   }
 
   public definitions(
-    definitions: {[definitionName: string]: Types.DefinitionObject}
+    definitions: { [definitionName: string]: Types.DefinitionObject },
   ): this {
     if (!this.spec.definitions) {
       this.spec.definitions = {};
@@ -235,7 +184,7 @@ export class Builder {
 
     this.spec.definitions = {
       ...this.spec.definitions,
-      ...definitions
+      ...definitions,
     };
 
     return this;
@@ -248,7 +197,7 @@ export class Builder {
    */
   public definition(
     type: Types.PrimitiveTypes,
-    fields: Partial<Types.DefinitionObject> = {}
+    fields: Partial<Types.DefinitionObject> = {},
   ): Types.DefinitionObject {
     return this.schema(type, fields);
   }
@@ -285,7 +234,6 @@ export class Builder {
   }
 
   /**
-   *
    * @param type
    * @param fields
    * @returns
@@ -323,7 +271,6 @@ export class Builder {
   }
 
   /**
-   *
    * @param host The `host` field in the OpenAPI Spec.
    */
   public host(host: string): void {
@@ -350,7 +297,9 @@ export class Builder {
    * @param objectToConvert The object to convert to Spec.
    * @returns The `objectToConvert` with field names meeting Spec.
    */
-  public convertFieldNamesToSpec(objectToConvert: ObjectToCamelize): ObjectToCamelize {
+  public convertFieldNamesToSpec(
+    objectToConvert: ObjectToCamelize,
+  ): ObjectToCamelize {
     const convertField = (s: string) => {
       // Convert HTTP method name to lowercase. Spec requires lowercase HTTP method names.
       if (Drash.Types.THttpMethodArray.includes(s)) {
@@ -365,13 +314,15 @@ export class Builder {
       });
     };
 
-    if (typeof objectToConvert === "object" && !Array.isArray(objectToConvert)) {
-      const convertedObject: {[key: string]: ObjectToCamelize} = {};
+    if (
+      typeof objectToConvert === "object" && !Array.isArray(objectToConvert)
+    ) {
+      const convertedObject: { [key: string]: ObjectToCamelize } = {};
 
       Object.keys(objectToConvert)
         .forEach((field: string) => {
           convertedObject[convertField(field)] = this.convertFieldNamesToSpec(
-            objectToConvert[field] as ObjectToCamelize
+            objectToConvert[field] as ObjectToCamelize,
           );
         });
 
@@ -411,18 +362,18 @@ export class Builder {
   //   }
   // }
 
-  public requestBody(
-    builders: PropertyBuilders.ObjectBuilder
-  ): Types.ParameterObjectInBody {
+  // public requestBody(
+  //   builders: PrimitiveTypeBuilders.ObjectBuilder
+  // ): Types.ParameterObjectInBody {
 
-    const schema = new SchemaObjectBuilder(builders).build();
+  //   const schemaObject = new SchemaObjectBuilder(builders).toJson();
 
-    return {
-      name: "Body Payload",
-      in: "body",
-      schema,
-    }
-  }
+  //   return {
+  //     name: "Body Payload",
+  //     in: "body",
+  //     schema: schemaObject,
+  //   }
+  // }
   //   const schema: Types.SchemaObject = {};
 
   //   for (const field in fields) {
@@ -444,15 +395,16 @@ export class Builder {
     path: string,
     method: string,
     operation: Types.OperationObject,
-    parameters: Types.ParameterObject[],
   ): void {
+    if (!this.spec.paths[path]) {
+      this.spec.paths[path] = {};
+    }
     this.spec.paths[path][method as Drash.Types.THttpMethod] = {
       ...operation,
       tags: [
         ...operation.tags ?? [],
         ...this.current_tags,
       ],
-      parameters,
     };
   }
 
@@ -464,31 +416,11 @@ export class Builder {
    * @param handler The request-response handler for a Drash resource.
    * @returns The request-response handler for the Drash resource. This handler is what Drash performs in `Drash.Server`.
    */
-  #operation(
+  operation(
     method: Drash.Types.THttpMethod,
     operation: Partial<Types.OperationObject>,
-    handler: HttpMethodHandler,
-  ): HttpMethodHandler {
+  ): void {
     this.#setRequiredOperationObjectFields(operation);
-
-    if (
-      // If this resource does not call `spec.document()`, then we cannot
-      // document this operation. Reason being `spec.document()` sets
-      // `this.current_resource`. If `this.current_resource` is not set, then we
-      // have no idea what resource this operation belongs to.
-      !this.current_resource ||
-      // `spec.document()` needs to be called on the `spec` property on the
-      // resource. Otherwise, we cannot proceed to document the resource.
-      !this.current_resource.spec
-    ) {
-      return handler;
-    }
-
-    // By this time, the Operation Object will have all required fields because `this.setRequiredOperationObjectFields()` will add them
-    this.current_resource.oas_operations[method] =
-      operation as Types.OperationObject;
-
-    return handler;
   }
 
   /**
@@ -568,28 +500,5 @@ class BodyBuilder {
 
   public build(): Types.ParameterObjectInBody {
     return this.spec;
-  }
-}
-
-class SchemaObjectBuilder {
-  #builder: PropertyBuilders.ObjectBuilder;
-
-  constructor(builder: PropertyBuilders.ObjectBuilder) {
-    this.#builder = builder;
-  }
-
-  build(schema?: Types.SchemaObject) {
-    if (!schema) {
-      schema = {};
-    }
-
-    if (this.#builder instanceof PropertyBuilders.ObjectBuilder) {
-      schema = {
-        ...schema,
-        ...this.#builder.toJson()
-      };
-    }
-
-    return schema;
   }
 }

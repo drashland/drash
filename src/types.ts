@@ -1,4 +1,4 @@
-import { Resource } from "../mod.ts";
+import { Request, Resource, Response } from "../mod.ts";
 
 /**
  * The allowed types for an HTTP method on a resource.
@@ -39,3 +39,8 @@ export type TResourcesAndPatterns = Map<number, {
   resource: Resource;
   patterns: URLPattern[];
 }>;
+
+export type THttpMethodHandler = (
+  request: Request,
+  response: Response,
+) => Promise<void> | void;

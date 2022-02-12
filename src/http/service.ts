@@ -1,4 +1,11 @@
-import { IService, Request, Resource, Response, Server, Types } from "../../mod.ts";
+import {
+  IService,
+  Request,
+  Resource,
+  Response,
+  Server,
+  Types,
+} from "../../mod.ts";
 
 export class Service implements IService {
   #send = false;

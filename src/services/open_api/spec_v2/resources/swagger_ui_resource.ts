@@ -1,16 +1,16 @@
-import * as Drash from "../../../mod.ts";
+import * as Drash from "../../../../../mod.ts";
+import { getSpecURLS, pathToSwaggerUI, specs } from "../open_api.ts";
+
 const css = Deno.readFileSync(
-  "/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/swagger-ui.css",
+  "/var/src/drashland/deno-drash/src/services/open_api/spec_v2/views/swagger_ui_standard/swagger-ui.css",
 );
 const bundle = Deno.readFileSync(
-  "/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/swagger-ui-bundle.js",
+  "/var/src/drashland/deno-drash/src/services/open_api/spec_v2/views/swagger_ui_standard/swagger-ui-bundle.js",
 );
 const standalone = Deno.readFileSync(
-  "/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/swagger-ui-standalone-preset.js",
+  "/var/src/drashland/deno-drash/src/services/open_api/spec_v2/views/swagger_ui_standard/swagger-ui-standalone-preset.js",
 );
 const decoder = new TextDecoder();
-
-import { pathToSwaggerUI, specs, getSpecURLS } from "./open_api.ts";
 
 export class SwaggerUIResource extends Drash.Resource {
   public paths = [
@@ -32,15 +32,18 @@ export class SwaggerUIResource extends Drash.Resource {
         specs.get(filename) ?? "{}",
       );
     }
+
     if (request.url.includes(".css")) {
       return response.send<string>("text/css", decoder.decode(css));
     }
+
     if (request.url.includes("bundle.js")) {
       return response.send<string>(
         "application/javascript",
         decoder.decode(bundle),
       );
     }
+
     if (request.url.includes("standalone-preset.js")) {
       return response.send<string>(
         "application/javascript",
@@ -49,12 +52,12 @@ export class SwaggerUIResource extends Drash.Resource {
     }
 
     const html = Deno.readFileSync(
-      "/var/src/drashland/deno-drash/src/services/open_api/swagger_ui/index.html",
+      "/var/src/drashland/deno-drash/src/services/open_api/spec_v2/views/swagger_ui_standard/index.html",
     );
 
     let decodedHtml = decoder.decode(html);
 
-    decodedHtml = decodedHtml.replace(/\{\{ var_urls \}\}/g, getSpecURLS())
+    decodedHtml = decodedHtml.replace(/\{\{ var_urls \}\}/g, getSpecURLS());
 
     return response.html(decodedHtml);
   }

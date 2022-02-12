@@ -1,4 +1,16 @@
-import { Drash } from "../../deps.ts";
+import * as Drash from "../../../../mod.ts";
+import { SpecBuilder } from "./builders/spec_builder.ts";
+
+export type OpenAPIResource =
+  & {
+    spec: SpecBuilder;
+    oas_operations: {
+      [key in Drash.Types.THttpMethod]?: OperationObject & {
+        responses?: ResponsesObject;
+      };
+    };
+  }
+  & Drash.Resource;
 
 export type OpenAPISpecV2 = {
   swagger: string;
@@ -48,6 +60,7 @@ export type PrimitiveTypes =
   | "boolean"
   | "array"
   | "object";
+
 export type ParameterTypes =
   | "string"
   | "number"
@@ -55,12 +68,13 @@ export type ParameterTypes =
   | "boolean"
   | "array"
   | "file";
+
 export type ItemsObjectTypes =
-| "string"
-| "number"
-| "integer"
-| "boolean"
-| "array";
+  | "string"
+  | "number"
+  | "integer"
+  | "boolean"
+  | "array";
 
 export type CollectionFormatTypes = "csv" | "ssv" | "tsv" | "pipes" | "multi";
 
@@ -74,13 +88,20 @@ export interface TagObject {
   external_docs?: ExternalDocumentationObject;
 }
 
-export interface ParameterObject {
+// TODO(crookse) Make extended types
+export type ParameterObject = {
   name: string;
   in: ParameterInTypes;
+  type?: ParameterTypes;
   description?: string;
   required?: boolean;
   schema?: SchemaObject;
-}
+  format?: DataTypeFormats;
+  allow_empty_value?: boolean;
+  collection_format?: CollectionFormatTypes;
+  default?: unknown;
+  items?: ItemsObject;
+} & JsonSchemaValidation;
 
 export interface ParameterObjectInBody extends ParameterObject {
   schema: SchemaObject;
@@ -162,8 +183,8 @@ export interface IUserRequestBody {
 }
 
 export type SecurityDefinitionsObject = {
-  [name: string]: SecuritySchemeObject
-}
+  [name: string]: SecuritySchemeObject;
+};
 
 export interface SwaggerObject {
   swagger: string;
@@ -249,15 +270,17 @@ export interface ReferenceObject {
 
 export type SchemaObject =
   & {
-    type?: PrimitiveTypes;
     $ref?: string;
-    items?: ItemsObject;
+    format?: DataTypeFormats;
+    description?: string;
     discriminator?: string;
     read_only?: boolean;
     xml?: XMLObject;
     external_docs?: ExternalDocumentationObject;
     example?: unknown;
     required?: string[];
+    type?: PrimitiveTypes;
+    collection_format?: CollectionFormatTypes;
   }
   & JsonSchema
   & JsonSchemaValidation;
@@ -300,7 +323,7 @@ export interface HeaderObject {
   items?: ItemsObject;
 }
 
-type DataTypeFormats =
+export type DataTypeFormats =
   | "integer"
   | "long"
   | "float"
@@ -314,12 +337,13 @@ type DataTypeFormats =
   | "password";
 
 export type ItemsObject = {
-  type: ItemsObjectTypes;
+  type?: ItemsObjectTypes;
   format?: DataTypeFormats;
   /** Required if `type` is "array". */
   items?: ItemsObject;
   /** Determines the format of the array if `type` is "array". */
   collection_format?: CollectionFormatTypes;
+  $ref?: string;
 } & JsonSchemaValidation;
 
 export interface JsonSchemaValidation {
