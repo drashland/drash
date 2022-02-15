@@ -20,6 +20,7 @@ export class Resource implements Drash.Interfaces.IResource {
    * ```js
    * this.redirect("http://localhost/login", response);
    * this.redirect("http://localhost/login", response, 301);
+   * this.redirect("http://localhost/login", response, 301, {"some-header": "some value"});
    * ```
    *
    * @param location - The location or resource uri of where you want to
