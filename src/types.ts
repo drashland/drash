@@ -18,3 +18,20 @@ export type BodyFile = {
   type: string;
   filename: string;
 };
+
+/**
+ * See the following for redirection HTTP status codes:
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages
+ */
+export type HttpStatusRedirection =
+  | 300
+  | 301
+  | 302
+  | 303
+  | 304
+  | 305
+  | 307
+  | 308;
+
+export type HttpHeadersKeyValuePairs = Record<string, string>;
