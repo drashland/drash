@@ -29,11 +29,12 @@ export class Resource implements Drash.Interfaces.IResource {
    * status code on
    * @param status - (optional) The response status. Defaults to 302.
    * @param headers - (optional) Any extra headers to specify with the response.
+   * Defaults to an empty object.
    */
   public redirect(
     location: string,
     response: Drash.Response,
-    status: Drash.Types.HttpStatusRedirection = 302,
+    status: number = 302,
     headers: Drash.Types.HttpHeadersKeyValuePairs = {},
   ): void {
     response.headers.set("Location", location);
