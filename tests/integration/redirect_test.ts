@@ -62,14 +62,19 @@ Rhum.testPlan("redirect_test.ts", () => {
       Rhum.asserts.assertEquals(await response.text(), "hello");
       Rhum.asserts.assertEquals(response.status, 200);
     });
-    Rhum.testCase("Should redirect to another resource with the specified status code", async () => {
-      server.run();
-      // Example browser request
-      const response = await fetch(server.address + "/redirects-with-307", { redirect: "manual" });
-      await server.close();
-      Rhum.asserts.assertEquals(await response.text(), "");
-      Rhum.asserts.assertEquals(response.status, 307);
-    });
+    Rhum.testCase(
+      "Should redirect to another resource with the specified status code",
+      async () => {
+        server.run();
+        // Example browser request
+        const response = await fetch(server.address + "/redirects-with-307", {
+          redirect: "manual",
+        });
+        await server.close();
+        Rhum.asserts.assertEquals(await response.text(), "");
+        Rhum.asserts.assertEquals(response.status, 307);
+      },
+    );
   });
 });
 
