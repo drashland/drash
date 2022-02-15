@@ -34,7 +34,7 @@ export class Resource implements Drash.Interfaces.IResource {
   public redirect(
     location: string,
     response: Drash.Response,
-    status: number = 302,
+    status = 302,
     headers: Drash.Types.HttpHeadersKeyValuePairs = {},
   ): void {
     response.headers.set("Location", location);
