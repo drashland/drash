@@ -63,7 +63,7 @@ Rhum.testPlan("redirect_test.ts", () => {
       Rhum.asserts.assertEquals(response.status, 200);
     });
     Rhum.testCase(
-      "Should redirect to another resource with the specified status code",
+      "Should respect the status code during redirection",
       async () => {
         server.run();
         // Example browser request
