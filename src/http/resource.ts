@@ -12,8 +12,7 @@ export class Resource implements Drash.Interfaces.IResource {
   public services: Drash.Interfaces.IResourceServices = {};
   public paths: string[] = [];
 
-  // TODO(crookse) Deprecate this method and introduce `response.redirect()` so
-  // it can leverage `this.#setHeaders()`.
+  // TODO(crookse) Deprecate this method and introduce `response.redirect()`
   /**
    * Redirect the incoming request to another resource
    *
