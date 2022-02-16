@@ -13,11 +13,19 @@ import { Request, Resource, Response, Server } from "../../mod.ts";
 // FILE MARKER - APP SETUP /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-class Res extends Resource {
+class Res0 extends Resource {
   paths = ["/"];
 
   public GET(_request: Request, response: Response) {
     this.redirect("http://localhost:3000/redirect", response);
+  }
+}
+
+class Res1 extends Resource {
+  paths = ["/redirects-with-307"];
+
+  public GET(_request: Request, response: Response) {
+    this.redirect("http://localhost:3000/redirect", response, 307);
   }
 }
 
@@ -31,7 +39,8 @@ class Res2 extends Resource {
 
 const server = new Server({
   resources: [
-    Res,
+    Res0,
+    Res1,
     Res2,
   ],
   protocol: "http",
@@ -53,6 +62,19 @@ Rhum.testPlan("redirect_test.ts", () => {
       Rhum.asserts.assertEquals(await response.text(), "hello");
       Rhum.asserts.assertEquals(response.status, 200);
     });
+    Rhum.testCase(
+      "Should respect the status code during redirection",
+      async () => {
+        server.run();
+        // Example browser request
+        const response = await fetch(server.address + "/redirects-with-307", {
+          redirect: "manual",
+        });
+        await server.close();
+        Rhum.asserts.assertEquals(await response.text(), "");
+        Rhum.asserts.assertEquals(response.status, 307);
+      },
+    );
   });
 });
 

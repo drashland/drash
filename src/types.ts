@@ -18,3 +18,5 @@ export type BodyFile = {
   type: string;
   filename: string;
 };
+
+export type HttpHeadersKeyValuePairs = Record<string, string>;
