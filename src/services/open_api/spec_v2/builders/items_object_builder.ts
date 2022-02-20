@@ -1,8 +1,8 @@
 import * as Types from "../types.ts";
 import { ItemsObjectWithJsonSchemaValidationBuilder } from "./items_object_with_json_schema_validation_builder.ts";
 
-export class ItemsObjectBuilder extends ItemsObjectWithJsonSchemaValidationBuilder {
-
+export class ItemsObjectBuilder
+  extends ItemsObjectWithJsonSchemaValidationBuilder {
   #items?: ItemsObjectBuilder;
 
   // FILE MARKER: TYPE ARRAY
@@ -38,9 +38,9 @@ export class ItemsObjectBuilder extends ItemsObjectWithJsonSchemaValidationBuild
   #toTypeArrayJson(): Types.ItemsObject {
     if (!this.#items) {
       throw new Error(
-        `Items Object of type array is invalid.\n`
-        + `Method \`.items()\` was not called. Example usage:\n\n`
-        + `  items().array().items( ... )`
+        `Items Object of type array is invalid.\n` +
+          `Method \`.items()\` was not called. Example usage:\n\n` +
+          `  items().array().items( ... )`,
       );
     }
     return this.spec as Types.ItemsObject;

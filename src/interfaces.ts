@@ -3,8 +3,8 @@ import {
   Request as DrashRequest,
   Resource,
   Response,
-  Service,
   Server,
+  Service,
   Types,
 } from "../mod.ts";
 

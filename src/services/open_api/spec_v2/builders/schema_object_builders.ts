@@ -2,7 +2,6 @@ import * as Types from "../types.ts";
 import { SchemaObjectTypeArrayBuilder } from "./schema_object_type_array_builder.ts";
 
 export class SchemaObjectBuilder {
-
   // FILE MARKER: TYPE ARRAY
 
   #items?: ItemsObjectWithJsonSchemaValidationBuilder;
@@ -29,8 +28,8 @@ export class SchemaObjectBuilder {
     if (!this.#items) {
       throw new Error(
         "Schema Object of type array is invalid.\n" +
-        "Method `items()` was not called. Example usage:\n\n" +
-        "  .schema().array().items( ... )"
+          "Method `items()` was not called. Example usage:\n\n" +
+          "  .schema().array().items( ... )",
       );
     }
 

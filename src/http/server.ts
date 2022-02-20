@@ -365,7 +365,8 @@ export class Server {
     url: string,
     resources: Drash.Types.TResourcesAndPatterns,
   ): Drash.Interfaces.IResourceAndParams | undefined {
-    let resourceAndParams: Drash.Interfaces.IResourceAndParams | undefined = undefined;
+    let resourceAndParams: Drash.Interfaces.IResourceAndParams | undefined =
+      undefined;
 
     for (const { resource, patterns } of resources.values()) {
       for (const pattern of patterns) {

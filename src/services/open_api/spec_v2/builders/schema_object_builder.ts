@@ -3,10 +3,11 @@ import { SchemaObjectWithJsonSchemaValidationBuilder } from "./schema_object_wit
 import { ItemsObjectBuilder } from "./items_object_builder.ts";
 
 type PropertyBuilders = {
-  [property: string]: unknown
-}
+  [property: string]: unknown;
+};
 
-export class SchemaObjectBuilder extends SchemaObjectWithJsonSchemaValidationBuilder {
+export class SchemaObjectBuilder
+  extends SchemaObjectWithJsonSchemaValidationBuilder {
   #items?: ItemsObjectBuilder;
   #properties?: PropertyBuilders;
 
@@ -72,8 +73,8 @@ export class SchemaObjectBuilder extends SchemaObjectWithJsonSchemaValidationBui
     if (!this.#properties) {
       throw new Error(
         "Schema Object of type object is invalid.\n" +
-        "Method `properties()` was not called. Example usage:\n\n" +
-        "  .schema().type(\"object\").properties( ... )"
+          "Method `properties()` was not called. Example usage:\n\n" +
+          '  .schema().type("object").properties( ... )',
       );
     }
 
@@ -91,8 +92,8 @@ export class SchemaObjectBuilder extends SchemaObjectWithJsonSchemaValidationBui
     if (!this.#items) {
       throw new Error(
         "Schema Object of type array is invalid.\n" +
-        "Method `items()` was not called. Example usage:\n\n" +
-        "  .schema().type(\"array\").items( ... )"
+          "Method `items()` was not called. Example usage:\n\n" +
+          '  .schema().type("array").items( ... )',
       );
     }
 

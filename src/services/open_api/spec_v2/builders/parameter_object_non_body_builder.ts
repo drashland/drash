@@ -2,7 +2,8 @@ import * as Types from "../types.ts";
 import { ParameterObjectWithJsonSchemaValidationBuilder } from "./parameter_object_with_json_schema_validation_builder.ts";
 import { ItemsObjectWithJsonSchemaValidationBuilder } from "./items_object_with_json_schema_validation_builder.ts";
 
-export class ParameterObjectNonBodyBuilder extends ParameterObjectWithJsonSchemaValidationBuilder {
+export class ParameterObjectNonBodyBuilder
+  extends ParameterObjectWithJsonSchemaValidationBuilder {
   #items?: ItemsObjectWithJsonSchemaValidationBuilder;
 
   constructor(inType: Types.ParameterInTypes) {
@@ -74,9 +75,9 @@ export class ParameterObjectNonBodyBuilder extends ParameterObjectWithJsonSchema
   #toJsonArray(): Types.ParameterObject {
     if (!this.#items) {
       throw new Error(
-        `Parameter Object of type array is invalid.\n`
-        + `Method \`.items()\` was not called. Example usage:\n\n`
-        + `  parameter().query().type("array").items( ... )`
+        `Parameter Object of type array is invalid.\n` +
+          `Method \`.items()\` was not called. Example usage:\n\n` +
+          `  parameter().query().type("array").items( ... )`,
       );
     }
 
@@ -101,8 +102,8 @@ export class ParameterObjectNonBodyBuilder extends ParameterObjectWithJsonSchema
     if (this.spec.type === "array") {
       if (!this.spec.items) {
         throw new Error(
-          `Invalid Parameter Object of type ${this.spec.type}.\n`
-          + `Field 'items' is required. Use \`array().items( ... )\`.`,
+          `Invalid Parameter Object of type ${this.spec.type}.\n` +
+            `Field 'items' is required. Use \`array().items( ... )\`.`,
         );
       }
     }

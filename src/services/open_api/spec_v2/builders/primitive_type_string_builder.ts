@@ -2,7 +2,7 @@ import * as Types from "../types.ts";
 
 export class PrimitiveTypeStringBuilder {
   #spec: Partial<Types.SchemaObject> = {
-    type: "string"
+    type: "string",
   };
 
   public format(format: Types.DataTypeFormats): this {

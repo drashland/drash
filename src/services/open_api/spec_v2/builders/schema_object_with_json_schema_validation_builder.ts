@@ -1,7 +1,6 @@
 import * as Types from "../types.ts";
 
 export class SchemaObjectWithJsonSchemaValidationBuilder {
-
   public spec: Partial<Types.SchemaObject> = {};
 
   public title(title: string): this {
