@@ -87,8 +87,12 @@ export class Server {
     });
 
     this.#error_handler = new (options.error_handler || Drash.ErrorHandler)();
-    this.#addResources();
+
+    // Compile the application. Add services first. Services may introduce
+    // resources and those resources need to be present before we call
+    // `this.#addResources()`.
     this.#addServices();
+    this.#addResources();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -105,6 +109,20 @@ export class Server {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  public addResource(resourceClass: typeof Drash.Resource): void {
+    const resource = new resourceClass();
+    const patterns: URLPattern[] = [];
+    resource.paths.forEach((path) => {
+      console.log(path);
+      // Add "{/}?" to match possible trailing slashes too
+      patterns.push(new URLPattern({ pathname: path + "{/}?" }));
+    });
+    this.#resources.set(this.#resources.size, {
+      resource,
+      patterns,
+    });
+  }
 
   /**
    * Close the server.
@@ -153,22 +171,11 @@ export class Server {
 
     this.#services.forEach(async (service: Drash.Service) => {
       if (service.runAtStartup) {
-        await service.runAtStartup(this, this.#resources);
+        await service.runAtStartup({
+          server: this,
+          resources: this.#resources
+        });
       }
-    });
-  }
-
-  public addResource(resourceClass: typeof Drash.Resource): void {
-    const resource = new resourceClass();
-    const patterns: URLPattern[] = [];
-    resource.paths.forEach((path) => {
-      console.log(path);
-      // Add "{/}?" to match possible trailing slashes too
-      patterns.push(new URLPattern({ pathname: path + "{/}?" }));
-    });
-    this.#resources.set(this.#resources.size, {
-      resource,
-      patterns,
     });
   }
 

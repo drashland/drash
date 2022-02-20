@@ -25,46 +25,17 @@ export function getSpecURLS(): string {
   return JSON.stringify(urls);
 }
 
-export interface OpenAPIServiceOptions {
+export interface OpenAPIV2ServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
   path?: string;
   spec?: string;
 }
 
-export class OpenAPIService extends Drash.Service {
-  #options: OpenAPIServiceOptions;
+export class OpenAPIV2Service extends Drash.Service {
+  #options: OpenAPIV2ServiceOptions;
 
-  #specs = new Map<string, SpecBuilder>();
-  #current_resource?: Types.OpenAPIResource;
-
-  public operationObject(): OperationObjectBuilder {
-    return new OperationObjectBuilder();
-  }
-
-  public referenceObject(ref: string): Types.ReferenceObject {
-    return {
-      $ref: `#/definitions/${ref}`,
-    };
-  }
-
-  // public array(): PrimitiveArrayBuilder {
-  //   return new PrimitiveArrayBuilder();
-  // }
-
-  public string(): PrimitiveTypeStringBuilder {
-    return new PrimitiveTypeStringBuilder();
-  }
-
-  public parameterObject(): ParameterObjectBuilders {
-    return new ParameterObjectBuilders();
-  }
-
-  public schemaObject(): SchemaObjectBuilder {
-    return new SchemaObjectBuilder();
-  }
-
-  public itemsObject(): ItemsObjectBuilder {
-    return new ItemsObjectBuilder();
+  public string(): StringBuilder {
+    return new StringBuilder();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -190,111 +161,10 @@ export class OpenAPIService extends Drash.Service {
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  runAtStartup(
+  runAtStartup(options: {
     server: Drash.Server,
     resources: Drash.Types.TResourcesAndPatterns,
-  ): void {
-    console.log("BUILDING SPEC");
-    this.addHostToAllSpecs(server);
-    this.addPathObjectToAllResources(resources);
-    this.preDocument();
-
-    // This comes after `buildSpec()` to prevent the OpenAPI spec from having the Swagger endpoint
+  }): void {
     server.addResource(SwaggerUIResource);
-  }
-
-  preDocument(): void {
-    this.#specs.forEach((spec: SpecBuilder) => {
-      // By this time, the `info` object should have been created
-      const info = spec.getSpec().info!;
-
-      const key = "swagger-ui-" + info.title + "-" + info.version;
-      specs.set(key, spec.toJson());
-
-      console.log(spec.toJson());
-    });
-  }
-
-  addHostToAllSpecs(server: Drash.Server): void {
-    this.#specs.forEach((spec: SpecBuilder) => {
-      spec.host(server.address);
-    });
-  }
-
-  addPathObject(resource: Types.OpenAPIResource, path: string): void {
-    resource.spec.pathsObject(path);
-  }
-
-  addPathObjectToAllResources(
-    resources: Drash.Types.TResourcesAndPatterns,
-  ): void {
-    for (const { resource } of resources.values()) {
-      // By this time, the resource should have all members from the `OpenAPIResource` type
-      const oasResource = resource as Types.OpenAPIResource;
-      // ... however, let's check before continuing.
-      if (!oasResource.spec) {
-        continue;
-      }
-
-      oasResource.paths.forEach((path: string) => {
-        this.addPathObject(oasResource, path);
-
-        // For each HTTP method, check if it exists in the resource. If it does, try to document it.
-        Drash.Types.THttpMethodArray.forEach((method: string) => {
-          if (method in oasResource) {
-            const { spec } = oasResource;
-
-            // If the method is not documented, then define some basic
-            // documentation so it is included in the spec
-            if (!(method in oasResource.oas_operations)) {
-              console.log(method, `not in`, oasResource);
-              spec.pathItemObject(
-                path,
-                method,
-                {
-                  description: "", // No description! Womp womp.
-                  summary: "", // No summary! Womp womp.
-                  responses: {
-                    200: { // Default to a 200 response (hopefully a 200 is returned)
-                      description: "Successful",
-                    },
-                  },
-                },
-              );
-
-              return;
-            }
-
-            spec.pathItemObject(
-              path,
-              method,
-              // We know the method exists by this time since we check for it in the `if` block above
-              oasResource.oas_operations[method as Drash.Types.THttpMethod]!,
-            );
-          }
-        });
-      });
-
-      oasResource.spec.resetCurrentFields();
-    }
-  }
-
-  /**
-   * Set the required fields on the given Operation Object. At the very least, an Operation Object requires the `responses` field.
-   *
-   * @param operation The operation to have fields set on it.
-   */
-  #setRequiredOperationObjectFields(
-    operation: Partial<Types.OperationObject>,
-  ): void {
-    if (Object.keys(operation).length === 0) {
-      operation = {
-        responses: {
-          200: {
-            description: "Successful",
-          },
-        },
-      };
-    }
   }
 }
