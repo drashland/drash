@@ -17,22 +17,4 @@ export class Service implements IService {
   protected end() {
     this.#send = true;
   }
-
-  public runAfterResource(
-    _request: Request,
-    _response: Response,
-  ) {
-  }
-
-  public runBeforeResource(
-    _request: Request,
-    _response: Response,
-  ) {
-  }
-
-  public runAtStartup(
-    _server: Server,
-    _resources: Types.TResourcesAndPatterns,
-  ) {
-  }
 }

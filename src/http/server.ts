@@ -2,7 +2,7 @@ import * as Drash from "../../mod.ts";
 import { ConnInfo, StdServer } from "../../deps.ts";
 
 async function runServices(
-  Services: Drash.Service[],
+  Services: Drash.Interfaces.IService[],
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
@@ -10,7 +10,9 @@ async function runServices(
   let err: Error | null = null;
   for (const Service of Services) {
     try {
-      await Service[serviceMethod](request, response);
+      if (serviceMethod in Service) {
+        await Service[serviceMethod]!(request, response);
+      }
     } catch (e) {
       if (!err) {
         err = e;
@@ -45,7 +47,7 @@ export class Server {
    */
   #server!: StdServer;
 
-  #services: Drash.Service[] = [];
+  #services: Drash.Interfaces.IService[] = [];
 
   /**
    * A promise we need to await after calling close() on #server
@@ -169,7 +171,7 @@ export class Server {
       this.#services = this.#options.services;
     }
 
-    this.#services.forEach(async (service: Drash.Service) => {
+    this.#services.forEach(async (service: Drash.Interfaces.IService) => {
       if (service.runAtStartup) {
         await service.runAtStartup({
           server: this,
