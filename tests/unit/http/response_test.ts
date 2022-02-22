@@ -21,6 +21,20 @@ Deno.test("deleteCookie", () => {
     true,
   );
 });
+Deno.test("download()", () => {
+  const response = new Drash.Response();
+  const filepath = Deno.cwd() + "/tests/data/static_file.txt";
+  response.download(filepath, "text/plain");
+  assertEquals(
+    response.headers.get("Content-Disposition"),
+    `attachment; filename="static_file.txt"`,
+  );
+  assertEquals(response.headers.get("Content-Type"), "text/plain");
+  assertEquals(
+    (new TextDecoder().decode(response.body as Uint8Array)).startsWith("test"),
+    true,
+  );
+});
 Deno.test("text()", () => {
   const response = new Drash.Response();
   response.text("hello", 419, {
