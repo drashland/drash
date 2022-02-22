@@ -55,7 +55,10 @@ export class DrashResponse {
   ): void {
     const filepathSplit = filepath.split("/");
     const filename = filepathSplit[filepathSplit.length - 1];
-    this.headers.set("Content-Disposition", `attachment; filename${filename}`);
+    this.headers.set(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`,
+    );
     this.headers.set("Content-Type", contentType);
     Object.keys(headers).forEach((key) => {
       this.headers.set(key, headers[key]);
