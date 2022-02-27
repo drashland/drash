@@ -7,12 +7,12 @@ export class SchemaObjectBuilder {
   public is_required = false;
 
   protected spec: Partial<{
-    type: string,
-    collection_format: string,
+    type: string;
+    collection_format: string;
     properties: {
-      [key: string]: Builder
-    },
-    required: string[],
+      [key: string]: Builder;
+    };
+    required: string[];
   }> = {};
 
   protected $ref?: string;
@@ -28,7 +28,9 @@ export class SchemaObjectBuilder {
 
   public properties(properties: any): this {
     if (this.spec.type === "array") {
-      throw new Error("Method `.properties()` cannot be used on `array` schema.");
+      throw new Error(
+        "Method `.properties()` cannot be used on `array` schema.",
+      );
     }
 
     this.spec.properties = properties;
@@ -38,7 +40,7 @@ export class SchemaObjectBuilder {
   public toJson(): any {
     if (this.$ref) {
       return {
-        $ref: this.$ref
+        $ref: this.$ref,
       };
     }
 
@@ -91,7 +93,7 @@ export class SchemaTypeArrayObjectBuilder extends SchemaObjectBuilder {
     if (this.$ref) {
       return {
         $ref: this.$ref,
-      }
+      };
     }
 
     if (!this.object_specific_spec.items) {

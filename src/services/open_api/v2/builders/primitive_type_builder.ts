@@ -1,6 +1,18 @@
 // The unknown type can be any type to provide documentation. The explicit types
 // are defined by Swagger Specification.
-type DataType = "integer" | "long" | "float" | "double" | "string" | "byte" | "binary" | "boolean" | "date" | "dateTime" | "password" | unknown;
+type DataType =
+  | "integer"
+  | "long"
+  | "float"
+  | "double"
+  | "string"
+  | "byte"
+  | "binary"
+  | "boolean"
+  | "date"
+  | "dateTime"
+  | "password"
+  | unknown;
 
 interface IBuilder {
   toJson: () => any;
@@ -19,7 +31,7 @@ export class PrimitiveDataTypeBuilder {
   #setDefaults(): void {
     let format: string | undefined;
 
-    switch(this.spec.type) {
+    switch (this.spec.type) {
       case "string":
         break;
       case "integer":
@@ -80,7 +92,7 @@ export class PrimitiveDataTypeBuilder {
     // invalid specification
     if (this.spec.$ref) {
       return {
-        $ref: this.spec.$ref
+        $ref: this.spec.$ref,
       };
     }
 

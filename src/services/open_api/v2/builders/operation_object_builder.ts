@@ -2,6 +2,14 @@ interface Builder {
   toJson(): any;
 }
 
+class OperationObjectError extends Error {
+  constructor(message: string) {
+    super();
+    this.name = this.constructor.name;
+    this.message = message;
+  }
+}
+
 export class OperationObjectBuilder {
   protected spec: any = {};
 
@@ -14,12 +22,12 @@ export class OperationObjectBuilder {
   }
 
   public responses(responses: any): this {
-    const spec: {[statusCode: string]: any} = {};
+    const spec: { [statusCode: string]: any } = {};
 
     for (const [statusCode, value] of Object.entries(responses)) {
       if (typeof value === "string") {
         spec[statusCode] = {
-          description: value
+          description: value,
         };
       } else {
         spec[statusCode] = (value as Builder).toJson();
@@ -31,6 +39,12 @@ export class OperationObjectBuilder {
   }
 
   public toJson(): any {
+    if (!this.spec.responses) {
+      throw new OperationObjectError(
+        `.responses() needs to be called.`
+      );
+    }
+
     return this.spec;
   }
 }

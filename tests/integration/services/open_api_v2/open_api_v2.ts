@@ -1,10 +1,12 @@
 import * as Drash from "../../../../mod.ts";
 import { OpenAPIV2Service } from "../../../../src/services/open_api/v2/open_api.ts";
+import { IBuilder } from "../../../../src/services/open_api/v2/interfaces.ts";
 import { asserts, plan, run, suite, test } from "../../../deps.ts";
+import { PathItemObjectBuilder } from "../../../../src/services/open_api/v2/builders/path_item_object_builder.ts";
 const { assertEquals } = asserts;
 
-const oas = new OpenAPIV2Service();
 import { builders } from "../../../../src/services/open_api/v2/open_api.ts";
+
 const {
   array,
   integer,
@@ -446,18 +448,17 @@ plan("Open API v2 Service", () => {
     });
   });
 
-  suite("pathItem()", () => {
-    test("sets GET", () => {
-      assertEquals(
-        build(
-          pathItem().get(operation()),
-        ),
-        {
-          get: {},
-        },
-      );
-    });
-  });
+  suite("pathItem()", () =>
+    pathItemTestData().forEach(
+      (data: { name: string; builder: IBuilder; expected: unknown }) => {
+        test(data.name, () => {
+          assertEquals(
+            build(data.builder),
+            data.expected,
+          );
+        });
+      },
+    ));
 
   suite("parameters.path()", () => {
     test("sets name, in, required", () => {
@@ -560,11 +561,13 @@ plan("Open API v2 Service", () => {
     test("requires .parameters() to take in an array", () => {
       assertEquals(
         build(
-          operation().parameters([
-            parameters.query().name("test"),
-          ]),
+          operation().responses({ 200: response().description("OK") })
+            .parameters([
+              parameters.query().name("test"),
+            ]),
         ),
         {
+          responses: { 200: { description: "OK" } },
           parameters: [
             {
               name: "test",
@@ -607,8 +610,22 @@ plan("Open API v2 Service", () => {
             "/some-path": pathItem()
               .get(
                 operation()
+                  .parameters([
+                    parameters.path().name("account_id").description(
+                      "The ID of the account to get.",
+                    ),
+                    parameters.path().name("user_id").description(
+                      "The ID of the user who owns the account.",
+                    ),
+                    parameters.header().name("X-TEST").description(
+                      "Some random header. Who knows?",
+                    ),
+                  ])
                   .responses({
-                    200: response().description("Test GET"),
+                    200: response().description("If you got it!"),
+                    400: response().description("If you bad requested it!"),
+                    404: response().description("If we no find!"),
+                    500: response().description("Daaaaang... got'em!"),
                   }),
               )
               .post(
@@ -650,3 +667,315 @@ plan("Open API v2 Service", () => {
 });
 
 run();
+
+function pathItemTestData(): any {
+  const methods = [
+    "get",
+    "post",
+    "put",
+    "patch",
+    "delete",
+    "head",
+    "options",
+  ];
+
+  return [
+    ...methods.map((method: string) => {
+      return [
+        // Basic tests
+        {
+          name: `${method}: sets empty operation object`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+          },
+        },
+
+        // With $ref
+        {
+          name: `${method}: sets $ref on property`,
+          // @ts-ignore
+          builder: {
+            "/some-path": pathItem().ref("SomePathItemDefinition"),
+          },
+          expected: {
+            "/some-path": {
+              $ref: "#/definitions/SomePathItemDefinition",
+            },
+          },
+        },
+        {
+          name: `${method}: sets $ref`,
+          // @ts-ignore
+          builder: pathItem().ref("SomePathItemDefinition"),
+          expected: {
+            $ref: "#/definitions/SomePathItemDefinition",
+          },
+        },
+
+        // With query parameters
+        {
+          name: `${method}: sets query params`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.query().name("hello"),
+            parameters.query().name("world"),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "query",
+                name: "hello",
+              },
+              {
+                in: "query",
+                name: "world",
+              },
+            ],
+          },
+        },
+        {
+          name: `${method}: sets query params on path`,
+          builder: {
+            // @ts-ignore
+            "/some-path": pathItem()[method](
+              operation().responses({ 200: response().description("OK") }),
+            ).parameters([
+              parameters.query().name("hello"),
+              parameters.query().name("world"),
+            ]),
+          },
+          expected: {
+            "/some-path": {
+              [method]: {
+                responses: { 200: { description: "OK" } },
+              },
+              parameters: [
+                {
+                  in: "query",
+                  name: "hello",
+                },
+                {
+                  in: "query",
+                  name: "world",
+                },
+              ],
+            },
+          },
+        },
+
+        // With form data
+        {
+          name: `${method}: sets formData params`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.formData().name("hello"),
+            parameters.formData().name("world"),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "formData",
+                name: "hello",
+              },
+              {
+                in: "formData",
+                name: "world",
+              },
+            ],
+          },
+        },
+
+        // With only one body parameter
+        {
+          name: `${method}: sets body param`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.body().name("body").schema(object()),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "body",
+                name: "body",
+                schema: {
+                  type: "object",
+                },
+              },
+            ],
+          },
+        },
+
+        // With only one body parameter required
+        {
+          name: `${method}: sets body param`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.body().name("body").schema(
+              object().properties({
+                some_property: string().required(),
+              }),
+            ).required(),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "body",
+                name: "body",
+                schema: {
+                  required: [
+                    "some_property",
+                  ],
+                  type: "object",
+                  properties: {
+                    some_property: {
+                      type: "string",
+                    },
+                  },
+                },
+                required: true,
+              },
+            ],
+          },
+        },
+
+        // With path parameters
+        {
+          name: `${method}: sets path params`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({
+              200: response().description("OK"),
+            }),
+          ).parameters([
+            parameters.path().name("hello"),
+            parameters.path().name("world"),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "path",
+                name: "hello",
+                required: true,
+              },
+              {
+                in: "path",
+                name: "world",
+                required: true,
+              },
+            ],
+          },
+        },
+
+        // With headers
+        {
+          name: `${method}: sets header params`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.header().name("hello"),
+            parameters.header().name("world"),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "header",
+                name: "hello",
+              },
+              {
+                in: "header",
+                name: "world",
+              },
+            ],
+          },
+        },
+
+        {
+          name: `${method}: sets header params required`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.header().name("hello"),
+            parameters.header().name("world").required(),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "header",
+                name: "hello",
+              },
+              {
+                in: "header",
+                name: "world",
+                required: true,
+              },
+            ],
+          },
+        },
+
+        {
+          name: `${method}: sets header params required`,
+          // @ts-ignore
+          builder: pathItem()[method](
+            operation().responses({ 200: response().description("OK") }),
+          ).parameters([
+            parameters.header().name("hello"),
+            parameters.header().name("world").required(),
+          ]),
+          expected: {
+            [method]: {
+              responses: { 200: { description: "OK" } },
+            },
+            parameters: [
+              {
+                in: "header",
+                name: "hello",
+              },
+              {
+                in: "header",
+                name: "world",
+                required: true,
+              },
+            ],
+          },
+        },
+      ];
+    }).flat(),
+  ];
+}

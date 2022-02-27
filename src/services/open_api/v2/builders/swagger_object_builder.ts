@@ -4,44 +4,44 @@ interface Builder {
 
 export class SwaggerObjectBuilder {
   protected spec: Partial<{
-    swagger: string,
+    swagger: string;
     info: {
-      title: string,
-      description: string,
-      termsOfService: string,
+      title: string;
+      description: string;
+      termsOfService: string;
       contact: {
-        name: string,
-        url: string,
-        email: string,
-      },
+        name: string;
+        url: string;
+        email: string;
+      };
       license: {
-        name: string,
-        url: string,
-      },
-      version: string,
-    },
-    host: string,
-    basePath: string,
-    schemes: string[],
-    consumes: string[],
-    produces: string[],
+        name: string;
+        url: string;
+      };
+      version: string;
+    };
+    host: string;
+    basePath: string;
+    schemes: string[];
+    consumes: string[];
+    produces: string[];
     paths: {
-      [path: string]: Builder
-    },
+      [path: string]: Builder;
+    };
     definitions: {
-      [definition: string]: Builder
-    },
+      [definition: string]: Builder;
+    };
     parameters: {
-      [parameter: string]: Builder
-    },
+      [parameter: string]: Builder;
+    };
     responses: {
-      [response: string]: Builder
-    },
+      [response: string]: Builder;
+    };
     security_definitions: {
-      [security_definition: string]: Builder
-    },
-    security: Builder[],
-    tags: Builder[],
+      [security_definition: string]: Builder;
+    };
+    security: Builder[];
+    tags: Builder[];
   }> = {};
 
   constructor(spec: any) {
@@ -95,7 +95,7 @@ export class SwaggerObjectBuilder {
     return this;
   }
 
-  public paths(paths: {[path: string]: Builder}): this {
+  public paths(paths: { [path: string]: Builder }): this {
     this.spec.paths = paths;
     return this;
   }

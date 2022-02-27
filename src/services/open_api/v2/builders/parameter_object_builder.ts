@@ -17,11 +17,6 @@ export class ParameterObjectBuilder {
 
   constructor(location: string) {
     this.spec.in = location;
-
-    // Set defaults
-    if (this.spec.in === "path") {
-      this.required();
-    }
   }
 
   public name(value: string): this {
@@ -31,11 +26,6 @@ export class ParameterObjectBuilder {
 
   public description(value: string): this {
     this.spec.description = value;
-    return this;
-  }
-
-  public required(): this {
-    this.spec.required = true;
     return this;
   }
 
@@ -52,6 +42,24 @@ export class ParameterInQueryObjectBuilder extends ParameterObjectBuilder {
   constructor() {
     super("query");
   }
+
+  public type(value: string): this {
+    this.spec.type = value;
+    return this;
+  }
+
+  public required(): this {
+    this.spec.required = true;
+    return this;
+  }
+
+  public toJson(): any {
+    if (!this.spec.type) {
+      throw new ParameterObjectError(`.type() needs to be called.`);
+    }
+
+    return super.toJson();
+  }
 }
 
 export class ParameterInBodyObjectBuilder extends ParameterObjectBuilder {
@@ -59,6 +67,11 @@ export class ParameterInBodyObjectBuilder extends ParameterObjectBuilder {
 
   constructor() {
     super("body");
+  }
+
+  public required(): this {
+    this.spec.required = true;
+    return this;
   }
 
   public schema(builder: Builder): this {
@@ -71,7 +84,7 @@ export class ParameterInBodyObjectBuilder extends ParameterObjectBuilder {
 
     if (!this.body_spec.schema) {
       throw new ParameterObjectError(
-        "Property 'schema' is required. Use `body().schema( ... )` to add it."
+        "Property 'schema' is required. Use `body().schema( ... )` to add it.",
       );
     }
 
@@ -85,5 +98,65 @@ export class ParameterInBodyObjectBuilder extends ParameterObjectBuilder {
 export class ParameterInPathObjectBuilder extends ParameterObjectBuilder {
   constructor() {
     super("path");
+  }
+
+  public type(value: string): this {
+    this.spec.type = value;
+    return this;
+  }
+
+  public toJson(): any {
+    return {
+      ...super.toJson(),
+      required: true,
+    };
+  }
+}
+
+export class ParameterInHeaderObjectBuilder extends ParameterObjectBuilder {
+  constructor() {
+    super("header");
+  }
+
+  public type(value: string): this {
+    this.spec.type = value;
+    return this;
+  }
+
+  public required(): this {
+    this.spec.required = true;
+    return this;
+  }
+
+  public toJson(): any {
+    if (!this.spec.type) {
+      throw new ParameterObjectError(`.type() needs to be called.`);
+    }
+
+    return super.toJson();
+  }
+}
+
+export class ParameterInFormDataObjectBuilder extends ParameterObjectBuilder {
+  constructor() {
+    super("formData");
+  }
+
+  public type(value: string): this {
+    this.spec.type = value;
+    return this;
+  }
+
+  public required(): this {
+    this.spec.required = true;
+    return this;
+  }
+
+  public toJson(): any {
+    if (!this.spec.type) {
+      throw new ParameterObjectError(`.type() needs to be called.`);
+    }
+
+    return super.toJson();
   }
 }

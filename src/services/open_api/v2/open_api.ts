@@ -1,30 +1,33 @@
 import * as Drash from "../../../../mod.ts";
-import { SwaggerUIResource } from './resources/swagger_ui_resource.ts';
-import { PrimitiveDataTypeBuilder } from './builders/primitive_type_builder.ts';
+import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
+import { PrimitiveDataTypeBuilder } from "./builders/primitive_type_builder.ts";
 import {
   SchemaObjectBuilder,
   SchemaTypeArrayObjectBuilder,
-} from './builders/schema_object_builder.ts';
-import { SwaggerObjectBuilder } from './builders/swagger_object_builder.ts';
-import { PathItemObjectBuilder } from './builders/path_item_object_builder.ts';
-import { OperationObjectBuilder } from './builders/operation_object_builder.ts';
-import { ResponseObjectBuilder } from './builders/response_object_builder.ts';
+} from "./builders/schema_object_builder.ts";
+import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
+import { PathItemObjectBuilder } from "./builders/path_item_object_builder.ts";
+import { OperationObjectBuilder } from "./builders/operation_object_builder.ts";
+import { ResponseObjectBuilder } from "./builders/response_object_builder.ts";
 import {
-  ParameterInQueryObjectBuilder,
   ParameterInBodyObjectBuilder,
+  ParameterInHeaderObjectBuilder,
   ParameterInPathObjectBuilder,
-} from './builders/parameter_object_builder.ts';
-
+  ParameterInQueryObjectBuilder,
+  ParameterInFormDataObjectBuilder,
+} from "./builders/parameter_object_builder.ts";
+import { IBuilder } from "./interfaces.ts";
 
 export let pathToSwaggerUI: string;
-export let specs = new Map<string, string>();
+export const specs = new Map<string, string>();
+
 export function getSpecURLS(): string {
   const urls: {
     url: string;
     name: string;
   }[] = [];
   specs.forEach((spec: string) => {
-    const json = JSON.parse(spec) as any
+    const json = JSON.parse(spec) as any;
     urls.push({
       name: `${json.info.title} ${json.info.version}`,
       url: `/swagger-ui-${json.info.title}-${json.info.version}.json`,
@@ -33,22 +36,26 @@ export function getSpecURLS(): string {
   return JSON.stringify(urls);
 }
 
-interface Builder {
-  toJson(): any;
+function isBuilder(obj: unknown): obj is IBuilder {
+  return !!obj && typeof obj === "object" && "toJson" in obj;
 }
 
-function build(obj: any, spec: any = {}): any {
-  if ("toJson" in obj) {
+function build(obj: unknown, spec: any = {}): any {
+  // Check if swagger() was provided
+  if (isBuilder(obj)) {
     return {
       ...spec,
-      ...obj.toJson()
+      ...obj.toJson(),
     };
   }
 
-  for (const [key, builder] of Object.entries(obj)) {
+  // Otherwise, we know that this is a key-value pair object with builders
+  for (
+    const [key, builder] of Object.entries(obj as Record<string, IBuilder>)
+  ) {
     spec = {
       ...spec,
-      [key]: (builder as Builder).toJson(),
+      [key]: builder.toJson(),
     };
   }
 
@@ -61,8 +68,14 @@ export const builders = {
     return new SwaggerObjectBuilder(spec);
   },
   parameters: {
+    header(): ParameterInHeaderObjectBuilder {
+      return new ParameterInHeaderObjectBuilder();
+    },
     path(): ParameterInPathObjectBuilder {
       return new ParameterInPathObjectBuilder();
+    },
+    formData(): ParameterInFormDataObjectBuilder {
+      return new ParameterInFormDataObjectBuilder();
     },
     query(): ParameterInQueryObjectBuilder {
       return new ParameterInQueryObjectBuilder();
