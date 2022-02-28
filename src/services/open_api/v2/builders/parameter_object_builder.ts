@@ -30,7 +30,7 @@ export class ParameterObjectBuilder {
   public toJson(): any {
     if (!this.spec.name) {
       throw new ParameterObjectError(
-        `Parameter of type "${this.spec.in}" requires .name() needs to be called.`
+        `Parameter of type "${this.spec.in}" requires .name() needs to be called.`,
       );
     }
 
@@ -51,7 +51,7 @@ export class ParameterInQueryObjectBuilder extends ParameterObjectBuilder {
     if (this.isBuilder(value)) {
       this.spec = {
         ...this.spec,
-        ...value.toJson()
+        ...value.toJson(),
       };
     } else {
       this.spec.type = value;
@@ -66,7 +66,9 @@ export class ParameterInQueryObjectBuilder extends ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.type) {
-      throw new ParameterObjectError(`Parameter of type "query" requires .type() to be called.`);
+      throw new ParameterObjectError(
+        `Parameter of type "query" requires .type() to be called.`,
+      );
     }
 
     return super.toJson();
@@ -115,7 +117,7 @@ export class ParameterInPathObjectBuilder extends ParameterObjectBuilder {
     if (this.isBuilder(value)) {
       this.spec = {
         ...this.spec,
-        ...value.toJson()
+        ...value.toJson(),
       };
     } else {
       this.spec.type = value;
@@ -143,7 +145,7 @@ export class ParameterInHeaderObjectBuilder extends ParameterObjectBuilder {
     if (this.isBuilder(value)) {
       this.spec = {
         ...this.spec,
-        ...value.toJson()
+        ...value.toJson(),
       };
     } else {
       this.spec.type = value;
@@ -158,7 +160,9 @@ export class ParameterInHeaderObjectBuilder extends ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.type) {
-      throw new ParameterObjectError(`Parameter of type "header" requires .type() to be called.`);
+      throw new ParameterObjectError(
+        `Parameter of type "header" requires .type() to be called.`,
+      );
     }
 
     return super.toJson();
@@ -174,7 +178,7 @@ export class ParameterInFormDataObjectBuilder extends ParameterObjectBuilder {
     if (this.isBuilder(value)) {
       this.spec = {
         ...this.spec,
-        ...value.toJson()
+        ...value.toJson(),
       };
     } else {
       this.spec.type = value;
@@ -189,11 +193,15 @@ export class ParameterInFormDataObjectBuilder extends ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.type) {
-      throw new ParameterObjectError(`Parameter of type "formData" requires .type() to be called.`);
+      throw new ParameterObjectError(
+        `Parameter of type "formData" requires .type() to be called.`,
+      );
     }
 
     if (this.spec.type === "file" && !this.spec.consumes) {
-      throw new ParameterObjectError(`Parameter "formData" with "type: file" requires .consumes() to be called.`);
+      throw new ParameterObjectError(
+        `Parameter "formData" with "type: file" requires .consumes() to be called.`,
+      );
     }
 
     return super.toJson();

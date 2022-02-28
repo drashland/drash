@@ -23,7 +23,7 @@ export class OperationObjectBuilder {
       },
       500: {
         description: "Internal Server Error",
-      }
+      },
     };
   }
 

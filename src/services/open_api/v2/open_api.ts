@@ -2,8 +2,8 @@ import * as Drash from "../../../../mod.ts";
 import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
 import { PrimitiveDataTypeBuilder } from "./builders/primitive_data_type_builder.ts";
 import {
-  SchemaObjectTypeObjectBuilder,
   SchemaObjectTypeArrayBuilder,
+  SchemaObjectTypeObjectBuilder,
 } from "./builders/schema_object_builder.ts";
 import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
 import { PathItemObjectBuilder } from "./builders/path_item_object_builder.ts";
@@ -11,15 +11,30 @@ import { OperationObjectBuilder } from "./builders/operation_object_builder.ts";
 import { ResponseObjectBuilder } from "./builders/response_object_builder.ts";
 import {
   ParameterInBodyObjectBuilder,
+  ParameterInFormDataObjectBuilder,
   ParameterInHeaderObjectBuilder,
   ParameterInPathObjectBuilder,
   ParameterInQueryObjectBuilder,
-  ParameterInFormDataObjectBuilder,
 } from "./builders/parameter_object_builder.ts";
 import { IBuilder } from "./interfaces.ts";
 
+export type PathItemObjectBuilderHttpMethods =
+  | "get"
+  | "post"
+  | "put"
+  | "delete"
+  | "patch"
+  | "head"
+  | "options"
+
 export let pathToSwaggerUI: string;
 export const specs = new Map<string, string>();
+
+interface IResourceWithSwagger extends Drash.Resource {
+  /** Example: DRASH V1.0 */
+  spec: string;
+  operations?: { [method: string]: IBuilder | null };
+}
 
 export function getSpecURLS(): string {
   const urls: {
@@ -82,37 +97,33 @@ export type Builders = {
   object: (properties?: any) => SchemaObjectTypeObjectBuilder;
   array: (properties?: any) => SchemaObjectTypeArrayBuilder;
   pathItem: () => PathItemObjectBuilder;
-  parameters: {
-    body: () => ParameterInBodyObjectBuilder;
-    formData: () => ParameterInFormDataObjectBuilder;
-    header: () => ParameterInHeaderObjectBuilder;
-    path: () => ParameterInPathObjectBuilder;
-    query: () => ParameterInQueryObjectBuilder;
-  };
+  body: () => ParameterInBodyObjectBuilder;
+  formData: () => ParameterInFormDataObjectBuilder;
+  header: () => ParameterInHeaderObjectBuilder;
+  path: () => ParameterInPathObjectBuilder;
+  query: () => ParameterInQueryObjectBuilder;
   response: () => ResponseObjectBuilder;
   operation: () => OperationObjectBuilder;
-}
+};
 
 export const Swagger: Builders = {
   swagger(spec: any): SwaggerObjectBuilder {
     return new SwaggerObjectBuilder(spec);
   },
-  parameters: {
-    header(): ParameterInHeaderObjectBuilder {
-      return new ParameterInHeaderObjectBuilder();
-    },
-    path(): ParameterInPathObjectBuilder {
-      return new ParameterInPathObjectBuilder();
-    },
-    formData(): ParameterInFormDataObjectBuilder {
-      return new ParameterInFormDataObjectBuilder();
-    },
-    query(): ParameterInQueryObjectBuilder {
-      return new ParameterInQueryObjectBuilder();
-    },
-    body(): ParameterInBodyObjectBuilder {
-      return new ParameterInBodyObjectBuilder();
-    },
+  header(): ParameterInHeaderObjectBuilder {
+    return new ParameterInHeaderObjectBuilder();
+  },
+  path(): ParameterInPathObjectBuilder {
+    return new ParameterInPathObjectBuilder();
+  },
+  formData(): ParameterInFormDataObjectBuilder {
+    return new ParameterInFormDataObjectBuilder();
+  },
+  query(): ParameterInQueryObjectBuilder {
+    return new ParameterInQueryObjectBuilder();
+  },
+  body(): ParameterInBodyObjectBuilder {
+    return new ParameterInBodyObjectBuilder();
   },
   response(): ResponseObjectBuilder {
     return new ResponseObjectBuilder();
@@ -182,7 +193,7 @@ export class OpenAPIService extends Drash.Service {
   #specs: Map<string, SwaggerObjectBuilder> = new Map();
   #options: any;
 
-  public current_resource_being_documented?: Drash.Resource;
+  public current_resource_being_documented?: Drash.Resource & IResourceWithSwagger;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -201,53 +212,73 @@ export class OpenAPIService extends Drash.Service {
   //////////////////////////////////////////////////////////////////////////////
 
   public runAtStartup(options: any): void {
-    console.log(`runAtStartup`)
+    console.log(`runAtStartup`);
     console.log(`options`, options);
     if (options.server) {
       options.server.addResource(SwaggerUIResource);
     }
 
     if (options.resources) {
-      options.resources.forEach((resourceData: { resource: typeof Drash.Resource & Drash.Resource & { spec: string }}) => {
-        // Get the spec
-        const resource = resourceData.resource;
-        console.log(`resource`, resource);
-        const swaggerObjectBuilder = this.#specs.get(resource.spec);
-        if (!swaggerObjectBuilder) {
-          return;
-        }
-        // Start building out the spec
-        // First, add this resource's paths
-        resource.paths.forEach((path: string) => {
-          const pathItemObjectBuilder = Swagger.pathItem();
-          [
-            "GET",
-            // TODO(crookse)
-            // - Add all HTTP methods
-          ].forEach((method: string) => {
-            if (method in resource) {
-              // @ts-ignore
-              pathItemObjectBuilder[method.toLowerCase()](Swagger.operation().responses({
-                // Have a default OK response
-                200: "OK"
-              }))
+      options.resources.forEach(
+        (
+          resourceData: {
+            // By now, this service will have modified the resources using this
+            // service. So, data members in IResourceWithSwagger will be
+            // available.
+            resource: typeof Drash.Resource & IResourceWithSwagger;
+          },
+        ) => {
+          // Get the spec
+          const resource = resourceData.resource;
+          console.log(`resource`, resource);
+          const swaggerObjectBuilder = this.#specs.get(resource.spec);
+          if (!swaggerObjectBuilder) {
+            return;
+          }
+          // Start building out the spec
+          // First, add this resource's paths
+          resource.paths.forEach((path: string) => {
+            const pathItemObjectBuilder = Swagger.pathItem();
+            [
+              "GET",
+              // TODO(crookse)
+              // - Add all HTTP methods
+            ].forEach((method: string) => {
+              const lcMethod = method.toLowerCase() as PathItemObjectBuilderHttpMethods;
 
-              // @ts-ignore
-              if ("operations" in resource && method.toLowerCase() in resource.operations) {
-                // @ts-ignore
-                pathItemObjectBuilder[method.toLowerCase()](resource.operations[method.toLowerCase()]);
+              if (method in resource) {
+                pathItemObjectBuilder[lcMethod](
+                  Swagger.operation().responses({
+                    // Have a default OK response
+                    200: "OK",
+                  }),
+                );
+
+                // If the resource uses `OpenAPIService[someMethod]()`, then use
+                // that builder instead
+                if (
+                  resource.operations &&
+                  lcMethod in resource.operations &&
+                  resource.operations[lcMethod] !== null
+                ) {
+                  pathItemObjectBuilder[lcMethod](
+                    resource.operations[lcMethod] as OperationObjectBuilder,
+                  );
+                }
               }
-            }
+            });
+            swaggerObjectBuilder.addPath(path, pathItemObjectBuilder);
           });
-          swaggerObjectBuilder.addPath(path, pathItemObjectBuilder);
-        });
-
-      });
+        },
+      );
 
       const spec = buildSpec(this.#specs.get("DRASH V1.0")!);
       const stringified = JSON.stringify(spec, null, 2);
       console.log(`stringified`, stringified);
-      specs.set(`swagger-ui-${spec.info.title}-${spec.info.version}`, stringified);
+      specs.set(
+        `swagger-ui-${spec.info.title}-${spec.info.version}`,
+        stringified,
+      );
       // console.log(buildSpec(swaggerObjectBuilder));
     }
 
@@ -265,16 +296,23 @@ export class OpenAPIService extends Drash.Service {
    */
   public createSpec(info: any): void {
     console.log("creating spec", info.title, info.version);
-    this.#specs.set(this.#formatSpecName(info.title, info.version), Swagger.swagger({
-      info,
-    }));
+    this.#specs.set(
+      this.#formatSpecName(info.title, info.version),
+      Swagger.swagger({
+        info,
+      }),
+    );
   }
 
   /**
    * Return a properly formed spec name. This spec name will be used in
    * `runAtStartup()` to build specs for resources that have specs.
    */
-  public setSpec(resource: Drash.Resource, name: string, version: string): string {
+  public setSpec(
+    resource: Drash.Resource & IResourceWithSwagger,
+    name: string,
+    version: string,
+  ): string {
     this.current_resource_being_documented = resource;
     return this.#formatSpecName(name, version).toUpperCase();
   }
@@ -284,24 +322,27 @@ export class OpenAPIService extends Drash.Service {
   }
 
   public GET(
-    spec: IBuilder,
+    spec: IBuilder | null,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
-    if (this.current_resource_being_documented) {
-      // @ts-ignore
-      if (!this.current_resource_being_documented.operations) {
-        // @ts-ignore
-        this.current_resource_being_documented!.operations = {};
-      }
-
-      // @ts-ignore
-      this.current_resource_being_documented!.operations.get = spec;
+    // Only resources should use this method. That means, it should also be
+    // using `setSpec()`. If `setSpec()` was not called, then we throw an error
+    // because we have no idea what resource needs to be documented at this
+    // current time.
+    if (!this.current_resource_being_documented) {
+      throw new Error(`Resource forgot to call oas.setSpec()`);
     }
+
+    if (!this.current_resource_being_documented.operations) {
+      this.current_resource_being_documented.operations = {};
+    }
+
+    this.current_resource_being_documented.operations.get = spec;
+
     console.log(`current spec`, this.current_resource_being_documented);
     return handler;
   }
 }
 
 class SpecBuilder {
-
 }
