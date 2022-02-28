@@ -155,6 +155,8 @@ export class OpenAPIService extends Drash.Service {
   #specs: Map<string, SwaggerObjectBuilder> = new Map();
   #options: any;
 
+  public current_resource?: Drash.Resource;
+
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -197,10 +199,17 @@ export class OpenAPIService extends Drash.Service {
             // - Add all HTTP methods
           ].forEach((method: string) => {
             if (method in resource) {
-              pathItemObjectBuilder.get(types.operation().responses({
+              // @ts-ignore
+              pathItemObjectBuilder[method.toLowerCase()](types.operation().responses({
                 // Have a default OK response
                 200: "OK"
               }))
+
+              // @ts-ignore
+              if ("operations" in resource && method.toLowerCase() in resource.operations) {
+                // @ts-ignore
+                pathItemObjectBuilder[method.toLowerCase()](resource.operations[method.toLowerCase()]);
+              }
             }
           });
           swaggerObjectBuilder.addPath(path, pathItemObjectBuilder);
@@ -238,12 +247,31 @@ export class OpenAPIService extends Drash.Service {
    * Return a properly formed spec name. This spec name will be used in
    * `runAtStartup()` to build specs for resources that have specs.
    */
-  public setSpec(name: string, version: string): string {
+  public setSpec(resource: Drash.Resource, name: string, version: string): string {
+    this.current_resource = resource;
     return this.#formatSpecName(name, version).toUpperCase();
   }
 
   #formatSpecName(title: string, version: string): string {
     return `${title} ${version}`.toUpperCase();
+  }
+
+  public GET(
+    spec: IBuilder,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    if (this.current_resource) {
+      // @ts-ignore
+      if (!this.current_resource.operations) {
+        // @ts-ignore
+        this.current_resource!.operations = {};
+      }
+
+      // @ts-ignore
+      this.current_resource!.operations.get = spec;
+    }
+    console.log(`current spec`, this.current_resource);
+    return handler;
   }
 }
 
