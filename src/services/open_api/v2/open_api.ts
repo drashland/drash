@@ -1,9 +1,9 @@
 import * as Drash from "../../../../mod.ts";
 import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
-import { PrimitiveDataTypeBuilder } from "./builders/primitive_type_builder.ts";
+import { PrimitiveDataTypeBuilder } from "./builders/primitive_data_type_builder.ts";
 import {
-  SchemaObjectBuilder,
-  SchemaTypeArrayObjectBuilder,
+  SchemaObjectTypeObjectBuilder,
+  SchemaObjectTypeArrayBuilder,
 } from "./builders/schema_object_builder.ts";
 import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
 import { PathItemObjectBuilder } from "./builders/path_item_object_builder.ts";
@@ -66,7 +66,34 @@ export function buildSpec(obj: unknown, spec: any = {}): any {
   return spec;
 }
 
-export const types = {
+export type Builders = {
+  swagger: (spec: any) => SwaggerObjectBuilder;
+  binary: () => PrimitiveDataTypeBuilder;
+  boolean: () => PrimitiveDataTypeBuilder;
+  byte: () => PrimitiveDataTypeBuilder;
+  date: () => PrimitiveDataTypeBuilder;
+  dateTime: () => PrimitiveDataTypeBuilder;
+  double: () => PrimitiveDataTypeBuilder;
+  float: () => PrimitiveDataTypeBuilder;
+  integer: () => PrimitiveDataTypeBuilder;
+  long: () => PrimitiveDataTypeBuilder;
+  password: () => PrimitiveDataTypeBuilder;
+  string: () => PrimitiveDataTypeBuilder;
+  object: (properties?: any) => SchemaObjectTypeObjectBuilder;
+  array: (properties?: any) => SchemaObjectTypeArrayBuilder;
+  pathItem: () => PathItemObjectBuilder;
+  parameters: {
+    body: () => ParameterInBodyObjectBuilder;
+    formData: () => ParameterInFormDataObjectBuilder;
+    header: () => ParameterInHeaderObjectBuilder;
+    path: () => ParameterInPathObjectBuilder;
+    query: () => ParameterInQueryObjectBuilder;
+  };
+  response: () => ResponseObjectBuilder;
+  operation: () => OperationObjectBuilder;
+}
+
+export const Swagger: Builders = {
   swagger(spec: any): SwaggerObjectBuilder {
     return new SwaggerObjectBuilder(spec);
   },
@@ -90,8 +117,8 @@ export const types = {
   response(): ResponseObjectBuilder {
     return new ResponseObjectBuilder();
   },
-  object(properties?: any): SchemaObjectBuilder {
-    const o = new SchemaObjectBuilder("object");
+  object(properties?: any): SchemaObjectTypeObjectBuilder {
+    const o = new SchemaObjectTypeObjectBuilder();
     if (properties) {
       o.properties(properties);
     }
@@ -103,8 +130,8 @@ export const types = {
   operation(): OperationObjectBuilder {
     return new OperationObjectBuilder();
   },
-  array(items?: any): SchemaTypeArrayObjectBuilder {
-    const a = new SchemaTypeArrayObjectBuilder();
+  array(items?: any): SchemaObjectTypeArrayBuilder {
+    const a = new SchemaObjectTypeArrayBuilder();
     if (items) {
       a.items(items);
     }
@@ -155,7 +182,7 @@ export class OpenAPIService extends Drash.Service {
   #specs: Map<string, SwaggerObjectBuilder> = new Map();
   #options: any;
 
-  public current_resource?: Drash.Resource;
+  public current_resource_being_documented?: Drash.Resource;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -192,7 +219,7 @@ export class OpenAPIService extends Drash.Service {
         // Start building out the spec
         // First, add this resource's paths
         resource.paths.forEach((path: string) => {
-          const pathItemObjectBuilder = types.pathItem();
+          const pathItemObjectBuilder = Swagger.pathItem();
           [
             "GET",
             // TODO(crookse)
@@ -200,7 +227,7 @@ export class OpenAPIService extends Drash.Service {
           ].forEach((method: string) => {
             if (method in resource) {
               // @ts-ignore
-              pathItemObjectBuilder[method.toLowerCase()](types.operation().responses({
+              pathItemObjectBuilder[method.toLowerCase()](Swagger.operation().responses({
                 // Have a default OK response
                 200: "OK"
               }))
@@ -238,7 +265,7 @@ export class OpenAPIService extends Drash.Service {
    */
   public createSpec(info: any): void {
     console.log("creating spec", info.title, info.version);
-    this.#specs.set(this.#formatSpecName(info.title, info.version), types.swagger({
+    this.#specs.set(this.#formatSpecName(info.title, info.version), Swagger.swagger({
       info,
     }));
   }
@@ -248,7 +275,7 @@ export class OpenAPIService extends Drash.Service {
    * `runAtStartup()` to build specs for resources that have specs.
    */
   public setSpec(resource: Drash.Resource, name: string, version: string): string {
-    this.current_resource = resource;
+    this.current_resource_being_documented = resource;
     return this.#formatSpecName(name, version).toUpperCase();
   }
 
@@ -260,17 +287,17 @@ export class OpenAPIService extends Drash.Service {
     spec: IBuilder,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
-    if (this.current_resource) {
+    if (this.current_resource_being_documented) {
       // @ts-ignore
-      if (!this.current_resource.operations) {
+      if (!this.current_resource_being_documented.operations) {
         // @ts-ignore
-        this.current_resource!.operations = {};
+        this.current_resource_being_documented!.operations = {};
       }
 
       // @ts-ignore
-      this.current_resource!.operations.get = spec;
+      this.current_resource_being_documented!.operations.get = spec;
     }
-    console.log(`current spec`, this.current_resource);
+    console.log(`current spec`, this.current_resource_being_documented);
     return handler;
   }
 }

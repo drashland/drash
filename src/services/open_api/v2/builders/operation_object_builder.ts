@@ -13,6 +13,20 @@ class OperationObjectError extends Error {
 export class OperationObjectBuilder {
   protected spec: any = {};
 
+  constructor() {
+    this.spec.responses = {
+      200: {
+        description: "OK",
+      },
+      404: {
+        description: "Not Found",
+      },
+      500: {
+        description: "Internal Server Error",
+      }
+    };
+  }
+
   public parameters(parameters: any[]): this {
     this.spec.parameters = parameters.map((param: Builder) => {
       return param.toJson();
@@ -39,11 +53,11 @@ export class OperationObjectBuilder {
   }
 
   public toJson(): any {
-    if (!this.spec.responses) {
-      throw new OperationObjectError(
-        `.responses() needs to be called.`
-      );
-    }
+    // if (!this.spec.responses) {
+    //   throw new OperationObjectError(
+    //     `.responses() needs to be called.`
+    //   );
+    // }
 
     return this.spec;
   }
