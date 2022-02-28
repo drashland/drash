@@ -99,4 +99,10 @@ export class SwaggerObjectBuilder {
     this.spec.paths = paths;
     return this;
   }
+
+  public addPath(path: string, builder: Builder): this {
+    // .paths will exist because it is created in the constructor
+    this.spec.paths![path] = builder;
+    return this;
+  }
 }

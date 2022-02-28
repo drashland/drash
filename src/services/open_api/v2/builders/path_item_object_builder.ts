@@ -78,8 +78,6 @@ export class PathItemObjectBuilder {
       };
     }
 
-    console.log(this.spec);
-
     return this.spec;
   }
 }

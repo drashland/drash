@@ -116,7 +116,6 @@ export class Server {
     const resource = new resourceClass();
     const patterns: URLPattern[] = [];
     resource.paths.forEach((path) => {
-      console.log(path);
       // Add "{/}?" to match possible trailing slashes too
       patterns.push(new URLPattern({ pathname: path + "{/}?" }));
     });

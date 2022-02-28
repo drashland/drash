@@ -40,8 +40,12 @@ function isBuilder(obj: unknown): obj is IBuilder {
   return !!obj && typeof obj === "object" && "toJson" in obj;
 }
 
-function build(obj: unknown, spec: any = {}): any {
-  // Check if swagger() was provided
+/**
+ * Build the specification. This could be the `SwaggerObjectBuilder` or an
+ * object of key-value pairs that holds nested builders.
+ */
+export function buildSpec(obj: unknown, spec: any = {}): any {
+  // Check if a builder was provided
   if (isBuilder(obj)) {
     return {
       ...spec,
@@ -62,8 +66,7 @@ function build(obj: unknown, spec: any = {}): any {
   return spec;
 }
 
-export const builders = {
-  buildSpec: build,
+export const types = {
   swagger(spec: any): SwaggerObjectBuilder {
     return new SwaggerObjectBuilder(spec);
   },
@@ -148,137 +151,102 @@ export interface OpenAPIV2ServiceOptions {
   spec?: string;
 }
 
-export class OpenAPIV2Service extends Drash.Service {
-  #specs: any = {};
-  // #options: OpenAPIV2ServiceOptions;
+export class OpenAPIService extends Drash.Service {
+  #specs: Map<string, SwaggerObjectBuilder> = new Map();
+  #options: any;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  // constructor(options?: OpenAPIServiceOptions) {
-  //   super();
-  //   this.#options = options ?? {};
+  constructor(options?: any) {
+    super();
+    this.#options = options ?? {};
 
-  //   // Set the path to the Swagger UI page so that the resource can use it
-  //   pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
-  // }
+    // Set the path to the Swagger UI page so that the resource can use it
+    pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
+  }
 
-  // public post(
-  //   operation: OperationObjectBuilder,
-  //   handler: Drash.Types.THttpMethodHandler,
-  // ): Drash.Types.THttpMethodHandler {
-  //   return this.#pathItemObject(
-  //     "POST",
-  //     operation,
-  //     handler,
-  //   );
-  // }
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - PUBLIC //////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
-  // public get(
-  //   operation: OperationObjectBuilder,
-  //   handler: Drash.Types.THttpMethodHandler,
-  // ): Drash.Types.THttpMethodHandler {
-  //   return this.#pathItemObject(
-  //     "GET",
-  //     operation,
-  //     handler,
-  //   );
-  // }
+  public runAtStartup(options: any): void {
+    console.log(`runAtStartup`)
+    console.log(`options`, options);
+    if (options.server) {
+      options.server.addResource(SwaggerUIResource);
+    }
 
-  // #pathItemObject(
-  //   method: Drash.Types.THttpMethod,
-  //   operation: OperationObjectBuilder,
-  //   handler: Drash.Types.THttpMethodHandler,
-  // ): Drash.Types.THttpMethodHandler {
-  //   if (!this.#current_resource) {
-  //     throw new Error(
-  //       `OpenAPIService.setSpec() was not called on a resource.\n` +
-  //         `OpenaAPIService.setSpec() must be called before using OpenAPIService.{httpMethod}().`,
-  //     );
-  //   }
+    if (options.resources) {
+      options.resources.forEach((resourceData: { resource: typeof Drash.Resource & Drash.Resource & { spec: string }}) => {
+        // Get the spec
+        const resource = resourceData.resource;
+        console.log(`resource`, resource);
+        const swaggerObjectBuilder = this.#specs.get(resource.spec);
+        if (!swaggerObjectBuilder) {
+          return;
+        }
+        // Start building out the spec
+        // First, add this resource's paths
+        resource.paths.forEach((path: string) => {
+          const pathItemObjectBuilder = types.pathItem();
+          [
+            "GET",
+            // TODO(crookse)
+            // - Add all HTTP methods
+          ].forEach((method: string) => {
+            if (method in resource) {
+              pathItemObjectBuilder.get(types.operation().responses({
+                // Have a default OK response
+                200: "OK"
+              }))
+            }
+          });
+          swaggerObjectBuilder.addPath(path, pathItemObjectBuilder);
+        });
 
-  //   console.log("CREATING PATH ITEM OBJECT");
+      });
 
-  //   try {
-  //     this.#current_resource.oas_operations[method] = operation.toJson();
-  //   } catch (error) {
-  //     let errorMessage =
-  //       `OpenAPI Spec for \`${this.#current_resource.constructor.name}\` could not be built.\n`;
-  //     errorMessage += `${error.message}`;
-  //     console.log(errorMessage);
-  //     Deno.exit(1);
-  //   }
+      const spec = buildSpec(this.#specs.get("DRASH V1.0")!);
+      const stringified = JSON.stringify(spec, null, 2);
+      console.log(`stringified`, stringified);
+      specs.set(`swagger-ui-${spec.info.title}-${spec.info.version}`, stringified);
+      // console.log(buildSpec(swaggerObjectBuilder));
+    }
 
-  //   return handler;
-  // }
-
-  // //////////////////////////////////////////////////////////////////////////////
-  // // FILE MARKER - SPEC CREATION ///////////////////////////////////////////////
-  // //////////////////////////////////////////////////////////////////////////////
+    // After iterating through all of the resources, build the final swagger
+    // objects to build a proper spec
+  }
 
   /**
-   * Create a new app to be spec'd with OpenAPI documentation.
+   * Create a specification. This call occurs before `runAtStartup()` is called
+   * because resources are required to call it.
+   *
+   * TODO(crookse)
+   * - Validate that the spec doesn't already exist
+   * - Conver the spec to uppercase and use uppercase throughout the process
    */
-  // public createSpec(info: any): SpecBuilder {
-  //   const key = info.title + info.version;
+  public createSpec(info: any): void {
+    console.log("creating spec", info.title, info.version);
+    this.#specs.set(this.#formatSpecName(info.title, info.version), types.swagger({
+      info,
+    }));
+  }
 
-  //   if (this.#specs.has(key)) {
-  //     throw new Error(
-  //       `Spec for "${info.title} ${info.version}" already exists.`,
-  //     );
-  //   }
+  /**
+   * Return a properly formed spec name. This spec name will be used in
+   * `runAtStartup()` to build specs for resources that have specs.
+   */
+  public setSpec(name: string, version: string): string {
+    return this.#formatSpecName(name, version).toUpperCase();
+  }
 
-  //   const builder = new SpecBuilder(info);
-  //   this.#specs.set(
-  //     key,
-  //     builder,
-  //   );
-  //   return builder;
-  // }
+  #formatSpecName(title: string, version: string): string {
+    return `${title} ${version}`.toUpperCase();
+  }
+}
 
-  // public setSpec(
-  //   resource: Drash.Resource,
-  //   apiTitle: string,
-  //   apiVersion: string,
-  // ): SpecBuilder {
-  //   console.log("SETTING SPEC");
-  //   if (!this.#specs.has(apiTitle + apiVersion)) {
-  //     throw new Error(
-  //       `Spec for "${apiTitle} ${apiVersion}" does not exist.\n` +
-  //         `To create one, use \`oas.addSpecV2({ title, version })\`.`,
-  //     );
-  //   }
+class SpecBuilder {
 
-  //   const builder = this.#specs.get(apiTitle + apiVersion)!;
-  //   this.#current_resource = resource as any;
-  //   this.#current_resource.oas_operations = {};
-
-  //   return builder;
-  // }
-
-  // public getSpec(
-  //   apiTitle: string,
-  //   apiVersion: string,
-  // ): SpecBuilder {
-  //   if (!this.#specs.has(apiTitle + apiVersion)) {
-  //     throw new Error(
-  //       `Spec for "${apiTitle} ${apiVersion}" does not exist.\n` +
-  //         `To create one, use \`oas.addSpecV2({ title, version })\`.`,
-  //     );
-  //   }
-
-  //   return this.#specs.get(apiTitle + apiVersion)!;
-  // }
-
-  // //////////////////////////////////////////////////////////////////////////////
-  // // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
-  // //////////////////////////////////////////////////////////////////////////////
-
-  // runAtStartup(options: {
-  //   server: Drash.Server,
-  //   resources: Drash.Types.TResourcesAndPatterns,
-  // }): void {
-  //   server.addResource(SwaggerUIResource);
-  // }
 }

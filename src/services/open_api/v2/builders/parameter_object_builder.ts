@@ -1,5 +1,3 @@
-import { builders } from "../open_api.ts";
-
 interface Builder {
   toJson(): any;
 }
@@ -31,10 +29,16 @@ export class ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.name) {
-      throw new ParameterObjectError(`.name() needs to be called.`);
+      throw new ParameterObjectError(
+        `Parameter of type "${this.spec.in}" requires .name() needs to be called.`
+      );
     }
 
     return this.spec;
+  }
+
+  protected isBuilder(value: unknown): value is Builder {
+    return !!value && typeof value === "object" && "toJson" in value;
   }
 }
 
@@ -43,8 +47,15 @@ export class ParameterInQueryObjectBuilder extends ParameterObjectBuilder {
     super("query");
   }
 
-  public type(value: string): this {
-    this.spec.type = value;
+  public type(value: string | Builder): this {
+    if (this.isBuilder(value)) {
+      this.spec = {
+        ...this.spec,
+        ...value.toJson()
+      };
+    } else {
+      this.spec.type = value;
+    }
     return this;
   }
 
@@ -55,7 +66,7 @@ export class ParameterInQueryObjectBuilder extends ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.type) {
-      throw new ParameterObjectError(`.type() needs to be called.`);
+      throw new ParameterObjectError(`Parameter of type "query" requires .type() to be called.`);
     }
 
     return super.toJson();
@@ -100,8 +111,15 @@ export class ParameterInPathObjectBuilder extends ParameterObjectBuilder {
     super("path");
   }
 
-  public type(value: string): this {
-    this.spec.type = value;
+  public type(value: string | Builder): this {
+    if (this.isBuilder(value)) {
+      this.spec = {
+        ...this.spec,
+        ...value.toJson()
+      };
+    } else {
+      this.spec.type = value;
+    }
     return this;
   }
 
@@ -118,8 +136,18 @@ export class ParameterInHeaderObjectBuilder extends ParameterObjectBuilder {
     super("header");
   }
 
-  public type(value: string): this {
-    this.spec.type = value;
+  public type(value: string | Builder): this {
+    // TODO(crookse):
+    // - Must be string, number, integer, boolean, array, or file
+    // - If file, then "in" needs to be formData and consumes() is required
+    if (this.isBuilder(value)) {
+      this.spec = {
+        ...this.spec,
+        ...value.toJson()
+      };
+    } else {
+      this.spec.type = value;
+    }
     return this;
   }
 
@@ -130,7 +158,7 @@ export class ParameterInHeaderObjectBuilder extends ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.type) {
-      throw new ParameterObjectError(`.type() needs to be called.`);
+      throw new ParameterObjectError(`Parameter of type "header" requires .type() to be called.`);
     }
 
     return super.toJson();
@@ -142,8 +170,15 @@ export class ParameterInFormDataObjectBuilder extends ParameterObjectBuilder {
     super("formData");
   }
 
-  public type(value: string): this {
-    this.spec.type = value;
+  public type(value: string | Builder): this {
+    if (this.isBuilder(value)) {
+      this.spec = {
+        ...this.spec,
+        ...value.toJson()
+      };
+    } else {
+      this.spec.type = value;
+    }
     return this;
   }
 
@@ -154,7 +189,11 @@ export class ParameterInFormDataObjectBuilder extends ParameterObjectBuilder {
 
   public toJson(): any {
     if (!this.spec.type) {
-      throw new ParameterObjectError(`.type() needs to be called.`);
+      throw new ParameterObjectError(`Parameter of type "formData" requires .type() to be called.`);
+    }
+
+    if (this.spec.type === "file" && !this.spec.consumes) {
+      throw new ParameterObjectError(`Parameter "formData" with "type: file" requires .consumes() to be called.`);
     }
 
     return super.toJson();

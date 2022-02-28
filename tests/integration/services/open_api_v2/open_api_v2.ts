@@ -1,11 +1,11 @@
 import * as Drash from "../../../../mod.ts";
-import { OpenAPIV2Service } from "../../../../src/services/open_api/v2/open_api.ts";
+import { OpenAPIService } from "../../../../src/services/open_api/v2/open_api.ts";
 import { IBuilder } from "../../../../src/services/open_api/v2/interfaces.ts";
 import { asserts, plan, run, suite, test } from "../../../deps.ts";
 import { PathItemObjectBuilder } from "../../../../src/services/open_api/v2/builders/path_item_object_builder.ts";
 const { assertEquals } = asserts;
 
-import { builders } from "../../../../src/services/open_api/v2/open_api.ts";
+import { buildSpec, types } from "../../../../src/services/open_api/v2/open_api.ts";
 
 const {
   array,
@@ -17,14 +17,13 @@ const {
   operation,
   response,
   parameters,
-  buildSpec: build,
-} = builders;
+} = types;
 
 plan("Open API v2 Service", () => {
   suite("string()", () => {
     test("basic", () => {
       assertEquals(
-        build({
+        buildSpec({
           hello: string(),
         }),
         {
@@ -37,7 +36,7 @@ plan("Open API v2 Service", () => {
 
     test("format()", () => {
       assertEquals(
-        build({
+        buildSpec({
           hello: string().format("email"),
         }),
         {
@@ -49,7 +48,7 @@ plan("Open API v2 Service", () => {
       );
 
       assertEquals(
-        build({
+        buildSpec({
           hello: string().format("password"),
         }),
         {
@@ -63,7 +62,7 @@ plan("Open API v2 Service", () => {
 
     test("ref()", () => {
       assertEquals(
-        build({
+        buildSpec({
           hello: string().ref("Password"),
         }),
         {
@@ -78,7 +77,7 @@ plan("Open API v2 Service", () => {
   suite("integer()", () => {
     test("basic", () => {
       assertEquals(
-        build({
+        buildSpec({
           hello: integer(),
         }),
         {
@@ -92,7 +91,7 @@ plan("Open API v2 Service", () => {
 
     test("format()", () => {
       assertEquals(
-        build({
+        buildSpec({
           hello: integer().format("int64"),
         }),
         {
@@ -106,7 +105,7 @@ plan("Open API v2 Service", () => {
 
     test("ref()", () => {
       assertEquals(
-        build({
+        buildSpec({
           hello: string().ref("Password"),
         }),
         {
@@ -121,7 +120,7 @@ plan("Open API v2 Service", () => {
   suite("schema(): object", () => {
     test("basic", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object(),
         }),
         {
@@ -134,7 +133,7 @@ plan("Open API v2 Service", () => {
 
     test("properties()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object().properties({
             name: string().required(),
           }),
@@ -157,7 +156,7 @@ plan("Open API v2 Service", () => {
 
     test("properties() with object schema object", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object().properties({
             name: string().format("something").required(),
             some_object: object().properties({
@@ -193,7 +192,7 @@ plan("Open API v2 Service", () => {
 
     test("ref()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object().ref(
             "SomeOtherModel",
           ),
@@ -210,7 +209,7 @@ plan("Open API v2 Service", () => {
   suite("schema(): object shorthand", () => {
     test("basic", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object(),
         }),
         {
@@ -223,7 +222,7 @@ plan("Open API v2 Service", () => {
 
     test("properties()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object({
             name: string().required(),
           }),
@@ -246,7 +245,7 @@ plan("Open API v2 Service", () => {
 
     test("properties() with object schema object", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object({
             name: string().format("something").required(),
             some_object: object({
@@ -282,7 +281,7 @@ plan("Open API v2 Service", () => {
 
     test("ref()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: object().ref(
             "SomeOtherModel",
           ),
@@ -299,7 +298,7 @@ plan("Open API v2 Service", () => {
   suite("schema(): array", () => {
     test("basic", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array().items(
             string(),
           ),
@@ -317,7 +316,7 @@ plan("Open API v2 Service", () => {
 
     test("items()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array().items(
             string().required(),
           ),
@@ -335,7 +334,7 @@ plan("Open API v2 Service", () => {
 
     test("items() with array schema object", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array().items(
             array().items(
               string(),
@@ -358,7 +357,7 @@ plan("Open API v2 Service", () => {
 
     test("ref()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array().ref(
             "SomeOtherModel",
           ),
@@ -375,7 +374,7 @@ plan("Open API v2 Service", () => {
   suite("schema(): array shorthand", () => {
     test("basic", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array(
             string(),
           ),
@@ -393,7 +392,7 @@ plan("Open API v2 Service", () => {
 
     test("items()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array(
             string().required(),
           ),
@@ -411,7 +410,7 @@ plan("Open API v2 Service", () => {
 
     test("items() with array schema object", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array(
             array().items(
               string(),
@@ -434,7 +433,7 @@ plan("Open API v2 Service", () => {
 
     test("ref()", () => {
       assertEquals(
-        build({
+        buildSpec({
           SomeModel: array().ref(
             "SomeOtherModel",
           ),
@@ -453,7 +452,7 @@ plan("Open API v2 Service", () => {
       (data: { name: string; builder: IBuilder; expected: unknown }) => {
         test(data.name, () => {
           assertEquals(
-            build(data.builder),
+            buildSpec(data.builder),
             data.expected,
           );
         });
@@ -463,7 +462,7 @@ plan("Open API v2 Service", () => {
   suite("parameters.path()", () => {
     test("sets name, in, required", () => {
       assertEquals(
-        build(
+        buildSpec(
           parameters.path().name("test"),
         ),
         {
@@ -478,7 +477,7 @@ plan("Open API v2 Service", () => {
   suite("parameters.body()", () => {
     test("sets name, in, schema", () => {
       assertEquals(
-        build(
+        buildSpec(
           parameters.body()
             .name("test")
             .schema(
@@ -510,7 +509,7 @@ plan("Open API v2 Service", () => {
     });
     test("sets name, in, schema, description", () => {
       assertEquals(
-        build(
+        buildSpec(
           parameters.body()
             .name("test")
             .description("Some body")
@@ -534,7 +533,7 @@ plan("Open API v2 Service", () => {
   suite("parameters.query()", () => {
     test("sets name, in", () => {
       assertEquals(
-        build(
+        buildSpec(
           parameters.query().name("test"),
         ),
         {
@@ -545,7 +544,7 @@ plan("Open API v2 Service", () => {
     });
     test("sets name, in, description", () => {
       assertEquals(
-        build(
+        buildSpec(
           parameters.query().name("test").description("Some query param"),
         ),
         {
@@ -560,7 +559,7 @@ plan("Open API v2 Service", () => {
   suite("operation()", () => {
     test("requires .parameters() to take in an array", () => {
       assertEquals(
-        build(
+        buildSpec(
           operation().responses({ 200: response().description("OK") })
             .parameters([
               parameters.query().name("test"),
@@ -582,7 +581,7 @@ plan("Open API v2 Service", () => {
   suite("swagger()", () => {
     test("requires info.title, info.version, and paths", () => {
       assertEquals(
-        build(swagger({
+        buildSpec(swagger({
           info: {
             title: "My API",
             version: "v1.0.1",
@@ -601,7 +600,7 @@ plan("Open API v2 Service", () => {
 
     test("can build paths object", () => {
       assertEquals(
-        build(swagger({
+        buildSpec(swagger({
           info: {
             title: "My API",
             version: "v1.0.1",
@@ -613,13 +612,13 @@ plan("Open API v2 Service", () => {
                   .parameters([
                     parameters.path().name("account_id").description(
                       "The ID of the account to get.",
-                    ),
+                    ).type(string()),
                     parameters.path().name("user_id").description(
                       "The ID of the user who owns the account.",
-                    ),
+                    ).type(string()),
                     parameters.header().name("X-TEST").description(
                       "Some random header. Who knows?",
-                    ),
+                    ).type(string()),
                   ])
                   .responses({
                     200: response().description("If you got it!"),
@@ -725,8 +724,8 @@ function pathItemTestData(): any {
           builder: pathItem()[method](
             operation().responses({ 200: response().description("OK") }),
           ).parameters([
-            parameters.query().name("hello"),
-            parameters.query().name("world"),
+            parameters.query().name("hello").type("string"),
+            parameters.query().name("world").type("string"),
           ]),
           expected: {
             [method]: {
@@ -751,8 +750,8 @@ function pathItemTestData(): any {
             "/some-path": pathItem()[method](
               operation().responses({ 200: response().description("OK") }),
             ).parameters([
-              parameters.query().name("hello"),
-              parameters.query().name("world"),
+              parameters.query().name("hello").type("string"),
+              parameters.query().name("world").type("string"),
             ]),
           },
           expected: {
@@ -781,8 +780,8 @@ function pathItemTestData(): any {
           builder: pathItem()[method](
             operation().responses({ 200: response().description("OK") }),
           ).parameters([
-            parameters.formData().name("hello"),
-            parameters.formData().name("world"),
+            parameters.formData().name("hello").type(string()),
+            parameters.formData().name("world").type(string()),
           ]),
           expected: {
             [method]: {
@@ -902,8 +901,8 @@ function pathItemTestData(): any {
           builder: pathItem()[method](
             operation().responses({ 200: response().description("OK") }),
           ).parameters([
-            parameters.header().name("hello"),
-            parameters.header().name("world"),
+            parameters.header().name("hello").type(string()),
+            parameters.header().name("world").type(string()),
           ]),
           expected: {
             [method]: {
@@ -928,8 +927,8 @@ function pathItemTestData(): any {
           builder: pathItem()[method](
             operation().responses({ 200: response().description("OK") }),
           ).parameters([
-            parameters.header().name("hello"),
-            parameters.header().name("world").required(),
+            parameters.header().name("hello").type(string()),
+            parameters.header().name("world").type(string()).required(),
           ]),
           expected: {
             [method]: {
@@ -955,8 +954,8 @@ function pathItemTestData(): any {
           builder: pathItem()[method](
             operation().responses({ 200: response().description("OK") }),
           ).parameters([
-            parameters.header().name("hello"),
-            parameters.header().name("world").required(),
+            parameters.header().name("hello").type(string()),
+            parameters.header().name("world").type(string()).required(),
           ]),
           expected: {
             [method]: {
