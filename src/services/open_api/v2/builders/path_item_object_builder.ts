@@ -15,31 +15,31 @@ export class PathItemObjectBuilder {
   protected $ref?: string;
 
   public get(operation: Builder): this {
-    return this.#setMethod("get", operation);
+    return this.#setOperation("get", operation);
   }
 
   public post(operation: Builder): this {
-    return this.#setMethod("post", operation);
+    return this.#setOperation("post", operation);
   }
 
   public put(operation: Builder): this {
-    return this.#setMethod("put", operation);
+    return this.#setOperation("put", operation);
   }
 
   public delete(operation: Builder): this {
-    return this.#setMethod("delete", operation);
+    return this.#setOperation("delete", operation);
   }
 
   public patch(operation: Builder): this {
-    return this.#setMethod("patch", operation);
+    return this.#setOperation("patch", operation);
   }
 
   public head(operation: Builder): this {
-    return this.#setMethod("head", operation);
+    return this.#setOperation("head", operation);
   }
 
   public options(operation: Builder): this {
-    return this.#setMethod("options", operation);
+    return this.#setOperation("options", operation);
   }
 
   public ref(value: string): this {
@@ -66,7 +66,7 @@ export class PathItemObjectBuilder {
     return this;
   }
 
-  #setMethod(method: string, operation: Builder): this {
+  #setOperation(method: string, operation: Builder): this {
     this.spec[method] = operation.toJson();
     return this;
   }

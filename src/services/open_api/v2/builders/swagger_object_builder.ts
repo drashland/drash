@@ -26,22 +26,22 @@ export class SwaggerObjectBuilder {
     consumes: string[];
     produces: string[];
     paths: {
-      [path: string]: Builder;
+      [path: string]: any;
     };
     definitions: {
-      [definition: string]: Builder;
+      [definition: string]: any;
     };
     parameters: {
-      [parameter: string]: Builder;
+      [parameter: string]: any;
     };
     responses: {
-      [response: string]: Builder;
+      [response: string]: any;
     };
     security_definitions: {
-      [security_definition: string]: Builder;
+      [security_definition: string]: any;
     };
-    security: Builder[];
-    tags: Builder[];
+    security: any[];
+    tags: any[];
   }> = {};
 
   constructor(spec: any) {
@@ -73,19 +73,7 @@ export class SwaggerObjectBuilder {
       throw new Error(`Field 'paths' is required.`);
     }
 
-    this.#buildPathsObject();
-
     return this.spec;
-  }
-
-  #buildPathsObject(): void {
-    const paths: any = {};
-
-    for (const [path, pathObjectBuilder] of Object.entries(this.spec.paths!)) {
-      paths[path] = pathObjectBuilder.toJson();
-    }
-
-    this.spec.paths = paths;
   }
 
   // Public
@@ -100,9 +88,10 @@ export class SwaggerObjectBuilder {
     return this;
   }
 
-  public addPath(path: string, builder: Builder): this {
-    // .paths will exist because it is created in the constructor
-    this.spec.paths![path] = builder;
+  public addPath(path: string, pathItemObject: Builder): this {
+    // Use `!` because `this.spec..paths` will exist. It is created in the
+    // constructor.
+    this.spec.paths![path] = pathItemObject.toJson();
     return this;
   }
 }
