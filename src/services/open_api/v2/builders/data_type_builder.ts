@@ -1,24 +1,6 @@
-// The unknown type can be any type to provide documentation. The explicit types
-// are defined by Swagger Specification.
-type DataType =
-  | "integer"
-  | "long"
-  | "float"
-  | "double"
-  | "string"
-  | "byte"
-  | "binary"
-  | "boolean"
-  | "date"
-  | "dateTime"
-  | "password"
-  | unknown;
+import { TDataType } from "../types.ts";
 
-interface IBuilder {
-  toJson: () => any;
-}
-
-export class PrimitiveDataTypeBuilder {
+export class DataTypeBuilder {
   public is_required = false;
 
   protected spec: any = {};
@@ -72,7 +54,7 @@ export class PrimitiveDataTypeBuilder {
     }
   }
 
-  public format(value: DataType): this {
+  public format(value: TDataType): this {
     this.spec.format = value;
     return this;
   }

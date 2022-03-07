@@ -1,38 +1,12 @@
-interface Builder {
-  is_required?: boolean;
-  toJson(): any;
-}
+import { SchemaObjectBuilder } from "./schema_object_builder.ts";
+import { IBuilder } from "../interfaces.ts";
 
-export class SchemaObjectBuilder {
-  public is_required = false;
-
-  protected spec: Partial<{
-    type: string;
-    collection_format: string;
-    properties: {
-      [key: string]: Builder;
-    };
-    required: string[];
-  }> = {};
-
-  protected $ref?: string;
-
-  constructor(type: string) {
-    this.spec.type = type;
-  }
-
-  public ref(value: string): this {
-    this.$ref = `#/definitions/${value}`;
-    return this;
+export class SchemaObjectTypeObjectBuilder extends SchemaObjectBuilder {
+  constructor() {
+    super("object");
   }
 
   public properties(properties: any): this {
-    if (this.spec.type === "array") {
-      throw new Error(
-        "Method `.properties()` cannot be used on `array` schema.",
-      );
-    }
-
     this.spec.properties = properties;
     return this;
   }

@@ -5,7 +5,7 @@ import { asserts, plan, run, suite, test } from "../../../deps.ts";
 import { PathItemObjectBuilder } from "../../../../src/services/open_api/v2/builders/path_item_object_builder.ts";
 const { assertEquals } = asserts;
 
-import { buildSpec, builders } from "../../../../src/services/open_api/v2/open_api.ts";
+import { buildSpec, swagger } from "../../../../src/services/open_api/v2/open_api.ts";
 
 const {
   array,
@@ -17,7 +17,7 @@ const {
   operation,
   response,
   parameters,
-} = builders;
+} = swagger;
 
 plan("Open API v2 Service", () => {
   suite("string()", () => {

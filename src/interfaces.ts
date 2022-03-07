@@ -172,10 +172,12 @@ export interface IService {
     response: Response,
   ) => void | Promise<void>;
 
-  runAtStartup?: (options?: {
-    server?: Server,
-    resources?: Types.TResourcesAndPatterns,
-  }) => void | Promise<void>;
+  runAtStartup?: (options: IServiceStartupOptions) => void | Promise<void>;
+}
+
+export interface IServiceStartupOptions {
+  server: Server,
+  resources: Types.TResourcesAndPatterns,
 }
 
 export interface IErrorHandler {

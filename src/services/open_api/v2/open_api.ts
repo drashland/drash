@@ -1,44 +1,33 @@
 import * as Drash from "../../../../mod.ts";
 import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
-import { PrimitiveDataTypeBuilder } from "./builders/primitive_data_type_builder.ts";
-import {
-  SchemaObjectTypeArrayBuilder,
-  SchemaObjectTypeObjectBuilder,
-} from "./builders/schema_object_builder.ts";
+import { DataTypeBuilder } from "./builders/data_type_builder.ts";
+import { SchemaObjectTypeArrayBuilder } from "./builders/schema_object_type_array_builder.ts";
+import { SchemaObjectTypeObjectBuilder } from "./builders/schema_object_type_object_builder.ts";
 import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
 import { PathItemObjectBuilder } from "./builders/path_item_object_builder.ts";
 import { OperationObjectBuilder } from "./builders/operation_object_builder.ts";
 import { ResponseObjectBuilder } from "./builders/response_object_builder.ts";
+import { ParameterInQueryObjectBuilder } from "./builders/parameter_object_in_query_builder.ts";
+import { ParameterInBodyObjectBuilder } from "./builders/parameter_object_in_body_builder.ts";
+import { ParameterInHeaderObjectBuilder } from "./builders/parameter_object_in_header_builder.ts";
+import { ParameterInFormDataObjectBuilder } from "./builders/parameter_object_in_form_data_builder.ts";
+import { ParameterInPathObjectBuilder } from "./builders/parameter_object_in_path_builder.ts";
 import {
-  ParameterInBodyObjectBuilder,
-  ParameterInFormDataObjectBuilder,
-  ParameterInHeaderObjectBuilder,
-  ParameterInPathObjectBuilder,
-  ParameterInQueryObjectBuilder,
-} from "./builders/parameter_object_builder.ts";
-import { IBuilder } from "./interfaces.ts";
+  IBuilder,
+  IResourceWithSwagger
+} from "./interfaces.ts";
+import {
+  TResourceHttpMethodSpec,
+  TPathItemObjectBuilderHttpMethods,
+} from "./types.ts";
 
-interface IHttpMethodSpec {
-  parameters?: IBuilder[],
-  responses?: {[statusCode: number]: IBuilder},
+type TStartupOptionsResources = {
+  resource: typeof Drash.Resource & IResourceWithSwagger
 }
 
-export type PathItemObjectBuilderHttpMethods =
-  | "get"
-  | "post"
-  | "put"
-  | "delete"
-  | "patch"
-  | "head"
-  | "options"
-
-export let pathToSwaggerUI: string;
-export const specs = new Map<string, string>();
-
-interface IResourceWithSwagger extends Drash.Resource {
-  /** Example: DRASH V1.0 */
-  spec: string;
-  operations?: { [method: string]: any };
+export const serviceGlobals = {
+  pathToSwaggerUI: "/swagger-ui",
+  specifications: new Map<string, string>(),
 }
 
 export function getSpecURLS(): string {
@@ -46,7 +35,7 @@ export function getSpecURLS(): string {
     url: string;
     name: string;
   }[] = [];
-  specs.forEach((spec: string) => {
+  serviceGlobals.specifications.forEach((spec: string) => {
     const json = JSON.parse(spec) as any;
     urls.push({
       name: `${json.info.title} ${json.info.version}`,
@@ -56,13 +45,9 @@ export function getSpecURLS(): string {
   return JSON.stringify(urls);
 }
 
-function isBuilder(obj: unknown): obj is IBuilder {
-  return !!obj && typeof obj === "object" && "toJson" in obj;
-}
-
 /**
  * Build the specification. This could be the `SwaggerObjectBuilder` or an
- * object of key-value pairs that holds nested builders.
+ * object of key-value pairs that holds nested swagger.
  */
 export function buildSpec(obj: unknown, spec: any = {}): any {
   // Check if a builder was provided. If a builder was provided, then convert it
@@ -87,53 +72,35 @@ export function buildSpec(obj: unknown, spec: any = {}): any {
   return spec;
 }
 
-export type Builders = {
-  array: (properties?: any) => SchemaObjectTypeArrayBuilder;
-  binary: () => PrimitiveDataTypeBuilder;
-  body: () => ParameterInBodyObjectBuilder;
-  boolean: () => PrimitiveDataTypeBuilder;
-  byte: () => PrimitiveDataTypeBuilder;
-  date: () => PrimitiveDataTypeBuilder;
-  dateTime: () => PrimitiveDataTypeBuilder;
-  double: () => PrimitiveDataTypeBuilder;
-  float: () => PrimitiveDataTypeBuilder;
-  formData: () => ParameterInFormDataObjectBuilder;
-  header: () => ParameterInHeaderObjectBuilder;
-  integer: () => PrimitiveDataTypeBuilder;
-  long: () => PrimitiveDataTypeBuilder;
-  object: (properties?: any) => SchemaObjectTypeObjectBuilder;
-  operation: () => OperationObjectBuilder;
-  password: () => PrimitiveDataTypeBuilder;
-  path: () => ParameterInPathObjectBuilder;
-  pathItem: () => PathItemObjectBuilder;
-  query: () => ParameterInQueryObjectBuilder;
-  response: () => ResponseObjectBuilder;
-  string: () => PrimitiveDataTypeBuilder;
-  swagger: (spec: any) => SwaggerObjectBuilder;
-};
-
-export const Swagger: Builders = {
+export const swagger = {
   swagger(spec: any): SwaggerObjectBuilder {
     return new SwaggerObjectBuilder(spec);
   },
+
   header(): ParameterInHeaderObjectBuilder {
     return new ParameterInHeaderObjectBuilder();
   },
+
   path(): ParameterInPathObjectBuilder {
     return new ParameterInPathObjectBuilder();
   },
+
   formData(): ParameterInFormDataObjectBuilder {
     return new ParameterInFormDataObjectBuilder();
   },
+
   query(): ParameterInQueryObjectBuilder {
     return new ParameterInQueryObjectBuilder();
   },
+
   body(): ParameterInBodyObjectBuilder {
     return new ParameterInBodyObjectBuilder();
   },
+
   response(): ResponseObjectBuilder {
     return new ResponseObjectBuilder();
   },
+
   object(properties?: any): SchemaObjectTypeObjectBuilder {
     const o = new SchemaObjectTypeObjectBuilder();
     if (properties) {
@@ -141,12 +108,15 @@ export const Swagger: Builders = {
     }
     return o;
   },
+
   pathItem(): PathItemObjectBuilder {
     return new PathItemObjectBuilder();
   },
+
   operation(): OperationObjectBuilder {
     return new OperationObjectBuilder();
   },
+
   array(items?: any): SchemaObjectTypeArrayBuilder {
     const a = new SchemaObjectTypeArrayBuilder();
     if (items) {
@@ -154,39 +124,51 @@ export const Swagger: Builders = {
     }
     return a;
   },
-  string(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("string");
+
+  string(): DataTypeBuilder {
+    return new DataTypeBuilder("string");
   },
-  integer(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("integer");
+
+  integer(): DataTypeBuilder {
+    return new DataTypeBuilder("integer");
   },
-  long(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("long");
+
+  long(): DataTypeBuilder {
+    return new DataTypeBuilder("long");
   },
-  float(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("float");
+
+  float(): DataTypeBuilder {
+    return new DataTypeBuilder("float");
   },
-  double(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("double");
+
+  double(): DataTypeBuilder {
+    return new DataTypeBuilder("double");
   },
-  byte(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("byte");
+
+  byte(): DataTypeBuilder {
+    return new DataTypeBuilder("byte");
   },
-  binary(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("binary");
+
+  binary(): DataTypeBuilder {
+    return new DataTypeBuilder("binary");
   },
-  boolean(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("boolean");
+
+  boolean(): DataTypeBuilder {
+    return new DataTypeBuilder("boolean");
   },
-  date(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("date");
+
+  date(): DataTypeBuilder {
+    return new DataTypeBuilder("date");
   },
-  dateTime(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("dateTime");
+
+  dateTime(): DataTypeBuilder {
+    return new DataTypeBuilder("dateTime");
   },
-  password(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("password");
+
+  password(): DataTypeBuilder {
+    return new DataTypeBuilder("password");
   },
+
 };
 
 export interface OpenAPIV2ServiceOptions {
@@ -210,22 +192,122 @@ export class OpenAPIService extends Drash.Service {
     this.#options = options ?? {};
 
     // Set the path to the Swagger UI page so that the resource can use it
-    pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
+    serviceGlobals.pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC //////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  public runAtStartup(options: any): void {
-    console.log(`runAtStartup`);
-    console.log(`options`, options);
-    if (options.server) {
-      options.server.addResource(SwaggerUIResource);
+  /**
+   * Run this service at startup time (when Drash is being built).
+   * @param options
+   */
+  public runAtStartup(options: Drash.Interfaces.IServiceStartupOptions): void {
+    options.server.addResource(SwaggerUIResource);
+    this.#documentResources(options.resources);
+  }
+
+  /**
+   * Create a specification. This call occurs before `runAtStartup()` because it is invoked before the Drash.Server is instantiated..
+   *
+   * TODO(crookse)
+   * - Validate that the spec doesn't already exist
+   */
+  public createSpec(info: {
+    title: string;
+    version: string;
+  }): void {
+    this.#specs.set(
+      this.#formatSpecName(info.title, info.version),
+      swagger.swagger({
+        info,
+      }),
+    );
+  }
+
+  /**
+   * Return a properly formed spec name. This spec name will be used in
+   * `runAtStartup()` to build specs for resources that have specs.
+   */
+  public setSpec(
+    resource: Drash.Resource & IResourceWithSwagger,
+    name: string,
+    version: string,
+  ): string {
+    // Set some properties on the resource object that we can use to document
+    // the resource
+    resource.operations = {};
+
+    this.current_resource_being_documented = resource;
+
+    return this.#formatSpecName(name, version).toUpperCase();
+  }
+
+  public DELETE(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("delete", httpMethodSpec);
+    return handler;
+  }
+
+  public GET(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("get", httpMethodSpec);
+    return handler;
+  }
+
+  public HEAD(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("head", httpMethodSpec);
+    return handler;
+  }
+
+  public OPTIONS(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("options", httpMethodSpec);
+    return handler;
+  }
+
+  public PATCH(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("patch", httpMethodSpec);
+    return handler;
+  }
+
+  public POST(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("post", httpMethodSpec);
+    return handler;
+  }
+
+  public PUT(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.#setHttpMethodToBeDocumented("put", httpMethodSpec);
+    return handler;
+  }
+
+  #documentResources(resources: Drash.Types.TResourcesAndPatterns): void {
+    if (!resources) {
+      return;
     }
 
-    if (options.resources) {
-      options.resources.forEach(
+    const resourcesWithSpecifications =  resources as unknown as TStartupOptionsResources[];
+
+    resourcesWithSpecifications.forEach(
         (
           resourceData: {
             // By now, this service will have modified the resources using this
@@ -246,7 +328,7 @@ export class OpenAPIService extends Drash.Service {
           resource.paths.forEach((path: string) => {
             // Step 1: Create the resource's path's Path Item Object for the
             // current path we are parsing.
-            const pathItemObjectBuilder = Swagger.pathItem();
+            const pathItemObjectBuilder = swagger.pathItem();
 
             // Step 2: For each HTTP method defined in the reosurce, create its
             // Operation Object
@@ -269,11 +351,11 @@ export class OpenAPIService extends Drash.Service {
               // array uses capitalized HTTP method names. Swagger uses
               // lowercase method names, so we convert the HTTP methods to
               // lowercase.
-              const lowerCaseMethod = method.toLowerCase() as PathItemObjectBuilderHttpMethods;
+              const lowerCaseMethod = method.toLowerCase() as TPathItemObjectBuilderHttpMethods;
 
               // Step 3: Start off with default responses
               pathItemObjectBuilder[lowerCaseMethod](
-                Swagger.operation().responses({
+                swagger.operation().responses({
                   // Have a default OK response
                   200: "OK",
                 }),
@@ -297,7 +379,7 @@ export class OpenAPIService extends Drash.Service {
 
               // Step 5: Create the Operation Object for the HTTP method we are
               // currently parsing.
-              const operationObjectBuilder = Swagger.operation();
+              const operationObjectBuilder = swagger.operation();
 
               // Step 6: Check if the resource has specified parameters for this
               // HTTP method. If so, then add them to the Operation Object.
@@ -333,107 +415,12 @@ export class OpenAPIService extends Drash.Service {
       const spec = buildSpec(this.#specs.get("DRASH V1.0")!);
       const stringified = JSON.stringify(spec, null, 2);
       console.log(`stringified`, stringified);
-      specs.set(
+
+      // Set this spec globally so it can be used by the SwaggerUIResource
+      serviceGlobals.specifications.set(
         `swagger-ui-${spec.info.title}-${spec.info.version}`,
         stringified,
       );
-      // console.log(buildSpec(swaggerObjectBuilder));
-    }
-
-    // After iterating through all of the resources, build the final swagger
-    // objects to build a proper spec
-  }
-
-  /**
-   * Create a specification. This call occurs before `runAtStartup()` is called
-   * because resources are required to call it.
-   *
-   * TODO(crookse)
-   * - Validate that the spec doesn't already exist
-   * - Conver the spec to uppercase and use uppercase throughout the process
-   */
-  public createSpec(info: any): void {
-    console.log("creating spec", info.title, info.version);
-    this.#specs.set(
-      this.#formatSpecName(info.title, info.version),
-      Swagger.swagger({
-        info,
-      }),
-    );
-  }
-
-  /**
-   * Return a properly formed spec name. This spec name will be used in
-   * `runAtStartup()` to build specs for resources that have specs.
-   */
-  public setSpec(
-    resource: Drash.Resource & IResourceWithSwagger,
-    name: string,
-    version: string,
-  ): string {
-    // Set some properties on the resource object that we can use to document
-    // the resource
-    resource.operations = {};
-
-    this.current_resource_being_documented = resource;
-
-    return this.#formatSpecName(name, version).toUpperCase();
-  }
-
-  public DELETE(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("delete", httpMethodSpec);
-    return handler;
-  }
-
-  public GET(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("get", httpMethodSpec);
-    return handler;
-  }
-
-  public HEAD(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("head", httpMethodSpec);
-    return handler;
-  }
-
-  public OPTIONS(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("options", httpMethodSpec);
-    return handler;
-  }
-
-  public PATCH(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("patch", httpMethodSpec);
-    return handler;
-  }
-
-  public POST(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("post", httpMethodSpec);
-    return handler;
-  }
-
-  public PUT(
-    httpMethodSpec: IHttpMethodSpec,
-    handler: (request: Drash.Request, response: Drash.Response) => void,
-  ): (request: Drash.Request, response: Drash.Response) => void {
-    this.#setHttpMethodToBeDocumented("put", httpMethodSpec);
-    return handler;
   }
 
   /**
@@ -466,7 +453,7 @@ export class OpenAPIService extends Drash.Service {
    */
   #setHttpMethodToBeDocumented(
     httpMethod: string,
-    httpMethodSpec: IHttpMethodSpec
+    httpMethodSpec: TResourceHttpMethodSpec
   ): void {
     if (!this.current_resource_being_documented) {
       throw new Error(`Resource forgot to call oas.setSpec()`);
@@ -480,5 +467,11 @@ export class OpenAPIService extends Drash.Service {
   }
 }
 
-class SpecBuilder {
+/**
+ * Is the object in question of the `IBuilder` interface?
+ * @param obj The object in question.
+ * @returns True if yes, false if no.
+ */
+function isBuilder(obj: unknown): obj is IBuilder {
+  return !!obj && typeof obj === "object" && "toJson" in obj;
 }
