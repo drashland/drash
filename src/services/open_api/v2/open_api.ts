@@ -26,23 +26,9 @@ type TStartupOptionsResources = {
 }
 
 export const serviceGlobals = {
-  pathToSwaggerUI: "/swagger-ui",
+  path_to_swagger_ui: "/swagger-ui",
   specifications: new Map<string, string>(),
-}
-
-export function getSpecURLS(): string {
-  const urls: {
-    url: string;
-    name: string;
-  }[] = [];
-  serviceGlobals.specifications.forEach((spec: string) => {
-    const json = JSON.parse(spec) as any;
-    urls.push({
-      name: `${json.info.title} ${json.info.version}`,
-      url: `/swagger-ui-${json.info.title}-${json.info.version}.json`,
-    });
-  });
-  return JSON.stringify(urls);
+  specification_urls: JSON.stringify([]),
 }
 
 /**
@@ -192,7 +178,7 @@ export class OpenAPIService extends Drash.Service {
     this.#options = options ?? {};
 
     // Set the path to the Swagger UI page so that the resource can use it
-    serviceGlobals.pathToSwaggerUI = this.#options.path ?? "/swagger-ui";
+    serviceGlobals.path_to_swagger_ui = this.#options.path ?? "/swagger-ui";
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -206,6 +192,20 @@ export class OpenAPIService extends Drash.Service {
   public runAtStartup(options: Drash.Interfaces.IServiceStartupOptions): void {
     options.server.addResource(SwaggerUIResource);
     this.#documentResources(options.resources);
+
+    // After documenting the resources, set the specification URLs for each specification defined by the user.
+    const urls: {
+      url: string;
+      name: string;
+    }[] = [];
+    serviceGlobals.specifications.forEach((spec: string) => {
+      const json = JSON.parse(spec) as any;
+      urls.push({
+        name: `${json.info.title} ${json.info.version}`,
+        url: `/swagger-ui-${json.info.title}-${json.info.version}.json`,
+      });
+    });
+    serviceGlobals.specification_urls = JSON.stringify(urls);
   }
 
   /**

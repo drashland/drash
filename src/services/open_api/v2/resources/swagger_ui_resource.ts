@@ -1,5 +1,7 @@
 import * as Drash from "../../../../../mod.ts";
-import { getSpecURLS, serviceGlobals } from "../open_api.ts";
+import { serviceGlobals } from "../open_api.ts";
+
+console.log(import.meta.url.replace);
 
 const css = Deno.readFileSync(
   "/var/src/drashland/deno-drash/src/services/open_api/v2/views/swagger_ui_standard/swagger-ui.css",
@@ -14,7 +16,7 @@ const decoder = new TextDecoder();
 
 export class SwaggerUIResource extends Drash.Resource {
   public paths = [
-    serviceGlobals.pathToSwaggerUI,
+    serviceGlobals.path_to_swagger_ui,
     "/swagger-ui(.+|\.js|\.json|\.css|-bundle\.js|-standalone-preset\.js)?",
   ];
 
@@ -25,9 +27,6 @@ export class SwaggerUIResource extends Drash.Resource {
     ) {
       const url = new URL(request.url);
       const filename = url.pathname.replace("/", "").replace(".json", "");
-      console.log(filename);
-      console.log(serviceGlobals.specifications);
-      console.log(serviceGlobals.specifications.get(filename));
       return response.send<string>(
         "application/json",
         serviceGlobals.specifications.get(filename) ?? "{}",
@@ -58,7 +57,7 @@ export class SwaggerUIResource extends Drash.Resource {
 
     let decodedHtml = decoder.decode(html);
 
-    decodedHtml = decodedHtml.replace(/\{\{ var_urls \}\}/g, getSpecURLS());
+    decodedHtml = decodedHtml.replace(/\{\{ var_urls \}\}/g, serviceGlobals.specification_urls);
 
     return response.html(decodedHtml);
   }
