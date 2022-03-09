@@ -1,48 +1,11 @@
+import { TSwaggerObject } from "../types.ts";
+
 interface Builder {
   toJson(): any;
 }
 
 export class SwaggerObjectBuilder {
-  protected spec: Partial<{
-    swagger: string;
-    info: {
-      title: string;
-      description: string;
-      termsOfService: string;
-      contact: {
-        name: string;
-        url: string;
-        email: string;
-      };
-      license: {
-        name: string;
-        url: string;
-      };
-      version: string;
-    };
-    host: string;
-    basePath: string;
-    schemes: string[];
-    consumes: string[];
-    produces: string[];
-    paths: {
-      [path: string]: any;
-    };
-    definitions: {
-      [definition: string]: any;
-    };
-    parameters: {
-      [parameter: string]: any;
-    };
-    responses: {
-      [response: string]: any;
-    };
-    security_definitions: {
-      [security_definition: string]: any;
-    };
-    security: any[];
-    tags: any[];
-  }> = {};
+  protected spec: Partial<TSwaggerObject> = {};
 
   constructor(spec: any) {
     this.spec = spec;

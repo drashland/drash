@@ -19,7 +19,31 @@ import {
 import {
   TResourceHttpMethodSpec,
   TPathItemObjectBuilderHttpMethods,
+  TSwaggerObject,
 } from "./types.ts";
+
+export class Resource extends Drash.Resource {
+
+  protected operations: {
+    [method: string]: TResourceHttpMethodSpec
+  } = {};
+
+  public post(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.operations.post = httpMethodSpec;
+    return handler;
+  }
+
+  public get(
+    httpMethodSpec: TResourceHttpMethodSpec,
+    handler: (request: Drash.Request, response: Drash.Response) => void,
+  ): (request: Drash.Request, response: Drash.Response) => void {
+    this.operations.get = httpMethodSpec;
+    return handler;
+  }
+}
 
 type TStartupOptionsResources = {
   resource: typeof Drash.Resource & IResourceWithSwagger
@@ -35,7 +59,7 @@ export const serviceGlobals = {
  * Build the specification. This could be the `SwaggerObjectBuilder` or an
  * object of key-value pairs that holds nested swagger.
  */
-export function buildSpec(obj: unknown, spec: any = {}): any {
+export function buildSpec(obj: unknown, spec: any = {}): TSwaggerObject {
   // Check if a builder was provided. If a builder was provided, then convert it
   // to its JSON form.
   if (isBuilder(obj)) {
@@ -157,15 +181,22 @@ export const swagger = {
 
 };
 
-export interface OpenAPIV2ServiceOptions {
+export interface IOpenAPIV2ServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
-  path?: string;
-  spec?: string;
+  swagger?: {
+    title?: string;
+    version?: string;
+  };
+  /**
+   * Path to the Swagger UI resource. Defaults to "/swagger-ui" if not defined.
+   */
+  path_to_swagger_ui?: string;
 }
 
 export class OpenAPIService extends Drash.Service {
   #specs: Map<string, SwaggerObjectBuilder> = new Map();
   #options: any;
+  #default_spec: string;
 
   public current_resource_being_documented?: Drash.Resource & IResourceWithSwagger;
 
@@ -173,12 +204,22 @@ export class OpenAPIService extends Drash.Service {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(options?: any) {
+  constructor(options?: IOpenAPIV2ServiceOptions) {
     super();
     this.#options = options ?? {};
 
+    // Create the default spec
+    this.createSpec({
+      title: this.#options.swagger.title,
+      version: this.#options.swagger.version,
+    });
+    this.#default_spec = this.#formatSpecName(
+      this.#options.swagger.title,
+      this.#options.swagger.version
+    );
+
     // Set the path to the Swagger UI page so that the resource can use it
-    serviceGlobals.path_to_swagger_ui = this.#options.path ?? "/swagger-ui";
+    serviceGlobals.path_to_swagger_ui = this.#options.path_to_swagger_ui ?? "/swagger-ui";
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -190,8 +231,24 @@ export class OpenAPIService extends Drash.Service {
    * @param options
    */
   public runAtStartup(options: Drash.Interfaces.IServiceStartupOptions): void {
-    options.server.addResource(SwaggerUIResource);
+    // Document all resources registered in the server
     this.#documentResources(options.resources);
+
+    // Build all specs
+    this.#specs.forEach((spec: SwaggerObjectBuilder) => {
+      const builtSpec = buildSpec(spec);
+      const specInJsonStringFormat = JSON.stringify(builtSpec, null, 2);
+      let specName = `swagger-ui-${builtSpec.info.title}-${builtSpec.info.version}`;
+      specName = specName.replace(/\s/g, "-").toLowerCase();
+      console.log(specName);
+      serviceGlobals.specifications.set(
+        specName,
+        specInJsonStringFormat
+      );
+    });
+
+    // Add the Swagger UI resource. We do this after documenting because we do not want to include this resource in the documenting process.
+    options.server.addResource(SwaggerUIResource);
 
     // After documenting the resources, set the specification URLs for each specification defined by the user.
     const urls: {
@@ -200,9 +257,11 @@ export class OpenAPIService extends Drash.Service {
     }[] = [];
     serviceGlobals.specifications.forEach((spec: string) => {
       const json = JSON.parse(spec) as any;
+      let url = `/swagger-ui-${json.info.title}-${json.info.version}.json`;
+      url = url.replace(/\s/g, "-").toLowerCase();
       urls.push({
         name: `${json.info.title} ${json.info.version}`,
-        url: `/swagger-ui-${json.info.title}-${json.info.version}.json`,
+        url,
       });
     });
     serviceGlobals.specification_urls = JSON.stringify(urls);
@@ -250,6 +309,10 @@ export class OpenAPIService extends Drash.Service {
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.#setHttpMethodToBeDocumented("delete", httpMethodSpec);
     return handler;
+    // return {
+    //   http_method_spec: httpMethodSpec,
+    //   handler,
+    // };
   }
 
   public GET(
@@ -300,6 +363,11 @@ export class OpenAPIService extends Drash.Service {
     return handler;
   }
 
+  /**
+   * Document all resources registered in the `Drash.Server#resources` config.
+   * @param resources
+   * @returns
+   */
   #documentResources(resources: Drash.Types.TResourcesAndPatterns): void {
     if (!resources) {
       return;
@@ -319,9 +387,15 @@ export class OpenAPIService extends Drash.Service {
           // Get the spec
           const resource = resourceData.resource;
           console.log(`resource`, resource);
-          const swaggerObjectBuilder = this.#specs.get(resource.spec);
+
+          let swaggerObjectBuilder = this.#specs.get(resource.spec);
+
           if (!swaggerObjectBuilder) {
-            return;
+            swaggerObjectBuilder = this.#specs.get(this.#default_spec);
+          }
+
+          if (!swaggerObjectBuilder) {
+            throw new Error(`Open API Specification could not be retrieved.`);
           }
 
           // Start building out the spec for this resource
@@ -364,11 +438,13 @@ export class OpenAPIService extends Drash.Service {
               // Step 4: Check if the resource has a spec specified. A resource
               // can specify a spec using the HTTP method methods in this class.
               // For example, see the `GET()` method in this class.
-              if (
-                !resource.operations
-                || (!(lowerCaseMethod in resource.operations))
-                || !resource.operations[lowerCaseMethod]
-              ) {
+              if (!resource.operations) {
+                console.log(resource.constructor.name, "No operations.");
+                return;
+              }
+
+              if ((!(lowerCaseMethod in resource.operations))) {
+                console.log(resource.constructor.name, "No method in operations.");
                 return;
               }
 
@@ -407,19 +483,9 @@ export class OpenAPIService extends Drash.Service {
             // Step 9 (last step): Add the Path Item Object to the Swagger
             // Object. The Swagger Object will build the Path Item Object, so
             // there is no need to call `pathItemObjectBuilder.toJson()`.
-            swaggerObjectBuilder.addPath(path, pathItemObjectBuilder);
+            swaggerObjectBuilder!.addPath(path, pathItemObjectBuilder);
           });
         },
-      );
-
-      const spec = buildSpec(this.#specs.get("DRASH V1.0")!);
-      const stringified = JSON.stringify(spec, null, 2);
-      console.log(`stringified`, stringified);
-
-      // Set this spec globally so it can be used by the SwaggerUIResource
-      serviceGlobals.specifications.set(
-        `swagger-ui-${spec.info.title}-${spec.info.version}`,
-        stringified,
       );
   }
 
