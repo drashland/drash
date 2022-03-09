@@ -1,5 +1,6 @@
 import { ParameterObjectError } from "../errors/parameter_object_error.ts";
 import { IBuilder } from "../interfaces.ts";
+import { isBuilder } from "./spec_builder.ts";
 
 export class ParameterObjectBuilder {
   protected spec: any = {};
@@ -29,6 +30,6 @@ export class ParameterObjectBuilder {
   }
 
   protected isBuilder(value: unknown): value is IBuilder {
-    return !!value && typeof value === "object" && "toJson" in value;
+    return isBuilder(value);
   }
 }

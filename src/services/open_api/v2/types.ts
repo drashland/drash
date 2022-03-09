@@ -32,9 +32,16 @@ export type TPathItemObjectBuilderHttpMethods =
 | "head"
 | "options"
 
-export type TResourceHttpMethodSpec = {
+export type TResourceOperationSpec = {
+  summary?: string;
+  description?: string;
+  externalDocs?: IBuilder;
+  operationId?: string;
+  consumes?: string[];
+  produces?: string[];
+  tags?: string[];
   parameters?: IBuilder[];
-  responses?: {[statusCode: number]: IBuilder};
+  responses?: {[statusCode: number]: string | IBuilder};
 }
 
 export type TSwaggerObject = {

@@ -1,17 +1,25 @@
-import { IResource } from "../../../interfaces.ts";
+import * as Drash from "../../../../mod.ts";
+import { TResourceOperationSpec } from "./types.ts"
 
 export interface IBuilder {
   toJson: () => Record<string, unknown>;
 }
 
-export interface IResourceWithSwagger extends IResource {
+export interface IServiceOptions {
+  /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
+  swagger?: {
+    title?: string;
+    version?: string;
+  };
   /**
-   * The specification name the resource belongs to. Example: "DRASH V1.0".
+   * Path to the Swagger UI resource. Defaults to "/swagger-ui" if not defined.
    */
-  spec: string;
+  path_to_swagger_ui?: string;
+}
 
-  /**
-   * The operations object that contains specification data about HTTP methods.
-   */
-  operations?: { [method: string]: any };
+export interface IResource extends Drash.Interfaces.IResource {
+  spec?: string;
+  operations: {
+    [method: string]: TResourceOperationSpec
+  }
 }
