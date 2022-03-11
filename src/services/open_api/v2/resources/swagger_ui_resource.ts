@@ -57,7 +57,10 @@ export class SwaggerUIResource extends Drash.Resource {
 
     let decodedHtml = decoder.decode(html);
 
-    decodedHtml = decodedHtml.replace(/\{\{ var_urls \}\}/g, serviceGlobals.specification_urls);
+    decodedHtml = decodedHtml.replace(
+      /\{\{ var_urls \}\}/g,
+      serviceGlobals.specification_urls,
+    );
 
     return response.html(decodedHtml);
   }

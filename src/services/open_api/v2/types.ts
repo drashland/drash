@@ -24,13 +24,13 @@ export type TDataType =
  * HTTP methods allowed by Open API Specification v2.0 in the Path Item Object.
  */
 export type TPathItemObjectBuilderHttpMethods =
-| "get"
-| "post"
-| "put"
-| "delete"
-| "patch"
-| "head"
-| "options"
+  | "get"
+  | "post"
+  | "put"
+  | "delete"
+  | "patch"
+  | "head"
+  | "options";
 
 export type TResourceOperationSpec = {
   summary?: string;
@@ -41,8 +41,8 @@ export type TResourceOperationSpec = {
   produces?: string[];
   tags?: string[];
   parameters?: IBuilder[];
-  responses?: {[statusCode: number]: string | IBuilder};
-}
+  responses?: { [statusCode: number]: string | IBuilder };
+};
 
 export type TSwaggerObject = {
   swagger: string;
@@ -83,4 +83,4 @@ export type TSwaggerObject = {
   };
   security: any[];
   tags: any[];
-}
+};

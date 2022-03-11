@@ -6,6 +6,8 @@ import * as Builders from "./builders.ts";
 import * as Interfaces from "./interfaces.ts";
 import { TPathItemObjectBuilderHttpMethods } from "./types.ts";
 import { Resource } from "./resources/resource.ts";
+import { walkSync } from "https://deno.land/std@0.128.0/fs/walk.ts";
+import { basename } from "https://deno.land/std@0.128.0/path/mod.ts";
 
 export { Builders, Resource };
 
@@ -13,10 +15,15 @@ export const serviceGlobals = {
   path_to_swagger_ui: "/swagger-ui",
   specifications: new Map<string, string>(),
   specification_urls: JSON.stringify([]),
-}
+};
 
 export class OpenAPIService extends Drash.Service {
-  #specs: Map<string, SwaggerObjectBuilder> = new Map();
+  #specs: Map<string, {
+    meta?: {
+      path?: string;
+    };
+    swagger_object_builder: SwaggerObjectBuilder;
+  }> = new Map();
   #options: any;
   #default_spec!: string;
 
@@ -30,7 +37,8 @@ export class OpenAPIService extends Drash.Service {
     this.#createDefaultSpec();
 
     // Set the path to the Swagger UI page so that the resource can use it
-    serviceGlobals.path_to_swagger_ui = this.#options.path_to_swagger_ui ?? "/swagger-ui";
+    serviceGlobals.path_to_swagger_ui = this.#options.path_to_swagger_ui ??
+      "/swagger-ui";
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -45,18 +53,55 @@ export class OpenAPIService extends Drash.Service {
     // Document all resources registered in the server
     this.#documentResources(options.resources);
 
+    this.#specs.forEach(
+      async (
+        spec: {
+          meta?: { path?: string };
+          swagger_object_builder: SwaggerObjectBuilder;
+        },
+      ) => {
+        if (spec?.meta?.path) {
+          for await (
+            const entry of walkSync(Deno.realPathSync(spec.meta.path))
+          ) {
+            if (entry.isFile) {
+              const t = await import(entry.path);
+              const moduleItems = Object.keys(t);
+              moduleItems.forEach((item: string) => {
+                if (typeof t[item] === "function") {
+                  if (t[item].constructor) {
+                    console.log(t[item].constructor.name);
+                    console.log("test");
+                  }
+                }
+              });
+              // console.log(Object.keys(t), new t[Object.keys(t)[0]]());
+            }
+          }
+        }
+      },
+    );
+
     // Build all specs
-    this.#specs.forEach((spec: SwaggerObjectBuilder) => {
-      const builtSpec = buildSpec(spec);
-      const specInJsonStringFormat = JSON.stringify(builtSpec, null, 2);
-      let specName = `swagger-ui-${builtSpec.info.title}-${builtSpec.info.version}`;
-      specName = specName.replace(/\s/g, "-").toLowerCase();
-      console.log(specName);
-      serviceGlobals.specifications.set(
-        specName,
-        specInJsonStringFormat
-      );
-    });
+    this.#specs.forEach(
+      (
+        spec: {
+          meta?: { path?: string };
+          swagger_object_builder: SwaggerObjectBuilder;
+        },
+      ) => {
+        const builtSpec = buildSpec(spec.swagger_object_builder);
+        const specInJsonStringFormat = JSON.stringify(builtSpec, null, 2);
+        let specName =
+          `swagger-ui-${builtSpec.info.title}-${builtSpec.info.version}`;
+        specName = specName.replace(/\s/g, "-").toLowerCase();
+        console.log(specName);
+        serviceGlobals.specifications.set(
+          specName,
+          specInJsonStringFormat,
+        );
+      },
+    );
 
     // Add the Swagger UI resource. We do this after documenting because we do not want to include this resource in the documenting process.
     options.server.addResource(SwaggerUIResource);
@@ -87,12 +132,17 @@ export class OpenAPIService extends Drash.Service {
   public createSpec(info: {
     title: string;
     version: string;
-  }): void {
+  }, path?: string): void {
     this.#specs.set(
       this.#formatSpecName(info.title, info.version),
-      Builders.swagger({
-        info,
-      }),
+      {
+        meta: {
+          path,
+        },
+        swagger_object_builder: Builders.swagger({
+          info,
+        }),
+      },
     );
   }
 
@@ -117,118 +167,123 @@ export class OpenAPIService extends Drash.Service {
       return;
     }
 
-    (resources as unknown as {resource: Interfaces.IResource}[]).forEach(
-        (
-          resourceData: {
-            resource: Interfaces.IResource;
-          },
-        ) => {
-          // Get the spec
-          const resource = resourceData.resource;
-          console.log(`resource`, resource);
-          let swaggerObjectBuilder: SwaggerObjectBuilder | undefined;
-
-          if (resource.spec) {
-            swaggerObjectBuilder = this.#specs.get(resource.spec);
-          }
-
-          if (!swaggerObjectBuilder) {
-            swaggerObjectBuilder = this.#specs.get(this.#default_spec);
-          }
-
-          if (!swaggerObjectBuilder) {
-            throw new Error(`Open API Specification could not be retrieved.`);
-          }
-
-          // Start building out the spec for this resource
-          resource.paths.forEach((path: string) => {
-            // Step 1: Create the resource's path's Path Item Object for the
-            // current path we are parsing.
-            const pathItemObjectBuilder = Builders.pathItem();
-
-            // Step 2: For each HTTP method defined in the reosurce, create its
-            // Operation Object
-            [
-              "GET",
-              "POST",
-              "PUT",
-              "DELETE",
-              "OPTIONS",
-              "HEAD",
-              "PATCH",
-            ].forEach((method: string) => {
-              // If the HTTP method is not defined in the resource, then there's
-              // nothing left to do here. So... get out.
-              if (!(method in resource)) {
-                return;
-              }
-
-              // All resources use capitalized HTTP method names, so the above
-              // array uses capitalized HTTP method names. Swagger uses
-              // lowercase method names, so we convert the HTTP methods to
-              // lowercase.
-              const lowerCaseMethod = method.toLowerCase() as TPathItemObjectBuilderHttpMethods;
-
-              // Step 3: Start off with default responses
-              pathItemObjectBuilder[lowerCaseMethod](
-                Builders.operation().responses({
-                  // Have a default OK response
-                  200: "OK",
-                }),
-              );
-
-              // Step 4: Check if the resource has a spec specified. A resource
-              // can specify a spec using the HTTP method methods in this class.
-              // For example, see the `GET()` method in this class.
-              if (!resource.operations) {
-                console.log(resource.constructor.name, "No operations.");
-                return;
-              }
-
-              if ((!(lowerCaseMethod in resource.operations))) {
-                console.log(resource.constructor.name, "No method in operations.");
-                return;
-              }
-
-              // If we get here, then the resource must have a spec specified
-              // for the given HTTP method. So, we create a new variable for
-              // some clarity.
-              const resourceHttpMethodSpec = resource.operations[lowerCaseMethod]
-
-              // Step 5: Create the Operation Object for the HTTP method we are
-              // currently parsing.
-              const operationObjectBuilder = Builders.operation();
-
-              // Step 6: Check if the resource has specified parameters for this
-              // HTTP method. If so, then add them to the Operation Object.
-              if (resourceHttpMethodSpec.parameters) {
-                operationObjectBuilder.parameters(
-                  resourceHttpMethodSpec.parameters
-                );
-              }
-
-              // Step 7: Check if the resource has specified responses for this
-              // HTTP method. If so, then add them to the Operation Object.
-              if (resourceHttpMethodSpec.responses) {
-                operationObjectBuilder.responses(
-                  resourceHttpMethodSpec.responses
-                );
-              }
-
-              // Step 8: Pass the Operation Object to the Path Item Object. The
-              // Path Item Object will build the Operation Object, so there is
-              // no need to call `operationObject.toJson()`.
-              pathItemObjectBuilder[lowerCaseMethod](operationObjectBuilder);
-            });
-
-
-            // Step 9 (last step): Add the Path Item Object to the Swagger
-            // Object. The Swagger Object will build the Path Item Object, so
-            // there is no need to call `pathItemObjectBuilder.toJson()`.
-            swaggerObjectBuilder!.addPath(path, pathItemObjectBuilder);
-          });
+    (resources as unknown as { resource: Interfaces.IResource }[]).forEach(
+      (
+        resourceData: {
+          resource: Interfaces.IResource;
         },
-      );
+      ) => {
+        // Get the spec
+        const resource = resourceData.resource;
+        console.log(`resource`, resource);
+        let swaggerObjectBuilder: SwaggerObjectBuilder | undefined;
+
+        if (resource.spec) {
+          swaggerObjectBuilder = this.#specs.get(resource.spec)
+            ?.swagger_object_builder;
+        }
+
+        if (!swaggerObjectBuilder) {
+          swaggerObjectBuilder = this.#specs.get(this.#default_spec)
+            ?.swagger_object_builder;
+        }
+
+        if (!swaggerObjectBuilder) {
+          throw new Error(`Open API Specification could not be retrieved.`);
+        }
+
+        // Start building out the spec for this resource
+        resource.paths.forEach((path: string) => {
+          // Step 1: Create the resource's path's Path Item Object for the
+          // current path we are parsing.
+          const pathItemObjectBuilder = Builders.pathItem();
+
+          // Step 2: For each HTTP method defined in the reosurce, create its
+          // Operation Object
+          [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS",
+            "HEAD",
+            "PATCH",
+          ].forEach((method: string) => {
+            // If the HTTP method is not defined in the resource, then there's
+            // nothing left to do here. So... get out.
+            if (!(method in resource)) {
+              return;
+            }
+
+            // All resources use capitalized HTTP method names, so the above
+            // array uses capitalized HTTP method names. Swagger uses
+            // lowercase method names, so we convert the HTTP methods to
+            // lowercase.
+            const lowerCaseMethod = method
+              .toLowerCase() as TPathItemObjectBuilderHttpMethods;
+
+            // Step 3: Start off with default responses
+            pathItemObjectBuilder[lowerCaseMethod](
+              Builders.operation().responses({
+                // Have a default OK response
+                200: "OK",
+              }),
+            );
+
+            // Step 4: Check if the resource has a spec specified. A resource
+            // can specify a spec using the HTTP method methods in this class.
+            // For example, see the `GET()` method in this class.
+            if (!resource.operations) {
+              console.log(resource.constructor.name, "No operations.");
+              return;
+            }
+
+            if ((!(lowerCaseMethod in resource.operations))) {
+              console.log(
+                resource.constructor.name,
+                "No method in operations.",
+              );
+              return;
+            }
+
+            // If we get here, then the resource must have a spec specified
+            // for the given HTTP method. So, we create a new variable for
+            // some clarity.
+            const resourceHttpMethodSpec = resource.operations[lowerCaseMethod];
+
+            // Step 5: Create the Operation Object for the HTTP method we are
+            // currently parsing.
+            const operationObjectBuilder = Builders.operation();
+
+            // Step 6: Check if the resource has specified parameters for this
+            // HTTP method. If so, then add them to the Operation Object.
+            if (resourceHttpMethodSpec.parameters) {
+              operationObjectBuilder.parameters(
+                resourceHttpMethodSpec.parameters,
+              );
+            }
+
+            // Step 7: Check if the resource has specified responses for this
+            // HTTP method. If so, then add them to the Operation Object.
+            if (resourceHttpMethodSpec.responses) {
+              operationObjectBuilder.responses(
+                resourceHttpMethodSpec.responses,
+              );
+            }
+
+            // Step 8: Pass the Operation Object to the Path Item Object. The
+            // Path Item Object will build the Operation Object, so there is
+            // no need to call `operationObject.toJson()`.
+            pathItemObjectBuilder[lowerCaseMethod](operationObjectBuilder);
+          });
+
+          // Step 9 (last step): Add the Path Item Object to the Swagger
+          // Object. The Swagger Object will build the Path Item Object, so
+          // there is no need to call `pathItemObjectBuilder.toJson()`.
+          swaggerObjectBuilder!.addPath(path, pathItemObjectBuilder);
+        });
+      },
+    );
   }
 
   /**
@@ -253,7 +308,7 @@ export class OpenAPIService extends Drash.Service {
     });
     this.#default_spec = this.#formatSpecName(
       this.#options.swagger.title,
-      this.#options.swagger.version
+      this.#options.swagger.version,
     );
   }
 }

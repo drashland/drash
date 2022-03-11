@@ -1,5 +1,5 @@
 import * as Drash from "../../../../mod.ts";
-import { TResourceOperationSpec } from "./types.ts"
+import { TResourceOperationSpec } from "./types.ts";
 
 export interface IBuilder {
   toJson: () => Record<string, unknown>;
@@ -19,7 +19,7 @@ export interface IServiceOptions {
 
 export interface IResource extends Drash.Interfaces.IResource {
   spec?: string;
-  operations: {
-    [method: string]: TResourceOperationSpec
-  }
+  operations?: {
+    [method: string]: TResourceOperationSpec;
+  };
 }

@@ -1,4 +1,3 @@
-
 import { DataTypeBuilder } from "./builders/data_type_builder.ts";
 import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
 import { SchemaObjectTypeArrayBuilder } from "./builders/schema_object_type_array_builder.ts";
