@@ -124,16 +124,16 @@ export interface IResource {
 }
 
 export interface IResourceServices {
-  CONNECT?: Service[];
-  DELETE?: Service[];
-  GET?: Service[];
-  HEAD?: Service[];
-  OPTIONS?: Service[];
-  PATCH?: Service[];
-  POST?: Service[];
-  PUT?: Service[];
-  TRACE?: Service[];
-  ALL?: Service[];
+  CONNECT?: IService[];
+  DELETE?: IService[];
+  GET?: IService[];
+  HEAD?: IService[];
+  OPTIONS?: IService[];
+  PATCH?: IService[];
+  POST?: IService[];
+  PUT?: IService[];
+  TRACE?: IService[];
+  ALL?: IService[];
 }
 
 /**
@@ -148,12 +148,14 @@ export interface IServerOptions {
   port: number;
   protocol: "http" | "https";
   resources: typeof Resource[];
-  services?: Service[];
+  services?: IService[];
   // deno-lint-ignore no-explicit-any camelcase
   error_handler?: new (...args: any[]) => IErrorHandler;
 }
 
 export interface IService {
+  send: boolean;
+
   /**
    * Method that is ran before a resource is handled
    */
