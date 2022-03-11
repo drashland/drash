@@ -167,6 +167,11 @@ export interface IService {
     request: DrashRequest,
     response: Response,
   ) => void | Promise<void>;
+
+  /**
+   * Method that runs during server build time.
+   */
+  runAtStartup?: (options: IServiceStartupOptions) => void | Promise<void>;
 }
 
 export interface IErrorHandler {
