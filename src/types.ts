@@ -1,7 +1,7 @@
 /**
  * The allowed types for an HTTP method on a resource.
  */
-export type THttpMethod =
+export type HttpMethodName =
   | "CONNECT"
   | "DELETE"
   | "GET"
