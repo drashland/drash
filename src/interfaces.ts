@@ -192,3 +192,10 @@ export interface IErrorHandler {
     response: Response,
   ) => void | Promise<void>;
 }
+
+export interface IResourceAndParams {
+  /** The instantiated resource class. */
+  resource: Resource;
+  /** The instantiated resource class' path params (if any). */
+  pathParams: Map<string, string>;
+}
