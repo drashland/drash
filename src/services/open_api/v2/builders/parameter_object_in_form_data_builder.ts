@@ -1,5 +1,5 @@
 import { ParameterObjectBuilder } from "./parameter_object_builder.ts";
-import { ParameterObjectError } from "../errors/parameter_object_error.ts";
+import { ParameterObjectError } from "../errors.ts";
 import { IBuilder } from "../interfaces.ts";
 
 export class ParameterInFormDataObjectBuilder extends ParameterObjectBuilder {

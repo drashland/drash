@@ -1,4 +1,4 @@
-import { ParameterObjectError } from "../errors/parameter_object_error.ts";
+import { ParameterObjectError } from "../errors.ts";
 import { IBuilder } from "../interfaces.ts";
 import { isBuilder } from "./spec_builder.ts";
 

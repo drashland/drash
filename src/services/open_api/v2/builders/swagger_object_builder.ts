@@ -1,11 +1,11 @@
-import { TSwaggerObject } from "../types.ts";
+import { TSwaggerObjectSpec } from "../types.ts";
 
 interface Builder {
   toJson(): any;
 }
 
 export class SwaggerObjectBuilder {
-  protected spec: Partial<TSwaggerObject> = {};
+  protected spec: Partial<TSwaggerObjectSpec> = {};
 
   constructor(spec: any) {
     this.spec = spec;

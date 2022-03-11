@@ -1,44 +1,35 @@
-interface Builder {
-  toJson(): any;
-}
-
-class PathItemObjectError extends Error {
-  constructor(message: string) {
-    super();
-    this.name = this.constructor.name;
-    this.message = message;
-  }
-}
+import { IBuilder } from "../interfaces.ts";
+import { PathItemObjectError } from "../errors.ts";
 
 export class PathItemObjectBuilder {
   protected spec: any = {};
   protected $ref?: string;
 
-  public get(operation: Builder): this {
+  public get(operation: IBuilder): this {
     return this.#setOperation("get", operation);
   }
 
-  public post(operation: Builder): this {
+  public post(operation: IBuilder): this {
     return this.#setOperation("post", operation);
   }
 
-  public put(operation: Builder): this {
+  public put(operation: IBuilder): this {
     return this.#setOperation("put", operation);
   }
 
-  public delete(operation: Builder): this {
+  public delete(operation: IBuilder): this {
     return this.#setOperation("delete", operation);
   }
 
-  public patch(operation: Builder): this {
+  public patch(operation: IBuilder): this {
     return this.#setOperation("patch", operation);
   }
 
-  public head(operation: Builder): this {
+  public head(operation: IBuilder): this {
     return this.#setOperation("head", operation);
   }
 
-  public options(operation: Builder): this {
+  public options(operation: IBuilder): this {
     return this.#setOperation("options", operation);
   }
 
@@ -47,8 +38,8 @@ export class PathItemObjectBuilder {
     return this;
   }
 
-  public parameters(parameters: Builder[]): this {
-    const bodyParameters = parameters.filter((param: Builder) => {
+  public parameters(parameters: IBuilder[]): this {
+    const bodyParameters = parameters.filter((param: IBuilder) => {
       const spec = param.toJson();
       return "in" in spec && spec.in === "body";
     });
@@ -59,14 +50,14 @@ export class PathItemObjectBuilder {
       );
     }
 
-    this.spec.parameters = parameters.map((param: Builder) => {
+    this.spec.parameters = parameters.map((param: IBuilder) => {
       return param.toJson();
     });
 
     return this;
   }
 
-  #setOperation(method: string, operation: Builder): this {
+  #setOperation(method: string, operation: IBuilder): this {
     this.spec[method] = operation.toJson();
     return this;
   }

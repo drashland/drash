@@ -1,11 +1,11 @@
 import { IBuilder } from "../interfaces.ts";
-import { TSwaggerObject } from "../types.ts";
+import { TSwaggerObjectSpec } from "../types.ts";
 
 /**
  * Build the specification. This could be the `SwaggerObjectBuilder` or an
  * object of key-value pairs that holds nested swagger.
  */
-export function buildSpec(obj: unknown, spec: any = {}): TSwaggerObject {
+export function buildSpec(obj: unknown, spec: any = {}): TSwaggerObjectSpec {
   // Check if a builder was provided. If a builder was provided, then convert it
   // to its JSON form.
   if (isBuilder(obj)) {

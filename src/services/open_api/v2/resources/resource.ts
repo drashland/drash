@@ -1,27 +1,37 @@
 import * as Drash from "../../../../../mod.ts";
-import { TResourceOperationSpec } from "../types.ts";
+import { TResourceOperation } from "../types.ts";
+import { formatSpecName } from "../open_api.ts";
 
 export class Resource extends Drash.Resource {
   /**
-   * The Swagger spec this resource should placed in during the documentation process. If left `undefined`, then it will be placed in the Swagger spec specified during instantion of `OpenAPI.Service`.
-   */
-  public spec?: string;
-
-  /**
-   * Operation Object specification.
+   * This resource's Operation Object specification details. This is not the
+   * specification itself. It is a property that holds builders to help create
+   * the specification.
    */
   public operations: {
-    [method: string]: TResourceOperationSpec;
+    [method: string]: TResourceOperation;
   } = {};
 
   /**
+   * The Swagger spec this resource should placed in during the documentation
+   * process. If left `undefined`, then it will be placed in the Swagger spec
+   * specified during instantion of `OpenAPI.Service`.
+   */
+  public spec?: string;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
    * Create a DELETE method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationDelete(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.delete = spec;
@@ -30,12 +40,13 @@ export class Resource extends Drash.Resource {
 
   /**
    * Create a GET method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationGet(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.get = spec;
@@ -44,12 +55,13 @@ export class Resource extends Drash.Resource {
 
   /**
    * Create a HEAD method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationHead(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.head = spec;
@@ -58,12 +70,13 @@ export class Resource extends Drash.Resource {
 
   /**
    * Create an OPTIONS method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationOptions(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.options = spec;
@@ -72,12 +85,13 @@ export class Resource extends Drash.Resource {
 
   /**
    * Create a PATCH method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationPatch(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.patch = spec;
@@ -86,12 +100,13 @@ export class Resource extends Drash.Resource {
 
   /**
    * Create a POST method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationPost(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.post = spec;
@@ -100,15 +115,34 @@ export class Resource extends Drash.Resource {
 
   /**
    * Create a PUT method with specifications.
+   *
    * @param spec The Operation Object spec for this method.
    * @param handler The handler that handles requests to this method.
    * @returns The handler.
    */
   public operationPut(
-    spec: TResourceOperationSpec,
+    spec: TResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.put = spec;
     return handler;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Set this resource's spec. This method is used to place a resource in its
+   * proper spec. If the resource does not use this method, then it will be
+   * documented in the default spec that's defined in the `OpenAPIService`'s
+   * constructor#options.
+   *
+   * @param title The spec's title. Example: "Drash"
+   * @param version The spec's version. Example: "v2.0"
+   * @returns Unified spec name format. Example: "DRASH V2.0"
+   */
+  protected setSpec(title: string, version: string): string {
+    return formatSpecName(title, version);
   }
 }

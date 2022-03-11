@@ -1,7 +1,4 @@
-interface Builder {
-  is_required?: boolean;
-  toJson(): any;
-}
+import { IBuilder } from "../interfaces.ts";
 
 export class SchemaObjectBuilder {
   public is_required = false;
@@ -10,7 +7,7 @@ export class SchemaObjectBuilder {
     type: string;
     collection_format: string;
     properties: {
-      [key: string]: Builder;
+      [key: string]: IBuilder;
     };
     required: string[];
   }> = {};
@@ -64,7 +61,7 @@ export class SchemaObjectBuilder {
     for (const [key, value] of Object.entries(this.spec.properties)) {
       properties[key] = value.toJson();
       // Add this property to the `required` array if it is required
-      if (value.is_required) {
+      if ("is_required" in value && value.is_required) {
         // Create the `required` array if it does not exist yet
         if (!this.spec.required) {
           this.spec.required = [];

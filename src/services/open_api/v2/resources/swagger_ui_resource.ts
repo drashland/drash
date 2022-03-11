@@ -1,8 +1,6 @@
 import * as Drash from "../../../../../mod.ts";
 import { serviceGlobals } from "../open_api.ts";
 
-console.log(import.meta.url.replace);
-
 const css = Deno.readFileSync(
   "/var/src/drashland/deno-drash/src/services/open_api/v2/views/swagger_ui_standard/swagger-ui.css",
 );
@@ -20,7 +18,7 @@ export class SwaggerUIResource extends Drash.Resource {
     "/swagger-ui(.+|\.js|\.json|\.css|-bundle\.js|-standalone-preset\.js)?",
   ];
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request, response: Drash.Response): void {
     if (
       request.url.includes("swagger-ui") &&
       request.url.includes(".json")

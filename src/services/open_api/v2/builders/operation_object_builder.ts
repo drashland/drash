@@ -1,14 +1,5 @@
-interface Builder {
-  toJson(): any;
-}
-
-class OperationObjectError extends Error {
-  constructor(message: string) {
-    super();
-    this.name = this.constructor.name;
-    this.message = message;
-  }
-}
+import { IBuilder } from "../interfaces.ts";
+import { OperationObjectError } from "../errors.ts";
 
 export class OperationObjectBuilder {
   protected spec: any = {};
@@ -27,25 +18,30 @@ export class OperationObjectBuilder {
     };
   }
 
-  public parameters(parameters: any[]): this {
-    this.spec.parameters = parameters.map((param: Builder) => {
+  public parameters(parameters: IBuilder[]): this {
+    this.spec.parameters = parameters.map((param: IBuilder) => {
       return param.toJson();
     });
 
     return this;
   }
 
-  public responses(responses: any): this {
+  public responses(responses: {
+    [statusCode: number]: string | IBuilder;
+  }): this {
     const spec: { [statusCode: string]: any } = {};
 
     for (const [statusCode, value] of Object.entries(responses)) {
+      // If a string was provided, then just create a basic Response Object
       if (typeof value === "string") {
         spec[statusCode] = {
           description: value,
         };
-      } else {
-        spec[statusCode] = (value as Builder).toJson();
+        continue;
       }
+
+      // Otherwise, we know this is a builder, so build the Response Object
+      spec[statusCode] = (value as IBuilder).toJson();
     }
 
     this.spec.responses = spec;

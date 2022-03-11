@@ -24,14 +24,14 @@ export class OpenAPIService extends Drash.Service {
     };
     swagger_object_builder: SwaggerObjectBuilder;
   }> = new Map();
-  #options: any;
+  #options: Interfaces.IServiceOptions;
   #default_spec!: string;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(options?: Interfaces.IServiceOptions) {
+  constructor(options: Interfaces.IServiceOptions) {
     super();
     this.#options = options ?? {};
     this.#createDefaultSpec();
@@ -53,36 +53,43 @@ export class OpenAPIService extends Drash.Service {
     // Document all resources registered in the server
     this.#documentResources(options.resources);
 
-    this.#specs.forEach(
-      async (
-        spec: {
-          meta?: { path?: string };
-          swagger_object_builder: SwaggerObjectBuilder;
+    // Build all specs
+    this.#buildSpecs();
+
+    // Add the Swagger UI resource. We do this after documenting because we do not want to include this resource in the documenting process.
+    options.server.addResource(SwaggerUIResource);
+
+    // After documenting the resources, set the specification URLs for each specification defined by the user.
+    this.#createSpecUrls();
+  }
+
+  /**
+   * Create a specification. This call occurs before `runAtStartup()` because it is invoked before the Drash.Server is instantiated..
+   *
+   * TODO(crookse)
+   * - Validate that the spec doesn't already exist
+   */
+  public createSpec(info: {
+    title: string;
+    version: string;
+  }, path?: string): void {
+    this.#specs.set(
+      formatSpecName(info.title, info.version),
+      {
+        meta: {
+          path,
         },
-      ) => {
-        if (spec?.meta?.path) {
-          for await (
-            const entry of walkSync(Deno.realPathSync(spec.meta.path))
-          ) {
-            if (entry.isFile) {
-              const t = await import(entry.path);
-              const moduleItems = Object.keys(t);
-              moduleItems.forEach((item: string) => {
-                if (typeof t[item] === "function") {
-                  if (t[item].constructor) {
-                    console.log(t[item].constructor.name);
-                    console.log("test");
-                  }
-                }
-              });
-              // console.log(Object.keys(t), new t[Object.keys(t)[0]]());
-            }
-          }
-        }
+        swagger_object_builder: Builders.swagger({
+          info,
+        }),
       },
     );
+  }
 
-    // Build all specs
+  /**
+   * Build all Open API specifications.
+   */
+  #buildSpecs(): void {
     this.#specs.forEach(
       (
         spec: {
@@ -102,15 +109,17 @@ export class OpenAPIService extends Drash.Service {
         );
       },
     );
+  }
 
-    // Add the Swagger UI resource. We do this after documenting because we do not want to include this resource in the documenting process.
-    options.server.addResource(SwaggerUIResource);
-
-    // After documenting the resources, set the specification URLs for each specification defined by the user.
+  /**
+   * Create the URLs that map to the Open API specifications.
+   */
+  #createSpecUrls(): void {
     const urls: {
       url: string;
       name: string;
     }[] = [];
+
     serviceGlobals.specifications.forEach((spec: string) => {
       const json = JSON.parse(spec) as any;
       let url = `/swagger-ui-${json.info.title}-${json.info.version}.json`;
@@ -121,40 +130,6 @@ export class OpenAPIService extends Drash.Service {
       });
     });
     serviceGlobals.specification_urls = JSON.stringify(urls);
-  }
-
-  /**
-   * Create a specification. This call occurs before `runAtStartup()` because it is invoked before the Drash.Server is instantiated..
-   *
-   * TODO(crookse)
-   * - Validate that the spec doesn't already exist
-   */
-  public createSpec(info: {
-    title: string;
-    version: string;
-  }, path?: string): void {
-    this.#specs.set(
-      this.#formatSpecName(info.title, info.version),
-      {
-        meta: {
-          path,
-        },
-        swagger_object_builder: Builders.swagger({
-          info,
-        }),
-      },
-    );
-  }
-
-  /**
-   * Return a properly formed spec name. This spec name will be used in
-   * `runAtStartup()` to build specs for resources that have specs.
-   */
-  public setSpec(
-    name: string,
-    version: string,
-  ): string {
-    return this.#formatSpecName(name, version).toUpperCase();
   }
 
   /**
@@ -287,28 +262,28 @@ export class OpenAPIService extends Drash.Service {
   }
 
   /**
-   * Format the spec name.
-   *
-   * @param title - The title of the spec.
-   * @param version - The verison of the spec.
-   *
-   * @returns A formatted spec name that's uniform across this service.
-   */
-  #formatSpecName(title: string, version: string): string {
-    return `${title} ${version}`.toUpperCase();
-  }
-
-  /**
    * Create the default spec. Any resource that does not specify which spec it should be defined in will end up in this default spec.
    */
   #createDefaultSpec(): void {
     this.createSpec({
-      title: this.#options.swagger.title,
-      version: this.#options.swagger.version,
+      title: this.#options.swagger.info.title,
+      version: this.#options.swagger.info.version,
     });
-    this.#default_spec = this.#formatSpecName(
-      this.#options.swagger.title,
-      this.#options.swagger.version,
+    this.#default_spec = formatSpecName(
+      this.#options.swagger.info.title,
+      this.#options.swagger.info.version,
     );
   }
+}
+
+/**
+ * Format the spec name.
+ *
+ * @param title - The title of the spec.
+ * @param version - The verison of the spec.
+ *
+ * @returns A formatted spec name that's uniform across this service.
+ */
+export function formatSpecName(title: string, version: string): string {
+  return `${title} ${version}`.toUpperCase();
 }

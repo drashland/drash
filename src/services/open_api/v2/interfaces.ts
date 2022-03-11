@@ -1,15 +1,18 @@
 import * as Drash from "../../../../mod.ts";
-import { TResourceOperationSpec } from "./types.ts";
+import { TResourceOperation } from "./types.ts";
 
 export interface IBuilder {
+  is_required?: boolean;
   toJson: () => Record<string, unknown>;
 }
 
 export interface IServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
-  swagger?: {
-    title?: string;
-    version?: string;
+  swagger: {
+    info: {
+      title: string;
+      version: string;
+    };
   };
   /**
    * Path to the Swagger UI resource. Defaults to "/swagger-ui" if not defined.
@@ -20,6 +23,6 @@ export interface IServiceOptions {
 export interface IResource extends Drash.Interfaces.IResource {
   spec?: string;
   operations?: {
-    [method: string]: TResourceOperationSpec;
+    [method: string]: TResourceOperation;
   };
 }
