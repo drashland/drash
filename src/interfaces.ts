@@ -3,7 +3,9 @@ import {
   Request as DrashRequest,
   Resource,
   Response,
+  Server,
   Service,
+  Types,
 } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
@@ -172,6 +174,11 @@ export interface IService {
    * Method that runs during server build time.
    */
   runAtStartup?: (options: IServiceStartupOptions) => void | Promise<void>;
+}
+
+export interface IServiceStartupOptions {
+  server: Server,
+  resources: Types.ResourcesAndPatternsMap,
 }
 
 export interface IErrorHandler {
