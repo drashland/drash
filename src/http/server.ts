@@ -51,7 +51,7 @@ export class Server {
    * a url pattern for every path specified. This means when a request
    * comes in, the paths are already converted to patterns, saving us time
    */
-  readonly #resources: Drash.Types.ResourcesAndPatternsMap= new Map();
+  readonly #resources: Drash.Types.ResourcesAndPatternsMap = new Map();
 
   /**
    * Our server instance that is serving the app
@@ -199,7 +199,7 @@ export class Server {
       if (service.runAtStartup) {
         await service.runAtStartup({
           server: this,
-          resources: this.#resources
+          resources: this.#resources,
         });
       }
     });

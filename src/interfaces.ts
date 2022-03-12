@@ -179,8 +179,8 @@ export interface IService {
 }
 
 export interface IServiceStartupOptions {
-  server: Server,
-  resources: Types.ResourcesAndPatternsMap,
+  server: Server;
+  resources: Types.ResourcesAndPatternsMap;
 }
 
 export interface IErrorHandler {
