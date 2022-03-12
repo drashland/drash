@@ -9,13 +9,13 @@ doc_blocks_output_actual.json
 package-lock.json
 
 # directories
-.vscode/
+.idea
 .sass-cache
+.vim
+.vscode/
+node_modules
 tmp*/*
 tmp/*
-node_modules
-.idea
-tmp-dir-for-testing-create-app
 
 # exceptions
 !.gitkeep
