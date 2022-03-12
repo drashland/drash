@@ -231,7 +231,6 @@ export class Server {
           response,
           "runBeforeResource",
         );
-        console.log("server services before res:", servicesResponse);
         // If error thrown, end lifecycle
         if (servicesResponse.err) {
           throw servicesResponse.err;
@@ -296,7 +295,6 @@ export class Server {
           });
         }
 
-        console.log("calling resource");
         // Execute the HTTP method on the resource
         // Ignoring because we know by now the method exists due to the above check
         // deno-lint-ignore ban-ts-comment

@@ -12,7 +12,6 @@ import { assertEquals } from "../deps.ts";
 
 class MethodService extends Service implements IService {
   runBeforeResource(request: Request, response: Response) {
-    console.log("methodbefore sevice called");
     response.headers.set("x-method-service-before", "started");
     if (request.queryParam("method-before") === "throw") {
       throw new Errors.HttpError(419, "Method Service Before threw");
@@ -41,11 +40,9 @@ class ServerService extends Service implements IService {
   runBeforeResource(request: Request, response: Response) {
     response.headers.set("x-server-service-before", "started");
     if (request.queryParam("server-before") === "throw") {
-      console.log("is a throw for server before");
       throw new Errors.HttpError(419, "Server Service Before threw");
     }
     if (request.queryParam("server-before") === "end") {
-      console.log("is an end for server before service");
       response.text("server before ended");
       return this.end();
     }
