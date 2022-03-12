@@ -4,7 +4,6 @@ import {
   Resource,
   Response,
   Server,
-  Service,
   Types,
 } from "../mod.ts";
 
