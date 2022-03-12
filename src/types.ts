@@ -1,3 +1,5 @@
+import { Resource } from "../mod.ts";
+
 /**
  * The allowed types for an HTTP method on a resource.
  */
@@ -20,3 +22,8 @@ export type BodyFile = {
 };
 
 export type HttpHeadersKeyValuePairs = Record<string, string>;
+
+export type TResourcesAndPatterns = Map<number, {
+  resource: Resource;
+  patterns: URLPattern[];
+}>;

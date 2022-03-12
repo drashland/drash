@@ -1,4 +1,4 @@
-import { IService, Request, Response } from "../../mod.ts";
+import { IService, Request, Resource, Response, Server, Types } from "../../mod.ts";
 
 export class Service implements IService {
   #send = false;
@@ -20,6 +20,12 @@ export class Service implements IService {
   public runBeforeResource(
     _request: Request,
     _response: Response,
+  ) {
+  }
+
+  public runAtStartup(
+    _server: Server,
+    _resources: Types.TResourcesAndPatterns,
   ) {
   }
 }
