@@ -8,20 +8,21 @@ export class SchemaObjectBuilder {
 
   protected spec: Partial<{
     type: string,
-    items: Builder,
-    $ref: string,
+    collection_format: string,
     properties: {
       [key: string]: Builder
     },
     required: string[],
   }> = {};
 
+  protected $ref?: string;
+
   constructor(type: "array" | "object") {
     this.spec.type = type;
   }
 
   public ref(value: string): this {
-    this.spec.$ref = `#/definitions/${value}`;
+    this.$ref = `#/definitions/${value}`;
     return this;
   }
 
@@ -35,14 +36,13 @@ export class SchemaObjectBuilder {
   }
 
   public toJson(): any {
-    if (this.spec.$ref) {
+    if (this.$ref) {
       return {
-        $ref: this.spec.$ref
+        $ref: this.$ref
       };
     }
 
     this.#convertPropertiesToJson();
-    this.#convertItemsToJson();
 
     return this.spec;
   }
@@ -50,28 +50,6 @@ export class SchemaObjectBuilder {
   public required(): this {
     this.is_required = true;
     return this;
-  }
-
-  public items(value: any): this {
-    if (this.spec.type === "object") {
-      throw new Error("Method `.items()` cannot be used on `object` schema.");
-    }
-
-    this.spec.items = value;
-    return this;
-  }
-
-  #convertItemsToJson(): void {
-    if (this.spec.type === "object") {
-      return;
-    }
-
-    if (this.spec.type === "array" && !this.spec.items) {
-      throw new Error("Field `items` is required for `array` schemas.");
-    }
-
-    // @ts-ignore
-    this.spec.items = this.spec.items.toJson();
   }
 
   #convertPropertiesToJson(): void {
@@ -94,5 +72,35 @@ export class SchemaObjectBuilder {
     }
 
     this.spec.properties = properties;
+  }
+}
+
+export class SchemaTypeArrayObjectBuilder extends SchemaObjectBuilder {
+  protected object_specific_spec: any = {};
+
+  constructor() {
+    super("array");
+  }
+
+  public items(value: Builder): this {
+    this.object_specific_spec.items = value.toJson();
+    return this;
+  }
+
+  public toJson(): any {
+    if (this.$ref) {
+      return {
+        $ref: this.$ref,
+      }
+    }
+
+    if (!this.object_specific_spec.items) {
+      throw new Error("Field `items` is required for `array` schemas.");
+    }
+
+    return {
+      ...super.toJson(),
+      ...this.object_specific_spec,
+    };
   }
 }

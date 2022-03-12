@@ -1,7 +1,20 @@
 import * as Drash from "../../../../mod.ts";
 import { SwaggerUIResource } from './resources/swagger_ui_resource.ts';
-import { PrimitiveDataTypeBuilder } from './builders/string_builder.ts';
-import { SchemaObjectBuilder } from './builders/schema_object_builder.ts';
+import { PrimitiveDataTypeBuilder } from './builders/primitive_type_builder.ts';
+import {
+  SchemaObjectBuilder,
+  SchemaTypeArrayObjectBuilder,
+} from './builders/schema_object_builder.ts';
+import { SwaggerObjectBuilder } from './builders/swagger_object_builder.ts';
+import { PathItemObjectBuilder } from './builders/path_item_object_builder.ts';
+import { OperationObjectBuilder } from './builders/operation_object_builder.ts';
+import { ResponseObjectBuilder } from './builders/response_object_builder.ts';
+import {
+  ParameterInQueryObjectBuilder,
+  ParameterInBodyObjectBuilder,
+  ParameterInPathObjectBuilder,
+} from './builders/parameter_object_builder.ts';
+
 
 export let pathToSwaggerUI: string;
 export let specs = new Map<string, string>();
@@ -20,6 +33,102 @@ export function getSpecURLS(): string {
   return JSON.stringify(urls);
 }
 
+interface Builder {
+  toJson(): any;
+}
+
+function build(obj: any, spec: any = {}): any {
+  if ("toJson" in obj) {
+    return {
+      ...spec,
+      ...obj.toJson()
+    };
+  }
+
+  for (const [key, builder] of Object.entries(obj)) {
+    spec = {
+      ...spec,
+      [key]: (builder as Builder).toJson(),
+    };
+  }
+
+  return spec;
+}
+
+export const builders = {
+  buildSpec: build,
+  swagger(spec: any): SwaggerObjectBuilder {
+    return new SwaggerObjectBuilder(spec);
+  },
+  parameters: {
+    path(): ParameterInPathObjectBuilder {
+      return new ParameterInPathObjectBuilder();
+    },
+    query(): ParameterInQueryObjectBuilder {
+      return new ParameterInQueryObjectBuilder();
+    },
+    body(): ParameterInBodyObjectBuilder {
+      return new ParameterInBodyObjectBuilder();
+    },
+  },
+  response(): ResponseObjectBuilder {
+    return new ResponseObjectBuilder();
+  },
+  object(properties?: any): SchemaObjectBuilder {
+    const o = new SchemaObjectBuilder("object");
+    if (properties) {
+      o.properties(properties);
+    }
+    return o;
+  },
+  pathItem(): PathItemObjectBuilder {
+    return new PathItemObjectBuilder();
+  },
+  operation(): OperationObjectBuilder {
+    return new OperationObjectBuilder();
+  },
+  array(items?: any): SchemaTypeArrayObjectBuilder {
+    const a = new SchemaTypeArrayObjectBuilder();
+    if (items) {
+      a.items(items);
+    }
+    return a;
+  },
+  string(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("string");
+  },
+  integer(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("integer");
+  },
+  long(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("long");
+  },
+  float(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("float");
+  },
+  double(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("double");
+  },
+  byte(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("byte");
+  },
+  binary(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("binary");
+  },
+  boolean(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("boolean");
+  },
+  date(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("date");
+  },
+  dateTime(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("dateTime");
+  },
+  password(): PrimitiveDataTypeBuilder {
+    return new PrimitiveDataTypeBuilder("password");
+  },
+};
+
 export interface OpenAPIV2ServiceOptions {
   /** Path to the Swagger UI page. Defaults to "/swagger-ui". */
   path?: string;
@@ -29,34 +138,6 @@ export interface OpenAPIV2ServiceOptions {
 export class OpenAPIV2Service extends Drash.Service {
   #specs: any = {};
   // #options: OpenAPIV2ServiceOptions;
-
-  public object(properties?: any): SchemaObjectBuilder {
-    const o = new SchemaObjectBuilder("object");
-
-    if (properties) {
-      o.properties(properties);
-    }
-
-    return o;
-  }
-
-  public array(items?: any): SchemaObjectBuilder {
-    const a = new SchemaObjectBuilder("array");
-
-    if (items) {
-      a.items(items);
-    }
-
-    return a;
-  }
-
-  public string(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("string");
-  }
-
-  public integer(): PrimitiveDataTypeBuilder {
-    return new PrimitiveDataTypeBuilder("integer");
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////

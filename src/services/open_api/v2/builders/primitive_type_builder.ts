@@ -13,6 +13,51 @@ export class PrimitiveDataTypeBuilder {
 
   constructor(type: string) {
     this.spec.type = type;
+    this.#setDefaults();
+  }
+
+  #setDefaults(): void {
+    let format: string | undefined;
+
+    switch(this.spec.type) {
+      case "string":
+        break;
+      case "integer":
+        format = "int32";
+        break;
+      case "long":
+        format = "int64";
+        break;
+      case "float":
+        format = "float";
+        break;
+      case "double":
+        format = "double";
+        break;
+      case "byte":
+        format = "byte";
+        break;
+      case "binary":
+        format = "binary";
+        break;
+      case "boolean":
+        break;
+      case "date":
+        format = "date";
+        break;
+      case "dateTime":
+        format = "date-time";
+        break;
+      case "password":
+        format = "password";
+        break;
+      default:
+        break;
+    }
+
+    if (format) {
+      this.spec.format = format;
+    }
   }
 
   public format(value: DataType): this {
