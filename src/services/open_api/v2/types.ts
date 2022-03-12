@@ -1,5 +1,4 @@
 import { IBuilder } from "./interfaces.ts";
-import { ParameterObjectBuilder } from "./builders/parameter_object_builder.ts";
 
 /**
  * Data Types in Open API Specification v2.0.
@@ -7,7 +6,7 @@ import { ParameterObjectBuilder } from "./builders/parameter_object_builder.ts";
  * The unknown type can be any type to provide documentation. The explicit types
  *  are defined by Swagger Specification.
  */
-export type TDataType =
+export type DataType =
   | "integer"
   | "long"
   | "float"
@@ -21,18 +20,18 @@ export type TDataType =
   | "password"
   | unknown;
 
-export type TDataTypeSpec =
+export type DataTypeSpec =
   & {
     type: string;
   }
   & Partial<{
     $ref: string;
-    items: TItemsObjectSpec;
+    items: ItemsObjectSpec;
   }>;
 
-export type TItemsObjectSpec =
+export type ItemsObjectSpec =
   & {
-    [key: string]: TDataTypeSpec;
+    [key: string]: DataTypeSpec;
   }
   & Partial<{
     $ref: string;
@@ -41,7 +40,7 @@ export type TItemsObjectSpec =
 /**
  * HTTP methods allowed by Open API Specification v2.0 in the Path Item Object.
  */
-export type TPathItemObjectBuilderHttpMethods =
+export type PathItemObjectBuilderHttpMethods =
   | "get"
   | "post"
   | "put"
@@ -50,7 +49,7 @@ export type TPathItemObjectBuilderHttpMethods =
   | "head"
   | "options";
 
-export type TOperationObject = {
+export type OperationObject = {
   summary?: string;
   description?: string;
   externalDocs?: IBuilder;
@@ -59,39 +58,39 @@ export type TOperationObject = {
   produces?: string[];
   tags?: string[];
   parameters?: IBuilder[];
-  responses?: TResponsesObject;
+  responses?: ResponsesObject;
 };
 
-export type TResourceOperation = {
+export type ResourceOperation = {
   parameters?: IBuilder[];
-  responses?: TResponsesObject;
+  responses?: ResponsesObject;
 };
 
-export type TParameterObject = IBuilder[];
+export type ParameterObject = IBuilder[];
 
-export type TResponsesObjectSpec =
+export type ResponsesObjectSpec =
   & {
-    [httpStatusCode: number]: TResponseObjectSpec | TReferenceObjectSpec;
+    [httpStatusCode: number]: ResponseObjectSpec | ReferenceObjectSpec;
   }
   & Partial<{
-    default: TResponseObjectSpec | TReferenceObjectSpec;
+    default: ResponseObjectSpec | ReferenceObjectSpec;
   }>;
 
-export type TResponseObjectSpec =
+export type ResponseObjectSpec =
   & {
     description: string;
   }
   & Partial<{
-    schema: TSchemaObjectSpec;
-    headers: THeadersObjectSpec;
-    examples: TExampleObjectSpec;
+    schema: SchemaObjectSpec;
+    headers: HeadersObjectSpec;
+    examples: ExampleObjectSpec;
   }>;
 
-export type THeadersObjectSpec = {
-  [name: string]: THeaderObjectSpec;
+export type HeadersObjectSpec = {
+  [name: string]: HeaderObjectSpec;
 };
 
-export type THeaderObjectSpec =
+export type HeaderObjectSpec =
   & {
     type: "string" | "number" | "integer" | "boolean" | "array";
   }
@@ -99,7 +98,7 @@ export type THeaderObjectSpec =
     format: string;
     description: string;
     default: string;
-    items: TItemsObjectSpec;
+    items: ItemsObjectSpec;
     collectionFormat: "csv" | "ssv" | "tsv" | "pipes";
     maximum: number;
     exclusiveMaximum: boolean;
@@ -115,42 +114,46 @@ export type THeaderObjectSpec =
     multipleOf: number;
   }>;
 
-export type TExampleObjectSpec = {};
+export type ExampleObjectSpec = { [mimeType: string]: unknown };
 
-export type TResponsesObject = { [statusCode: number]: string | IBuilder };
-export type TReferenceObjectSpec = {
+export type ResponsesObject = { [statusCode: number]: string | IBuilder };
+export type ReferenceObjectSpec = {
   $ref: string;
 };
-export type TSchemaObjectSpec = {
-  type?: string;
-  properties?: {
-    [key: string]: TDataType;
-  };
-};
+export type SchemaObjectSpec =
+  & {
+    type?: string;
+    properties?: {
+      [key: string]: DataType;
+    };
+  }
+  & Partial<{
+    $ref: string;
+  }>;
 
-export type TContactSpec = {
+export type ContactSpec = {
   name: string;
   url: string;
   email: string;
 };
 
-export type TLicenseSpec = {
+export type LicenseSpec = {
   name: string;
   url: string;
 };
 
-export type TInfoObjectSpec = {
+export type InfoObjectSpec = {
   title: string;
   description: string;
   termsOfService: string;
-  contact: TContactSpec;
-  license: TLicenseSpec;
+  contact: ContactSpec;
+  license: LicenseSpec;
   version: string;
 };
 
-export type TSwaggerObjectSpec = {
+export type SwaggerObjectSpec = {
   swagger: string;
-  info: TInfoObjectSpec;
+  info: InfoObjectSpec;
   host: string;
   basePath: string;
   schemes: string[];

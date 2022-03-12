@@ -1,13 +1,11 @@
-import * as Drash from "../../../../mod.ts";
-import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
-import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
-import { buildSpec } from "./builders/spec_builder.ts";
 import * as Builders from "./builders.ts";
+import * as Drash from "../../../../mod.ts";
 import * as Interfaces from "./interfaces.ts";
-import { TPathItemObjectBuilderHttpMethods } from "./types.ts";
 import { Resource } from "./resources/resource.ts";
-import { walkSync } from "https://deno.land/std@0.128.0/fs/walk.ts";
-import { basename } from "https://deno.land/std@0.128.0/path/mod.ts";
+import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
+import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
+import { TPathItemObjectBuilderHttpMethods } from "./types.ts";
+import { buildSpec } from "./builders/spec_builder.ts";
 
 export { Builders, Resource };
 
