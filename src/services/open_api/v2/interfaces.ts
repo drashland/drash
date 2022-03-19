@@ -1,5 +1,5 @@
 import * as Drash from "../../../../mod.ts";
-import { TResourceOperation } from "./types.ts";
+import { ResourceOperation } from "./types.ts";
 
 export interface IBuilder {
   is_required?: boolean;
@@ -23,6 +23,6 @@ export interface IServiceOptions {
 export interface IResource extends Drash.Interfaces.IResource {
   spec?: string;
   operations?: {
-    [method: string]: TResourceOperation;
+    [method: string]: ResourceOperation;
   };
 }

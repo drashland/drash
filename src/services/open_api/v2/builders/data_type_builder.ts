@@ -1,4 +1,4 @@
-import { TDataType } from "../types.ts";
+import { DataType } from "../types.ts";
 
 /**
  * A builder to help build a Data Type spec.
@@ -39,7 +39,7 @@ export class DataTypeBuilder {
    *
    * @return this
    */
-  public format(value: TDataType): this {
+  public format(value: DataType): this {
     this.spec.format = value;
     return this;
   }

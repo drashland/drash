@@ -4,7 +4,7 @@ import * as Interfaces from "./interfaces.ts";
 import { Resource } from "./resources/resource.ts";
 import { SwaggerObjectBuilder } from "./builders/swagger_object_builder.ts";
 import { SwaggerUIResource } from "./resources/swagger_ui_resource.ts";
-import { TPathItemObjectBuilderHttpMethods } from "./types.ts";
+import { PathItemObjectBuilderHttpMethods } from "./types.ts";
 import { buildSpec } from "./builders/spec_builder.ts";
 
 export { Builders, Resource };
@@ -193,7 +193,7 @@ export class OpenAPIService extends Drash.Service {
             // lowercase method names, so we convert the HTTP methods to
             // lowercase.
             const lowerCaseMethod = method
-              .toLowerCase() as TPathItemObjectBuilderHttpMethods;
+              .toLowerCase() as PathItemObjectBuilderHttpMethods;
 
             // Step 3: Start off with default responses
             pathItemObjectBuilder[lowerCaseMethod](

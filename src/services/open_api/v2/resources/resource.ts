@@ -1,5 +1,5 @@
 import * as Drash from "../../../../../mod.ts";
-import { TResourceOperation } from "../types.ts";
+import { ResourceOperation } from "../types.ts";
 import { formatSpecName } from "../open_api.ts";
 
 export class Resource extends Drash.Resource {
@@ -9,7 +9,7 @@ export class Resource extends Drash.Resource {
    * the specification.
    */
   public operations: {
-    [method: string]: TResourceOperation;
+    [method: string]: ResourceOperation;
   } = {};
 
   /**
@@ -31,7 +31,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationDelete(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.delete = spec;
@@ -46,7 +46,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationGet(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.get = spec;
@@ -61,7 +61,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationHead(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.head = spec;
@@ -76,7 +76,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationOptions(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.options = spec;
@@ -91,7 +91,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationPatch(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.patch = spec;
@@ -106,7 +106,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationPost(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.post = spec;
@@ -121,7 +121,7 @@ export class Resource extends Drash.Resource {
    * @returns The handler.
    */
   public operationPut(
-    spec: TResourceOperation,
+    spec: ResourceOperation,
     handler: (request: Drash.Request, response: Drash.Response) => void,
   ): (request: Drash.Request, response: Drash.Response) => void {
     this.operations.put = spec;

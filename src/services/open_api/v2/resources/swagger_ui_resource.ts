@@ -2,13 +2,13 @@ import * as Drash from "../../../../../mod.ts";
 import { serviceGlobals } from "../open_api.ts";
 
 const css = Deno.readFileSync(
-  "/var/src/drashland/deno-drash/src/services/open_api/v2/views/swagger_ui_standard/swagger-ui.css",
+  "../views/swagger_ui_standard/swagger-ui.css",
 );
 const bundle = Deno.readFileSync(
-  "/var/src/drashland/deno-drash/src/services/open_api/v2/views/swagger_ui_standard/swagger-ui-bundle.js",
+  "../views/swagger_ui_standard/swagger-ui-bundle.js",
 );
 const standalone = Deno.readFileSync(
-  "/var/src/drashland/deno-drash/src/services/open_api/v2/views/swagger_ui_standard/swagger-ui-standalone-preset.js",
+  "../views/swagger_ui_standard/swagger-ui-standalone-preset.js",
 );
 const decoder = new TextDecoder();
 
