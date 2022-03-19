@@ -42,26 +42,29 @@ async function runServices(
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
-): Promise<{ err: Error | null; end: boolean }> {
-  let err: Error | null = null;
+): Promise<boolean> {
   let end = false;
+
+  // There are two ways a service can short-circuit the
+  // request-resource-response lifecycle:
+  //
+  //   1. The service throws an error.
+  //   2. The service calls `this.end()`.
+  //
+  // If the service throws an error, then the request handler we pass in to `new
+  // StdServer()` will catch it and return a response.
+  //
+  // If the service calls `this.send()`, then the request handler we pass in to
+  // `new StdServer()` will return `new Response()`.
   for (const Service of Services) {
-    try {
-      await Service[serviceMethod](request, response);
-      end = Service.send;
-      if (end) {
-        break;
-      }
-    } catch (e) {
-      if (!err) {
-        err = e;
-      }
+    await Service[serviceMethod](request, response);
+    end = Service.send;
+    if (end) {
+      break;
     }
   }
-  return {
-    end,
-    err,
-  };
+
+  return end;
 }
 
 /**
@@ -90,7 +93,7 @@ export class Server {
   #server!: StdServer;
 
   /**
-   * A promise we need to await after calling close() on #server
+   * A promise we need to await after calling close() on #server 
    */
   #serverPromise!: Promise<void>;
 
@@ -191,6 +194,18 @@ export class Server {
     const errorHandler = this.#error_handler;
     const defaultErrorHandler = new Drash.ErrorHandler();
 
+    const respond = (response: Drash.Response): Response => {
+      if (response.upgraded && response.upgraded_response) {
+        return response.upgraded_response;
+      }
+
+      return new Response(response.body, {
+        headers: response.headers,
+        statusText: response.statusText,
+        status: response.status,
+      });
+    };
+
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
@@ -216,32 +231,16 @@ export class Server {
           connInfo,
         );
 
-        let servicesResponse: {
-          err: Error | null;
-          end: boolean;
-        } = {
-          err: null,
-          end: false,
-        };
-
-        // Server level services, run before resource
-        servicesResponse = await runServices(
+        // Run server-level services (before we get to the resource)
+        let endLifecycle = await runServices(
           serverServices,
           request,
           response,
           "runBeforeResource",
         );
-        // If error thrown, end lifecycle
-        if (servicesResponse.err) {
-          throw servicesResponse.err;
-        }
-        // Is a service wants to end, end lifeycycle
-        if (servicesResponse.end) {
-          return new Response(response.body, {
-            headers: response.headers,
-            statusText: response.statusText,
-            status: response.status,
-          });
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
         // If no resource found, throw 404. Unable to call class/resource services
@@ -250,22 +249,16 @@ export class Server {
           throw new Drash.Errors.HttpError(404);
         }
 
-        // Class before resource services
-        servicesResponse = await runServices(
+        // Run resource-level services (before their HTTP method is called)
+        endLifecycle = await runServices(
           resource.services.ALL ?? [],
           request,
           response,
           "runBeforeResource",
         );
-        if (servicesResponse.err) {
-          throw servicesResponse.err;
-        }
-        if (servicesResponse.end) {
-          return new Response(response.body, {
-            headers: response.headers,
-            statusText: response.statusText,
-            status: response.status,
-          });
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
         // If the method does not exist on the resource, then the method is not
@@ -277,22 +270,17 @@ export class Server {
           throw new Drash.Errors.HttpError(405);
         }
 
-        // resource before middleware
-        servicesResponse = await runServices(
+        // Run resource HTTP method level services (before the HTTP method is
+        // called)
+        endLifecycle = await runServices(
           resource.services[method] ?? [],
           request,
           response,
           "runBeforeResource",
         );
-        if (servicesResponse.err) {
-          throw servicesResponse.err;
-        }
-        if (servicesResponse.end) {
-          return new Response(response.body, {
-            headers: response.headers,
-            statusText: response.statusText,
-            status: response.status,
-          });
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
         // Execute the HTTP method on the resource
@@ -301,58 +289,42 @@ export class Server {
         // @ts-ignore
         await resource[method](request, response);
 
-        // after resource middleware
-        servicesResponse = await runServices(
+        // Run resource HTTP method level services (after the HTTP method is
+        // called)
+        endLifecycle = await runServices(
           resource.services[method] ?? [],
           request,
           response,
           "runAfterResource",
         );
-        if (servicesResponse.err) {
-          throw servicesResponse.err;
-        }
-        if (servicesResponse.end) {
-          return new Response(response.body, {
-            headers: response.headers,
-            statusText: response.statusText,
-            status: response.status,
-          });
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
-        // Class after resource middleware. always run
-        servicesResponse = await runServices(
+        // Run resource-level services (after the HTTP method is called)
+        endLifecycle = await runServices(
           resource.services.ALL ?? [],
           request,
           response,
           "runAfterResource",
         );
-        if (servicesResponse.err) {
-          throw servicesResponse.err;
-        }
-        if (servicesResponse.end) {
-          return new Response(response.body, {
-            headers: response.headers,
-            statusText: response.statusText,
-            status: response.status,
-          });
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
-        // Server after resource services. always run
-        servicesResponse = await runServices(
+        // Run server-level services as a last step before returning a response
+        // that the resource has formed
+        endLifecycle = await runServices(
           serverServices,
           request,
           response,
           "runAfterResource",
         );
-        if (servicesResponse.err) {
-          throw servicesResponse.err;
-        }
-        if (servicesResponse.end) {
-          return new Response(response.body, {
-            headers: response.headers,
-            statusText: response.statusText,
-            status: response.status,
-          });
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
         const accept = request.headers.get("accept") ?? "";
@@ -366,15 +338,7 @@ export class Server {
           }
         }
 
-        if (response.upgraded && response.upgraded_response) {
-          return response.upgraded_response;
-        }
-
-        return new Response(response.body, {
-          headers: response.headers,
-          statusText: response.statusText,
-          status: response.status,
-        });
+        return respond(response);
       } catch (e) {
         try {
           await errorHandler.catch(e, originalRequest, response);
@@ -382,7 +346,7 @@ export class Server {
           await defaultErrorHandler.catch(e, originalRequest, response);
         }
 
-        return new Response(response.body, response);
+        return respond(response);
       }
     };
   }
