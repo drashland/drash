@@ -1,4 +1,11 @@
-import { IService, Request, Response } from "../../mod.ts";
+import {
+  IService,
+  Request,
+  Resource,
+  Response,
+  Server,
+  Types,
+} from "../../mod.ts";
 
 export class Service implements IService {
   #send = false;
@@ -9,17 +16,5 @@ export class Service implements IService {
 
   protected end() {
     this.#send = true;
-  }
-
-  public runAfterResource(
-    _request: Request,
-    _response: Response,
-  ) {
-  }
-
-  public runBeforeResource(
-    _request: Request,
-    _response: Response,
-  ) {
   }
 }
