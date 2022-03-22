@@ -3,7 +3,8 @@ import {
   Request as DrashRequest,
   Resource,
   Response,
-  Service,
+  Server,
+  Types,
 } from "../mod.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
@@ -122,16 +123,16 @@ export interface IResource {
 }
 
 export interface IResourceServices {
-  CONNECT?: Service[];
-  DELETE?: Service[];
-  GET?: Service[];
-  HEAD?: Service[];
-  OPTIONS?: Service[];
-  PATCH?: Service[];
-  POST?: Service[];
-  PUT?: Service[];
-  TRACE?: Service[];
-  ALL?: Service[];
+  CONNECT?: IService[];
+  DELETE?: IService[];
+  GET?: IService[];
+  HEAD?: IService[];
+  OPTIONS?: IService[];
+  PATCH?: IService[];
+  POST?: IService[];
+  PUT?: IService[];
+  TRACE?: IService[];
+  ALL?: IService[];
 }
 
 /**
@@ -146,12 +147,14 @@ export interface IServerOptions {
   port: number;
   protocol: "http" | "https";
   resources: typeof Resource[];
-  services?: Service[];
+  services?: IService[];
   // deno-lint-ignore no-explicit-any camelcase
   error_handler?: new (...args: any[]) => IErrorHandler;
 }
 
 export interface IService {
+  send: boolean;
+
   /**
    * Method that is ran before a resource is handled
    */
@@ -167,6 +170,16 @@ export interface IService {
     request: DrashRequest,
     response: Response,
   ) => void | Promise<void>;
+
+  /**
+   * Method that runs during server build time.
+   */
+  runAtStartup?: (options: IServiceStartupOptions) => void | Promise<void>;
+}
+
+export interface IServiceStartupOptions {
+  server: Server;
+  resources: Types.ResourcesAndPatternsMap;
 }
 
 export interface IErrorHandler {
@@ -179,4 +192,11 @@ export interface IErrorHandler {
     request: Request,
     response: Response,
   ) => void | Promise<void>;
+}
+
+export interface IResourceAndParams {
+  /** The instantiated resource class. */
+  resource: Resource;
+  /** The instantiated resource class' path params (if any). */
+  pathParams: Map<string, string>;
 }
