@@ -37,7 +37,7 @@ const server = new Server({
 ////////////////////////////////////////////////////////////////////////////////
 
 Rhum.testPlan("browser_request_resource.ts", () => {
-  Rhum.testSuite("GET /browser-request", () => {
+  Rhum.testSuite("GET (https) /browser-request", () => {
     Rhum.testCase("Response should be JSON", async () => {
       server.run();
       // Example browser request

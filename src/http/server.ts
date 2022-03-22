@@ -42,18 +42,29 @@ async function runServices(
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
-): Promise<Error | null> {
-  let err: Error | null = null;
+): Promise<boolean> {
+  let end = false;
+
+  // There are two ways a service can short-circuit the
+  // request-resource-response lifecycle:
+  //
+  //   1. The service throws an error.
+  //   2. The service calls `this.end()`.
+  //
+  // If the service throws an error, then the request handler we pass in to `new
+  // StdServer()` will catch it and return a response.
+  //
+  // If the service calls `this.end()`, then the request handler we pass in to
+  // `new StdServer()` will return `new Response()`.
   for (const Service of Services) {
-    try {
-      await Service[serviceMethod](request, response);
-    } catch (e) {
-      if (!err) {
-        err = e;
-      }
+    await Service[serviceMethod](request, response);
+    end = Service.send;
+    if (end) {
+      break;
     }
   }
-  return err;
+
+  return end;
 }
 
 /**
@@ -183,6 +194,18 @@ export class Server {
     const errorHandler = this.#error_handler;
     const defaultErrorHandler = new Drash.ErrorHandler();
 
+    const respond = (response: Drash.Response): Response => {
+      if (response.upgraded && response.upgraded_response) {
+        return response.upgraded_response;
+      }
+
+      return new Response(response.body, {
+        headers: response.headers,
+        statusText: response.statusText,
+        status: response.status,
+      });
+    };
+
     return async function (
       originalRequest: Request,
       connInfo: ConnInfo,
@@ -207,110 +230,101 @@ export class Server {
           pathParams,
           connInfo,
         );
-        // If a service wants to respond early, then allow it but dont run the resource method and still
-        // allow services to run eg csrf, paladin
-        let serviceError: Error | null = null;
 
-        // Server level services, run before resource
-        const serverBeforeServicesError = await runServices(
+        // Run server-level services (before we get to the resource)
+        let endLifecycle = await runServices(
           serverServices,
           request,
           response,
           "runBeforeResource",
         );
-        if (serverBeforeServicesError) {
-          serviceError = serverBeforeServicesError;
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
-        // If no resource found, then still run server level services for after resource eg paladin,
-        // then throw a 404
+        // If no resource found, throw 404. Unable to call class/resource services
+        // when the class doesn't exist!
         if (!resource) {
-          await runServices(
-            serverServices,
-            request,
-            response,
-            "runAfterResource",
-          );
           throw new Drash.Errors.HttpError(404);
         }
 
+        // Run resource-level services (before their HTTP method is called)
+        endLifecycle = await runServices(
+          resource.services.ALL ?? [],
+          request,
+          response,
+          "runBeforeResource",
+        );
+
+        if (endLifecycle) {
+          return respond(response);
+        }
+
         // If the method does not exist on the resource, then the method is not
-        // allowed. So, throw that 405 and GTFO and still allow after reosurce server services to run
+        // allowed. So, throw that 405 and GTFO. Unable to call resource method
+        // services if the method doesn't exist!
         const method = request.method
           .toUpperCase() as Drash.Types.THttpMethod;
         if (!(method in resource)) {
-          await runServices(
-            serverServices,
-            request,
-            response,
-            "runAfterResource",
-          );
           throw new Drash.Errors.HttpError(405);
         }
 
-        // By now, we all gucci, do run services and resource method as usual
-
-        // Class before resource services
-        const classBeforeServicesError = await runServices(
-          resource.services.ALL ?? [],
-          request,
-          response,
-          "runBeforeResource",
-        );
-        if (classBeforeServicesError && !serviceError) {
-          serviceError = classBeforeServicesError;
-        }
-
-        // resource before middleware
-        const resourceBeforeServicesError = await runServices(
+        // Run resource HTTP method level services (before the HTTP method is
+        // called)
+        endLifecycle = await runServices(
           resource.services[method] ?? [],
           request,
           response,
           "runBeforeResource",
         );
-        if (resourceBeforeServicesError && !serviceError) {
-          serviceError = resourceBeforeServicesError;
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
-        if (serviceError == null) {
-          // Execute the HTTP method on the resource
-          // Ignoring because we know by now the method exists due to the above check
-          // deno-lint-ignore ban-ts-comment
-          // @ts-ignore
-          await resource[method](request, response);
-        }
+        // Execute the HTTP method on the resource
+        // Ignoring because we know by now the method exists due to the above check
+        // deno-lint-ignore ban-ts-comment
+        // @ts-ignore
+        await resource[method](request, response);
 
-        // after resource middleware. always run
-        const resourceAfterServicesError = await runServices(
+        // Run resource HTTP method level services (after the HTTP method is
+        // called)
+        endLifecycle = await runServices(
           resource.services[method] ?? [],
           request,
           response,
           "runAfterResource",
         );
-        if (resourceAfterServicesError && !serviceError) {
-          serviceError = resourceAfterServicesError;
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
-        // Class after resource middleware. always run
-        const classAfterServicesError = await runServices(
+        // Run resource-level services (after the HTTP method is called)
+        endLifecycle = await runServices(
           resource.services.ALL ?? [],
           request,
           response,
           "runAfterResource",
         );
-        if (classAfterServicesError && !serviceError) {
-          serviceError = classAfterServicesError;
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
-        // Server after resource services. always run
-        const serverAfterServicesError = await runServices(
+        // Run server-level services as a last step before returning a response
+        // that the resource has formed
+        endLifecycle = await runServices(
           serverServices,
           request,
           response,
           "runAfterResource",
         );
-        if (serverAfterServicesError && !serviceError) {
-          serviceError = serverAfterServicesError;
+
+        if (endLifecycle) {
+          return respond(response);
         }
 
         const accept = request.headers.get("accept") ?? "";
@@ -324,19 +338,7 @@ export class Server {
           }
         }
 
-        if (serviceError) {
-          throw serviceError;
-        }
-
-        if (response.upgraded && response.upgraded_response) {
-          return response.upgraded_response;
-        }
-
-        return new Response(response.body, {
-          headers: response.headers,
-          statusText: response.statusText,
-          status: response.status,
-        });
+        return respond(response);
       } catch (e) {
         try {
           await errorHandler.catch(e, originalRequest, response);
@@ -344,7 +346,7 @@ export class Server {
           await defaultErrorHandler.catch(e, originalRequest, response);
         }
 
-        return new Response(response.body, response);
+        return respond(response);
       }
     };
   }

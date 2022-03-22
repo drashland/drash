@@ -9,6 +9,7 @@ doc_blocks_output_actual.json
 package-lock.json
 
 # directories
+.vim
 .sass-cache
 tmp*/*
 tmp/*

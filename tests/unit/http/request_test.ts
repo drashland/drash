@@ -1,4 +1,4 @@
-import { Rhum } from "../../deps.ts";
+import { assertEquals, Rhum } from "../../deps.ts";
 import * as Drash from "../../../mod.ts";
 import type { ConnInfo } from "../../../deps.ts";
 
@@ -150,21 +150,17 @@ function bodyTests() {
       connInfo,
     );
 
+    // make sure that if a requets has multiple files, we can get each one eh <input type=file name=uploads[] />
     const size = Deno.build.os === "windows" ? 1471 : 1433;
-    Rhum.asserts.assertEquals(request.bodyParam("foo"), [
-      {
-        content: Deno.readFileSync("./mod.ts"),
-        size,
-        type: "application/javascript",
-        filename: "mod.ts",
-      },
-      {
-        content: Deno.readFileSync("./mod.ts"),
-        size,
-        type: "application/javascript",
-        filename: "mod2.ts",
-      },
-    ]); // make sure that if a requets has multiple files, we can get each one eh <input type=file name=uploads[] />
+    const file = request.bodyParam<Drash.Types.BodyFile[]>("foo") ?? [];
+    assertEquals(file[0].content, Deno.readFileSync("./mod.ts"));
+    assertEquals(file[0].size, size);
+    assertEquals(file[0].type, "application/javascript");
+    assertEquals(file[0].filename, "mod.ts");
+    assertEquals(file[1].content, Deno.readFileSync("./mod.ts"));
+    assertEquals(file[1].size, size);
+    assertEquals(file[1].type, "application/javascript");
+    assertEquals(file[1].filename, "mod2.ts");
   });
 
   // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
