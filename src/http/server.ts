@@ -54,7 +54,7 @@ async function runServices(
   // If the service throws an error, then the request handler we pass in to `new
   // StdServer()` will catch it and return a response.
   //
-  // If the service calls `this.send()`, then the request handler we pass in to
+  // If the service calls `this.end()`, then the request handler we pass in to
   // `new StdServer()` will return `new Response()`.
   for (const Service of Services) {
     await Service[serviceMethod](request, response);
@@ -93,7 +93,7 @@ export class Server {
   #server!: StdServer;
 
   /**
-   * A promise we need to await after calling close() on #server 
+   * A promise we need to await after calling close() on #server
    */
   #serverPromise!: Promise<void>;
 
