@@ -414,5 +414,5 @@ export class Server {
       statusText: response.statusText,
       status: response.status,
     });
-  };
+  }
 }
