@@ -60,7 +60,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         response.headers.get("access-control-allow-methods"),
         "GET,HEAD,PUT,PATCH,POST,DELETE",
       );
-      Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
+      Rhum.asserts.assertEquals(response.headers.get("vary"), "Accept-Encoding, origin");
       Rhum.asserts.assertEquals(response.headers.get("content-length"), null);
       await server.close();
     });
@@ -75,7 +75,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         },
       });
       await server.close();
-      Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
+      Rhum.asserts.assertEquals(response.headers.get("vary"), "Accept-Encoding, origin");
     });
     Rhum.testCase(
       "Only sets the vary header if Origin header is not set",
@@ -90,7 +90,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await response.arrayBuffer();
         await server.close();
-        Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
+        Rhum.asserts.assertEquals(response.headers.get("vary"), "Accept-Encoding, origin");
         Rhum.asserts.assertEquals(
           response.headers.get("access-control-allow-origin"),
           null,
@@ -115,7 +115,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await response.arrayBuffer();
         await server.close();
-        Rhum.asserts.assertEquals(response.headers.get("vary"), "origin");
+        Rhum.asserts.assertEquals(response.headers.get("vary"), "Accept-Encoding, origin");
         Rhum.asserts.assertEquals(
           response.headers.get("access-control-allow-origin"),
           null,
