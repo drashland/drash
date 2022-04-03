@@ -7,8 +7,8 @@ class MyService extends Service {
   }
 }
 
-Deno.test("unit/http.service_test.ts | send() ", () => {
+Deno.test("unit/http.service_test.ts | end() ", () => {
   const s = new MyService();
   s.runBeforeResource();
-  assertEquals(s.send, true);
+  assertEquals(s.end_lifecycle, true);
 });

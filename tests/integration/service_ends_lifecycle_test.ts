@@ -86,12 +86,16 @@ class ClassService extends Service implements IService {
   }
 }
 
+const classService = new ClassService();
+const methodService = new MethodService();
+const serverService = new ServerService();
+
 class Resource1 extends Resource implements IResource {
   paths = ["/"];
 
   public services = {
-    "GET": [new MethodService()],
-    ALL: [new ClassService()],
+    GET: [methodService],
+    ALL: [classService],
   };
 
   public GET(_request: Request, response: Response) {
@@ -106,7 +110,7 @@ function getServer() {
     port: 1234,
     hostname: "localhost",
     resources: [Resource1],
-    services: [new ServerService()],
+    services: [serverService],
   });
 }
 
@@ -127,6 +131,9 @@ Deno.test("Server before services should throw and end lifecycle", async () => {
     (await res.text()).startsWith("Error: Server Service Before threw"),
     true,
   );
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(serverService.end_lifecycle, false);
 });
 
 Deno.test("Server before services should end lifecycle", async () => {
@@ -143,6 +150,9 @@ Deno.test("Server before services should end lifecycle", async () => {
   assertEquals(res.headers.get("x-resource-called"), null);
   assertEquals(res.status, 200);
   assertEquals(await res.text(), "server before ended");
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(serverService.end_lifecycle, false);
 });
 
 Deno.test("Server after services should throw and end lifecycle", async () => {
@@ -162,6 +172,9 @@ Deno.test("Server after services should throw and end lifecycle", async () => {
     (await res.text()).startsWith("Error: Server Service After threw"),
     true,
   );
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(serverService.end_lifecycle, false);
 });
 
 Deno.test("Server after services should end lifecycle", async () => {
@@ -178,6 +191,9 @@ Deno.test("Server after services should end lifecycle", async () => {
   assertEquals(res.headers.get("x-resource-called"), "true");
   assertEquals(res.status, 200);
   assertEquals(await res.text(), "server after ended");
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(serverService.end_lifecycle, false);
 });
 
 Deno.test("Class before services should throw and end lifecycle", async () => {
@@ -197,6 +213,9 @@ Deno.test("Class before services should throw and end lifecycle", async () => {
     (await res.text()).startsWith("Error: Class Service Before threw"),
     true,
   );
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(classService.end_lifecycle, false);
 });
 
 Deno.test("Class before services should end lifecycle", async () => {
@@ -213,6 +232,9 @@ Deno.test("Class before services should end lifecycle", async () => {
   assertEquals(res.headers.get("x-resource-called"), null);
   assertEquals(res.status, 200);
   assertEquals(await res.text(), "class before ended");
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(classService.end_lifecycle, false);
 });
 
 Deno.test("Class after services should throw and end lifecycle", async () => {
@@ -232,6 +254,9 @@ Deno.test("Class after services should throw and end lifecycle", async () => {
     (await res.text()).startsWith("Error: Class Service After threw"),
     true,
   );
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(classService.end_lifecycle, false);
 });
 
 Deno.test("Class after services should end lifecycle", async () => {
@@ -248,6 +273,9 @@ Deno.test("Class after services should end lifecycle", async () => {
   assertEquals(res.headers.get("x-resource-called"), "true");
   assertEquals(res.status, 200);
   assertEquals(await res.text(), "class after ended");
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(classService.end_lifecycle, false);
 });
 
 Deno.test("Method before services should throw and end lifecycle", async () => {
@@ -267,6 +295,9 @@ Deno.test("Method before services should throw and end lifecycle", async () => {
     (await res.text()).startsWith("Error: Method Service Before threw"),
     true,
   );
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(methodService.end_lifecycle, false);
 });
 
 Deno.test("Method before services should end lifecycle", async () => {
@@ -283,6 +314,9 @@ Deno.test("Method before services should end lifecycle", async () => {
   assertEquals(res.headers.get("x-resource-called"), null);
   assertEquals(res.status, 200);
   assertEquals(await res.text(), "method before ended");
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(methodService.end_lifecycle, false);
 });
 
 Deno.test("Method after services should throw and end lifecycle", async () => {
@@ -302,6 +336,9 @@ Deno.test("Method after services should throw and end lifecycle", async () => {
     (await res.text()).startsWith("Error: Method Service After threw"),
     true,
   );
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(methodService.end_lifecycle, false);
 });
 
 Deno.test("Method after services should end lifecycle", async () => {
@@ -318,4 +355,7 @@ Deno.test("Method after services should end lifecycle", async () => {
   assertEquals(res.headers.get("x-resource-called"), "true");
   assertEquals(res.status, 200);
   assertEquals(await res.text(), "method after ended");
+  // The server should reset the service singleton's `end_lifecycle` property
+  // back to false
+  assertEquals(methodService.end_lifecycle, false);
 });
