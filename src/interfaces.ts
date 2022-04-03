@@ -156,6 +156,11 @@ export interface IService {
   end_lifecycle: boolean;
 
   /**
+   * Used to reset this service's fields.
+   */
+  resetInstance(): void;
+
+  /**
    * Method that is ran before a resource is handled
    */
   runBeforeResource?: (

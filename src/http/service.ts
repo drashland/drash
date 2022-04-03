@@ -22,4 +22,8 @@ export class Service implements IService {
     _response: Response,
   ) {
   }
+
+  public resetInstance(): void {
+    this.#end_lifecycle = false;
+  }
 }
