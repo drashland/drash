@@ -23,7 +23,7 @@ async function runServices(
   for (const Service of Services) {
     if (serviceMethod in Service) {
       await Service[serviceMethod]!(request, response);
-      end = Service.send;
+      end = Service.end_lifecycle;
       if (end) {
         break;
       }

@@ -1,14 +1,14 @@
 import { IService, Request, Response } from "../../mod.ts";
 
 export class Service implements IService {
-  #send = false;
+  #end_lifecycle = false;
 
-  get send() {
-    return this.#send;
+  get end_lifecycle() {
+    return this.#end_lifecycle;
   }
 
   protected end() {
-    this.#send = true;
+    this.#end_lifecycle = true;
   }
 
   public runAfterResource(

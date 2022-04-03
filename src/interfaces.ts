@@ -153,7 +153,7 @@ export interface IServerOptions {
 }
 
 export interface IService {
-  send: boolean;
+  end_lifecycle: boolean;
 
   /**
    * Method that is ran before a resource is handled
