@@ -25,6 +25,10 @@ async function runServices(
       await Service[serviceMethod]!(request, response);
       end = Service.end_lifecycle;
       if (end) {
+        // Since services are singletons, we need to reset them here. Otherwise
+        // the service will have `#end_lifecycle` set to true for the life of
+        // the server.
+        Service.resetInstance();
         break;
       }
     }
