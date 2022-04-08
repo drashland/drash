@@ -1,5 +1,5 @@
 import { getCookies } from "../../deps.ts";
-import { IService, Errors } from "../../mod.ts";
+import { Errors } from "../../mod.ts";
 import type { ConnInfo } from "../../deps.ts";
 import { BodyFile } from "../types.ts";
 

@@ -178,7 +178,7 @@ Deno.test(
     await p;
 
     await server.close();
-  }
+  },
 );
 
 Deno.test("Server before services should throw and end lifecycle", async () => {
@@ -289,7 +289,7 @@ Deno.test(
     await p;
 
     await server.close();
-  }
+  },
 );
 
 Deno.test("Class before services should throw and end lifecycle", async () => {
@@ -397,7 +397,7 @@ Deno.test(
     await p;
 
     await server.close();
-  }
+  },
 );
 
 Deno.test("Method before services should throw and end lifecycle", async () => {
