@@ -256,7 +256,7 @@ export class Server {
    *
    * @param originalRequest The native request from Deno's internals.
    * @param connInfo The connection info from Deno's internals.
-   * 
+   *
    * @returns A native response.
    */
   async #handleRequest(
@@ -405,9 +405,9 @@ export class Server {
 
   /**
    * Respond to the client making the request.
-   * 
+   *
    * @param response The response details to use in the `Response` object.
-   * 
+   *
    * @returns A native Response.
    */
   #respond(response: Drash.Response): Response {
