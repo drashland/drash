@@ -16,6 +16,7 @@ export class DrashRequest extends Request {
   readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
   public conn_info: ConnInfo;
+  #end_lifecycle = false;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -42,6 +43,18 @@ export class DrashRequest extends Request {
     this.#path_params = pathParams;
     this.conn_info = connInfo;
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // GETTERS / SETTERS /////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  get end_lifecycle(): boolean {
+    return this.#end_lifecycle;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Create a Drash request object. We use this method to create request objects
@@ -88,6 +101,15 @@ export class DrashRequest extends Request {
       return false;
     }
     return acceptHeader.includes(contentType);
+  }
+
+  /**
+   * Set this request to end early? Calling this will tell the request to stop
+   * where it is at in the request-resource-response lifecycle and immediately
+   * return a response.
+   */
+  public end(): void {
+    this.#end_lifecycle = true;
   }
 
   /**

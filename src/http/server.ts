@@ -6,31 +6,26 @@ async function runServices(
   request: Drash.Request,
   response: Drash.Response,
   serviceMethod: "runBeforeResource" | "runAfterResource",
-): Promise<boolean> {
-  let end = false;
-
+): Promise<void> {
   // There are two ways a service can short-circuit the
   // request-resource-response lifecycle:
   //
   //   1. The service throws an error.
-  //   2. The service calls `this.end()`.
+  //   2. The service calls `request.end()`.
   //
   // If the service throws an error, then the request handler we pass in to `new
   // StdServer()` will catch it and return a response.
   //
-  // If the service calls `this.end()`, then the request handler we pass in to
-  // `new StdServer()` will return `new Response()`.
+  // If the service calls `request.end()`, then the request handler we pass in
+  // to `new StdServer()` will return `new Response()`.
   for (const Service of Services) {
     if (serviceMethod in Service) {
       await Service[serviceMethod]!(request, response);
-      end = Service.send;
-      if (end) {
+      if (request.end_lifecycle) {
         break;
       }
     }
   }
-
-  return end;
 }
 
 /**
@@ -281,14 +276,14 @@ export class Server {
       );
 
       // Run server-level services (before we get to the resource)
-      let endLifecycle = await runServices(
+      await runServices(
         this.#services,
         request,
         response,
         "runBeforeResource",
       );
 
-      if (endLifecycle) {
+      if (request.end_lifecycle) {
         return this.#respond(response);
       }
 
@@ -299,14 +294,14 @@ export class Server {
       }
 
       // Run resource-level services (before their HTTP method is called)
-      endLifecycle = await runServices(
+      await runServices(
         resource.services.ALL ?? [],
         request,
         response,
         "runBeforeResource",
       );
 
-      if (endLifecycle) {
+      if (request.end_lifecycle) {
         return this.#respond(response);
       }
 
@@ -321,14 +316,14 @@ export class Server {
 
       // Run resource HTTP method level services (before the HTTP method is
       // called)
-      endLifecycle = await runServices(
+      await runServices(
         resource.services[method] ?? [],
         request,
         response,
         "runBeforeResource",
       );
 
-      if (endLifecycle) {
+      if (request.end_lifecycle) {
         return this.#respond(response);
       }
 
@@ -340,39 +335,39 @@ export class Server {
 
       // Run resource HTTP method level services (after the HTTP method is
       // called)
-      endLifecycle = await runServices(
+      await runServices(
         resource.services[method] ?? [],
         request,
         response,
         "runAfterResource",
       );
 
-      if (endLifecycle) {
+      if (request.end_lifecycle) {
         return this.#respond(response);
       }
 
       // Run resource-level services (after the HTTP method is called)
-      endLifecycle = await runServices(
+      await runServices(
         resource.services.ALL ?? [],
         request,
         response,
         "runAfterResource",
       );
 
-      if (endLifecycle) {
+      if (request.end_lifecycle) {
         return this.#respond(response);
       }
 
       // Run server-level services as a last step before returning a response
       // that the resource has formed
-      endLifecycle = await runServices(
+      await runServices(
         this.#services,
         request,
         response,
         "runAfterResource",
       );
 
-      if (endLifecycle) {
+      if (request.end_lifecycle) {
         return this.#respond(response);
       }
 
