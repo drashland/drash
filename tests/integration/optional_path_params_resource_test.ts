@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,9 +41,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("optional_path_params_test.ts", () => {
-  Rhum.testSuite("/oppWithoutRequired", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+Deno.test("optional_path_params_test.ts", async (t) => {
+  await t.step("/oppWithoutRequired", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -55,19 +55,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, undefined);
-      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-      Rhum.asserts.assertEquals(json.data.city, undefined);
+      assertEquals(json.data.name, undefined);
+      assertEquals(json.data.age_of_person, undefined);
+      assertEquals(json.data.city, undefined);
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -79,19 +79,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, undefined);
-      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-      Rhum.asserts.assertEquals(json.data.city, undefined);
+      assertEquals(json.data.name, undefined);
+      assertEquals(json.data.age_of_person, undefined);
+      assertEquals(json.data.city, undefined);
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/:name", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -103,19 +103,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-      Rhum.asserts.assertEquals(json.data.city, undefined);
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, undefined);
+      assertEquals(json.data.city, undefined);
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name/", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/:name/", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -127,19 +127,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-      Rhum.asserts.assertEquals(json.data.city, undefined);
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, undefined);
+      assertEquals(json.data.city, undefined);
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/:name/:age_of_person", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -151,19 +151,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, "999");
-      Rhum.asserts.assertEquals(json.data.city, undefined);
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, "999");
+      assertEquals(json.data.city, undefined);
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/:name/:age_of_person/", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -175,19 +175,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, "999");
-      Rhum.asserts.assertEquals(json.data.city, undefined);
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, "999");
+      assertEquals(json.data.city, undefined);
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/:city", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/:name/:age_of_person/:city", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
       const response = await TestHelpers.makeRequest.get(
         "http://localhost:3000/oppWithoutRequired/edward/999/UK",
@@ -198,19 +198,19 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, "999");
-      Rhum.asserts.assertEquals(json.data.city, "UK");
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, "999");
+      assertEquals(json.data.city, "UK");
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithoutRequired/:name/:age_of_person/:city/", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithoutRequired/:name/:age_of_person/:city/", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -222,21 +222,21 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, "999");
-      Rhum.asserts.assertEquals(json.data.city, "UK");
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, "999");
+      assertEquals(json.data.city, "UK");
 
       await server.close();
     });
   });
-  Rhum.testSuite(
+  await t.step(
     "/oppWithoutRequired/:name/:age_of_person/:city/:other",
-    () => {
-      Rhum.testCase("Resource should NOT handle request", async () => {
+    async (t) => {
+      await t.step("Resource should NOT handle request", async () => {
         server.run();
 
         const response = await TestHelpers.makeRequest.get(
@@ -247,7 +247,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
             },
           },
         );
-        Rhum.asserts.assertEquals(
+        assertEquals(
           (await response.text()).startsWith("Error: Not Found"),
           true,
         );
@@ -255,8 +255,8 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       });
     },
   );
-  Rhum.testSuite("/oppWithoutRequired/:name/", () => {
-    Rhum.testCase(
+  await t.step("/oppWithoutRequired/:name/", async (t) => {
+    await t.step(
       "Resource should handle request",
       async () => {
         server.run();
@@ -270,20 +270,20 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           },
         );
         const json = await response.json();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           json.message,
           "Successfully handled optional path params",
         );
-        Rhum.asserts.assertEquals(json.data.name, "edward");
-        Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
-        Rhum.asserts.assertEquals(json.data.city, undefined);
+        assertEquals(json.data.name, "edward");
+        assertEquals(json.data.age_of_person, undefined);
+        assertEquals(json.data.city, undefined);
 
         await server.close();
       },
     );
   });
-  Rhum.testSuite("/oppWithRequired", () => {
-    Rhum.testCase("Resource should NOT handle request", async () => {
+  await t.step("/oppWithRequired", async (t) => {
+    await t.step("Resource should NOT handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -294,7 +294,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
         true,
       );
@@ -302,8 +302,8 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithRequired/", () => {
-    Rhum.testCase("Resource should NOT handle request", async () => {
+  await t.step("/oppWithRequired/", async (t) => {
+    await t.step("Resource should NOT handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -314,7 +314,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
         true,
       );
@@ -322,8 +322,8 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithRequired/edward", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithRequired/edward", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -336,16 +336,16 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       );
       await server.close();
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, undefined);
     });
   });
-  Rhum.testSuite("/oppWithRequired/edward/", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithRequired/edward/", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -358,16 +358,16 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
       );
       await server.close();
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, undefined);
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, undefined);
     });
   });
-  Rhum.testSuite("/oppWithRequired/ed-123/22", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithRequired/ed-123/22", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -379,18 +379,18 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "ed-123");
-      Rhum.asserts.assertEquals(json.data.age_of_person, "22-22");
+      assertEquals(json.data.name, "ed-123");
+      assertEquals(json.data.age_of_person, "22-22");
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithRequired/edward/22/", () => {
-    Rhum.testCase("Resource should handle request", async () => {
+  await t.step("/oppWithRequired/edward/22/", async (t) => {
+    await t.step("Resource should handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -402,18 +402,18 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
         },
       );
       const json = await response.json();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         json.message,
         "Successfully handled optional path params",
       );
-      Rhum.asserts.assertEquals(json.data.name, "edward");
-      Rhum.asserts.assertEquals(json.data.age_of_person, "22");
+      assertEquals(json.data.name, "edward");
+      assertEquals(json.data.age_of_person, "22");
 
       await server.close();
     });
   });
-  Rhum.testSuite("/oppWithRequired/edward/22/other", () => {
-    Rhum.testCase("Resource should NOT handle request", async () => {
+  await t.step("/oppWithRequired/edward/22/other", async (t) => {
+    await t.step("Resource should NOT handle request", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.get(
@@ -424,7 +424,7 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
         true,
       );
@@ -433,5 +433,3 @@ Rhum.testPlan("optional_path_params_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

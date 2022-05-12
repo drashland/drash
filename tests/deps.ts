@@ -1,8 +1,8 @@
-export { Rhum } from "https://deno.land/x/rhum@v2.0.0/mod.ts";
 export * as Drash from "../mod.ts";
 export * as path from "https://deno.land/std@0.138.0/path/mod.ts";
 export * as TestHelpers from "./test_helpers.ts";
 export {
+  assert,
   assertEquals,
   assertNotEquals,
 } from "https://deno.land/std@0.138.0/testing/asserts.ts";

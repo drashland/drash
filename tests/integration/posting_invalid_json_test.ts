@@ -6,7 +6,7 @@
  * this was the first type on the request)
  */
 
-import { Rhum } from "../deps.ts";
+import { assertEquals } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +34,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("posting_invlaid_json_test.ts", () => {
-  Rhum.testSuite("POST /", () => {
-    Rhum.testCase("Should return error when json body is invalid", async () => {
+Deno.test("posting_invlaid_json_test.ts", async (t) => {
+  await t.step("POST /", async (t) => {
+    await t.step("Should return error when json body is invalid", async () => {
       server.run();
       const response = await fetch(
         server.address,
@@ -49,18 +49,16 @@ Rhum.testPlan("posting_invlaid_json_test.ts", () => {
         },
       );
       await server.close();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith(
           "Error: Unprocessable Entity. The request body seems to be invalid as there was an error parsing it.",
         ),
         true,
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         response.status,
         422,
       );
     });
   });
 });
-
-Rhum.run();

@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import {
   Errors,
   IResource,
@@ -79,72 +79,72 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("coffee_resource_test.ts", () => {
-  Rhum.testSuite("/coffee (path params)", () => {
-    Rhum.testCase("works as expected with path params", async () => {
+Deno.test("coffee_resource_test.ts", async (t) => {
+  await t.step("/coffee (path params)", async (t) => {
+    await t.step("works as expected with path params", async () => {
       server.run();
 
       let response;
 
       // response = await fetch("http://localhost:3000/coffee");
-      // Rhum.asserts.assertEquals(
+      // assertEquals(
       //   await response.text(),
       //   'Please specify a coffee ID.',
       // );
 
       // response = await fetch("http://localhost:3000/coffee/");
-      // Rhum.asserts.assertEquals(
+      // assertEquals(
       //   await response.text(),
       //   'Please specify a coffee ID.',
       // );
 
       // response = await fetch("http://localhost:3000/coffee//");
-      // Rhum.asserts.assertEquals((await response.text()).startsWith("Error: Not Found"), true);
+      // assertEquals((await response.text()).startsWith("Error: Not Found"), true);
 
       // response = await fetch("http://localhost:3000/coffee/17");
-      // Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
+      // assertEquals(await response.text(), '{"name":"Light"}');
 
       response = await fetch("http://localhost:3000/coffee/17/", {
         headers: {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Light"}');
+      assertEquals(await response.text(), '{"name":"Light"}');
 
       response = await fetch("http://localhost:3000/coffee/18", {
         headers: {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
+      assertEquals(await response.text(), '{"name":"Medium"}');
 
       response = await fetch("http://localhost:3000/coffee/18/", {
         headers: {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Medium"}');
+      assertEquals(await response.text(), '{"name":"Medium"}');
 
       response = await fetch("http://localhost:3000/coffee/19", {
         headers: {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
+      assertEquals(await response.text(), '{"name":"Dark"}');
 
       response = await fetch("http://localhost:3000/coffee/19/", {
         headers: {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(await response.text(), '{"name":"Dark"}');
+      assertEquals(await response.text(), '{"name":"Dark"}');
 
       response = await fetch("http://localhost:3000/coffee/20", {
         headers: {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith(
           'Error: Coffee with ID "20" not found.',
         ),
@@ -159,7 +159,7 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Method Not Allowed"),
         true,
       );
@@ -168,8 +168,8 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
     });
   });
 
-  Rhum.testSuite("/coffee (url query params)", () => {
-    Rhum.testCase("works as expected with URL query params", async () => {
+  await t.step("/coffee (url query params)", async (t) => {
+    await t.step("works as expected with URL query params", async () => {
       server.run();
 
       const response = await fetch(
@@ -182,11 +182,9 @@ Rhum.testPlan("coffee_resource_test.ts", () => {
         },
       );
       const t = await response.text();
-      Rhum.asserts.assertEquals(t, '{"name":"Medium"}');
+      assertEquals(t, '{"name":"Medium"}');
 
       await server.close();
     });
   });
 });
-
-Rhum.run();

@@ -6,7 +6,7 @@
  * this was the first type on the request)
  */
 
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,9 +36,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("browser_request_resource.ts", () => {
-  Rhum.testSuite("GET (https) /browser-request", () => {
-    Rhum.testCase("Response should be JSON", async () => {
+Deno.test("browser_request_resource.ts", async (t) => {
+  await t.step("GET (https) /browser-request", async (t) => {
+    await t.step("Response should be JSON", async () => {
       server.run();
       // Example browser request
       const response = await TestHelpers.makeRequest.get(
@@ -50,13 +50,11 @@ Rhum.testPlan("browser_request_resource.ts", () => {
         },
       );
       await server.close();
-      Rhum.asserts.assertEquals(await response.text(), "hello");
-      Rhum.asserts.assertEquals(
+      assertEquals(await response.text(), "hello");
+      assertEquals(
         response.headers.get("Content-Type"),
         "text/plain",
       );
     });
   });
 });
-
-Rhum.run();

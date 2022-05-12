@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import * as Drash from "../../mod.ts";
 import { Request, Resource, Response } from "../../mod.ts";
 
@@ -73,9 +73,9 @@ const server = new Drash.Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("users_resource_test.ts", () => {
-  Rhum.testSuite("/users", () => {
-    Rhum.testCase("user data can be retrieved", async () => {
+Deno.test("users_resource_test.ts", async (t) => {
+  await t.step("/users", async (t) => {
+    await t.step("user data can be retrieved", async () => {
       server.run();
 
       let response;
@@ -89,7 +89,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "Please specify a user ID.",
       );
@@ -102,7 +102,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "Please specify a user ID.",
       );
@@ -115,7 +115,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
         true,
       );
@@ -128,7 +128,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         '{"id":17,"name":"Thor"}',
       );
@@ -141,7 +141,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         '{"id":17,"name":"Thor"}',
       );
@@ -154,7 +154,7 @@ Rhum.testPlan("users_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith(
           `Error: User with ID "18" not found.`,
         ),
@@ -169,5 +169,3 @@ Rhum.testPlan("users_resource_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

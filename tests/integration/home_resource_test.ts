@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,9 +38,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("home_resource_test.ts", () => {
-  Rhum.testSuite("/", () => {
-    Rhum.testCase("only defined methods are accessible", async () => {
+Deno.test("home_resource_test.ts", async (t) => {
+  await t.step("/", async (t) => {
+    await t.step("only defined methods are accessible", async () => {
       server.run();
 
       let response;
@@ -50,7 +50,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "GET request received!",
       );
@@ -63,7 +63,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "GET request received!",
       );
@@ -76,7 +76,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "GET request received!",
       );
@@ -89,7 +89,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Not Found"),
         true,
       );
@@ -99,7 +99,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "POST request received!",
       );
@@ -109,7 +109,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "PUT request received!",
       );
@@ -119,7 +119,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         "DELETE request received!",
       );
@@ -129,7 +129,7 @@ Rhum.testPlan("home_resource_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         (await response.text()).startsWith("Error: Method Not Allowed"),
         true,
       );
@@ -138,5 +138,3 @@ Rhum.testPlan("home_resource_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

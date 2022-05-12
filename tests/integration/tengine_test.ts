@@ -6,7 +6,7 @@
  * this was the first type on the request)
  */
 
-import { Rhum } from "../deps.ts";
+import { assertEquals } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 import { TengineService } from "../../src/services/tengine/tengine.ts";
 
@@ -45,16 +45,14 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("tengine_test.ts", () => {
-  Rhum.testSuite("GET /tengine", () => {
-    Rhum.testCase("Tengine should handle the request", async () => {
+Deno.test("tengine_test.ts", async (t) => {
+  await t.step("GET /tengine", async (t) => {
+    await t.step("Tengine should handle the request", async () => {
       server.run();
       const res = await fetch(`${server.address}/tengine`);
       await server.close();
-      Rhum.asserts.assertEquals(res.headers.get("content-type"), "text/html");
-      Rhum.asserts.assertEquals(await res.text(), "Gday");
+      assertEquals(res.headers.get("content-type"), "text/html");
+      assertEquals(await res.text(), "Gday");
     });
   });
 });
-
-Rhum.run();

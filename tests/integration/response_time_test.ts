@@ -6,7 +6,7 @@
  * this was the first type on the request)
  */
 
-import { delay, Rhum } from "../deps.ts";
+import { assert, delay } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 import { ResponseTimeService } from "../../src/services/response_time/response_time.ts";
 
@@ -37,9 +37,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("response_time_test.ts", () => {
-  Rhum.testSuite("GET /response-time", () => {
-    Rhum.testCase("Should set the response time header", async () => {
+Deno.test("response_time_test.ts", async (t) => {
+  await t.step("GET /response-time", async (t) => {
+    await t.step("Should set the response time header", async () => {
       server.run();
       // Example browser request
       const response = await fetch(
@@ -48,9 +48,7 @@ Rhum.testPlan("response_time_test.ts", () => {
       await response.text();
       await server.close();
       const value = response.headers.get("x-response-time") ?? "";
-      Rhum.asserts.assert(value.match(/\d\d\dms/));
+      assert(value.match(/\d\d\dms/));
     });
   });
 });
-
-Rhum.run();

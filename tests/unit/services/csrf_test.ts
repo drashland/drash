@@ -1,5 +1,5 @@
 import { CSRFService } from "../../../src/services/csrf/csrf.ts";
-import { Rhum } from "../../deps.ts";
+import { assertEquals } from "../../deps.ts";
 import {
   IResource,
   Request,
@@ -64,15 +64,15 @@ const server = new Server({
   hostname: "localhost",
 });
 
-Rhum.testPlan("CSRF - mod_test.ts", () => {
-  Rhum.testSuite("csrf", () => {
-    Rhum.testCase("`csrf.token` Should return a valid token", () => {
-      Rhum.asserts.assertEquals(
+Deno.test("CSRF - mod_test.ts", async (t) => {
+  await t.step("csrf", async (t) => {
+    await t.step("`csrf.token` Should return a valid token", () => {
+      assertEquals(
         csrfWithoutCookie.token.match("[a-zA-Z0-9]{43}") !== null,
         true,
       );
     });
-    Rhum.testCase(
+    await t.step(
       "Token should be the same for different requests",
       async () => {
         server.run();
@@ -82,7 +82,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           },
         });
         await firstRes.arrayBuffer();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           firstRes.headers.get("X-CSRF-TOKEN") === csrfWithoutCookie.token,
           true,
         );
@@ -92,14 +92,14 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           },
         });
         await secondRes.arrayBuffer();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           secondRes.headers.get("X-CSRF-TOKEN") === csrfWithoutCookie.token,
           true,
         );
         await server.close();
       },
     );
-    Rhum.testCase("Token can be used for other requests", async () => { // eg get it from a route, and use it in the view for sending other requests
+    await t.step("Token can be used for other requests", async () => { // eg get it from a route, and use it in the view for sending other requests
       server.run();
       const firstRes = await fetch("http://localhost:1337", {
         headers: {
@@ -115,14 +115,14 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await secondRes.text(),
         "Success; " + token,
       );
-      Rhum.asserts.assertEquals(secondRes.status, 200);
+      assertEquals(secondRes.status, 200);
       await server.close();
     });
-    Rhum.testCase(
+    await t.step(
       "Route with CSRF should throw a 400 when no token",
       async () => {
         server.run();
@@ -132,15 +132,15 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
             Accept: "text/plain",
           },
         });
-        Rhum.asserts.assertEquals(res.status, 400);
-        Rhum.asserts.assertEquals(
+        assertEquals(res.status, 400);
+        assertEquals(
           (await res.text()).startsWith("Error: No CSRF token was passed in"),
           true,
         );
         await server.close();
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Route with CSRF should throw 403 for an invalid token",
       async () => {
         server.run();
@@ -151,8 +151,8 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
             Accept: "text/plain",
           },
         });
-        Rhum.asserts.assertEquals(res.status, 403);
-        Rhum.asserts.assertEquals(
+        assertEquals(res.status, 403);
+        assertEquals(
           (await res.text()).startsWith(
             "Error: The CSRF tokens do not match",
           ),
@@ -162,7 +162,7 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       },
     );
     // This test asserts that the token is consistent when passed about, and will not change
-    Rhum.testCase(
+    await t.step(
       "Route should respond with success when passing in token",
       async () => {
         server.run();
@@ -173,15 +173,15 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
             Accept: "text/plain",
           },
         });
-        Rhum.asserts.assertEquals(res.status, 200);
-        Rhum.asserts.assertEquals(
+        assertEquals(res.status, 200);
+        assertEquals(
           await res.text(),
           "Success; " + csrfWithoutCookie.token,
         );
         await server.close();
       },
     );
-    Rhum.testCase("Should allow to set the token as a cookie", async () => {
+    await t.step("Should allow to set the token as a cookie", async () => {
       server.run();
       const res = await fetch("http://localhost:1337/cookie", {
         headers: {
@@ -191,10 +191,8 @@ Rhum.testPlan("CSRF - mod_test.ts", () => {
       await res.text();
       const headers = res.headers;
       const token = headers.get("set-cookie")!.split("=")[1];
-      Rhum.asserts.assertEquals(token, csrfWithCookie.token);
+      assertEquals(token, csrfWithCookie.token);
       await server.close();
     });
   });
 });
-
-Rhum.run();

@@ -1,4 +1,4 @@
-import { Rhum } from "../deps.ts";
+import { assertEquals } from "../deps.ts";
 import * as Drash from "../../mod.ts";
 import { GraphQL, GraphQLService } from "../../src/services/graphql/graphql.ts";
 
@@ -66,24 +66,24 @@ async function serverAction(
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("graphql_test.ts", () => {
-  Rhum.testSuite("GraphQL", () => {
-    Rhum.testCase(
+Deno.test("graphql_test.ts", async (t) => {
+  await t.step("GraphQL", async (t) => {
+    await t.step(
       "Can respond with a playground when used as middleware",
       async () => {
         const server = await serverAction("run");
         const res = await fetch("http://localhost:1337/graphql");
         await serverAction("close", server);
         const text = await res.text();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           text.indexOf("<title>GraphQL Playground</title>") > -1,
           true,
         );
-        Rhum.asserts.assertEquals(res.status, 200);
-        Rhum.asserts.assertEquals(res.headers.get("Content-Type"), "text/html");
+        assertEquals(res.status, 200);
+        assertEquals(res.headers.get("Content-Type"), "text/html");
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Will make a query on a request when used as middleware",
       async () => {
         const server = await serverAction("run");
@@ -99,15 +99,13 @@ Rhum.testPlan("graphql_test.ts", () => {
         });
         await serverAction("close", server);
         const json = await res.json();
-        Rhum.asserts.assertEquals(res.status, 200);
-        Rhum.asserts.assertEquals(
+        assertEquals(res.status, 200);
+        assertEquals(
           res.headers.get("Content-Type"),
           "application/json",
         );
-        Rhum.asserts.assertEquals(json, { data: { hello: "Hello world!" } });
+        assertEquals(json, { data: { hello: "Hello world!" } });
       },
     );
   });
 });
-
-Rhum.run();

@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-import { Drash, Rhum } from "./deps.ts";
+import { Drash } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 
 interface IMakeRequestOptions {
