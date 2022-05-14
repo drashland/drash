@@ -6,7 +6,7 @@
  * this was the first type on the request)
  */
 
-import { assertNotEquals, delay, Rhum } from "../deps.ts";
+import { assert, assertEquals, assertNotEquals, delay } from "../deps.ts";
 import { Interfaces, Request, Resource, Response, Server } from "../../mod.ts";
 import { ETagService } from "../../src/services/etag/etag.ts";
 
@@ -43,9 +43,9 @@ function makeServer(weak = false) {
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("etag_test.ts", () => {
-  Rhum.testSuite("GET /etag", () => {
-    Rhum.testCase("Should set the header and default to strong", async () => {
+Deno.test("etag_test.ts", async (t) => {
+  await t.step("GET /etag", async (t) => {
+    await t.step("Should set the header and default to strong", async () => {
       const strongServer = makeServer();
       strongServer.run();
       // Example browser request
@@ -53,12 +53,12 @@ Rhum.testPlan("etag_test.ts", () => {
         `${strongServer.address}/etag`,
       );
       await strongServer.close();
-      Rhum.asserts.assertEquals(await response.text(), "hello ");
+      assertEquals(await response.text(), "hello ");
       const header = response.headers.get("etag") ?? "";
-      Rhum.asserts.assert(header.match(/\"\d-.*\"/));
-      Rhum.asserts.assert(response.headers.get("last-modified"));
+      assert(header.match(/\"\d-.*\"/));
+      assert(response.headers.get("last-modified"));
     });
-    Rhum.testCase(
+    await t.step(
       "Should set the header and be weak if specified",
       async () => {
         const weakServer = makeServer(true);
@@ -68,13 +68,13 @@ Rhum.testPlan("etag_test.ts", () => {
           `${weakServer.address}/etag`,
         );
         await weakServer.close();
-        Rhum.asserts.assertEquals(await response.text(), "hello ");
+        assertEquals(await response.text(), "hello ");
         const header = response.headers.get("etag") ?? "";
-        Rhum.asserts.assert(header.match(/W\/\"\d-.*\"/));
-        Rhum.asserts.assert(response.headers.get("last-modified"));
+        assert(header.match(/W\/\"\d-.*\"/));
+        assert(response.headers.get("last-modified"));
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Header values stay the same after 2 reqs with same body",
       async () => {
         const strongServer = makeServer();
@@ -93,11 +93,11 @@ Rhum.testPlan("etag_test.ts", () => {
         const etag1 = response1.headers.get("etag");
         const lastModified2 = response1.headers.get("last-modified");
         const etag2 = response1.headers.get("etag");
-        Rhum.asserts.assertEquals(lastModified1, lastModified2);
-        Rhum.asserts.assertEquals(etag1, etag2);
+        assertEquals(lastModified1, lastModified2);
+        assertEquals(etag1, etag2);
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Header values are different after 2nd req has different body",
       async () => {
         const strongServer = makeServer();
@@ -122,5 +122,3 @@ Rhum.testPlan("etag_test.ts", () => {
     );
   });
 });
-
-Rhum.run();

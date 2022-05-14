@@ -1,4 +1,4 @@
-import { Rhum } from "../deps.ts";
+import { assert, assertEquals } from "../deps.ts";
 import { RateLimiterService } from "../../src/services/rate_limiter/rate_limiter.ts";
 import * as Drash from "../../mod.ts";
 
@@ -9,9 +9,9 @@ class Resource extends Drash.Resource {
   }
 }
 
-Rhum.testPlan("rate_limiter_test", () => {
-  Rhum.testSuite("Not hit limit", () => {
-    Rhum.testCase(
+Deno.test("rate_limiter_test", async (t) => {
+  await t.step("Not hit limit", async (t) => {
+    await t.step(
       "Header should be set correctly when you request and haven't hit the limit",
       async () => {
         const rateLimiter = new RateLimiterService({
@@ -27,32 +27,32 @@ Rhum.testPlan("rate_limiter_test", () => {
         });
         server.run();
         const res1 = await fetch(server.address);
-        Rhum.asserts.assertEquals(res1.status, 200);
-        Rhum.asserts.assertEquals(await res1.text(), "Hello world");
-        Rhum.asserts.assert(res1.headers.get("date"));
-        Rhum.asserts.assertEquals(res1.headers.get("x-ratelimit-limit"), "3");
-        Rhum.asserts.assertEquals(
+        assertEquals(res1.status, 200);
+        assertEquals(await res1.text(), "Hello world");
+        assert(res1.headers.get("date"));
+        assertEquals(res1.headers.get("x-ratelimit-limit"), "3");
+        assertEquals(
           res1.headers.get("x-ratelimit-remaining"),
           "2",
         );
-        Rhum.asserts.assert(res1.headers.get("x-ratelimit-reset"));
+        assert(res1.headers.get("x-ratelimit-reset"));
         const res2 = await fetch(server.address);
         await server.close();
-        Rhum.asserts.assertEquals(res2.status, 200);
-        Rhum.asserts.assertEquals(await res2.text(), "Hello world");
-        Rhum.asserts.assert(res2.headers.get("date"));
-        Rhum.asserts.assertEquals(res2.headers.get("x-ratelimit-limit"), "3");
-        Rhum.asserts.assertEquals(
+        assertEquals(res2.status, 200);
+        assertEquals(await res2.text(), "Hello world");
+        assert(res2.headers.get("date"));
+        assertEquals(res2.headers.get("x-ratelimit-limit"), "3");
+        assertEquals(
           res2.headers.get("x-ratelimit-remaining"),
           "1",
         );
-        Rhum.asserts.assert(res2.headers.get("x-ratelimit-reset"));
+        assert(res2.headers.get("x-ratelimit-reset"));
         rateLimiter.cleanup();
       },
     );
   });
-  Rhum.testSuite("Has hit limit", () => {
-    Rhum.testCase(
+  await t.step("Has hit limit", async (t) => {
+    await t.step(
       "Header should be set correctly when you request and have hit the limit",
       async () => {
         const rateLimiter = new RateLimiterService({
@@ -72,38 +72,36 @@ Rhum.testPlan("rate_limiter_test", () => {
         const res2 = await fetch(server.address);
         await res2.arrayBuffer();
         const res3 = await fetch(server.address);
-        Rhum.asserts.assertEquals(res3.status, 200);
-        Rhum.asserts.assertEquals(await res3.text(), "Hello world");
-        Rhum.asserts.assert(res3.headers.get("date"));
-        Rhum.asserts.assertEquals(res3.headers.get("x-ratelimit-limit"), "3");
-        Rhum.asserts.assertEquals(
+        assertEquals(res3.status, 200);
+        assertEquals(await res3.text(), "Hello world");
+        assert(res3.headers.get("date"));
+        assertEquals(res3.headers.get("x-ratelimit-limit"), "3");
+        assertEquals(
           res3.headers.get("x-ratelimit-remaining"),
           "0",
         );
-        Rhum.asserts.assert(res3.headers.get("x-ratelimit-reset"));
-        Rhum.asserts.assertEquals(res3.headers.get("x-retry-after"), null);
+        assert(res3.headers.get("x-ratelimit-reset"));
+        assertEquals(res3.headers.get("x-retry-after"), null);
         const res4 = await fetch(server.address);
         await server.close();
-        Rhum.asserts.assertEquals(res4.status, 429);
+        assertEquals(res4.status, 429);
         const text = await res4.text();
         const retryAfter = res4.headers.get("x-retry-after");
-        Rhum.asserts.assert(
+        assert(
           text.startsWith(
             "Error: Too Many Requests. Please try again after " + retryAfter,
           ),
         );
-        Rhum.asserts.assert(res4.headers.get("date"));
-        Rhum.asserts.assertEquals(res4.headers.get("x-ratelimit-limit"), "3");
-        Rhum.asserts.assertEquals(
+        assert(res4.headers.get("date"));
+        assertEquals(res4.headers.get("x-ratelimit-limit"), "3");
+        assertEquals(
           res4.headers.get("x-ratelimit-remaining"),
           "0",
         );
-        Rhum.asserts.assert(res4.headers.get("x-ratelimit-reset"));
-        Rhum.asserts.assertEquals(res4.headers.get("x-retry-after"), "900s");
+        assert(res4.headers.get("x-ratelimit-reset"));
+        assertEquals(res4.headers.get("x-retry-after"), "900s");
         rateLimiter.cleanup();
       },
     );
   });
 });
-
-Rhum.run();

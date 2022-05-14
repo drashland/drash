@@ -1,4 +1,4 @@
-import { assertEquals, Rhum } from "../../deps.ts";
+import { assertEquals } from "../../deps.ts";
 import * as Drash from "../../../mod.ts";
 import type { ConnInfo } from "../../../deps.ts";
 
@@ -15,36 +15,34 @@ const connInfo: ConnInfo = {
   },
 };
 
-Rhum.testPlan("http/request_test.ts", () => {
-  Rhum.testSuite("accepts()", () => {
-    acceptsTests();
+Deno.test("http/request_test.ts", async (t) => {
+  await t.step("accepts()", async (t) => {
+    await acceptsTests(t);
   });
 
-  Rhum.testSuite("getCookie()", () => {
-    getCookieTests();
+  await t.step("getCookie()", async (t) => {
+    await getCookieTests(t);
   });
 
-  Rhum.testSuite("bodyParam()", () => {
-    bodyTests();
+  await t.step("bodyParam()", async (t) => {
+    await bodyTests(t);
   });
 
-  Rhum.testSuite("pathParam()", () => {
-    paramTests();
+  await t.step("pathParam()", async (t) => {
+    await paramTests(t);
   });
 
-  Rhum.testSuite("queryParam()", () => {
-    queryTests();
+  await t.step("queryParam()", async (t) => {
+    await queryTests(t);
   });
 });
-
-Rhum.run();
 
 ////////////////////////////////////////////////////////////////////////////////
 // FILE MARKER - TEST CASES ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function acceptsTests() {
-  Rhum.testCase(
+async function acceptsTests(t: Deno.TestContext) {
+  await t.step(
     "accepts the single type if it is present in the header",
     () => {
       const req = new Request("https://drash.land", {
@@ -59,12 +57,12 @@ function acceptsTests() {
       );
       let actual;
       actual = request.accepts("application/json");
-      Rhum.asserts.assertEquals(actual, true);
+      assertEquals(actual, true);
       actual = request.accepts("text/html");
-      Rhum.asserts.assertEquals(actual, true);
+      assertEquals(actual, true);
     },
   );
-  Rhum.testCase(
+  await t.step(
     "rejects the single type if it is not present in the header",
     () => {
       const req = new Request("https://drash.land", {
@@ -78,13 +76,13 @@ function acceptsTests() {
         connInfo,
       );
       const actual = request.accepts("text/xml");
-      Rhum.asserts.assertEquals(actual, false);
+      assertEquals(actual, false);
     },
   );
 }
 
-function getCookieTests() {
-  Rhum.testCase("Returns the cookie value if it exists", () => {
+async function getCookieTests(t: Deno.TestContext) {
+  await t.step("Returns the cookie value if it exists", () => {
     const req = new Request("https://drash.land", {
       headers: {
         Accept: "application/json;text/html",
@@ -98,9 +96,9 @@ function getCookieTests() {
       connInfo,
     );
     const cookieValue = request.getCookie("test_cookie");
-    Rhum.asserts.assertEquals(cookieValue, "test_cookie_value");
+    assertEquals(cookieValue, "test_cookie_value");
   });
-  Rhum.testCase("Returns undefined if the cookie does not exist", () => {
+  await t.step("Returns undefined if the cookie does not exist", () => {
     const req = new Request("https://drash.land", {
       headers: {
         Accept: "application/json;text/html",
@@ -114,12 +112,12 @@ function getCookieTests() {
       connInfo,
     );
     const cookieValue = request.getCookie("cookie_doesnt_exist");
-    Rhum.asserts.assertEquals(cookieValue, undefined);
+    assertEquals(cookieValue, undefined);
   });
 }
 
-function bodyTests() {
-  Rhum.testCase("Can return multiple files", async () => {
+async function bodyTests(t: Deno.TestContext) {
+  await t.step("Can return multiple files", async () => {
     const formData = new FormData();
     const file1 = new Blob([
       new File([Deno.readFileSync("./mod.ts")], "mod.ts"),
@@ -164,7 +162,7 @@ function bodyTests() {
   });
 
   // Reason: `this.request.getBodyParam()` didn't work for multipart/form-data requests
-  Rhum.testCase("Returns the file object if the file exists", async () => {
+  await t.step("Returns the file object if the file exists", async () => {
     const formData = new FormData();
     const file = new Blob([
       new File([Deno.readFileSync("./logo.svg")], "logo.svg"),
@@ -190,19 +188,19 @@ function bodyTests() {
     );
     // deno-lint-ignore no-explicit-any
     const bodyFile = request.bodyParam<Drash.Types.BodyFile>("foo") as any;
-    Rhum.asserts.assertEquals(
+    assertEquals(
       bodyFile.content,
       Deno.readFileSync("./logo.svg"),
     );
-    Rhum.asserts.assertEquals(bodyFile.type, "image/svg");
-    Rhum.asserts.assertEquals(bodyFile.filename, "logo.svg");
-    Rhum.asserts.assertEquals(
+    assertEquals(bodyFile.type, "image/svg");
+    assertEquals(bodyFile.filename, "logo.svg");
+    assertEquals(
       bodyFile.size > 3000 && bodyFile.size < 3200,
       true,
     ); // Should be 3099, but on windows it 3119, so just do a basic check on size to avoid bloated test code
   });
 
-  Rhum.testCase(
+  await t.step(
     "Returns the value of a normal field for formdata requests",
     async () => {
       const formData = new FormData();
@@ -223,11 +221,11 @@ function bodyTests() {
         new Map(),
         connInfo,
       );
-      Rhum.asserts.assertEquals(request.bodyParam("user"), "Drash");
+      assertEquals(request.bodyParam("user"), "Drash");
     },
   );
 
-  Rhum.testCase("Returns undefined if the file does not exist", async () => {
+  await t.step("Returns undefined if the file does not exist", async () => {
     const formData = new FormData();
     const file = new Blob([JSON.stringify({ hello: "world" }, null, 2)], {
       type: "application/json",
@@ -249,9 +247,9 @@ function bodyTests() {
       new Map(),
       connInfo,
     );
-    Rhum.asserts.assertEquals(request.bodyParam("dontexist"), undefined);
+    assertEquals(request.bodyParam("dontexist"), undefined);
   });
-  Rhum.testCase(
+  await t.step(
     "Returns the value for the parameter when the data exists for application/json",
     async () => {
       const req = new Request("https://drash.land", {
@@ -274,10 +272,10 @@ function bodyTests() {
         connInfo,
       );
       const actual = request.bodyParam("hello");
-      Rhum.asserts.assertEquals("world", actual);
+      assertEquals("world", actual);
     },
   );
-  Rhum.testCase(
+  await t.step(
     "Returns null when the data doesn't exist for application/json",
     async () => {
       const serverRequest = new Request("https://drash.land", {
@@ -300,11 +298,11 @@ function bodyTests() {
         connInfo,
       );
       const actual = request.bodyParam("dont_exist");
-      Rhum.asserts.assertEquals(undefined, actual);
+      assertEquals(undefined, actual);
     },
   );
 
-  Rhum.testCase(
+  await t.step(
     "Returns the value for the parameter when it exists and request is multipart/form-data when using generics",
     async () => {
       const formData = new FormData();
@@ -337,15 +335,15 @@ function bodyTests() {
         size: string;
         type: string;
       }>("foo");
-      Rhum.asserts.assertEquals(
+      assertEquals(
         param!.content,
         Deno.readFileSync("./logo.svg"),
       );
-      Rhum.asserts.assertEquals(request.bodyParam("user"), "drash");
+      assertEquals(request.bodyParam("user"), "drash");
     },
   );
   // Before the date of 5th, Oct 2020, type errors were thrown for objects because the return value of `getBodyParam` was either a string or null
-  Rhum.testCase("Can handle when a body param is an object", async () => {
+  await t.step("Can handle when a body param is an object", async () => {
     const serverRequest = new Request("https://drash.land", {
       headers: {
         // We use `"Content-Length": "1"` to tell Drash.Request that there is
@@ -372,14 +370,14 @@ function bodyTests() {
       name: string;
       location: string;
     }>("user")!;
-    Rhum.asserts.assertEquals({
+    assertEquals({
       name: "Edward",
       location: "UK",
     }, actual);
     const name = actual.name; // Ensuring we can access it and TS doesn't throw errors
-    Rhum.asserts.assertEquals(name, "Edward");
+    assertEquals(name, "Edward");
   });
-  Rhum.testCase("Can handle when a body param is an array", async () => {
+  await t.step("Can handle when a body param is an array", async () => {
     const serverRequest = new Request("https://drash.land", {
       headers: {
         // We use `"Content-Length": "1"` to tell Drash.Request that there is
@@ -400,14 +398,14 @@ function bodyTests() {
       connInfo,
     );
     const actual = request.bodyParam("usernames");
-    Rhum.asserts.assertEquals(
+    assertEquals(
       ["Edward", "John Smith", "Lord Voldemort", "Count Dankula"],
       actual,
     );
     const firstName = (actual as Array<string>)[0];
-    Rhum.asserts.assertEquals(firstName, "Edward");
+    assertEquals(firstName, "Edward");
   });
-  Rhum.testCase("Can handle when a body param is a boolean", async () => {
+  await t.step("Can handle when a body param is a boolean", async () => {
     const serverRequest = new Request("https://drash.land", {
       headers: {
         // We use `"Content-Length": "1"` to tell Drash.Request that there is
@@ -428,14 +426,14 @@ function bodyTests() {
       connInfo,
     );
     const actual = request.bodyParam("authenticated");
-    Rhum.asserts.assertEquals(actual, false);
+    assertEquals(actual, false);
     const authenticated = (actual as boolean);
-    Rhum.asserts.assertEquals(authenticated, false);
+    assertEquals(authenticated, false);
   });
 }
 
-function paramTests() {
-  Rhum.testCase(
+async function paramTests(t: Deno.TestContext) {
+  await t.step(
     "Returns the value for the header param when it exists",
     () => {
       const serverRequest = new Request("https://drash.land");
@@ -445,11 +443,11 @@ function paramTests() {
         connInfo,
       );
       const actual = request.pathParam("hello");
-      Rhum.asserts.assertEquals("world", actual);
+      assertEquals("world", actual);
     },
   );
 
-  Rhum.testCase(
+  await t.step(
     "Returns null when the path param doesn't exist",
     () => {
       const serverRequest = new Request("https://drash.land");
@@ -459,13 +457,13 @@ function paramTests() {
         connInfo,
       );
       const actual = request.pathParam("dont-exist");
-      Rhum.asserts.assertEquals(actual, undefined);
+      assertEquals(actual, undefined);
     },
   );
 }
 
-function queryTests() {
-  Rhum.testCase(
+async function queryTests(t: Deno.TestContext) {
+  await t.step(
     "Returns the value for the query param when it exists",
     () => {
       const serverRequest = new Request("https://drash.land/?hello=world");
@@ -475,11 +473,11 @@ function queryTests() {
         connInfo,
       );
       const actual = request.queryParam("hello");
-      Rhum.asserts.assertEquals(actual, "world");
+      assertEquals(actual, "world");
     },
   );
 
-  Rhum.testCase(
+  await t.step(
     "Returns null when the query data doesn't exist",
     () => {
       const serverRequest = new Request("https://drash.land/?hello=world");
@@ -489,7 +487,7 @@ function queryTests() {
         connInfo,
       );
       const actual = request.queryParam("dont_exist");
-      Rhum.asserts.assertEquals(undefined, actual);
+      assertEquals(undefined, actual);
     },
   );
 }

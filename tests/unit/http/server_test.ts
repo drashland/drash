@@ -1,4 +1,4 @@
-import { Rhum } from "../../deps.ts";
+import { assertEquals } from "../../deps.ts";
 import { Server } from "../../../src/http/server.ts";
 import { Request, Resource, Response } from "../../../mod.ts";
 
@@ -21,9 +21,9 @@ const server = new Server({
   hostname: "localhost",
 });
 
-Rhum.testPlan("http/server_test.ts", () => {
-  Rhum.testSuite("address", () => {
-    Rhum.testCase("Should correctly format the address", () => {
+Deno.test("http/server_test.ts", async (t) => {
+  await t.step("address", async (t) => {
+    await t.step("Should correctly format the address", () => {
       const server1 = new Server({
         protocol: "https",
         hostname: "hosty",
@@ -38,13 +38,13 @@ Rhum.testPlan("http/server_test.ts", () => {
       });
       server1.close();
       server2.close();
-      Rhum.asserts.assertEquals(server1.address, "https://hosty:1234");
-      Rhum.asserts.assertEquals(server2.address, "http://ello:1234");
+      assertEquals(server1.address, "https://hosty:1234");
+      assertEquals(server2.address, "http://ello:1234");
     });
   });
 
-  Rhum.testSuite("close()", () => {
-    Rhum.testCase("Closes the server", async () => {
+  await t.step("close()", async (t) => {
+    await t.step("Closes the server", async () => {
       server.run();
       // can connect
       const conn = await Deno.connect({
@@ -63,12 +63,12 @@ Rhum.testPlan("http/server_test.ts", () => {
       } catch (_e) {
         errorThrown = true;
       }
-      Rhum.asserts.assertEquals(errorThrown, true);
+      assertEquals(errorThrown, true);
     });
   });
 
-  Rhum.testSuite("run()", () => {
-    Rhum.testCase(
+  await t.step("run()", async (t) => {
+    await t.step(
       "Will listen correctly and send the proper response",
       async () => {
         server.run();
@@ -78,23 +78,23 @@ Rhum.testPlan("http/server_test.ts", () => {
           },
         });
         await server.close();
-        Rhum.asserts.assertEquals(await res.json(), {
+        assertEquals(await res.json(), {
           success: true,
         });
-        Rhum.asserts.assertEquals(res.status, 200);
+        assertEquals(res.status, 200);
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Will throw a 404 if no resource found matching the uri",
       async () => {
         server.run();
         const res = await fetch("http://localhost:1234/dont/exist");
         await res.text();
         await server.close();
-        Rhum.asserts.assertEquals(res.status, 404);
+        assertEquals(res.status, 404);
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Will throw a 405 if the req method isnt found on the resource",
       async () => {
         server.run();
@@ -103,10 +103,10 @@ Rhum.testPlan("http/server_test.ts", () => {
         });
         await res.text();
         await server.close();
-        Rhum.asserts.assertEquals(res.status, 405);
+        assertEquals(res.status, 405);
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Will parse the body if it exists on the request",
       async () => {
         server.run();
@@ -119,11 +119,9 @@ Rhum.testPlan("http/server_test.ts", () => {
           body: JSON.stringify({ name: "Drash" }),
         });
         await server.close();
-        Rhum.asserts.assertEquals(await res.text(), "Drash");
-        Rhum.asserts.assertEquals(res.status, 200);
+        assertEquals(await res.text(), "Drash");
+        assertEquals(res.status, 200);
       },
     );
   });
 });
-
-Rhum.run();

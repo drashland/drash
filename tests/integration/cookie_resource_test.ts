@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,9 +37,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("cookie_resource_test.ts", () => {
-  Rhum.testSuite("/cookie", () => {
-    Rhum.testCase("cookie can be created, retrieved, and deleted", async () => {
+Deno.test("cookie_resource_test.ts", async (t) => {
+  await t.step("/cookie", async (t) => {
+    await t.step("cookie can be created, retrieved, and deleted", async () => {
       server.run();
 
       let response;
@@ -56,7 +56,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           body: cookie,
         },
       );
-      Rhum.asserts.assertEquals(await response.text(), "Saved your cookie!");
+      assertEquals(await response.text(), "Saved your cookie!");
 
       // Get - Dependent on the above post request saving a cookie
       response = await TestHelpers.makeRequest.get(
@@ -69,7 +69,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
           },
         },
       );
-      await Rhum.asserts.assertEquals(await response.text(), "Drash");
+      await assertEquals(await response.text(), "Drash");
 
       // Remove - Dependent on the above post request saving a cookie
       response = await TestHelpers.makeRequest.delete(
@@ -82,7 +82,7 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
       );
       const cookies = response.headers.get("set-cookie") || "";
       const cookieVal = cookies.split(";")[0].split("=")[1];
-      Rhum.asserts.assertEquals(cookieVal, "");
+      assertEquals(cookieVal, "");
       await response.arrayBuffer();
       //await response.body.close()
 
@@ -90,5 +90,3 @@ Rhum.testPlan("cookie_resource_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

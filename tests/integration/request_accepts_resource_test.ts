@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,9 +85,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("request_accepts_resource_test.ts", () => {
-  Rhum.testSuite("/request-accepts-use-case-one", () => {
-    Rhum.testCase("request accepts one type", async () => {
+Deno.test("request_accepts_resource_test.ts", async (t) => {
+  await t.step("/request-accepts-use-case-one", async (t) => {
+    await t.step("request accepts one type", async () => {
       server.run();
       // Accepts the correct type the resource will give - tests calling the `accepts` method with a string and finds a match
       const typeToCheck = "application/json";
@@ -102,13 +102,13 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
       );
       const res = await response.json();
       const json = res;
-      Rhum.asserts.assertEquals(json.success, true);
-      Rhum.asserts.assertEquals(json.message, "application/json");
+      assertEquals(json.success, true);
+      assertEquals(json.message, "application/json");
 
       await server.close();
     });
 
-    Rhum.testCase(
+    await t.step(
       "request accepts multiple types: text/xml first",
       async () => {
         server.run();
@@ -123,13 +123,13 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         );
         const json = await response.json();
-        Rhum.asserts.assertEquals(json.success, true);
-        Rhum.asserts.assertEquals(json.message, "text/html");
+        assertEquals(json.success, true);
+        assertEquals(json.message, "text/html");
         await server.close();
       },
     );
 
-    Rhum.testCase("request accepts multiple types: text/js first", async () => {
+    await t.step("request accepts multiple types: text/js first", async () => {
       server.run();
 
       // Accepts the first content type - tests when calling the `accepts` method with an array with no match
@@ -142,13 +142,13 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
         },
       );
       const text = await response.text();
-      Rhum.asserts.assertEquals(text.startsWith("Error: "), true);
+      assertEquals(text.startsWith("Error: "), true);
       await server.close();
     });
   });
 
-  Rhum.testSuite("/request-accepts-use-case-two", () => {
-    Rhum.testCase("accepts one and multiple types", async () => {
+  await t.step("/request-accepts-use-case-two", async (t) => {
+    await t.step("accepts one and multiple types", async () => {
       server.run();
 
       let response;
@@ -161,7 +161,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         `<div>response: text/html</div>`,
       );
@@ -174,7 +174,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         `{"response":"application/json"}`,
       );
@@ -187,7 +187,7 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
           },
         },
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         await response.text(),
         `<response>text/xml</response>`,
       );
@@ -196,5 +196,3 @@ Rhum.testPlan("request_accepts_resource_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

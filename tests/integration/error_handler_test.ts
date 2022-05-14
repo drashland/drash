@@ -1,4 +1,4 @@
-import { Rhum, TestHelpers } from "../deps.ts";
+import { assertEquals, TestHelpers } from "../deps.ts";
 import { ErrorHandler, Errors, Response, Server } from "../../mod.ts";
 
 class MyErrorHandler extends ErrorHandler {
@@ -50,9 +50,9 @@ class MySimpleErrorErrorHandler {
   }
 }
 
-Rhum.testPlan("error_handler_test.ts", () => {
-  Rhum.testSuite("GET /", () => {
-    Rhum.testCase("default ErrorHandler", async () => {
+Deno.test("error_handler_test.ts", async (t) => {
+  await t.step("GET /", async (t) => {
+    await t.step("default ErrorHandler", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -63,14 +63,14 @@ Rhum.testPlan("error_handler_test.ts", () => {
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals(
+      assertEquals(res.status, 404);
+      assertEquals(
         (await res.text()).includes("Error: Not Found\n"),
         true,
       );
     });
 
-    Rhum.testCase("custom ErrorHandler", async () => {
+    await t.step("custom ErrorHandler", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -82,11 +82,11 @@ Rhum.testPlan("error_handler_test.ts", () => {
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
+      assertEquals(res.status, 404);
+      assertEquals(await res.json(), { error: "Not Found" });
     });
 
-    Rhum.testCase("custom ErrorHandler thrown error", async () => {
+    await t.step("custom ErrorHandler thrown error", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -98,14 +98,14 @@ Rhum.testPlan("error_handler_test.ts", () => {
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 500);
-      Rhum.asserts.assertEquals(
+      assertEquals(res.status, 500);
+      assertEquals(
         (await res.text()).includes("Error: error on ErrorHandler\n"),
         true,
       );
     });
 
-    Rhum.testCase("custom ErrorHandler without extends", async () => {
+    await t.step("custom ErrorHandler without extends", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -117,11 +117,11 @@ Rhum.testPlan("error_handler_test.ts", () => {
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
+      assertEquals(res.status, 404);
+      assertEquals(await res.json(), { error: "Not Found" });
     });
 
-    Rhum.testCase("custom ErrorHandler with async catch", async () => {
+    await t.step("custom ErrorHandler with async catch", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -133,11 +133,11 @@ Rhum.testPlan("error_handler_test.ts", () => {
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 404);
-      Rhum.asserts.assertEquals(await res.json(), { error: "Not Found" });
+      assertEquals(res.status, 404);
+      assertEquals(await res.json(), { error: "Not Found" });
     });
 
-    Rhum.testCase("custom ErrorHandler simple Error thrown", async () => {
+    await t.step("custom ErrorHandler simple Error thrown", async () => {
       const server = new Server({
         protocol: "http",
         hostname: "localhost",
@@ -149,13 +149,11 @@ Rhum.testPlan("error_handler_test.ts", () => {
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 
-      Rhum.asserts.assertEquals(res.status, 500);
-      Rhum.asserts.assertEquals(
+      assertEquals(res.status, 500);
+      assertEquals(
         (await res.text()).includes("Error: My Simple Error\n"),
         true,
       );
     });
   });
 });
-
-Rhum.run();

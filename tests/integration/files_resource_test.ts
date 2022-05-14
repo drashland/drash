@@ -1,4 +1,4 @@
-import { Rhum } from "../deps.ts";
+import { assertEquals } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,9 +26,9 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("files_resource_test.ts", () => {
-  Rhum.testSuite("/files", () => {
-    Rhum.testCase("multipart/form-data works", async () => {
+Deno.test("files_resource_test.ts", async (t) => {
+  await t.step("/files", async (t) => {
+    await t.step("multipart/form-data works", async () => {
       server.run();
 
       const formData = new FormData();
@@ -41,11 +41,9 @@ Rhum.testPlan("files_resource_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(await response.text(), "John");
+      assertEquals(await response.text(), "John");
 
       await server.close();
     });
   });
 });
-
-Rhum.run();

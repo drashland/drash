@@ -1,4 +1,4 @@
-import { Rhum } from "../deps.ts";
+import { assertEquals } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 const messages: MessageEvent[] = [];
@@ -59,7 +59,7 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
     };
   });
 
-  Rhum.asserts.assertEquals(
+  assertEquals(
     (hydratedMessages as MessageEvent[])[0],
     "this is a message from the client",
   );

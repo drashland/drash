@@ -1,4 +1,4 @@
-import { Rhum } from "../../deps.ts";
+import { assertEquals } from "../../deps.ts";
 import {
   IResource,
   Request,
@@ -35,10 +35,10 @@ function runServer(allowAll = true): Server {
   return server;
 }
 
-Rhum.testPlan("cors/tests/mod_test.ts", () => {
+Deno.test("cors/tests/mod_test.ts", async (t) => {
   // Also covers unit tests
-  Rhum.testSuite("Integration", () => {
-    Rhum.testCase("Should shortcircuit preflight requests", async () => {
+  await t.step("Integration", async (t) => {
+    await t.step("Should shortcircuit preflight requests", async () => {
       const server = runServer();
       const response = await fetch("http://localhost:1447/cors", {
         method: "OPTIONS",
@@ -48,26 +48,26 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
           Accept: "text/plain",
         },
       });
-      Rhum.asserts.assertEquals(
+      assertEquals(
         response.status,
         204,
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         response.headers.get("access-control-allow-origin"),
         "*",
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         response.headers.get("access-control-allow-methods"),
         "GET,HEAD,PUT,PATCH,POST,DELETE",
       );
-      Rhum.asserts.assertEquals(
+      assertEquals(
         response.headers.get("vary"),
         "Accept-Encoding, origin",
       );
-      Rhum.asserts.assertEquals(response.headers.get("content-length"), null);
+      assertEquals(response.headers.get("content-length"), null);
       await server.close();
     });
-    Rhum.testCase("Should always set the vary header", async () => {
+    await t.step("Should always set the vary header", async () => {
       const server = runServer();
       const response = await fetch("http://localhost:1447/cors", {
         method: "OPTIONS",
@@ -78,12 +78,12 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         },
       });
       await server.close();
-      Rhum.asserts.assertEquals(
+      assertEquals(
         response.headers.get("vary"),
         "Accept-Encoding, origin",
       );
     });
-    Rhum.testCase(
+    await t.step(
       "Only sets the vary header if Origin header is not set",
       async () => {
         const server = runServer();
@@ -96,21 +96,21 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await response.arrayBuffer();
         await server.close();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           response.headers.get("vary"),
           "Accept-Encoding, origin",
         );
-        Rhum.asserts.assertEquals(
+        assertEquals(
           response.headers.get("access-control-allow-origin"),
           null,
         );
-        Rhum.asserts.assertEquals(
+        assertEquals(
           response.headers.get("access-control-allow-methods"),
           null,
         );
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Should not allow request when origins do not match",
       async () => {
         const server = runServer(false);
@@ -124,17 +124,17 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await response.arrayBuffer();
         await server.close();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           response.headers.get("vary"),
           "Accept-Encoding, origin",
         );
-        Rhum.asserts.assertEquals(
+        assertEquals(
           response.headers.get("access-control-allow-origin"),
           null,
         );
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Sets Allow Headers header when Request Header header is set",
       async () => {
         const server = runServer(false);
@@ -149,13 +149,13 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await response.arrayBuffer();
         await server.close();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           response.headers.get("access-control-allow-headers"),
           "hello world",
         );
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Realworld example - CORS not enabled for request",
       async () => {
         // Failed request - access control header is not present
@@ -169,13 +169,13 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await res.text();
         await server.close();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           res.headers.get("access-control-allow-origin"),
           null,
         );
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Realworld example - CORS enabled for a single origin",
       async () => {
         // Successful request - access control header is present and the value of the origin
@@ -189,13 +189,13 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await res.text();
         await server.close();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           res.headers.get("access-control-allow-origin"),
           "localhost",
         );
       },
     );
-    Rhum.testCase(
+    await t.step(
       "Realworld example - CORS enabled for every origin",
       async () => {
         // Another successful request, but the origin allows anything
@@ -209,7 +209,7 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
         });
         await res.text();
         await server.close();
-        Rhum.asserts.assertEquals(
+        assertEquals(
           res.headers.get("access-control-allow-origin"),
           "*",
         );
@@ -217,5 +217,3 @@ Rhum.testPlan("cors/tests/mod_test.ts", () => {
     );
   });
 });
-
-Rhum.run();

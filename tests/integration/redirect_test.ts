@@ -6,7 +6,7 @@
  * this was the first type on the request)
  */
 
-import { Rhum } from "../deps.ts";
+import { assertEquals } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,17 +52,17 @@ const server = new Server({
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-Rhum.testPlan("redirect_test.ts", () => {
-  Rhum.testSuite("GET /", () => {
-    Rhum.testCase("Should redirect to another resource", async () => {
+Deno.test("redirect_test.ts", async (t) => {
+  await t.step("GET /", async (t) => {
+    await t.step("Should redirect to another resource", async () => {
       server.run();
       // Example browser request
       const response = await fetch(server.address);
       await server.close();
-      Rhum.asserts.assertEquals(await response.text(), "hello");
-      Rhum.asserts.assertEquals(response.status, 200);
+      assertEquals(await response.text(), "hello");
+      assertEquals(response.status, 200);
     });
-    Rhum.testCase(
+    await t.step(
       "Should respect the status code during redirection",
       async () => {
         server.run();
@@ -71,11 +71,9 @@ Rhum.testPlan("redirect_test.ts", () => {
           redirect: "manual",
         });
         await server.close();
-        Rhum.asserts.assertEquals(await response.text(), "");
-        Rhum.asserts.assertEquals(response.status, 307);
+        assertEquals(await response.text(), "");
+        assertEquals(response.status, 307);
       },
     );
   });
 });
-
-Rhum.run();
