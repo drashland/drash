@@ -373,7 +373,7 @@ export class Server {
 
       const accept = request.headers.get("accept") ?? "";
       const contentType = response.headers.get("content-type") ?? "";
-      if (accept.includes("*/*") === false) {
+      if (accept && accept.trim() != "" && accept.includes("*/*") === false) {
         if (accept.includes(contentType) === false) {
           throw new Drash.Errors.HttpError(
             406,
