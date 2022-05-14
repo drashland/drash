@@ -80,7 +80,10 @@ export class Server {
    * server does not have to find a resource if it was already matched to a
    * previous request's URL.
    */
-  #request_to_resource_map = new Map<string, Drash.Interfaces.IResourceAndParams>();
+  #request_to_resource_map = new Map<
+    string,
+    Drash.Interfaces.IResourceAndParams
+  >();
 
   /**
    * The internal and external services used by this server. Internal services
