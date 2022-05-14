@@ -76,6 +76,16 @@ export class Server {
   #default_error_handler = new Drash.ErrorHandler();
 
   /**
+   * Property to track request URLs to resources. This is used so that the
+   * server does not have to find a resource if it was already matched to a
+   * previous request's URL.
+   */
+  #request_to_resource_map = new Map<
+    string,
+    Drash.Interfaces.IResourceAndParams
+  >();
+
+  /**
    * The internal and external services used by this server. Internal services
    * are ones created by Drash. External services are ones specified by the
    * user.
@@ -214,6 +224,10 @@ export class Server {
     let resourceAndParams: Drash.Interfaces.IResourceAndParams | undefined =
       undefined;
 
+    if (this.#request_to_resource_map.has(url)) {
+      return this.#request_to_resource_map.get(url)!;
+    }
+
     for (const { resource, patterns } of resources.values()) {
       for (const pattern of patterns) {
         const result = pattern.exec(url);
@@ -233,6 +247,8 @@ export class Server {
           resource,
           pathParams: params,
         };
+
+        this.#request_to_resource_map.set(url, resourceAndParams);
         break;
       }
     }
