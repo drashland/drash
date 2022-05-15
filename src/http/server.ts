@@ -387,15 +387,14 @@ export class Server {
         return this.#respond(response);
       }
 
-      const accept = request.headers.get("accept") ?? "";
-      const contentType = response.headers.get("content-type") ?? "";
-      if (accept.includes("*/*") === false) {
-        if (accept.includes(contentType) === false) {
-          throw new Drash.Errors.HttpError(
-            406,
-            "The requested resource is only capable of returning content that is not acceptable according to the request's Accept headers.",
-          );
-        }
+      const requestAcceptHeader = request.headers.get("accept");
+      const responseContentTypeHeader = response.headers.get("content-type");
+
+      if (requestAcceptHeader && responseContentTypeHeader) {
+        this.#verifyAcceptHeader(
+          requestAcceptHeader,
+          responseContentTypeHeader,
+        );
       }
 
       return this.#respond(response);
@@ -425,5 +424,30 @@ export class Server {
       statusText: response.statusText,
       status: response.status,
     });
+  }
+
+  /**
+   * If the request Accept header is present, then make sure the response
+   * Content-Type header is accepted.
+   *
+   * @param requestAcceptHeader
+   * @param responseContentTypeHeader
+   */
+  #verifyAcceptHeader(
+    requestAcceptHeader: string,
+    responseContentTypeHeader: string,
+  ): void {
+    if (requestAcceptHeader.includes("*/*")) {
+      return;
+    }
+
+    if (requestAcceptHeader.includes(responseContentTypeHeader)) {
+      return;
+    }
+
+    throw new Drash.Errors.HttpError(
+      406,
+      "The requested resource is only capable of returning content that is not acceptable according to the request's Accept headers.",
+    );
   }
 }
