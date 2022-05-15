@@ -73,7 +73,7 @@ export class DrashResponse {
    *
    * @param filepath - The filepath of the file to download, relative to the CWD
    * that executed the entrypoint script.
-   * @param status - The status ot respond with.
+   * @param status - The status to respond with. Default on the response is 200.
    * @param headers - Any extra headers you wish to specify apart of the content-type header
    */
   public file(
@@ -189,7 +189,7 @@ export class DrashResponse {
   /**
    * Set a cookie on the response to be handled by the client.
    *
-   * @param cookie The cookie data.
+   * @param cookie - The cookie data.
    */
   public setCookie(cookie: Cookie): void {
     setCookie(this.headers, cookie);

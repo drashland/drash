@@ -29,10 +29,10 @@ export class DrashRequest extends Request {
    * reason we wrap around the native Request object is so we can add more
    * methods to interact with the native Request object (e.g., req.bodyParam()).
    *
-   * @param originalRequest - The original request coming in from
-   * `Server.listenForRequests()`.
+   * @param originalRequest - The original request coming.
    * @param pathParams - The path params to match the request's URL to. The path
    * params come from a resource's path(s).
+   * @param connInfo - The connection information for the current request
    */
   constructor(
     originalRequest: Request,
@@ -53,7 +53,7 @@ export class DrashRequest extends Request {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  // FILE MARKER - METHODS - STATIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -64,15 +64,16 @@ export class DrashRequest extends Request {
    * @param request - The original request.
    * @param pathParams - The path params to match the request's URL to. The path
    * params come from a resource's path(s).
+   * @param connInfo - The connection info Deno provides on a new request
    *
    * @returns A Drash request object.
    */
   static async create(
     request: Request,
-    pathParms: Map<string, string>,
+    pathParams: Map<string, string>,
     connInfo: ConnInfo,
   ) {
-    const req = new DrashRequest(request, pathParms, connInfo);
+    const req = new DrashRequest(request, pathParams, connInfo);
     // This is here because `parseBody` is async. We can't parse the request
     // body on the fly as we dont want users to have to use await when getting a
     // body param.
@@ -90,7 +91,7 @@ export class DrashRequest extends Request {
   /**
    * Check if the content type in question are accepted by the request.
    *
-   * @param contentType - A proper MIME type. See mime.ts for proper MIME types
+   * @param contentType - A proper MIME type. See /src/dictionaries/mime_db.ts for proper MIME types
    * that Drash can handle.
    *
    * @returns True if yes, false if no.
@@ -115,7 +116,7 @@ export class DrashRequest extends Request {
   /**
    * Get a cookie value by the name that is sent in with the request.
    *
-   * @param cookie - The name of the cookie to retrieve
+   * @param name - The name of the cookie to retrieve
    *
    * @returns The cookie value associated with the cookie name or `undefined` if
    * a cookie with that name doesn't exist
@@ -151,7 +152,7 @@ export class DrashRequest extends Request {
     if (typeof this.#parsed_body !== "object") {
       return undefined;
     }
-    return this.#parsed_body![name] as unknown as T ?? undefined;
+    return this.#parsed_body[name] as unknown as T ?? undefined;
   }
 
   public bodyAll<T>(): ParsedBody | T {
@@ -262,7 +263,7 @@ export class DrashRequest extends Request {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
