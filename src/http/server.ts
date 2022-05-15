@@ -85,11 +85,6 @@ export class Server {
     Drash.Interfaces.IResourceAndParams
   >();
 
-  /**
-   * The internal and external services used by this server. Internal services
-   * are ones created by Drash. External services are ones specified by the
-   * user.
-   */
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -177,14 +172,12 @@ export class Server {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - PRIVATE METHODS /////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE /////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Add all given resources to this server -- instantiating them so that they
+   * Add all resources to this server -- instantiating them so that they
    * are ready to handle requests at runtime.
-   *
-   * @param resources - Resources defined by the user.
    */
   #addResources(): void {
     this.#options.resources.forEach((resourceClass: typeof Drash.Resource) => {
@@ -263,6 +256,7 @@ export class Server {
    *
    * @param originalRequest The native request from Deno's internals.
    * @param connInfo The connection info from Deno's internals.
+   *
    * @returns A native response.
    */
   async #handleRequest(
@@ -411,7 +405,9 @@ export class Server {
 
   /**
    * Respond to the client making the request.
+   *
    * @param response The response details to use in the `Response` object.
+   *
    * @returns A native Response.
    */
   #respond(response: Drash.Response): Response {
