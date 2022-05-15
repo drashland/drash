@@ -1,14 +1,11 @@
 # Drash
 
-[![Latest Release](https://img.shields.io/github/release/drashland/deno-drash.svg?color=bright_green&label=latest)](#)
-[![CI master](https://img.shields.io/github/workflow/status/drashland/deno-drash/master?label=ci%20-%20master)](#)
-[![YouTube](https://img.shields.io/badge/tutorials-youtube-red)](https://rb.gy/vxmeed)
+[![Latest Release](https://img.shields.io/github/release/drashland/drash.svg?color=bright_green&label=latest)](https://github.com/drashland/drash/releases/latest)
+[![CI](https://img.shields.io/github/workflow/status/drashland/drash/master?label=ci)](https://github.com/drashland/drash/actions/workflows/master.yml)
 
-<img align="right" height="100" src="./logo.svg" alt="Drash logo">
+<img align="right" src="./logo.svg" alt="Drash Land - Drash logo" height="150" style="max-height: 150px">
 
-Drash is a microframework for
-<a href="https://github.com/denoland/deno">Deno</a>'s HTTP server with zero
-third-party dependencies.
+Drash is a microframework for Deno's HTTP server.
 
 View the full documentation at https://drash.land/drash.
 
