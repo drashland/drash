@@ -333,7 +333,7 @@ async function bodyTests(t: Deno.TestContext) {
         foo: null,
       });
       assertEquals(body["foo"], null);
-      assertEquals(request.bodyParam("foo"), null);
+      assertEquals(request.bodyParam("foo"), undefined);
     },
   );
 
