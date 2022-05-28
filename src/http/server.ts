@@ -180,7 +180,7 @@ export class Server {
    * are ready to handle requests at runtime.
    */
   #addResources(): void {
-    this.#options.resources.forEach((resourceClass: typeof Drash.Resource) => {
+    this.#options.resources?.forEach((resourceClass: typeof Drash.Resource) => {
       this.addResource(resourceClass);
     });
   }
