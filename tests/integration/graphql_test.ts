@@ -37,7 +37,7 @@ async function serverAction(
       protocol: "http",
       port: 1337,
       hostname: "localhost",
-      services: [graphQL]
+      services: [graphQL],
     });
     server.run();
     return server;

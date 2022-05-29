@@ -1,4 +1,9 @@
-import { Drash, ExecutionResult, GraphQL, renderPlaygroundPage } from "./deps.ts";
+import {
+  Drash,
+  ExecutionResult,
+  GraphQL,
+  renderPlaygroundPage,
+} from "./deps.ts";
 import { GraphQLResource } from "./graphql_resource.ts";
 export { GraphQL };
 
@@ -48,10 +53,10 @@ export class GraphQLService extends Drash.Service {
       return class UserDefinedGraphQLResource extends GraphQLResource {
         public paths = [serviceOptions.playground_path!];
         public services = {
-          ALL: [this as unknown as Drash.Service]
+          ALL: [this as unknown as Drash.Service],
         };
-      }
-    }
+      };
+    };
 
     options.server.addResource(createUserDefinedPlayground());
   }
