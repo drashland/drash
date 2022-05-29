@@ -1,5 +1,5 @@
-import * as Drash from "../../../mod.ts";
-import { ExecutionResult, GraphQL, renderPlaygroundPage } from "./deps.ts";
+import { Drash, ExecutionResult, GraphQL, renderPlaygroundPage } from "./deps.ts";
+import { GraphQLResource } from "./graphql_resource.ts";
 export { GraphQL };
 
 type GraphiQLValue = boolean | string;
@@ -10,6 +10,7 @@ interface GraphQLOptions {
   // TODO(crookse) Figure out how to add typings for the args
   // deno-lint-ignore no-explicit-any
   rootValue: Record<string, (...args: any) => string>;
+  playground_path?: string;
 }
 
 /**
@@ -35,6 +36,25 @@ export class GraphQLService extends Drash.Service {
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - PUBLIC METHODS //////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  public runAtStartup(options: Drash.Interfaces.IServiceStartupOptions): void {
+    const serviceOptions = this.#options;
+
+    if (serviceOptions.playground_path === undefined) {
+      return options.server.addResource(GraphQLResource);
+    }
+
+    const createUserDefinedPlayground = () => {
+      return class UserDefinedGraphQLResource extends GraphQLResource {
+        public paths = [serviceOptions.playground_path!];
+        public services = {
+          ALL: [this as unknown as Drash.Service]
+        };
+      }
+    }
+
+    options.server.addResource(createUserDefinedPlayground());
+  }
 
   async runBeforeResource(
     request: Drash.Request,
