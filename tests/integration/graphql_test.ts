@@ -20,22 +20,6 @@ const root = {
 
 const graphQL = new GraphQLService({ schema, graphiql: true, rootValue: root });
 
-class GraphQLResource extends Drash.Resource {
-  paths = ["/graphql"];
-
-  services = {
-    ALL: [graphQL],
-  };
-
-  // Used purely as an endpoint for the frontend playground
-  public GET() {
-  }
-
-  // Used purely as an endpoint to make a query from the client
-  public POST() {
-  }
-}
-
 async function serverAction(
   action: "close",
   server: Drash.Server,
@@ -49,10 +33,11 @@ async function serverAction(
 ): Promise<Drash.Server | void> {
   if (action === "run") {
     const server = new Drash.Server({
-      resources: [GraphQLResource],
+      resources: [],
       protocol: "http",
       port: 1337,
       hostname: "localhost",
+      services: [graphQL]
     });
     server.run();
     return server;
