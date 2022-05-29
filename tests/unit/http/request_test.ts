@@ -341,6 +341,44 @@ async function bodyTests(t: Deno.TestContext) {
   );
 
   await t.step(
+    "Should be consistent with falsey return values (false value returns false)",
+    async () => {
+      // This test case was added due to https://github.com/drashland/drash/issues/623
+
+      const serverRequest = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          foo: false,
+        }),
+        method: "POST",
+      });
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+      const body = request.bodyAll() as Partial<{
+        foo: unknown;
+      }>;
+      assertEquals(body, { foo: false });
+      assertEquals(body["foo"], false);
+      assertEquals(request.bodyParam("foo"), false);
+      // As an edge case check, make sure bodyAll() returns the expected
+      assertEquals(
+        (request.bodyAll() as Partial<{ foo: unknown }>)["foo"],
+        false,
+      );
+    },
+  );
+
+  await t.step(
     "Should be consistent with falsey return values (undefined value returns undefined)",
     async () => {
       // This test case was added due to https://github.com/drashland/drash/issues/623
