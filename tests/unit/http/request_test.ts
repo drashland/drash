@@ -587,7 +587,9 @@ async function bodyTests(t: Deno.TestContext) {
 }
 
 async function originalRequestTests(t: Deno.TestContext) {
-  await t.step("body is kept intact when Drash.Request body is parsed", async () => {
+  await t.step(
+    "body is kept intact when Drash.Request body is parsed",
+    async () => {
       const serverRequest = new Request("https://drash.land", {
         headers: {
           // We use `"Content-Length": "1"` to tell Drash.Request that there is
