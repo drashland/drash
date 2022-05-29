@@ -59,8 +59,8 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
     };
   });
 
-  assertEquals(
-    (hydratedMessages as MessageEvent[])[0],
+  assertEquals<string>(
+    (hydratedMessages as MessageEvent[])[0] as unknown as string,
     "this is a message from the client",
   );
   await server.close();

@@ -330,7 +330,7 @@ async function bodyTests(t: Deno.TestContext) {
         connInfo,
       );
       const param = request.bodyParam<{
-        content: string;
+        content: Uint8Array;
         filename: string;
         size: string;
         type: string;
