@@ -303,7 +303,7 @@ async function bodyTests(t: Deno.TestContext) {
   );
 
   await t.step(
-    "Should be consistent with falsey return values",
+    "Should be consistent with falsey return values (null value returns null)",
     async () => {
       // This test case was added due to https://github.com/drashland/drash/issues/623
 
@@ -329,11 +329,79 @@ async function bodyTests(t: Deno.TestContext) {
       const body = request.bodyAll() as {
         foo: null;
       };
-      assertEquals(body, {
-        foo: null,
-      });
+      assertEquals(body, { foo: null });
       assertEquals(body["foo"], null);
+      assertEquals(request.bodyParam("foo"), null);
+      // As an edge case check, make sure bodyAll() returns the expected
+      assertEquals((request.bodyAll() as Partial<{foo: unknown}>)["foo"], null);
+    },
+  );
+
+  await t.step(
+    "Should be consistent with falsey return values (undefined value returns undefined)",
+    async () => {
+      // This test case was added due to https://github.com/drashland/drash/issues/623
+
+      const serverRequest = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          foo: undefined
+        }),
+        method: "POST",
+      });
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+      const body = request.bodyAll() as Partial<{
+        foo: unknown
+      }>;
+      assertEquals(body, {});
+      assertEquals(body["foo"], undefined);
       assertEquals(request.bodyParam("foo"), undefined);
+      // As an edge case check, make sure bodyAll() returns the expected
+      assertEquals((request.bodyAll() as Partial<{foo: unknown}>)["foo"], undefined);
+    },
+  );
+
+  await t.step(
+    "Should be consistent with falsey return values (no value returns undefined)",
+    async () => {
+      // This test case was added due to https://github.com/drashland/drash/issues/623
+
+      const serverRequest = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+        method: "POST",
+      });
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+      const body = request.bodyAll() as Partial<{
+        foo: unknown;
+      }>;
+      assertEquals(body, {});
+      assertEquals(body["foo"], undefined);
+      assertEquals(request.bodyParam("foo"), undefined);
+      // As an edge case check, make sure bodyAll() returns the expected
+      assertEquals((request.bodyAll() as Partial<{foo: unknown}>)["foo"], undefined);
     },
   );
 

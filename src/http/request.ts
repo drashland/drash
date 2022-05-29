@@ -166,8 +166,19 @@ export class DrashRequest extends Request {
 
   /**
    * Get all body params.
+   *
+   * @returns All params contained in the body or an empty body if no params
+   * exist.
    */
   public bodyAll<T>(): ParsedBody | T {
+    if (this.#parsed_body === undefined) {
+      return {};
+    }
+
+    if (typeof this.#parsed_body !== "object") {
+      return {};
+    }
+
     return this.#parsed_body;
   }
 
