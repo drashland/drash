@@ -333,7 +333,10 @@ async function bodyTests(t: Deno.TestContext) {
       assertEquals(body["foo"], null);
       assertEquals(request.bodyParam("foo"), null);
       // As an edge case check, make sure bodyAll() returns the expected
-      assertEquals((request.bodyAll() as Partial<{foo: unknown}>)["foo"], null);
+      assertEquals(
+        (request.bodyAll() as Partial<{ foo: unknown }>)["foo"],
+        null,
+      );
     },
   );
 
@@ -352,7 +355,7 @@ async function bodyTests(t: Deno.TestContext) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          foo: undefined
+          foo: undefined,
         }),
         method: "POST",
       });
@@ -362,13 +365,16 @@ async function bodyTests(t: Deno.TestContext) {
         connInfo,
       );
       const body = request.bodyAll() as Partial<{
-        foo: unknown
+        foo: unknown;
       }>;
       assertEquals(body, {});
       assertEquals(body["foo"], undefined);
       assertEquals(request.bodyParam("foo"), undefined);
       // As an edge case check, make sure bodyAll() returns the expected
-      assertEquals((request.bodyAll() as Partial<{foo: unknown}>)["foo"], undefined);
+      assertEquals(
+        (request.bodyAll() as Partial<{ foo: unknown }>)["foo"],
+        undefined,
+      );
     },
   );
 
@@ -401,7 +407,10 @@ async function bodyTests(t: Deno.TestContext) {
       assertEquals(body["foo"], undefined);
       assertEquals(request.bodyParam("foo"), undefined);
       // As an edge case check, make sure bodyAll() returns the expected
-      assertEquals((request.bodyAll() as Partial<{foo: unknown}>)["foo"], undefined);
+      assertEquals(
+        (request.bodyAll() as Partial<{ foo: unknown }>)["foo"],
+        undefined,
+      );
     },
   );
 
