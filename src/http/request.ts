@@ -12,7 +12,7 @@ export type ParsedBody =
  * A class that holds the representation of an incoming request
  */
 export class DrashRequest extends Request {
-  #parsed_body!: ParsedBody;
+  #parsed_body?: ParsedBody;
   readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
   public conn_info: ConnInfo;
@@ -146,15 +146,27 @@ export class DrashRequest extends Request {
    *
    * @param name The body parameter name
    *
-   * @returns The value of the parameter if found, or undefined if not found.
+   * @returns The value of the parameter if found, or `undefined` if not found.
    */
   public bodyParam<T>(name: string): T | undefined {
+    if (this.#parsed_body === undefined) {
+      return undefined;
+    }
+
     if (typeof this.#parsed_body !== "object") {
       return undefined;
     }
-    return this.#parsed_body[name] as unknown as T ?? undefined;
+
+    if (this.#parsed_body[name] === undefined) {
+      return undefined;
+    }
+
+    return this.#parsed_body[name] as unknown as T;
   }
 
+  /**
+   * Get all body params.
+   */
   public bodyAll<T>(): ParsedBody | T {
     return this.#parsed_body;
   }
