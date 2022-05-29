@@ -15,7 +15,6 @@ interface GraphQLOptions {
   // TODO(crookse) Figure out how to add typings for the args
   // deno-lint-ignore no-explicit-any
   rootValue: Record<string, (...args: any) => string>;
-  playground_path?: string;
 }
 
 /**
@@ -28,6 +27,8 @@ interface GraphQLOptions {
  */
 export class GraphQLService extends Drash.Service {
   #options: GraphQLOptions;
+  #playground_enabled = false;
+  #playground_endpoint = "/graphql";
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -45,20 +46,25 @@ export class GraphQLService extends Drash.Service {
   public runAtStartup(options: Drash.Interfaces.IServiceStartupOptions): void {
     const serviceOptions = this.#options;
 
-    if (serviceOptions.playground_path === undefined) {
-      return options.server.addResource(GraphQLResource);
+    // Not enabled, so skip setting up the playground
+    if (!serviceOptions.graphiql) {
+      return;
     }
 
-    const createUserDefinedPlayground = () => {
-      return class UserDefinedGraphQLResource extends GraphQLResource {
-        public paths = [serviceOptions.playground_path!];
-        public services = {
-          ALL: [this as unknown as Drash.Service],
-        };
-      };
-    };
+    this.#playground_enabled = true;
 
-    options.server.addResource(createUserDefinedPlayground());
+    // If the user specified a string, then they are defining a different
+    // endpoint for the GraphQL playground
+    if (typeof this.#options.graphiql === "string") {
+      this.#playground_endpoint = this.#options.graphiql;
+
+      return options.server.addResource(
+        this.#createUserDefinedGraphQLResource(this.#options.graphiql),
+      );
+    }
+
+    // Default to the /graphql resource
+    options.server.addResource(GraphQLResource);
   }
 
   async runBeforeResource(
@@ -79,27 +85,37 @@ export class GraphQLService extends Drash.Service {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
+   * Create the user-defined playground resource.
+   *
+   * @param endpoint - The endpoint the playground will be accessible at.
+   *
+   * @returns The GraphQL playground resource.
+   */
+  #createUserDefinedGraphQLResource(endpoint: string): typeof Drash.Resource {
+    return class UserDefinedGraphQLResource extends GraphQLResource {
+      public paths = [endpoint];
+      public services = {
+        ALL: [this as unknown as Drash.Service],
+      };
+    };
+  }
+
+  /**
    * Handle GET requets.
    *
    * @param request
    * @param response
    */
   #handleGetRequests(_request: Drash.Request, response: Drash.Response): void {
-    const playgroundEndpoint = this.#options.graphiql === true
-      ? "/graphql"
-      : typeof this.#options.graphiql === "string"
-      ? this.#options.graphiql
-      : undefined;
-
-    if (!playgroundEndpoint) {
+    if (!this.#playground_enabled) {
       throw new Drash.Errors.HttpError(
         500,
-        "The request method is GET, but the server has not enabled a playground.",
+        "The GraphQL playground is not enabled.",
       );
     }
 
     return response.html(
-      renderPlaygroundPage({ endpoint: playgroundEndpoint }),
+      renderPlaygroundPage({ endpoint: this.#playground_endpoint }),
     );
   }
 
