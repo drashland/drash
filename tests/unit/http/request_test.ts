@@ -16,6 +16,10 @@ const connInfo: ConnInfo = {
 };
 
 Deno.test("http/request_test.ts", async (t) => {
+  await t.step("original", async (t) => {
+    await originalRequestTests(t);
+  });
+
   await t.step("accepts()", async (t) => {
     await acceptsTests(t);
   });
@@ -580,6 +584,44 @@ async function bodyTests(t: Deno.TestContext) {
     const authenticated = (actual as boolean);
     assertEquals(authenticated, false);
   });
+}
+
+async function originalRequestTests(t: Deno.TestContext) {
+  await t.step("body is kept intact when Drash.Request body is parsed", async () => {
+      const serverRequest = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          "Content-Length": "1",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          hello: "world",
+        }),
+        method: "POST",
+      });
+
+      // When creating a Drash.Request object, the body is automatically parsed
+      // and causes `Drash.Request.bodyUsed` to be `true`
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+
+      // Check that the Drash.Request body has the `hello` param
+      const hello = request.bodyParam("hello");
+      assertEquals(hello, "world");
+
+      // Check that the original request body was kept intact
+      assertEquals(request.bodyUsed, true);
+      assertEquals(request.original.bodyUsed, false);
+      // Now read the original request body
+      assertEquals(await request.original.json(), { hello: "world" });
+    },
+  );
 }
 
 async function paramTests(t: Deno.TestContext) {
