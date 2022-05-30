@@ -12,11 +12,13 @@ export type ParsedBody =
  * A class that holds the representation of an incoming request
  */
 export class DrashRequest extends Request {
+  public conn_info: ConnInfo;
+
+  #end_lifecycle = false;
+  #original: Request;
   #parsed_body?: ParsedBody;
   readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
-  public conn_info: ConnInfo;
-  #end_lifecycle = false;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -42,6 +44,7 @@ export class DrashRequest extends Request {
     super(originalRequest);
     this.#path_params = pathParams;
     this.conn_info = connInfo;
+    this.#original = originalRequest.clone();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -50,6 +53,10 @@ export class DrashRequest extends Request {
 
   get end_lifecycle(): boolean {
     return this.#end_lifecycle;
+  }
+
+  get original(): Request {
+    return this.#original;
   }
 
   //////////////////////////////////////////////////////////////////////////////
