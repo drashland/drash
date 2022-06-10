@@ -3,7 +3,9 @@ const encoder = new TextEncoder();
 export { decoder, encoder };
 
 import { STATUS_TEXT as StdStatusText } from "https://deno.land/std@0.143.0/http/http_status.ts";
-export const STATUS_TEXT = new Map<string, string>(Object.entries(StdStatusText));
+export const STATUS_TEXT = new Map<string, string>(
+  Object.entries(StdStatusText),
+);
 
 export {
   deleteCookie,
