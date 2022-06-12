@@ -42,7 +42,7 @@ export class ErrorHandler implements IErrorHandler {
       // replace the default 500 with it.
       if (
         typeof errorWithCode.code === "number" &&
-        STATUS_TEXT.get(errorWithCode.code)
+        STATUS_TEXT.get(errorWithCode.code.toString())
       ) {
         code = errorWithCode.code;
       }

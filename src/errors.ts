@@ -19,7 +19,7 @@ export class HttpError extends Error {
   constructor(code: number, message?: string) {
     super(message);
     if (!message) {
-      const statusText = STATUS_TEXT.get(code);
+      const statusText = STATUS_TEXT.get(code.toString());
       if (statusText) {
         this.message = statusText;
       }
