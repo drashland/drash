@@ -47,7 +47,15 @@ export class Jae {
     let code = "with(obj) { var r=[];\n";
     let cursor = 0;
     let match;
-    const filepath = this.views_path + template;
+    let filepath = this.views_path;
+    if (this.views_path.endsWith('/') && template.startsWith('/')) {
+      filepath += template.slice(1)
+    } else if (!this.views_path.endsWith('/') && !template.startsWith('/')) {
+      filepath += `/${template}`
+    } else {
+      filepath += template
+    }
+
     let html: string = decoder.decode(
       Deno.readFileSync(filepath),
     );
