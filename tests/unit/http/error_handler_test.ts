@@ -38,6 +38,7 @@ Deno.test("catch()", async (t) => {
       new Error(),
       request(),
       res,
+      connInfo,
     );
     assertEquals(res.status, 500);
   });
@@ -58,6 +59,7 @@ Deno.test("catch()", async (t) => {
         error,
         request(),
         res,
+        connInfo,
       );
       assertEquals(res.status, 500);
     });
@@ -69,6 +71,7 @@ Deno.test("catch()", async (t) => {
       new ErrorWithRandomCodeString("Hello"),
       request(),
       res,
+      connInfo,
     );
     assertEquals(res.status, 500);
   });
@@ -79,6 +82,7 @@ Deno.test("catch()", async (t) => {
       new ErrorWithRandomCodeString("SQL15023"),
       request(),
       res,
+      connInfo,
     );
     assertEquals(res.status, 500);
   });
@@ -89,6 +93,7 @@ Deno.test("catch()", async (t) => {
       new ErrorWithRandomCodeNumber(400),
       request(),
       res,
+      connInfo,
     );
     assertEquals(res.status, 400);
   });
@@ -99,6 +104,7 @@ Deno.test("catch()", async (t) => {
       new Drash.Errors.HttpError(401),
       request(),
       res,
+      connInfo,
     );
     assertEquals(res.status, 401);
   });

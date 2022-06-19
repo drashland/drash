@@ -1,6 +1,12 @@
 import { assertEquals, TestHelpers } from "../deps.ts";
 import type { ConnInfo } from "../../deps.ts";
-import { ErrorHandler, Errors, Response, Server } from "../../mod.ts";
+import {
+  ErrorHandler,
+  Errors,
+  IErrorHandler,
+  Response,
+  Server,
+} from "../../mod.ts";
 
 class MyErrorHandler extends ErrorHandler {
   public catch(error: Error, _request: Request, response: Response) {
@@ -51,7 +57,18 @@ class MySimpleErrorErrorHandler {
   }
 }
 
-class MyConnInfoErrorErrorHandler {
+class _TypeCheckConnInfoInErrorHandler {
+  public catch(
+    _error: Error,
+    _request: Request,
+    response: Response,
+    connInfo: ConnInfo,
+  ) {
+    return response.json(connInfo);
+  }
+}
+
+class MyConnInfoErrorErrorHandler implements IErrorHandler {
   public catch(
     _error: Error,
     _request: Request,

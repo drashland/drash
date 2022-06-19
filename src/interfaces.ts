@@ -181,17 +181,25 @@ export interface IServiceStartupOptions {
   resources: Types.ResourcesAndPatternsMap;
 }
 
+type Catch =
+  | ((
+    error: Errors.HttpError,
+    request: Request,
+    response: Response,
+  ) => void | Promise<void>)
+  | ((
+    error: Errors.HttpError,
+    request: Request,
+    response: Response,
+    connInfo: ConnInfo,
+  ) => void | Promise<void>);
+
 export interface IErrorHandler {
   /**
    * Method that gets executed during the request-resource-response lifecycle in
    * the event an error is thrown.
    */
-  catch: (
-    error: Errors.HttpError,
-    request: Request,
-    response: Response,
-    connInfo: ConnInfo,
-  ) => void | Promise<void>;
+  catch: Catch;
 }
 
 export interface IResourceAndParams {
