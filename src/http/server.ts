@@ -394,9 +394,14 @@ export class Server {
       return this.#respond(response);
     } catch (e) {
       try {
-        await this.#error_handler.catch(e, originalRequest, response);
+        await this.#error_handler.catch(e, originalRequest, response, connInfo);
       } catch (e) {
-        await this.#default_error_handler.catch(e, originalRequest, response);
+        await this.#default_error_handler.catch(
+          e,
+          originalRequest,
+          response,
+          connInfo,
+        );
       }
 
       return this.#respond(response);

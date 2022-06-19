@@ -1,4 +1,5 @@
 import { assertEquals, TestHelpers } from "../deps.ts";
+import type { ConnInfo } from "../../deps.ts";
 import { ErrorHandler, Errors, Response, Server } from "../../mod.ts";
 
 class MyErrorHandler extends ErrorHandler {
@@ -47,6 +48,17 @@ class MyAsyncErrorHandler extends ErrorHandler {
 class MySimpleErrorErrorHandler {
   public catch(_error: Error, _request: Request, _response: Response) {
     throw new Error("My Simple Error");
+  }
+}
+
+class MyConnInfoErrorErrorHandler {
+  public catch(
+    _error: Error,
+    _request: Request,
+    response: Response,
+    connInfo: ConnInfo,
+  ) {
+    return response.json(connInfo);
   }
 }
 
@@ -154,6 +166,23 @@ Deno.test("error_handler_test.ts", async (t) => {
         (await res.text()).includes("Error: My Simple Error\n"),
         true,
       );
+    });
+
+    await t.step("connInfo error handler gets connInfo", async () => {
+      const server = new Server({
+        protocol: "http",
+        hostname: "localhost",
+        port: 3000,
+        resources: [],
+        error_handler: MyConnInfoErrorErrorHandler,
+      });
+      server.run();
+      const res = await TestHelpers.makeRequest.get(server.address);
+      await server.close();
+      const json = await res.json();
+      assertEquals(res.status, 200);
+      assertEquals(json.localAddr.port, 3000);
+      assertEquals(json.remoteAddr.transport, "tcp");
     });
   });
 });

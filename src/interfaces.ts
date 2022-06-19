@@ -6,6 +6,7 @@ import {
   Server,
   Types,
 } from "../mod.ts";
+import type { ConnInfo } from "../deps.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -189,6 +190,7 @@ export interface IErrorHandler {
     error: Errors.HttpError,
     request: Request,
     response: Response,
+    connInfo: ConnInfo,
   ) => void | Promise<void>;
 }
 
