@@ -1,5 +1,5 @@
 import { Interfaces, Resource, Service } from "../../../mod.ts";
-import { walk } from "./deps.ts";
+import { walkSync } from "./deps.ts";
 
 interface IOptions {
   paths_to_resources: string[];
@@ -16,10 +16,8 @@ export class ResourceLoaderService extends Service {
   public async runAtStartup(
     options: Interfaces.IServiceStartupOptions,
   ): Promise<void> {
-    for (const i in this.#options.paths_to_resources) {
-      const basePath = this.#options.paths_to_resources[i];
-
-      for await (const entry of walk(basePath)) {
+    for (const basePath of this.#options.paths_to_resources) {
+      for (const entry of walkSync(basePath)) {
         if (!entry.isFile) {
           continue;
         }
@@ -29,21 +27,22 @@ export class ResourceLoaderService extends Service {
         );
 
         if (!fileAsModule || typeof fileAsModule !== "object") {
-          return;
+          continue;
         }
 
         const exportedMemberNames = Object.keys(fileAsModule);
 
         if (!exportedMemberNames || exportedMemberNames.length <= 0) {
-          return;
+          continue;
         }
 
-        exportedMemberNames.forEach((exportedMemberName: string) => {
-          const exportedMember =
-            (fileAsModule as { [k: string]: unknown })[exportedMemberName];
+        for (const exportedMemberName of exportedMemberNames) {
+          const exportedMember = (fileAsModule as { [k: string]: unknown })[
+            exportedMemberName as string
+          ];
 
           if (typeof exportedMember !== "function") {
-            return;
+            continue;
           }
 
           const typeSafeExportedMember =
@@ -53,14 +52,14 @@ export class ResourceLoaderService extends Service {
             const obj = new typeSafeExportedMember();
             const propertyNames = Object.getOwnPropertyNames(obj);
             if (!propertyNames.includes("drash_resource")) {
-              return;
+              continue;
             }
 
             options.server.addResource(typeSafeExportedMember);
           } catch (_error) {
             // If `obj` cannot be instantiated, then skip it
           }
-        });
+        }
       }
     }
   }
