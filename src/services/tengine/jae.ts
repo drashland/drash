@@ -48,12 +48,12 @@ export class Jae {
     let cursor = 0;
     let match;
     let filepath = this.views_path;
-    if (this.views_path.endsWith('/') && template.startsWith('/')) {
-      filepath += template.slice(1)
-    } else if (!this.views_path.endsWith('/') && !template.startsWith('/')) {
-      filepath += `/${template}`
+    if (this.views_path.endsWith("/") && template.startsWith("/")) {
+      filepath += template.slice(1);
+    } else if (!this.views_path.endsWith("/") && !template.startsWith("/")) {
+      filepath += `/${template}`;
     } else {
-      filepath += template
+      filepath += template;
     }
 
     let html: string = decoder.decode(
