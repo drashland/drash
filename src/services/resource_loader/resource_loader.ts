@@ -2,12 +2,43 @@ import { Interfaces, Resource, Service } from "../../../mod.ts";
 import { walkSync } from "./deps.ts";
 
 interface IOptions {
+  /**
+   * The paths to the resources.
+   *
+   * @example
+   * ```typescript
+   * ["./resources/api", "./resources/ssr"]
+   * ```
+   */
   paths_to_resources: string[];
 }
 
 export class ResourceLoaderService extends Service {
   #options: IOptions;
 
+  /**
+   * Autoload resources in the provided `options.paths_to_resources` option.
+   * @param options - See `IOptions`. More information can be found at https://drash.land/drash.
+   *
+   * @example
+   * ```typescript
+   * const resourceLoader = new ResourceLoaderService({
+   *   paths_to_resources: [
+   *     "./resources/api", // Loads all resources in ./resources/api directory
+   *     "./resources/ssr", // Loads all resources in ./resources/ssr directory
+   *   ],
+   * });
+   *
+   * const server = new Drash.Server({
+   *   protocol: "http",
+   *   hostname: "localhost",
+   *   port: 1337,
+   *   services: [
+   *     resourceLoader, // Plug in the service to add the autoloaded resources
+   *   ],
+   * });
+   * ```
+   */
   constructor(options: IOptions) {
     super();
     this.#options = options;
