@@ -53,9 +53,8 @@ export class ResourceLoaderService extends Service {
           continue;
         }
 
-        const fileAsModule = await import(
-          await Deno.realPath("./" + entry.path)
-        );
+        const realPath = await Deno.realPath("./" + entry.path);
+        const fileAsModule = await import(realPath);
 
         if (!fileAsModule || typeof fileAsModule !== "object") {
           continue;
