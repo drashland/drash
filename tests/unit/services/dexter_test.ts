@@ -1,5 +1,5 @@
-import { assertEquals } from "../../deps.ts";
 import { DexterService } from "../../../src/services/dexter/dexter.ts";
+import { assertEquals } from "../../deps.ts";
 
 Deno.test("Dexter - mod_test.ts", async (t) => {
   await t.step("Dexter", async (t) => {

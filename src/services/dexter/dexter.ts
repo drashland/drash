@@ -17,6 +17,7 @@ interface IDexterConfigs extends LoggerConfigs {
   datetime?: boolean;
   method?: boolean;
   enabled?: boolean;
+  skip?(request: Request, _response: Response): boolean;
 }
 
 /**
@@ -52,6 +53,7 @@ export class DexterService extends Service implements IService {
       method: configs.method || false,
       response_time: configs.response_time || false,
       enabled: configs.enabled === undefined ? true : configs.enabled,
+      skip: configs.skip,
       tag_string: configs.tag_string ?? "",
       tag_string_fns: configs.tag_string_fns ?? {},
     };
@@ -71,6 +73,10 @@ export class DexterService extends Service implements IService {
 
   runBeforeResource(request: Request, _response: Response) {
     if (this.configs.enabled === false) {
+      return;
+    }
+
+    if (this.configs.skip && this.configs.skip(request, _response) === true) {
       return;
     }
 
