@@ -53,7 +53,9 @@ export class ResourceLoaderService extends Service {
           continue;
         }
 
-        const fileAsModule = await import(this.#getUrlWithFileScheme(entry.path));
+        const fileAsModule = await import(
+          this.#getUrlWithFileScheme(entry.path)
+        );
 
         if (!fileAsModule || typeof fileAsModule !== "object") {
           continue;
