@@ -1,5 +1,5 @@
 import { Interfaces, Resource, Service } from "../../../mod.ts";
-import { walkSync } from "./deps.ts";
+import { walkSync, join } from "./deps.ts";
 
 interface IOptions {
   /**
@@ -53,7 +53,7 @@ export class ResourceLoaderService extends Service {
           continue;
         }
 
-        const realPath = await Deno.realPath("./" + entry.path);
+        const realPath = join(await Deno.realPath("."), entry.path);
         const fileAsModule = await import(realPath);
 
         if (!fileAsModule || typeof fileAsModule !== "object") {
