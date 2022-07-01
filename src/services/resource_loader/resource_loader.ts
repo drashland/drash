@@ -1,5 +1,5 @@
 import { Interfaces, Resource, Service } from "../../../mod.ts";
-import { walkSync, join } from "./deps.ts";
+import { join, walkSync } from "./deps.ts";
 
 interface IOptions {
   /**
@@ -53,8 +53,7 @@ export class ResourceLoaderService extends Service {
           continue;
         }
 
-        const realPath = join(await Deno.realPath("."), entry.path);
-        const fileAsModule = await import(realPath);
+        const fileAsModule = await import(this.#getUrlWithFileScheme(entry.path));
 
         if (!fileAsModule || typeof fileAsModule !== "object") {
           continue;
@@ -92,5 +91,29 @@ export class ResourceLoaderService extends Service {
         }
       }
     }
+  }
+
+  /**
+   * In some cases, the file:// scheme may be missing. To make sure it is always
+   * present when using dynamic imports, we check if it's missing and add it if
+   * so.
+   *
+   * @param path - The path that may have a missing file:// scheme.
+   *
+   * @returns The path if file:// exists or a new path with file:// added.
+   */
+  #getUrlWithFileScheme(path: string): string {
+    const url = new URL(
+      join(Deno.cwd(), path),
+      "file://" + Deno.cwd(),
+    );
+
+    let urlWithFileScheme = url.href;
+
+    if (!urlWithFileScheme.includes("file://")) {
+      urlWithFileScheme = "file://" + urlWithFileScheme;
+    }
+
+    return urlWithFileScheme;
   }
 }
