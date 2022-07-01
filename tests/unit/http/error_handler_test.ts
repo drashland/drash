@@ -31,75 +31,83 @@ function request() {
 
 const errorHandler = new Drash.ErrorHandler();
 
-Deno.test("unit/http/error_handler_test.ts | catch() | new Error()", () => {
-  const res = new Drash.Response();
-  errorHandler.catch(
-    new Error(),
-    request(),
-    res,
-  );
-  assertEquals(res.status, 500);
-});
-
-Deno.test("unit/http/error_handler_test.ts | catch() | Built-in JS Errors", () => {
-  const errors = [
-    new EvalError(),
-    new RangeError(),
-    new ReferenceError(),
-    new SyntaxError(),
-    new TypeError(),
-    new URIError(),
-  ];
-
-  errors.forEach((error: Error) => {
+Deno.test("catch()", async (t) => {
+  await t.step("new Error()", () => {
     const res = new Drash.Response();
     errorHandler.catch(
-      error,
+      new Error(),
       request(),
       res,
+      connInfo,
     );
     assertEquals(res.status, 500);
   });
-});
 
-Deno.test("unit/http/error_handler_test.ts | catch() | { code: 'Hello' }", () => {
-  const res = new Drash.Response();
-  errorHandler.catch(
-    new ErrorWithRandomCodeString("Hello"),
-    request(),
-    res,
-  );
-  assertEquals(res.status, 500);
-});
+  await t.step("Built-in JS Errors", () => {
+    const errors = [
+      new EvalError(),
+      new RangeError(),
+      new ReferenceError(),
+      new SyntaxError(),
+      new TypeError(),
+      new URIError(),
+    ];
 
-Deno.test("unit/http/error_handler_test.ts | catch() | { code: '500' }", () => {
-  const res = new Drash.Response();
-  errorHandler.catch(
-    new ErrorWithRandomCodeString("SQL15023"),
-    request(),
-    res,
-  );
-  assertEquals(res.status, 500);
-});
+    errors.forEach((error: Error) => {
+      const res = new Drash.Response();
+      errorHandler.catch(
+        error,
+        request(),
+        res,
+        connInfo,
+      );
+      assertEquals(res.status, 500);
+    });
+  });
 
-Deno.test("unit/http/error_handler_test.ts | catch() | { code: 400 }", () => {
-  const res = new Drash.Response();
-  errorHandler.catch(
-    new ErrorWithRandomCodeNumber(400),
-    request(),
-    res,
-  );
-  assertEquals(res.status, 400);
-});
+  await t.step("{ code: 'Hello' }", () => {
+    const res = new Drash.Response();
+    errorHandler.catch(
+      new ErrorWithRandomCodeString("Hello"),
+      request(),
+      res,
+      connInfo,
+    );
+    assertEquals(res.status, 500);
+  });
 
-Deno.test("unit/http/error_handler_test.ts | catch() | new Drash.Errors.HttpError(401)", () => {
-  const res = new Drash.Response();
-  errorHandler.catch(
-    new Drash.Errors.HttpError(401),
-    request(),
-    res,
-  );
-  assertEquals(res.status, 401);
+  await t.step("{ code: '500' }", () => {
+    const res = new Drash.Response();
+    errorHandler.catch(
+      new ErrorWithRandomCodeString("SQL15023"),
+      request(),
+      res,
+      connInfo,
+    );
+    assertEquals(res.status, 500);
+  });
+
+  await t.step("{ code: 400 }", () => {
+    const res = new Drash.Response();
+    errorHandler.catch(
+      new ErrorWithRandomCodeNumber(400),
+      request(),
+      res,
+      connInfo,
+    );
+    assertEquals(res.status, 400);
+  });
+
+  await t.step("new Drash.Errors.HttpError(401)", () => {
+    const res = new Drash.Response();
+    errorHandler.catch(
+      new Drash.Errors.HttpError(401),
+      request(),
+      res,
+      connInfo,
+    );
+    assertEquals(res.status, 401);
+  });
 });
 
 class ErrorWithRandomCodeNumber extends Error {
