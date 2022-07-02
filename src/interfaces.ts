@@ -147,7 +147,7 @@ export interface IServerOptions {
   key_file?: string;
   port: number;
   protocol: "http" | "https";
-  resources: typeof Resource[];
+  resources?: typeof Resource[];
   services?: IService[];
   // deno-lint-ignore no-explicit-any camelcase
   error_handler?: new (...args: any[]) => IErrorHandler;

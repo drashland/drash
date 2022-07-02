@@ -9,6 +9,11 @@ import * as Drash from "../../mod.ts";
  *     https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web
  */
 export class Resource implements Drash.Interfaces.IResource {
+  /**
+   * Internal property used to identify this as a Drash resource.
+   */
+  protected drash_resource = true;
+
   public services: Drash.Interfaces.IResourceServices = {};
   public paths: string[] = [];
 
