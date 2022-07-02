@@ -105,15 +105,16 @@ export class ResourceLoaderService extends Service {
    * @returns The path if file:// exists or a new path with file:// added.
    */
   #getUrlWithFileScheme(path: string): string {
-    const url = new URL(
-      join(Deno.cwd(), path),
-      "file://" + Deno.cwd(),
-    );
+    const scheme = "file://";
+
+    const url = new URL(join(Deno.cwd(), path), scheme + Deno.cwd());
 
     let urlWithFileScheme = url.href;
 
-    if (!urlWithFileScheme.includes("file://")) {
-      urlWithFileScheme = "file://" + urlWithFileScheme;
+    // If the file:// scheme is not included during URL creation, then make sure
+    // it is added
+    if (!urlWithFileScheme.includes(scheme)) {
+      urlWithFileScheme = scheme + urlWithFileScheme;
     }
 
     return urlWithFileScheme;
