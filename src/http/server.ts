@@ -2,10 +2,11 @@ import * as Drash from "../../mod.ts";
 import { ConnInfo, StdServer } from "../../deps.ts";
 
 async function runServices(
-  Services: Drash.Interfaces.IService[],
+  services: Drash.Interfaces.IService[],
+  serviceMethod: "runBeforeResource" | "runAfterResource",
   request: Drash.Request,
   response: Drash.Response,
-  serviceMethod: "runBeforeResource" | "runAfterResource",
+  afters: Drash.Interfaces.IService[],
 ): Promise<void> {
   // There are two ways a service can short-circuit the
   // request-resource-response lifecycle:
@@ -18,16 +19,25 @@ async function runServices(
   //
   // If the service calls `request.end()`, then the request handler we pass in
   // to `new StdServer()` will return `new Response()`.
-  for (const Service of Services) {
-    if (serviceMethod in Service) {
-      await Service[serviceMethod]!(request, response);
+  for (const service of services) {
+    if (serviceMethod in service) {
+      await service[serviceMethod]!(request, response);
+    }
+
+    if (serviceMethod === "runBeforeResource") {
       if (request.end_lifecycle) {
         break;
+      }
+
+      // should run runAfterResource for this service
+      if (
+        "runAfterResource" in service
+      ) {
+        afters.push(service);
       }
     }
   }
 }
-
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
  * charge of handling incoming requests, matching them to resources for further
@@ -264,7 +274,7 @@ export class Server {
     connInfo: ConnInfo,
   ): Promise<Response> {
     // Grab resource and path params
-    const resourceAndParams = this.#getResourceAndParams(
+    const { resource, pathParams } = this.#getResourceAndParams(
       originalRequest.url,
       this.#resources,
     ) ?? {
@@ -272,136 +282,114 @@ export class Server {
       pathParams: new Map(),
     };
 
-    const { resource, pathParams } = resourceAndParams;
-
     // Construct request and response objects to pass to services and resource
     // Keep response top level so we can reuse the headers should an error be thrown
     // in the try
     const response = new Drash.Response();
+    const request = new Drash.Request(originalRequest, pathParams, connInfo);
+
+    const errorHandler = async (
+      e: Drash.Errors.HttpError,
+      request: Drash.Request,
+      response: Drash.Response,
+    ) => {
+      try {
+        await this.#error_handler.catch(e, request, response);
+      } catch (e) {
+        await this.#default_error_handler.catch(
+          e,
+          request,
+          response,
+        );
+      }
+    };
+
+    const afters: Drash.Interfaces.IService[] = [];
     try {
-      const request = await Drash.Request.create(
-        originalRequest,
-        pathParams,
-        connInfo,
-      );
+      // todo : move the prepare to befor calling resource, Compatibility needs to be considered
+      // parseBody, etc
+      await request.prepare();
 
       // Run server-level services (before we get to the resource)
       await runServices(
         this.#services,
-        request,
-        response,
         "runBeforeResource",
-      );
-
-      if (request.end_lifecycle) {
-        return this.#respond(response);
-      }
-
-      // If no resource found, throw 404. Unable to call class/resource services
-      // when the class doesn't exist!
-      if (!resource) {
-        throw new Drash.Errors.HttpError(404);
-      }
-
-      // Run resource-level services (before their HTTP method is called)
-      await runServices(
-        resource.services.ALL ?? [],
         request,
         response,
-        "runBeforeResource",
+        afters,
       );
 
-      if (request.end_lifecycle) {
-        return this.#respond(response);
-      }
+      if (!request.end_lifecycle) {
+        // If no resource found, throw 404. Unable to call class/resource services
+        // when the class doesn't exist!
+        if (!resource) {
+          throw new Drash.Errors.HttpError(404);
+        }
 
-      // If the method does not exist on the resource, then the method is not
-      // allowed. So, throw that 405 and GTFO. Unable to call resource method
-      // services if the method doesn't exist!
-      const method = request.method
-        .toUpperCase() as Drash.Types.HttpMethodName;
-      if (!(method in resource)) {
-        throw new Drash.Errors.HttpError(405);
-      }
-
-      // Run resource HTTP method level services (before the HTTP method is
-      // called)
-      await runServices(
-        resource.services[method] ?? [],
-        request,
-        response,
-        "runBeforeResource",
-      );
-
-      if (request.end_lifecycle) {
-        return this.#respond(response);
-      }
-
-      // Execute the HTTP method on the resource
-      // Ignoring because we know by now the method exists due to the above check
-      // deno-lint-ignore ban-ts-comment
-      // @ts-ignore
-      await resource[method](request, response);
-
-      // Run resource HTTP method level services (after the HTTP method is
-      // called)
-      await runServices(
-        resource.services[method] ?? [],
-        request,
-        response,
-        "runAfterResource",
-      );
-
-      if (request.end_lifecycle) {
-        return this.#respond(response);
-      }
-
-      // Run resource-level services (after the HTTP method is called)
-      await runServices(
-        resource.services.ALL ?? [],
-        request,
-        response,
-        "runAfterResource",
-      );
-
-      if (request.end_lifecycle) {
-        return this.#respond(response);
-      }
-
-      // Run server-level services as a last step before returning a response
-      // that the resource has formed
-      await runServices(
-        this.#services,
-        request,
-        response,
-        "runAfterResource",
-      );
-
-      if (request.end_lifecycle) {
-        return this.#respond(response);
-      }
-
-      const requestAcceptHeader = request.headers.get("accept");
-      const responseContentTypeHeader = response.headers.get("content-type");
-
-      if (requestAcceptHeader && responseContentTypeHeader) {
-        this.#verifyAcceptHeader(
-          requestAcceptHeader,
-          responseContentTypeHeader,
-        );
-      }
-
-      return this.#respond(response);
-    } catch (e) {
-      try {
-        await this.#error_handler.catch(e, originalRequest, response, connInfo);
-      } catch (e) {
-        await this.#default_error_handler.catch(
-          e,
-          originalRequest,
+        // Run resource-level services (before their HTTP method is called)
+        await runServices(
+          resource.services.ALL ?? [],
+          "runBeforeResource",
+          request,
           response,
-          connInfo,
+          afters,
         );
+
+        if (!request.end_lifecycle) {
+          // If the method does not exist on the resource, then the method is not
+          // allowed. So, throw that 405 and GTFO. Unable to call resource method
+          // services if the method doesn't exist!
+          const method = request.method
+            .toUpperCase() as Drash.Types.HttpMethodName;
+          if (!(method in resource)) {
+            throw new Drash.Errors.HttpError(405);
+          }
+
+          // Run resource HTTP method level services (before the HTTP method is
+          // called)
+          await runServices(
+            resource.services[method] ?? [],
+            "runBeforeResource",
+            request,
+            response,
+            afters,
+          );
+
+          if (!request.end_lifecycle) {
+            // Execute the HTTP method on the resource
+            // Ignoring because we know by now the method exists due to the above check
+            // deno-lint-ignore ban-ts-comment
+            // @ts-ignore
+            await resource[method](request, response);
+          }
+        }
+      }
+    } catch (e) {
+      // call errorHandler for befores and resources
+      await errorHandler(e, request, response);
+    } finally {
+      // try run afters in reverse order
+      try {
+        await runServices(
+          afters.reverse(),
+          "runAfterResource",
+          request,
+          response,
+          [],
+        );
+
+        const requestAcceptHeader = request.headers.get("accept");
+        const responseContentTypeHeader = response.headers.get("content-type");
+
+        if (requestAcceptHeader && responseContentTypeHeader) {
+          this.#verifyAcceptHeader(
+            requestAcceptHeader,
+            responseContentTypeHeader,
+          );
+        }
+      } catch (e) {
+        // call errorHandler for afters
+        await errorHandler(e, request, response);
       }
 
       return this.#respond(response);

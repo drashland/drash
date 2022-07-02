@@ -81,14 +81,22 @@ export class DrashRequest extends Request {
     connInfo: ConnInfo,
   ) {
     const req = new DrashRequest(request, pathParams, connInfo);
+    await req.prepare();
+    return req;
+  }
+
+  /**
+   * Try prepare ParsedBody for resources, etc
+   */
+  async prepare() {
     // This is here because `parseBody` is async. We can't parse the request
     // body on the fly as we dont want users to have to use await when getting a
     // body param.
+    const req = this.original;
     const contentLength = req.headers.get("content-length") ?? "0";
     if (req.body && req.bodyUsed === false && contentLength !== "0") {
-      req.#parsed_body = await req.#parseBody();
+      this.#parsed_body = await this.#parseBody();
     }
-    return req;
   }
 
   //////////////////////////////////////////////////////////////////////////////

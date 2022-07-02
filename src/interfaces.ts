@@ -181,18 +181,11 @@ export interface IServiceStartupOptions {
   resources: Types.ResourcesAndPatternsMap;
 }
 
-type Catch =
-  | ((
-    error: Errors.HttpError,
-    request: Request,
-    response: Response,
-  ) => void | Promise<void>)
-  | ((
-    error: Errors.HttpError,
-    request: Request,
-    response: Response,
-    connInfo: ConnInfo,
-  ) => void | Promise<void>);
+type Catch = (
+  error: Errors.HttpError,
+  request: DrashRequest,
+  response: Response,
+) => void | Promise<void>;
 
 export interface IErrorHandler {
   /**

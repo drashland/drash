@@ -1,6 +1,5 @@
-import { Errors, IErrorHandler, Response } from "../../mod.ts";
+import { Errors, IErrorHandler, Request, Response } from "../../mod.ts";
 import { STATUS_TEXT } from "../../deps.ts";
-import type { ConnInfo } from "../../deps.ts";
 
 export class ErrorHandler implements IErrorHandler {
   /**
@@ -16,7 +15,6 @@ export class ErrorHandler implements IErrorHandler {
     error: Error,
     _request: Request,
     response: Response,
-    _connInfo: ConnInfo,
   ): void {
     const errorMessage = error.stack ?? "Error: Unknown Error";
 
