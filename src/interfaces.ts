@@ -202,9 +202,15 @@ export interface IErrorHandler {
   catch: Catch;
 }
 
-export interface IResourceAndParams {
-  /** The instantiated resource class. */
-  resource: Resource;
+/**
+ * This proxy is created when an incoming request's URL is matched to a
+ * resource (see the implementation of `Drash.Server.handleRequest()`). Each
+ * incoming request that is matched to a resource uses its own `IResourceProxy`
+ * object for its own context.
+ */
+export interface IResourceProxy {
   /** The instantiated resource class' path params (if any). */
   pathParams: Map<string, string>;
+  /** The instantiated resource class. */
+  instance?: Resource;
 }
