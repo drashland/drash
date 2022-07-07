@@ -1,7 +1,7 @@
 import { getCookies } from "../../deps.ts";
 import { Errors } from "../../mod.ts";
 import type { ConnInfo } from "../../deps.ts";
-import { BodyFile } from "../types.ts";
+import { BodyFile, RequestOptionals } from "../types.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
@@ -79,8 +79,16 @@ export class DrashRequest extends Request {
     request: Request,
     pathParams: Map<string, string>,
     connInfo: ConnInfo,
+    optionals?: RequestOptionals,
   ) {
     const req = new DrashRequest(request, pathParams, connInfo);
+
+    if (optionals) {
+      if (optionals.read_body === false) {
+        return req;
+      }
+    }
+
     // This is here because `parseBody` is async. We can't parse the request
     // body on the fly as we dont want users to have to use await when getting a
     // body param.
