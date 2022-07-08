@@ -71,7 +71,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(true);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=blob",
           {
@@ -93,7 +92,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(true);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=json",
           {
@@ -115,7 +113,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(true);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=arrayBuffer",
           {
@@ -137,7 +134,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(true);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=text",
           {
@@ -159,7 +155,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(true);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=formData",
           {
@@ -183,7 +178,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(false);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=blob",
           {
@@ -205,7 +199,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(false);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=json",
           {
@@ -227,7 +220,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(false);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=arrayBuffer",
           {
@@ -249,7 +241,6 @@ Deno.test("Drash.Server#options.request", async (t) => {
         const server = createServer(false);
         server.run();
 
-        const typeToCheck = "application/json";
         const response = await fetch(
           "http://localhost:1447?method_to_execute=text",
           {
