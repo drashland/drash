@@ -146,7 +146,7 @@ export interface IServerOptions {
   hostname: string;
   // deno-lint-ignore camelcase
   key_file?: string;
-  optionals: {
+  optionals?: {
     request: RequestOptionals;
   };
   port: number;
