@@ -284,7 +284,7 @@ export class Server {
         originalRequest,
         pathParams,
         connInfo,
-        this.#options.optionals?.request,
+        this.#options.request ?? {},
       );
 
       // Run server-level services (before we get to the resource)

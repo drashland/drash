@@ -34,8 +34,7 @@ export type ResourceHttpMethodHandler = (
 ) => Promise<void> | void;
 
 /**
- * Optional request configs to use when creating the `Drash.Server` object. This
- * type describes the `optionals.request` config on the `Drash.Server` object.
+ * Request options to use when creating the `Drash.Server` object.
  *
  * @example
  *
@@ -44,15 +43,13 @@ export type ResourceHttpMethodHandler = (
  *   ...
  *   ...
  *   ...
- *   optionals: {
- *     request: {
- *       read_body: false,
- *     }
- *   },
+ *   request: {
+ *     read_body: false,
+ *   }
  * });
  * ```
  */
-export type RequestOptionals = Partial<{
+export type RequestOptions = Partial<{
   /** Should incoming requests have their bodies read? */
   read_body: boolean;
 }>;

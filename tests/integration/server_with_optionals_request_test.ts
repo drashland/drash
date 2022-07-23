@@ -52,10 +52,8 @@ const createServer = (readBody: boolean) =>
     resources: [
       HomeResource,
     ],
-    optionals: {
-      request: {
-        read_body: readBody,
-      },
+    request: {
+      read_body: readBody,
     },
   });
 

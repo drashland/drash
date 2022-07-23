@@ -1,7 +1,7 @@
 import { getCookies } from "../../deps.ts";
 import { Errors } from "../../mod.ts";
 import type { ConnInfo } from "../../deps.ts";
-import { BodyFile, RequestOptionals } from "../types.ts";
+import { BodyFile, RequestOptions } from "../types.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
@@ -79,12 +79,12 @@ export class DrashRequest extends Request {
     request: Request,
     pathParams: Map<string, string>,
     connInfo: ConnInfo,
-    optionals?: RequestOptionals,
+    requestOptions: RequestOptions,
   ) {
     const req = new DrashRequest(request, pathParams, connInfo);
 
-    if (optionals) {
-      if (optionals.read_body === false) {
+    if (requestOptions) {
+      if (requestOptions.read_body === false) {
         return req;
       }
     }

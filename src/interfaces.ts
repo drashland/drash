@@ -7,7 +7,7 @@ import {
   Types,
 } from "../mod.ts";
 import type { ConnInfo } from "../deps.ts";
-import { RequestOptionals } from "./types.ts";
+import { RequestOptions } from "./types.ts";
 
 // This file contains ALL interfaces used by Drash. As a result, it is a very
 // large file.
@@ -146,9 +146,7 @@ export interface IServerOptions {
   hostname: string;
   // deno-lint-ignore camelcase
   key_file?: string;
-  optionals?: {
-    request: RequestOptionals;
-  };
+  request?: RequestOptions;
   port: number;
   protocol: "http" | "https";
   resources?: typeof Resource[];
