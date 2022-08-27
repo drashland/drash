@@ -72,7 +72,7 @@ export class DrashRequest extends Request {
    * @param pathParams - The path params to match the request's URL to. The path
    * params come from a resource's path(s).
    * @param connInfo - The connection info Deno provides on a new request
-   * @param requestOptions - Any options to control the way requests behave.
+   * @param options - Any options to control the way requests behave.
    *
    * @returns A Drash request object.
    */
@@ -80,12 +80,12 @@ export class DrashRequest extends Request {
     request: Request,
     pathParams: Map<string, string>,
     connInfo: ConnInfo,
-    requestOptions?: RequestOptions,
+    options?: RequestOptions,
   ) {
     const req = new DrashRequest(request, pathParams, connInfo);
 
-    if (requestOptions) {
-      if (requestOptions.read_body === false) {
+    if (options) {
+      if (options.read_body === false) {
         return req;
       }
     }
