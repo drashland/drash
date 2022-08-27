@@ -278,11 +278,13 @@ export class Server {
     // Keep response top level so we can reuse the headers should an error be thrown
     // in the try
     const response = new Drash.Response();
+
     try {
       const request = await Drash.Request.create(
         originalRequest,
         pathParams,
         connInfo,
+        this.#options.request ?? {},
       );
 
       // Run server-level services (before we get to the resource)

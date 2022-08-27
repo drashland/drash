@@ -1,7 +1,7 @@
 import { getCookies } from "../../deps.ts";
 import { Errors } from "../../mod.ts";
 import type { ConnInfo } from "../../deps.ts";
-import { BodyFile } from "../types.ts";
+import { BodyFile, RequestOptions } from "../types.ts";
 
 export type ParsedBody =
   | Record<string, string | BodyFile | BodyFile[]>
@@ -72,6 +72,7 @@ export class DrashRequest extends Request {
    * @param pathParams - The path params to match the request's URL to. The path
    * params come from a resource's path(s).
    * @param connInfo - The connection info Deno provides on a new request
+   * @param options - Any options to control the way requests behave.
    *
    * @returns A Drash request object.
    */
@@ -79,8 +80,16 @@ export class DrashRequest extends Request {
     request: Request,
     pathParams: Map<string, string>,
     connInfo: ConnInfo,
+    options?: RequestOptions,
   ) {
     const req = new DrashRequest(request, pathParams, connInfo);
+
+    if (options) {
+      if (options.read_body === false) {
+        return req;
+      }
+    }
+
     // This is here because `parseBody` is async. We can't parse the request
     // body on the fly as we dont want users to have to use await when getting a
     // body param.

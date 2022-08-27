@@ -32,3 +32,24 @@ export type ResourceHttpMethodHandler = (
   request: Request,
   response: Response,
 ) => Promise<void> | void;
+
+/**
+ * Request options to use when creating the `Drash.Server` object.
+ *
+ * @example
+ *
+ * ```typescript
+ * const server = new Drash.Server({
+ *   ...
+ *   ...
+ *   ...
+ *   request: {
+ *     read_body: false,
+ *   }
+ * });
+ * ```
+ */
+export type RequestOptions = Partial<{
+  /** Should incoming requests have their bodies read? */
+  read_body: boolean;
+}>;
