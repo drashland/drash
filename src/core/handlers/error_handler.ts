@@ -33,11 +33,12 @@ import * as Types from "../types.ts";
  * use this class as a fallback so errors are handled in Drash instead of the
  * runtime.
  */
-export class ErrorHandler implements Interfaces.ErrorHandler {
+export class ErrorHandler<RequestType>
+  implements Interfaces.ErrorHandler<RequestType> {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
 
   public handle(
-    context: Types.ErrorHandlerContext,
+    context: Types.ErrorHandlerContext<RequestType>,
   ): Types.Promisable<Interfaces.ResponseBuilder | void> {
     const ret = new Errors.HttpError(StatusCode.InternalServerError);
 

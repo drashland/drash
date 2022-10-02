@@ -19,15 +19,15 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../http/abstract_request.ts";
+import { AbstractRequest } from "../http/abstract_native_request.ts";
 import * as Interfaces from "../interfaces.ts";
 import * as Types from "../types.ts";
 
 /**
  * Base class for services handlers.
  */
-export class ServicesHandler {
-  #services: Record<Types.ServiceMethod, Interfaces.Service[]> = {
+export class ServicesHandler<RequestType> {
+  #services: Record<Types.ServiceMethod, Interfaces.Service<RequestType>[]> = {
     runAfterResource: [],
     runAtStartup: [],
     runBeforeResource: [],
@@ -39,7 +39,7 @@ export class ServicesHandler {
   /**
    * @param services - An array of services this instance can run.
    */
-  constructor(services: Interfaces.Service[]) {
+  constructor(services: Interfaces.Service<RequestType>[]) {
     this.#setServices(services ?? []);
   }
 
@@ -59,7 +59,7 @@ export class ServicesHandler {
    * @param context - See {@link Types.ContextForRequest}.
    */
   async runAfterResourceServices(
-    context: Types.ContextForRequest,
+    context: Types.ContextForRequest<RequestType>,
   ): Promise<void> {
     const internalRequest = (context.request as AbstractRequest);
 
@@ -76,7 +76,7 @@ export class ServicesHandler {
    * @param context - See {@link Types.ContextForRequest}.
    */
   async runBeforeResourceServices(
-    context: Types.ContextForRequest,
+    context: Types.ContextForRequest<RequestType>,
   ): Promise<void> {
     const internalRequest = (context.request as AbstractRequest);
 
@@ -93,7 +93,7 @@ export class ServicesHandler {
    * @param context
    */
   public async runOnErrorServices(
-    context: Types.ContextForRequest,
+    context: Types.ContextForRequest<RequestType>,
   ): Promise<void> {
     for (const service of this.#services.runOnError) {
       await service.runOnError!(context.request, context.response);
@@ -105,7 +105,7 @@ export class ServicesHandler {
    * @param context - See {@link Types.ContextForRequest}.
    */
   public async runStartupServices(
-    context: Types.ContextForServicesAtStartup,
+    context: Types.ContextForServicesAtStartup<RequestType>,
   ) {
     for (const service of this.#services.runAtStartup) {
       await service.runAtStartup!(context);
@@ -119,7 +119,7 @@ export class ServicesHandler {
    * have defined.
    * @param services - All services this service handler handles.
    */
-  #setServices(services: Interfaces.Service[]): void {
+  #setServices(services: Interfaces.Service<RequestType>[]): void {
     const methods: Types.ServiceMethod[] = [
       "runAfterResource",
       "runAtStartup",

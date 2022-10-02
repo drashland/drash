@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../../core/http/abstract_request.ts";
+import { AbstractRequest } from "../../core/http/abstract_native_request.ts";
 
 /**
  * Drash's version of a `Request`. This class introduces helper methods to

@@ -19,8 +19,8 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../../core/http/abstract_request.ts";
-import * as NodeTypes from "../types.ts";
+import { AbstractRequest } from "../../core/http/abstract_native_request.ts";
+import * as Types from "../types.ts";
 
 /**
  * Drash's version of a `Request`. This class introduces helper methods to
@@ -41,7 +41,7 @@ export class DrashRequest extends AbstractRequest {
     }
 
     const patterns = this.resource_handler
-      .getOriginalUrlPatterns() as NodeTypes.ResourcePaths[];
+      .getOriginalUrlPatterns() as Types.ResourcePaths[];
 
     if (patterns.length <= 0) {
       return pathParams;

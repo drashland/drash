@@ -31,25 +31,26 @@ import * as Types from "../types.ts";
  * ensure that the default {@link ErrorHandler} can be used as a fallback if a
  * user-defiend error handler class is defined and errors outs.
  */
-export class ErrorHandlerProxy implements Interfaces.ErrorHandler {
+export class ErrorHandlerProxy<RequestType>
+  implements Interfaces.ErrorHandler<RequestType> {
   /**
    * The original error handler. This is mainly used if a user-defined error
    * handler is provided by the `RequestHandler`. If not, then this gets
    * assigned the default error handler -- {@link ErrorHandler}.
    */
-  #original: Interfaces.ErrorHandler;
+  #original: Interfaces.ErrorHandler<RequestType>;
 
   /**
    * In case running the original fails, this error handler is used.
    */
-  #fallback: ErrorHandler = new ErrorHandler();
+  #fallback: ErrorHandler<RequestType> = new ErrorHandler();
 
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
 
   /**
    * @param ErrorHandlerClass - See {@link Types.ErrorHandlerClass}.
    */
-  constructor(ErrorHandlerClass: Types.ErrorHandlerClass) {
+  constructor(ErrorHandlerClass: Types.ErrorHandlerClass<RequestType>) {
     this.#original = new ErrorHandlerClass();
   }
 
@@ -61,7 +62,7 @@ export class ErrorHandlerProxy implements Interfaces.ErrorHandler {
    * @returns The response if needed by the caller.
    */
   public handle(
-    context: Types.ErrorHandlerContext,
+    context: Types.ErrorHandlerContext<RequestType>,
   ): Types.Promisable<Interfaces.ResponseBuilder | void> {
     if (!context.error) {
       context.error = new HttpError(500);
@@ -79,7 +80,7 @@ export class ErrorHandlerProxy implements Interfaces.ErrorHandler {
    * @returns The response if needed by the caller.
    */
   #runFallback(
-    context: Types.ErrorHandlerContext,
+    context: Types.ErrorHandlerContext<RequestType>,
   ): Types.Promisable<Interfaces.ResponseBuilder | void> {
     return this.#fallback.handle({
       error: context.error,
@@ -94,7 +95,7 @@ export class ErrorHandlerProxy implements Interfaces.ErrorHandler {
    * @returns The response if needed by the caller.
    */
   #runOriginal(
-    context: Types.ErrorHandlerContext,
+    context: Types.ErrorHandlerContext<RequestType>,
   ): Types.Promisable<Interfaces.ResponseBuilder | void> {
     // Errors can be thrown inside an error handler that was passed in by a
     // user. In order to catch it, we need a regular try-catch block instead of

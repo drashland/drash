@@ -64,20 +64,20 @@ export type RuntimeServiceMethod =
   | "runBeforeResource"
   | "runOnError";
 
-export type RunAtStartupService = Required<
-  Pick<Interfaces.Service, "runAtStartup">
+export type RunAtStartupService<RequestType> = Required<
+  Pick<Interfaces.Service<RequestType>, "runAtStartup">
 >;
 
-export type RunBeforeResourceService = Required<
-  Pick<Interfaces.Service, "runBeforeResource">
+export type RunBeforeResourceService<RequestType> = Required<
+  Pick<Interfaces.Service<RequestType>, "runBeforeResource">
 >;
 
-export type RunAfterResourceService = Required<
-  Pick<Interfaces.Service, "runAfterResource">
+export type RunAfterResourceService<RequestType> = Required<
+  Pick<Interfaces.Service<RequestType>, "runAfterResource">
 >;
 
-export type RunOnErrorService = Required<
-  Pick<Interfaces.Service, "runOnError">
+export type RunOnErrorService<RequestType> = Required<
+  Pick<Interfaces.Service<RequestType>, "runOnError">
 >;
 
 /**
@@ -85,11 +85,11 @@ export type RunOnErrorService = Required<
  */
 export type Promisable<T> = T | Promise<T>;
 
-export type ErrorHandlerContext = {
+export type ErrorHandlerContext<RequestType> = {
   /** The error that caused this error handler to be called. */
   error?: Error;
   /** The request associated with this error. */
-  request: Interfaces.DrashRequest;
+  request: RequestType;
   /** The response associated with this error. */
   response: Interfaces.ResponseBuilder;
 };
@@ -108,7 +108,7 @@ export type RequestMethods =
  * Each incoming request gets its own context. The context is this typing and it
  * is passed around throughout the entire request-resource-response lifecycle.
  */
-export type ContextForRequest = {
+export type ContextForRequest<RequestType> = {
   /**
    * The `Error` that is thrown during the lifecycle. This is optional because
    * an `Error` is only assigned to this property when an `Error` is thrown.
@@ -118,7 +118,7 @@ export type ContextForRequest = {
   /**
    * The `DrashRequest` instance, not the interface.
    */
-  request: Interfaces.DrashRequest;
+  request: RequestType;
 
   /**
    * The `ResourceHandler` instance. This is optional since there might not be a
@@ -285,53 +285,49 @@ export type ResourceHandlerClass = new (
 /**
  * An instance of the {@link Resource}.
  */
-export type ResourceClass = new (
+export type ResourceClass<RequestType> = new (
   ...args: unknown[]
-) => Interfaces.Resource;
+) => Interfaces.Resource<RequestType>;
 
 /**
  * An instance of the {@link Interfaces.Service}.
  */
-export type ServiceClass = new (
+export type ServiceClass<RequestType> = new (
   ...args: unknown[]
-) => Interfaces.Service;
+) => Interfaces.Service<RequestType>;
 
 /**
  * An instance of {@link Interfaces.ErrorHandler}.
  */
-export type ErrorHandlerClass = new (
+export type ErrorHandlerClass<RequestType> = new (
   ...args: unknown[]
-) => Interfaces.ErrorHandler;
-
-export type ServiceHandlerOptions = {
-  services?: Interfaces.Service[];
-};
+) => Interfaces.ErrorHandler<RequestType>;
 
 /**
  * Options given to the `Drash.RequestHandler` class.
  */
-export type RequestHandlerOptions = {
+export type RequestHandlerOptions<RequestType> = {
   /**
    * The resources (which contain the URIs) to register with the handler. Any
    * resource or URI not added to the handler will result in a 404 when
    * requested by a client.
    */
-  resources?: ResourceClass[];
+  resources?: ResourceClass<RequestType>[];
   /**
    * The error handler that handles any errors in the request handler's
    * lifecycle.
    */
-  error_handler?: ErrorHandlerClass;
+  error_handler?: ErrorHandlerClass<RequestType>;
   /**
    * The services to add to the request handler lifecycle. These services can
    * run at different points in the lifecycle.
    */
-  services?: Interfaces.Service[];
+  services?: Interfaces.Service<RequestType>[];
 };
 
 /**
  * Options given to the `Service.runAtStartup()` method.
  */
-export type ContextForServicesAtStartup = {
-  request_handler: Interfaces.RequestHandler;
+export type ContextForServicesAtStartup<RequestType> = {
+  request_handler: Interfaces.RequestHandler<RequestType>;
 };

@@ -37,12 +37,12 @@ import * as Types from "../types.ts";
  * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web - MDN definition of resource.
  * @link https://datatracker.ietf.org/doc/html/rfc7231#section-4.1 - RFC section for using 501 Not Implemented as default HTTP method response.
  */
-export class Resource implements Interfaces.Resource {
+export class Resource<RequestType> implements Interfaces.Resource<RequestType> {
   public paths: string[] = [];
   public services:
-    & Partial<Record<Types.HTTPMethod, Interfaces.Service[]>>
+    & Partial<Record<Types.HTTPMethod, Interfaces.Service<RequestType>[]>>
     & Partial<{
-      ALL: Interfaces.Service[];
+      ALL: Interfaces.Service<RequestType>[];
     }> = {};
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////

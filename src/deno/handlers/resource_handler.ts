@@ -20,6 +20,7 @@
  */
 
 import { AbstractResourceHandler } from "../../core/handlers/abstract_resource_handler.ts";
+import { DrashRequest } from "../http/drash_request.ts";
 
 /**
  * Class that handles requests that have made it to an existing resource. This
@@ -27,7 +28,8 @@ import { AbstractResourceHandler } from "../../core/handlers/abstract_resource_h
  * Resource's can have multiple chains -- one for each HTTP method they define;
  * and each of those chains can have services.
  */
-export class ResourceHandler extends AbstractResourceHandler<URLPattern> {
+export class ResourceHandler
+  extends AbstractResourceHandler<DrashRequest, URLPattern> {
   /**
    * Take `this.#original.paths` and convert them to `URLPattern` objects.
    * @returns An array of `URLPattern` objects created from

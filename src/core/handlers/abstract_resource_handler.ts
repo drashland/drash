@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../http/abstract_request.ts";
+import { AbstractRequest } from "../http/abstract_native_request.ts";
 import { ChainHandler } from "./chain_handler.ts";
 import { ResponseBuilder } from "../http/response_builder.ts";
 import { Method as HTTPMethod } from "../enums.ts";
@@ -33,13 +33,14 @@ import * as Types from "../types.ts";
  * `this#original`). Resource's can have multiple chains -- one for each HTTP
  * method they define; and each of those chains can have services.
  */
-export abstract class AbstractResourceHandler<OriginalURLPatternsType>
-  extends ChainHandler
-  implements Interfaces.ResourceHandler {
-  protected original: Interfaces.Resource;
+export abstract class AbstractResourceHandler<
+  RequestType extends Interfaces.DrashRequest,
+  OriginalURLPatternsType,
+> extends ChainHandler<RequestType> implements Interfaces.ResourceHandler {
+  protected original: Interfaces.Resource<RequestType>;
   protected method_chains: Record<
     HTTPMethod,
-    Types.HandleMethod<Types.ContextForRequest, void>[]
+    Types.HandleMethod<Types.ContextForRequest<RequestType>, void>[]
   > = {
     CONNECT: [],
     DELETE: [],
@@ -51,7 +52,7 @@ export abstract class AbstractResourceHandler<OriginalURLPatternsType>
     PUT: [],
     TRACE: [],
   };
-  protected services_all_handler: ServicesHandler;
+  protected services_all_handler: ServicesHandler<RequestType>;
 
   readonly original_url_patterns: OriginalURLPatternsType[];
 
@@ -60,7 +61,7 @@ export abstract class AbstractResourceHandler<OriginalURLPatternsType>
   /**
    * @param ResourceClass - See {@link Resource}.
    */
-  constructor(ResourceClass: Types.ResourceClass) {
+  constructor(ResourceClass: Types.ResourceClass<RequestType>) {
     super();
     this.original = new ResourceClass();
 
@@ -79,8 +80,10 @@ export abstract class AbstractResourceHandler<OriginalURLPatternsType>
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
-  public handle(context: Types.ContextForRequest): Types.Promisable<void> {
-    if ((context.request as AbstractRequest).end_early) {
+  public handle(
+    context: Types.ContextForRequest<RequestType>,
+  ): Types.Promisable<void> {
+    if ((context.request as unknown as AbstractRequest).end_early) {
       return;
     }
 
@@ -116,14 +119,15 @@ export abstract class AbstractResourceHandler<OriginalURLPatternsType>
       // Add the services that run before the HTTP method
       if (services.hasServices("runBeforeResource")) {
         this.method_chains[httpMethod].push((
-          context: Types.ContextForRequest,
+          context: Types.ContextForRequest<RequestType>,
         ) => services.runBeforeResourceServices(context));
       }
 
       // Add the HTTP method
       this.method_chains[httpMethod].push(
-        (context: Types.ContextForRequest) => {
-          const internalRequest = (context.request as AbstractRequest);
+        (context: Types.ContextForRequest<RequestType>) => {
+          const internalRequest =
+            (context.request as unknown as AbstractRequest);
 
           const internalResponse = (context.response as ResponseBuilder);
 

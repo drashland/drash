@@ -40,7 +40,7 @@ export abstract class AbstractRequest extends Request
    */
   constructor(originalRequest: Request) {
     super(originalRequest);
-    this.headers.append("x-drash-version", "v3.0.0");
+    this.headers.append("x-drash-version", "v3");
   }
 
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////

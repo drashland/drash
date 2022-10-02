@@ -85,3 +85,8 @@ Transfer/sec:      6.31M
 ### Node
 
 WIP
+
+## Implementation Details
+
+- Core should not contain any code that is not cross-platform (e.g.,
+  `URLPattern`)

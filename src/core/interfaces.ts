@@ -307,7 +307,7 @@ export interface ResponseBuilder {
   // download(): this;
 }
 
-export interface ErrorHandler extends Handler {
+export interface ErrorHandler<RequestType> extends Handler {
   /**
    * Method that gets executed during the request-resource-response lifecycle in
    * the event an error is thrown.
@@ -318,7 +318,7 @@ export interface ErrorHandler extends Handler {
    * @returns A Drash response.
    */
   handle: (
-    context: Types.ErrorHandlerContext,
+    context: Types.ErrorHandlerContext<RequestType>,
   ) => Types.Promisable<ResponseBuilder | void>;
 }
 
@@ -329,13 +329,13 @@ export interface Handler {
 /**
  * The handler for all incoming requests.
  */
-export interface RequestHandler extends Handler {
+export interface RequestHandler<RequestType> extends Handler {
   /**
    * Add resources to this request handler so requests can be matched to them.
    * @param resources - The resource classes to add to this request handler so
    * they can be accessed during runtime.
    */
-  addResources(resources: Types.ResourceClass[]): void;
+  addResources(resources: Types.ResourceClass<RequestType>[]): void;
 
   /**
    * Handling the incoming request.
@@ -345,21 +345,21 @@ export interface RequestHandler extends Handler {
    * ___after___ it has gone through any services defined in this request
    * handler.
    */
-  handle(request: Request): Types.Promisable<Response>;
+  handle(request: RequestType): Types.Promisable<Response>;
 }
 
 export interface ResourceHandler extends Handler {
   getOriginalUrlPatterns(): unknown;
 }
 
-export interface Service {
+export interface Service<RequestType> {
   /**
    * Method that runs before a resource's HTTP method is called.
    * @param request - The incoming request.
    * @param response - The response to be sent to the client.
    */
   runBeforeResource?: (
-    request: DrashRequest,
+    request: RequestType,
     response: ResponseBuilder,
   ) => Types.Promisable<ResponseBuilder | void>;
 
@@ -369,7 +369,7 @@ export interface Service {
    * @param response - The response to be sent to the client.
    */
   runAfterResource?: (
-    request: DrashRequest,
+    request: RequestType,
     response: ResponseBuilder,
   ) => Types.Promisable<ResponseBuilder | void>;
 
@@ -378,7 +378,7 @@ export interface Service {
    * @param options - The startup options provided by `Drash.RequestHandler`.
    */
   runAtStartup?: (
-    options: Types.ContextForServicesAtStartup,
+    options: Types.ContextForServicesAtStartup<RequestType>,
   ) => Types.Promisable<ResponseBuilder | void>;
 
   /**
@@ -386,12 +386,12 @@ export interface Service {
    * Drash throwing an error during the request-resource-repsonse lifecycle.
    */
   runOnError?: (
-    request: DrashRequest,
+    request: RequestType,
     response: ResponseBuilder,
   ) => Types.Promisable<ResponseBuilder | void>;
 }
 
-export interface Resource {
+export interface Resource<RequestType> {
   /**
    * The paths this resource is accessible at. For example, if the path is
    * `/home`, then requests to `/home` will target this resource.
@@ -431,7 +431,7 @@ export interface Resource {
    * }
    * ```
    */
-  services: Partial<Record<Types.HTTPMethod | "ALL", Service[]>>;
+  services: Partial<Record<Types.HTTPMethod | "ALL", Service<RequestType>[]>>;
 
   /**
    * The CONNECT HTTP method which is called if the request to the resource is a

@@ -29,6 +29,7 @@ import * as Types from "../../core/types.ts";
 // Imports from /core/deno
 import { DrashRequest } from "../http/drash_request.ts";
 import { ResourceHandler } from "./resource_handler.ts";
+import { Interfaces } from "../../../mod.deno.ts";
 
 /**
  * This class handles the entire request-resource-response lifecycle. It is in
@@ -36,7 +37,8 @@ import { ResourceHandler } from "./resource_handler.ts";
  * filtering requests, running middleware on requests, and returning a response
  * from the resource that matches the request.
  */
-export class RequestHandler extends AbstractRequestHandler {
+export class RequestHandler
+  extends AbstractRequestHandler<Interfaces.DrashRequest> {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
 
   /**
@@ -48,7 +50,7 @@ export class RequestHandler extends AbstractRequestHandler {
    * @param context - See {@link Types.ContextForRequest}.
    */
   matchRequestToResourceHandler(
-    context: Types.ContextForRequest,
+    context: Types.ContextForRequest<Interfaces.DrashRequest>,
   ): void {
     const requestUrl = context.request.url;
 
@@ -95,8 +97,10 @@ export class RequestHandler extends AbstractRequestHandler {
    * processed through the chain.
    * @returns The context Drash needs to process the request end-to-end.
    */
-  createContext(incomingRequest: Request): Types.ContextForRequest {
-    const context: Types.ContextForRequest = {
+  createContext(
+    incomingRequest: Request,
+  ): Types.ContextForRequest<Interfaces.DrashRequest> {
+    const context: Types.ContextForRequest<Interfaces.DrashRequest> = {
       request: new DrashRequest(incomingRequest),
       response: new ResponseBuilder(),
     };
@@ -104,7 +108,9 @@ export class RequestHandler extends AbstractRequestHandler {
     return context;
   }
 
-  addResourceHandler(ResourceClass: Types.ResourceClass): void {
+  addResourceHandler(
+    ResourceClass: Types.ResourceClass<Interfaces.DrashRequest>,
+  ): void {
     this.resource_handlers[ResourceClass.name] = new ResourceHandler(
       ResourceClass,
     );

@@ -1,4 +1,4 @@
-import * as Drash from "../mod.node.ts";
+import * as Drash from "../mod.bun.ts";
 
 class HomeResource extends Drash.Resource {
   public paths = ["/"];
