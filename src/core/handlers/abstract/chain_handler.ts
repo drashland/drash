@@ -53,7 +53,7 @@ export abstract class ChainHandler<GenericRequest, GenericResponseBuilder>
     if (!chain) {
       return;
     }
-    console.log(`we are in the chain. chain is:`, chain);
+
     return chain.reduce(
       (previousMethod, nextMethod) => {
         return previousMethod.then(() => nextMethod(context));

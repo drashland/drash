@@ -32,7 +32,6 @@ export class ChainHandler {
     if (!chain) {
       return;
     }
-    console.log(`we are in the chain. chain is:`, chain);
     return chain.reduce((previousMethod, nextMethod) => {
       return previousMethod.then(() => nextMethod(context));
     }, Promise.resolve());

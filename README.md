@@ -82,9 +82,31 @@ Requests/sec:  40352.02
 Transfer/sec:      6.31M
 ```
 
-### Node
+### Node (CommonJS)
 
-WIP
+#### Node and Machine Information
+
+- Node
+  - Version 16.15.0
+- Machine
+  - MacBook Pro (16-inch, 2019)
+  - Processor 2.6 GHz 6-Core Intel Core i7
+  - Memory 16 GB 2667 MHz DDR4
+
+#### Results
+
+```
+$ wrk -c 40 -d 10 http://localhost:3000
+
+Running 10s test @ http://localhost:3000
+  2 threads and 40 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.56ms  546.40us  11.28ms   91.35%
+    Req/Sec    13.12k     2.04k   27.92k    83.58%
+  262378 requests in 10.10s, 31.78MB read
+Requests/sec:  25976.37
+Transfer/sec:      3.15M
+```
 
 ## Implementation Details
 

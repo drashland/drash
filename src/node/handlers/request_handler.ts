@@ -55,11 +55,8 @@ export class RequestHandler
     // @ts-ignore: TODO(crookse): Need to make sure we have a Request interface
     const requestUrl = context.request.url;
 
-    console.log(`requestUrl`, requestUrl);
-
     // If the resource was cached, then return it. No need to look for it again.
     if (this.resource_handlers_cached[requestUrl]) {
-      console.log(`requestUrl CACHCED`, requestUrl);
       const handler = this.resource_handlers_cached[requestUrl];
       context.resource_handler = handler;
       (context.request as unknown as NativeRequest).resource_handler = handler;

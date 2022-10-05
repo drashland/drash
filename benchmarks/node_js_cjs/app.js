@@ -9,7 +9,6 @@ class HomeResource extends Drash.Resource {
   paths = ["/"];
 
   GET(request, response) {
-    console.log(`test`, response);
     return response.body("Hello, Drash (NP)!");
   }
 }
@@ -30,11 +29,8 @@ Promise.resolve()
         await r.handle(req, res);
         res.end();
       } catch (error) {
-        // console.log(`WOOPS`, error);
+        console.log(`WOOPS`, error);
       }
-      // const res = await res.statusCode = 200;
-      // res.setHeader("Content-Type", "text/plain");
-      // res.end("Hello World");
     });
 
     server.listen(port, hostname, () => {
