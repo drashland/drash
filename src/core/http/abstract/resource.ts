@@ -19,10 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { DrashRequest, ResponseBuilder } from "../interfaces.ts";
-import { StatusCode } from "../enums.ts";
-import * as Interfaces from "../interfaces.ts";
-import * as Types from "../types.ts";
+import { StatusCode } from "../../enums.ts";
+import * as Interfaces from "../../interfaces.ts";
+import * as Types from "../../types.ts";
 
 /**
  * This is the base resource class for all resources. All resource classes MUST
@@ -37,77 +36,105 @@ import * as Types from "../types.ts";
  * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Identifying_resources_on_the_Web - MDN definition of resource.
  * @link https://datatracker.ietf.org/doc/html/rfc7231#section-4.1 - RFC section for using 501 Not Implemented as default HTTP method response.
  */
-export abstract class AbstractResource<RequestType>
-  implements Interfaces.Resource<RequestType> {
+export abstract class AbstractResource<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends Interfaces.ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> implements
+  Interfaces.Resource<
+    GenericRequest,
+    GenericResponse,
+    GenericResponseBody,
+    GenericResponseBuilder
+  > {
   public paths: string[] = [];
   public services:
-    & Partial<Record<Types.HTTPMethod, Interfaces.Service<RequestType>[]>>
+    & Partial<
+      Record<
+        Types.HTTPMethod,
+        Interfaces.Service<
+          GenericRequest,
+          GenericResponse,
+          GenericResponseBody,
+          GenericResponseBuilder
+        >[]
+      >
+    >
     & Partial<{
-      ALL: Interfaces.Service<RequestType>[];
+      ALL: Interfaces.Service<
+        GenericRequest,
+        GenericResponse,
+        GenericResponseBody,
+        GenericResponseBuilder
+      >[];
     }> = {};
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   public CONNECT(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public DELETE(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public GET(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public HEAD(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public OPTIONS(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public PATCH(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public POST(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public PUT(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 
   public TRACE(
-    _request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder> {
+    _request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder> {
     return response.error(StatusCode.NotImplemented);
   }
 }

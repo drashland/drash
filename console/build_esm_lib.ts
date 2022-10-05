@@ -3,7 +3,7 @@ const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const workspace = "./tmp/conversion_workspace";
 
-const debug = false;
+const debug = true;
 
 function logDebug(msg: unknown): void {
   if (!debug) {
@@ -17,8 +17,21 @@ try {
   logDebug(`Creating ${workspace}.`);
   emptyDirSync(workspace);
   ensureDirSync(workspace);
+  ensureDirSync(workspace + "/src/core/handlers")
+  ensureDirSync(workspace + "/src/core/http")
+  ensureDirSync(workspace + "/src/core/proxies")
   logDebug(`Copying Drash source files to ${workspace}.`);
-  copySync("./src/core", workspace + "/src/core", { overwrite: true });
+  // Copy core because the Node lib relies on core code
+  copySync("./src/core/handlers/abstract", workspace + "/src/core/handlers/abstract", { overwrite: true });
+  copySync("./src/core/handlers/error_handler.ts", workspace + "/src/core/handlers/error_handler.ts", { overwrite: true });
+  copySync("./src/core/handlers/services_handler.ts", workspace + "/src/core/handlers/services_handler.ts", { overwrite: true });
+  copySync("./src/core/http/abstract", workspace + "/src/core/http/abstract", { overwrite: true });
+  copySync("./src/core/http/errors.ts", workspace + "/src/core/http/errors.ts", { overwrite: true });
+  copySync("./src/core/http/status_code_registry.ts", workspace + "/src/core/http/status_code_registry.ts", { overwrite: true });
+  copySync("./src/core/proxies/error_handler_proxy.ts", workspace + "/src/core/proxies/error_handler_proxy.ts", { overwrite: true });
+  copySync("./src/core/enums.ts", workspace + "/src/core/enums.ts", { overwrite: true });
+  copySync("./src/core/interfaces.ts", workspace + "/src/core/interfaces.ts", { overwrite: true });
+  copySync("./src/core/types.ts", workspace + "/src/core/types.ts", { overwrite: true });
   copySync("./src/node", workspace + "/src/node", { overwrite: true });
   // copySync("./services/native", workspace + "/services/native", { overwrite: true });
   copySync("./mod.node.ts", workspace + "/mod.ts", { overwrite: true });

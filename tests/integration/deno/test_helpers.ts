@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-import { DrashRequest } from "../../../src/deno/http/drash_request.ts";
+import { NativeRequest } from "../../../src/deno/http/drash_request.ts";
 import { ConnInfo, DenoServer, Drash, ServerInit } from "./deps.ts";
 const decoder = new TextDecoder("utf-8");
 

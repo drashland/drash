@@ -19,8 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractResourceHandler } from "../../core/handlers/abstract_resource_handler.ts";
-import { Request as DrashRequest } from "../http/request.ts";
+import { AbstractResourceHandler } from "../../core/handlers/abstract/resource_handler.ts";
 import * as Types from "../types.ts";
 
 const REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -33,7 +32,10 @@ const REGEX_URI_REPLACEMENT = "([^/]+)";
  * and each of those chains can have services.
  */
 export class ResourceHandler extends AbstractResourceHandler<
-  DrashRequest,
+  unknown,
+  unknown,
+  unknown,
+  any,
   Types.ResourcePaths
 > {
   /**

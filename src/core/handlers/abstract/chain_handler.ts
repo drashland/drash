@@ -19,17 +19,20 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as Interfaces from "../interfaces.ts";
-import * as Types from "../types.ts";
+import * as Interfaces from "../../interfaces.ts";
+import * as Types from "../../types.ts";
 
-export abstract class ChainHandler<RequestType> implements Interfaces.Handler {
+export abstract class ChainHandler<GenericRequest, GenericResponseBuilder>
+  implements Interfaces.Handler<GenericResponseBuilder> {
   /**
    * Method to be implemented by all extended classes so they can be called by
    * other callers via `Interfaces.Handler`.
    * @param args - The handler's args.
    * @returns A `Promise` of the given `ReturnValue` or the `ReturnValue`.
    */
-  abstract handle(...args: unknown[]): Types.Promisable<unknown>;
+  abstract handle(
+    ...args: unknown[]
+  ): Types.Promisable<GenericResponseBuilder | void>;
 
   /**
    * Each handler builds its own chain and passes that chain to this method to
@@ -40,8 +43,11 @@ export abstract class ChainHandler<RequestType> implements Interfaces.Handler {
    * @returns
    */
   protected runMethodChain(
-    context: Types.ContextForRequest<RequestType>,
-    chain: Types.HandleMethod<Types.ContextForRequest<RequestType>, void>[],
+    context: Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
+    chain: Types.HandleMethod<
+      Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
+      void
+    >[],
   ): Types.Promisable<void> {
     // TODO(crookse) Why is this running twice
     if (!chain) {

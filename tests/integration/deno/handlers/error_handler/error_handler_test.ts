@@ -94,7 +94,7 @@ async function runServer(
     requestHandlerOptions.resources = resources;
   }
 
-  const drashRequestHandler = await Drash.createRequestHandler(
+  const NativeRequestHandler = await Drash.createRequestHandler(
     requestHandlerOptions,
   );
 
@@ -122,7 +122,7 @@ async function runServer(
   const denoRequestHandler = (request: Request, connInfo: ConnInfo) => {
     const denoRequestWithConnInfo = new DenoRequestWithConnInfo(request);
     denoRequestWithConnInfo.setConnInfo(connInfo);
-    return drashRequestHandler.handle(denoRequestWithConnInfo);
+    return NativeRequestHandler.handle(denoRequestWithConnInfo);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

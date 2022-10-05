@@ -19,59 +19,76 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HttpError } from "./errors.ts";
-import { StatusCodeRegistry } from "../http/status_code_registry.ts";
-import * as Enums from "../enums.ts";
-import * as Interfaces from "../interfaces.ts";
-import * as Types from "../types.ts";
+import { HttpError } from "../errors.ts";
+import { StatusCodeRegistry } from "../../http/status_code_registry.ts";
+import * as Enums from "../../enums.ts";
+import * as Interfaces from "../../interfaces.ts";
+import * as Types from "../../types.ts";
+
+type BaseGenericHeaders =
+  | string[][]
+  | Record<string, string>
+  | unknown
+  | Map<string, string>;
 
 /**
- * A builder to help create/update a response object. This is used until the
- * last step of the request-resource-response which is calling the
- * `build()` method -- sending a native `Response` object to the
- * runtime for further processing.
+ * A builder to help create/update a response object. This builder is used
+ * throughout the entire request-resource-response lifecycle until the very last
+ * step of the lifecycle. The last step builds the response. The result is an
+ * instance of `GenericResponse`.
+ * @template GenericResponse The response this builder builds.
+ * @template GenericBody The response's body type (e.g, `BodyInit`).
+ * @template GenericHeaders The response's headers type (e.g., `Headers`).
  */
-export class ResponseBuilder implements Interfaces.ResponseBuilder {
-  #state: {
-    body?: BodyInit | null;
+export abstract class AbstractResponseBuilder<
+  GenericResponse,
+  GenericBody,
+> implements
+  Interfaces.ResponseBuilder<
+    GenericResponse,
+    GenericBody
+  > {
+  protected current_state: {
+    body?: GenericBody | string;
     error?: Error;
-    // headers?: Headers;
-    headers?: Map<string, string>;
+    headers?: Record<string, string>;
     status?: Enums.StatusCode;
     statusText?: string;
-    upgrade?: Response;
+    upgrade?: GenericResponse;
   } = {};
 
-  // FILE MARKER - GETTERS/SETTERS /////////////////////////////////////////////
+  // FILE MARKER - GETTERS / SETTERS (EXPOSED) /////////////////////////////////
+  //
+  // These getters/setters are documented by the interface.
 
-  get body_init() {
-    return this.#state.body as BodyInit;
+  get body_init(): GenericBody | string | undefined {
+    return this.current_state.body;
   }
 
-  get headers_init() {
-    return this.#state.headers;
+  get headers_init(): Record<string, string> | undefined {
+    return this.current_state.headers;
   }
 
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
   //
   // These methods are documented by the interface.
 
-  public body<T extends BodyInit | string>(
-    body: T | null,
+  public body<T extends GenericBody | string>(
+    body: T,
   ): this;
-  public body<T extends BodyInit | string>(
+  public body<T extends GenericBody | string>(
     contentType: string,
-    body: T | null,
+    body: T,
   ): this;
-  public body<T extends BodyInit | string>(
-    evaluatee: T | string,
-    body?: T | string | null,
+  public body<T extends GenericBody | string>(
+    evaluatee: T,
+    body?: T,
   ): this {
     if (typeof evaluatee === "string" && body !== undefined) {
       return this.#setResponseBody(evaluatee, body);
     }
 
-    this.#state.body = evaluatee;
+    this.current_state.body = evaluatee;
 
     return this;
   }
@@ -91,7 +108,7 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
   }
 
   public error(statusCode: Enums.StatusCode, reason?: string): this {
-    this.#state.error = new HttpError(statusCode, reason);
+    this.current_state.error = new HttpError(statusCode, reason);
 
     return this;
   }
@@ -120,7 +137,9 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
 
   public cookies(cookies: Record<string, Partial<Types.Cookie>>): this {
     const currentCookiesObj = this.#parseCookies(
-      this.#state.headers?.get("set-cookie") || "",
+      this.current_state.headers
+        ? this.current_state.headers["set-cookie"] || ""
+        : "",
     );
 
     for (const cookieName in cookies) {
@@ -136,13 +155,13 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
   }
 
   public headers(headers: Record<string, string>): this {
-    if (!this.#state.headers) {
-      this.#state.headers = new Map(); //new Headers();
+    if (!this.current_state.headers) {
+      this.current_state.headers = {};
     }
 
     for (const header in headers) {
       const value = headers[header];
-      this.#state.headers.set(header, value);
+      this.current_state.headers[header] = value;
     }
 
     return this;
@@ -155,8 +174,8 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
       throw new Error(`Status code ${status} is not a valid HTTP status code.`);
     }
 
-    this.#state.status = registry.value;
-    this.#state.statusText = registry.description;
+    this.current_state.status = registry.value;
+    this.current_state.statusText = registry.description;
 
     return this;
   }
@@ -165,8 +184,8 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
     return this.#setResponseBody("text/plain", text);
   }
 
-  public upgrade(response: Response): this {
-    this.#state.upgrade = response;
+  public upgrade(response: GenericResponse): this {
+    this.current_state.upgrade = response;
     return this;
   }
 
@@ -177,7 +196,7 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
   // FILE MARKER - GETTERS / SETTERS ///////////////////////////////////////////
 
   get error_init() {
-    return this.#state.error;
+    return this.current_state.error;
   }
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
@@ -187,36 +206,7 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
    *
    * @returns This object as a native `Response` object.
    */
-  public build(): Response {
-    if (this.#state.upgrade) {
-      return this.#state.upgrade;
-    }
-
-    if (
-      this.#state.headers ||
-      this.#state.body ||
-      this.#state.status
-    ) {
-      const statusFields = {
-        status: 200,
-        statusText: StatusCodeRegistry.get(200)?.description,
-      };
-
-      if (this.#state.status) {
-        statusFields.status = this.#state.status;
-        statusFields.statusText =
-          StatusCodeRegistry.get(this.#state.status)?.description || "";
-      }
-
-      return new Response(this.#state.body, {
-        // @ts-ignore: TODO(crookse) Need to account for HeadersInit not in Node
-        headers: this.#state.headers ?? new Map<string, string>(), // new Headers(),
-        ...statusFields,
-      });
-    }
-
-    return new Response(this.#state.body);
-  }
+  abstract build(): GenericResponse;
 
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
 
@@ -231,12 +221,12 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
    *
    * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation
    */
-  #setResponseBody(contentType: string, body: BodyInit | null): this {
+  #setResponseBody(contentType: string, body: GenericBody | string): this {
     this.headers({
       "Content-Type": contentType,
     });
 
-    this.#state.body = body;
+    this.current_state.body = body;
 
     return this;
   }

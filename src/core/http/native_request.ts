@@ -19,13 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../../core/http/abstract_native_request.ts";
+import { AbstractNativeRequest } from "../../core/http/abstract/native_request.ts";
+import { NativeResponseBuilder } from "./native_response_builder.ts";
+import * as Interfaces from "../interfaces.ts";
 
 /**
  * Drash's version of a `Request`. This class introduces helper methods to
  * interact with the native `Request` object (e.g., `request.readBody("json"))`.
  */
-export class Request extends AbstractRequest {
+export class NativeRequest extends AbstractNativeRequest<
+  Interfaces.ResourceHandler<NativeResponseBuilder>
+> {
   /**
    * Set the path params on this request. This takes the request's URL and
    * matches it to the path params defined by the resource it targets.

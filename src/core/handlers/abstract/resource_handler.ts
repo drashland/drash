@@ -19,13 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../http/abstract_native_request.ts";
+import { AbstractNativeRequest } from "../../http/abstract/native_request.ts";
 import { ChainHandler } from "./chain_handler.ts";
-import { ResponseBuilder } from "../http/response_builder.ts";
-import { Method as HTTPMethod } from "../enums.ts";
-import { ServicesHandler } from "./services_handler.ts";
-import * as Interfaces from "../interfaces.ts";
-import * as Types from "../types.ts";
+import { Method as HTTPMethod } from "../../enums.ts";
+import { ServicesHandler } from "../services_handler.ts";
+import * as Interfaces from "../../interfaces.ts";
+import * as Types from "../../types.ts";
 
 /**
  * Class that handles requests that have made it to an existing resource. This
@@ -34,13 +33,28 @@ import * as Types from "../types.ts";
  * method they define; and each of those chains can have services.
  */
 export abstract class AbstractResourceHandler<
-  RequestType, // extends Interfaces.DrashRequest,
-  OriginalURLPatternsType,
-> extends ChainHandler<RequestType> implements Interfaces.ResourceHandler {
-  protected original: Interfaces.Resource<RequestType>;
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends Interfaces.ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+  GenericOriginalURLPatterns,
+> extends ChainHandler<GenericRequest, GenericResponseBuilder>
+  implements Interfaces.ResourceHandler<GenericResponseBuilder> {
+  protected original: Interfaces.Resource<
+    GenericRequest,
+    GenericResponse,
+    GenericResponseBody,
+    GenericResponseBuilder
+  >;
   protected method_chains: Record<
     HTTPMethod,
-    Types.HandleMethod<Types.ContextForRequest<RequestType>, void>[]
+    Types.HandleMethod<
+      Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
+      void
+    >[]
   > = {
     CONNECT: [],
     DELETE: [],
@@ -52,16 +66,28 @@ export abstract class AbstractResourceHandler<
     PUT: [],
     TRACE: [],
   };
-  protected services_all_handler: ServicesHandler<RequestType>;
+  protected services_all_handler: ServicesHandler<
+    GenericRequest,
+    GenericResponse,
+    GenericResponseBody,
+    GenericResponseBuilder
+  >;
 
-  readonly original_url_patterns: OriginalURLPatternsType[];
+  readonly original_url_patterns: GenericOriginalURLPatterns[];
 
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
 
   /**
    * @param ResourceClass - See {@link Resource}.
    */
-  constructor(ResourceClass: Types.ResourceClass<RequestType>) {
+  constructor(
+    ResourceClass: Types.ResourceClass<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ) {
     super();
     this.original = new ResourceClass();
 
@@ -76,14 +102,15 @@ export abstract class AbstractResourceHandler<
 
   // FILE MARKER - METHODS - ABSTRACT //////////////////////////////////////////
 
-  abstract getOriginalUrlPatterns(): OriginalURLPatternsType[];
+  abstract getOriginalUrlPatterns(): GenericOriginalURLPatterns[];
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   public handle(
-    context: Types.ContextForRequest<RequestType>,
+    context: Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
   ): Types.Promisable<void> {
-    if ((context.request as unknown as AbstractRequest).end_early) {
+    // @ts-ignore
+    if ((context.request as unknown as AbstractNativeRequest).end_early) {
       return;
     }
 
@@ -120,19 +147,23 @@ export abstract class AbstractResourceHandler<
       // Add the services that run before the HTTP method
       if (services.hasServices("runBeforeResource")) {
         this.method_chains[httpMethod].push((
-          context: Types.ContextForRequest<RequestType>,
+          context: Types.ContextForRequest<
+            GenericRequest,
+            GenericResponseBuilder
+          >,
         ) => services.runBeforeResourceServices(context));
       }
 
       // Add the HTTP method
       this.method_chains[httpMethod].push(
-        (context: Types.ContextForRequest<RequestType>) => {
-          const internalRequest =
-            (context.request as unknown as AbstractRequest);
-
-          const internalResponse = (context.response as ResponseBuilder);
-
-          if (internalRequest.end_early) {
+        (
+          context: Types.ContextForRequest<
+            GenericRequest,
+            GenericResponseBuilder
+          >,
+        ) => {
+          // @ts-ignore
+          if (context.request.end_early) {
             return;
           }
 
@@ -145,15 +176,18 @@ export abstract class AbstractResourceHandler<
           return Promise
             .resolve(
               resourceHttpMethod.bind(this.original)(
-                internalRequest,
-                internalResponse,
+                context.request,
+                context.response,
               ),
             )
             .then(() => {
-              if (internalResponse.error_init) {
-                throw internalResponse.error_init;
+              // @ts-ignore
+              if (context.response.error_init) {
+                // @ts-ignore
+                throw context.response.error_init;
               }
-              if (internalRequest.end_early) {
+              // @ts-ignore
+              if (context.request.end_early) {
                 return;
               }
             });

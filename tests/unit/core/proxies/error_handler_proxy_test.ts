@@ -1,5 +1,5 @@
 import { assertEquals } from "../deps.ts";
-import { DrashRequest } from "../../../../src/deno/http/request.ts";
+import { NativeRequest } from "../../../../src/deno/http/request.ts";
 import { ResponseBuilder } from "../../../../src/core/http/response_builder.ts";
 import { ErrorHandler, Errors, Types } from "../../../../mod.deno.ts";
 import { ErrorHandlerProxy } from "../../../../src/core/proxies/error_handler_proxy.ts";
@@ -10,7 +10,7 @@ Deno.test("ErrorHandlerProxy", async (t) => {
       const errorHandlerProxy = new ErrorHandlerProxy(ErrorHandler);
 
       const context: Types.ContextForRequest = {
-        request: new DrashRequest(new Request("http://localhost:1997")),
+        request: new NativeRequest(new Request("http://localhost:1997")),
         response: new ResponseBuilder(),
       };
 
@@ -27,7 +27,7 @@ Deno.test("ErrorHandlerProxy", async (t) => {
       const errorHandlerProxy = new ErrorHandlerProxy(ErrorHandler);
 
       const context: Types.ContextForRequest = {
-        request: new DrashRequest(new Request("http://localhost:1997")),
+        request: new NativeRequest(new Request("http://localhost:1997")),
         response: new ResponseBuilder(),
         error: new Errors.HttpError(400),
       };

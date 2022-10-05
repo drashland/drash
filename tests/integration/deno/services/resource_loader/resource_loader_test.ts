@@ -11,12 +11,12 @@ async function runServer(
     ],
   });
 
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     services: [resourceLoader],
   });
 
   const denoRequestHandler = (request: Request) => {
-    return drashRequestHandler.handle(request);
+    return NativeRequestHandler.handle(request);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

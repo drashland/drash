@@ -14,7 +14,7 @@ async function runServer(
   paladin: PaladinService, // eg `const paladin = new new PaladinService()`, imported from paladin/mod.ts
   port: number,
 ): Promise<TestHelpers.DrashServer> {
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     services: [paladin],
     resources: [
       Res,
@@ -22,7 +22,7 @@ async function runServer(
   });
 
   const denoRequestHandler = (request: Request) => {
-    return drashRequestHandler.handle(request);
+    return NativeRequestHandler.handle(request);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

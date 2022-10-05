@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.147.0/testing/asserts.ts";
 import { ChainHandler } from "../../../../src/core/handlers/chain_handler.ts";
-import { DrashRequest } from "../../../../src/deno/http/drash_request.ts";
+import { NativeRequest } from "../../../../src/deno/http/drash_request.ts";
 import { ResponseBuilder } from "../../../../src/core/http/response_builder.ts";
 import { Types } from "../../../../mod.deno.ts";
 
@@ -35,7 +35,7 @@ Deno.test("ChainHandler", async (t) => {
       const myChainHandler = new MyChainHandler();
 
       const context = {
-        request: new DrashRequest(
+        request: new NativeRequest(
           new Request("http://localhost:1337/my-cool-url"),
         ),
         response: new ResponseBuilder(),

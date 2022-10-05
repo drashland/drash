@@ -31,26 +31,56 @@ import * as Types from "../types.ts";
  * ensure that the default {@link ErrorHandler} can be used as a fallback if a
  * user-defiend error handler class is defined and errors outs.
  */
-export class ErrorHandlerProxy<RequestType>
-  implements Interfaces.ErrorHandler<RequestType> {
+export class ErrorHandlerProxy<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends Interfaces.ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> implements
+  Interfaces.ErrorHandler<
+    GenericRequest,
+    GenericResponse,
+    GenericResponseBody,
+    GenericResponseBuilder
+  > {
   /**
    * The original error handler. This is mainly used if a user-defined error
    * handler is provided by the `RequestHandler`. If not, then this gets
    * assigned the default error handler -- {@link ErrorHandler}.
    */
-  #original: Interfaces.ErrorHandler<RequestType>;
+  #original: Interfaces.ErrorHandler<
+    GenericRequest,
+    GenericResponse,
+    GenericResponseBody,
+    GenericResponseBuilder
+  >;
 
   /**
    * In case running the original fails, this error handler is used.
    */
-  #fallback: ErrorHandler<RequestType> = new ErrorHandler();
+  #fallback: ErrorHandler<
+    GenericRequest,
+    GenericResponse,
+    GenericResponseBody,
+    GenericResponseBuilder
+  > = new ErrorHandler();
 
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
 
   /**
    * @param ErrorHandlerClass - See {@link Types.ErrorHandlerClass}.
    */
-  constructor(ErrorHandlerClass: Types.ErrorHandlerClass<RequestType>) {
+  constructor(
+    ErrorHandlerClass: Types.ErrorHandlerClass<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ) {
     this.#original = new ErrorHandlerClass();
   }
 
@@ -62,8 +92,13 @@ export class ErrorHandlerProxy<RequestType>
    * @returns The response if needed by the caller.
    */
   public handle(
-    context: Types.ErrorHandlerContext<RequestType>,
-  ): Types.Promisable<Interfaces.ResponseBuilder | void> {
+    context: Types.ErrorHandlerContext<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ): Types.Promisable<GenericResponseBuilder | void> {
     if (!context.error) {
       context.error = new HttpError(500);
     }
@@ -80,8 +115,13 @@ export class ErrorHandlerProxy<RequestType>
    * @returns The response if needed by the caller.
    */
   #runFallback(
-    context: Types.ErrorHandlerContext<RequestType>,
-  ): Types.Promisable<Interfaces.ResponseBuilder | void> {
+    context: Types.ErrorHandlerContext<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ): Types.Promisable<GenericResponseBuilder | void> {
     return this.#fallback.handle({
       error: context.error,
       request: context.request,
@@ -95,8 +135,13 @@ export class ErrorHandlerProxy<RequestType>
    * @returns The response if needed by the caller.
    */
   #runOriginal(
-    context: Types.ErrorHandlerContext<RequestType>,
-  ): Types.Promisable<Interfaces.ResponseBuilder | void> {
+    context: Types.ErrorHandlerContext<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ): Types.Promisable<GenericResponseBuilder | void> {
     // Errors can be thrown inside an error handler that was passed in by a
     // user. In order to catch it, we need a regular try-catch block instead of
     // using a `.catch()` Promise block.

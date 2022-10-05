@@ -19,8 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractResourceHandler } from "../../core/handlers/abstract_resource_handler.ts";
-import { Request as DrashRequest } from "../http/request.ts";
+import { AbstractResourceHandler } from "../../core/handlers/abstract/resource_handler.ts";
+import { NativeResponseBuilder } from "../http/native_response_builder.ts";
+import { NativeRequest } from "../http/native_request.ts";
 
 /**
  * Class that handles requests that have made it to an existing resource. This
@@ -28,8 +29,13 @@ import { Request as DrashRequest } from "../http/request.ts";
  * Resource's can have multiple chains -- one for each HTTP method they define;
  * and each of those chains can have services.
  */
-export class ResourceHandler
-  extends AbstractResourceHandler<DrashRequest, URLPattern> {
+export class ResourceHandler extends AbstractResourceHandler<
+  NativeRequest,
+  Response,
+  BodyInit,
+  NativeResponseBuilder,
+  URLPattern
+> {
   /**
    * Take `this.#original.paths` and convert them to `URLPattern` objects.
    * @returns An array of `URLPattern` objects created from

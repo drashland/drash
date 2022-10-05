@@ -19,15 +19,31 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractRequest } from "../http/abstract_native_request.ts";
+import { AbstractNativeRequest } from "../http/abstract/native_request.ts";
 import * as Interfaces from "../interfaces.ts";
 import * as Types from "../types.ts";
 
 /**
  * Base class for services handlers.
  */
-export class ServicesHandler<RequestType> {
-  #services: Record<Types.ServiceMethod, Interfaces.Service<RequestType>[]> = {
+export class ServicesHandler<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends Interfaces.ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> {
+  #services: Record<
+    Types.ServiceMethod,
+    Interfaces.Service<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >[]
+  > = {
     runAfterResource: [],
     runAtStartup: [],
     runBeforeResource: [],
@@ -39,7 +55,14 @@ export class ServicesHandler<RequestType> {
   /**
    * @param services - An array of services this instance can run.
    */
-  constructor(services: Interfaces.Service<RequestType>[]) {
+  constructor(
+    services: Interfaces.Service<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >[],
+  ) {
     this.#setServices(services ?? []);
   }
 
@@ -59,9 +82,11 @@ export class ServicesHandler<RequestType> {
    * @param context - See {@link Types.ContextForRequest}.
    */
   async runAfterResourceServices(
-    context: Types.ContextForRequest<RequestType>,
+    context: Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
   ): Promise<void> {
-    const internalRequest = (context.request as unknown as AbstractRequest);
+    const internalRequest =
+      // @ts-ignore
+      (context.request as unknown as AbstractNativeRequest);
 
     for (const service of this.#services.runAfterResource) {
       if (internalRequest.end_early) {
@@ -76,9 +101,11 @@ export class ServicesHandler<RequestType> {
    * @param context - See {@link Types.ContextForRequest}.
    */
   async runBeforeResourceServices(
-    context: Types.ContextForRequest<RequestType>,
+    context: Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
   ): Promise<void> {
-    const internalRequest = (context.request as unknown as AbstractRequest);
+    const internalRequest =
+      // @ts-ignore
+      (context.request as unknown as AbstractNativeRequest);
 
     for (const service of this.#services.runBeforeResource) {
       if (internalRequest.end_early) {
@@ -93,7 +120,7 @@ export class ServicesHandler<RequestType> {
    * @param context
    */
   public async runOnErrorServices(
-    context: Types.ContextForRequest<RequestType>,
+    context: Types.ContextForRequest<GenericRequest, GenericResponseBuilder>,
   ): Promise<void> {
     for (const service of this.#services.runOnError) {
       await service.runOnError!(context.request, context.response);
@@ -105,7 +132,12 @@ export class ServicesHandler<RequestType> {
    * @param context - See {@link Types.ContextForRequest}.
    */
   public async runStartupServices(
-    context: Types.ContextForServicesAtStartup<RequestType>,
+    context: Types.ContextForServicesAtStartup<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
   ) {
     for (const service of this.#services.runAtStartup) {
       await service.runAtStartup!(context);
@@ -119,7 +151,14 @@ export class ServicesHandler<RequestType> {
    * have defined.
    * @param services - All services this service handler handles.
    */
-  #setServices(services: Interfaces.Service<RequestType>[]): void {
+  #setServices(
+    services: Interfaces.Service<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >[],
+  ): void {
     const methods: Types.ServiceMethod[] = [
       "runAfterResource",
       "runAtStartup",

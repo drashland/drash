@@ -31,7 +31,7 @@ export class Request {
   #end_lifecycle = false;
   #path_params?: Record<string, string | undefined>;
   #query_params?: URLSearchParams;
-  resource_handler?: Interfaces.ResourceHandler;
+  resource_handler?: Interfaces.ResourceHandler<any>;
 
   /**
    * @param originalRequest - An original, native `Request` object. This should
@@ -109,7 +109,9 @@ export class Request {
 
   // abstract setPathParams(): Record<string, string | undefined>;
 
-  public setResourceHandler(resourceHandler: Interfaces.ResourceHandler) {
+  public setResourceHandler(
+    resourceHandler: Interfaces.ResourceHandler<unknown>,
+  ) {
     this.resource_handler = resourceHandler;
   }
 

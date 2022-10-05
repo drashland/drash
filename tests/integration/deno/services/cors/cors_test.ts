@@ -16,7 +16,7 @@ async function runServer(allowAll = true): Promise<TestHelpers.DrashServer> {
     ? new CORSService()
     : new CORSService({ origin: "localhost" });
 
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     services: [cors],
     resources: [
       FailedOptionCORSMiddlewareResource,
@@ -24,7 +24,7 @@ async function runServer(allowAll = true): Promise<TestHelpers.DrashServer> {
   });
 
   const denoRequestHandler = (request: Request) => {
-    return drashRequestHandler.handle(request);
+    return NativeRequestHandler.handle(request);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

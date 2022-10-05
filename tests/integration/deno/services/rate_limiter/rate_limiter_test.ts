@@ -36,7 +36,7 @@ class DenoRequestWithConnInfo extends Request {
 async function runServer(
   rateLimiter: RateLimiterService,
 ): Promise<TestHelpers.DrashServer> {
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     resources: [
       Resource,
     ],
@@ -46,7 +46,7 @@ async function runServer(
   const denoRequestHandler = (request: Request, connInfo: ConnInfo) => {
     const denoRequest = new DenoRequestWithConnInfo(request);
     denoRequest.setConnInfo(connInfo);
-    return drashRequestHandler.handle(denoRequest);
+    return NativeRequestHandler.handle(denoRequest);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

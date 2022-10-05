@@ -20,15 +20,15 @@
  */
 
 // Imports from /core/common
-import { AbstractRequestHandler } from "../../core/handlers/abstract_request_handler.ts";
+import { AbstractRequestHandler } from "../../core/handlers/abstract/request_handler.ts";
 import { HttpError } from "../../core/http/errors.ts";
-import { ResponseBuilder } from "../../core/http/response_builder.ts";
 import { StatusCode } from "../../core/enums.ts";
 import * as Types from "../../core/types.ts";
 
 // Imports from /core/deno
-import { Request as DrashRequest } from "../http/request.ts";
-import { ResourceHandler } from "./resource_handler.ts";
+import { NativeRequest } from "../http/native_request.ts";
+import { NativeResponseBuilder } from "../http/native_response_builder.ts";
+import { ResourceHandler } from "./native_resource_handler.ts";
 import { Interfaces } from "../../../mod.deno.ts";
 
 /**
@@ -37,8 +37,12 @@ import { Interfaces } from "../../../mod.deno.ts";
  * filtering requests, running middleware on requests, and returning a response
  * from the resource that matches the request.
  */
-export class RequestHandler
-  extends AbstractRequestHandler<Interfaces.DrashRequest> {
+export class RequestHandler extends AbstractRequestHandler<
+  Interfaces.NativeRequest,
+  Response,
+  BodyInit,
+  NativeResponseBuilder
+> {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
 
   /**
@@ -50,7 +54,10 @@ export class RequestHandler
    * @param context - See {@link Types.ContextForRequest}.
    */
   matchRequestToResourceHandler(
-    context: Types.ContextForRequest<Interfaces.DrashRequest>,
+    context: Types.ContextForRequest<
+      Interfaces.NativeRequest,
+      NativeResponseBuilder
+    >,
   ): void {
     const requestUrl = context.request.url;
 
@@ -58,7 +65,7 @@ export class RequestHandler
     if (this.resource_handlers_cached[requestUrl]) {
       const handler = this.resource_handlers_cached[requestUrl];
       context.resource_handler = handler;
-      (context.request as DrashRequest).setResourceHandler(handler);
+      (context.request as NativeRequest).setResourceHandler(handler);
       return;
     }
 
@@ -81,7 +88,7 @@ export class RequestHandler
         // subsequent requests can be faster
         const handler = this.resource_handlers[resourceConstructorName];
         this.resource_handlers_cached[requestUrl] = handler;
-        (context.request as DrashRequest).setResourceHandler(handler);
+        (context.request as NativeRequest).setResourceHandler(handler);
         context.resource_handler = handler;
         return;
       }
@@ -99,17 +106,25 @@ export class RequestHandler
    */
   createContext(
     incomingRequest: Request,
-  ): Types.ContextForRequest<Interfaces.DrashRequest> {
-    const context: Types.ContextForRequest<Interfaces.DrashRequest> = {
-      request: new DrashRequest(incomingRequest),
-      response: new ResponseBuilder(),
+  ): Types.ContextForRequest<Interfaces.NativeRequest, NativeResponseBuilder> {
+    const context: Types.ContextForRequest<
+      Interfaces.NativeRequest,
+      NativeResponseBuilder
+    > = {
+      request: new NativeRequest(incomingRequest),
+      response: new NativeResponseBuilder(),
     };
 
     return context;
   }
 
   addResourceHandler(
-    ResourceClass: Types.ResourceClass<Interfaces.DrashRequest>,
+    ResourceClass: Types.ResourceClass<
+      Interfaces.NativeRequest,
+      Response,
+      BodyInit,
+      NativeResponseBuilder
+    >,
   ): void {
     this.resource_handlers[ResourceClass.name] = new ResourceHandler(
       ResourceClass,

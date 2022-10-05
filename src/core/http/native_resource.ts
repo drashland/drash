@@ -19,7 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractResource } from "../../core/http/abstract_resource.ts";
+import { AbstractResource } from "../../core/http/abstract/resource.ts";
 import * as Interfaces from "../../core/interfaces.ts";
 
-export class Resource extends AbstractResource<Interfaces.DrashRequest> {}
+export class Resource extends AbstractResource<
+  Interfaces.NativeRequest,
+  Response,
+  BodyInit,
+  Interfaces.ResponseBuilder<Response, BodyInit>
+> {}

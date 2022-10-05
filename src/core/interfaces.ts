@@ -27,7 +27,7 @@ import * as Types from "./types.ts";
  * methods that can be used in Drash's context. For example, you can get a path
  * param from a Drash request.
  */
-export interface DrashRequest extends Request {
+export interface NativeRequest extends Request {
   /**
    * Check if the content type in question are accepted by the request.
    *
@@ -136,10 +136,9 @@ export interface DrashRequest extends Request {
  * // Ok this is a 404 text/plain response.
  * ```
  */
-export interface ResponseBuilder {
-  body_init: BodyInit;
-  // headers_init?: Headers;
-  headers_init?: Map<string, string>;
+export interface ResponseBuilder<GenericResponse, GenericBody> {
+  body_init?: GenericBody | string;
+  headers_init?: Record<string, string>;
 
   /**
    * Set the body of this response.
@@ -149,7 +148,7 @@ export interface ResponseBuilder {
    *
    * @link The `body` param is used as the `body` argument in https://developer.mozilla.org/en-US/docs/Web/API/Response/Response#parameters
    */
-  body<T extends BodyInit | string>(body: T | null): this;
+  body<T extends GenericBody | string>(body: T | null): this;
 
   /**
    * Set the body of this response.
@@ -161,7 +160,10 @@ export interface ResponseBuilder {
    * @link The `contentType` param is used in the `options.headers` argument in https://developer.mozilla.org/en-US/docs/Web/API/Response/Response#parameters
    * @link The `body` param is used as the `body` argument in https://developer.mozilla.org/en-US/docs/Web/API/Response/Response#parameters
    */
-  body<T extends BodyInit | string>(contentType: string, body: T | null): this;
+  body<T extends GenericBody | string>(
+    contentType: string,
+    body: T | null,
+  ): this;
 
   /**
    * Throw an error with the given HTTP status code and reason?
@@ -268,7 +270,7 @@ export interface ResponseBuilder {
    * response be upgraded to a `WebSocket` connection?
    * @param response - The `Response` this response should be upgraded to.
    */
-  upgrade(response: Response): this;
+  upgrade(response: GenericResponse): this;
 
   /**
    * Set this response with a Content-Type header of text/xml and a body as an
@@ -308,7 +310,15 @@ export interface ResponseBuilder {
   // download(): this;
 }
 
-export interface ErrorHandler<RequestType> extends Handler {
+export interface ErrorHandler<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> extends Handler<GenericResponseBuilder> {
   /**
    * Method that gets executed during the request-resource-response lifecycle in
    * the event an error is thrown.
@@ -316,27 +326,53 @@ export interface ErrorHandler<RequestType> extends Handler {
    * @param context - The context surrounding this error (e.g., the request, the
    * error itself, the response, etc.).
    *
-   * @returns A Drash response.
+   * @returns A response.
    */
   handle: (
-    context: Types.ErrorHandlerContext<RequestType>,
-  ) => Types.Promisable<ResponseBuilder | void>;
+    context: Types.ErrorHandlerContext<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ) => Types.Promisable<GenericResponseBuilder | void>;
 }
 
-export interface Handler {
-  handle(...args: unknown[]): Types.Promisable<unknown>;
+export interface Handler<GenericResponseBuilder> {
+  handle(
+    ...args: unknown[]
+  ): Types.Promisable<
+    GenericResponseBuilder | void
+  >;
 }
 
 /**
  * The handler for all incoming requests.
+ * @template Request The request object.
+ * @template Response The response builder - Extends {@link ResponseBuilder}.
  */
-export interface RequestHandler<RequestType> extends Handler {
+export interface RequestHandler<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> extends Handler<GenericResponse> {
   /**
    * Add resources to this request handler so requests can be matched to them.
    * @param resources - The resource classes to add to this request handler so
    * they can be accessed during runtime.
    */
-  addResources(resources: Types.ResourceClass<RequestType>[]): void;
+  addResources(
+    resources: Types.ResourceClass<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >[],
+  ): void;
 
   /**
    * Handling the incoming request.
@@ -346,23 +382,32 @@ export interface RequestHandler<RequestType> extends Handler {
    * ___after___ it has gone through any services defined in this request
    * handler.
    */
-  handle(request: RequestType): Types.Promisable<Response>;
+  handle(request: GenericRequest): Types.Promisable<GenericResponse | void>;
 }
 
-export interface ResourceHandler extends Handler {
+export interface ResourceHandler<GenericResponseBuilder>
+  extends Handler<GenericResponseBuilder> {
   getOriginalUrlPatterns(): unknown;
 }
 
-export interface Service<RequestType> {
+export interface Service<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> {
   /**
    * Method that runs before a resource's HTTP method is called.
    * @param request - The incoming request.
    * @param response - The response to be sent to the client.
    */
   runBeforeResource?: (
-    request: RequestType,
-    response: ResponseBuilder,
-  ) => Types.Promisable<ResponseBuilder | void>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ) => Types.Promisable<GenericResponseBuilder | void>;
 
   /**
    * Method that runs after a resource's HTTP method is called.
@@ -370,29 +415,42 @@ export interface Service<RequestType> {
    * @param response - The response to be sent to the client.
    */
   runAfterResource?: (
-    request: RequestType,
-    response: ResponseBuilder,
-  ) => Types.Promisable<ResponseBuilder | void>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ) => Types.Promisable<GenericResponseBuilder | void>;
 
   /**
    * Method that runs during `Drash.RequestHandler` build time.
    * @param options - The startup options provided by `Drash.RequestHandler`.
    */
   runAtStartup?: (
-    options: Types.ContextForServicesAtStartup<RequestType>,
-  ) => Types.Promisable<ResponseBuilder | void>;
+    options: Types.ContextForServicesAtStartup<
+      GenericRequest,
+      GenericResponse,
+      GenericResponseBody,
+      GenericResponseBuilder
+    >,
+  ) => Types.Promisable<GenericResponseBuilder | void>;
 
   /**
    * Method that runs AFTER the error handler handles a request that resulted in
    * Drash throwing an error during the request-resource-repsonse lifecycle.
    */
   runOnError?: (
-    request: RequestType,
-    response: ResponseBuilder,
-  ) => Types.Promisable<ResponseBuilder | void>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ) => Types.Promisable<GenericResponseBuilder | void>;
 }
 
-export interface Resource<RequestType> {
+export interface Resource<
+  GenericRequest,
+  GenericResponse,
+  GenericResponseBody,
+  GenericResponseBuilder extends ResponseBuilder<
+    GenericResponse,
+    GenericResponseBody
+  >,
+> {
   /**
    * The paths this resource is accessible at. For example, if the path is
    * `/home`, then requests to `/home` will target this resource.
@@ -432,7 +490,17 @@ export interface Resource<RequestType> {
    * }
    * ```
    */
-  services: Partial<Record<Types.HTTPMethod | "ALL", Service<RequestType>[]>>;
+  services: Partial<
+    Record<
+      Types.HTTPMethod | "ALL",
+      Service<
+        GenericRequest,
+        GenericResponse,
+        GenericResponseBody,
+        GenericResponseBuilder
+      >[]
+    >
+  >;
 
   /**
    * The CONNECT HTTP method which is called if the request to the resource is a
@@ -441,9 +509,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT
    */
   CONNECT(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The DELETE HTTP method which is called if the request to the resource is a
@@ -452,9 +520,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE
    */
   DELETE?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The GET HTTP method which is called if the request to the resource is a
@@ -463,9 +531,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET
    */
   GET?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The OPTIONS HTTP method which is called if the request to the resource is a
@@ -474,9 +542,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
    */
   HEAD?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The OPTIONS HTTP method which is called if the request to the resource is a
@@ -485,9 +553,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
    */
   OPTIONS?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The PATCH HTTP method which is called if the request to the resource is a
@@ -496,9 +564,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH
    */
   PATCH?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The POST HTTP method which is called if the request to the resource is a
@@ -507,9 +575,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST
    */
   POST?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The PUT HTTP method which is called if the request to the resource is a
@@ -518,9 +586,9 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT
    */
   PUT?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 
   /**
    * The TRACE HTTP method which is called if the request to the resource is a
@@ -529,7 +597,7 @@ export interface Resource<RequestType> {
    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE
    */
   TRACE?(
-    request: DrashRequest,
-    response: ResponseBuilder,
-  ): Types.Promisable<ResponseBuilder>;
+    request: GenericRequest,
+    response: GenericResponseBuilder,
+  ): Types.Promisable<GenericResponseBuilder>;
 }

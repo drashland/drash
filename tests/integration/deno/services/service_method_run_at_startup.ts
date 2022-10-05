@@ -37,13 +37,13 @@ class ServerService implements Drash.Interfaces.Service {
 }
 
 async function runServer(): Promise<TestHelpers.DrashServer> {
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     resources: [DefaultResource], // `AddedResource` is not present, but it should exist when `ServerService` is instantiated
     services: [new ServerService()],
   });
 
   const denoRequestHandler = (request: Request) => {
-    return drashRequestHandler.handle(request);
+    return NativeRequestHandler.handle(request);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

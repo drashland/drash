@@ -1,5 +1,5 @@
 import { assertEquals } from "../deps.ts";
-import { DrashRequest } from "../../../../src/deno/http/drash_request.ts";
+import { NativeRequest } from "../../../../src/deno/http/drash_request.ts";
 import { ResponseBuilder } from "../../../../src/core/http/response_builder.ts";
 import { ErrorHandler } from "../../../../src/core/handlers/error_handler.ts";
 import * as Errors from "../../../../src/core/http/errors.ts";
@@ -11,7 +11,7 @@ function request() {
     },
   });
 
-  return new DrashRequest(
+  return new NativeRequest(
     req,
   );
 }

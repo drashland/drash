@@ -49,13 +49,13 @@ class Resource1 extends Drash.Resource {
 }
 
 async function runServer(): Promise<TestHelpers.DrashServer> {
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     resources: [Resource1],
     services: [serverService],
   });
 
   const denoRequestHandler = (request: Request) => {
-    return drashRequestHandler.handle(request);
+    return NativeRequestHandler.handle(request);
   };
 
   const server = new TestHelpers.DrashServer.Builder()

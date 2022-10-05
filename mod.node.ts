@@ -24,12 +24,11 @@ import * as Interfaces from "./src/core/interfaces.ts";
 import * as Types from "./src/core/types.ts";
 
 export { ErrorHandler } from "./src/core/handlers/error_handler.ts";
-export { Resource } from "./src/core/http/resource.ts";
+export { Resource } from "./src/node/http/resource.ts";
 export * as Enums from "./src/core/enums.ts";
 export * as Errors from "./src/core/http/errors.ts";
 
 export type {
-  DrashRequest as Request,
   ResponseBuilder as Response,
   RequestHandler,
 } from "./src/core/interfaces.ts";
@@ -43,9 +42,8 @@ export type { Interfaces, Types };
  * @returns An instance of Drash's `RequestHandler`.
  */
 export async function createRequestHandler(
-  options?: Types.RequestHandlerOptions<unknown>,
-): Promise<Interfaces.RequestHandler<unknown>> {
-  console.log("we here")
+  options?: Types.RequestHandlerOptions<unknown, unknown, unknown, any>,
+): Promise<Interfaces.RequestHandler<unknown, unknown, unknown, any>> {
   const r = new RequestHandler(options);
   await r.runServicesAtStartup();
   // @ts-ignore: Need Node interface

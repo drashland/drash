@@ -20,15 +20,14 @@
  */
 
 // Imports from /core/common
-import { AbstractRequestHandler } from "../../core/handlers/abstract_request_handler.ts";
+import { AbstractRequestHandler } from "../../core/handlers/abstract/request_handler.ts";
 import { HttpError } from "../../core/http/errors.ts";
-import { ResponseBuilder } from "../../core/http/response_builder.ts";
 import { StatusCode } from "../../core/enums.ts";
 import * as CoreTypes from "../../core/types.ts";
 import * as Interfaces from "../../core/interfaces.ts";
 
 // Imports from /core/node
-import { Request as DrashRequest } from "../http/request.ts";
+import { Request as NativeRequest } from "../http/request.ts";
 import { ResourceHandler } from "./resource_handler.ts";
 import * as NodeTypes from "../types.ts";
 
@@ -38,7 +37,8 @@ import * as NodeTypes from "../types.ts";
  * filtering requests, running middleware on requests, and returning a response
  * from the resource that matches the request.
  */
-export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
+export class RequestHandler
+  extends AbstractRequestHandler<unknown, unknown, unknown, any> {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
 
   /**
@@ -50,7 +50,7 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
    * @param context - See {@link CoreTypes.ContextForRequest}.
    */
   matchRequestToResourceHandler(
-    context: CoreTypes.ContextForRequest<DrashRequest>,
+    context: CoreTypes.ContextForRequest<unknown, unknown>,
   ): void {
     // @ts-ignore: TODO(crookse): Need to make sure we have a Request interface
     const requestUrl = context.request.url;
@@ -62,7 +62,7 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
       console.log(`requestUrl CACHCED`, requestUrl);
       const handler = this.resource_handlers_cached[requestUrl];
       context.resource_handler = handler;
-      (context.request as unknown as DrashRequest).resource_handler = handler;
+      (context.request as unknown as NativeRequest).resource_handler = handler;
       return;
     }
 
@@ -82,7 +82,7 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
         if (matchArray) {
           const handler = this.resource_handlers[resourceConstructorName];
           this.resource_handlers_cached[requestUrl] = handler;
-          (context.request as unknown as DrashRequest).setResourceHandler(
+          (context.request as unknown as NativeRequest).setResourceHandler(
             handler,
           );
           context.resource_handler = handler;
@@ -97,7 +97,7 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
   // @ts-ignore: Need Node interface
   public handle(
     incomingRequest: unknown,
-    response: unknown,
+    response: Interfaces.ResponseBuilder<unknown, unknown>,
   ): CoreTypes.Promisable<unknown> {
     const context = this.createContext(incomingRequest, response);
 
@@ -105,7 +105,7 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
       .resolve()
       .then(() => this.matchRequestToResourceHandler(context))
       .then(() => super.runMethodChain(context, this.method_chain))
-      .then(() => (context: CoreTypes.ContextForRequest<unknown>) => {
+      .then(() => (context: CoreTypes.ContextForRequest<unknown, unknown>) => {
         return context.resource_handler?.handle(context);
       })
       .catch((e: Error) => this.runErrorHandler(context, e))
@@ -127,10 +127,13 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
   createContext(
     incomingRequest: unknown,
     response: unknown,
-  ): CoreTypes.ContextForRequest<DrashRequest> {
-    const context: CoreTypes.ContextForRequest<DrashRequest> = {
+  ): CoreTypes.ContextForRequest<
+    unknown,
+    Interfaces.ResponseBuilder<any, any>
+  > {
+    const context: CoreTypes.ContextForRequest<any, any> = {
       // @ts-ignore: Need Node interface
-      request: new DrashRequest(incomingRequest),
+      request: new NativeRequest(incomingRequest),
       // @ts-ignore: Need Node interface
       response,
     };
@@ -139,7 +142,7 @@ export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
   }
 
   addResourceHandler(
-    ResourceClass: CoreTypes.ResourceClass<DrashRequest>,
+    ResourceClass: CoreTypes.ResourceClass<unknown, unknown, unknown, any>,
   ): void {
     this.resource_handlers[ResourceClass.name] = new ResourceHandler(
       ResourceClass,

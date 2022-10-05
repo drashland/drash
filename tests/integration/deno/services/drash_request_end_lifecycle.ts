@@ -180,7 +180,7 @@ class Resource1 extends Drash.Resource {
 }
 
 async function runServer(port?: number): Promise<TestHelpers.DrashServer> {
-  const drashRequestHandler = await Drash.createRequestHandler({
+  const NativeRequestHandler = await Drash.createRequestHandler({
     resources: [
       Resource1,
     ],
@@ -188,7 +188,7 @@ async function runServer(port?: number): Promise<TestHelpers.DrashServer> {
   });
 
   const denoRequestHandler = (request: Request) => {
-    return drashRequestHandler.handle(request);
+    return NativeRequestHandler.handle(request);
   };
 
   const server = new TestHelpers.DrashServer.Builder()
@@ -202,7 +202,7 @@ async function runServer(port?: number): Promise<TestHelpers.DrashServer> {
 
 // FILE MARKER - TESTS /////////////////////////////////////////////////////////
 
-Deno.test("DrashRequest / .end()", async (t) => {
+Deno.test("NativeRequest / .end()", async (t) => {
   await t.step(
     `Server before services should thow and end lifecycle`,
     async () => {

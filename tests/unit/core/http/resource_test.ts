@@ -1,11 +1,11 @@
 import { assertEquals } from "../deps.ts";
 import { ResponseBuilder } from "../../../../src/core/http/response_builder.ts";
 import { Resource } from "../../../../src/core/http/resource.ts";
-import { DrashRequest } from "../../../../src/deno/http/drash_request.ts";
+import { NativeRequest } from "../../../../src/deno/http/drash_request.ts";
 import { Errors, Types } from "../../../../mod.deno.ts";
 import { Method as HTTPMethod } from "../../../../src/core/http/status_code_registry.ts";
 
-const request = new DrashRequest(new Request("http://localhost:1997"));
+const request = new NativeRequest(new Request("http://localhost:1997"));
 
 Deno.test("Resource", async (t) => {
   for (const httpMethod in HTTPMethod) {
