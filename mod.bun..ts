@@ -45,11 +45,11 @@ export type { Interfaces, Types };
  */
 export async function createRequestHandler(
   options?: Types.RequestHandlerOptions<
-  Interfaces.NativeRequest,
-  Response,
-  BodyInit,
-  NativeResponseBuilder
->,
+    Interfaces.NativeRequest,
+    Response,
+    BodyInit,
+    NativeResponseBuilder
+  >,
 ): Promise<
   Interfaces.RequestHandler<
     Interfaces.NativeRequest,

@@ -8,5 +8,10 @@
     "moduleResolution": "node"
   },
   "include": ["./tmp/conversion_workspace/**/*.ts"],
-  "exclude": ["./console/**/*", "./tests/**/*", "./benchmarks/**/*", "./services/**/*"]
+  "exclude": [
+    "./console/**/*",
+    "./tests/**/*",
+    "./benchmarks/**/*",
+    "./services/**/*"
+  ]
 }

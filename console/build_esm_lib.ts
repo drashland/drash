@@ -22,61 +22,61 @@ const filesToCopy = [
   },
   {
     src: "./src/core/handlers/abstract",
-    dest: "/src/core/handlers/abstract"
+    dest: "/src/core/handlers/abstract",
   },
   {
     src: "./src/core/handlers/error_handler.ts",
-    dest: "/src/core/handlers/error_handler.ts"
+    dest: "/src/core/handlers/error_handler.ts",
   },
   {
     src: "./src/core/handlers/services_handler.ts",
-    dest: "/src/core/handlers/services_handler.ts"
+    dest: "/src/core/handlers/services_handler.ts",
   },
   {
     src: "./src/core/http/abstract",
-    dest: "/src/core/http/abstract"
+    dest: "/src/core/http/abstract",
   },
   {
     src: "./src/core/http/errors.ts",
-    dest: "/src/core/http/errors.ts"
+    dest: "/src/core/http/errors.ts",
   },
   {
     src: "./src/core/http/status_code_registry.ts",
-    dest: "/src/core/http/status_code_registry.ts"
+    dest: "/src/core/http/status_code_registry.ts",
   },
   {
     src: "./src/core/proxies/error_handler_proxy.ts",
-    dest: "/src/core/proxies/error_handler_proxy.ts"
+    dest: "/src/core/proxies/error_handler_proxy.ts",
   },
   {
     src: "./src/core/enums.ts",
-    dest: "/src/core/enums.ts"
+    dest: "/src/core/enums.ts",
   },
   {
     src: "./src/core/interfaces.ts",
-    dest: "/src/core/interfaces.ts"
+    dest: "/src/core/interfaces.ts",
   },
   {
     src: "./src/core/types.ts",
-    dest: "/src/core/types.ts"
+    dest: "/src/core/types.ts",
   },
   {
     src: "./src/node",
-    dest: "/src/node"
+    dest: "/src/node",
   },
   {
     src: "./mod.node.ts",
-    dest: "/mod.ts"
+    dest: "/mod.ts",
   },
-]
+];
 
 try {
   logDebug(`Creating ${workspace}.`);
   emptyDirSync(workspace);
   ensureDirSync(workspace);
-  ensureDirSync(workspace + "/src/core/handlers")
-  ensureDirSync(workspace + "/src/core/http")
-  ensureDirSync(workspace + "/src/core/proxies")
+  ensureDirSync(workspace + "/src/core/handlers");
+  ensureDirSync(workspace + "/src/core/http");
+  ensureDirSync(workspace + "/src/core/proxies");
   logDebug(`Copying Drash source files to ${workspace}.`);
   for (const file of filesToCopy) {
     copySync(file.src, workspace + file.dest, { overwrite: true });
@@ -144,4 +144,3 @@ function removeTsExtensions(filename: string): void {
   Deno.writeFileSync(filename, encoder.encode(contents));
   logDebug("File written.");
 }
-

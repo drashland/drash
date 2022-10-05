@@ -1,16 +1,16 @@
 {
   "contributors": [
     {
-      "name" : "Breno Salles"
+      "name": "Breno Salles"
     },
     {
-      "name" : "Edward Bebbington"
+      "name": "Edward Bebbington"
     },
     {
-      "name" : "Eric Crooks"
+      "name": "Eric Crooks"
     },
     {
-      "name" : "Sara Gee"
+      "name": "Sara Gee"
     }
   ],
   "description": "Drash is a TypeScript HTTP microframework. It works for Deno, Node, Bun, and any other JavaScript/TypeScript runtime.",

@@ -29,8 +29,8 @@ export * as Enums from "./src/core/enums.ts";
 export * as Errors from "./src/core/http/errors.ts";
 
 export type {
-  ResponseBuilder as Response,
   RequestHandler,
+  ResponseBuilder as Response,
 } from "./src/core/interfaces.ts";
 
 export type { Interfaces, Types };
