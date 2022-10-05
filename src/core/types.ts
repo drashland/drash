@@ -1,0 +1,337 @@
+/**
+ * Drash - A micro HTTP framework for JavaScript and TypeScript systems.
+ * Copyright (C) 2022  Drash authors. The Drash authors are listed in the
+ * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
+ * applies to Drash version 3.X.X and any later version.
+ *
+ * This file is part of Drash. See <https://github.com/drashland/drash>.
+ *
+ * Drash is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Drash is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Drash. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import * as Interfaces from "./interfaces.ts";
+
+export type HandleMethod<Arg, ReturnValue> = (
+  arg: Arg,
+) => ReturnValue;
+
+export type CatchableReason = "request_end_early";
+
+export type Catchable = Error;
+
+export type Cookie = {
+  /** Name of the cookie. */
+  name: string;
+  /** Value of the cookie. */
+  value: string;
+  /** Expiration date of the cookie. */
+  expires?: Date;
+  /** Max-Age of the Cookie. Max-Age must be an integer superior or equal to 0. */
+  max_age?: number;
+  /** Specifies those hosts to which the cookie will be sent. */
+  domain?: string;
+  /** Indicates a URL path that must exist in the request. */
+  path?: string;
+  /** Indicates if the cookie is made using SSL & HTTPS. */
+  secure?: boolean;
+  /** Indicates that cookie is not accessible via JavaScript. */
+  http_only?: boolean;
+  /**
+   * Allows servers to assert that a cookie ought not to
+   * be sent along with cross-site requests.
+   */
+  same_site?: "Strict" | "Lax" | "None";
+  /** Additional key value pairs with the form "key=value" */
+  unparsed?: string[];
+};
+
+export type ServiceMethod =
+  | RuntimeServiceMethod
+  | "runAtStartup";
+
+export type RuntimeServiceMethod =
+  | "runAfterResource"
+  | "runBeforeResource"
+  | "runOnError";
+
+export type RunAtStartupService = Required<
+  Pick<Interfaces.Service, "runAtStartup">
+>;
+
+export type RunBeforeResourceService = Required<
+  Pick<Interfaces.Service, "runBeforeResource">
+>;
+
+export type RunAfterResourceService = Required<
+  Pick<Interfaces.Service, "runAfterResource">
+>;
+
+export type RunOnErrorService = Required<
+  Pick<Interfaces.Service, "runOnError">
+>;
+
+/**
+ * Stand-in for https://github.com/microsoft/TypeScript/issues/31394.
+ */
+export type Promisable<T> = T | Promise<T>;
+
+export type ErrorHandlerContext = {
+  /** The error that caused this error handler to be called. */
+  error?: Error;
+  /** The request associated with this error. */
+  request: Interfaces.DrashRequest;
+  /** The response associated with this error. */
+  response: Interfaces.ResponseBuilder;
+};
+
+/**
+ * The native `Request` class' methods for parsing a body.
+ */
+export type RequestMethods =
+  | "arrayBuffer"
+  | "blob"
+  | "formData"
+  | "json"
+  | "text";
+
+/**
+ * Each incoming request gets its own context. The context is this typing and it
+ * is passed around throughout the entire request-resource-response lifecycle.
+ */
+export type ContextForRequest = {
+  /**
+   * The `Error` that is thrown during the lifecycle. This is optional because
+   * an `Error` is only assigned to this property when an `Error` is thrown.
+   */
+  error?: Error;
+
+  /**
+   * The `DrashRequest` instance, not the interface.
+   */
+  request: Interfaces.DrashRequest;
+
+  /**
+   * The `ResourceHandler` instance. This is optional since there might not be a
+   * resource yet. For example, when a request enters `Drash.RequsetHandler`,
+   * the context is created with only the `DrashRequest` and `ResponseBuilder`
+   * objects. There is no resource yet until later in the lifecycle.
+   */
+  resource_handler?: Interfaces.ResourceHandler;
+
+  /**
+   * The `ResponseBuilder` instance, not the interface.
+   */
+  response: Interfaces.ResponseBuilder;
+};
+
+/**
+ * Request methods defined by HTTP.
+ *
+ * @link See https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods.
+ */
+export type HTTPMethod =
+  | "CONNECT"
+  | "DELETE"
+  | "GET"
+  | "HEAD"
+  | "OPTIONS"
+  | "PATCH"
+  | "POST"
+  | "PUT"
+  | "TRACE";
+
+export type ResourcePaths = {
+  regex_path: string;
+  path_params: string[];
+};
+
+/**
+ * Utility type that helps identify "this is a method of the given object"
+ */
+export type MethodOf<Object> = {
+  // deno-lint-ignore no-explicit-any
+  [K in keyof Object]: Object[K] extends (...args: any[]) => unknown ? K
+    : never;
+}[keyof Object];
+
+export type HTTPStatusCode =
+  | 100
+  | 101
+  | 102
+  | 103
+  | 200
+  | 201
+  | 202
+  | 203
+  | 204
+  | 205
+  | 206
+  | 207
+  | 208
+  | 226
+  | 300
+  | 301
+  | 302
+  | 303
+  | 304
+  | 305
+  | 307
+  | 308
+  | 400
+  | 401
+  | 402
+  | 403
+  | 404
+  | 405
+  | 406
+  | 407
+  | 408
+  | 409
+  | 410
+  | 411
+  | 412
+  | 413
+  | 414
+  | 415
+  | 416
+  | 417
+  | 418
+  | 421
+  | 422
+  | 423
+  | 424
+  | 425
+  | 426
+  | 428
+  | 429
+  | 431
+  | 451
+  | 500
+  | 501
+  | 502
+  | 503
+  | 504
+  | 505
+  | 506
+  | 507
+  | 508
+  | 510
+  | 511;
+
+/**
+ * Typing for the values in the `Drash.Response.statuses` key-value store.
+ */
+export type HTTPStatusCodeRegistry = {
+  /**
+   * The HTTP status code description (e.g, `OK`).
+   */
+  description: string;
+
+  // To be implemented. See https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+  // reference?: string[];
+
+  /**
+   * The HTTP status code (e.g., `200`).
+   */
+  value: HTTPStatusCode;
+};
+
+export type CachedResource = {
+  /**
+   * Cached resources are associated with a request URL. That request URL may
+   * have path params that match to the cached resource's path params signature.
+   * If this is the case, the path params are stored in this property.
+   */
+  path_params: Record<string, string>;
+
+  /**
+   * The resource proxy that is cached.
+   */
+  http_method_handler: Interfaces.ResourceHandler;
+};
+
+/**
+ * A resource that has been added to the `Drash.RequestHandler` instance.
+ */
+export type AddedResource<PathPatternType> = {
+  /**
+   * The instance of the added resource.
+   */
+  instance: Interfaces.ResourceHandler;
+  /**
+   * The resource's path's patterns (based on the resource's `paths` property)
+   * used to match requests to this resource.
+   */
+  patterns: PathPatternType;
+};
+
+/**
+ * An instance of the {@link Resource}.
+ */
+export type ResourceHandlerClass = new (
+  ...args: unknown[]
+) => Interfaces.ResourceHandler;
+
+/**
+ * An instance of the {@link Resource}.
+ */
+export type ResourceClass = new (
+  ...args: unknown[]
+) => Interfaces.Resource;
+
+/**
+ * An instance of the {@link Interfaces.Service}.
+ */
+export type ServiceClass = new (
+  ...args: unknown[]
+) => Interfaces.Service;
+
+/**
+ * An instance of {@link Interfaces.ErrorHandler}.
+ */
+export type ErrorHandlerClass = new (
+  ...args: unknown[]
+) => Interfaces.ErrorHandler;
+
+export type ServiceHandlerOptions = {
+  services?: Interfaces.Service[];
+};
+
+/**
+ * Options given to the `Drash.RequestHandler` class.
+ */
+export type RequestHandlerOptions = {
+  /**
+   * The resources (which contain the URIs) to register with the handler. Any
+   * resource or URI not added to the handler will result in a 404 when
+   * requested by a client.
+   */
+  resources?: ResourceClass[];
+  /**
+   * The error handler that handles any errors in the request handler's
+   * lifecycle.
+   */
+  error_handler?: ErrorHandlerClass;
+  /**
+   * The services to add to the request handler lifecycle. These services can
+   * run at different points in the lifecycle.
+   */
+  services?: Interfaces.Service[];
+};
+
+/**
+ * Options given to the `Service.runAtStartup()` method.
+ */
+export type ContextForServicesAtStartup = {
+  request_handler: Interfaces.RequestHandler;
+};

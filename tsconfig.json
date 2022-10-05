@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "rootDir": "./tmp/conversion_workspace",
+    "declaration": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  },
+  "include": ["./tmp/conversion_workspace/**/*.ts"],
+  "exclude": ["./console/**/*", "./tests/**/*", "./benchmarks/**/*", "./services/**/*"]
+}

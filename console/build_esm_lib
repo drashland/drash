@@ -1,0 +1,5 @@
+#!/bin/bash
+
+(
+  deno run --allow-read --allow-run --allow-write ./console/build_esm_lib.ts
+)

@@ -1,0 +1,17 @@
+{
+  "tasks": {
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:conversion-workspace": "deno run --allow-read --allow-write ./console/build_esm_lib.ts",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:windows": "bash console/build_esm_lib && yarn build:cjs && yarn build:esm",
+    "build": "console/build_esm_lib && deno task build:cjs && deno task build:esm",
+    "check": "rm -rf node_modules/ && rm yarn.lock && yarn install && yarn build && yarn test",
+    "fmt": "deno fmt benchmarks src services tests interfaces.ts mod.ts types.ts README.md",
+    "release": "yarn publish --access public",
+    "run-bench-app:bun": "bun run ./benchmarks/bun_app.ts",
+    "run-bench-app:deno": "deno run -A ./benchmarks/deno_app.ts",
+    "test:deno": "deno test -A --unsafely-ignore-certificate-errors tests/integration/deno",
+    "test:unit": "deno test -A tests/unit",
+    "test:node": "jest"
+  }
+}
