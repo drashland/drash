@@ -1,4 +1,4 @@
-import * as Drash from "../mod.deno.ts";
+import * as Drash from "../../mod.deno.ts";
 
 import { serve } from "https://deno.land/std@0.158.0/http/server.ts";
 

@@ -1,8 +1,8 @@
 {
   "tasks": {
-    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:cjs": "rm -rf lib/cjs && mkdir -p lib/cjs && deno task build:conversion-workspace node_js_cjs && tsc --project tsconfig.cjs.json && cp -r lib/cjs benchmarks/node_js_cjs/local_cjs_build",
     "build:conversion-workspace": "deno run --allow-read --allow-write ./console/build_esm_lib.ts",
-    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:esm": "rm -rf lib/esm && mkdir -p lib/esm && deno task build:conversion-workspace node_js_esm && tsc --project tsconfig.esm.json  && cp -r lib/esm benchmarks/node_js_esm/local_esm_build",
     "build:windows": "bash console/build_esm_lib && yarn build:cjs && yarn build:esm",
     "build": "console/build_esm_lib && deno task build:cjs && deno task build:esm",
     "check": "rm -rf node_modules/ && rm yarn.lock && yarn install && yarn build && yarn test",
@@ -11,7 +11,7 @@
     "run-bench-app:bun": "bun run ./benchmarks/bun_app.ts",
     "run-bench-app:deno": "deno run -A ./benchmarks/deno_app.ts",
     "test:deno": "deno test -A --unsafely-ignore-certificate-errors tests/integration/deno",
-    "test:unit": "deno test -A tests/unit",
-    "test:node": "jest"
+    "test:node": "jest",
+    "test:unit": "deno test -A tests/unit"
   }
 }

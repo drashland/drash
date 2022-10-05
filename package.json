@@ -1,0 +1,22 @@
+{
+  "contributors": [
+    {
+      "name" : "Breno Salles"
+    },
+    {
+      "name" : "Edward Bebbington"
+    },
+    {
+      "name" : "Eric Crooks"
+    },
+    {
+      "name" : "Sara Gee"
+    }
+  ],
+  "description": "Drash is a TypeScript HTTP microframework. It works for Deno, Node, Bun, and any other JavaScript/TypeScript runtime.",
+  "license": "GPL-3.0",
+  "main": "mod.js",
+  "name": "drash",
+  "repository": "git@github.com:drashland/drash.git",
+  "version": "3.0.0.rc-1"
+}

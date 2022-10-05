@@ -1,19 +1,15 @@
 # files
-*conf.json
 .DS_Store
 .env
-bundle.js
-compiled_*.js
-compiled_*.json
-doc_blocks_output_actual.json
+*.log
 package-lock.json
 
 # directories
 .idea
 .sass-cache
 .vim
-node_modules
 lib/*
+node_modules
 tmp*/*
 tmp/*
 

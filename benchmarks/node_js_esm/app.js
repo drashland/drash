@@ -1,6 +1,6 @@
-const Drash = require("../lib/cjs/mod.js");
+import * as Drash from "./local_esm_build/mod.js";
 
-const http = require("http");
+import * as http from "http";
 
 const hostname = "127.0.0.1";
 const port = 3000;
@@ -20,7 +20,7 @@ const requestHandler = Drash.createRequestHandler({
   ],
 });
 
-return Promise.resolve()
+Promise.resolve()
   .then(async () => {
     return await requestHandler;
   })

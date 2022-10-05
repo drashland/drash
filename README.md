@@ -5,8 +5,8 @@
 [![Latest Release](https://img.shields.io/github/release/drashland/drash.svg?color=bright_green&label=latest)](https://github.com/drashland/drash/releases/latest)
 [![CI](https://img.shields.io/github/workflow/status/drashland/drash/master?label=ci)](https://github.com/drashland/drash/actions/workflows/master.yml)
 
-Drash is a native JavaScript HTTP microframework. It works for Deno, Node, Bun,
-and any other runtime that implements native JavaScript APIs.
+Drash is a TypeScript HTTP microframework. It works for Deno, Node, Bun, and any
+other JavaScript/TypeScript runtime.
 
 View the full documentation at https://drash.land/drash.
 
