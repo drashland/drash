@@ -1,5 +1,5 @@
 import { assertEquals } from "../deps.ts";
-import { DrashRequest } from "../../../../src/deno/http/drash_request.ts";
+import { DrashRequest } from "../../../../src/deno/http/request.ts";
 import { ResponseBuilder } from "../../../../src/core/http/response_builder.ts";
 import { ErrorHandler, Errors, Types } from "../../../../mod.deno.ts";
 import { ErrorHandlerProxy } from "../../../../src/core/proxies/error_handler_proxy.ts";
@@ -16,7 +16,7 @@ Deno.test("ErrorHandlerProxy", async (t) => {
 
       errorHandlerProxy.handle(context);
 
-      const response = (context.response as ResponseBuilder).toNativeResponse();
+      const response = (context.response as ResponseBuilder).build();
 
       assertEquals(response.status, 500);
       assertEquals(response.statusText, "Internal Server Error");
@@ -34,7 +34,7 @@ Deno.test("ErrorHandlerProxy", async (t) => {
 
       errorHandlerProxy.handle(context);
 
-      const response = (context.response as ResponseBuilder).toNativeResponse();
+      const response = (context.response as ResponseBuilder).build();
 
       assertEquals(response.status, 400);
       assertEquals(response.statusText, "Bad Request");

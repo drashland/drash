@@ -27,7 +27,7 @@ import { StatusCode } from "../../core/enums.ts";
 import * as Types from "../../core/types.ts";
 
 // Imports from /core/deno
-import { DrashRequest } from "../http/drash_request.ts";
+import { Request as DrashRequest } from "../http/request.ts";
 import { ResourceHandler } from "./resource_handler.ts";
 import { Interfaces } from "../../../mod.deno.ts";
 

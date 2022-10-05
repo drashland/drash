@@ -20,6 +20,7 @@
  */
 
 import { AbstractResourceHandler } from "../../core/handlers/abstract_resource_handler.ts";
+import { Request as DrashRequest } from "../http/request.ts";
 import * as Types from "../types.ts";
 
 const REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -31,8 +32,10 @@ const REGEX_URI_REPLACEMENT = "([^/]+)";
  * Resource's can have multiple chains -- one for each HTTP method they define;
  * and each of those chains can have services.
  */
-export class ResourceHandler
-  extends AbstractResourceHandler<Types.ResourcePaths> {
+export class ResourceHandler extends AbstractResourceHandler<
+  DrashRequest,
+  Types.ResourcePaths
+> {
   /**
    * Take `this.#original.paths` and convert them to `URLPattern` objects.
    * @returns An array of `URLPattern` objects created from

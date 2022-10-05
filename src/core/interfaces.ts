@@ -138,7 +138,8 @@ export interface DrashRequest extends Request {
  */
 export interface ResponseBuilder {
   body_init: BodyInit;
-  headers_init?: Headers;
+  // headers_init?: Headers;
+  headers_init?: Map<string, string>;
 
   /**
    * Set the body of this response.

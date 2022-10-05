@@ -61,7 +61,7 @@ export class ServicesHandler<RequestType> {
   async runAfterResourceServices(
     context: Types.ContextForRequest<RequestType>,
   ): Promise<void> {
-    const internalRequest = (context.request as AbstractRequest);
+    const internalRequest = (context.request as unknown as AbstractRequest);
 
     for (const service of this.#services.runAfterResource) {
       if (internalRequest.end_early) {
@@ -78,7 +78,7 @@ export class ServicesHandler<RequestType> {
   async runBeforeResourceServices(
     context: Types.ContextForRequest<RequestType>,
   ): Promise<void> {
-    const internalRequest = (context.request as AbstractRequest);
+    const internalRequest = (context.request as unknown as AbstractRequest);
 
     for (const service of this.#services.runBeforeResource) {
       if (internalRequest.end_early) {

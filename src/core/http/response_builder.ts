@@ -28,14 +28,15 @@ import * as Types from "../types.ts";
 /**
  * A builder to help create/update a response object. This is used until the
  * last step of the request-resource-response which is calling the
- * `toNativeResponse()` method -- sending a native `Response` object to the
+ * `build()` method -- sending a native `Response` object to the
  * runtime for further processing.
  */
 export class ResponseBuilder implements Interfaces.ResponseBuilder {
   #state: {
     body?: BodyInit | null;
     error?: Error;
-    headers?: Headers;
+    // headers?: Headers;
+    headers?: Map<string, string>;
     status?: Enums.StatusCode;
     statusText?: string;
     upgrade?: Response;
@@ -136,7 +137,7 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
 
   public headers(headers: Record<string, string>): this {
     if (!this.#state.headers) {
-      this.#state.headers = new Headers();
+      this.#state.headers = new Map(); //new Headers();
     }
 
     for (const header in headers) {
@@ -186,7 +187,7 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
    *
    * @returns This object as a native `Response` object.
    */
-  public toNativeResponse(): Response {
+  public build(): Response {
     if (this.#state.upgrade) {
       return this.#state.upgrade;
     }
@@ -208,7 +209,8 @@ export class ResponseBuilder implements Interfaces.ResponseBuilder {
       }
 
       return new Response(this.#state.body, {
-        headers: this.#state.headers ?? new Headers(),
+        // @ts-ignore: TODO(crookse) Need to account for HeadersInit not in Node
+        headers: this.#state.headers ?? new Map<string, string>(), // new Headers(),
         ...statusFields,
       });
     }

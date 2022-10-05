@@ -25,7 +25,7 @@ import { AbstractRequest } from "../../core/http/abstract_native_request.ts";
  * Drash's version of a `Request`. This class introduces helper methods to
  * interact with the native `Request` object (e.g., `request.readBody("json"))`.
  */
-export class DrashRequest extends AbstractRequest {
+export class Request extends AbstractRequest {
   /**
    * Set the path params on this request. This takes the request's URL and
    * matches it to the path params defined by the resource it targets.

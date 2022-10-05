@@ -25,9 +25,10 @@ import { HttpError } from "../../core/http/errors.ts";
 import { ResponseBuilder } from "../../core/http/response_builder.ts";
 import { StatusCode } from "../../core/enums.ts";
 import * as CoreTypes from "../../core/types.ts";
+import * as Interfaces from "../../core/interfaces.ts";
 
 // Imports from /core/node
-import { DrashRequest } from "../http/drash_request.ts";
+import { Request as DrashRequest } from "../http/request.ts";
 import { ResourceHandler } from "./resource_handler.ts";
 import * as NodeTypes from "../types.ts";
 
@@ -37,7 +38,7 @@ import * as NodeTypes from "../types.ts";
  * filtering requests, running middleware on requests, and returning a response
  * from the resource that matches the request.
  */
-export class RequestHandler extends AbstractRequestHandler {
+export class RequestHandler extends AbstractRequestHandler<DrashRequest> {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
 
   /**
@@ -49,19 +50,24 @@ export class RequestHandler extends AbstractRequestHandler {
    * @param context - See {@link CoreTypes.ContextForRequest}.
    */
   matchRequestToResourceHandler(
-    context: CoreTypes.ContextForRequest,
+    context: CoreTypes.ContextForRequest<DrashRequest>,
   ): void {
+    // @ts-ignore: TODO(crookse): Need to make sure we have a Request interface
     const requestUrl = context.request.url;
+
+    console.log(`requestUrl`, requestUrl);
 
     // If the resource was cached, then return it. No need to look for it again.
     if (this.resource_handlers_cached[requestUrl]) {
+      console.log(`requestUrl CACHCED`, requestUrl);
       const handler = this.resource_handlers_cached[requestUrl];
       context.resource_handler = handler;
-      (context.request as DrashRequest).resource_handler = handler;
+      (context.request as unknown as DrashRequest).resource_handler = handler;
       return;
     }
 
-    const url = new URL(requestUrl);
+    // @ts-ignore
+    const url = new URL(requestUrl, `http://${context.request.headers.host}`);
 
     for (const resourceConstructorName in this.resource_handlers) {
       const resourceHandler = this.resource_handlers[resourceConstructorName];
@@ -76,7 +82,9 @@ export class RequestHandler extends AbstractRequestHandler {
         if (matchArray) {
           const handler = this.resource_handlers[resourceConstructorName];
           this.resource_handlers_cached[requestUrl] = handler;
-          (context.request as DrashRequest).setResourceHandler(handler);
+          (context.request as unknown as DrashRequest).setResourceHandler(
+            handler,
+          );
           context.resource_handler = handler;
           return;
         }
@@ -86,6 +94,28 @@ export class RequestHandler extends AbstractRequestHandler {
     throw new HttpError(StatusCode.NotFound);
   }
 
+  // @ts-ignore: Need Node interface
+  public handle(
+    incomingRequest: unknown,
+    response: unknown,
+  ): CoreTypes.Promisable<unknown> {
+    const context = this.createContext(incomingRequest, response);
+
+    return Promise
+      .resolve()
+      .then(() => this.matchRequestToResourceHandler(context))
+      .then(() => super.runMethodChain(context, this.method_chain))
+      .then(() => (context: CoreTypes.ContextForRequest<unknown>) => {
+        return context.resource_handler?.handle(context);
+      })
+      .catch((e: Error) => this.runErrorHandler(context, e))
+      .then(() => {
+        // @ts-ignore
+        context.response.end("Hello");
+      });
+    // .then(() => (context.response as ResponseBuilder).build());
+  }
+
   /**
    * Each incoming request has its own context so as not to overlap with one
    * another. The context is created here.
@@ -93,16 +123,24 @@ export class RequestHandler extends AbstractRequestHandler {
    * processed through the chain.
    * @returns The context Drash needs to process the request end-to-end.
    */
-  createContext(incomingRequest: Request): CoreTypes.ContextForRequest {
-    const context: CoreTypes.ContextForRequest = {
+  // @ts-ignore: Need Node interface
+  createContext(
+    incomingRequest: unknown,
+    response: unknown,
+  ): CoreTypes.ContextForRequest<DrashRequest> {
+    const context: CoreTypes.ContextForRequest<DrashRequest> = {
+      // @ts-ignore: Need Node interface
       request: new DrashRequest(incomingRequest),
-      response: new ResponseBuilder(),
+      // @ts-ignore: Need Node interface
+      response,
     };
 
     return context;
   }
 
-  addResourceHandler(ResourceClass: CoreTypes.ResourceClass): void {
+  addResourceHandler(
+    ResourceClass: CoreTypes.ResourceClass<DrashRequest>,
+  ): void {
     this.resource_handlers[ResourceClass.name] = new ResourceHandler(
       ResourceClass,
     );

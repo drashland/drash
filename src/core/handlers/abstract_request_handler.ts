@@ -78,7 +78,7 @@ export abstract class AbstractRequestHandler<RequestType>
       options?.error_handler ?? ErrorHandler,
     );
     this.addResources(options?.resources ?? []);
-    this.#buildMethodChain();
+    this.buildMethodChain();
   }
 
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
@@ -103,8 +103,8 @@ export abstract class AbstractRequestHandler<RequestType>
       .then(() => (context: Types.ContextForRequest<RequestType>) => {
         return context.resource_handler?.handle(context);
       })
-      .catch((e: Error) => this.#runErrorHandler(context, e))
-      .then(() => (context.response as ResponseBuilder).toNativeResponse());
+      .catch((e: Error) => this.runErrorHandler(context, e))
+      .then(() => (context.response as ResponseBuilder).build());
   }
 
   // FILE MARKER - METHODS - PUBLIC (HIDDEN) ///////////////////////////////////
@@ -142,7 +142,8 @@ export abstract class AbstractRequestHandler<RequestType>
   /**
    * Build this handler's chain.
    */
-  #buildMethodChain(): void {
+  protected buildMethodChain(): void {
+    console.log("Building method chain");
     // Run all "global before resource" services
     if (this.services_handler.hasServices("runBeforeResource")) {
       this.method_chain.push(
@@ -178,13 +179,15 @@ export abstract class AbstractRequestHandler<RequestType>
    * @param error
    * @returns
    */
-  #runErrorHandler(
+  protected runErrorHandler(
     context: Types.ContextForRequest<RequestType>,
     error: Error,
   ): Promise<void> {
     context.error = error ?? new HttpError(
       Enums.StatusCode.InternalServerError,
     );
+
+    console.log(`WEEEE:`, error);
 
     return Promise
       .resolve()

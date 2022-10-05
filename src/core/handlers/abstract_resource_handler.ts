@@ -34,7 +34,7 @@ import * as Types from "../types.ts";
  * method they define; and each of those chains can have services.
  */
 export abstract class AbstractResourceHandler<
-  RequestType extends Interfaces.DrashRequest,
+  RequestType, // extends Interfaces.DrashRequest,
   OriginalURLPatternsType,
 > extends ChainHandler<RequestType> implements Interfaces.ResourceHandler {
   protected original: Interfaces.Resource<RequestType>;
@@ -87,6 +87,7 @@ export abstract class AbstractResourceHandler<
       return;
     }
 
+    // @ts-ignore: TODO(crookse): Need to make sure we have a Request interface
     const httpMethod = context.request.method as HTTPMethod;
     return super.runMethodChain(context, this.method_chains[httpMethod]);
   }

@@ -54,7 +54,7 @@ Deno.test("ChainHandler", async (t) => {
       );
 
       assertEquals(
-        await (context.response.toNativeResponse()).text(),
+        await (context.response.build()).text(),
         "Hello! This is a text response!",
       );
     });

@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { RequestHandler } from "././src/deno/handlers/request_handler.ts";
+import { RequestHandler } from "././src/node/handlers/request_handler.ts";
 import * as Interfaces from "./src/core/interfaces.ts";
 import * as Types from "./src/core/types.ts";
 
@@ -43,9 +43,11 @@ export type { Interfaces, Types };
  * @returns An instance of Drash's `RequestHandler`.
  */
 export async function createRequestHandler(
-  options?: Types.RequestHandlerOptions,
-): Promise<Interfaces.RequestHandler> {
+  options?: Types.RequestHandlerOptions<unknown>,
+): Promise<Interfaces.RequestHandler<unknown>> {
+  console.log("we here")
   const r = new RequestHandler(options);
   await r.runServicesAtStartup();
+  // @ts-ignore: Need Node interface
   return r;
 }

@@ -43,6 +43,11 @@ export abstract class ChainHandler<RequestType> implements Interfaces.Handler {
     context: Types.ContextForRequest<RequestType>,
     chain: Types.HandleMethod<Types.ContextForRequest<RequestType>, void>[],
   ): Types.Promisable<void> {
+    // TODO(crookse) Why is this running twice
+    if (!chain) {
+      return;
+    }
+    console.log(`we are in the chain. chain is:`, chain);
     return chain.reduce(
       (previousMethod, nextMethod) => {
         return previousMethod.then(() => nextMethod(context));

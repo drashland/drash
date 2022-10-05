@@ -20,7 +20,7 @@
  */
 
 import { AbstractResourceHandler } from "../../core/handlers/abstract_resource_handler.ts";
-import { DrashRequest } from "../http/drash_request.ts";
+import { Request as DrashRequest } from "../http/request.ts";
 
 /**
  * Class that handles requests that have made it to an existing resource. This
