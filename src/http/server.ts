@@ -287,7 +287,6 @@ export class Server {
         this.#options.request ?? {},
       );
 
-
       // Run server-level services (before we get to the resource)
       await runServices(
         this.#services,
@@ -354,7 +353,6 @@ export class Server {
         response,
         "runAfterResource",
       );
-
 
       if (request.end_lifecycle) {
         return this.#respond(response);
