@@ -13,9 +13,7 @@ export type ParsedBody =
  */
 export class DrashRequest extends Request {
   public conn_info: ConnInfo;
-
   #end_lifecycle = false;
-  #original: Request;
   #parsed_body?: ParsedBody;
   readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
@@ -44,7 +42,6 @@ export class DrashRequest extends Request {
     super(originalRequest);
     this.#path_params = pathParams;
     this.conn_info = connInfo;
-    this.#original = originalRequest.clone();
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +53,7 @@ export class DrashRequest extends Request {
   }
 
   get original(): Request {
-    return this.#original;
+    return Object.getPrototypeOf(this);
   }
 
   //////////////////////////////////////////////////////////////////////////////
