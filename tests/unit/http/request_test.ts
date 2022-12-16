@@ -588,7 +588,7 @@ async function bodyTests(t: Deno.TestContext) {
 
 async function originalRequestTests(t: Deno.TestContext) {
   await t.step(
-    "body is kept intact when Drash.Request body is parsed",
+    "body is kept intact when read_body is false",
     async () => {
       const serverRequest = new Request("https://drash.land", {
         headers: {
@@ -611,17 +611,21 @@ async function originalRequestTests(t: Deno.TestContext) {
         serverRequest,
         new Map(),
         connInfo,
+        {
+          read_body: false,
+        },
       );
 
-      // Check that the Drash.Request body has the `hello` param
+      // Hasn't been parsed so should return undefined
       const hello = request.bodyParam("hello");
-      assertEquals(hello, "world");
+      assertEquals(hello, undefined);
 
-      // Check that the original request body was kept intact
+      // Should be able to consume the body
+      assertEquals(request.bodyUsed, false);
+      const json = await request.json();
       assertEquals(request.bodyUsed, true);
-      assertEquals(request.original.bodyUsed, false);
       // Now read the original request body
-      assertEquals(await request.original.json(), { hello: "world" });
+      assertEquals(json, { hello: "world" });
     },
   );
 }
