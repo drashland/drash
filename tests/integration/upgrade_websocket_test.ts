@@ -1,6 +1,5 @@
-import { assertEquals } from "../deps.ts";
+import { assertEquals, deferred } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
-import { deferred } from "https://deno.land/std@0.158.0/async/deferred";
 
 const messages: MessageEvent[] = [];
 let globalResolve: ((arg: unknown) => void) | null = null;
@@ -63,7 +62,7 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
   const p = deferred();
   socket.onclose = () => {
     p.resolve();
-  }
+  };
   assertEquals<string>(
     (hydratedMessages as MessageEvent[])[0] as unknown as string,
     "this is a message from the client",
