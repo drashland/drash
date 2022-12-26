@@ -13,11 +13,11 @@ export type ParsedBody =
  */
 export class DrashRequest extends Request {
   public conn_info: ConnInfo;
-  readonly #path_params: Map<string, string>;
 
   #end_lifecycle = false;
   #original: Request;
   #parsed_body?: ParsedBody;
+  readonly #path_params: Map<string, string>;
   #search_params!: URLSearchParams;
 
   //////////////////////////////////////////////////////////////////////////////
