@@ -628,6 +628,33 @@ async function originalRequestTests(t: Deno.TestContext) {
       assertEquals(json, { hello: "world" });
     },
   );
+
+  await t.step(
+    "original request can be retrieved and bodyUsed is false",
+    async () => {
+      // We expect this to be cloned in the `Drash.Request.create()` call
+      const serverRequest = new Request("https://drash.land", {
+        headers: { "x-hello": "goodbye", "x-goodbye": "hello" },
+        method: "POST",
+        redirect: "error",
+      });
+
+      // When creating a Drash.Request object, the body is automatically parsed
+      // and causes `Drash.Request.bodyUsed` to be `true`
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+
+      // Assert some equality between the two requests
+      assertEquals(request.original.bodyUsed, serverRequest.bodyUsed);
+      assertEquals(request.original.headers, serverRequest.headers);
+      assertEquals(request.original.method, serverRequest.method);
+      assertEquals(request.original.redirect, serverRequest.redirect);
+      assertEquals(request.original.url, serverRequest.url);
+    },
+  );
 }
 
 async function paramTests(t: Deno.TestContext) {
