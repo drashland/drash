@@ -620,17 +620,19 @@ async function originalRequestTests(t: Deno.TestContext) {
       // Check that the Drash.Request body has the `hello` param
       const hello = request.bodyParam("hello");
       assertEquals(hello, "world");
+      assertEquals(request.bodyUsed, true);
 
       // Check that the original request body was kept intact
-      assertEquals(request.bodyUsed, true);
       assertEquals(request.original.bodyUsed, false);
+
       // Now read the original request body
       assertEquals(await request.original.json(), { hello: "world" });
+      assertEquals(request.original.bodyUsed, true);
     },
   );
 
   await t.step(
-    "can be retrieved via request.original and has { bodyUsed: false }",
+    "can be retrieved via request.original and has { bodyUsed: false } (POST no body)",
     async () => {
       // We expect this to be cloned in the `Drash.Request.create()` call
       const serverRequest = new Request("https://drash.land", {
@@ -648,6 +650,7 @@ async function originalRequestTests(t: Deno.TestContext) {
       );
 
       // Assert some equality between the two requests
+      assertEquals(request.original.bodyUsed, false);
       assertEquals(request.original.bodyUsed, serverRequest.bodyUsed);
       assertEquals(request.original.headers, serverRequest.headers);
       assertEquals(request.original.method, serverRequest.method);
@@ -750,12 +753,14 @@ async function staticCreateTests(t: Deno.TestContext) {
         },
       );
 
-      // Assert the bodies have not been read
+      // Assert the bodies have not been read because a clone of `serverRequest`
+      // was passed in to `super()` in `DrashRequest`
       assertEquals(request.bodyUsed, false);
       assertEquals(request.original.bodyUsed, false);
 
       // Now read the original request body
       assertEquals(await request.original.json(), { hello: "world" });
+      assertEquals(request.original.bodyUsed, true);
     },
   );
 
@@ -766,28 +771,35 @@ async function staticCreateTests(t: Deno.TestContext) {
         method: "POST",
       });
 
-      // This call should cause the body to be left intact.
-      // `DrashRequest.parseBody()` should not be called.
       const request = await Drash.Request.create(
         serverRequest,
         new Map(),
         connInfo,
       );
 
-      // Assert the bodies have not been read
+      // Assert the bodies have not been read because a clone of `serverRequest`
+      // was passed in to `super()` in `DrashRequest`
       assertEquals(request.bodyUsed, false);
       assertEquals(request.original.bodyUsed, false);
 
       // Now read the bodies
       assertEquals(await request.text(), "");
+
       // This should work because the above call should not affect the original
       assertEquals(await request.original.text(), "");
+
       // The body should be null for both according to spec
       // (https://developer.mozilla.org/en-US/docs/Web/API/Request/body). Body
       // contents should not have been added to the requests, so null is what we
       // should expect.
       assertEquals(request.body, null);
       assertEquals(request.original.body, null);
+
+      // According to spec, these should still be false because the bodies were
+      // null. See https://fetch.spec.whatwg.org/#dom-body-bodyused.
+      assertEquals(request.bodyUsed, false);
+      assertEquals(request.original.bodyUsed, false);
+
     },
   );
 }
