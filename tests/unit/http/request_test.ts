@@ -799,7 +799,6 @@ async function staticCreateTests(t: Deno.TestContext) {
       // null. See https://fetch.spec.whatwg.org/#dom-body-bodyused.
       assertEquals(request.bodyUsed, false);
       assertEquals(request.original.bodyUsed, false);
-
     },
   );
 }
