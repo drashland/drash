@@ -20,12 +20,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AbstractNativeRequest = void 0;
+exports.AbstractRequest = void 0;
 /**
  * Drash's version of a `Request`. This class introduces helper methods to
  * interact with the native `Request` object (e.g., `request.readBody("json"))`.
  */
-class AbstractNativeRequest extends Request {
+class AbstractRequest extends Request {
   /**
    * @param originalRequest - An original, native `Request` object. This should
    * come from the runtime.
@@ -107,5 +107,5 @@ class AbstractNativeRequest extends Request {
     return new URL(this.url).searchParams;
   }
 }
-exports.AbstractNativeRequest = AbstractNativeRequest;
+exports.AbstractRequest = AbstractRequest;
 //# sourceMappingURL=native_request.js.map

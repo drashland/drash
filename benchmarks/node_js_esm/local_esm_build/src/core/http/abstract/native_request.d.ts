@@ -24,8 +24,7 @@ import * as Types from "../../types.js";
  * Drash's version of a `Request`. This class introduces helper methods to
  * interact with the native `Request` object (e.g., `request.readBody("json"))`.
  */
-export declare abstract class AbstractNativeRequest<ResourceHandler>
-  extends Request
+export declare abstract class AbstractRequest<ResourceHandler> extends Request
   implements Interfaces.NativeRequest {
   protected cookies?: Record<string, string>;
   protected end_lifecycle: boolean;

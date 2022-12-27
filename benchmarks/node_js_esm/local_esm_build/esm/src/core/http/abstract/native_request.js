@@ -22,7 +22,7 @@
  * Drash's version of a `Request`. This class introduces helper methods to
  * interact with the native `Request` object (e.g., `request.readBody("json"))`.
  */
-export class AbstractNativeRequest extends Request {
+export class AbstractRequest extends Request {
   /**
    * @param originalRequest - An original, native `Request` object. This should
    * come from the runtime.

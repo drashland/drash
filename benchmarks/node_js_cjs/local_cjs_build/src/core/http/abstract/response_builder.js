@@ -142,7 +142,7 @@ class AbstractResponseBuilder {
     return this;
   }
   error(statusCode, reason) {
-    this.current_state.error = new errors_js_1.HttpError(statusCode, reason);
+    this.current_state.error = new errors_js_1.HTTPError(statusCode, reason);
     return this;
   }
   html(html) {

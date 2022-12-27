@@ -19,21 +19,20 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { RequestHandler } from "././src/core/handlers/native_request_handler.ts";
-import * as Interfaces from "./src/core/interfaces.ts";
-import * as Types from "./src/core/types.ts";
-import { NativeResponseBuilder } from "./src/core/http/native_response_builder.ts";
+import { RequestHandlerBuilder } from "./src/core/builders/RequestHandlerBuilder.ts";
+import * as Interfaces from "./src/core/Interfaces.ts";
+import * as Types from "./src/core/Types.ts";
+import * as Enums from "./src/core/Enums.ts";
 
-export { ErrorHandler } from "./src/core/handlers/error_handler.ts";
-export { Resource } from "./src/core/http/native_resource.ts";
-export * as Enums from "./src/core/enums.ts";
-export * as Errors from "./src/core/http/errors.ts";
+export { ErrorHandler } from "./src/core/handlers/ErrorHandler.ts";
+export { ResourceWithServices as Resource } from "./src/core/http/ResourceWithServices.ts";
+export { HTTPError } from "./src/core/Errors/HTTPError.ts";
 
 export type {
-  NativeRequest as Request,
+  DrashRequest as Request,
   RequestHandler,
   ResponseBuilder as Response,
-} from "./src/core/interfaces.ts";
+} from "./src/core/Interfaces.ts";
 
 export type { Interfaces, Types };
 
@@ -44,21 +43,11 @@ export type { Interfaces, Types };
  * @returns An instance of Drash's `RequestHandler`.
  */
 export async function createRequestHandler(
-  options?: Types.RequestHandlerOptions<
-    Interfaces.NativeRequest,
-    Response,
-    BodyInit,
-    NativeResponseBuilder
-  >,
-): Promise<
-  Interfaces.RequestHandler<
-    Interfaces.NativeRequest,
-    Response,
-    BodyInit,
-    NativeResponseBuilder
-  >
-> {
-  const r = new RequestHandler(options);
-  await r.runServicesAtStartup();
-  return r;
+  options?: Types.RequestHandlerOptions,
+): Promise<{
+  handleRequest: (request: Request) => Promise<Response>
+}> {
+  const builder = new RequestHandlerBuilder(options);
+  await builder.runServicesAtStartup();
+  return builder.build();
 }

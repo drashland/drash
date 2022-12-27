@@ -7,19 +7,26 @@ import { assertEquals, Drash, TestHelpers } from "../deps.ts";
 class CookieResource extends Drash.Resource {
   paths = ["/cookie", "/cookie/"];
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request) {
     const cookieValue = request.cookie("testCookie");
-    return response.text(cookieValue);
+    return TestHelpers.responseBuilder().text(cookieValue).build();
   }
 
-  public POST(_request: Drash.Request, response: Drash.Response) {
-    return response.cookies({ "testCookie": { value: "Drash" } })
-      .text("Saved your cookie!");
+  public POST(_request: Drash.Request) {
+    return TestHelpers
+      .responseBuilder()
+      .cookies({
+        "testCookie": { value: "Drash" },
+      })
+      .text("Saved your cookie!").build();
   }
 
-  public DELETE(_request: Drash.Request, response: Drash.Response) {
-    return response.text("DELETE request received!")
-      .deleteCookies(["testCookie"]);
+  public DELETE(_request: Drash.Request) {
+    return TestHelpers
+      .responseBuilder()
+      .text("DELETE request received!")
+      .deleteCookies(["testCookie"])
+      .build();
   }
 }
 

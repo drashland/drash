@@ -33,7 +33,7 @@ export class ErrorHandler {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
   handle(context) {
     var _a, _b;
-    const ret = new Errors.HttpError(StatusCode.InternalServerError);
+    const ret = new HTTPError(StatusCode.InternalServerError);
     // Retype the error to have a code so we can check if it has a code
     const errorWithCode = context.error;
     // If the error has a code and that code is a proper status code, then

@@ -31,7 +31,7 @@ import { StatusCodeRegistry } from "../http/status_code_registry.js";
  *
  * public GET(request: Drash.Request, response: Drash.Response) {
  *   if (!request.header("authorization")) {
- *     throw new HttpError(401, "Get out!");
+ *     throw new HTTPError(401, "Get out!");
  *   }
  * }
  *
@@ -39,12 +39,12 @@ import { StatusCodeRegistry } from "../http/status_code_registry.js";
  *
  * public runBeforeResource(request: Drash.Request, response: Drash.Response) {
  *   if (!request.header("authorization")) {
- *     throw new HttpError(401, "Get out!");
+ *     throw new HTTPError(401, "Get out!");
  *   }
  * }
  * ```
  */
-export class HttpError extends Error {
+export class HTTPError extends Error {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   /**
    * Construct an object of this class.

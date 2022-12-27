@@ -7,20 +7,20 @@ import { assertEquals, Drash, TestHelpers } from "../deps.ts";
 class HomeResource extends Drash.Resource {
   paths = ["/", "/home"];
 
-  public GET(_request: Drash.Request, response: Drash.Response) {
-    return response.text("GET request received!");
+  public GET(_request: Drash.Request) {
+    return new Response("GET request received!");
   }
 
-  public POST(_request: Drash.Request, response: Drash.Response) {
-    return response.text("POST request received!");
+  public POST(_request: Drash.Request) {
+    return new Response("POST request received!");
   }
 
-  public PUT(_request: Drash.Request, response: Drash.Response) {
-    return response.text("PUT request received!");
+  public PUT(_request: Drash.Request) {
+    return new Response("PUT request received!");
   }
 
-  public DELETE(_request: Drash.Request, response: Drash.Response) {
-    return response.text("DELETE request received!");
+  public DELETE(_request: Drash.Request) {
+    return new Response("DELETE request received!");
   }
 }
 

@@ -16,7 +16,7 @@ export class CoffeeResource extends Drash.Resource
     [19, { name: "Dark" }],
   ]);
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request) {
     // @ts-ignore Ignoring because we don't care
     let coffeeId: string | null | undefined = request.pathParam("id");
     const location = request.queryParam("location");
@@ -27,10 +27,10 @@ export class CoffeeResource extends Drash.Resource
     }
 
     if (!coffeeId) {
-      return response.text("Please specify a coffee ID.");
+      return new Response("Please specify a coffee ID.");
     }
 
-    return response.text(JSON.stringify(this.getCoffee(parseInt(coffeeId))));
+    return new Response(JSON.stringify(this.getCoffee(parseInt(coffeeId))));
   }
 
   protected getCoffee(coffeeId: number): ICoffee {
@@ -39,14 +39,14 @@ export class CoffeeResource extends Drash.Resource
     try {
       coffee = this.coffee.get(coffeeId);
     } catch (error) {
-      throw new Drash.Errors.HttpError(
+      throw new Drash.HTTPError(
         400,
         `Error getting coffee with ID "${coffeeId}". Error: ${error.message}.`,
       );
     }
 
     if (!coffee) {
-      throw new Drash.Errors.HttpError(
+      throw new Drash.HTTPError(
         404,
         `Coffee with ID "${coffeeId}" not found.`,
       );

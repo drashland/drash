@@ -18,8 +18,8 @@
  * You should have received a copy of the GNU General Public License along with
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
-import { ChainHandler } from "./chain_handler.js";
-import { ErrorHandlerProxy } from "../../proxies/error_handler_proxy.js";
+import { AbstractChainHandler } from "./AbstractChainHandler.js";
+import { ErrorHandlerProxy } from "../../proxies/ErrorHandlerProxy.js";
 import { ServicesHandler } from "../services_handler.js";
 import * as Interfaces from "../../interfaces.js";
 import * as Types from "../../types.js";
@@ -39,7 +39,7 @@ export declare abstract class AbstractRequestHandler<
     GenericResponse,
     GenericResponseBody
   >,
-> extends ChainHandler<GenericRequest, GenericResponseBuilder>
+> extends AbstractChainHandler<GenericRequest, GenericResponseBuilder>
   implements
     Interfaces.RequestHandler<
       GenericRequest,

@@ -5,47 +5,50 @@ import { assertEquals, ConnInfo, Drash, TestHelpers } from "../../deps.ts";
 class MyErrorHandler extends Drash.ErrorHandler {
   public handle(context: Drash.Types.ErrorHandlerContext) {
     let code = 0;
-    if (context.error instanceof Drash.Errors.HttpError) {
+    if (context.error instanceof Drash.HTTPError) {
       code = context.error?.code;
     } else {
       code = 500;
     }
 
-    return context.response.json({ error: context.error?.message }).status(
-      code,
-    );
+    return TestHelpers.responseBuilder().json({ error: context.error?.message })
+      .status(
+        code,
+      ).build();
   }
 }
 
-class MyHttpErrorErrorHandler extends Drash.ErrorHandler {
+class MyHTTPErrorErrorHandler extends Drash.ErrorHandler {
   public handle(_context: Drash.Types.ErrorHandlerContext) {
-    throw new Drash.Errors.HttpError(500, "error on ErrorHandler");
+    throw new Drash.HTTPError(500, "error on ErrorHandler");
   }
 }
 
 class MyOwnErrorHandler {
   public handle(context: Drash.Types.ErrorHandlerContext) {
     let code = 0;
-    if (context.error instanceof Drash.Errors.HttpError) {
+    if (context.error instanceof Drash.HTTPError) {
       code = context.error?.code;
     } else {
       code = 500;
     }
-    context.response.json({ error: context.error?.message }).status(code);
+    return TestHelpers.responseBuilder().json({ error: context.error?.message })
+      .status(code).build();
   }
 }
 
 class MyAsyncErrorHandler extends Drash.ErrorHandler {
   public async handle(context: Drash.Types.ErrorHandlerContext) {
     let code = 0;
-    if (context.error instanceof Drash.Errors.HttpError) {
+    if (context.error instanceof Drash.HTTPError) {
       code = context.error?.code;
     } else {
       code = 500;
     }
     // We should see a pause
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    context.response.json({ error: context.error?.message }).status(code);
+    return TestHelpers.responseBuilder().json({ error: context.error?.message })
+      .status(code).build();
   }
 }
 
@@ -57,15 +60,15 @@ class MySimpleErrorErrorHandler {
 
 class _TypeCheckConnInfoInErrorHandler {
   public handle(context: Drash.Types.ErrorHandlerContext) {
-    return context.response.json({
+    return TestHelpers.responseBuilder().json({
       thrown_error: context.error,
-    });
+    }).build();
   }
 }
 
 class MyConnInfoErrorErrorHandler implements Drash.Interfaces.ErrorHandler {
   public handle(context: Drash.Types.ErrorHandlerContext) {
-    return context.response.json({
+    return TestHelpers.responseBuilder().json({
       conn_info: {
         local_addr: JSON.parse(
           context.request.headers.get("x-deno-conn-info-local-addr") ?? "{}",
@@ -75,7 +78,7 @@ class MyConnInfoErrorErrorHandler implements Drash.Interfaces.ErrorHandler {
         ),
       },
       thrown_error: context.error,
-    });
+    }).build();
   }
 }
 
@@ -160,7 +163,7 @@ Deno.test("error_handler_test.ts", async (t) => {
     });
 
     await t.step("custom ErrorHandler thrown error", async () => {
-      const server = await runServer(MyHttpErrorErrorHandler);
+      const server = await runServer(MyHTTPErrorErrorHandler);
       const res = await TestHelpers.makeRequest.get(server.address);
       await server.close();
 

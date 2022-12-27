@@ -20,7 +20,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HttpError = void 0;
+exports.HTTPError = void 0;
 const enums_js_1 = require("../enums.js");
 const status_code_registry_js_1 = require("../http/status_code_registry.js");
 /**
@@ -34,7 +34,7 @@ const status_code_registry_js_1 = require("../http/status_code_registry.js");
  *
  * public GET(request: Drash.Request, response: Drash.Response) {
  *   if (!request.header("authorization")) {
- *     throw new HttpError(401, "Get out!");
+ *     throw new HTTPError(401, "Get out!");
  *   }
  * }
  *
@@ -42,12 +42,12 @@ const status_code_registry_js_1 = require("../http/status_code_registry.js");
  *
  * public runBeforeResource(request: Drash.Request, response: Drash.Response) {
  *   if (!request.header("authorization")) {
- *     throw new HttpError(401, "Get out!");
+ *     throw new HTTPError(401, "Get out!");
  *   }
  * }
  * ```
  */
-class HttpError extends Error {
+class HTTPError extends Error {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   /**
    * Construct an object of this class.
@@ -68,5 +68,5 @@ class HttpError extends Error {
     }
   }
 }
-exports.HttpError = HttpError;
+exports.HTTPError = HTTPError;
 //# sourceMappingURL=errors.js.map

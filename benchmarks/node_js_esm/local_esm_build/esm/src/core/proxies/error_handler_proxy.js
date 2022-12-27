@@ -68,7 +68,7 @@ var _ErrorHandlerProxy_instances,
   _ErrorHandlerProxy_runFallback,
   _ErrorHandlerProxy_runOriginal;
 import { ErrorHandler } from "../handlers/error_handler.js";
-import { HttpError } from "../http/errors.js";
+import { HTTPError } from "../http/errors.js";
 import { StatusCode } from "../enums.js";
 /**
  * A wrapper around the error handler class that users can provide. If not
@@ -108,7 +108,7 @@ export class ErrorHandlerProxy {
    */
   handle(context) {
     if (!context.error) {
-      context.error = new HttpError(500);
+      context.error = new HTTPError(500);
     }
     return __classPrivateFieldGet(
       this,
@@ -143,7 +143,7 @@ _ErrorHandlerProxy_original = new WeakMap(),
         .handle({
           error: (_a = context.error) !== null && _a !== void 0
             ? _a
-            : new HttpError(StatusCode.InternalServerError),
+            : new HTTPError(StatusCode.InternalServerError),
           request: context.request,
           response: context.response,
         });
@@ -157,4 +157,4 @@ _ErrorHandlerProxy_original = new WeakMap(),
       _ErrorHandlerProxy_runFallback,
     ).call(this, context);
   };
-//# sourceMappingURL=error_handler_proxy.js.map
+//# sourceMappingURL=ErrorHandlerProxy.js.map

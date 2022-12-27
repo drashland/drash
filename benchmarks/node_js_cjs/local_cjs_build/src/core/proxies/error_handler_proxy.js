@@ -114,7 +114,7 @@ class ErrorHandlerProxy {
    */
   handle(context) {
     if (!context.error) {
-      context.error = new errors_js_1.HttpError(500);
+      context.error = new errors_js_1.HTTPError(500);
     }
     return __classPrivateFieldGet(
       this,
@@ -150,7 +150,7 @@ _ErrorHandlerProxy_original = new WeakMap(),
         .handle({
           error: (_a = context.error) !== null && _a !== void 0
             ? _a
-            : new errors_js_1.HttpError(
+            : new errors_js_1.HTTPError(
               enums_js_1.StatusCode.InternalServerError,
             ),
           request: context.request,
@@ -166,4 +166,4 @@ _ErrorHandlerProxy_original = new WeakMap(),
       _ErrorHandlerProxy_runFallback,
     ).call(this, context);
   };
-//# sourceMappingURL=error_handler_proxy.js.map
+//# sourceMappingURL=ErrorHandlerProxy.js.map

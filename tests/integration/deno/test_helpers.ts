@@ -1,6 +1,8 @@
 // deno-lint-ignore-file
-import { NativeRequest } from "../../../src/deno/http/drash_request.ts";
+import { DrashRequest } from "../../../src/core/http/drash_request.ts";
+import { NativeResponseBuilder } from "../../../src/builders/native_response_builder.ts";
 import { ConnInfo, DenoServer, Drash, ServerInit } from "./deps.ts";
+
 const decoder = new TextDecoder("utf-8");
 
 interface IMakeRequestOptions {
@@ -8,6 +10,8 @@ interface IMakeRequestOptions {
   headers?: any;
   credentials?: any;
 }
+
+export const responseBuilder = () => new NativeResponseBuilder();
 
 export const makeRequest = {
   get(url: string, options: IMakeRequestOptions = {}) {

@@ -49,12 +49,12 @@ const filesToCopy = [
     dest: "/src/core/proxies/error_handler_proxy.ts",
   },
   {
-    src: "./src/core/enums.ts",
-    dest: "/src/core/enums.ts",
+    src: "./src/core/Enums.ts",
+    dest: "/src/core/Enums.ts",
   },
   {
-    src: "./src/core/interfaces.ts",
-    dest: "/src/core/interfaces.ts",
+    src: "./src/core/Interfaces.ts",
+    dest: "/src/core/Interfaces.ts",
   },
   {
     src: "./src/core/types.ts",

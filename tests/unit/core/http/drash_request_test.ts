@@ -1,7 +1,7 @@
 import { assertEquals } from "../deps.ts";
-import { NativeRequest } from "../../../../src/deno/http/drash_request.ts";
+import { DrashRequest } from "../../../../src/core/http/drash_request.ts";
 
-Deno.test("NativeRequest", async (t) => {
+Deno.test("DrashRequest", async (t) => {
   await t.step("accepts()", async (t) => {
     await t.step("returns true if the content type is accepted", () => {
       const req = new Request("https://drash.land", {
@@ -9,7 +9,7 @@ Deno.test("NativeRequest", async (t) => {
           Accept: "application/json;text/html",
         },
       });
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         req,
       );
       let actual;
@@ -24,7 +24,7 @@ Deno.test("NativeRequest", async (t) => {
           Accept: "application/json;text/html",
         },
       });
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         req,
       );
       const actual = request.accepts("text/xml");
@@ -41,7 +41,7 @@ Deno.test("NativeRequest", async (t) => {
           credentials: "include",
         },
       });
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         req,
       );
       const cookieValue = request.cookie("test_cookie");
@@ -55,7 +55,7 @@ Deno.test("NativeRequest", async (t) => {
           credentials: "include",
         },
       });
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         req,
       );
       const cookieValue = request.cookie("cookie_doesnt_exist");
@@ -67,7 +67,7 @@ Deno.test("NativeRequest", async (t) => {
     await t.step("header returns value", () => {
       const serverRequest = new Request("https://drash.land");
       serverRequest.headers.set("hello", "world");
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         serverRequest,
       );
       const actual = request.headers.get("hello");
@@ -78,7 +78,7 @@ Deno.test("NativeRequest", async (t) => {
   await t.step("pathParam()", async (t) => {
     await t.step("returns undefined when path param does not exist", () => {
       const serverRequest = new Request("https://drash.land");
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         serverRequest,
       );
       const actual = request.pathParam("dont-exist");
@@ -89,7 +89,7 @@ Deno.test("NativeRequest", async (t) => {
   await t.step("queryParam()", async (t) => {
     await t.step("returns the value when it exists", () => {
       const serverRequest = new Request("https://drash.land/?hello=world");
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         serverRequest,
       );
       const actual = request.queryParam("hello");
@@ -98,7 +98,7 @@ Deno.test("NativeRequest", async (t) => {
 
     await t.step("returns null when query param value does not exist", () => {
       const serverRequest = new Request("https://drash.land/?hello=world");
-      const request = new NativeRequest(
+      const request = new DrashRequest(
         serverRequest,
       );
       const actual = request.queryParam("dont_exist");

@@ -75,7 +75,7 @@ class RequestHandler extends request_handler_js_1.AbstractRequestHandler {
         }
       }
     }
-    throw new errors_js_1.HttpError(enums_js_1.StatusCode.NotFound);
+    throw new errors_js_1.HTTPError(enums_js_1.StatusCode.NotFound);
   }
   // @ts-ignore: Need Node interface
   handle(incomingRequest, response) {

@@ -45,7 +45,7 @@ var _AbstractResourceHandler_instances,
   _AbstractResourceHandler_buildMethodChains;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AbstractResourceHandler = void 0;
-const chain_handler_js_1 = require("./chain_handler.js");
+const chain_handler_js_1 = require("./AbstractChainHandler.js");
 const enums_js_1 = require("../../enums.js");
 const services_handler_js_1 = require("../services_handler.js");
 /**

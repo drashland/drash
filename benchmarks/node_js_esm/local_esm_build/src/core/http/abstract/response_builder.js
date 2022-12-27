@@ -45,7 +45,7 @@ var _AbstractResponseBuilder_instances,
   _AbstractResponseBuilder_parseCookies,
   _AbstractResponseBuilder_createCookieAttributesString,
   _AbstractResponseBuilder_createCookieString;
-import { HttpError } from "../errors.js";
+import { HTTPError } from "../errors.js";
 import { StatusCodeRegistry } from "../../http/status_code_registry.js";
 import * as Enums from "../../enums.js";
 /**
@@ -96,7 +96,7 @@ export class AbstractResponseBuilder {
     return this;
   }
   error(statusCode, reason) {
-    this.current_state.error = new HttpError(statusCode, reason);
+    this.current_state.error = new HTTPError(statusCode, reason);
     return this;
   }
   html(html) {

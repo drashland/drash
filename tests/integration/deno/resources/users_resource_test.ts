@@ -5,18 +5,18 @@ import { assertEquals, Drash, TestHelpers } from "../deps.ts";
 class UsersResource extends Drash.Resource {
   paths = ["/users", "/users/:id"];
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request) {
     const userId = request.pathParam("id");
 
     if (!userId) {
-      return response.text("Please specify a user ID.");
+      return new Response("Please specify a user ID.");
     }
 
-    return response.text(JSON.stringify(this.getUser(parseInt(userId))));
+    return new Response(JSON.stringify(this.getUser(parseInt(userId))));
   }
 
-  public POST(_request: Drash.Request, response: Drash.Response) {
-    return response.text("POST request received!");
+  public POST(_request: Drash.Request) {
+    return new Response("POST request received!");
   }
 
   protected getUser(userId: number) {
@@ -29,14 +29,14 @@ class UsersResource extends Drash.Resource {
       users = JSON.parse(users);
       user = users[userId];
     } catch (error) {
-      throw new Drash.Errors.HttpError(
+      throw new Drash.HTTPError(
         400,
         `Error getting user with ID "${userId}". Error: ${error.message}.`,
       );
     }
 
     if (!user) {
-      throw new Drash.Errors.HttpError(
+      throw new Drash.HTTPError(
         404,
         `User with ID "${userId}" not found.`,
       );
@@ -115,9 +115,12 @@ Deno.test("users_resource_test.ts", async (t) => {
           },
         },
       );
+
+      const text = await response.text();
+
       assertEquals(
-        (await response.text()).startsWith("Error: Not Found"),
-        true,
+        text,
+        "Not Found",
       );
 
       response = await TestHelpers.makeRequest.get(

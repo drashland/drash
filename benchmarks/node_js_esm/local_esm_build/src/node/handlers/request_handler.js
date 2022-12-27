@@ -20,7 +20,7 @@
  */
 // Imports from /core/common
 import { AbstractRequestHandler } from "../../core/handlers/abstract/request_handler.js";
-import { HttpError } from "../../core/http/errors.js";
+import { HTTPError } from "../../core/http/errors.js";
 import { StatusCode } from "../../core/enums.js";
 // Imports from /core/node
 import { Request as NativeRequest } from "../http/request.js";
@@ -70,7 +70,7 @@ export class RequestHandler extends AbstractRequestHandler {
         }
       }
     }
-    throw new HttpError(StatusCode.NotFound);
+    throw new HTTPError(StatusCode.NotFound);
   }
   // @ts-ignore: Need Node interface
   handle(incomingRequest, response) {

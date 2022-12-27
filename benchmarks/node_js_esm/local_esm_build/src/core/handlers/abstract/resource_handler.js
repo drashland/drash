@@ -42,7 +42,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) ||
   };
 var _AbstractResourceHandler_instances,
   _AbstractResourceHandler_buildMethodChains;
-import { ChainHandler } from "./chain_handler.js";
+import { AbstractChainHandler } from "./AbstractChainHandler.js";
 import { Method as HTTPMethod } from "../../enums.js";
 import { ServicesHandler } from "../services_handler.js";
 /**
@@ -51,7 +51,7 @@ import { ServicesHandler } from "../services_handler.js";
  * `this#original`). Resource's can have multiple chains -- one for each HTTP
  * method they define; and each of those chains can have services.
  */
-export class AbstractResourceHandler extends ChainHandler {
+export class AbstractResourceHandler extends AbstractChainHandler {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   /**
    * @param ResourceClass - See {@link Resource}.

@@ -20,20 +20,20 @@
  */
 
 import { RequestHandler } from "././src/core/handlers/native_request_handler.ts";
-import * as Interfaces from "./src/core/interfaces.ts";
+import * as Interfaces from "./src/core/Interfaces.ts";
 import * as Types from "./src/core/types.ts";
 import { NativeResponseBuilder } from "./src/core/http/native_response_builder.ts";
 
 export { ErrorHandler } from "./src/core/handlers/error_handler.ts";
 export { Resource } from "./src/core/http/native_resource.ts";
-export * as Enums from "./src/core/enums.ts";
+export * as Enums from "./src/core/Enums.ts";
 export * as Errors from "./src/core/http/errors.ts";
 
 export type {
   NativeRequest as Request,
   RequestHandler,
   ResponseBuilder as Response,
-} from "./src/core/interfaces.ts";
+} from "./src/core/Interfaces.ts";
 
 export type { Interfaces, Types };
 

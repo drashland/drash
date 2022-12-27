@@ -10,20 +10,20 @@ class OptionalPathParamsResource extends Drash.Resource {
     "/oppWithRequired/:name/:age_of_person?",
   ];
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request) {
     const name = request.pathParam("name");
     // deno-lint-ignore camelcase
     const age_of_person = request.pathParam("age_of_person");
     const city = request.pathParam("city");
 
-    return response.json({
+    return TestHelpers.responseBuilder().json({
       message: "Successfully handled optional path params",
       data: {
         name,
         age_of_person,
         city,
       },
-    });
+    }).build();
   }
 }
 

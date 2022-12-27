@@ -94,10 +94,10 @@ var __awaiter = (this && this.__awaiter) ||
   };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AbstractRequestHandler = void 0;
-const chain_handler_js_1 = require("./chain_handler.js");
+const chain_handler_js_1 = require("./AbstractChainHandler.js");
 const error_handler_js_1 = require("../error_handler.js");
-const error_handler_proxy_js_1 = require(
-  "../../proxies/error_handler_proxy.js",
+const ErrorHandlerProxy_js_1 = require(
+  "../../proxies/ErrorHandlerProxy.js",
 );
 const errors_js_1 = require("../../http/errors.js");
 const services_handler_js_1 = require("../services_handler.js");
@@ -141,7 +141,7 @@ class AbstractRequestHandler extends chain_handler_js_1.ChainHandler {
         : [],
     );
     // @ts-ignore
-    this.error_handler = new error_handler_proxy_js_1.ErrorHandlerProxy(
+    this.error_handler = new ErrorHandlerProxy_js_1.ErrorHandlerProxy(
       // @ts-ignore
       (_b = options === null || options === void 0
             ? void 0
@@ -233,7 +233,7 @@ class AbstractRequestHandler extends chain_handler_js_1.ChainHandler {
   runErrorHandler(context, error) {
     context.error = error !== null && error !== void 0
       ? error
-      : new errors_js_1.HttpError(Enums.StatusCode.InternalServerError);
+      : new errors_js_1.HTTPError(Enums.StatusCode.InternalServerError);
     return Promise
       .resolve()
       .then(() =>

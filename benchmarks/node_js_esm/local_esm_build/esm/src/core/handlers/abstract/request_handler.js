@@ -48,10 +48,10 @@ var __awaiter = (this && this.__awaiter) ||
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { ChainHandler } from "./chain_handler.js";
+import { AbstractChainHandler } from "./AbstractChainHandler.js";
 import { ErrorHandler } from "../error_handler.js";
-import { ErrorHandlerProxy } from "../../proxies/error_handler_proxy.js";
-import { HttpError } from "../../http/errors.js";
+import { ErrorHandlerProxy } from "../../proxies/ErrorHandlerProxy.js";
+import { HTTPError } from "../../http/errors.js";
 import { ServicesHandler } from "../services_handler.js";
 import * as Enums from "../../enums.js";
 /**
@@ -62,7 +62,7 @@ import * as Enums from "../../enums.js";
  * @template GenericRequest The incoming request.
  * @template GenericResponse The outgoing response.
  */
-export class AbstractRequestHandler extends ChainHandler {
+export class AbstractRequestHandler extends AbstractChainHandler {
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   /**
    * @param options - See {@link Types.RequestHandlerOptions}.
@@ -185,7 +185,7 @@ export class AbstractRequestHandler extends ChainHandler {
   runErrorHandler(context, error) {
     context.error = error !== null && error !== void 0
       ? error
-      : new HttpError(Enums.StatusCode.InternalServerError);
+      : new HTTPError(Enums.StatusCode.InternalServerError);
     return Promise
       .resolve()
       .then(() =>

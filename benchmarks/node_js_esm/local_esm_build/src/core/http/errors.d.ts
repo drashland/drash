@@ -30,7 +30,7 @@ import { StatusCode } from "../enums.js";
  *
  * public GET(request: Drash.Request, response: Drash.Response) {
  *   if (!request.header("authorization")) {
- *     throw new HttpError(401, "Get out!");
+ *     throw new HTTPError(401, "Get out!");
  *   }
  * }
  *
@@ -38,12 +38,12 @@ import { StatusCode } from "../enums.js";
  *
  * public runBeforeResource(request: Drash.Request, response: Drash.Response) {
  *   if (!request.header("authorization")) {
- *     throw new HttpError(401, "Get out!");
+ *     throw new HTTPError(401, "Get out!");
  *   }
  * }
  * ```
  */
-export declare class HttpError extends Error {
+export declare class HTTPError extends Error {
   /**
    * The HTTP status code associated with this error.
    */

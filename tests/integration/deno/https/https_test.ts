@@ -7,8 +7,8 @@ import { assertEquals, Drash, TestHelpers } from "../deps.ts";
 class BrowserRequestResource extends Drash.Resource {
   paths = ["/browser-request"];
 
-  public GET(_request: Drash.Request, response: Drash.Response) {
-    return response.text("hello");
+  public GET(_request: Drash.Request) {
+    return TestHelpers.responseBuilder().text("hello").build();
   }
 }
 

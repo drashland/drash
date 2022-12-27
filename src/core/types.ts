@@ -19,13 +19,20 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as Interfaces from "./interfaces.ts";
+import * as Interfaces from "./Interfaces.ts";
+
+export type ResponseBuilderState = {
+  body?: BodyInit;
+  error?: Error;
+  headers: Headers;
+  status: HTTPStatusCode;
+  status_text: string;
+  upgrade?: Response;
+};
 
 export type HandleMethod<Arg, ReturnValue> = (
   arg: Arg,
 ) => ReturnValue;
-
-export type CatchableReason = "request_end_early";
 
 export type Catchable = Error;
 
@@ -64,82 +71,30 @@ export type RuntimeServiceMethod =
   | "runBeforeResource"
   | "runOnError";
 
-export type RunAtStartupService<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = Required<
+export type RunAtStartupService = Required<
   Pick<
-    Interfaces.Service<
-      GenericRequest,
-      GenericResponse,
-      GenericResponseBody,
-      GenericResponseBuilder
-    >,
+    Interfaces.Service,
     "runAtStartup"
   >
 >;
 
-export type RunBeforeResourceService<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = Required<
+export type RunBeforeResourceService = Required<
   Pick<
-    Interfaces.Service<
-      GenericRequest,
-      GenericResponse,
-      GenericResponseBody,
-      GenericResponseBuilder
-    >,
+    Interfaces.Service,
     "runBeforeResource"
   >
 >;
 
-export type RunAfterResourceService<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = Required<
+export type RunAfterResourceService = Required<
   Pick<
-    Interfaces.Service<
-      GenericRequest,
-      GenericResponse,
-      GenericResponseBody,
-      GenericResponseBuilder
-    >,
+    Interfaces.Service,
     "runAfterResource"
   >
 >;
 
-export type RunOnErrorService<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = Required<
+export type RunOnErrorService = Required<
   Pick<
-    Interfaces.Service<
-      GenericRequest,
-      GenericResponse,
-      GenericResponseBody,
-      GenericResponseBuilder
-    >,
+    Interfaces.Service,
     "runOnError"
   >
 >;
@@ -149,21 +104,11 @@ export type RunOnErrorService<
  */
 export type Promisable<T> = T | Promise<T>;
 
-export type ErrorHandlerContext<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = {
+export type ErrorHandlerContext = {
   /** The error that caused this error handler to be called. */
   error?: Error;
   /** The request associated with this error. */
-  request: GenericRequest;
-  /** The response associated with this error. */
-  response: GenericResponseBuilder;
+  request: Request;
 };
 
 /**
@@ -180,7 +125,7 @@ export type RequestMethods =
  * Each incoming request gets its own context. The context is this typing and it
  * is passed around throughout the entire request-resource-response lifecycle.
  */
-export type ContextForRequest<GenericRequest, GenericResponseBuilder> = {
+export type ContextForRequest = {
   /**
    * The `Error` that is thrown during the lifecycle. This is optional because
    * an `Error` is only assigned to this property when an `Error` is thrown.
@@ -188,9 +133,9 @@ export type ContextForRequest<GenericRequest, GenericResponseBuilder> = {
   error?: Error;
 
   /**
-   * The `NativeRequest` instance, not the interface.
+   * The `Request` object.
    */
-  request: GenericRequest;
+  request: Request;
 
   /**
    * The `ResourceHandler` instance. This is optional since there might not be a
@@ -198,12 +143,13 @@ export type ContextForRequest<GenericRequest, GenericResponseBuilder> = {
    * the context is created with only the `NativeRequest` and `ResponseBuilder`
    * objects. There is no resource yet until later in the lifecycle.
    */
-  resource_handler?: Interfaces.ResourceHandler<GenericResponseBuilder>;
+  resource_handler?: Interfaces.RequestHandler;
 
   /**
-   * The `ResponseBuilder` instance, not the interface.
+   * The `ResponseBuilder` that will build the `Response` object to be returned
+   * for this context.
    */
-  response: GenericResponseBuilder;
+  response: Interfaces.ResponseBuilder;
 };
 
 /**
@@ -305,7 +251,7 @@ export type HTTPStatusCode =
  */
 export type HTTPStatusCodeRegistry = {
   /**
-   * The HTTP status code description (e.g, `OK`).
+   * The HTTP status code description. For example, if the HTTP status code was `200`, then the description would be `OK`.
    */
   description: string;
 
@@ -313,7 +259,7 @@ export type HTTPStatusCodeRegistry = {
   // reference?: string[];
 
   /**
-   * The HTTP status code (e.g., `200`).
+   * The HTTP status code (e.g., `200`, `401`, `500`).
    */
   value: HTTPStatusCode;
 };
@@ -321,124 +267,49 @@ export type HTTPStatusCodeRegistry = {
 /**
  * An instance of the {@link Resource}.
  */
-export type ResourceClass<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = new (
+export type ResourceClass = new (
   ...args: unknown[]
-) => Interfaces.Resource<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder
->;
+) => Interfaces.Resource;
 
 /**
  * An instance of the {@link Interfaces.Service}.
  */
-export type ServiceClass<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = new (
+export type ServiceClass = new (
   ...args: unknown[]
-) => Interfaces.Service<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder
->;
+) => Interfaces.Service;
 
 /**
  * An instance of {@link Interfaces.ErrorHandler}.
  */
-export type ErrorHandlerClass<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = new (
+export type ErrorHandlerClass = new (
   ...args: unknown[]
-) => Interfaces.ErrorHandler<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder
->;
+) => Interfaces.RequestHandler;
 
 /**
  * Options given to the `Drash.RequestHandler` class.
  */
-export type RequestHandlerOptions<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = {
+export type RequestHandlerOptions = {
   /**
    * The resources (which contain the URIs) to register with the handler. Any
    * resource or URI not added to the handler will result in a 404 when
    * requested by a client.
    */
-  resources?: ResourceClass<
-    GenericRequest,
-    GenericResponse,
-    GenericResponseBody,
-    GenericResponseBuilder
-  >[];
+  resources?: ResourceClass[];
   /**
    * The error handler that handles any errors in the request handler's
    * lifecycle.
    */
-  error_handler?: ErrorHandlerClass<
-    GenericRequest,
-    GenericResponse,
-    GenericResponseBody,
-    GenericResponseBuilder
-  >;
+  error_handler?: ErrorHandlerClass;
   /**
    * The services to add to the request handler lifecycle. These services can
    * run at different points in the lifecycle.
    */
-  services?: Interfaces.Service<
-    GenericRequest,
-    GenericResponse,
-    GenericResponseBody,
-    GenericResponseBuilder
-  >[];
+  services?: Interfaces.Service[];
 };
 
 /**
  * Options given to the `Service.runAtStartup()` method.
  */
-export type ContextForServicesAtStartup<
-  GenericRequest,
-  GenericResponse,
-  GenericResponseBody,
-  GenericResponseBuilder extends Interfaces.ResponseBuilder<
-    GenericResponse,
-    GenericResponseBody
-  >,
-> = {
-  request_handler: Interfaces.RequestHandler<
-    GenericRequest,
-    GenericResponse,
-    GenericResponseBody,
-    GenericResponseBuilder
-  >;
+export type ContextForServicesAtStartup = {
+  request_handler: any; // TODO(crookse) Interfaces.RequestHandler;
 };

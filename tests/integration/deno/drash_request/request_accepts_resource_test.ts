@@ -7,7 +7,7 @@ import { assertEquals, Drash, TestHelpers } from "../deps.ts";
 class RequestAcceptsUseCaseOneResource extends Drash.Resource {
   paths = ["/request-accepts-use-case-one"];
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request) {
     const typeToRequest = request.queryParam("typeToCheck");
 
     let matchedType;
@@ -22,11 +22,22 @@ class RequestAcceptsUseCaseOneResource extends Drash.Resource {
     }
 
     if (!matchedType) {
-      return response.json({ success: false });
+      return new Response(JSON.stringify({ success: false }), {
+        headers: {
+          "content-type": "application/json",
+        },
+      });
     }
 
-    return response.json(
-      { success: true, message: matchedType },
+    return new Response(
+      JSON.stringify(
+        { success: true, message: matchedType },
+      ),
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+      },
     );
   }
 }
@@ -34,40 +45,52 @@ class RequestAcceptsUseCaseOneResource extends Drash.Resource {
 class RequestAcceptsUseCaseTwoResource extends Drash.Resource {
   paths = ["/request-accepts-use-case-two"];
 
-  public GET(request: Drash.Request, response: Drash.Response) {
+  public GET(request: Drash.Request) {
     const acceptHeader = request.headers.get("Accept");
     if (!acceptHeader) {
-      return this.jsonResponse(response);
+      return this.jsonResponse();
     }
     const contentTypes: string[] = acceptHeader.split(";");
     for (let content of contentTypes) {
       content = content.trim();
       if (content.indexOf("application/json") != -1) {
-        return this.jsonResponse(response);
+        return this.jsonResponse();
       }
 
       if (request.accepts("text/html")) {
-        return this.htmlResponse(response);
+        return this.htmlResponse();
       }
 
       if (request.accepts("text/xml")) {
-        return this.xmlResponse(response);
+        return this.xmlResponse();
       }
     }
 
-    return response.text("Default response");
+    return new Response("Default response");
   }
 
-  protected htmlResponse(response: Drash.Response) {
-    return response.html("<div>response: text/html</div>");
+  protected htmlResponse() {
+    return new Response("<div>response: text/html</div>", {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
   }
 
-  protected jsonResponse(response: Drash.Response) {
-    return response.json({ response: "application/json" });
+  protected jsonResponse() {
+    return new Response(JSON.stringify({ response: "application/json" }), {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
   }
 
-  protected xmlResponse(response: Drash.Response) {
-    return response.xml("<response>text/xml</response>");
+  protected xmlResponse() {
+    return new Response("<response>text/xml</response>", {
+      headers: {
+        "content-type": "text/xml",
+      },
+    });
   }
 }
 

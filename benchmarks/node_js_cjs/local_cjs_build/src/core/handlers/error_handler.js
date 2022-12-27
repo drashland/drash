@@ -79,7 +79,7 @@ class ErrorHandler {
   // FILE MARKER - METHODS - PUBLIC (EXPOSED) //////////////////////////////////
   handle(context) {
     var _a, _b;
-    const ret = new Errors.HttpError(enums_js_1.StatusCode.InternalServerError);
+    const ret = new HTTPError(enums_js_1.StatusCode.InternalServerError);
     // Retype the error to have a code so we can check if it has a code
     const errorWithCode = context.error;
     // If the error has a code and that code is a proper status code, then
