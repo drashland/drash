@@ -39,6 +39,10 @@ Deno.test("http/request_test.ts", async (t) => {
   await t.step("queryParam()", async (t) => {
     await queryTests(t);
   });
+
+  await t.step("static create()", async (t) => {
+    await staticCreateTests(t);
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -588,7 +592,7 @@ async function bodyTests(t: Deno.TestContext) {
 
 async function originalRequestTests(t: Deno.TestContext) {
   await t.step(
-    "body is kept intact when read_body is false",
+    "body is kept intact when Drash.Request body is parsed",
     async () => {
       const serverRequest = new Request("https://drash.land", {
         headers: {
@@ -611,21 +615,47 @@ async function originalRequestTests(t: Deno.TestContext) {
         serverRequest,
         new Map(),
         connInfo,
-        {
-          read_body: false,
-        },
       );
 
-      // Hasn't been parsed so should return undefined
+      // Check that the Drash.Request body has the `hello` param
       const hello = request.bodyParam("hello");
-      assertEquals(hello, undefined);
-
-      // Should be able to consume the body
-      assertEquals(request.bodyUsed, false);
-      const json = await request.json();
+      assertEquals(hello, "world");
       assertEquals(request.bodyUsed, true);
+
+      // Check that the original request body was kept intact
+      assertEquals(request.original.bodyUsed, false);
+
       // Now read the original request body
-      assertEquals(json, { hello: "world" });
+      assertEquals(await request.original.json(), { hello: "world" });
+      assertEquals(request.original.bodyUsed, true);
+    },
+  );
+
+  await t.step(
+    "can be retrieved via request.original and has { bodyUsed: false } (POST no body)",
+    async () => {
+      // We expect this to be cloned in the `Drash.Request.create()` call
+      const serverRequest = new Request("https://drash.land", {
+        headers: { "x-hello": "goodbye", "x-goodbye": "hello" },
+        method: "POST",
+        redirect: "error",
+      });
+
+      // When creating a Drash.Request object, the body is automatically parsed
+      // and causes `Drash.Request.bodyUsed` to be `true`
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+
+      // Assert some equality between the two requests
+      assertEquals(request.original.bodyUsed, false);
+      assertEquals(request.original.bodyUsed, serverRequest.bodyUsed);
+      assertEquals(request.original.headers, serverRequest.headers);
+      assertEquals(request.original.method, serverRequest.method);
+      assertEquals(request.original.redirect, serverRequest.redirect);
+      assertEquals(request.original.url, serverRequest.url);
     },
   );
 }
@@ -686,6 +716,89 @@ async function queryTests(t: Deno.TestContext) {
       );
       const actual = request.queryParam("dont_exist");
       assertEquals(undefined, actual);
+    },
+  );
+}
+
+async function staticCreateTests(t: Deno.TestContext) {
+  await t.step(
+    "option { read_body: false } keeps body intact",
+    async () => {
+      const serverRequest = new Request("https://drash.land", {
+        headers: {
+          // We use `"Content-Length": "1"` to tell Drash.Request that there is
+          // a request body. This is a hack just for unit testing. In the real
+          // world, the Content-Length header will be defined (at least it
+          // should be) by the client.
+          //
+          // Since we are passing in { read_body: false }, the body should not
+          // be read regardless of Content-Length being 1.
+          "Content-Length": "1",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          hello: "world",
+        }),
+        method: "POST",
+      });
+
+      // This call should cause the body to be left intact.
+      // `DrashRequest.parseBody()` should not be called.
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+        {
+          read_body: false,
+        },
+      );
+
+      // Assert the bodies have not been read because a clone of `serverRequest`
+      // was passed in to `super()` in `DrashRequest`
+      assertEquals(request.bodyUsed, false);
+      assertEquals(request.original.bodyUsed, false);
+
+      // Now read the original request body
+      assertEquals(await request.original.json(), { hello: "world" });
+      assertEquals(request.original.bodyUsed, true);
+    },
+  );
+
+  await t.step(
+    "empty POST body does not throw an error",
+    async () => {
+      const serverRequest = new Request("https://drash.land", {
+        method: "POST",
+      });
+
+      const request = await Drash.Request.create(
+        serverRequest,
+        new Map(),
+        connInfo,
+      );
+
+      // Assert the bodies have not been read because a clone of `serverRequest`
+      // was passed in to `super()` in `DrashRequest`
+      assertEquals(request.bodyUsed, false);
+      assertEquals(request.original.bodyUsed, false);
+
+      // Now read the bodies
+      assertEquals(await request.text(), "");
+
+      // This should work because the above call should not affect the original
+      assertEquals(await request.original.text(), "");
+
+      // The body should be null for both according to spec
+      // (https://developer.mozilla.org/en-US/docs/Web/API/Request/body). Body
+      // contents should not have been added to the requests, so null is what we
+      // should expect.
+      assertEquals(request.body, null);
+      assertEquals(request.original.body, null);
+
+      // According to spec, these should still be false because the bodies were
+      // null. See https://fetch.spec.whatwg.org/#dom-body-bodyused.
+      assertEquals(request.bodyUsed, false);
+      assertEquals(request.original.bodyUsed, false);
     },
   );
 }

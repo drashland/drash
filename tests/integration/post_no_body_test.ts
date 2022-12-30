@@ -29,12 +29,11 @@ const server = new Server({
 Deno.test("post_no_body_test.ts", async (t) => {
   await t.step("POST /post-no-body", async (t) => {
     /**
-     * This bug was discovered by sending no body ina post request.
+     * See the following for reasons why this test was added:
      *
-     * The fix was to remove the `#original_request` on `request.ts` as we cloned it,
-     * no body seemed to not be caught by the native code, but we didn't need it anyway.
+     *   - https://github.com/drashland/drash/pull/691
      */
-    await t.step("Does not throw if a body isnt defined", async () => {
+    await t.step("Does not throw if a body is not defined", async () => {
       server.run();
 
       const response = await TestHelpers.makeRequest.post(
