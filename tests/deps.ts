@@ -9,3 +9,5 @@ export {
 
 export { green, red } from "https://deno.land/std@0.158.0/fmt/colors.ts";
 export { delay } from "https://deno.land/std@0.158.0/async/delay.ts";
+
+export { deferred } from "https://deno.land/std@0.158.0/async/deferred.ts";

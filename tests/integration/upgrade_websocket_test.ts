@@ -1,4 +1,4 @@
-import { assertEquals } from "../deps.ts";
+import { assertEquals, deferred } from "../deps.ts";
 import { Request, Resource, Response, Server } from "../../mod.ts";
 
 const messages: MessageEvent[] = [];
@@ -59,9 +59,14 @@ Deno.test("integration/upgrade_websocket_test.ts", async () => {
     };
   });
 
+  const p = deferred();
+  socket.onclose = () => {
+    p.resolve();
+  };
   assertEquals<string>(
     (hydratedMessages as MessageEvent[])[0] as unknown as string,
     "this is a message from the client",
   );
   await server.close();
+  await p;
 });

@@ -41,7 +41,7 @@ export class DrashRequest extends Request {
     pathParams: Map<string, string>,
     connInfo: ConnInfo,
   ) {
-    super(originalRequest);
+    super(originalRequest.clone());
     this.#path_params = pathParams;
     this.conn_info = connInfo;
     this.#original = originalRequest.clone();
