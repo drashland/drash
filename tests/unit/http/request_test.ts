@@ -585,7 +585,7 @@ async function bodyTests(t: Deno.TestContext) {
     );
     const actual = request.bodyParam("authenticated");
     assertEquals(actual, false);
-    const authenticated = (actual as boolean);
+    const authenticated = actual as boolean;
     assertEquals(authenticated, false);
   });
 }
