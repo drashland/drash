@@ -1,0 +1,39 @@
+{
+  "name": "drash",
+  "version": "3.0.0-preview+20230607.1029",
+  "description": "A cross-platform HTTP microframework",
+  "license": "GPL-3.0",
+  "main": "./.drashland/builds/cjs/mod.core.js",
+  "types": "./.drashland/builds/cjs/mod.core.d.ts",
+  "repository": "git@github.com:drashland/drash.git",
+  "author": "Drash Land",
+  "contributors": [
+    {
+      "name": "Breno Salles"
+    },
+    {
+      "name": "Edward Bebbington"
+    },
+    {
+      "name": "Eric Crooks"
+    },
+    {
+      "name": "Sara Gee"
+    }
+  ],
+  "devDependencies": {
+    "@babel/core": "7.x",
+    "@babel/preset-env": "7.x",
+    "@types/jest": "29.x",
+    "@swc/cli": "0.x",
+    "@swc/core": "1.x",
+    "@types/node": "18.x",
+    "babel-jest": "29.x",
+    "jest": "29.x",
+    "ts-jest": "29.x",
+    "ts-node": "10.x",
+    "tsc": "2.x",
+    "tsconfig-paths": "4.x",
+    "typescript": "5.x"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      // This is used in tandem with `jest.config.ts#moduleNameMapper`
+      "@/*": ["../*"]
+    },
+    "allowImportingTsExtensions": true
+  },
+  "include": ["./**/*.ts"]
+}

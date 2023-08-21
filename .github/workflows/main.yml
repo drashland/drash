@@ -1,0 +1,74 @@
+name: main
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+
+  api-test:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Integration Tests
+        run: |
+          deno task test:deno
+
+      - name: Unit Tests
+        run: deno task test:unit
+
+  benchmarks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Setup Node 13
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13'
+
+      - name: Install Autocannon
+        run: npm install -g autocannon
+
+      - name: Run Drash application
+        run: deno run --allow-net ./console/benchmark_app.ts &
+
+      - name: Run Autocannon against Drash application
+        run: autocannon -c 40 -d 10 -j http://localhost:1447
+
+  code_quality:
+    # Only one OS is required since fmt is cross platform
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Check `deno lint` passes
+        run: deno lint --ignore=tests/data
+
+      - name: Check `deno fmt` passes
+        run: deno fmt --check

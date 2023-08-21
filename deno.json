@@ -1,0 +1,26 @@
+{
+  "importMap": "./.deno/import_map.json",
+  "lock": false,
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["src/"],
+    "exclude": [".deno", ".drashland", "node_modules"]
+  },
+  "tasks": {
+    "build-all": "./scripts/build_all",
+    "build-and-check": "deno task build-intermediary; yarn tsc --project tsconfig.check.json",
+    "build-cjs": "yarn tsc --project tsconfig.cjs.json",
+    "build-esm": "yarn tsc --project tsconfig.esm.json",
+    "build-intermediary": "./scripts/lib_builder/build_intermediary",
+    "check": "yarn tsc --project tsconfig.check.json",
+    "release": "yarn publish --access public",
+    "test-all": "deno task test-deno && deno task test-node",
+    "test-deno": "deno test tests/integration/deno",
+    "test-node": "yarn jest tests/integration/node"
+  }
+}

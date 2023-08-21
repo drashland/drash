@@ -1,20 +1,23 @@
-# files
-*conf.json
+# Files
+
 .DS_Store
 .env
-bundle.js
-compiled_*.js
-compiled_*.json
-doc_blocks_output_actual.json
+*.log
 package-lock.json
+.vscode/settings.json
+yarn.lock
 
-# directories
-.idea
-.sass-cache
-.vim
-node_modules
+# Directories
+
+benchmarks/*
+.drashland/
+.idea/
+.vim/
+lib/*
+node_modules/
 tmp*/*
 tmp/*
 
-# exceptions
+# Exceptions
+
 !.gitkeep
