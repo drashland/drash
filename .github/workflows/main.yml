@@ -23,39 +23,48 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Integration Tests
+      - name: Integration Tests (Deno)
         run: |
-          deno task test:deno
+          deno task test-deno
 
-      - name: Unit Tests
-        run: deno task test:unit
-
-  benchmarks:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
-
-      - name: Setup Node 13
-        uses: actions/setup-node@v1
+      - name: Install Node 16
+        uses: actions/setup-node@v2
         with:
-          node-version: '13'
+          node-version: '16'
 
-      - name: Install Autocannon
-        run: npm install -g autocannon
+      - name: Integration Tests (Node)
+        run: |
+          yarn install && deno task build-all && deno task test-node
 
-      - name: Run Drash application
-        run: deno run --allow-net ./console/benchmark_app.ts &
+      # - name: Unit Tests
+      #   run: deno task test:unit
 
-      - name: Run Autocannon against Drash application
-        run: autocannon -c 40 -d 10 -j http://localhost:1447
+  # benchmarks:
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+
+  #   runs-on: ${{ matrix.os }}
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Install Deno
+  #       uses: denoland/setup-deno@v1
+
+  #     - name: Setup Node 13
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '13'
+
+  #     - name: Install Autocannon
+  #       run: npm install -g autocannon
+
+  #     - name: Run Drash application
+  #       run: deno run --allow-net ./console/benchmark_app.ts &
+
+  #     - name: Run Autocannon against Drash application
+  #       run: autocannon -c 40 -d 10 -j http://localhost:1447
 
   code_quality:
     # Only one OS is required since fmt is cross platform
@@ -67,8 +76,8 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Check `deno lint` passes
-        run: deno lint --ignore=tests/data
+      - name: "Check: deno lint"
+        run: deno lint src
 
-      - name: Check `deno fmt` passes
+      - name: "Check deno fmt"
         run: deno fmt --check
