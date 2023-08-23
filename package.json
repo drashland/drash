@@ -24,9 +24,9 @@
   "devDependencies": {
     "@babel/core": "7.x",
     "@babel/preset-env": "7.x",
-    "@types/jest": "29.x",
     "@swc/cli": "0.x",
     "@swc/core": "1.x",
+    "@types/jest": "29.x",
     "@types/node": "18.x",
     "babel-jest": "29.x",
     "jest": "29.x",

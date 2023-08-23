@@ -1,16 +1,16 @@
-// Drash imports
-import { HTTPError } from "@/src/core/errors/HTTPError.ts";
-import { StatusByCode } from "@/src/core/http/Status.ts";
 import { Chain as StandardChain } from "@/src/modules/base/Chain.ts";
-import * as NativeRequestChain from "@/src/modules/RequestChain/native.ts";
+import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
 import { RequestHandler } from "@/src/standard/handlers/RequestHandler.ts";
 import { ResourceHandler } from "@/src/modules/RequestChain/native/ResourceHandler.ts";
+import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
+import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
+import * as Chain from "@/src/modules/RequestChain/native.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends NativeRequestChain.Resource {
+class Home extends Chain.Resource {
   public paths = ["/"];
 
   public GET(request: Request) {
@@ -57,8 +57,8 @@ export const send = (
       }
 
       return new Response(error.message, {
-        status: StatusByCode[500].Code,
-        statusText: StatusByCode[500].Description,
+        status: StatusCode.InternalServerError,
+        statusText: StatusDescription.InternalServerError,
       });
     });
 };

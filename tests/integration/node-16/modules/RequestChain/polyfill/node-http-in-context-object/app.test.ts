@@ -3,14 +3,10 @@ import { Socket } from "net";
 import { IncomingMessage, ServerResponse } from "http";
 
 // Test setup imports
-import { send } from "./app_nodehttp_in_context";
-import {
-  testCases,
-  testCasesNotFound,
-} from "./test_data";
+import { send } from "./app";
 
 describe("Polyfill - Using IncomingMessage/ServerResponse in context object", () => {
-  describe.each(testCases)(
+  describe.each(testCases())(
     "Home / paths = /",
     ({ method, expected }) => {
       it(`${method} returns ${expected.status}`, async () => {
@@ -27,7 +23,7 @@ describe("Polyfill - Using IncomingMessage/ServerResponse in context object", ()
     },
   );
 
-  describe.each(testCasesNotFound)(
+  describe.each(testCasesNotFound())(
     "Non-existent endpoints / path = test",
     ({ method, expected }) => {
       it(`${method} returns ${expected.status}`, async () => {
@@ -56,4 +52,84 @@ function getBody(response: ServerResponse<IncomingMessage>) {
   }
 
   return body.join("");
+}
+
+function testCases() {
+  return [
+    {
+      method: "GET",
+      expected: {
+        status: 200,
+        body: "Hello from GET.",
+      }
+    },
+    {
+      method: "POST",
+      expected: {
+        status: 200,
+        body: "Hello from POST.",
+      }
+    },
+    {
+      method: "PUT",
+      expected: {
+        status: 501,
+        body: "Not Implemented",
+      }
+    },
+    {
+      method: "DELETE",
+      expected: {
+        status: 500,
+        body: "Hey, I'm the DELETE endpoint. Errrr.",
+      }
+    },
+    {
+      method: "PATCH",
+      expected: {
+        status: 405,
+        body: "Method Not Allowed",
+      }
+    }
+  ];
+}
+
+function testCasesNotFound() {
+  return [
+  {
+    method: "GET",
+    expected: {
+      status: 404,
+      body: "Not Found"
+    }
+  },
+  {
+    method: "POST",
+    expected: {
+      status: 404,
+      body: "Not Found"
+    }
+  },
+  {
+    method: "PUT",
+    expected: {
+      status: 404,
+      body: "Not Found"
+    }
+  },
+  {
+    method: "DELETE",
+    expected: {
+      status: 404,
+      body: "Not Found"
+    }
+  },
+  {
+    method: "PATCH",
+    expected: {
+      status: 404,
+      body: "Not Found"
+    }
+  },
+];
 }

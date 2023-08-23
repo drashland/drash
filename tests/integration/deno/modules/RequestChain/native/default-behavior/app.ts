@@ -1,8 +1,8 @@
-// Drash imports
-import { HTTPError } from "@/src/core/errors/HTTPError.ts";
-import { StatusByCode } from "@/src/core/http/Status.ts";
-import * as Chain from "@/src/modules/RequestChain/polyfill.ts";
 import { GroupConsoleLogger, Level } from "@/src/standard/log/GroupConsoleLogger.ts";
+import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
+import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
+import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
+import * as Chain from "@/src/modules/RequestChain/native.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -53,8 +53,8 @@ export const send = (
       }
 
       return new Response(error.message, {
-        status: StatusByCode[500].Code,
-        statusText: StatusByCode[500].Description,
+        status: StatusCode.InternalServerError,
+        statusText: StatusDescription.InternalServerError,
       });
     });
 };

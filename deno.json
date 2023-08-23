@@ -20,7 +20,8 @@
     "check": "yarn tsc --project tsconfig.check.json",
     "release": "yarn publish --access public",
     "test-all": "deno task test-deno && deno task test-node",
-    "test-deno": "deno test tests/integration/deno",
-    "test-node": "yarn jest tests/integration/node"
+    "test:integration:deno": "deno test tests/integration/deno",
+    "test:integration:node": "yarn jest tests/integration",
+    "test:unit": "deno test tests/unit"
   }
 }

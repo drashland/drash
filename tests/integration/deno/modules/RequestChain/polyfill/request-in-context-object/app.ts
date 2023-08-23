@@ -1,8 +1,8 @@
-// Drash imports
-import { HTTPError } from "@/src/core/errors/HTTPError.ts";
-import { Status, StatusByCode } from "@/src/core/http/Status.ts";
-import { Status as StatusUtils } from "@/src/standard/http/Status.ts";
-import * as Chain from "@/src/modules/RequestChain/native.ts";
+import { GroupConsoleLogger, Level } from "@/src/standard/log/GroupConsoleLogger.ts";
+import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
+import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
+import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
+import * as Chain from "@/src/modules/RequestChain/polyfill.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -39,6 +39,7 @@ class Home extends Chain.Resource {
 
 const chain = Chain
   .builder()
+  .logger(GroupConsoleLogger.create("Test", Level.Off))
   .resources(Home)
   .build<WebAPIContext, WebAPIContext>();
 
@@ -46,8 +47,6 @@ export const send = (
   request: Request,
 ): Promise<Response> => {
 
-  // We will keep the Request intact and provide url and method to let the chain
-  // know how to route the request
   const context = {
     request,
     url: request.url,
@@ -56,9 +55,6 @@ export const send = (
 
   return chain
     .handle(context)
-    // Since we are passing in a context and resources are returning the
-    // context, then we expect to retrieve a Response object from the context to
-    // use as the Response
     .then((returnedContext) => {
       if (returnedContext.response) {
         return returnedContext.response;
@@ -66,7 +62,10 @@ export const send = (
 
       return new Response(
         "Response not generated",
-        StatusUtils.toResponseFields(500)
+        {
+          status: StatusCode.InternalServerError,
+          statusText: StatusDescription.InternalServerError,
+        }
       );
     })
     .catch((error: Error | HTTPError) => {
@@ -82,8 +81,8 @@ export const send = (
       }
 
       return new Response(error.message, {
-        status: StatusByCode[500].Code,
-        statusText: StatusByCode[500].Description,
+        status: StatusCode.InternalServerError,
+        statusText: StatusDescription.InternalServerError,
       });
     });
 };

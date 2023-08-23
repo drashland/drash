@@ -1,11 +1,9 @@
-// Drash imports
-import { HTTPError } from "@/.drashland/builds/esm/core/errors/HTTPError";
-import { StatusByCode } from "@/.drashland/builds/esm/core/http/Status";
-import * as Chain from "@/.drashland/builds/esm/modules/RequestChain/polyfill";
-import { GroupConsoleLogger, Level } from "@/src/standard/log/GroupConsoleLogger";
-
-// Node imports
+import { GroupConsoleLogger, Level } from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
+import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { IncomingMessage, ServerResponse } from "node:http";
+import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";
+import { StatusDescription } from "@/.drashland/builds/esm/standard/http/response/StatusDescription";
+import * as Chain from "@/.drashland/builds/esm/modules/RequestChain/polyfill";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -45,8 +43,8 @@ class Home extends Chain.Resource {
 
 const chain = Chain
   .builder()
-  .resources(Home)
   .logger(GroupConsoleLogger.create("Test", Level.Off))
+  .resources(Home)
   .build<NodeContext, NodeContext>();
 
 export const send = (
@@ -77,8 +75,8 @@ export const send = (
         context.response.statusMessage = error.code_description;
         context.response.end(error.message);
       } else {
-        context.response.statusCode = StatusByCode[500].Code;
-        context.response.statusMessage = StatusByCode[500].Description;
+        context.response.statusCode = StatusCode.InternalServerError;
+        context.response.statusMessage = StatusDescription.InternalServerError;
         context.response.end(error.message);
       }
 

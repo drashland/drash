@@ -1,6 +1,11 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "types": [
+      "deno",
+      "node",
+      "jest"
+    ],
     "baseUrl": ".",
     "paths": {
       // This is used in tandem with `jest.config.ts#moduleNameMapper`
@@ -8,5 +13,5 @@
     },
     "allowImportingTsExtensions": true
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts", "../src/**/*.ts"]
 }
