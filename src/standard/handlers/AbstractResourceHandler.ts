@@ -20,12 +20,10 @@
  */
 
 // Imports > Core
-import { HTTPError } from "../../core/errors/HTTPError.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 import type { IResource } from "../../core/interfaces/IResource.ts";
 import type { MethodOf } from "../../core/types/MethodOf.ts";
 import type { ResourceClass } from "../../core/types/ResourceClass.ts";
-import type { ILogger } from "../../core/interfaces/ILogger.ts";
 import type { IHandler } from "../../core/interfaces/IHandler.ts";
 
 // Imports > Standard
@@ -34,6 +32,8 @@ import {
   type InputRequest,
 } from "./AbstractRequestHandler.ts";
 import { GroupConsoleLogger } from "../log/GroupConsoleLogger.ts";
+import { HTTPError } from "../errors/HTTPError.ts";
+import { Logger } from "../log/Logger.ts";
 
 type ResourceClassesArray = (ResourceClass | ResourceClass[])[];
 
@@ -54,7 +54,7 @@ abstract class AbstractBuilder implements IBuilder {
     resources: [],
   };
 
-  public logger(logger: ILogger): this {
+  public logger(logger: Logger): this {
     this.constructor_args.logger = logger;
     return this;
   }
@@ -73,7 +73,7 @@ abstract class AbstractBuilder implements IBuilder {
 }
 
 type CtorParams = {
-  logger?: ILogger;
+  logger?: Logger;
   request_params_parser?: IHandler;
   resources: ResourceClassesArray;
 };
@@ -96,7 +96,7 @@ abstract class AbstractResourceHandler<
   protected resource_path_patterns: ResourceAndPathPatterns[] = [];
   protected request_params_parser?: IHandler;
 
-  #logger: ILogger = GroupConsoleLogger.create("ResourceHandler");
+  #logger: Logger = GroupConsoleLogger.create("ResourceHandler");
 
   constructor(options: CtorParams) {
     super();
@@ -132,7 +132,7 @@ abstract class AbstractResourceHandler<
       .then(() => this.#parseRequestParams(request, foundResource.path_params))
       .then(() => this.#checkIfProxy(foundResource.resource!))
       .then(() =>
-        this.#callResourceHTTPMethod(
+        this.#callResourceRequestMethod(
           foundResource.resource!,
           request.method.toUpperCase() as MethodOf<IResource>,
           request,
@@ -173,7 +173,7 @@ abstract class AbstractResourceHandler<
    * @param request The request to pass to the resource's HTTP method.
    * @returns The result from calling the resource's HTTP method.
    */
-  #callResourceHTTPMethod(
+  #callResourceRequestMethod(
     resource: IResource,
     httpMethod: MethodOf<IResource>,
     request: I,

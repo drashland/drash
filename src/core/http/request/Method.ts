@@ -24,7 +24,7 @@
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods} for more information on HTTP methods.
  */
-export enum HTTPMethod {
+export enum Method {
   CONNECT = "CONNECT",
   DELETE = "DELETE",
   GET = "GET",

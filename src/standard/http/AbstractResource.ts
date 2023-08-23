@@ -20,18 +20,20 @@
  */
 
 // Imports > Core
-import { AbstractResource as Base } from "../../core/http/AbstractResource.ts";
 import type { ResourceClass } from "../../core/types/ResourceClass.ts";
+import { IResource } from "../../core/interfaces/IResource.ts";
 
 // Imports > Standard
+import { StatusCode } from "./response/StatusCode.ts";
 import { type Builder, ResourceGroup } from "./ResourceGroup.ts";
+import { HTTPResponse } from "./HTTPResponse.ts";
 
 type ResourceClasses = (ResourceClass | ResourceClass[])[];
 
 /**
  * A base class with a resource group builder.
  */
-export abstract class AbstractResource extends Base {
+export abstract class AbstractResource implements IResource {
   /**
    * Instantiate a {@link Builder} with the given `resources`.
    * @param resources The resource classes to group together.
@@ -41,5 +43,45 @@ export abstract class AbstractResource extends Base {
     ...resources: ResourceClasses
   ): Omit<Builder, "resources"> {
     return ResourceGroup.builder().resources(...resources);
+  }
+
+  abstract paths: string[];
+
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+
+  public CONNECT(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public DELETE(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public GET(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public HEAD(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public OPTIONS(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public PATCH(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public POST(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public PUT(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
+  }
+
+  public TRACE(_input: unknown): unknown {
+    throw HTTPResponse.error(StatusCode.NotImplemented);
   }
 }

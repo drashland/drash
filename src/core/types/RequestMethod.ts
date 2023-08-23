@@ -19,38 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Base interface for logger classes.
- */
-export interface ILogger {
-  /**
-   * Write `debug` messages.
-   * @param messages The messages to write.
-   */
-  debug(...messages: unknown[]): unknown;
-  /**
-   * Write `error` messages.
-   * @param messages The messages to write.
-   */
-  error(...messages: unknown[]): unknown;
-  /**
-   * Write `fatal` messages.
-   * @param messages The messages to write.
-   */
-  fatal(...messages: unknown[]): unknown;
-  /**
-   * Write `info` messages.
-   * @param messages The messages to write.
-   */
-  info(...messages: unknown[]): unknown;
-  /**
-   * Write `trace` messages.
-   * @param messages The messages to write.
-   */
-  trace(...messages: unknown[]): unknown;
-  /**
-   * Write `warn` messages.
-   * @param messages The messages to write.
-   */
-  warn(...messages: unknown[]): unknown;
-}
+import { Method } from "../http/request/Method.ts";
+
+export type RequestMethod = Method;

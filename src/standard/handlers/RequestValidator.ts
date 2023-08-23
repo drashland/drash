@@ -20,12 +20,12 @@
  */
 
 // Imports > Core
-import { AbstractHandler } from "../../core/handlers/AbstractHandler.ts";
-import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { Status } from "../../core/http/Status.ts";
+import { AbstractHandler } from "../handlers/AbstractHandler.ts";
+import { HTTPError } from "../errors/HTTPError.ts";
 
 // Imports > Standard
 import { GroupConsoleLogger } from "../log/GroupConsoleLogger.ts";
+import { StatusCode } from "../http/response/StatusCode.ts";
 
 class RequestValidator<I> extends AbstractHandler {
   #logger = GroupConsoleLogger.create("RequestValidator");
@@ -35,28 +35,28 @@ class RequestValidator<I> extends AbstractHandler {
 
     if (!request) {
       throw new HTTPError(
-        Status.UnprocessableEntity.Code,
+        StatusCode.UnprocessableEntity,
         `Request could not be read`,
       );
     }
 
     if (typeof request !== "object") {
       throw new HTTPError(
-        Status.UnprocessableEntity.Code,
+        StatusCode.UnprocessableEntity,
         `Request could not be read`,
       );
     }
 
-    if (!("method" in request)) {
+    if (!("method" in request) || typeof request.method !== "string") {
       throw new HTTPError(
-        Status.UnprocessableEntity.Code,
+        StatusCode.UnprocessableEntity,
         `Request HTTP method could not be read`,
       );
     }
 
-    if (!("url" in request)) {
+    if (!("url" in request) || typeof request.url !== "string") {
       throw new HTTPError(
-        Status.UnprocessableEntity.Code,
+        StatusCode.UnprocessableEntity,
         `Request URL could not be read`,
       );
     }

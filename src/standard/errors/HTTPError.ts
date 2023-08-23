@@ -19,8 +19,10 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Status, StatusByCode } from "../http/Status.ts";
-import type { HTTPStatusCode } from "../types/HTTPStatusCode.ts";
+import { ResponseStatusCode } from "../../core/Types.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { StatusByCode } from "../http/response/StatusByCode.ts";
+import { StatusDescription } from "../http/response/StatusDescription.ts";
 
 /**
  * Base class for all HTTP errors in Drash. Use this class to throw uniform HTTP
@@ -46,7 +48,8 @@ export class HTTPError extends Error {
   /**
    * The HTTP status code associated with this error.
    */
-  public readonly code: HTTPStatusCode;
+  public readonly code: ResponseStatusCode;
+  public readonly code_description: string;
 
   /**
    * The name of this error to be used with conditionals that do not work with
@@ -63,29 +66,35 @@ export class HTTPError extends Error {
    */
   public readonly name = "HTTPError";
 
-  #code_description: string;
-
-  /**
-   * The description to `this.code`.
-   */
-  get code_description(): string {
-    return StatusByCode[this.code].Description;
-  }
-
   /**
    * @param statusCode A valid HTTP status code. If an unknown HTTP status code
    * is provided, then `500` will be used.
    * @param message (optional) The error message.
    */
-  constructor(statusCode: HTTPStatusCode, message?: string) {
+  constructor(statusCode: StatusCode | number, message?: string) {
     super(message);
 
-    const codeObj = StatusByCode[statusCode] ??
-      Status.InternalServerError;
-    this.code = codeObj.Code;
-    this.#code_description = codeObj.Description;
+    this.code = StatusCode.InternalServerError;
+    this.code_description = StatusDescription.InternalServerError;
 
-    this.message = this.#code_description ??
-      "An error occurred (an error message was not provided)";
+    const status = StatusByCode[statusCode];
+
+    if (status) {
+      this.code = status.Code;
+      this.code_description = status.Description;
+    }
+
+    if (!this.code) {
+      this.code = StatusCode.InternalServerError;
+    }
+
+    if (!this.code_description) {
+      this.code_description =
+        "An error occurred (an error message was not provided)";
+    }
+
+    if (!this.message) {
+      this.message = this.code_description;
+    }
   }
 }

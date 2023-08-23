@@ -20,14 +20,14 @@
  */
 
 // Imports > Core
-import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { Status } from "../../core/http/Status.ts";
 import type { ConstructorWithArgs } from "../../core/types/ConstructorWithArgs.ts";
 import type { IResource } from "../../core/interfaces/IResource.ts";
 import type { MethodOf } from "../../core/types/MethodOf.ts";
 
 // Imports > Standard
 import { ResourceProxy } from "./ResourceProxy.ts";
+import { HTTPError } from "../errors/HTTPError.ts";
+import { StatusCode } from "./response/StatusCode.ts";
 
 interface IMiddleware extends IResource {
   ALL(request: unknown): unknown;
@@ -51,7 +51,7 @@ class Middleware<I, O> extends ResourceProxy<Middleware<I, O>, I, O> {
 
     if (!("method" in (input as Record<string, unknown>))) {
       throw new HTTPError(
-        Status.UnprocessableEntity.Code,
+        StatusCode.UnprocessableEntity,
         `Request method could not be read`,
       );
     }

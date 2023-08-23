@@ -20,17 +20,37 @@
  */
 
 /**
- * Request methods defined by HTTP.
- *
- * @link See https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods.
+ * Base interface for logger classes.
  */
-export type HTTPMethod =
-  | "CONNECT"
-  | "DELETE"
-  | "GET"
-  | "HEAD"
-  | "OPTIONS"
-  | "PATCH"
-  | "POST"
-  | "PUT"
-  | "TRACE";
+export interface Logger {
+  /**
+   * Write `debug` messages.
+   * @param messages The messages to write.
+   */
+  debug(...messages: unknown[]): unknown;
+  /**
+   * Write `error` messages.
+   * @param messages The messages to write.
+   */
+  error(...messages: unknown[]): unknown;
+  /**
+   * Write `fatal` messages.
+   * @param messages The messages to write.
+   */
+  fatal(...messages: unknown[]): unknown;
+  /**
+   * Write `info` messages.
+   * @param messages The messages to write.
+   */
+  info(...messages: unknown[]): unknown;
+  /**
+   * Write `trace` messages.
+   * @param messages The messages to write.
+   */
+  trace(...messages: unknown[]): unknown;
+  /**
+   * Write `warn` messages.
+   * @param messages The messages to write.
+   */
+  warn(...messages: unknown[]): unknown;
+}

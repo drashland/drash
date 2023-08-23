@@ -32,13 +32,13 @@ import {
 } from "../../standard/handlers/RequestHandler.ts";
 import { GroupConsoleLogger } from "../../standard/log/GroupConsoleLogger.ts";
 import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
-import type { IGroupLogger } from "../../standard/log/AbstractGroupLogger.ts";
+import type { LogGroup } from "../../standard/log/AbstractLogGroup.ts";
 
 /**
  * Builder for building a chain of request handlers.
  */
 class Builder extends AbstractChainBuilder {
-  #logger: IGroupLogger = GroupConsoleLogger.create("RequestChain");
+  #logger: LogGroup = GroupConsoleLogger.create("RequestChain");
 
   // RequestHandler members
   protected request_handler_builder!: RequestHandlerBuilder;
@@ -49,7 +49,7 @@ class Builder extends AbstractChainBuilder {
   protected resource_handler_builder!: ResourceHandlerBuilder;
   protected request_params_parser?: IHandler;
 
-  public logger(logger: IGroupLogger): this {
+  public logger(logger: LogGroup): this {
     this.#logger = logger;
     return this;
   }

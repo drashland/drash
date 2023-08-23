@@ -20,9 +20,9 @@
  */
 
 // Imports > Core
-import { AbstractResource } from "../../core/http/AbstractResource.ts";
 import type { IResource } from "../../core/interfaces/IResource.ts";
 import { Promisable } from "../types/Promisable.ts";
+import { AbstractResource } from "./AbstractResource.ts";
 
 abstract class ResourceProxy<Proxy, I, O> extends AbstractResource {
   public paths: string[] = [];

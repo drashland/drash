@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ILogger } from "../interfaces/ILogger.ts";
+import { Logger } from "./Logger.ts";
 import { Level } from "./Level.ts";
 
 enum LevelDisplayName {
@@ -36,7 +36,7 @@ enum LevelDisplayName {
 /**
  * Base logger for logger classes.
  */
-export abstract class AbstractLogger implements ILogger {
+export abstract class AbstractLogger implements Logger {
   /**
    * The name of this logger. Can be used when writing messsages.
    */

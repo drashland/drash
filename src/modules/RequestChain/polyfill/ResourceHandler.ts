@@ -19,11 +19,8 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { HTTPError } from "../../../core/errors/HTTPError.ts";
-import { Status } from "../../../core/http/Status.ts";
-
 // Imports > Standard
+import { HTTPError } from "../../../standard/errors/HTTPError.ts";
 import {
   AbstractResourceHandler,
   type CtorParams,
@@ -31,6 +28,7 @@ import {
   type ResourceClassesArray,
   type ResourceWithPathParams,
 } from "../../../standard/handlers/AbstractResourceHandler.ts";
+import { StatusCode } from "../../../standard/http/response/StatusCode.ts";
 import { GroupConsoleLogger } from "../../../standard/log/GroupConsoleLogger.ts";
 
 const REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
@@ -179,7 +177,7 @@ class ResourceHandler<
 
     // TODO(crookse) What does the stack trace look like with this error thrown?
     this.#logger.trace(`Resource not found`);
-    throw new HTTPError(Status.NotFound.Code);
+    throw new HTTPError(StatusCode.NotFound);
   }
 
   /**

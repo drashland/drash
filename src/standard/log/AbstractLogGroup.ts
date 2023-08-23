@@ -20,23 +20,23 @@
  */
 
 // Imports > Core
-import { AbstractLogger as Base } from "../../core/log/AbstractLogger.ts";
-import { Level } from "../../core/log/Level.ts";
-import type { ILogger } from "../../core/interfaces/ILogger.ts";
+import { AbstractLogger } from "./AbstractLogger.ts";
+import { Level } from "./Level.ts";
+import type { Logger } from "./Logger.ts";
 
-interface IGroupLogger extends ILogger {
-  logger(name: string): IGroupLogger;
+interface LogGroup extends Logger {
+  logger(name: string): LogGroup;
 }
 
-type GroupLoggerOptions = {
+type LogGroupOptions = {
   prefixes?: {
     maxLoggerNameLength?: number;
   };
   // tags?: unknown[];
 };
 
-abstract class AbstractGroupLogger extends Base implements IGroupLogger {
-  protected readonly options: GroupLoggerOptions = {
+abstract class AbstractLogGroup extends AbstractLogger implements LogGroup {
+  protected readonly options: LogGroupOptions = {
     prefixes: {
       maxLoggerNameLength: 25,
     },
@@ -52,7 +52,7 @@ abstract class AbstractGroupLogger extends Base implements IGroupLogger {
   constructor(
     name: string,
     level: Level = Level.Off,
-    options: GroupLoggerOptions = {},
+    options: LogGroupOptions = {},
   ) {
     super(name, level);
     this.name = name;
@@ -77,10 +77,10 @@ abstract class AbstractGroupLogger extends Base implements IGroupLogger {
   /**
    * Create a nested logger under this logger.
    * @param name The name of the nested logger.
-   * @returns A `AbstractGroupLogger` with a prefixed name. The prefix is this
-   * `AbstractGroupLogger`'s name.
+   * @returns A `AbstractLogGroup` with a prefixed name. The prefix is this
+   * `AbstractLogGroup`'s name.
    */
-  abstract logger(name: string): IGroupLogger;
+  abstract logger(name: string): LogGroup;
 
   /**
    * Get the prefix to write before the log message.
@@ -145,4 +145,4 @@ abstract class AbstractGroupLogger extends Base implements IGroupLogger {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractGroupLogger, type GroupLoggerOptions, type IGroupLogger };
+export { AbstractLogGroup, type LogGroup, type LogGroupOptions };

@@ -19,12 +19,8 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { HTTPError } from "../../../core/errors/HTTPError.ts";
-import { Status } from "../../../core/http/Status.ts";
-import { ILogger } from "../../../core/interfaces/ILogger.ts";
-
 // Imports > Standard
+import { HTTPError } from "../../../standard/errors/HTTPError.ts";
 import {
   AbstractResourceHandler,
   type CtorParams,
@@ -32,7 +28,9 @@ import {
   type ResourceClassesArray,
   type ResourceWithPathParams,
 } from "../../../standard/handlers/AbstractResourceHandler.ts";
+import { StatusCode } from "../../../standard/http/response/StatusCode.ts";
 import { GroupConsoleLogger } from "../../../standard/log/GroupConsoleLogger.ts";
+import type { Logger } from "../../../standard/log/Logger.ts";
 
 class Builder extends AbstractResourceHandler.AbstractBuilder {
   public build<I extends InputRequest, O>(): ResourceHandler<I, O> {
@@ -49,7 +47,7 @@ class ResourceHandler<
    */
   static Builder = Builder;
 
-  #logger: ILogger = GroupConsoleLogger.create("ResourceHandler");
+  #logger: Logger = GroupConsoleLogger.create("ResourceHandler");
 
   constructor(options: CtorParams) {
     super(options);
@@ -170,7 +168,7 @@ class ResourceHandler<
 
     // TODO(crookse) What does the stack trace look like with this error thrown?
     this.#logger.debug(`Resource not found (throwing 404)`);
-    throw new HTTPError(Status.NotFound.Code);
+    throw new HTTPError(StatusCode.NotFound);
   }
 }
 

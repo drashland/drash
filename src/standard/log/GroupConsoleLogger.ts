@@ -19,13 +19,11 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { Level } from "../../core/log/Level.ts";
-
 // Imports > Standard
-import { AbstractGroupLogger } from "./AbstractGroupLogger.ts";
+import { Level } from "./Level.ts";
+import { AbstractLogGroup } from "./AbstractLogGroup.ts";
 
-class GroupConsoleLogger extends AbstractGroupLogger {
+class GroupConsoleLogger extends AbstractLogGroup {
   #loggers: Record<string, GroupConsoleLogger> = {};
 
   /**

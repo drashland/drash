@@ -19,66 +19,31 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export type HTTPStatusCode =
-  | 100
-  | 101
-  | 102
-  | 103
-  | 200
-  | 201
-  | 202
-  | 203
-  | 204
-  | 205
-  | 206
-  | 207
-  | 208
-  | 226
-  | 300
-  | 301
-  | 302
-  | 303
-  | 304
-  | 305
-  | 307
-  | 308
-  | 400
-  | 401
-  | 402
-  | 403
-  | 404
-  | 405
-  | 406
-  | 407
-  | 408
-  | 409
-  | 410
-  | 411
-  | 412
-  | 413
-  | 414
-  | 415
-  | 416
-  | 417
-  | 418
-  | 421
-  | 422
-  | 423
-  | 424
-  | 425
-  | 426
-  | 428
-  | 429
-  | 431
-  | 451
-  | 500
-  | 501
-  | 502
-  | 503
-  | 504
-  | 505
-  | 506
-  | 507
-  | 508
-  | 510
-  | 511;
+import { IHandler } from "../../core/interfaces/IHandler.ts";
+/**
+ * A class to be extended by handlers so they can share the same interface.
+ */
+export abstract class AbstractHandler implements IHandler {
+  /**
+   * Handlers can be chained together using this property. See example.
+   *
+   * @example
+   * ```
+   * // Instantiate some handlers
+   * const handlerA = new HandlerA();
+   * const handlerB = new HandlerB();
+   * const handlerC = new HandlerC();
+   *
+   * // Link them together
+   * handlerA.setNext(handlerB).setNext(handlerC);
+   * ```
+   */
+  next_handler?: IHandler;
+
+  abstract handle(input: unknown, ...rest: unknown[]): unknown;
+
+  public setNext(nextHandler: IHandler): IHandler {
+    this.next_handler = nextHandler;
+    return this.next_handler;
+  }
+}

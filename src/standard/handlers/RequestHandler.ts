@@ -20,11 +20,9 @@
  */
 
 // Imports > Core
-import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { Status } from "../../core/http/Status.ts";
+import { HTTPError } from "../errors/HTTPError.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 import type { IHandler } from "../../core/interfaces/IHandler.ts";
-import type { ILogger } from "../../core/interfaces/ILogger.ts";
 
 // Imports > Standard
 import {
@@ -32,7 +30,8 @@ import {
   type InputRequest,
 } from "./AbstractRequestHandler.ts";
 import { GroupConsoleLogger } from "../log/GroupConsoleLogger.ts";
-import type { IGroupLogger } from "../log/AbstractGroupLogger.ts";
+import type { LogGroup } from "../log/AbstractLogGroup.ts";
+import type { Logger } from "../log/Logger.ts";
 
 class Builder implements IBuilder {
   protected constructor_args: CtorParams = {};
@@ -42,7 +41,7 @@ class Builder implements IBuilder {
    * @param handler
    * @returns This instance (for convenient method chaining).
    */
-  public logger(logger?: IGroupLogger): this {
+  public logger(logger?: LogGroup): this {
     this.constructor_args.logger = logger;
     return this;
   }
@@ -64,7 +63,7 @@ class Builder implements IBuilder {
 
 type CtorParams = {
   request_validator?: IHandler;
-  logger?: IGroupLogger;
+  logger?: LogGroup;
 };
 
 export class RequestHandler<
@@ -73,7 +72,7 @@ export class RequestHandler<
 > extends AbstractRequestHandler<I, O> {
   static Builder = Builder;
 
-  #logger: ILogger = GroupConsoleLogger.create("RequestHandler");
+  #logger: Logger = GroupConsoleLogger.create("RequestHandler");
 
   /**
    * A handler that validates this handler's incoming request.

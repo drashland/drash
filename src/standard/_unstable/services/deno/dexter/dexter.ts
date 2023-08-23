@@ -57,7 +57,7 @@ export class DexterService {
     this.configs = configs;
 
     // If a user has defined specific strings we allow, ensure they are set
-    // before we hand it off to unilogger to process into a log statement
+    // before we hand it off to unLogger to process into a log statement
     if (configs?.datetime !== false) {
       this.configs.tag_string += "{datetime} |";
       this.configs.tag_string_fns!.datetime = () =>

@@ -19,11 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { AbstractHandler } from "../../core/handlers/AbstractHandler.ts";
-
 // Imports > Standard
 import { GroupConsoleLogger } from "../log/GroupConsoleLogger.ts";
+import { AbstractHandler } from "./AbstractHandler.ts";
 
 class RequestParamsParser<I> extends AbstractHandler {
   #logger = GroupConsoleLogger.create("RequestValidator");

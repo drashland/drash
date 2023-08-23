@@ -19,12 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IHTTPMethods } from "../interfaces/IHTTPMethods.ts";
+import { IRequestMethods } from "../interfaces/IRequestMethods.ts";
 
 /**
  * A base interface for resource classes.
  */
-export interface IResource extends IHTTPMethods {
+export interface IResource extends IRequestMethods {
   /**
    * The paths this resource is accessible at. For example, if this is set to
    * `["/home"]`, then requests to `/home` will target this resource.

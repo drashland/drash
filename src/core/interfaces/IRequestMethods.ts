@@ -23,7 +23,7 @@
  * A base interface for classes that implement HTTP methods. For example,
  * resource classes use this interface.
  */
-export interface IHTTPMethods {
+export interface IRequestMethods {
   /**
    * The CONNECT HTTP method which is called if the request to the resource is a
    * CONNECT request. See the following for more information on this method.

@@ -20,8 +20,8 @@
  */
 
 // Imports > Core
-import { AbstractHandler } from "../../core/handlers/AbstractHandler.ts";
 import type { IHandler } from "../../core/interfaces/IHandler.ts";
+import { AbstractHandler } from "./AbstractHandler.ts";
 
 /**
  * The minimal amount of data the `RequestChain` needs to process HTTP requests.
