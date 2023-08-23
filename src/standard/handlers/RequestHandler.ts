@@ -39,7 +39,7 @@ class Builder implements IBuilder {
   /**
    * Set the logger the request handler will use.
    * @param handler
-   * @returns This instance (for convenient method chaining).
+   * @returns This instance so you can chain more methods.
    */
   public logger(logger?: LogGroup): this {
     this.constructor_args.logger = logger;
@@ -49,7 +49,7 @@ class Builder implements IBuilder {
   /**
    * Set the request validator the request handler will use.
    * @param handler
-   * @returns This instance (for convenient method chaining).
+   * @returns This instance so you can chain more methods.
    */
   public requestValidator(handler?: IHandler): this {
     this.constructor_args.request_validator = handler;

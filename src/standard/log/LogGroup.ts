@@ -19,39 +19,8 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { IBuilder } from "../../core/interfaces/IBuilder.ts";
-import { IHandler } from "../../core/interfaces/IHandler.ts";
+import { Logger } from "./Logger.ts";
 
-abstract class AbstractChainBuilder implements IBuilder {
-  /**
-   * The first handler in the chain.
-   */
-  protected first_handler?: IHandler;
-
-  /**
-   * @param handlers The handlers that will be chained together.
-   * @returns This instance so you can chain more methods.
-   */
-  public handlers(...handlers: IHandler[]): this {
-    if (!handlers || !handlers.length) {
-      throw new Error("Chain.Builder: `handlers` arg must be an array");
-    }
-
-    const firstHandler = handlers[0];
-
-    handlers.reduce((previous, current) => {
-      return previous.setNext(current);
-    });
-
-    this.first_handler = firstHandler;
-
-    return this;
-  }
-
-  abstract build(): unknown;
+export interface LogGroup extends Logger {
+  logger(name: string): LogGroup;
 }
-
-// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
-
-export { AbstractChainBuilder };

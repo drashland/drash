@@ -58,7 +58,7 @@ class Builder extends AbstractChainBuilder {
    * Set the request handler this chain will use as the first handler in the
    * chain.
    * @param builder
-   * @returns This instance (for convenient method chaining).
+   * @returns This instance so you can chain more methods.
    */
   public requestHandler(builder: RequestHandlerBuilder): this {
     this.request_handler_builder = builder;
@@ -78,7 +78,7 @@ class Builder extends AbstractChainBuilder {
   /**
    * Set the resources this chain's resource handler will use.
    * @param resources
-   * @returns This instance (for convenient method chaining).
+   * @returns This instance so you can chain more methods.
    */
   public resources(...resources: ResourceClassesArray): this {
     this.resource_handler_resource_classes = resources;
@@ -88,7 +88,7 @@ class Builder extends AbstractChainBuilder {
   /**
    * Set the resource handler this chain will use to match requests against.
    * @param builder
-   * @returns This instance (for convenient method chaining).
+   * @returns This instance so you can chain more methods.
    */
   public resourceHandler(builder: ResourceHandlerBuilder): this {
     this.resource_handler_builder = builder;

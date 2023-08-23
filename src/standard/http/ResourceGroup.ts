@@ -46,7 +46,7 @@ class Builder implements IBuilder {
   /**
    * Set the resources for this group so they can share functionality.
    * @param resources The resources to group together.
-   * @returns This builder so you can continuing chaining its methods.
+   * @returns This instance so you can chain more methods.
    * ---
    * @example
    * ```ts
@@ -95,7 +95,7 @@ class Builder implements IBuilder {
   /**
    * Set the path prefixes for all resources in this group.
    * @param pathPrefixes The path prefixes the resources will use.
-   * @returns This builder so you can continuing chaining its methods.
+   * @returns This instance so you can chain more methods.
    * ---
    * @example
    * ```ts
@@ -118,7 +118,7 @@ class Builder implements IBuilder {
   /**
    * Set the middlware for all resources in this group.
    * @param middleware The middleware the resources will use.
-   * @returns This builder so you can continuing chaining its methods.
+   * @returns This instance so you can chain more methods.
    * ---
    * @example
    * ```ts

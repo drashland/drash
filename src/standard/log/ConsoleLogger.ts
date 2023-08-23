@@ -19,39 +19,30 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { IBuilder } from "../../core/interfaces/IBuilder.ts";
-import { IHandler } from "../../core/interfaces/IHandler.ts";
+// Imports > Standard
+import { AbstractLogger } from "./AbstractLogger.ts";
+import { Level } from "./Level.ts";
 
-abstract class AbstractChainBuilder implements IBuilder {
+class ConsoleLogger extends AbstractLogger {
   /**
-   * The first handler in the chain.
+   * Create this logger.
+   * @param name
+   * @param level The highest log message level this logger can write.
+   * @returns
    */
-  protected first_handler?: IHandler;
-
-  /**
-   * @param handlers The handlers that will be chained together.
-   * @returns This instance so you can chain more methods.
-   */
-  public handlers(...handlers: IHandler[]): this {
-    if (!handlers || !handlers.length) {
-      throw new Error("Chain.Builder: `handlers` arg must be an array");
-    }
-
-    const firstHandler = handlers[0];
-
-    handlers.reduce((previous, current) => {
-      return previous.setNext(current);
-    });
-
-    this.first_handler = firstHandler;
-
-    return this;
+  static create(name: string, level: Level = Level.Off): ConsoleLogger {
+    return new ConsoleLogger(name, level);
   }
 
-  abstract build(): unknown;
+  protected write(
+    level: string,
+    message: string,
+    replacements: unknown[],
+  ): void {
+    console.log(this.getFormattedMessage(level, message, replacements));
+  }
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractChainBuilder };
+export { ConsoleLogger, Level };

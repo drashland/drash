@@ -37,6 +37,8 @@ enum LevelDisplayName {
  * Base logger for logger classes.
  */
 export abstract class AbstractLogger implements Logger {
+  static Level = Level;
+
   /**
    * The name of this logger. Can be used when writing messsages.
    */
@@ -94,8 +96,71 @@ export abstract class AbstractLogger implements Logger {
     return this.write(LevelDisplayName.Warn, message, replacements);
   }
 
+  /**
+   * Can this logger log the given message level?
+   * @param messageLevel The mesage level in question.
+   * @returns True if yes, false if no.
+   */
   protected canLog(messageLevel: Level): boolean {
     return this.level >= messageLevel;
+  }
+
+  /**
+   * Get the prefix to write before the log message.
+   * @param messageLevel The message's level to write as part of the prefix.
+   * @returns The prefix: `[this.name] [messageLevel]`
+   */
+  protected getMessagePrefix(messageLevel: string): string {
+    const repeatLength = 25 - this.name.length;
+    const repeat = repeatLength > 0 ? ".".repeat(repeatLength) : "";
+    const nameForPrefix = this.name.substring(0, 25) + repeat;
+
+    return `[${nameForPrefix}] [${messageLevel}] `;
+  }
+
+  /**
+   * @param level The message's log level.
+   * @param message The message.
+   * @param replacements An array of values to replace `{}` placeholders in the
+   * `message`.
+   * @returns
+   */
+  protected getFormattedMessage(
+    level: string,
+    message: unknown,
+    replacements: unknown[],
+  ): string {
+    const messagePrefix = this.getMessagePrefix(level);
+
+    if (typeof message !== "string") {
+      return messagePrefix + message;
+    }
+
+    if (!replacements || !replacements.length) {
+      return messagePrefix + message;
+    }
+
+    const replacedMessage = message
+      .replace(/\{\}/g, "{}{remove}")
+      .split("{remove}")
+      .map((value, index) => {
+        if (index + 1 > replacements.length) {
+          return value.replace(/\{\}/, "{<UNDEFINED_MESSAGE_ARG>}");
+        }
+
+        const replacement = replacements[index];
+
+        let cleanReplacement = `${replacement}`;
+
+        if (Array.isArray(replacement) || typeof replacement === "object") {
+          cleanReplacement = JSON.stringify(replacement);
+        }
+
+        return value.replace(/\{\}/, cleanReplacement);
+      })
+      .join("");
+
+    return messagePrefix + replacedMessage;
   }
 
   protected abstract write(...messages: unknown[]): unknown;
