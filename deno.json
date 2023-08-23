@@ -19,7 +19,8 @@
     "build-intermediary": "./scripts/lib_builder/build_intermediary",
     "check": "yarn tsc --project tsconfig.check.json",
     "release": "yarn publish --access public",
-    "test-all": "deno task test-deno && deno task test-node",
+    "test:all": "deno task test:integration:bun && deno task test:integration:deno && deno task test:integration:node && deno task test:unit",
+    "test:integration:bun": "bun test tests/integration/bun",
     "test:integration:deno": "deno test tests/integration/deno",
     "test:integration:node": "yarn jest tests/integration",
     "test:unit": "deno test tests/unit"
