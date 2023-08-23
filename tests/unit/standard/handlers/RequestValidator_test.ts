@@ -1,22 +1,21 @@
-import { asserts } from "@/tests/integration/deno/deps.ts"
+import { asserts } from "@/tests/integration/deno/deps.ts";
 import { RequestValidator } from "@/src/standard/handlers/RequestValidator.ts";
 
 const testCasesThrow = [
   null,
   undefined,
   {},
-  {url: "yep"},
-  {method: "yep"},
-  {url: true},
-  {method: false},
-  {url: true, method: true},
-  {hello: "yep"},
+  { url: "yep" },
+  { method: "yep" },
+  { url: true },
+  { method: false },
+  { url: true, method: true },
+  { hello: "yep" },
   true,
   false,
-]
+];
 
 Deno.test("RequestValidator", async (t) => {
-
   for await (let request of testCasesThrow) {
     let testName = typeof request === "object"
       ? JSON.stringify(request)
@@ -40,13 +39,19 @@ Deno.test("RequestValidator", async (t) => {
     asserts.assertThrows(() => requestValidator.handle());
   });
 
-  await t.step("does not throw if the object is `{ url: string; method: string }`", async (t) => {
-    const requestValidator = new RequestValidator();
-    try {
-      requestValidator.handle({ url: "", method: ""});
-      assert(true); // Asserting just so we assert something in this test
-    } catch (e) {
-      throw new Error("Request object is valid, but the test failed. Error message: " + e.messages)
-    }
-  });
+  await t.step(
+    "does not throw if the object is `{ url: string; method: string }`",
+    async (t) => {
+      const requestValidator = new RequestValidator();
+      try {
+        requestValidator.handle({ url: "", method: "" });
+        assert(true); // Asserting just so we assert something in this test
+      } catch (e) {
+        throw new Error(
+          "Request object is valid, but the test failed. Error message: " +
+            e.messages,
+        );
+      }
+    },
+  );
 });

@@ -1,4 +1,7 @@
-import { GroupConsoleLogger, Level } from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
+import {
+  GroupConsoleLogger,
+  Level,
+} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";
@@ -51,7 +54,6 @@ export const send = (
   request: IncomingMessage,
   response: ServerResponse,
 ): Promise<NodeContext> => {
-
   // We will keep the IncomingMessage and ServerResponse objects intact and just
   // provide url and method to let the chain know how to route the request
   const context = {

@@ -8,7 +8,6 @@
     "semiColons": true,
     "singleQuote": false,
     "proseWrap": "preserve",
-    "include": ["src/"],
     "exclude": [".deno", ".drashland", "node_modules"]
   },
   "tasks": {

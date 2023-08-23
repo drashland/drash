@@ -1,4 +1,7 @@
-import { GroupConsoleLogger, Level } from "@/src/standard/log/GroupConsoleLogger.ts";
+import {
+  GroupConsoleLogger,
+  Level,
+} from "@/src/standard/log/GroupConsoleLogger.ts";
 import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
 import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
@@ -37,7 +40,6 @@ const chain = Chain
 export const send = (
   request: Request,
 ): Promise<Response> => {
-
   return chain
     .handle(request)
     .catch((error: Error | HTTPError) => {

@@ -1,4 +1,7 @@
-import { GroupConsoleLogger, Level } from "@/src/standard/log/GroupConsoleLogger.ts";
+import {
+  GroupConsoleLogger,
+  Level,
+} from "@/src/standard/log/GroupConsoleLogger.ts";
 import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
 import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
@@ -46,7 +49,6 @@ const chain = Chain
 export const send = (
   request: Request,
 ): Promise<Response> => {
-
   // We will keep the Request intact and provide url and method to let the chain
   // know how to route the request
   const context = {
@@ -70,7 +72,7 @@ export const send = (
         {
           status: StatusCode.InternalServerError,
           statusText: StatusDescription.InternalServerError,
-        }
+        },
       );
     })
     .catch((error: Error | HTTPError) => {

@@ -34,14 +34,13 @@ const chain = StandardChain
   .builder()
   .handlers(
     RequestHandler.builder().build(),
-    ResourceHandler.builder().resources(Home).build()
+    ResourceHandler.builder().resources(Home).build(),
   )
   .build<Request, Promise<Response>>();
 
 export const send = (
   request: Request,
 ): Promise<Response> => {
-
   return chain
     .handle(request)
     .catch((error: Error | HTTPError) => {

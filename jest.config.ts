@@ -3,7 +3,7 @@ import type { Config } from "@jest/types";
 
 let directorySuffix = getDirectorySuffix();
 
-console.log(`\nRunning tests in 'node${directorySuffix}' directory\n`)
+console.log(`\nRunning tests in 'node${directorySuffix}' directory\n`);
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",
@@ -29,7 +29,6 @@ const config: Config.InitialOptions = {
 };
 
 export default config;
-
 
 function getDirectorySuffix() {
   const matchedVersion = process.version.match(/v[0-9]+/);

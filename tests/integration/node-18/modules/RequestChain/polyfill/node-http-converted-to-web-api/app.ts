@@ -1,4 +1,7 @@
-import { GroupConsoleLogger, Level } from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
+import {
+  GroupConsoleLogger,
+  Level,
+} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";
@@ -39,10 +42,9 @@ export const send = (
   req: IncomingMessage,
   res: ServerResponse,
 ): Promise<void> => {
-
   // Convert the IncomingMessage object to a Request object
   const request = new Request(`${protocol}://${hostname}:${port}${req.url}`, {
-    method: req.method
+    method: req.method,
   });
 
   return chain

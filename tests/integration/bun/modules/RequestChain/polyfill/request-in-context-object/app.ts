@@ -44,7 +44,6 @@ const chain = Chain
 export const send = (
   request: Request,
 ): Promise<Response> => {
-
   const context = {
     request,
     url: request.url,
@@ -63,7 +62,7 @@ export const send = (
         {
           status: StatusCode.InternalServerError,
           statusText: StatusDescription.InternalServerError,
-        }
+        },
       );
     })
     .catch((error: Error | HTTPError) => {

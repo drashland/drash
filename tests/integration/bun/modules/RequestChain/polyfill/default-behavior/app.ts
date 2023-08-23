@@ -1,4 +1,7 @@
-import { GroupConsoleLogger, Level } from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
+import {
+  GroupConsoleLogger,
+  Level,
+} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";
 import { StatusDescription } from "@/.drashland/builds/esm/standard/http/response/StatusDescription";
@@ -37,7 +40,6 @@ const chain = Chain
 export const send = (
   request: Request,
 ): Promise<Response> => {
-
   return chain
     .handle(request)
     .catch((error: Error | HTTPError) => {

@@ -7,18 +7,18 @@ describe("Native - Using Request/Response in context object", () => {
   describe("Home / paths = /", () => {
     for (const testCase of testCases()) {
       const { method, expected } = testCase;
-        it(`${method} returns ${expected.status}`, async () => {
-          const req = new Request(url + "/", {
-            method,
-          });
-
-          const response = await send(req);
-          const body = await response?.text();
-
-          expect(response?.status).toBe(expected.status);
-          expect(body).toBe(expected.body);
+      it(`${method} returns ${expected.status}`, async () => {
+        const req = new Request(url + "/", {
+          method,
         });
-      }
+
+        const response = await send(req);
+        const body = await response?.text();
+
+        expect(response?.status).toBe(expected.status);
+        expect(body).toBe(expected.body);
+      });
+    }
   });
 
   describe("Non-existent endpoints / path = test", () => {
@@ -39,83 +39,82 @@ describe("Native - Using Request/Response in context object", () => {
   });
 });
 
-
 function testCases() {
   return [
-  {
-    method: "GET",
-    expected: {
-      status: 200,
-      body: "Hello from GET.",
-    }
-  },
-  {
-    method: "POST",
-    expected: {
-      status: 200,
-      body: "Hello from POST.",
-    }
-  },
-  {
-    method: "PUT",
-    expected: {
-      status: 501,
-      body: "Not Implemented",
-    }
-  },
-  {
-    method: "DELETE",
-    expected: {
-      status: 500,
-      body: "Hey, I'm the DELETE endpoint. Errrr.",
-    }
-  },
-  {
-    method: "PATCH",
-    expected: {
-      status: 405,
-      body: "Method Not Allowed",
-    }
-  }
-];
+    {
+      method: "GET",
+      expected: {
+        status: 200,
+        body: "Hello from GET.",
+      },
+    },
+    {
+      method: "POST",
+      expected: {
+        status: 200,
+        body: "Hello from POST.",
+      },
+    },
+    {
+      method: "PUT",
+      expected: {
+        status: 501,
+        body: "Not Implemented",
+      },
+    },
+    {
+      method: "DELETE",
+      expected: {
+        status: 500,
+        body: "Hey, I'm the DELETE endpoint. Errrr.",
+      },
+    },
+    {
+      method: "PATCH",
+      expected: {
+        status: 405,
+        body: "Method Not Allowed",
+      },
+    },
+  ];
 }
 
 function testCasesNotFound() {
   return [
-  {
-    method: "GET",
-    expected: {
-      status: 404,
-      body: "Not Found"
-    }
-  },
-  {
-    method: "POST",
-    expected: {
-      status: 404,
-      body: "Not Found"
-    }
-  },
-  {
-    method: "PUT",
-    expected: {
-      status: 404,
-      body: "Not Found"
-    }
-  },
-  {
-    method: "DELETE",
-    expected: {
-      status: 404,
-      body: "Not Found"
-    }
-  },
-  {
-    method: "PATCH",
-    expected: {
-      status: 404,
-      body: "Not Found"
-    }
-  },
-];
+    {
+      method: "GET",
+      expected: {
+        status: 404,
+        body: "Not Found",
+      },
+    },
+    {
+      method: "POST",
+      expected: {
+        status: 404,
+        body: "Not Found",
+      },
+    },
+    {
+      method: "PUT",
+      expected: {
+        status: 404,
+        body: "Not Found",
+      },
+    },
+    {
+      method: "DELETE",
+      expected: {
+        status: 404,
+        body: "Not Found",
+      },
+    },
+    {
+      method: "PATCH",
+      expected: {
+        status: 404,
+        body: "Not Found",
+      },
+    },
+  ];
 }
