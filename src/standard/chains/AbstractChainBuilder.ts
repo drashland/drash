@@ -29,22 +29,34 @@ abstract class AbstractChainBuilder implements IBuilder {
    */
   protected first_handler?: IHandler;
 
+  protected handlers: IHandler[] = [];
+
+  public handler(handler: IHandler): this {
+    if (!this.first_handler) {
+      this.first_handler = handler;
+    }
+
+    this.handlers.push(handler);
+
+    return this;
+  }
+
   /**
    * @param handlers The handlers that will be chained together.
    * @returns This instance so you can chain more methods.
    */
-  public handlers(...handlers: IHandler[]): this {
-    if (!handlers || !handlers.length) {
-      throw new Error("Chain.Builder: `handlers` arg must be an array");
+  protected link(): this {
+    if (!this.handlers) {
+      throw new Error("Chain.Builder: `this.handlers` should be an array");
     }
 
-    const firstHandler = handlers[0];
+    if (!this.handlers.length) {
+      throw new Error("Chain.Builder: `this.handlers` is empty");
+    }
 
-    handlers.reduce((previous, current) => {
+    this.handlers.reduce((previous, current) => {
       return previous.setNext(current);
     });
-
-    this.first_handler = firstHandler;
 
     return this;
   }

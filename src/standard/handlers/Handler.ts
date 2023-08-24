@@ -19,36 +19,37 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import type { IHandler } from "../../core/interfaces/IHandler.ts";
-import { AbstractHandler } from "./AbstractHandler.ts";
-
+import { IHandler } from "../../core/interfaces/IHandler.ts";
 /**
- * The minimal amount of data the `RequestChain` needs to process HTTP requests.
+ * A class to be extended by handlers so they can share the same interface.
  */
-type InputRequest = {
-  /** The requests' URL (e.g., `"http://localhost:1447/hello"`) */
-  url: string;
-  /** The requests' HTTP method (e.g., `"GET"`) */
-  method: string;
-};
+export class Handler<O = unknown> implements IHandler<O> {
+  /**
+   * Handlers can be chained together using this property. See example.
+   *
+   * @example
+   * ```
+   * // Instantiate some handlers
+   * const handlerA = new HandlerA();
+   * const handlerB = new HandlerB();
+   * const handlerC = new HandlerC();
+   *
+   * // Link them together
+   * handlerA.setNext(handlerB).setNext(handlerC);
+   * ```
+   */
+  next_handler?: IHandler<O>;
 
-/**
- * Base handler for all request handlers so each can share the same interface.
- */
-abstract class AbstractRequestHandler<
-  I extends InputRequest,
-  O,
-> extends AbstractHandler {
-  public handle(input: I): Promise<O> {
+  handle(input: unknown): O {
     if (this.next_handler) {
-      return (this.next_handler as IHandler<I, Promise<O>>).handle(input);
+      return this.next_handler.handle(input);
     }
 
-    throw new Error("Request could not be processed further");
+    throw new Error("Input could not be processed further");
+  }
+
+  public setNext(nextHandler: IHandler<O>): IHandler<O> {
+    this.next_handler = nextHandler;
+    return this.next_handler;
   }
 }
-
-// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
-
-export { AbstractRequestHandler, type InputRequest };

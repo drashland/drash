@@ -33,14 +33,16 @@ class Builder extends AbstractChainBuilder {
    * Chain all handlers together.
    * @returns The first handler.
    */
-  public build<I, O>(): IHandler<I, O> {
+  public build<I, O>(): IHandler<O> {
+    this.link();
+
     if (!this.first_handler) {
       throw new Error(
         "Chain.Builder: No handlers set. Did you forget to call `this.handlers()`?",
       );
     }
 
-    return this.first_handler as IHandler<I, O>;
+    return this.first_handler as IHandler<O>;
   }
 }
 

@@ -24,14 +24,8 @@ import {
   GroupConsoleLogger,
   Level,
 } from "../../standard/log/GroupConsoleLogger.ts";
-import { RequestHandler } from "../../standard/handlers/RequestHandler.ts";
-import { RequestParamsParser } from "../../standard/handlers/RequestParamsParser.ts";
-
-// Imports > Modules
-import { type Builder, RequestChain } from "../base/RequestChain.ts";
 
 // Imports > Local
-import { ResourceHandler } from "./native/ResourceHandler.ts";
 
 const logger = GroupConsoleLogger.create(
   "(mod.native) RequestChain",
@@ -43,25 +37,9 @@ const logger = GroupConsoleLogger.create(
 export { AbstractResource as Resource } from "../../standard/http/AbstractResource.ts";
 export { Middleware } from "../../standard/http/Middleware.ts";
 
-/**
- * Get the builder that builds an HTTP request chain.
- */
-export function builder(): Builder {
-  logger.debug("Instantiating RequestChainBuilder");
-  const builder = RequestChain.builder();
+// /**
+//  * Get the builder that builds an HTTP request chain.
+//  */
+// export function builder(): Builder {
 
-  logger.debug("Setting RequestHandlerBuilder");
-  builder.requestHandler(RequestHandler.builder());
-
-  logger.debug("Getting ResourceHandlerBuilder");
-  const resourceHandlerBuilder = ResourceHandler.builder();
-
-  logger.debug("Setting ResourceHandler RequestParamsParser");
-  resourceHandlerBuilder.requestParamsParser(new RequestParamsParser());
-
-  logger.debug("Setting ResourceHandlerBuilder");
-  builder.resourceHandler(resourceHandlerBuilder);
-
-  logger.debug("Returning RequestChainBuilder");
-  return builder;
-}
+// }
