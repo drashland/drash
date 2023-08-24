@@ -19,6 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Standard
 import { Logger } from "./Logger.ts";
 import { Level } from "./Level.ts";
 
@@ -36,7 +37,7 @@ enum LevelDisplayName {
 /**
  * Base logger for logger classes.
  */
-export abstract class AbstractLogger implements Logger {
+abstract class AbstractLogger implements Logger {
   static Level = Level;
 
   /**
@@ -165,3 +166,7 @@ export abstract class AbstractLogger implements Logger {
 
   protected abstract write(...messages: unknown[]): unknown;
 }
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { AbstractLogger };

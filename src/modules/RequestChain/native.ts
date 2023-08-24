@@ -24,8 +24,8 @@ import {
   GroupConsoleLogger,
   Level,
 } from "../../standard/log/GroupConsoleLogger.ts";
-
-// Imports > Local
+import { RequestChain } from "../base/RequestChain.ts";
+import { URLPatternResourcesIndex } from "./native/URLPatternResourcesIndex.ts";
 
 const logger = GroupConsoleLogger.create(
   "(mod.native) RequestChain",
@@ -37,9 +37,11 @@ const logger = GroupConsoleLogger.create(
 export { AbstractResource as Resource } from "../../standard/http/AbstractResource.ts";
 export { Middleware } from "../../standard/http/Middleware.ts";
 
-// /**
-//  * Get the builder that builds an HTTP request chain.
-//  */
-// export function builder(): Builder {
-
-// }
+/**
+ * Get the builder that builds an HTTP request chain.
+ */
+export function builder() {
+  return RequestChain
+    .builder()
+    .resourcesFinderClass(URLPatternResourcesIndex);
+}

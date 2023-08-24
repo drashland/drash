@@ -25,13 +25,15 @@ import { MethodOf } from "../../core/Types.ts";
 
 // Imports > Standard
 import { ConsoleLogger, Level } from "../log/ConsoleLogger.ts";
-import { Logger } from "../log/Logger.ts";
 import { Handler } from "./Handler.ts";
+import { Logger } from "../log/Logger.ts";
 
-export class ResourceCaller<O = unknown> extends Handler<Promise<O>> {
+type Input = { request: { method: string }; resource: IResource };
+
+class ResourceCaller<O = unknown> extends Handler<Input, Promise<O>> {
   #logger: Logger = ConsoleLogger.create("ResourceCaller", Level.Debug);
 
-  handle(input: { request: { method: string }; resource: IResource }): Promise<O> {
+  handle(input: Input): Promise<O> {
     return Promise
       .resolve()
       .then(() => this.#logger.debug(`Request received`))
@@ -39,10 +41,11 @@ export class ResourceCaller<O = unknown> extends Handler<Promise<O>> {
       .then(() => this.#sendRequestToResource(input));
   }
 
-  #sendRequestToResource(input: { request: { method: string; }; resource: IResource; }): Promise<O> | O {
+  #sendRequestToResource(input: Input): O {
     const httpMethod = input.request.method.toUpperCase();
-    const result = input.resource[httpMethod as MethodOf<IResource>](input.request) as O;
-    return result;
+    return input.resource[httpMethod as MethodOf<IResource>](
+      input.request,
+    ) as O;
   }
 
   #validate(input: unknown): void {
@@ -50,11 +53,16 @@ export class ResourceCaller<O = unknown> extends Handler<Promise<O>> {
       throw new Error("Input received is not an object");
     }
 
-    if (!("request" in input) || !input.request || typeof input.request !== "object") {
+    if (
+      !("request" in input) || !input.request ||
+      typeof input.request !== "object"
+    ) {
       throw new Error("Input request received is not an object");
     }
 
-    if (!("method" in input.request) || typeof input.request.method !== "string") {
+    if (
+      !("method" in input.request) || typeof input.request.method !== "string"
+    ) {
       throw new Error("Input request method could not be read");
     }
 
@@ -63,3 +71,7 @@ export class ResourceCaller<O = unknown> extends Handler<Promise<O>> {
     }
   }
 }
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { ResourceCaller, type Input };

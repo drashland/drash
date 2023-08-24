@@ -19,31 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IHandler } from "../../core/interfaces/IHandler.ts";
-/**
- * A class to be extended by handlers so they can share the same interface.
- */
-export abstract class AbstractHandler implements IHandler {
-  /**
-   * Handlers can be chained together using this property. See example.
-   *
-   * @example
-   * ```
-   * // Instantiate some handlers
-   * const handlerA = new HandlerA();
-   * const handlerB = new HandlerB();
-   * const handlerC = new HandlerC();
-   *
-   * // Link them together
-   * handlerA.setNext(handlerB).setNext(handlerC);
-   * ```
-   */
-  next_handler?: IHandler;
+// Imports > Modules
+import { ResourceClassesArray } from "../../base/types/ResourceClassesArray.ts";
+import { ResourcesIndex as BaseResourcesIndex } from "../../base/ResourcesIndex.ts";
 
-  abstract handle(input: unknown, ...rest: unknown[]): unknown;
-
-  public setNext(nextHandler: IHandler): IHandler {
-    this.next_handler = nextHandler;
-    return this.next_handler;
+export class URLPatternResourcesIndex extends BaseResourcesIndex {
+  constructor(...resources: ResourceClassesArray) {
+    // @ts-ignore (crookse) Making the compiler happy
+    super(URLPattern, resources);
   }
 }

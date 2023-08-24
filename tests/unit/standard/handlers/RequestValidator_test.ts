@@ -45,7 +45,7 @@ Deno.test("RequestValidator", async (t) => {
       const requestValidator = new RequestValidator();
       try {
         requestValidator.handle({ url: "", method: "" });
-        assert(true); // Asserting just so we assert something in this test
+        asserts.assert(true); // Asserting just so we assert something in this test
       } catch (e) {
         throw new Error(
           "Request object is valid, but the test failed. Error message: " +

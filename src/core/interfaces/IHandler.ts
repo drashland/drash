@@ -22,14 +22,14 @@
 /**
  * A base interface for handler classes.
  */
-export interface IHandler<O = unknown> {
+export interface IHandler<I = unknown, O = unknown> {
   /**
    * Handle the given input to produce an output. For example, handle a request
    * (the input) to produce a response (the output).
    * @param input The input in question.
    * @return The output.
    */
-  handle(input: unknown): O;
+  handle(input: I): O;
 
   /**
    * Set this handler's next handler.

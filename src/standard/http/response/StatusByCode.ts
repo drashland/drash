@@ -23,9 +23,7 @@
 import { StatusCode } from "../../../core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../core/http/response/StatusDescription.ts";
 
-// FILE MARKER - IMPLEMENTATION ////////////////////////////////////////////////
-
-export const StatusByCode: Record<
+const StatusByCode: Record<
   number,
   { Code: StatusCode; Description: StatusDescription }
 > = {
@@ -278,3 +276,7 @@ export const StatusByCode: Record<
     Description: StatusDescription.NetworkAuthenticationRequired,
   },
 };
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { StatusByCode };

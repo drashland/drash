@@ -29,7 +29,7 @@ import { HTTPError } from "../errors/HTTPError.ts";
 import { Logger } from "../log/Logger.ts";
 import { StatusCode } from "../http/response/StatusCode.ts";
 
-export type Input = {
+type Input = {
   request: {
     url: string;
   };
@@ -38,38 +38,50 @@ export type Input = {
     resource: IResource;
     path_params: Record<string, string>;
   };
-}
+};
 
-export class ResourceNotFoundHandler<O = unknown> extends Handler<Promise<O>> {
-
+class ResourceNotFoundHandler<O = unknown>
+  extends Handler<Input, Promise<O>> {
   #logger: Logger = ConsoleLogger.create("ResourceNotFoundHandler", Level.Off);
 
   handle(input: Input): Promise<O> {
-
     return Promise
       .resolve()
       .then(() => this.#logger.debug(`Request received`))
       .then(() => this.#validate(input))
       .then(() => {
         this.#logger.debug(`Sending to next handler`);
-        return super.handle({
+        return super.nextHandler({
           request: input.request,
           resource: input.result.resource,
-          path_params: input.result.path_params,
+          request_params: {
+            path_params: input.result.path_params,
+          },
         });
-      })
+      });
   }
 
   #validate(input: unknown): void {
     if (!input || typeof input !== "object") {
-      throw new HTTPError(StatusCode.InternalServerError, "Request could not be read")
+      throw new HTTPError(
+        StatusCode.InternalServerError,
+        "Request could not be read",
+      );
     }
 
-    if (!("request" in input) || !input.request || typeof input.request !== "object") {
-      throw new HTTPError(StatusCode.InternalServerError, "Request could not be read")
+    if (
+      !("request" in input) || !input.request ||
+      typeof input.request !== "object"
+    ) {
+      throw new HTTPError(
+        StatusCode.InternalServerError,
+        "Request could not be read",
+      );
     }
 
-    if (!("result" in input) || !input.result || typeof input.result !== "object") {
+    if (
+      !("result" in input) || !input.result || typeof input.result !== "object"
+    ) {
       throw new HTTPError(StatusCode.NotFound);
     }
 
@@ -78,3 +90,7 @@ export class ResourceNotFoundHandler<O = unknown> extends Handler<Promise<O>> {
     }
   }
 }
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { ResourceNotFoundHandler, type Input };

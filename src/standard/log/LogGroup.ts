@@ -19,6 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Standard
 import { Logger } from "./Logger.ts";
 
 export interface LogGroup extends Logger {

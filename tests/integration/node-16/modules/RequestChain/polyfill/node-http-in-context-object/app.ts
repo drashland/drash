@@ -50,7 +50,7 @@ class Home extends Chain.Resource {
 const chain = Chain
   .builder()
   .resources(Home)
-  .logger(GroupConsoleLogger.create("Test", Level.Off))
+  // .logger(GroupConsoleLogger.create("Test", Level.Off)) TODO(crookse)
   .build<NodeContext, NodeContext>();
 
 export const send = (

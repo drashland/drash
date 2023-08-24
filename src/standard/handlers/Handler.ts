@@ -23,7 +23,7 @@ import { IHandler } from "../../core/interfaces/IHandler.ts";
 /**
  * A class to be extended by handlers so they can share the same interface.
  */
-export class Handler<O = unknown> implements IHandler<O> {
+abstract class Handler<I, O> implements IHandler {
   /**
    * Handlers can be chained together using this property. See example.
    *
@@ -38,18 +38,32 @@ export class Handler<O = unknown> implements IHandler<O> {
    * handlerA.setNext(handlerB).setNext(handlerC);
    * ```
    */
-  next_handler?: IHandler<O>;
+  next_handler?: IHandler;
 
-  handle(input: unknown): O {
-    if (this.next_handler) {
-      return this.next_handler.handle(input);
+  abstract handle(input: I): O;
+
+  nextHandler<NextI = unknown, NextO = unknown>(input: NextI): NextO {
+    if (!this.next_handler) {
+      throw new Error("No next handler found");
     }
 
-    throw new Error("Input could not be processed further");
+    if (!this.next_handler.handle) {
+      throw new Error("Next handler is not valid");
+    }
+
+    if (typeof this.next_handler.handle !== "function") {
+      throw new Error("Next handler cannot process input");
+    }
+
+    return this.next_handler.handle(input) as NextO;
   }
 
-  public setNext(nextHandler: IHandler<O>): IHandler<O> {
+  public setNext(nextHandler: IHandler): IHandler {
     this.next_handler = nextHandler;
     return this.next_handler;
   }
 }
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { Handler };

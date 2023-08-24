@@ -1,17 +1,19 @@
-import {
-  GroupConsoleLogger,
-  Level,
-} from "@/src/standard/log/GroupConsoleLogger.ts";
+import { AbstractResource } from "@/src/standard/http/AbstractResource.ts";
+import { Chain as BaseChain } from "@/src/modules/base/Chain.ts";
 import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
+import { RequestParamsParser } from "@/src/standard/handlers/RequestParamsParser.ts";
+import { RequestValidator } from "@/src/standard/handlers/RequestValidator.ts";
+import { ResourceCaller } from "@/src/standard/handlers/ResourceCaller.ts";
+import { ResourceNotFoundHandler } from "@/src/standard/handlers/ResourceNotFoundHandler.ts";
 import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
-import * as Chain from "@/src/modules/RequestChain/native.ts";
+import { URLPatternPolyfillResourcesIndex } from "@/src/modules/RequestChain/polyfill/URLPatternPolyfillResourcesIndex.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends AbstractResource {
   public paths = ["/"];
 
   public GET(request: Request) {
@@ -31,11 +33,14 @@ class Home extends Chain.Resource {
   }
 }
 
-const chain = Chain
+const chain = BaseChain
   .builder()
-  // .logger(GroupConsoleLogger.create("Test", Level.Off)) TODO(crookse)
-  .resources(Home)
-  .build<Request, Response>();
+  .handler(new RequestValidator())
+  .handler(new URLPatternPolyfillResourcesIndex(Home)) // Using the `URLPattern` polyfill from Drash v1
+  .handler(new ResourceNotFoundHandler())
+  .handler(new RequestParamsParser())
+  .handler(new ResourceCaller())
+  .build<Request, Promise<Response>>();
 
 export const send = (
   request: Request,

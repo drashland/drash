@@ -19,18 +19,32 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { AbstractHandler } from "../handlers/AbstractHandler.ts";
-import { HTTPError } from "../errors/HTTPError.ts";
-
 // Imports > Standard
-import { GroupConsoleLogger } from "../log/GroupConsoleLogger.ts";
+import { ConsoleLogger, Level } from "../log/ConsoleLogger.ts";
+import { Handler } from "./Handler.ts";
+import { HTTPError } from "../errors/HTTPError.ts";
 import { StatusCode } from "../http/response/StatusCode.ts";
 
-class RequestValidator<I> extends AbstractHandler {
-  #logger = GroupConsoleLogger.create("RequestValidator");
+type Input = {
+  method: string;
+  url: string;
+}
 
-  handle(request: I): void {
+class RequestValidator<
+  I extends Input = Input
+> extends Handler<unknown, Promise<unknown>> {
+  #logger = ConsoleLogger.create("RequestValidator", Level.Off);
+
+  handle(request: I): Promise<unknown> {
+    this.#logger.debug(`Request received`);
+
+    return Promise
+      .resolve()
+      .then(() => this.#validate(request))
+      .then(() => super.nextHandler(request));
+  }
+
+  #validate(request: unknown): void {
     this.#logger.debug(`Validating request`);
 
     if (!request) {
@@ -71,4 +85,4 @@ class RequestValidator<I> extends AbstractHandler {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { RequestValidator };
+export { RequestValidator, type Input };

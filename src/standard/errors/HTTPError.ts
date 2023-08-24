@@ -44,7 +44,7 @@ import { StatusDescription } from "../http/response/StatusDescription.ts";
  * }
  * ```
  */
-export class HTTPError extends Error {
+class HTTPError extends Error {
   /**
    * The HTTP status code associated with this error.
    */
@@ -98,3 +98,7 @@ export class HTTPError extends Error {
     }
   }
 }
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { HTTPError };

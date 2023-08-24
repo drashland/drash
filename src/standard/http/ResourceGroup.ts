@@ -25,7 +25,6 @@ import type { ResourceClass } from "../../core/types/ResourceClass.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 
 // Imports > Standard
-import ArrayUtils from "../utils/ArrayUtils.ts";
 import type { IMiddleware, MiddlewareClass } from "./Middleware.ts";
 
 type ResourceClasses = (ResourceClass | ResourceClass[])[];
@@ -199,11 +198,11 @@ function createGroupWithMiddleware(
   serviceClasses: MiddlewareClass[],
   resourceClasses: ResourceClass[],
 ): ResourceClass[] {
-  if (ArrayUtils.isEmpty(serviceClasses)) {
+  if (arrayEmpty(serviceClasses)) {
     return resourceClasses;
   }
 
-  if (ArrayUtils.isEmpty(resourceClasses)) {
+  if (arrayEmpty(resourceClasses)) {
     return resourceClasses;
   }
 
@@ -353,6 +352,22 @@ class ResourceGroup {
   static builder(): Builder {
     return new Builder();
   }
+}
+
+function arrayEmpty(value: unknown[]): boolean {
+  if (!value) {
+    return true;
+  }
+
+  if (!Array.isArray(value)) {
+    return true;
+  }
+
+  if (value.length === 0) {
+    return true;
+  }
+
+  return false;
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////

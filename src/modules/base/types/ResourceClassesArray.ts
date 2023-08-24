@@ -19,25 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export default class ArrayUtils {
-  /**
-   * Is the given value an array and is it empty?
-   * @param value The value to evaluate as an array and if empty.
-   * @returns True if yes, false if no.
-   */
-  static isEmpty(value: unknown[]): boolean {
-    if (!value) {
-      return true;
-    }
+// Imports > Core
+import { ResourceClass } from "../../../core/Types.ts";
 
-    if (!Array.isArray(value)) {
-      return true;
-    }
-
-    if (value.length === 0) {
-      return true;
-    }
-
-    return false;
-  }
-}
+export type ResourceClassesArray = (ResourceClass | ResourceClass[])[];

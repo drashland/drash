@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
+// Imports > Standard
 import { AbstractLogger } from "./AbstractLogger.ts";
 import { Level } from "./Level.ts";
 import type { LogGroup } from "./LogGroup.ts";
@@ -33,7 +33,7 @@ abstract class AbstractLogGroup extends AbstractLogger implements LogGroup {
    */
   constructor(
     name: string,
-    level: Level = Level.Off
+    level: Level = Level.Off,
   ) {
     super(name, level);
   }

@@ -19,33 +19,19 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import {
-  GroupConsoleLogger,
-  Level,
-} from "../../standard/log/GroupConsoleLogger.ts";
-
 // Imports > Modules
-import { RequestChain } from "../base/RequestChain.ts";
+import { ResourceClassesArray } from "../../base/types/ResourceClassesArray.ts";
+import { ResourcesIndex as BaseResourcesIndex } from "../../base/ResourcesIndex.ts";
 
 // Imports > Local
-import { URLPatternPolyfillResourcesIndex } from "./polyfill/URLPatternPolyfillResourcesIndex.ts";
+import { URLPatternPolyfill } from "./URLPatternPolyfill.ts";
 
-const logger = GroupConsoleLogger.create(
-  "(mod.polyfill) RequestChain",
-  Level.Off,
-);
+class URLPatternPolyfillResourcesIndex extends BaseResourcesIndex {
+  constructor(...resources: ResourceClassesArray) {
+    super(URLPatternPolyfill, resources);
+  }
+}
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractResource as Resource } from "../../standard/http/AbstractResource.ts";
-export { Middleware } from "../../standard/http/Middleware.ts";
-
-/**
- * Get the builder that builds an HTTP request chain.
- */
-export function builder() {
-  return RequestChain
-    .builder()
-    .resourcesFinderClass(URLPatternPolyfillResourcesIndex);
-}
+export { URLPatternPolyfillResourcesIndex };

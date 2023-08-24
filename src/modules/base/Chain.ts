@@ -33,7 +33,7 @@ class Builder extends AbstractChainBuilder {
    * Chain all handlers together.
    * @returns The first handler.
    */
-  public build<I, O>(): IHandler<O> {
+  public build<I, O>(): IHandler<I, O> {
     this.link();
 
     if (!this.first_handler) {
@@ -42,7 +42,7 @@ class Builder extends AbstractChainBuilder {
       );
     }
 
-    return this.first_handler as IHandler<O>;
+    return this.first_handler as IHandler<I, O>;
   }
 }
 

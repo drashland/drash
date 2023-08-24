@@ -19,33 +19,27 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import {
-  GroupConsoleLogger,
-  Level,
-} from "../../standard/log/GroupConsoleLogger.ts";
+import { Handler } from "./Handler.ts";
 
-// Imports > Modules
-import { RequestChain } from "../base/RequestChain.ts";
+abstract class SearchIndex<
+  SearchResult
+> extends Handler<unknown, SearchResult> {
 
-// Imports > Local
-import { URLPatternPolyfillResourcesIndex } from "./polyfill/URLPatternPolyfillResourcesIndex.ts";
+  /**
+   * Build the index that can be searched via `this.search(...)`.
+   * @param items The items to go into the index.
+   */
+  protected abstract buildIndex(items?: unknown): void;
 
-const logger = GroupConsoleLogger.create(
-  "(mod.polyfill) RequestChain",
-  Level.Off,
-);
+  /**
+   * Search the index.
+   * @param input The data containing the location information for items in the
+   * index.
+   * @retuns The results of the search.
+   */
+  protected abstract search(input: unknown): SearchResult;
+}
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractResource as Resource } from "../../standard/http/AbstractResource.ts";
-export { Middleware } from "../../standard/http/Middleware.ts";
-
-/**
- * Get the builder that builds an HTTP request chain.
- */
-export function builder() {
-  return RequestChain
-    .builder()
-    .resourcesFinderClass(URLPatternPolyfillResourcesIndex);
-}
+export { SearchIndex };

@@ -42,7 +42,7 @@ class Home extends Chain.Resource {
 
 const chain = Chain
   .builder()
-  .logger(GroupConsoleLogger.create("Test", Level.Off))
+  // .logger(GroupConsoleLogger.create("Test", Level.Off)) // TODO(crookse)
   .resources(Home)
   .build<WebAPIContext, WebAPIContext>();
 

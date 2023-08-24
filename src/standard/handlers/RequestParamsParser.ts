@@ -19,45 +19,108 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Core
+import { IResource } from "../../core/Interfaces.ts";
+
 // Imports > Standard
-import { GroupConsoleLogger } from "../log/GroupConsoleLogger.ts";
-import { AbstractHandler } from "./AbstractHandler.ts";
+import { GroupConsoleLogger, Level } from "../log/GroupConsoleLogger.ts";
+import { Handler } from "../handlers/Handler.ts";
 
-class RequestParamsParser<I> extends AbstractHandler {
-  #logger = GroupConsoleLogger.create("RequestValidator");
+type Input = {
+  request: { url: string };
+  resource: IResource;
+  request_params: {
+    path_params: Record<string, string | undefined>
+  };
+};
 
-  handle(request: I, options: { path_params: Record<string, string> }): I {
+type Output = {
+  request: Input["request"] & { params: Params };
+  resource: IResource;
+};
+
+class RequestParamsParser extends Handler<Input, Promise<Output>> {
+  #logger = GroupConsoleLogger.create("RequestValidator", Level.Debug);
+
+  handle(input: Input): Promise<Output> {
     this.#logger.debug(`Parsing request path params`);
 
-    Object.defineProperty(request, "params", {
-      value: new Params(request, options),
-    });
+    return Promise
+      .resolve()
+      .then(() => this.#validateInput(input))
+      .then(() => this.#addParams(input.request, input.request_params))
+      .then(() =>
+        super.nextHandler({
+          request: input.request,
+          resource: input.resource,
+        } as Output)
+      );
+  }
 
-    return request;
+  /**
+   * Add the given `requestParams` to the given `request`.
+   * @param request
+   * @param params
+   */
+  #addParams(
+    request: Input["request"],
+    requestParams: Input["request_params"],
+  ): void {
+    Object.defineProperty(request, "params", {
+      value: new Params(
+        request,
+        requestParams,
+      ),
+    });
+  }
+
+  /**
+   * Validate the input is the expected type.
+   * @param input The input passed to `this.handle()`.
+   */
+  #validateInput(input: unknown): void {
+    if (!input || typeof input !== "object") {
+      throw new Error("Input received is not an object");
+    }
+
+    if (
+      !("request" in input) || !input.request ||
+      typeof input.request !== "object"
+    ) {
+      throw new Error("Input request received is not an object");
+    }
+
+    if (!("url" in input.request) || typeof input.request.url !== "string") {
+      throw new Error("Input request URL could not be read");
+    }
+
+    if (!("resource" in input) || typeof input.resource !== "object") {
+      throw new Error("Input resource received is not an object");
+    }
   }
 }
 
 class Params {
   #query: URLSearchParams;
-  #path_params: Record<string, string>;
+  #path_params: Record<string, string | undefined>;
 
   constructor(
-    request: unknown,
-    options: { path_params: Record<string, string> },
+    request: Input["request"],
+    params: Input["request_params"],
   ) {
-    this.#query = new URLSearchParams((request as { url: string }).url);
-    this.#path_params = options.path_params;
+    this.#query = new URLSearchParams(request);
+    this.#path_params = params.path_params;
   }
 
   public queryParam(param: string): string | undefined {
     return this.#query.get(param) ?? undefined;
   }
 
-  public pathParam(param: string): string {
+  public pathParam(param: string): string | undefined {
     return this.#path_params[param];
   }
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { RequestParamsParser };
+export { RequestParamsParser, type Input, type Output };

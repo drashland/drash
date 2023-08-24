@@ -1,19 +1,19 @@
-import { Chain as StandardChain } from "@/src/modules/base/Chain.ts";
+import { AbstractResource } from "@/src/standard/http/AbstractResource.ts";
+import { Chain as BaseChain } from "@/src/modules/base/Chain.ts";
 import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
-import { RequestParamsParser } from "@/src/modules/RequestChain/native/RequestParamsParser.ts";
-import { RequestValidator } from "@/src/standard/handlers/RequestHandlers/RequestValidator.ts";
+import { RequestParamsParser } from "@/src/standard/handlers/RequestParamsParser.ts";
+import { RequestValidator } from "@/src/standard/handlers/RequestValidator.ts";
 import { ResourceCaller } from "@/src/standard/handlers/ResourceCaller.ts";
 import { ResourceNotFoundHandler } from "@/src/standard/handlers/ResourceNotFoundHandler.ts";
-import { ResourcesIndex } from "@/src/modules/RequestChain/native/ResourcesIndex.ts";
+import { URLPatternResourcesIndex } from "@/src/modules/RequestChain/native/URLPatternResourcesIndex.ts";
 import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
-import * as Chain from "@/src/modules/RequestChain/native.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends AbstractResource {
   public paths = ["/"];
 
   public GET(request: Request) {
@@ -33,10 +33,10 @@ class Home extends Chain.Resource {
   }
 }
 
-const chain = StandardChain
+const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new ResourcesIndex(Home))
+  .handler(new URLPatternResourcesIndex(Home)) // Using native `URLPattern`
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())
