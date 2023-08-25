@@ -40,7 +40,7 @@ jobs:
 
       - name: Run Integration Tests
         run: |
-          deno task build:all:ci && deno task test:integration:bun
+          deno task build:all:ci && ~/.bun/bin/bun test tests/integration/bun
 
 
   deno-integration-tests:
