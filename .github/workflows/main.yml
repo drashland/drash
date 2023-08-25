@@ -40,7 +40,7 @@ jobs:
 
       - name: Run Integration Tests
         run: |
-          deno task build:all && test:integration:bun
+          deno task build:all:ci && test:integration:bun
 
 
   deno-integration-tests:
@@ -83,7 +83,7 @@ jobs:
 
       - name: Run Integration Tests
         run: |
-          yarn install && deno task build:all && deno task test:integration:node
+          yarn install && deno task build:all:ci && deno task test:integration:node
 
   # benchmarks:
   #   strategy:

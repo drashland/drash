@@ -88,10 +88,17 @@ function copyFilesToWorkspace(): void {
 
   for (const item of split) {
     logger.debug(`Renaming file: ${item}`);
+
     const srcDirPrefixRemovedFilename = item.replace("./src", "./");
     logger.debug(`    -> ${srcDirPrefixRemovedFilename}`);
-    const nonDotFilename = srcDirPrefixRemovedFilename.replace("./", "/");
+
+    let nonDotFilename = srcDirPrefixRemovedFilename.replace("./", "/");
     logger.debug(`    -> ${nonDotFilename}`);
+
+    if (nonDotFilename === "package.builds.json") {
+      nonDotFilename = "package.json";
+    }
+
     logger.debug(`Copying ${item} to ${workspace}${nonDotFilename}`);
     copySync(item, workspace + nonDotFilename, {
       overwrite: true,
