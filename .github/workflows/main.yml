@@ -10,7 +10,28 @@ on:
 
 jobs:
 
-  api-test:
+  bun-integration-tests:
+    name: Bun Integration Tests
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+
+      - name: Run Integration Tests
+        run: |
+          deno task build:all && test:integration:bun
+
+
+  deno-integration-tests:
+    name: Deno Integration Tests
 
     strategy:
       matrix:
@@ -23,21 +44,30 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Integration Tests (Deno)
+      - name: Run Integration Tests
         run: |
-          deno task test-deno
+          deno task test:integration:deno
 
-      - name: Install Node 16
+  node-integration-tests:
+    name: Node Integration Tests
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Integration Tests (Node)
+      - name: Run Integration Tests
         run: |
-          yarn install && deno task build-all && deno task test-node
-
-      # - name: Unit Tests
-      #   run: deno task test:unit
+          yarn install && deno task build:all && deno task test:integration:node
 
   # benchmarks:
   #   strategy:
@@ -66,18 +96,18 @@ jobs:
   #     - name: Run Autocannon against Drash application
   #       run: autocannon -c 40 -d 10 -j http://localhost:1447
 
-  code_quality:
-    # Only one OS is required since fmt is cross platform
-    runs-on: ubuntu-latest
+  # code_quality:
+  #   # Only one OS is required since fmt is cross platform
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
+  #     - name: Install Deno
+  #       uses: denoland/setup-deno@v1
 
-      - name: "Check: deno lint"
-        run: deno lint src
+  #     - name: "Check: deno lint"
+  #       run: deno lint src
 
-      - name: "Check deno fmt"
-        run: deno fmt --check
+  #     - name: "Check deno fmt"
+  #       run: deno fmt --check
