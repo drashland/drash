@@ -13,7 +13,7 @@
   cp package.builds.json .drashland/builds/package.json && \
   rm -rf .drashland/builds/intermediary && \
   cd .drashland/builds && \
-  yarn unlink && \
-  yarn link && \
+  # yarn unlink && \
+  # yarn link && \
   cd ../..
 )

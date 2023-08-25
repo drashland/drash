@@ -30,6 +30,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Install TypeScript
+        run: |
+          yarn install
+
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
