@@ -1,12 +1,12 @@
-import {
-  GroupConsoleLogger,
-  Level,
-} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";
 import { StatusDescription } from "@/.drashland/builds/esm/standard/http/response/StatusDescription";
 import * as Chain from "@/.drashland/builds/esm/modules/RequestChain/polyfill";
+import {
+  GroupConsoleLogger,
+  Level,
+} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -15,26 +15,26 @@ export const port = 1447;
 class Home extends Chain.Resource {
   public paths = ["/"];
 
-  public GET(request: Request) {
+  public GET(_request: Request) {
     return new Response("Hello from GET.");
   }
 
-  public POST(request: Request) {
+  public POST(_request: Request) {
     return new Response("Hello from POST.");
   }
 
-  public DELETE(request: Request) {
+  public DELETE(_request: Request) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(request: Request) {
+  public PATCH(_request: Request) {
     throw new HTTPError(405);
   }
 }
 
 const chain = Chain
   .builder()
-  // .logger(GroupConsoleLogger.create("Test", Level.Off)) TODO(crookse)
+  // .logger(GroupConsoleLogger.create("Test", Level.Off))
   .resources(Home)
   .build<Request, Response>();
 

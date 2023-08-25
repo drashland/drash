@@ -19,22 +19,10 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import {
-  GroupConsoleLogger,
-  Level,
-} from "../../standard/log/GroupConsoleLogger.ts";
-
-// Imports > Modules
 import { RequestChain } from "../base/RequestChain.ts";
-
-// Imports > Local
-import { URLPatternPolyfillResourcesIndex } from "./polyfill/URLPatternPolyfillResourcesIndex.ts";
-
-const logger = GroupConsoleLogger.create(
-  "(mod.polyfill) RequestChain",
-  Level.Off,
-);
+import {
+  URLPatternPolyfillResourcesIndex as ResourcesIndex,
+} from "./polyfill/URLPatternPolyfillResourcesIndex.ts";
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
@@ -47,5 +35,5 @@ export { Middleware } from "../../standard/http/Middleware.ts";
 export function builder() {
   return RequestChain
     .builder()
-    .resourcesFinderClass(URLPatternPolyfillResourcesIndex);
+    .resourcesFinderClass(ResourcesIndex);
 }

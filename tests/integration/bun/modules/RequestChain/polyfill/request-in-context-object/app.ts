@@ -27,11 +27,11 @@ class Home extends Chain.Resource {
     return context;
   }
 
-  public DELETE(context: WebAPIContext) {
+  public DELETE(_context: WebAPIContext) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(context: WebAPIContext) {
+  public PATCH(_context: WebAPIContext) {
     throw new HTTPError(405);
   }
 }

@@ -1,9 +1,13 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 import type { Config } from "@jest/types";
 
+import { rootLogger } from "./rootLogger";
+
+const logger = rootLogger.logger("jest.config.js");
+
 let directorySuffix = getDirectorySuffix();
 
-console.log(`\nRunning tests in 'node${directorySuffix}' directory\n`);
+logger.info(`Running tests in 'node${directorySuffix}' directory`);
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",

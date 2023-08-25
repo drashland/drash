@@ -14,5 +14,9 @@
     },
     "allowImportingTsExtensions": true
   },
-  "include": ["./**/*.ts", "../src/**/*.ts"]
+  "include": [
+    "./**/*.ts",
+    "../src/**/*.ts",
+    "../.drashland/**/*.ts"
+  ]
 }

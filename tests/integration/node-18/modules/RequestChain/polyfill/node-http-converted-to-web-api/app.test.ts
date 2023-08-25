@@ -2,7 +2,7 @@ import { Socket } from "net";
 import { IncomingMessage, ServerResponse } from "http";
 import { send } from "./app";
 
-describe("Native - Convert IncomingMessage/ServerResponse to Request/Response", () => {
+describe.only("Native - Convert IncomingMessage/ServerResponse to Request/Response", () => {
   describe.each(testCases())(
     "Home / paths = /",
     ({ method, expected }) => {
@@ -44,7 +44,7 @@ function getBody(response: ServerResponse<IncomingMessage>) {
 
   const body: string[] = [];
 
-  for (let output of json.outputData) {
+  for (const output of json.outputData) {
     body.push(output.data.replace(json._header, ""));
   }
 

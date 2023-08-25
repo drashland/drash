@@ -1,7 +1,3 @@
-import {
-  GroupConsoleLogger,
-  Level,
-} from "@/src/standard/log/GroupConsoleLogger.ts";
 import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
 import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
@@ -31,11 +27,11 @@ class Home extends Chain.Resource {
     return context;
   }
 
-  public DELETE(context: WebAPIContext) {
+  public DELETE(_context: WebAPIContext) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(context: WebAPIContext) {
+  public PATCH(_context: WebAPIContext) {
     throw new HTTPError(405);
   }
 }

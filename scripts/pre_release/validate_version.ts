@@ -1,3 +1,7 @@
+import { rootLogger } from "../../rootLogger";
+
+const logger = rootLogger.logger("validate_version.ts");
+
 const versionToPublish = Deno.args[0];
 
 const packageJsonContents = new TextDecoder().decode(
@@ -7,13 +11,13 @@ const packageJsonContents = new TextDecoder().decode(
 const packageJson = JSON.parse(packageJsonContents);
 const packageJsonVersion = `v${packageJson.version}`;
 
-console.log("Checking package.json version with GitHub release tag version.\n");
-console.log(`packge.json version:    ${packageJsonVersion}`);
-console.log(`GitHub release version: ${versionToPublish}\n`);
+logger.info("Checking package.json version with GitHub release tag version.\n");
+logger.info(`packge.json version:    ${packageJsonVersion}`);
+logger.info(`GitHub release version: ${versionToPublish}\n`);
 
 if (packageJsonVersion !== versionToPublish) {
-  console.log("Version mismatch. Stopping Release workflow.");
+  logger.info("Version mismatch. Stopping Release workflow.");
   Deno.exit(1);
 } else {
-  console.log("Versions match. Proceeding with Release workflow.");
+  logger.info("Versions match. Proceeding with Release workflow.");
 }

@@ -44,7 +44,7 @@ function getBody(response: ServerResponse<IncomingMessage>) {
 
   const body: string[] = [];
 
-  for (let output of json.outputData) {
+  for (const output of json.outputData) {
     body.push(output.data.replace(json._header, ""));
   }
 

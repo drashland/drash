@@ -56,16 +56,13 @@ class Middleware<I, O> extends ResourceProxy<Middleware<I, O>, I, O> {
       );
     }
 
-    // @ts-ignore
-    const method = (input as { method: MethodOf<typeof this> }).method;
+    const method = (input as { method: MethodOf<IMiddleware> }).method;
 
-    // @ts-ignore
     if (typeof this[method] !== "function") {
       throw new Error("Test");
     }
 
-    // @ts-ignore
-    return this[method](input);
+    return this[method](input) as O;
   }
 }
 

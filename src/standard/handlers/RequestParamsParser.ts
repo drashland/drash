@@ -108,7 +108,7 @@ class Params {
     request: Input["request"],
     params: Input["request_params"],
   ) {
-    this.#query = new URLSearchParams(request);
+    this.#query = new URLSearchParams(request.url);
     this.#path_params = params.path_params;
   }
 

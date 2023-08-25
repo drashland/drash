@@ -1,7 +1,3 @@
-import {
-  GroupConsoleLogger,
-  Level,
-} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";

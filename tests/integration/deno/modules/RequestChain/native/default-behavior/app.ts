@@ -1,7 +1,3 @@
-import {
-  GroupConsoleLogger,
-  Level,
-} from "@/src/standard/log/GroupConsoleLogger.ts";
 import { HTTPError } from "@/src/standard/errors/HTTPError.ts";
 import { StatusCode } from "@/src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "@/src/standard/http/response/StatusDescription.ts";
@@ -14,19 +10,19 @@ export const port = 1447;
 class Home extends Chain.Resource {
   public paths = ["/"];
 
-  public GET(request: Request) {
+  public GET(_request: Request) {
     return new Response("Hello from GET.");
   }
 
-  public POST(request: Request) {
+  public POST(_request: Request) {
     return new Response("Hello from POST.");
   }
 
-  public DELETE(request: Request) {
+  public DELETE(_request: Request) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(request: Request) {
+  public PATCH(_request: Request) {
     throw new HTTPError(405);
   }
 }

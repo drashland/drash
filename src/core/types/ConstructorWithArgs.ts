@@ -19,8 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-interface IConstructorWithArgs<Instance> {
-  new (...args: any[]): Instance;
+interface IConstructorWithArgs<Instance, Args extends unknown[] = unknown[]> {
+  new (...args: Args): Instance;
 }
 
-export type ConstructorWithArgs<Instance> = IConstructorWithArgs<Instance>;
+export type ConstructorWithArgs<Instance, Args extends unknown[] = unknown[]> =
+  IConstructorWithArgs<Instance, Args>;

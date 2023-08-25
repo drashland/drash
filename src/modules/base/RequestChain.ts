@@ -30,13 +30,15 @@ import { RequestParamsParser } from "../../standard/handlers/RequestParamsParser
 import { RequestValidator } from "../../standard/handlers/RequestValidator.ts";
 import { ResourceCaller } from "../../standard/handlers/ResourceCaller.ts";
 import { ResourceNotFoundHandler } from "../../standard/handlers/ResourceNotFoundHandler.ts";
+// import { Logger } from "../../standard/log/Logger.ts";
 
 // Imports > Modules
 import { ResourceClassesArray } from "./types/ResourceClassesArray.ts";
 import { type Input as ResourceIndexInput } from "./ResourcesIndex.ts";
 
-type ResourceFinderClass = ConstructorWithArgs<
-  Handler<ResourceIndexInput, unknown>
+type ResourcesFinderClass = ConstructorWithArgs<
+  Handler<ResourceIndexInput, unknown>,
+  ResourceClassesArray
 >;
 
 /**
@@ -45,7 +47,7 @@ type ResourceFinderClass = ConstructorWithArgs<
 class Builder extends AbstractChainBuilder {
   // #logger?: Logger;
   #resources: ResourceClassesArray = [];
-  #ResourceFinderClass?: ResourceFinderClass;
+  #ResourcesFinderClass?: ResourcesFinderClass;
 
   // logger(logger: Logger) {
   //   this.#logger = logger;
@@ -67,21 +69,21 @@ class Builder extends AbstractChainBuilder {
    * @param handler
    * @returns
    */
-  resourcesFinderClass(handler: ResourceFinderClass): this {
-    this.#ResourceFinderClass = handler;
+  resourcesFinderClass(handler: ResourcesFinderClass): this {
+    this.#ResourcesFinderClass = handler;
     return this;
   }
 
   public build<I, O>(): IHandler<I, Promise<O>> {
-    if (!this.#ResourceFinderClass) {
+    if (!this.#ResourcesFinderClass) {
       throw new Error(
-        `\`this.resourcesFinderClass(Resource)\` not called. Cannot create RequestChain without \`ResourceFinderClass\`.`,
+        `\`this.resourcesFinderClass(Resource)\` not called. Cannot create RequestChain without \`ResourcesFinderClass\`.`,
       );
     }
 
     this
       .handler(new RequestValidator())
-      .handler(new this.#ResourceFinderClass(...this.#resources))
+      .handler(new this.#ResourcesFinderClass(...this.#resources))
       .handler(new ResourceNotFoundHandler())
       .handler(new RequestParamsParser())
       .handler(new ResourceCaller())
@@ -99,4 +101,4 @@ class RequestChain {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { type Builder, RequestChain };
+export { type Builder, RequestChain, type ResourcesFinderClass };

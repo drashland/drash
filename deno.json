@@ -1,6 +1,12 @@
 {
-  "importMap": "./.deno/import_map.json",
+  "imports": {
+    "@/": "./"
+  },
   "lock": false,
+  "lint": {
+    "include": ["./src", "./tests"],
+    "exclude": [".deno", ".drashland", "node_modules", "**/_unstable"]
+  },
   "fmt": {
     "useTabs": false,
     "lineWidth": 80,
@@ -16,8 +22,11 @@
     "build:esm": "yarn tsc --project tsconfig.esm.json",
     "build:intermediary": "./scripts/lib_builder/build_intermediary",
     "check": "yarn tsc --project tsconfig.check.json",
+    "lint:tests:bun": "deno lint tests/integration/bun",
+    "lint:tests:node": "deno lint tests/integration/node*/**",
     "release": "yarn publish --access public",
-    "test:all": "deno task test:integration:bun && deno task test:integration:deno && deno task test:integration:node && deno task test:unit",
+    "BUN_IS_NOT_STABLE_SO_IT_IS_NOT_PART_OF_TEST_ALL_SCRIPT": "true",
+    "test:all": "deno task test:integration:deno && deno task test:integration:node && deno task test:unit",
     "test:integration:bun": "bun test tests/integration/bun",
     "test:integration:deno": "deno test tests/integration/deno",
     "test:integration:node": "yarn jest tests/integration",

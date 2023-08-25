@@ -27,7 +27,10 @@
  * that this script should convert.
  */
 
+import { rootLogger } from "../../rootLogger.ts";
 import { copySync, emptyDirSync, ensureDirSync, walk } from "./deps.ts";
+
+const logger = rootLogger.logger("build_esm_lib.ts");
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -39,13 +42,13 @@ const workspace = optionValue("--workspace") || "";
 const copyFiles = optionValue("--copy-files");
 
 Promise
-  .resolve((() => logDebug(`Options:`, { debug, debugContents }))())
+  .resolve((() => logger.debug(`Options:`, { debug, debugContents }))())
   .then(createWorkspace)
   .then(copyFilesToWorkspace)
   .then(convertCode)
   .then(() => Deno.exit(0))
   .catch((error) => {
-    logDebug(error);
+    logger.debug(error);
     Deno.exit(1);
   });
 
@@ -53,7 +56,7 @@ Promise
  * Convert the code given to this script.
  */
 async function convertCode(): Promise<void> {
-  logDebug("\nStarting .ts extension removal process.\n");
+  logger.debug("\nStarting .ts extension removal process.\n");
 
   for await (const entry of walk(workspace)) {
     if (entry.isDirectory) {
@@ -70,26 +73,26 @@ async function convertCode(): Promise<void> {
       continue;
     }
 
-    logDebug(`Removing .ts extensions from ${entry.path}.`);
+    logger.debug(`Removing .ts extensions from ${entry.path}.`);
     removeTsExtensions(entry.path);
-    logDebug("Moving to next file.");
-    logDebug("");
+    logger.debug("Moving to next file.");
+    logger.debug("");
   }
 
-  logDebug("Done removing .ts extensions from source files.");
+  logger.debug("Done removing .ts extensions from source files.");
 }
 
 function copyFilesToWorkspace(): void {
   const split = copyFiles?.split(",") || [];
-  logDebug(`Copying files into workspace:`, split);
+  logger.debug(`Copying files into workspace:`, split);
 
   for (const item of split) {
-    logDebug(`Renaming file: ${item}`);
+    logger.debug(`Renaming file: ${item}`);
     const srcDirPrefixRemovedFilename = item.replace("./src", "./");
-    logDebug(`    -> ${srcDirPrefixRemovedFilename}`);
+    logger.debug(`    -> ${srcDirPrefixRemovedFilename}`);
     const nonDotFilename = srcDirPrefixRemovedFilename.replace("./", "/");
-    logDebug(`    -> ${nonDotFilename}`);
-    logDebug(`Copying ${item} to ${workspace}${nonDotFilename}`);
+    logger.debug(`    -> ${nonDotFilename}`);
+    logger.debug(`Copying ${item} to ${workspace}${nonDotFilename}`);
     copySync(item, workspace + nonDotFilename, {
       overwrite: true,
     });
@@ -100,7 +103,7 @@ function copyFilesToWorkspace(): void {
  * Create the workspace directory.
  */
 function createWorkspace() {
-  logDebug(`Creating ${workspace}.`);
+  logger.debug(`Creating ${workspace}.`);
   emptyDirSync(workspace);
   ensureDirSync(workspace);
 }
@@ -144,26 +147,14 @@ function removeTsExtensions(filename: string): void {
   // }
 
   if (debugContents) {
-    logDebug(`New contents (without .ts extensions):`);
-    logDebug(contents);
+    logger.debug(`New contents (without .ts extensions):`);
+    logger.debug(contents);
   }
 
   // Step 5: Rewrite the original file without .ts extensions
-  logDebug(`Overwriting ${filename} with new contents.`);
+  logger.debug(`Overwriting ${filename} with new contents.`);
   Deno.writeFileSync(filename, encoder.encode(contents));
-  logDebug("File written.");
-}
-
-/**
- * Log output.
- * @param msg The message to log.
- */
-function logDebug(...msg: unknown[]): void {
-  if (!debug) {
-    return;
-  }
-
-  console.log(...msg);
+  logger.debug("File written.");
 }
 
 /**

@@ -3,8 +3,6 @@
   "version": "3.0.0-preview+20230607.1029",
   "description": "A cross-platform HTTP microframework",
   "license": "GPL-3.0",
-  "main": "./cjs/mod.core.js",
-  "types": "./cjs/mod.core.d.ts",
   "repository": "git@github.com:drashland/drash.git",
   "author": "Drash Land",
   "contributors": [

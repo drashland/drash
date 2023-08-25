@@ -1,8 +1,4 @@
 // Drash imports
-import {
-  GroupConsoleLogger,
-  Level,
-} from "@/.drashland/builds/esm/standard/log/GroupConsoleLogger";
 import { HTTPError } from "@/.drashland/builds/esm/standard/errors/HTTPError";
 import { StatusCode } from "@/.drashland/builds/esm/standard/http/response/StatusCode";
 import { StatusDescription } from "@/.drashland/builds/esm/standard/http/response/StatusDescription";

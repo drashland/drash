@@ -51,7 +51,10 @@ interface PathPattern {
   exec(input: string): PathPatternExecResult | null;
 }
 
-type PathPatternClass = ConstructorWithArgs<PathPattern>;
+type PathPatternClass = ConstructorWithArgs<
+  PathPattern,
+  [{ pathname: string }]
+>;
 
 type SearchResult = {
   resource: IResource;
@@ -74,7 +77,7 @@ abstract class ResourcesIndex extends SearchIndex<
     super();
     this.resources = resources ?? [];
     this.PathPatternClass = PathPatternClass;
-    this.buildIndex();
+    this.buildIndex(this.resources);
   }
 
   public handle(request: Input): Promise<SearchResult | null> {
@@ -86,10 +89,10 @@ abstract class ResourcesIndex extends SearchIndex<
       .then((result) => super.nextHandler({ request, result }));
   }
 
-  protected buildIndex(...resources: ResourceClassesArray): void {
+  protected buildIndex(resources: ResourceClassesArray): void {
     this.#logger.debug(`Building resources index`);
 
-    for (const ResourceClass of this.resources) {
+    for (const ResourceClass of resources) {
       if (Array.isArray(ResourceClass)) {
         this.buildIndex(ResourceClass);
         continue;
@@ -131,7 +134,9 @@ abstract class ResourcesIndex extends SearchIndex<
 
     try {
       urlPathname = fullyQualifiedUrl.replace(/http(s)?:\/\/.+\//, "/");
-    } catch (_error) {}
+    } catch (error) {
+      this.#logger.debug(`Error searching for resource - error: {}`, error);
+    }
 
     this.#logger.debug(
       `Finding first resource by URL pathname - pathname: {}`,

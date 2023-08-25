@@ -103,7 +103,8 @@ abstract class AbstractLogger implements Logger {
    * @returns True if yes, false if no.
    */
   protected canLog(messageLevel: Level): boolean {
-    return this.level >= messageLevel;
+    return true;
+    // return this.level >= messageLevel;
   }
 
   /**

@@ -16,32 +16,30 @@ const testCasesThrow = [
 ];
 
 Deno.test("RequestValidator", async (t) => {
-  for await (let request of testCasesThrow) {
-    let testName = typeof request === "object"
+  for await (const request of testCasesThrow) {
+    const testName = typeof request === "object"
       ? JSON.stringify(request)
       : request;
 
-    await t.step(`throws if request is \`${testName}\``, async (t) => {
+    await t.step(`throws if request is \`${testName}\``, () => {
       const requestValidator = new RequestValidator();
       asserts.assertThrows(() => requestValidator.handle(request));
     });
   }
 
-  await t.step("throws if request is not provided", async (t) => {
+  await t.step("throws if request is not provided", () => {
     const requestValidator = new RequestValidator();
-    // @ts-ignore
     asserts.assertThrows(() => requestValidator.handle());
   });
 
-  await t.step("throws if request is not provided", async (t) => {
+  await t.step("throws if request is not provided", () => {
     const requestValidator = new RequestValidator();
-    // @ts-ignore
     asserts.assertThrows(() => requestValidator.handle());
   });
 
   await t.step(
     "does not throw if the object is `{ url: string; method: string }`",
-    async (t) => {
+    () => {
       const requestValidator = new RequestValidator();
       try {
         requestValidator.handle({ url: "", method: "" });

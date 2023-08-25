@@ -49,5 +49,5 @@ export type MethodOf<Object> = {
 }[keyof Object];
 
 type Func =
-  | ((...args: any[]) => unknown)
+  | ((...args: unknown[]) => unknown)
   | (() => unknown);
