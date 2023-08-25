@@ -1,5 +1,5 @@
 /**
- * Drash - A micro HTTP framework for JavaScript and TypeScript systems.
+ * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
  * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
@@ -40,8 +40,7 @@ type Input = {
   };
 };
 
-class ResourceNotFoundHandler<O = unknown>
-  extends Handler<Input, Promise<O>> {
+class ResourceNotFoundHandler<O = unknown> extends Handler<Input, Promise<O>> {
   #logger: Logger = ConsoleLogger.create("ResourceNotFoundHandler", Level.Off);
 
   handle(input: Input): Promise<O> {
@@ -93,4 +92,4 @@ class ResourceNotFoundHandler<O = unknown>
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { ResourceNotFoundHandler, type Input };
+export { type Input, ResourceNotFoundHandler };

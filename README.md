@@ -4,7 +4,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/drashland/drash/master.yml?branch=main&label=branch:main)](https://github.com/drashland/drash/actions/workflows/master.yml?query=branch%3Amain)
 [![Drash Land Discord](https://img.shields.io/badge/discord-join-blue?logo=discord)](https://discord.gg/RFsCSaHRWK)
 
-Drash is an HTTP microframework for JavaScript runtimes.
+Drash - A microframework for building JavaScript/TypeScript HTTP systems.
 
 View the full documentation at https://drash.land/drash.
 

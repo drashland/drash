@@ -1,5 +1,5 @@
 /**
- * Drash - A micro HTTP framework for JavaScript and TypeScript systems.
+ * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
  * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
@@ -30,7 +30,7 @@ type Input = {
   request: { url: string };
   resource: IResource;
   request_params: {
-    path_params: Record<string, string | undefined>
+    path_params: Record<string, string | undefined>;
   };
 };
 
@@ -123,4 +123,4 @@ class Params {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { RequestParamsParser, type Input, type Output };
+export { type Input, type Output, RequestParamsParser };
