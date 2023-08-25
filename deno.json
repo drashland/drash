@@ -18,10 +18,11 @@
   },
   "tasks": {
     "build:all": "./scripts/build_all",
-    "build:all:ci": "deno task build:intermediary && deno task build:esm && deno task build:cjs",
+    "build:all:ci": "deno task build:intermediary:ci && deno task build:esm && deno task build:cjs",
     "build:cjs": "yarn tsc --project tsconfig.cjs.json",
     "build:esm": "yarn tsc --project tsconfig.esm.json",
     "build:intermediary": "./scripts/lib_builder/build_intermediary",
+    "build:intermediary:ci": "deno fmt && deno run -A ./scripts/lib_builder/build_esm_lib.ts --debug --workspace=./.drashland/builds/intermediary --copy-files=./src,./package.builds.json",
     "check": "yarn tsc --project tsconfig.check.json",
     "lint:tests:bun": "deno lint tests/integration/bun",
     "lint:tests:node": "deno lint tests/integration/node*/**",
