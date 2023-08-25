@@ -11,11 +11,10 @@
     "exclude": [".deno", ".drashland", "node_modules"]
   },
   "tasks": {
-    "build-all": "./scripts/build_all",
-    "build-and-check": "deno task build-intermediary; yarn tsc --project tsconfig.check.json",
-    "build-cjs": "yarn tsc --project tsconfig.cjs.json",
-    "build-esm": "yarn tsc --project tsconfig.esm.json",
-    "build-intermediary": "./scripts/lib_builder/build_intermediary",
+    "build:all": "./scripts/build_all",
+    "build:cjs": "yarn tsc --project tsconfig.cjs.json",
+    "build:esm": "yarn tsc --project tsconfig.esm.json",
+    "build:intermediary": "./scripts/lib_builder/build_intermediary",
     "check": "yarn tsc --project tsconfig.check.json",
     "release": "yarn publish --access public",
     "test:all": "deno task test:integration:bun && deno task test:integration:deno && deno task test:integration:node && deno task test:unit",

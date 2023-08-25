@@ -4,12 +4,12 @@
 # CI to build the CJS and ESM libs.
 (
   rm -rf .drashland/builds && \
-  deno task build-intermediary && \
+  deno task build:intermediary && \
   # This will need to be moved into the script for cross-builds
   # rm -rf node_modules && \
   # yarn install --no-lockfile && \
-  deno task build-esm && \
-  deno task build-cjs && \
+  deno task build:esm && \
+  deno task build:cjs && \
   cp package.builds.json .drashland/builds/package.json && \
   rm -rf .drashland/builds/intermediary && \
   cd .drashland/builds && \
