@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -23,6 +24,11 @@ jobs:
 
       - name: Install Deno (for `deno task` command)
         uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }} (for `tsc` command)
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Install Bun
         run: |
