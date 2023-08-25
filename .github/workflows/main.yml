@@ -21,6 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install Deno (for `deno task` command)
+        uses: denoland/setup-deno@v1
+
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
@@ -59,6 +62,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install Deno (for `deno task` command)
+        uses: denoland/setup-deno@v1
 
       - name: Install Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
