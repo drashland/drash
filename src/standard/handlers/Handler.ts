@@ -19,7 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Core
 import { IHandler } from "../../core/interfaces/IHandler.ts";
+
 /**
  * A class to be extended by handlers so they can share the same interface.
  */

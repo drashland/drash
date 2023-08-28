@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true
+    "target": "es2015",
+    "allowImportingTsExtensions": true,
+    "lib": ["dom"]
   },
   "include": [
     "./**/*.ts"

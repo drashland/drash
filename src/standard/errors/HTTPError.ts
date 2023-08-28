@@ -19,8 +19,11 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Core
 import { ResponseStatusCode } from "../../core/Types.ts";
 import { StatusCode } from "../../core/http/response/StatusCode.ts";
+
+// Imports > Standard
 import { StatusByCode } from "../http/response/StatusByCode.ts";
 import { StatusDescription } from "../http/response/StatusDescription.ts";
 
