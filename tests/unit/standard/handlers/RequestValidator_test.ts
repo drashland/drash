@@ -68,7 +68,7 @@ Deno.test("RequestValidator", async (t) => {
     const requestValidator = new RequestValidator();
     try {
       // @ts-ignore: Ignorning because we want to test not passing in an arg for
-    // cases where TypeScript is not being used
+      // cases where TypeScript is not being used
       await requestValidator.handle();
     } catch (e) {
       asserts.assertEquals(e.message, "Request could not be read");

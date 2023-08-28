@@ -1,11 +1,25 @@
 {
   "name": "drash",
-  "version": "3.0.0-preview+20230607.1029",
-  "description": "Microframework for building HTTP applications",
+  "version": "3.0.0-preview+2023.08.28.1029",
+  "description": "A microframework for building JavaScript HTTP applications",
   "license": "GPL-3.0",
   "repository": "git@github.com:drashland/drash.git",
   "author": "Drash Land",
   "type": "module",
+  "contributors": [
+    {
+      "name": "Breno Salles"
+    },
+    {
+      "name": "Edward Bebbington"
+    },
+    {
+      "name": "Eric Crooks"
+    },
+    {
+      "name": "Sara Gee"
+    }
+  ],
   "devDependencies": {
     "@babel/preset-env": "^7.22.10",
     "@cloudflare/workers-types": "^4.20221111.1",
