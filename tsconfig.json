@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "target": "es2015",
-    "allowImportingTsExtensions": true
-  },
-  "include": ["./src/**/*.ts"]
-}

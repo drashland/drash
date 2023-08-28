@@ -1,40 +1,23 @@
 {
   "name": "drash",
   "version": "3.0.0-preview+20230607.1029",
-  "description": "A cross-platform HTTP microframework",
+  "description": "Microframework for building HTTP applications",
   "license": "GPL-3.0",
-  "main": "./.drashland/builds/cjs/mod.core.js",
-  "types": "./.drashland/builds/cjs/mod.core.d.ts",
   "repository": "git@github.com:drashland/drash.git",
   "author": "Drash Land",
-  "contributors": [
-    {
-      "name": "Breno Salles"
-    },
-    {
-      "name": "Edward Bebbington"
-    },
-    {
-      "name": "Eric Crooks"
-    },
-    {
-      "name": "Sara Gee"
-    }
-  ],
+  "type": "module",
   "devDependencies": {
-    "@babel/core": "7.x",
-    "@babel/preset-env": "7.x",
-    "@swc/cli": "0.x",
-    "@swc/core": "1.x",
-    "@types/jest": "29.x",
-    "@types/node": "18.x",
-    "babel-jest": "29.x",
-    "bun-types": "0.x",
-    "jest": "29.x",
-    "ts-jest": "29.x",
-    "ts-node": "10.x",
-    "tsc": "2.x",
-    "tsconfig-paths": "4.x",
-    "typescript": "5.x"
+    "@babel/preset-env": "^7.22.10",
+    "@cloudflare/workers-types": "^4.20221111.1",
+    "@types/jest": "^29.5.4",
+    "@types/node": "^20.5.7",
+    "babel-jest": "^29.6.4",
+    "bun-types": "^0.8.1",
+    "jest-environment-miniflare": "2.7.1",
+    "jest": "^29.4.3",
+    "ts-jest": "^29.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "5.x",
+    "wrangler": "^2.12.0"
   }
 }

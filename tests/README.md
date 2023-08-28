@@ -1,6 +1,10 @@
 # Drash Tests
 
-This document outlines how to run the tests.
+This document outlines:
+
+- descriptions of the test directories;
+- intent behind the tests; and
+- how to run the tests.
 
 ## Integration
 
@@ -45,4 +49,14 @@ $ deno task test:integration:deno
 $ yarn install
 $ deno task build:all
 $ deno task test:integration:node
+```
+
+## Unit
+
+Unit tests make assertions against Core, Standard, and Modules.
+
+### How to run tests
+
+```
+$ deno task test:unit
 ```

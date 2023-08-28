@@ -2,21 +2,22 @@
 
 .DS_Store
 .env
+.vscode/settings.json
 *.log
 package-lock.json
-.vscode/settings.json
 yarn.lock
 
 # Directories
 
-benchmarks/*
 .drashland/
 .idea/
 .vim/
-lib/*
+benchmarks/
+dist/
+lib/
 node_modules/
-tmp*/*
-tmp/*
+tmp*/
+tmp/
 
 # Exceptions
 

@@ -27,10 +27,10 @@
  * that this script should convert.
  */
 
-import { rootLogger } from "../../rootLogger.ts";
 import { copySync, emptyDirSync, ensureDirSync, walk } from "./deps.ts";
+import { ConsoleLogger, Level } from "../../src/standard/log/ConsoleLogger.ts";
 
-const logger = rootLogger.logger("build_esm_lib.ts");
+const logger = ConsoleLogger.create("build_esm_lib.ts", Level.Info);
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();

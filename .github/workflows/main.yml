@@ -10,6 +10,34 @@ on:
 
 jobs:
 
+  cloudflare-integration-tests:
+    name: Cloudflare Integration Tests
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deno (for `deno task` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
+      - name: Run Integration Tests
+        run: |
+          deno task build:all:ci && deno task test:integration:cloudflare
+
   bun-integration-tests:
     name: Bun Integration Tests
 
@@ -26,12 +54,12 @@ jobs:
       - name: Install Deno (for `deno task` command)
         uses: denoland/setup-deno@v1
 
-      - name: Install Node ${{ matrix.node-version }} (for `tsc` command)
+      - name: Install Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install TypeScript
+      - name: Install Node dependencies
         run: |
           yarn install
 
@@ -82,9 +110,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Instal Node dependencies
+        run: |
+          yarn install
+
       - name: Run Integration Tests
         run: |
-          yarn install && deno task build:all:ci && deno task test:integration:node
+          deno task build:all:ci && deno task test:integration:node
 
   # benchmarks:
   #   strategy:

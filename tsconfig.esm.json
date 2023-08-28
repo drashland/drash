@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "./.drashland/builds/esm",
-    "rootDir": "./.drashland/builds/intermediary"
-  },
-  "include": ["./.drashland/builds/intermediary"]
-}

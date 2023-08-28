@@ -41,7 +41,13 @@ class RequestValidator<
     return Promise
       .resolve()
       .then(() => this.#validate(request))
-      .then(() => super.nextHandler(request));
+      .then(() => {
+        if (this.next_handler) {
+          return super.nextHandler(request);
+        }
+
+        return request;
+      });
   }
 
   #validate(request: unknown): void {
