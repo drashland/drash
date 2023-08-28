@@ -20,13 +20,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Deno (for `deno task` command)
         uses: denoland/setup-deno@v1
 
       - name: Install Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -49,13 +49,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Deno (for `deno task` command)
         uses: denoland/setup-deno@v1
 
       - name: Install Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -81,7 +81,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Deno
         uses: denoland/setup-deno@v1
@@ -100,13 +100,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Deno (for `deno task` command)
         uses: denoland/setup-deno@v1
 
       - name: Install Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -126,13 +126,13 @@ jobs:
   #   runs-on: ${{ matrix.os }}
 
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v3
 
   #     - name: Install Deno
   #       uses: denoland/setup-deno@v1
 
   #     - name: Setup Node 13
-  #       uses: actions/setup-node@v1
+  #       uses: actions/setup-node@v3
   #       with:
   #         node-version: '13'
 
@@ -150,7 +150,7 @@ jobs:
   #   runs-on: ubuntu-latest
 
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v3
 
   #     - name: Install Deno
   #       uses: denoland/setup-deno@v1
