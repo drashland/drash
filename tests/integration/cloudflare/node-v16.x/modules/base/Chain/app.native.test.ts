@@ -1,4 +1,4 @@
-import { lstatSync } from "fs";
+import { lstatSync } from "node:fs";
 import { unstable_dev } from "wrangler";
 import type { UnstableDevWorker } from "wrangler";
 

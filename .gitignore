@@ -2,7 +2,6 @@
 
 .DS_Store
 .env
-.vscode/settings.json
 *.log
 package-lock.json
 yarn.lock
@@ -12,6 +11,7 @@ yarn.lock
 .drashland/
 .idea/
 .vim/
+.vscode/
 benchmarks/
 dist/
 lib/

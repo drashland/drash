@@ -31,6 +31,7 @@
     "test:integration:deno": "deno test tests/integration/deno",
     "test:integration:node": "yarn jest --config jest.config.node.ts tests/integration/node",
     "test:unit": "deno test tests/unit",
-    "yarn:clean": "rm -rf node_modules && rm yarn.lock || true"
+    "yarn:clean": "rm -rf node_modules && rm yarn.lock || true",
+    "yarn:publish": "deno task build:all:ci"
   }
 }
