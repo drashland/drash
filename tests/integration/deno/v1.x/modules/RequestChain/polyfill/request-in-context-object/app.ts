@@ -1,7 +1,7 @@
 import { HTTPError } from "../../../../../../../../src/standard/errors/HTTPError.ts";
 import { StatusCode } from "../../../../../../../../src/standard/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/standard/http/response/StatusDescription.ts";
-import * as Chain from "../../../../../../../../src/modules/RequestChain/polyfill.ts";
+import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.polyfill.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
