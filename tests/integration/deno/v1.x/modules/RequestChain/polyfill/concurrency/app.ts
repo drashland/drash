@@ -87,12 +87,3 @@ export const handleRequest = (
       });
     });
 };
-
-import { serve } from "https://deno.land/std@0.200.0/http/server.ts";
-
-const handler = (request: Request): Promise<Response> => {
-  return handleRequest(request)
-};
-
-console.log(`HTTP webserver running. Access it at: http://localhost:8080/`);
-await serve(handler, { port });
