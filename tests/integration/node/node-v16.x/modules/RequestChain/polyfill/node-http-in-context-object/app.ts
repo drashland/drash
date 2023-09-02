@@ -67,11 +67,11 @@ export const handleRequest = (
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
-        "code" in error &&
-        "code_description" in error
+        "status_code" in error &&
+        "status_code_description" in error
       ) {
-        context.response.statusCode = error.code;
-        context.response.statusMessage = error.code_description;
+        context.response.statusCode = error.status_code;
+        context.response.statusMessage = error.status_code_description;
         context.response.end(error.message);
       } else {
         context.response.statusCode = StatusCode.InternalServerError;

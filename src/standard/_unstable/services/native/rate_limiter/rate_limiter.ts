@@ -20,7 +20,6 @@
  */
 
 import { Errors, Interfaces, Request } from "../../../mod.deno.ts";
-import { Promisable } from "../../../src/core/types.ts";
 import { MemoryStore } from "./memory_store.ts";
 
 interface IOptions {

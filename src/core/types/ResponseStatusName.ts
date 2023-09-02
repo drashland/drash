@@ -19,9 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-interface IConstructorWithArgs<Instance, Args extends unknown[] = unknown[]> {
-  new (...args: Args): Instance;
-}
+import { StatusName } from "../http/response/StatusName.ts";
 
-export type ConstructorWithArgs<Instance, Args extends unknown[] = unknown[]> =
-  IConstructorWithArgs<Instance, Args>;
+export type ResponseStatusName = (typeof StatusName)[keyof typeof StatusName];

@@ -19,71 +19,53 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import type { ResourceClass } from "../../core/types/ResourceClass.ts";
-import { IResource } from "../../core/interfaces/IResource.ts";
-
-// Imports > Standard
-import { HTTPResponse } from "./HTTPResponse.ts";
-import { StatusCode } from "./response/StatusCode.ts";
-import { type Builder, ResourceGroup } from "./ResourceGroup.ts";
-
-type ResourceClasses = (ResourceClass | ResourceClass[])[];
+import { HTTPError } from "../errors/HTTPError.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import type { IResource } from "../../core/interfaces/IResource.ts";
 
 /**
- * A base class with a resource group builder.
+ * The base resource class for all resources.
  */
-abstract class AbstractResource implements IResource {
-  /**
-   * Instantiate a {@link Builder} with the given `resources`.
-   * @param resources The resource classes to group together.
-   * @returns A {@link Builder}.
-   */
-  static group(
-    ...resources: ResourceClasses
-  ): Omit<Builder, "resources"> {
-    return ResourceGroup.builder().resources(...resources);
-  }
-
-  abstract paths: string[];
+class Resource implements IResource {
+  public paths: string[] = [];
 
   public CONNECT(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public DELETE(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public GET(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public HEAD(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public OPTIONS(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public PATCH(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public POST(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public PUT(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 
   public TRACE(_input: unknown): unknown {
-    throw HTTPResponse.error(StatusCode.NotImplemented);
+    throw new HTTPError(StatusCode.NotImplemented);
   }
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractResource };
+export { Resource };

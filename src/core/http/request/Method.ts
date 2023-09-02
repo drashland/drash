@@ -24,14 +24,16 @@
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods} for more information on HTTP methods.
  */
-export enum Method {
-  CONNECT = "CONNECT",
-  DELETE = "DELETE",
-  GET = "GET",
-  HEAD = "HEAD",
-  OPTIONS = "OPTIONS",
-  PATCH = "PATCH",
-  POST = "POST",
-  PUT = "PUT",
-  TRACE = "TRACE",
-}
+const Method = {
+  CONNECT: "CONNECT",
+  DELETE: "DELETE",
+  GET: "GET",
+  HEAD: "HEAD",
+  OPTIONS: "OPTIONS",
+  PATCH: "PATCH",
+  POST: "POST",
+  PUT: "PUT",
+  TRACE: "TRACE",
+} as const;
+
+export type Method = (typeof Method)[keyof typeof Method];

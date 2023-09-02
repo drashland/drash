@@ -1,20 +1,20 @@
-import { AbstractResource } from "../../../../../../../src/standard/http/AbstractResource.ts";
 import { Chain as BaseChain } from "../../../../../../../src/modules/base/Chain.ts";
-import { HTTPError } from "../../../../../../../src/standard/errors/HTTPError.ts";
 import { RequestParamsParser } from "../../../../../../../src/standard/handlers/RequestParamsParser.ts";
 import { RequestValidator } from "../../../../../../../src/standard/handlers/RequestValidator.ts";
+import { Resource } from "../../../../../../../src/core/http/Resource.ts";
 import { ResourceCaller } from "../../../../../../../src/standard/handlers/ResourceCaller.ts";
 import { ResourceNotFoundHandler } from "../../../../../../../src/standard/handlers/ResourceNotFoundHandler.ts";
-import { StatusCode } from "../../../../../../../src/standard/http/response/StatusCode.ts";
-import { StatusDescription } from "../../../../../../../src/standard/http/response/StatusDescription.ts";
-
-import { URLPatternPolyfillResourcesIndex } from "../../../../../../../src/modules/RequestChain/polyfill/URLPatternPolyfillResourcesIndex.ts";
+import { ResourcesIndex } from "../../../../../../../src/standard/handlers/ResourcesIndex.ts";
+import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
+import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
+import { URLPatternPolyfill } from "../../../../../../../src/standard/polyfill/URLPatternPolyfill.ts";
+import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends AbstractResource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(_request: Request) {
@@ -37,7 +37,7 @@ class Home extends AbstractResource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new URLPatternPolyfillResourcesIndex(Home)) // Using the `URLPattern` polyfill from Drash v1
+  .handler(new ResourcesIndex(URLPatternPolyfill, Home)) // Using the `URLPattern` polyfill from Drash v1
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())
@@ -51,12 +51,12 @@ export const handleRequest = (
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
-        "code" in error &&
-        "code_description" in error
+        "status_code" in error &&
+        "status_code_description" in error
       ) {
         return new Response(error.message, {
-          status: error.code,
-          statusText: error.code_description,
+          status: error.status_code,
+          statusText: error.status_code_description,
         });
       }
 

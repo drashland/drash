@@ -19,31 +19,27 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import { StatusCode as StatusCodeEnum } from "../../core/http/response/StatusCode.ts";
-
 // Imports > Standard
-import { HTTPError } from "../errors/HTTPError.ts";
-import { StatusByCode } from "./response/StatusByCode.ts";
+import { Handler } from "./Handler.ts";
 
-class HTTPResponse {
-  static error(
-    statusCode: StatusCodeEnum | number,
-    message?: string,
-  ): HTTPError {
-    return new HTTPError(statusCode, message);
-  }
+abstract class AbstractSearchIndex<
+  SearchResult,
+> extends Handler<unknown, SearchResult> {
+  /**
+   * Build the index that can be searched via `this.search(...)`.
+   * @param items The items to go into the index.
+   */
+  protected abstract buildIndex(items?: unknown): void;
 
-  static fromStatusCode(statusCode: StatusCodeEnum | number): Response {
-    const status = StatusByCode[statusCode];
-
-    return new Response(status.Description, {
-      status: status.Code,
-      statusText: status.Description,
-    });
-  }
+  /**
+   * Search the index.
+   * @param input The data containing the location information for items in the
+   * index.
+   * @retuns The results of the search.
+   */
+  protected abstract search(input: unknown): SearchResult;
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { HTTPResponse };
+export { AbstractSearchIndex };

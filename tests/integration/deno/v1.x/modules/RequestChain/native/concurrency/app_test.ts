@@ -3,7 +3,7 @@ import { handleRequest, hostname, port, protocol } from "./app.ts";
 
 const url = `${protocol}://${hostname}:${port}`;
 
-Deno.test("Polyfill - Using Request/Response", async (t) => {
+Deno.test("Native - Using Request/Response", async (t) => {
   await t.step("Accounts /accounts paths = /accounts", async (t) => {
     await t.step(`GET does not wait`, () => {
       const req = new Request(url + "/accounts", {

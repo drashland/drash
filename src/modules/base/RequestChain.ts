@@ -20,34 +20,26 @@
  */
 
 // Imports > Core
-import { ConstructorWithArgs } from "../../core/Types.ts";
+import { Resource } from "../../core/http/Resource.ts";
 import type { IHandler } from "../../core/interfaces/IHandler.ts";
 
 // Imports > Standard
 import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
-import { Handler } from "../../standard/handlers/Handler.ts";
 import { RequestParamsParser } from "../../standard/handlers/RequestParamsParser.ts";
 import { RequestValidator } from "../../standard/handlers/RequestValidator.ts";
 import { ResourceCaller } from "../../standard/handlers/ResourceCaller.ts";
 import { ResourceNotFoundHandler } from "../../standard/handlers/ResourceNotFoundHandler.ts";
-// import { Logger } from "../../standard/log/Logger.ts";
+import { ResourcesIndex, type URLPatternClass } from "../../standard/handlers/ResourcesIndex.ts";
 
-// Imports > Modules
-import { ResourceClassesArray } from "./types/ResourceClassesArray.ts";
-import { type Input as ResourceIndexInput } from "./ResourcesIndex.ts";
-
-type ResourcesFinderClass = ConstructorWithArgs<
-  Handler<ResourceIndexInput, unknown>,
-  ResourceClassesArray
->;
+type ResourceClasses = (typeof Resource | typeof Resource[]);
 
 /**
  * Builder for building a chain of handlers.
  */
 class Builder extends AbstractChainBuilder {
   // #logger?: Logger;
-  #resources: ResourceClassesArray = [];
-  #ResourcesFinderClass?: ResourcesFinderClass;
+  #resources: ResourceClasses[] = [];
+  #URLPatternClass?: URLPatternClass;
 
   // logger(logger: Logger) {
   //   this.#logger = logger;
@@ -59,7 +51,7 @@ class Builder extends AbstractChainBuilder {
    * @param resources
    * @returns This instance for method chaining.
    */
-  resources(...resources: ResourceClassesArray) {
+  resources(...resources: ResourceClasses[]) {
     this.#resources = resources;
     return this;
   }
@@ -69,21 +61,21 @@ class Builder extends AbstractChainBuilder {
    * @param handler
    * @returns
    */
-  resourcesFinderClass(handler: ResourcesFinderClass): this {
-    this.#ResourcesFinderClass = handler;
+  urlPatternClass(urlPatternClass: URLPatternClass): this {
+    this.#URLPatternClass = urlPatternClass;
     return this;
   }
 
   public build<I, O>(): IHandler<I, Promise<O>> {
-    if (!this.#ResourcesFinderClass) {
+    if (!this.#URLPatternClass) {
       throw new Error(
-        `\`this.resourcesFinderClass(Resource)\` not called. Cannot create RequestChain without \`ResourcesFinderClass\`.`,
+        `\`this.urlPatternClass(Resource)\` not called. Cannot create RequestChain without a \`URLPattern\`-like class.`,
       );
     }
 
     this
       .handler(new RequestValidator())
-      .handler(new this.#ResourcesFinderClass(...this.#resources))
+      .handler(new ResourcesIndex(this.#URLPatternClass, ...this.#resources))
       .handler(new ResourceNotFoundHandler())
       .handler(new RequestParamsParser())
       .handler(new ResourceCaller())
@@ -101,4 +93,4 @@ class RequestChain {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { type Builder, RequestChain, type ResourcesFinderClass };
+export { type Builder, RequestChain };

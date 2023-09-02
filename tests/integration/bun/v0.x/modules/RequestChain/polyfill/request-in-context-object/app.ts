@@ -68,12 +68,12 @@ export const handleRequest = (
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
-        "code" in error &&
-        "code_description" in error
+        "status_code" in error &&
+        "status_code_description" in error
       ) {
         return new Response(error.message, {
-          status: error.code,
-          statusText: error.code_description,
+          status: error.status_code,
+          statusText: error.status_code_description,
         });
       }
 

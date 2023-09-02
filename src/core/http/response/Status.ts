@@ -19,27 +19,40 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import { Handler } from "./Handler.ts";
+// Imports > Core
+import { StatusCode } from "./StatusCode.ts";
+import { StatusDescription } from "./StatusDescription.ts";
+import type { ResponseStatusCode, ResponseStatusDescription, ResponseStatusName } from "../../Types.ts";
 
-abstract class SearchIndex<
-  SearchResult,
-> extends Handler<unknown, SearchResult> {
+class Status {
   /**
-   * Build the index that can be searched via `this.search(...)`.
-   * @param items The items to go into the index.
+   * Get a status code object.
+   * @param statusCode A valid status code. See HTTP Status link below for a
+   * list of valid status codes.
+   * @returns An object with a status code and description or `undefined` if
+   * the provided `statusCode` is invalid.
+   *
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Status}
    */
-  protected abstract buildIndex(items?: unknown): void;
+  static get(statusCode: ResponseStatusCode): {
+    code: ResponseStatusCode;
+    description: ResponseStatusDescription;
+  } | undefined {
+    const entries = Object.entries<number>(
+      StatusCode
+    ) as [ResponseStatusName, ResponseStatusCode][];
 
-  /**
-   * Search the index.
-   * @param input The data containing the location information for items in the
-   * index.
-   * @retuns The results of the search.
-   */
-  protected abstract search(input: unknown): SearchResult;
+    for (const [ key, value ] of entries) {
+      if (value === statusCode) {
+        return {
+          code: statusCode,
+          description: StatusDescription[key],
+        }
+      }
+    }
+  }
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { SearchIndex };
+export { Status };

@@ -20,20 +20,17 @@
  */
 
 // Imports > Core
-import type { ConstructorWithArgs } from "../../core/types/ConstructorWithArgs.ts";
+import { HTTPError } from "../../core/errors/HTTPError.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
 import type { IResource } from "../../core/interfaces/IResource.ts";
 import type { MethodOf } from "../../core/types/MethodOf.ts";
 
 // Imports > Standard
 import { ResourceProxy } from "./ResourceProxy.ts";
-import { HTTPError } from "../errors/HTTPError.ts";
-import { StatusCode } from "./response/StatusCode.ts";
 
 interface IMiddleware extends IResource {
   ALL(request: unknown): unknown;
 }
-
-type MiddlewareClass = ConstructorWithArgs<IMiddleware>;
 
 class Middleware<I, O> extends ResourceProxy<Middleware<I, O>, I, O> {
   /**
@@ -68,4 +65,4 @@ class Middleware<I, O> extends ResourceProxy<Middleware<I, O>, I, O> {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { type IMiddleware, Middleware, type MiddlewareClass };
+export { type IMiddleware, Middleware };

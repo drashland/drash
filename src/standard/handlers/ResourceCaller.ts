@@ -31,12 +31,9 @@ import { Logger } from "../log/Logger.ts";
 type Input = { request: { method: string }; resource: IResource };
 
 class ResourceCaller<O = unknown> extends Handler<Input, Promise<O>> {
-  #logger: Logger = ConsoleLogger.create("ResourceCaller", Level.Off);
-
   handle(input: Input): Promise<O> {
     return Promise
       .resolve()
-      .then(() => this.#logger.debug(`Request received`))
       .then(() => this.#validate(input))
       .then(() => this.#sendRequestToResource(input));
   }

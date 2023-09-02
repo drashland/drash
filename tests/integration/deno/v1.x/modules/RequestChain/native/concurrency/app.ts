@@ -1,7 +1,7 @@
 import { HTTPError } from "../../../../../../../../src/standard/errors/HTTPError.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/standard/http/response/StatusDescription.ts";
-import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.polyfill.ts";
+import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.native.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -20,7 +20,7 @@ class Accounts extends Chain.Resource {
               { status: 200 },
             ),
           );
-        }, 250);
+        }, 2000);
       });
     }
 
@@ -33,7 +33,7 @@ class Accounts extends Chain.Resource {
               { status: 200 },
             ),
           );
-        }, 1000);
+        }, 1500);
       });
     }
 
@@ -46,7 +46,7 @@ class Accounts extends Chain.Resource {
               { status: 200 },
             ),
           );
-        }, 1000);
+        }, 1250);
       });
     }
 

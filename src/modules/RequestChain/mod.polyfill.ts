@@ -19,15 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Standard
+import { URLPatternPolyfill } from "../../standard/polyfill/URLPatternPolyfill.ts";
+
+// Imports > Modules
 import { RequestChain } from "../base/RequestChain.ts";
-import {
-  URLPatternPolyfillResourcesIndex as ResourcesIndex,
-} from "./polyfill/URLPatternPolyfillResourcesIndex.ts";
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractResource as Resource } from "../../standard/http/AbstractResource.ts";
+export { HTTPError } from "../../core/errors/HTTPError.ts";
 export { Middleware } from "../../standard/http/Middleware.ts";
+export { Resource } from "../../core/http/Resource.ts";
 
 /**
  * Get the builder that builds an HTTP request chain.
@@ -35,5 +37,5 @@ export { Middleware } from "../../standard/http/Middleware.ts";
 export function builder() {
   return RequestChain
     .builder()
-    .resourcesFinderClass(ResourcesIndex);
+    .urlPatternClass(URLPatternPolyfill);
 }

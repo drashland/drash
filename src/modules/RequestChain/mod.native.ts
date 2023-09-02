@@ -19,15 +19,14 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Modules
 import { RequestChain } from "../base/RequestChain.ts";
-import {
-  URLPatternResourcesIndex as ResourcesIndex,
-} from "./native/URLPatternResourcesIndex.ts";
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { AbstractResource as Resource } from "../../standard/http/AbstractResource.ts";
+export { HTTPError } from "../../core/errors/HTTPError.ts";
 export { Middleware } from "../../standard/http/Middleware.ts";
+export { Resource } from "../../core/http/Resource.ts";
 
 /**
  * Get the builder that builds an HTTP request chain.
@@ -35,5 +34,6 @@ export { Middleware } from "../../standard/http/Middleware.ts";
 export function builder() {
   return RequestChain
     .builder()
-    .resourcesFinderClass(ResourcesIndex);
+    // @ts-ignore URLPattern exists, just not when dev'ing
+    .urlPatternClass(URLPattern);
 }

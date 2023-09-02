@@ -40,11 +40,7 @@ type Output = {
 };
 
 class RequestParamsParser extends Handler<Input, Promise<Output>> {
-  #logger = GroupConsoleLogger.create("RequestValidator", Level.Off);
-
   handle(input: Input): Promise<Output> {
-    this.#logger.debug(`Parsing request path params`);
-
     return Promise
       .resolve()
       .then(() => this.#validateInput(input))

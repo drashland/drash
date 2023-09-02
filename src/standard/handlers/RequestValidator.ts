@@ -19,11 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Core
+import { HTTPError } from "../../core/errors/HTTPError.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
+
 // Imports > Standard
 import { ConsoleLogger, Level } from "../log/ConsoleLogger.ts";
 import { Handler } from "./Handler.ts";
-import { HTTPError } from "../errors/HTTPError.ts";
-import { StatusCode } from "../http/response/StatusCode.ts";
 
 type Input = {
   method: string;
@@ -33,11 +35,7 @@ type Input = {
 class RequestValidator<
   I extends Input = Input,
 > extends Handler<unknown, Promise<unknown>> {
-  #logger = ConsoleLogger.create("RequestValidator", Level.Off);
-
   handle(request: I): Promise<unknown> {
-    this.#logger.debug(`Request received`);
-
     return Promise
       .resolve()
       .then(() => this.#validate(request))
@@ -51,8 +49,6 @@ class RequestValidator<
   }
 
   #validate(request: unknown): void {
-    this.#logger.debug(`Validating request`);
-
     if (!request) {
       throw new HTTPError(
         StatusCode.UnprocessableEntity,
@@ -80,12 +76,6 @@ class RequestValidator<
         `Request URL could not be read`,
       );
     }
-
-    this.#logger.trace(
-      `Request validated - method: {}; url: {}`,
-      request.method,
-      request.url,
-    );
   }
 }
 

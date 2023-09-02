@@ -20,14 +20,14 @@
  */
 
 // Imports > Core
+import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { IResource } from "../../core/Interfaces.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
 
 // Imports > Standard
 import { ConsoleLogger, Level } from "../log/ConsoleLogger.ts";
 import { Handler } from "./Handler.ts";
-import { HTTPError } from "../errors/HTTPError.ts";
 import { Logger } from "../log/Logger.ts";
-import { StatusCode } from "../http/response/StatusCode.ts";
 
 type Input = {
   request: {
@@ -41,15 +41,11 @@ type Input = {
 };
 
 class ResourceNotFoundHandler<O = unknown> extends Handler<Input, Promise<O>> {
-  #logger: Logger = ConsoleLogger.create("ResourceNotFoundHandler", Level.Off);
-
   handle(input: Input): Promise<O> {
     return Promise
       .resolve()
-      .then(() => this.#logger.debug(`Request received`))
       .then(() => this.#validate(input))
       .then(() => {
-        this.#logger.debug(`Sending to next handler`);
         return super.nextHandler({
           request: input.request,
           resource: input.result.resource,

@@ -19,6 +19,4 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Method } from "../http/request/Method.ts";
-
-export type RequestMethod = Method;
+export type { Method as RequestMethod } from "../http/request/Method.ts";

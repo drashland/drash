@@ -20,15 +20,14 @@
  */
 
 // Imports > Core
-import type { IResource } from "../../core/interfaces/IResource.ts";
 import { Promisable } from "../types/Promisable.ts";
-import { AbstractResource } from "./AbstractResource.ts";
+import { Resource } from "../../core/http/Resource.ts";
 
-abstract class ResourceProxy<Proxy, I, O> extends AbstractResource {
+abstract class ResourceProxy<Proxy, I, O> extends Resource {
   public paths: string[] = [];
-  protected original: IResource & Proxy;
+  protected original: Resource & Proxy;
 
-  constructor(original: IResource & Proxy) {
+  constructor(original: Resource & Proxy) {
     super();
     this.paths = original.paths;
     this.original = original;

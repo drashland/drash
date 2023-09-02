@@ -1,7 +1,7 @@
-import { HTTPError } from "../../../../../../../../src/standard/errors/HTTPError.ts";
-import { StatusCode } from "../../../../../../../../src/standard/http/response/StatusCode.ts";
-import { StatusDescription } from "../../../../../../../../src/standard/http/response/StatusDescription.ts";
+import { HTTPError } from "../../../../../../../../src/core/errors/HTTPError.ts";
 import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.native.ts";
+import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
+import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -41,12 +41,12 @@ export const handleRequest = (
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
-        "code" in error &&
-        "code_description" in error
+        "status_code" in error &&
+        "status_code_description" in error
       ) {
         return new Response(error.message, {
-          status: error.code,
-          statusText: error.code_description,
+          status: error.status_code,
+          statusText: error.status_code_description,
         });
       }
 

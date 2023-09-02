@@ -62,11 +62,11 @@ export const handleRequest = (
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
-        "code" in error &&
-        "code_description" in error
+        "status_code" in error &&
+        "status_code_description" in error
       ) {
-        res.statusCode = error.code;
-        res.statusMessage = error.code_description;
+        res.statusCode = error.status_code;
+        res.statusMessage = error.status_code_description;
         res.end(error.message);
         return;
       }
