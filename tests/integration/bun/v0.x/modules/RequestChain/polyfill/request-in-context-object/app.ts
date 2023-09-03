@@ -88,7 +88,7 @@ export const handleRequest = (
       );
     })
     .catch((error: Error | HTTPError) => {
-      console.log({ error })
+      console.log({ error });
 
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
