@@ -1,6 +1,6 @@
 {
   "include": [
-    "../../.drashland/**/*.js"
+    "../../.drashland/**/*.js",
     "./**/*.ts"
   ]
 }
