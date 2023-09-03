@@ -24,7 +24,7 @@ import { unstable_dev } from "wrangler";
 import type { UnstableDevWorker } from "wrangler";
 
 const testName =
-  "tests/integration/cloudflare/node-v18.x/modules/base/Chain/app.polyfill.ts";
+  "tests/compat/cloudflare/node-v18.x/modules/base/Chain/app.native.ts";
 
 lstatSync(testName);
 

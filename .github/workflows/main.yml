@@ -34,9 +34,9 @@ jobs:
         run: |
           yarn install
 
-      - name: Run Integration Tests
+      - name: Run Tests
         run: |
-          deno task build:all:ci && deno task test:integration:cloudflare
+          deno task build:all:ci && deno task test:compat:cloudflare
 
   compat-bun:
     name: Compat - Bun
@@ -67,9 +67,9 @@ jobs:
         run: |
           curl -fsSL https://bun.sh/install | bash
 
-      - name: Run Integration Tests
+      - name: Run Tests
         run: |
-          deno task build:all:ci && ~/.bun/bin/bun test tests/integration/bun
+          deno task build:all:ci && ~/.bun/bin/bun test tests/compat/bun
 
 
   compat-deno:
@@ -86,13 +86,13 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Run Integration Tests
+      - name: Run Tests
         run: |
-          deno task test:integration:deno
+          deno task test:compat:deno
 
-      - name: Run Integration Tests (concurrency)
+      - name: Run Tests (concurrency)
         run: |
-          deno task test:integration:deno:concurrency
+          deno task test:compat:deno:concurrency
 
   compat-node:
     name: Compat - Node
@@ -118,9 +118,9 @@ jobs:
         run: |
           yarn install
 
-      - name: Run Integration Tests
+      - name: Run Tests
         run: |
-          deno task build:all:ci && deno task test:integration:node
+          deno task build:all:ci && deno task test:compat:node
 
   # benchmarks:
   #   strategy:
