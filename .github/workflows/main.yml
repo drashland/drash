@@ -38,7 +38,7 @@ jobs:
         run: |
           deno task build:all:ci && deno task test:integration:cloudflare
 
- compat-bun:
+  compat-bun:
     name: Compat - Bun
 
     strategy:
