@@ -1,4 +1,3 @@
-
 import { Chain as BaseChain } from "../../../../../../../src/modules/base/Chain.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import { Resource } from "../../../../../../../src/modules/RequestChain/mod.native.ts";
@@ -6,7 +5,10 @@ import { ResourceNotFoundHandler } from "../../../../../../../src/standard/handl
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
-import { ResourcesIndex, SearchResult } from "../../../../../../../src/standard/handlers/ResourcesIndex.ts";
+import {
+  ResourcesIndex,
+  SearchResult,
+} from "../../../../../../../src/standard/handlers/ResourcesIndex.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";

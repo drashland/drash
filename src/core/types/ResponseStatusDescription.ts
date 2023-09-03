@@ -21,4 +21,5 @@
 
 import { StatusDescription } from "../http/response/StatusDescription.ts";
 
-export type ResponseStatusDescription = (typeof StatusDescription)[keyof typeof StatusDescription];
+export type ResponseStatusDescription =
+  (typeof StatusDescription)[keyof typeof StatusDescription];

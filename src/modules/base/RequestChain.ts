@@ -29,9 +29,12 @@ import { RequestParamsParser } from "../../standard/handlers/RequestParamsParser
 import { RequestValidator } from "../../standard/handlers/RequestValidator.ts";
 import { ResourceCaller } from "../../standard/handlers/ResourceCaller.ts";
 import { ResourceNotFoundHandler } from "../../standard/handlers/ResourceNotFoundHandler.ts";
-import { ResourcesIndex, type URLPatternClass } from "../../standard/handlers/ResourcesIndex.ts";
+import {
+  ResourcesIndex,
+  type URLPatternClass,
+} from "../../standard/handlers/ResourcesIndex.ts";
 
-type ResourceClasses = (typeof Resource | typeof Resource[]);
+type ResourceClasses = typeof Resource | typeof Resource[];
 
 /**
  * Builder for building a chain of handlers.

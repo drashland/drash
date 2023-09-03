@@ -26,8 +26,6 @@ import { StatusCode } from "../../core/http/response/StatusCode.ts";
 
 // Imports > Standard
 import { AbstractSearchIndex } from "../handlers/AbstractSearchIndex.ts";
-import { ConsoleLogger, Level } from "../log/ConsoleLogger.ts";
-import { Logger } from "../log/Logger.ts";
 
 type Input = { url: string };
 
@@ -36,7 +34,7 @@ interface IURLPattern {
   exec(input: string): URLPatternExecResult | null;
 }
 
-type ResourceClasses = (typeof Resource | typeof Resource[]);
+type ResourceClasses = typeof Resource | typeof Resource[];
 
 type SearchResult = {
   resource: Resource;
@@ -50,7 +48,7 @@ type URLPatternExecResult = {
 };
 
 interface URLPatternClass {
-  new(options: { pathname: string }): IURLPattern;
+  new (options: { pathname: string }): IURLPattern;
 }
 
 class ResourcesIndex extends AbstractSearchIndex<
@@ -174,9 +172,4 @@ class ResourcesIndex extends AbstractSearchIndex<
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export {
-  ResourcesIndex,
-  type Input,
-  type SearchResult,
-  type URLPatternClass,
-};
+export { type Input, ResourcesIndex, type SearchResult, type URLPatternClass };

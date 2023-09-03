@@ -20,14 +20,14 @@
  */
 
 // Imports > Core
-import type { IResource } from "../../core/interfaces/IResource.ts";
-import type { ResourceClass } from "../../core/types/ResourceClass.ts";
+import { Resource } from "../../core/http/Resource.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
+import type { IResource } from "../../core/interfaces/IResource.ts";
+import { Middleware } from "./Middleware.ts";
 
-// Imports > Standard
-import type { IMiddleware, MiddlewareClass } from "./Middleware.ts";
+type ResourceCtor = typeof Resource;
 
-type ResourceClasses = (ResourceClass | ResourceClass[])[];
+type ResourceClasses = (ResourceCtor | ResourceCtor[])[];
 
 /**
  * Builder for building a resource group. Resources in a resource group can
@@ -38,9 +38,9 @@ type ResourceClasses = (ResourceClass | ResourceClass[])[];
  */
 class Builder implements IBuilder {
   #path_prefixes: string[] = [];
-  #middleware: MiddlewareClass[] = [];
-  #resources: ResourceClass[] = [];
-  #group: ResourceClass[] = [];
+  #middleware: typeof Middleware[] = [];
+  #resources: ResourceCtor[] = [];
+  #group: ResourceCtor[] = [];
 
   /**
    * Set the resources for this group so they can share functionality.
@@ -142,9 +142,9 @@ class Builder implements IBuilder {
   withMiddleware(
     // TODO(crookse) Fix typing. For now, omit `paths` just to make the compiler
     // happy.
-    ...middleware: Omit<MiddlewareClass, "paths">[]
+    ...middleware: typeof Middleware[]
   ): this {
-    this.#middleware = middleware as MiddlewareClass[];
+    this.#middleware = middleware;
     return this;
   }
 
@@ -153,7 +153,7 @@ class Builder implements IBuilder {
    * @returns An array of all the resources passed to the `this.resources()`
    * call with shared functionality (path prefixes, middleware, etc.).
    */
-  build(): ResourceClass[] {
+  build(): ResourceCtor[] {
     this.#group = createGroupWithMiddleware(
       this.#middleware,
       this.#getTarget(),
@@ -174,31 +174,31 @@ class Builder implements IBuilder {
    * off the group.
    * @returns The resources or the group.
    */
-  #getTarget(): ResourceClass[] {
+  #getTarget(): ResourceCtor[] {
     return this.#group.length === 0 ? this.#resources : this.#group;
   }
 }
 
 function createGroupWithPrefixes(
   prefixes: string[],
-  resourceClasses: ResourceClass[],
+  resourceClasses: ResourceCtor[],
 ) {
   if (!prefixes || !prefixes.length) {
     return resourceClasses;
   }
 
   return resourceClasses.map(
-    (ResourceClass: ResourceClass) => {
+    (ResourceClass: ResourceCtor) => {
       return createResourceWithPrefixes(prefixes, ResourceClass);
     },
   );
 }
 
 function createGroupWithMiddleware(
-  serviceClasses: MiddlewareClass[],
-  resourceClasses: ResourceClass[],
-): ResourceClass[] {
-  if (arrayEmpty(serviceClasses)) {
+  middlewareClasses: typeof Middleware[],
+  resourceClasses: ResourceCtor[],
+): ResourceCtor[] {
+  if (arrayEmpty(middlewareClasses)) {
     return resourceClasses;
   }
 
@@ -208,10 +208,10 @@ function createGroupWithMiddleware(
 
   // If there's only one service, then we just need to wrap the service around
   // each resource class
-  if (serviceClasses.length === 1) {
+  if (middlewareClasses.length === 1) {
     return resourceClasses.map((ResourceClass) => {
       const resource = new ResourceClass();
-      const ServiceClass = serviceClasses[0];
+      const ServiceClass = middlewareClasses[0];
       const service = new ServiceClass(resource);
       return resourceProxy(service, ResourceClass);
     });
@@ -221,30 +221,30 @@ function createGroupWithMiddleware(
   // it. just trying to get the code working to make it testable for later
   // cleaning and refactoring.
   const wrapped = resourceClasses.map((resourceClass) => {
-    const firstService = serviceClasses.reduceRight((
+    const firstService = middlewareClasses.reduceRight((
       previous:
         | IResource
-        | MiddlewareClass,
+        | typeof Middleware,
       current:
         | IResource
-        | MiddlewareClass,
+        | typeof Middleware,
       index: number,
     ) => {
       if (typeof current !== "function") {
         return previous;
       }
 
-      if ((index + 1) === serviceClasses.length) {
+      if ((index + 1) === middlewareClasses.length) {
         const resourceInstance = new resourceClass();
         const lastService = new current(resourceInstance);
         return lastService;
       }
 
       return new current(previous as IResource);
-    }, serviceClasses[serviceClasses.length - 1]);
+    }, middlewareClasses[middlewareClasses.length - 1]);
 
     return resourceProxy(
-      firstService as IMiddleware,
+      firstService as Middleware,
       resourceClass,
     );
   });
@@ -253,51 +253,44 @@ function createGroupWithMiddleware(
 }
 
 function resourceProxy(
-  service: IMiddleware,
-  ResourceClass: ResourceClass,
-): ResourceClass {
+  service: Middleware,
+  ResourceClass: typeof Resource,
+): typeof Resource {
   const p = class ResourceWithService extends ResourceClass {
-    // This property is used internally to verify that proxies are/arent't being used
-    readonly original_name = service.constructor.name;
-
-    ALL(request: unknown): unknown {
+    CONNECT(request: unknown): unknown {
       return service.ALL(request);
     }
 
-    CONNECT(request: unknown): unknown {
-      return service.CONNECT(request);
-    }
-
     DELETE(request: unknown): unknown {
-      return service.DELETE(request);
+      return service.ALL(request);
     }
 
     GET(request: unknown): unknown {
-      return service.GET(request);
+      return service.ALL(request);
     }
 
     HEAD(request: unknown): unknown {
-      return service.HEAD(request);
+      return service.ALL(request);
     }
 
     OPTIONS(request: unknown): unknown {
-      return service.OPTIONS(request);
+      return service.ALL(request);
     }
 
     PATCH(request: unknown): unknown {
-      return service.PATCH(request);
+      return service.ALL(request);
     }
 
     POST(request: unknown): unknown {
-      return service.POST(request);
+      return service.ALL(request);
     }
 
     PUT(request: unknown): unknown {
-      return service.PUT(request);
+      return service.ALL(request);
     }
 
     TRACE(request: unknown): unknown {
-      return service.TRACE(request);
+      return service.ALL(request);
     }
   };
 
@@ -306,8 +299,8 @@ function resourceProxy(
 
 function createResourceWithPrefixes(
   prefixes: string[],
-  ResourceClass: ResourceClass,
-): ResourceClass {
+  ResourceClass: typeof Resource,
+): typeof Resource {
   const p = class ResourceWithPrefix extends ResourceClass {
     constructor() {
       super();
@@ -335,9 +328,9 @@ function createResourceWithPrefixes(
 }
 
 function createProxy(
-  proxy: ResourceClass,
-  ResourceClass: ResourceClass,
-): ResourceClass {
+  proxy: typeof Resource,
+  ResourceClass: typeof Resource,
+): typeof Resource {
   // Keep the original name for debugging purposes
   Object.defineProperty(proxy, "name", { value: ResourceClass.name });
 

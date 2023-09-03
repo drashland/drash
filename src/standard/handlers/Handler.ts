@@ -25,7 +25,7 @@ import { IHandler } from "../../core/interfaces/IHandler.ts";
 /**
  * A class to be extended by handlers so they can share the same interface.
  */
-abstract class Handler<I, O> implements IHandler {
+class Handler<I, O> implements IHandler {
   /**
    * Handlers can be chained together using this property. See example.
    *
@@ -42,7 +42,9 @@ abstract class Handler<I, O> implements IHandler {
    */
   next_handler?: IHandler;
 
-  abstract handle(input: I): O;
+  handle(input: I): O {
+    return this.nextHandler(input);
+  }
 
   nextHandler<NextI = unknown, NextO = unknown>(input: NextI): NextO {
     if (!this.next_handler) {

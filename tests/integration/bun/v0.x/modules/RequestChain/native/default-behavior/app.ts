@@ -1,6 +1,6 @@
-import { HTTPError } from "../../../../../../../../.drashland/lib/esm/standard/errors/HTTPError";
-import { StatusCode } from "../../../../../../../../.drashland/lib/esm/standard/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../../.drashland/lib/esm/standard/http/response/StatusDescription";
+import { HTTPError } from "../../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
+import { StatusCode } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
 import * as Chain from "../../../../../../../../.drashland/lib/esm/modules/RequestChain/mod.native";
 
 export const protocol = "http";

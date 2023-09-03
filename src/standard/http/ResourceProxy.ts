@@ -20,53 +20,52 @@
  */
 
 // Imports > Core
-import { Promisable } from "../types/Promisable.ts";
 import { Resource } from "../../core/http/Resource.ts";
 
-abstract class ResourceProxy<Proxy, I, O> extends Resource {
+class ResourceProxy extends Resource {
   public paths: string[] = [];
-  protected original: Resource & Proxy;
+  protected original_instance: Resource;
 
-  constructor(original: Resource & Proxy) {
+  constructor(originalInstance: Resource) {
     super();
-    this.paths = original.paths;
-    this.original = original;
+    this.paths = originalInstance.paths;
+    this.original_instance = originalInstance;
   }
 
-  public CONNECT(request: I): Promisable<O> {
-    return this.original.CONNECT(request) as Promisable<O>;
+  public CONNECT(request: unknown): unknown {
+    return this.original_instance.CONNECT(request);
   }
 
-  public DELETE(request: I): Promisable<O> {
-    return this.original.DELETE(request) as Promisable<O>;
+  public DELETE(request: unknown): unknown {
+    return this.original_instance.DELETE(request);
   }
 
-  public GET(request: I): Promisable<O> {
-    return this.original.GET(request) as Promisable<O>;
+  public GET(request: unknown): unknown {
+    return this.original_instance.GET(request);
   }
 
-  public HEAD(request: I): Promisable<O> {
-    return this.original.HEAD(request) as Promisable<O>;
+  public HEAD(request: unknown): unknown {
+    return this.original_instance.HEAD(request);
   }
 
-  public OPTIONS(request: I): Promisable<O> {
-    return this.original.OPTIONS(request) as Promisable<O>;
+  public OPTIONS(request: unknown): unknown {
+    return this.original_instance.OPTIONS(request);
   }
 
-  public PATCH(request: I): Promisable<O> {
-    return this.original.PATCH(request) as Promisable<O>;
+  public PATCH(request: unknown): unknown {
+    return this.original_instance.PATCH(request);
   }
 
-  public POST(request: I): Promisable<O> {
-    return this.original.POST(request) as Promisable<O>;
+  public POST(request: unknown): unknown {
+    return this.original_instance.POST(request);
   }
 
-  public PUT(request: I): Promisable<O> {
-    return this.original.PUT(request) as Promisable<O>;
+  public PUT(request: unknown): unknown {
+    return this.original_instance.PUT(request);
   }
 
-  public TRACE(request: I): Promisable<O> {
-    return this.original.TRACE(request) as Promisable<O>;
+  public TRACE(request: unknown): unknown {
+    return this.original_instance.TRACE(request);
   }
 }
 

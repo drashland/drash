@@ -23,7 +23,6 @@
 import { IResource } from "../../core/Interfaces.ts";
 
 // Imports > Standard
-import { GroupConsoleLogger, Level } from "../log/GroupConsoleLogger.ts";
 import { Handler } from "../handlers/Handler.ts";
 
 type Input = {

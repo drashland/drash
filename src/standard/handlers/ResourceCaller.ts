@@ -24,9 +24,7 @@ import { IResource } from "../../core/Interfaces.ts";
 import { MethodOf } from "../../core/Types.ts";
 
 // Imports > Standard
-import { ConsoleLogger, Level } from "../log/ConsoleLogger.ts";
 import { Handler } from "./Handler.ts";
-import { Logger } from "../log/Logger.ts";
 
 type Input = { request: { method: string }; resource: IResource };
 

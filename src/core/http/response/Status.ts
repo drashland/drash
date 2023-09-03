@@ -22,7 +22,11 @@
 // Imports > Core
 import { StatusCode } from "./StatusCode.ts";
 import { StatusDescription } from "./StatusDescription.ts";
-import type { ResponseStatusCode, ResponseStatusDescription, ResponseStatusName } from "../../Types.ts";
+import type {
+  ResponseStatusCode,
+  ResponseStatusDescription,
+  ResponseStatusName,
+} from "../../Types.ts";
 
 class Status {
   /**
@@ -39,15 +43,15 @@ class Status {
     description: ResponseStatusDescription;
   } | undefined {
     const entries = Object.entries<number>(
-      StatusCode
+      StatusCode,
     ) as [ResponseStatusName, ResponseStatusCode][];
 
-    for (const [ key, value ] of entries) {
+    for (const [key, value] of entries) {
       if (value === statusCode) {
         return {
           code: statusCode,
           description: StatusDescription[key],
-        }
+        };
       }
     }
   }
