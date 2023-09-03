@@ -19,9 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HTTPError } from "../../../../../../../../src/standard/errors/HTTPError.ts";
+import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
-import { StatusDescription } from "../../../../../../../../src/standard/http/response/StatusDescription.ts";
+import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.polyfill.ts";
 
 export const protocol = "http";
@@ -82,7 +82,7 @@ class Users extends Chain.Resource {
   public paths = ["/users"];
 
   public GET(_request: Request) {
-    throw new HTTPError(StatusCode.MethodNotAllowed);
+    throw new Chain.HTTPError(Status.MethodNotAllowed);
   }
 }
 
@@ -96,9 +96,9 @@ export const handleRequest = (
 ): Promise<Response> => {
   return chain
     .handle(request)
-    .catch((error: Error | HTTPError) => {
+    .catch((error: Error | Chain.HTTPError) => {
       if (
-        (error.name === "HTTPError" || error instanceof HTTPError) &&
+        (error.name === "HTTPError" || error instanceof Chain.HTTPError) &&
         "status_code" in error &&
         "status_code_description" in error
       ) {

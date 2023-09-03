@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "types": [
-      "bun-types"
-    ]
+    "allowImportingTsExtensions": true
   },
   "include": [
     "../../src/**/*.ts",

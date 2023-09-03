@@ -19,11 +19,11 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HTTPError } from "../../../../../../../.drashland/lib/esm/standard/errors/HTTPError";
-import { StatusCode } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusDescription";
-import * as Chain from "../../../../../../../.drashland/lib/esm/modules/RequestChain/mod.native";
-import { Status } from "../../../../../../../.drashland/lib/esm/standard/http/ResponseStatus";
+import { HTTPError } from "../../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
+import { StatusCode } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
+import * as Chain from "../../../../../../../../.drashland/lib/esm/modules/RequestChain/mod.native";
+import { Status } from "../../../../../../../../.drashland/lib/esm/core/http/response/Status";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -54,7 +54,7 @@ class Home extends Chain.Resource {
   }
 
   public PATCH(_context: WebAPIContext) {
-    throw new HTTPError(ResponseStatus.MethodNotAllowed);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 

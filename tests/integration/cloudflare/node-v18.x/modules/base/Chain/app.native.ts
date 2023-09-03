@@ -30,7 +30,6 @@ import { StatusCode } from "../../../../../../../.drashland/lib/esm/standard/htt
 import { StatusDescription } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusDescription";
 
 import { URLPatternResourcesIndex } from "../../../../../../../.drashland/lib/esm/modules/RequestChain/native/URLPatternResourcesIndex";
-import { Status } from "../../../../../../../.drashland/lib/esm/standard/http/ResponseStatus";
 
 export const protocol = "http";
 export const hostname = "localhost";

@@ -30,7 +30,7 @@ import { StatusCode } from "../../../../../../../.drashland/lib/esm/standard/htt
 import { StatusDescription } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusDescription";
 
 import { URLPatternPolyfillResourcesIndex } from "../../../../../../../.drashland/lib/esm/modules/RequestChain/polyfill/URLPatternPolyfillResourcesIndex";
-import { Status } from "../../../../../../../.drashland/lib/esm/standard/http/ResponseStatus";
+import { Status } from "../../../../../../../.drashland/lib/esm/standard/http/Status";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -52,7 +52,7 @@ class Home extends AbstractResource {
   }
 
   public PATCH(_request: Request) {
-    throw new HTTPError(ResponseStatus);
+    throw new HTTPError(Status);
   }
 }
 

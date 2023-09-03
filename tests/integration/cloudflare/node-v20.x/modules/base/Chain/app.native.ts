@@ -19,24 +19,22 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AbstractResource } from "../../../../../../../.drashland/lib/esm/standard/http/AbstractResource";
+import { HTTPError } from "../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
+import { Resource } from "../../../../../../../.drashland/lib/esm/core/http/Resource";
+import { Status } from "../../../../../../../.drashland/lib/esm/core/http/response/Status";
+import { StatusCode } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
 import { Chain as BaseChain } from "../../../../../../../.drashland/lib/esm/modules/base/Chain";
-import { HTTPError } from "../../../../../../../.drashland/lib/esm/standard/errors/HTTPError";
 import { RequestParamsParser } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestParamsParser";
 import { RequestValidator } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestValidator";
 import { ResourceCaller } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceCaller";
 import { ResourceNotFoundHandler } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceNotFoundHandler";
-import { StatusCode } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusDescription";
-
-import { URLPatternResourcesIndex } from "../../../../../../../.drashland/lib/esm/modules/RequestChain/native/URLPatternResourcesIndex";
-import { Status } from "../../../../../../../.drashland/lib/esm/standard/http/ResponseStatus";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends AbstractResource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(_request: Request) {
@@ -52,7 +50,7 @@ class Home extends AbstractResource {
   }
 
   public PATCH(_request: Request) {
-    throw new HTTPError(ResponseStatus.MethodNotAllowed);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 

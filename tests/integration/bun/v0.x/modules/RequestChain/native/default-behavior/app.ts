@@ -20,10 +20,10 @@
  */
 
 import { HTTPError } from "../../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
+import { Status } from "../../../../../../../../.drashland/lib/esm/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
 import * as Chain from "../../../../../../../../.drashland/lib/esm/modules/RequestChain/mod.native";
-import { Status } from "../../../../../../../../src/core/http/response/Status";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -45,7 +45,7 @@ class Home extends Chain.Resource {
   }
 
   public PATCH(_request: Request) {
-    throw new HTTPError(ResponseStatus.MethodNotAllowed);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 
