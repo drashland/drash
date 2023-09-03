@@ -20,26 +20,14 @@
  */
 
 // Imports > Standard
-import { Logger } from "./Logger.ts";
 import { Level } from "./Level.ts";
-
-enum LevelDisplayName {
-  Off = "OFF",
-  Fatal = "FATAL",
-  Error = "ERROR",
-  Warn = "WARN ",
-  Info = "INFO ",
-  Debug = "DEBUG",
-  Trace = "TRACE",
-  All = "ALL",
-}
+import { Logger } from "./Logger.ts";
+import type { LogLevel } from "./LogLevel.ts";
 
 /**
  * Base logger for logger classes.
  */
 abstract class AbstractLogger implements Logger {
-  static Level = Level;
-
   /**
    * The name of this logger. Can be used when writing messsages.
    */
@@ -48,9 +36,9 @@ abstract class AbstractLogger implements Logger {
   /**
    * The highest level log message this logger can write.
    */
-  protected level: Level;
+  protected level: LogLevel;
 
-  constructor(name: string, level: Level) {
+  constructor(name: string, level: LogLevel) {
     this.name = name;
     this.level = level;
   }
@@ -59,42 +47,42 @@ abstract class AbstractLogger implements Logger {
     if (!this.canLog(Level.Debug)) {
       return;
     }
-    return this.write(LevelDisplayName.Debug, message, replacements);
+    return this.write("DEBUG", message, replacements);
   }
 
   public error(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Error)) {
       return;
     }
-    return this.write(LevelDisplayName.Error, message, replacements);
+    return this.write("ERROR", message, replacements);
   }
 
   public fatal(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Fatal)) {
       return;
     }
-    return this.write(LevelDisplayName.Fatal, message, replacements);
+    return this.write("FATAL", message, replacements);
   }
 
   public info(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Info)) {
       return;
     }
-    return this.write(LevelDisplayName.Info, message, replacements);
+    return this.write("INFO", message, replacements);
   }
 
   public trace(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Trace)) {
       return;
     }
-    return this.write(LevelDisplayName.Trace, message, replacements);
+    return this.write("TRACE", message, replacements);
   }
 
   public warn(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Warn)) {
       return;
     }
-    return this.write(LevelDisplayName.Warn, message, replacements);
+    return this.write("WARN", message, replacements);
   }
 
   /**
@@ -102,7 +90,7 @@ abstract class AbstractLogger implements Logger {
    * @param messageLevel The mesage level in question.
    * @returns True if yes, false if no.
    */
-  protected canLog(messageLevel: Level): boolean {
+  protected canLog(messageLevel: LogLevel): boolean {
     // return true;
     return this.level >= messageLevel;
   }

@@ -19,9 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import { Logger } from "./Logger.ts";
+import { Level } from "./Level.ts";
 
-export interface LogGroup extends Logger {
-  logger(name: string): LogGroup;
-}
+/**
+ * Log levels in ascending order.
+ */
+export type LogLevel = (typeof Level)[keyof typeof Level];

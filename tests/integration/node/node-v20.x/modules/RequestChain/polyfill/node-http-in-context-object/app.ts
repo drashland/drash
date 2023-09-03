@@ -32,7 +32,7 @@ export const port = 1447;
 
 type NodeContext = {
   url: string;
-  method: string;
+  method?: string;
   request: IncomingMessage;
   response: ServerResponse<IncomingMessage>;
 };
@@ -64,7 +64,6 @@ class Home extends Chain.Resource {
 
 const chain = Chain
   .builder()
-  // .logger(GroupConsoleLogger.create("Test", Level.Off)) TODO(crookse)
   .resources(Home)
   .build<NodeContext, NodeContext>();
 

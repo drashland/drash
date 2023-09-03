@@ -40,14 +40,8 @@ type ResourceClasses = typeof Resource | typeof Resource[];
  * Builder for building a chain of handlers.
  */
 class Builder extends AbstractChainBuilder {
-  // #logger?: Logger;
   #resources: ResourceClasses[] = [];
   #URLPatternClass?: URLPatternClass;
-
-  // logger(logger: Logger) {
-  //   this.#logger = logger;
-  //   return this;
-  // }
 
   /**
    * Add resources to this chain.

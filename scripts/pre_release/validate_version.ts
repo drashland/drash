@@ -1,6 +1,6 @@
-import { rootLogger } from "../../rootLogger";
+import { ConsoleLogger } from "../../src/standard/log/ConsoleLogger";
 
-const logger = rootLogger.logger("validate_version.ts");
+const logger = ConsoleLogger.create("validate_version.ts");
 
 const versionToPublish = Deno.args[0];
 

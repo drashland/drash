@@ -22,6 +22,7 @@
 // Imports > Standard
 import { AbstractLogger } from "./AbstractLogger.ts";
 import { Level } from "./Level.ts";
+import type { LogLevel } from "./LogLevel.ts";
 
 class ConsoleLogger extends AbstractLogger {
   /**
@@ -30,7 +31,7 @@ class ConsoleLogger extends AbstractLogger {
    * @param level The highest log message level this logger can write.
    * @returns
    */
-  static create(name: string, level: Level = Level.Off): ConsoleLogger {
+  static create(name: string, level: LogLevel = Level.Off): ConsoleLogger {
     return new ConsoleLogger(name, level);
   }
 

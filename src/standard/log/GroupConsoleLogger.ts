@@ -20,10 +20,11 @@
  */
 
 // Imports > Standard
+import { AbstractLogger } from "./AbstractLogger";
 import { Level } from "./Level.ts";
-import { AbstractLogGroup } from "./AbstractLogGroup.ts";
+import type { LogLevel } from "./LogLevel.ts";
 
-class GroupConsoleLogger extends AbstractLogGroup {
+class GroupConsoleLogger extends AbstractLogger {
   #loggers: Record<string, GroupConsoleLogger> = {};
 
   /**
@@ -32,7 +33,7 @@ class GroupConsoleLogger extends AbstractLogGroup {
    * @param level The highest log message level this logger can write.
    * @returns
    */
-  static create(name: string, level: Level = Level.Off): GroupConsoleLogger {
+  static create(name: string, level: LogLevel = Level.Off): GroupConsoleLogger {
     return new GroupConsoleLogger(name, level);
   }
 
