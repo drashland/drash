@@ -29,6 +29,7 @@ import { StatusDescription } from "../../../../../../../src/core/http/response/S
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import { ResourcesIndex } from "../../../../../../../src/standard/handlers/ResourcesIndex.ts";
 import { Resource } from "../../../../../../../src/core/http/Resource.ts";
+import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -50,7 +51,7 @@ class Home extends Resource {
   }
 
   public PATCH(_request: Request) {
-    throw new HTTPError(405);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 

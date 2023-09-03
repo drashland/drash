@@ -19,8 +19,8 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ResponseStatusCode } from "../Types.ts";
-import { Status } from "../http/response/Status.ts";
+import type { ResponseStatus } from "../types/ResponseStatus.ts";
+import type { ResponseStatusCode } from "../types/ResponseStatusCode.ts";
 
 /**
  * Base class for all HTTP errors in Drash. Use this class to throw uniform HTTP
@@ -65,17 +65,17 @@ class HTTPError extends Error {
   public readonly name = "HTTPError";
 
   /**
-   * @param statusCode A valid response status code.
+   * @param status A valid response status tuple.
    * @param message (optional) The error message. Defaults to the description
    * associated with the provided `statusCode`.
    */
-  constructor(statusCode: ResponseStatusCode, message?: string) {
+  constructor(status: ResponseStatus, message?: string) {
     super(message);
 
-    const status = Status.get(statusCode);
+    const [code, description] = status;
 
-    this.status_code = status?.code || 500;
-    this.status_code_description = status?.description || "";
+    this.status_code = code;
+    this.status_code_description = description;
 
     if (!this.message) {
       this.message = this.status_code_description;

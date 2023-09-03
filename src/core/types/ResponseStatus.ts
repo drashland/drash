@@ -19,8 +19,10 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export type * from "./types/MethodOf.ts";
-export type * from "./types/RequestMethod.ts";
-export type * from "./types/ResponseStatus.ts";
-export type * from "./types/ResponseStatusDescription.ts";
-export type * from "./types/ResponseStatusName.ts";
+import type { ResponseStatusCode } from "./ResponseStatusCode.ts";
+import type { ResponseStatusDescription } from "./ResponseStatusDescription.ts";
+
+export type ResponseStatus = readonly [
+  ResponseStatusCode,
+  ResponseStatusDescription,
+];

@@ -22,41 +22,260 @@
 // Imports > Core
 import { StatusCode } from "./StatusCode.ts";
 import { StatusDescription } from "./StatusDescription.ts";
-import type {
-  ResponseStatusCode,
-  ResponseStatusDescription,
+import type { ResponseStatusCode } from "../../types/ResponseStatusCode.ts";
+import type { ResponseStatusDescription } from "../../types/ResponseStatusDescription.ts";
+import type { ResponseStatusName } from "../../types/ResponseStatusName.ts";
+
+export const Status: Record<
   ResponseStatusName,
-} from "../../Types.ts";
-
-class Status {
-  /**
-   * Get a status code object.
-   * @param statusCode A valid status code. See HTTP Status link below for a
-   * list of valid status codes.
-   * @returns An object with a status code and description or `undefined` if
-   * the provided `statusCode` is invalid.
-   *
-   * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Status}
-   */
-  static get(statusCode: ResponseStatusCode): {
-    code: ResponseStatusCode;
-    description: ResponseStatusDescription;
-  } | undefined {
-    const entries = Object.entries<number>(
-      StatusCode,
-    ) as [ResponseStatusName, ResponseStatusCode][];
-
-    for (const [key, value] of entries) {
-      if (value === statusCode) {
-        return {
-          code: statusCode,
-          description: StatusDescription[key],
-        };
-      }
-    }
-  }
-}
-
-// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
-
-export { Status };
+  readonly [ResponseStatusCode, ResponseStatusDescription]
+> = {
+  Continue: [
+    StatusCode.Continue,
+    StatusDescription.Continue,
+  ],
+  SwitchingProtocols: [
+    StatusCode.SwitchingProtocols,
+    StatusDescription.SwitchingProtocols,
+  ],
+  Processing: [
+    StatusCode.Processing,
+    StatusDescription.Processing,
+  ],
+  EarlyHints: [
+    StatusCode.EarlyHints,
+    StatusDescription.EarlyHints,
+  ],
+  OK: [
+    StatusCode.OK,
+    StatusDescription.OK,
+  ],
+  Created: [
+    StatusCode.Created,
+    StatusDescription.Created,
+  ],
+  Accepted: [
+    StatusCode.Accepted,
+    StatusDescription.Accepted,
+  ],
+  NonAuthoritativeInformation: [
+    StatusCode.NonAuthoritativeInformation,
+    StatusDescription.NonAuthoritativeInformation,
+  ],
+  NoContent: [
+    StatusCode.NoContent,
+    StatusDescription.NoContent,
+  ],
+  ResetContent: [
+    StatusCode.ResetContent,
+    StatusDescription.ResetContent,
+  ],
+  PartialContent: [
+    StatusCode.PartialContent,
+    StatusDescription.PartialContent,
+  ],
+  MultiStatus: [
+    StatusCode.MultiStatus,
+    StatusDescription.MultiStatus,
+  ],
+  AlreadyReported: [
+    StatusCode.AlreadyReported,
+    StatusDescription.AlreadyReported,
+  ],
+  IMUsed: [
+    StatusCode.IMUsed,
+    StatusDescription.IMUsed,
+  ],
+  MultipleChoices: [
+    StatusCode.MultipleChoices,
+    StatusDescription.MultipleChoices,
+  ],
+  MovedPermanently: [
+    StatusCode.MovedPermanently,
+    StatusDescription.MovedPermanently,
+  ],
+  Found: [
+    StatusCode.Found,
+    StatusDescription.Found,
+  ],
+  SeeOther: [
+    StatusCode.SeeOther,
+    StatusDescription.SeeOther,
+  ],
+  NotModified: [
+    StatusCode.NotModified,
+    StatusDescription.NotModified,
+  ],
+  UseProxy: [
+    StatusCode.UseProxy,
+    StatusDescription.UseProxy,
+  ],
+  TemporaryRedirect: [
+    StatusCode.TemporaryRedirect,
+    StatusDescription.TemporaryRedirect,
+  ],
+  PermanentRedirect: [
+    StatusCode.PermanentRedirect,
+    StatusDescription.PermanentRedirect,
+  ],
+  BadRequest: [
+    StatusCode.BadRequest,
+    StatusDescription.BadRequest,
+  ],
+  Unauthorized: [
+    StatusCode.Unauthorized,
+    StatusDescription.Unauthorized,
+  ],
+  PaymentRequired: [
+    StatusCode.PaymentRequired,
+    StatusDescription.PaymentRequired,
+  ],
+  Forbidden: [
+    StatusCode.Forbidden,
+    StatusDescription.Forbidden,
+  ],
+  NotFound: [
+    StatusCode.NotFound,
+    StatusDescription.NotFound,
+  ],
+  MethodNotAllowed: [
+    StatusCode.MethodNotAllowed,
+    StatusDescription.MethodNotAllowed,
+  ],
+  NotAcceptable: [
+    StatusCode.NotAcceptable,
+    StatusDescription.NotAcceptable,
+  ],
+  ProxyAuthenticationRequired: [
+    StatusCode.ProxyAuthenticationRequired,
+    StatusDescription.ProxyAuthenticationRequired,
+  ],
+  RequestTimeout: [
+    StatusCode.RequestTimeout,
+    StatusDescription.RequestTimeout,
+  ],
+  Conflict: [
+    StatusCode.Conflict,
+    StatusDescription.Conflict,
+  ],
+  Gone: [
+    StatusCode.Gone,
+    StatusDescription.Gone,
+  ],
+  LengthRequired: [
+    StatusCode.LengthRequired,
+    StatusDescription.LengthRequired,
+  ],
+  PreconditionFailed: [
+    StatusCode.PreconditionFailed,
+    StatusDescription.PreconditionFailed,
+  ],
+  PayloadTooLarge: [
+    StatusCode.PayloadTooLarge,
+    StatusDescription.PayloadTooLarge,
+  ],
+  URITooLong: [
+    StatusCode.URITooLong,
+    StatusDescription.URITooLong,
+  ],
+  UnsupportedMediaType: [
+    StatusCode.UnsupportedMediaType,
+    StatusDescription.UnsupportedMediaType,
+  ],
+  RangeNotSatisfiable: [
+    StatusCode.RangeNotSatisfiable,
+    StatusDescription.RangeNotSatisfiable,
+  ],
+  ExpectationFailed: [
+    StatusCode.ExpectationFailed,
+    StatusDescription.ExpectationFailed,
+  ],
+  Imateapot: [
+    StatusCode.Imateapot,
+    StatusDescription.Imateapot,
+  ],
+  MisdirectedRequest: [
+    StatusCode.MisdirectedRequest,
+    StatusDescription.MisdirectedRequest,
+  ],
+  UnprocessableEntity: [
+    StatusCode.UnprocessableEntity,
+    StatusDescription.UnprocessableEntity,
+  ],
+  Locked: [
+    StatusCode.Locked,
+    StatusDescription.Locked,
+  ],
+  FailedDependency: [
+    StatusCode.FailedDependency,
+    StatusDescription.FailedDependency,
+  ],
+  TooEarly: [
+    StatusCode.TooEarly,
+    StatusDescription.TooEarly,
+  ],
+  UpgradeRequired: [
+    StatusCode.UpgradeRequired,
+    StatusDescription.UpgradeRequired,
+  ],
+  PreconditionRequired: [
+    StatusCode.PreconditionRequired,
+    StatusDescription.PreconditionRequired,
+  ],
+  TooManyRequests: [
+    StatusCode.TooManyRequests,
+    StatusDescription.TooManyRequests,
+  ],
+  RequestHeaderFieldsTooLarge: [
+    StatusCode.RequestHeaderFieldsTooLarge,
+    StatusDescription.RequestHeaderFieldsTooLarge,
+  ],
+  UnavailableForLegalReasons: [
+    StatusCode.UnavailableForLegalReasons,
+    StatusDescription.UnavailableForLegalReasons,
+  ],
+  InternalServerError: [
+    StatusCode.InternalServerError,
+    StatusDescription.InternalServerError,
+  ],
+  NotImplemented: [
+    StatusCode.NotImplemented,
+    StatusDescription.NotImplemented,
+  ],
+  BadGateway: [
+    StatusCode.BadGateway,
+    StatusDescription.BadGateway,
+  ],
+  ServiceUnavailable: [
+    StatusCode.ServiceUnavailable,
+    StatusDescription.ServiceUnavailable,
+  ],
+  GatewayTimeout: [
+    StatusCode.GatewayTimeout,
+    StatusDescription.GatewayTimeout,
+  ],
+  HTTPVersionNotSupported: [
+    StatusCode.HTTPVersionNotSupported,
+    StatusDescription.HTTPVersionNotSupported,
+  ],
+  VariantAlsoNegotiates: [
+    StatusCode.VariantAlsoNegotiates,
+    StatusDescription.VariantAlsoNegotiates,
+  ],
+  InsufficientStorage: [
+    StatusCode.InsufficientStorage,
+    StatusDescription.InsufficientStorage,
+  ],
+  LoopDetected: [
+    StatusCode.LoopDetected,
+    StatusDescription.LoopDetected,
+  ],
+  NotExtended: [
+    StatusCode.NotExtended,
+    StatusDescription.NotExtended,
+  ],
+  NetworkAuthenticationRequired: [
+    StatusCode.NetworkAuthenticationRequired,
+    StatusDescription.NetworkAuthenticationRequired,
+  ],
+} as const;

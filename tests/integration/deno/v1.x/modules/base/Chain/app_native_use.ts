@@ -30,6 +30,7 @@ import {
   ResourcesIndex,
   SearchResult,
 } from "../../../../../../../src/standard/handlers/ResourcesIndex.ts";
+import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -53,7 +54,7 @@ class Home extends Resource {
   }
 
   public PATCH(_ctx: Ctx) {
-    throw new HTTPError(405);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 
@@ -114,7 +115,7 @@ const chain = (new UseInsteadOfHandleBuilder())
   })
   .use(function CallResource(ctx: Ctx) {
     if (!ctx.resource) {
-      throw new HTTPError(500, "No resource");
+      throw new HTTPError(Status.InternalServerError, "No resource");
     }
     const method = ctx.request.method?.toUpperCase();
     // @ts-ignore We know this exists

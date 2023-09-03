@@ -22,6 +22,7 @@
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.polyfill.ts";
+import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -43,7 +44,7 @@ class Home extends Chain.Resource {
   }
 
   public PATCH(_request: Request) {
-    throw new Chain.HTTPError(405);
+    throw new Chain.HTTPError(Status.MethodNotAllowed);
   }
 }
 

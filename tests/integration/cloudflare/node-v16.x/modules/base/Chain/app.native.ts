@@ -28,8 +28,8 @@ import { ResourceCaller } from "../../../../../../../.drashland/lib/esm/standard
 import { ResourceNotFoundHandler } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceNotFoundHandler";
 import { StatusCode } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../.drashland/lib/esm/standard/http/response/StatusDescription";
-
 import { URLPatternResourcesIndex } from "../../../../../../../.drashland/lib/esm/modules/RequestChain/native/URLPatternResourcesIndex";
+import { Status } from "../../../../../../../.drashland/lib/esm/standard/http/ResponseStatus";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -51,7 +51,7 @@ class Home extends AbstractResource {
   }
 
   public PATCH(_request: Request) {
-    throw new HTTPError(405);
+    throw new HTTPError(ResponseStatus.MethodNotAllowed);
   }
 }
 

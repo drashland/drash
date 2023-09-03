@@ -22,7 +22,7 @@
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { Resource } from "../../core/http/Resource.ts";
-import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { Status } from "../../core/http/response/Status.ts";
 
 // Imports > Standard
 import { AbstractSearchIndex } from "../handlers/AbstractSearchIndex.ts";
@@ -156,14 +156,14 @@ class ResourcesIndex extends AbstractSearchIndex<
   #validateRequest(request: unknown): void {
     if (!request || typeof request !== "object") {
       throw new HTTPError(
-        StatusCode.InternalServerError,
+        Status.InternalServerError,
         "Request could not be read",
       );
     }
 
     if (!("url" in request) || typeof request.url !== "string") {
       throw new HTTPError(
-        StatusCode.InternalServerError,
+        Status.InternalServerError,
         "Request URL could not be read",
       );
     }

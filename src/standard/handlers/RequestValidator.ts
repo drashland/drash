@@ -21,7 +21,7 @@
 
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { Status } from "../../core/http/response/Status.ts";
 
 // Imports > Standard
 import { Handler } from "./Handler.ts";
@@ -50,28 +50,28 @@ class RequestValidator<
   #validate(request: unknown): void {
     if (!request) {
       throw new HTTPError(
-        StatusCode.UnprocessableEntity,
+        Status.UnprocessableEntity,
         `Request could not be read`,
       );
     }
 
     if (typeof request !== "object") {
       throw new HTTPError(
-        StatusCode.UnprocessableEntity,
+        Status.UnprocessableEntity,
         `Request could not be read`,
       );
     }
 
     if (!("method" in request) || typeof request.method !== "string") {
       throw new HTTPError(
-        StatusCode.UnprocessableEntity,
+        Status.UnprocessableEntity,
         `Request HTTP method could not be read`,
       );
     }
 
     if (!("url" in request) || typeof request.url !== "string") {
       throw new HTTPError(
-        StatusCode.UnprocessableEntity,
+        Status.UnprocessableEntity,
         `Request URL could not be read`,
       );
     }

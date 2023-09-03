@@ -21,7 +21,7 @@
 
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { Status } from "../../core/http/response/Status.ts";
 import type { MethodOf } from "../../core/types/MethodOf.ts";
 
 // Imports > Standard
@@ -43,7 +43,7 @@ class Middleware extends ResourceProxy {
 
     if (!("method" in (input as Record<string, unknown>))) {
       throw new HTTPError(
-        StatusCode.UnprocessableEntity,
+        Status.UnprocessableEntity,
         `Request method could not be read`,
       );
     }
@@ -53,7 +53,7 @@ class Middleware extends ResourceProxy {
 
     // @ts-ignore TODO(crookse) Typing
     if (typeof this[method] !== "function") {
-      throw new HTTPError(StatusCode.NotImplemented);
+      throw new HTTPError(Status.NotImplemented);
     }
 
     // @ts-ignore TODO(crookse) Typing

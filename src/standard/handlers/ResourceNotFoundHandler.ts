@@ -21,8 +21,8 @@
 
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { IResource } from "../../core/Interfaces.ts";
-import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { Status } from "../../core/http/response/Status.ts";
+import type { IResource } from "../../core/Interfaces.ts";
 
 // Imports > Standard
 import { Handler } from "./Handler.ts";
@@ -57,7 +57,7 @@ class ResourceNotFoundHandler<O = unknown> extends Handler<Input, Promise<O>> {
   #validate(input: unknown): void {
     if (!input || typeof input !== "object") {
       throw new HTTPError(
-        StatusCode.InternalServerError,
+        Status.InternalServerError,
         "Request could not be read",
       );
     }
@@ -67,7 +67,7 @@ class ResourceNotFoundHandler<O = unknown> extends Handler<Input, Promise<O>> {
       typeof input.request !== "object"
     ) {
       throw new HTTPError(
-        StatusCode.InternalServerError,
+        Status.InternalServerError,
         "Request could not be read",
       );
     }
@@ -75,11 +75,11 @@ class ResourceNotFoundHandler<O = unknown> extends Handler<Input, Promise<O>> {
     if (
       !("result" in input) || !input.result || typeof input.result !== "object"
     ) {
-      throw new HTTPError(StatusCode.NotFound);
+      throw new HTTPError(Status.NotFound);
     }
 
     if (!("resource" in input.result) || !input.result.resource) {
-      throw new HTTPError(StatusCode.NotFound);
+      throw new HTTPError(Status.NotFound);
     }
   }
 }
