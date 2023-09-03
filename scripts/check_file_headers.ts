@@ -65,7 +65,7 @@ async function check(entry) {
 }
 
 if (!filesRequiringHeaders.length) {
-  console.log(`\nDone checking files.`);
+  console.log(`\nDone checking files. All good.`);
   Deno.exit(0);
 }
 

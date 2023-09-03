@@ -21,7 +21,6 @@
     "build:esm": "yarn tsc --project tsconfig.build.esm.json",
     "build:intermediary:ci": "deno fmt && deno run -A ./scripts/lib_builder/build_esm_lib.ts --debug --workspace=./.drashland/lib/intermediary --copy-files=./src",
     "build:intermediary": "./scripts/lib_builder/build_intermediary",
-    "check": "yarn tsc --project tsconfig.check.json",
     "lint:tests:bun": "deno lint tests/integration/bun",
     "lint:tests:node": "deno lint tests/integration/node*/**",
     "release": "yarn publish --access public",
@@ -32,6 +31,7 @@
     "test:integration:deno:concurrency": "deno test tests/integration/deno/**/concurrency",
     "test:integration:node": "yarn jest --config jest.config.node.ts tests/integration/node",
     "test:unit": "deno test tests/unit",
+    "validate:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
     "yarn:clean": "rm -rf node_modules && rm yarn.lock || true",
     "yarn:publish": "deno task build:all:ci"
   }
