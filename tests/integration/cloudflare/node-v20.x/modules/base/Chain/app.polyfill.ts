@@ -21,6 +21,7 @@
 
 import { HTTPError } from "../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
 import { Resource } from "../../../../../../../.drashland/lib/esm/core/http/Resource";
+import { Status } from "../../../../../../../.drashland/lib/esm/core/http/response/Status";
 import { StatusCode } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
 import { Chain as BaseChain } from "../../../../../../../.drashland/lib/esm/modules/base/Chain";

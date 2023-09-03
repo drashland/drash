@@ -29,6 +29,7 @@ import { RequestParamsParser } from "../../../../../../../.drashland/lib/esm/sta
 import { RequestValidator } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestValidator";
 import { ResourceCaller } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceCaller";
 import { ResourceNotFoundHandler } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceNotFoundHandler";
+import { ResourcesIndex } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourcesIndex";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -57,7 +58,8 @@ class Home extends Resource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new URLPatternResourcesIndex(Home)) // Using native `URLPattern`
+  // @ts-ignore URLPattern exists
+  .handler(new ResourcesIndex(URLPattern, Home))
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())

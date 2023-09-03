@@ -25,12 +25,17 @@ import { RequestValidator } from "../../../../../../../.drashland/lib/esm/standa
 import { ResourceCaller } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceCaller";
 import { ResourceNotFoundHandler } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceNotFoundHandler";
 import { Status } from "../../../../../../../.drashland/lib/esm/core/http/response/Status";
+import { Resource } from "../../../../../../../.drashland/lib/esm/core/http/Resource";
+import { HTTPError } from "../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
+import { ResourcesIndex } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourcesIndex";
+import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends AbstractResource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(_request: Request) {
@@ -53,7 +58,8 @@ class Home extends AbstractResource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new URLPatternResourcesIndex(Home)) // Using native `URLPattern`
+  // @ts-ignore URLPattern exists while dev'ing
+  .handler(new ResourcesIndex(URLPattern, Home))
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())
