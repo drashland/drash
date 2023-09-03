@@ -10,8 +10,8 @@ on:
 
 jobs:
 
-  cloudflare-integration-tests:
-    name: Cloudflare Integration Tests
+  compat-cloudflare:
+    name: Compat - Cloudflare
 
     strategy:
       matrix:
@@ -38,8 +38,8 @@ jobs:
         run: |
           deno task build:all:ci && deno task test:integration:cloudflare
 
-  bun-integration-tests:
-    name: Bun Integration Tests
+ compat- bun:
+    name: Compat - Bun
 
     strategy:
       matrix:
@@ -72,8 +72,8 @@ jobs:
           deno task build:all:ci && ~/.bun/bin/bun test tests/integration/bun
 
 
-  deno-integration-tests:
-    name: Deno Integration Tests
+  compat-deno:
+    name: Compat - Deno
 
     strategy:
       matrix:
@@ -90,8 +90,8 @@ jobs:
         run: |
           deno task test:integration:deno
 
-  node-integration-tests:
-    name: Node Integration Tests
+  compat-node:
+    name: Compat - Node
 
     strategy:
       matrix:
