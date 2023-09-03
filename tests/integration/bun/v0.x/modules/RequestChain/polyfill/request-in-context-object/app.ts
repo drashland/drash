@@ -20,6 +20,7 @@
  */
 
 import { HTTPError } from "../../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
+import { Status } from "../../../../../../../../.drashland/lib/esm/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
 import * as Chain from "../../../../../../../../.drashland/lib/esm/modules/RequestChain/mod.polyfill";
@@ -53,7 +54,7 @@ class Home extends Chain.Resource {
   }
 
   public PATCH(_context: WebAPIContext) {
-    throw new HTTPError(ResponseStatus.MethodNotAllowed);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 
@@ -87,6 +88,8 @@ export const handleRequest = (
       );
     })
     .catch((error: Error | HTTPError) => {
+      console.log({ error })
+
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
         "status_code" in error &&
