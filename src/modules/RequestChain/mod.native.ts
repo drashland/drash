@@ -25,8 +25,8 @@ import { RequestChain } from "../base/RequestChain.ts";
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
 export { HTTPError } from "../../core/errors/HTTPError.ts";
-export { Middleware } from "../../standard/http/Middleware.ts";
 export { Resource } from "../../core/http/Resource.ts";
+export { Middleware } from "../../standard/http/Middleware.ts";
 
 /**
  * Get the builder that builds an HTTP request chain.

@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "allowImportingTsExtensions": true
-  },
-  "include": [
-    "../../src/**/*.ts",
-    "./**/*.ts"
-  ]
-}

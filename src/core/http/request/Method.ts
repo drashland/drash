@@ -24,7 +24,7 @@
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods} for more information on HTTP methods.
  */
-const Method = {
+export const Method = {
   CONNECT: "CONNECT",
   DELETE: "DELETE",
   GET: "GET",
@@ -35,5 +35,3 @@ const Method = {
   PUT: "PUT",
   TRACE: "TRACE",
 } as const;
-
-export type Method = (typeof Method)[keyof typeof Method];

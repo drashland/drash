@@ -50,8 +50,48 @@ class Home extends Chain.Resource {
   }
 }
 
-class Users extends Chain.Resource {
-  public paths = ["/users"];
+class UsersAll extends Chain.Resource {
+  public paths = ["/users-all"];
+
+  public GET(_request: Request) {
+    return new Response("Hello from GET.");
+  }
+
+  public POST(_request: Request) {
+    return new Response("Hello from POST.");
+  }
+
+  public DELETE(_request: Request) {
+    throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
+  }
+
+  public PATCH(_request: Request) {
+    throw new HTTPError(Status.MethodNotAllowed);
+  }
+}
+
+class UsersAllGet extends Chain.Resource {
+  public paths = ["/users-all-get"];
+
+  public GET(_request: Request) {
+    return new Response("Hello from GET.");
+  }
+
+  public POST(_request: Request) {
+    return new Response("Hello from POST.");
+  }
+
+  public DELETE(_request: Request) {
+    throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
+  }
+
+  public PATCH(_request: Request) {
+    throw new HTTPError(Status.MethodNotAllowed);
+  }
+}
+
+class UsersAllGetGetAgain extends Chain.Resource {
+  public paths = ["/users-all-get-get-again"];
 
   public GET(_request: Request) {
     return new Response("Hello from GET.");
@@ -71,48 +111,123 @@ class Users extends Chain.Resource {
 }
 
 class MiddlewareBlockedMethods extends Chain.Middleware {
-  public GET(_request: Request) {
+  // Intentionally not using `public` keyword here to mix and match usages
+  GET(_request: Request) {
     return new Response("Blocked");
   }
 
-  public POST(_request: Request) {
+  // Intentionally not using `public` keyword here to mix and match usages
+  POST(_request: Request) {
     return new Response("Blocked");
   }
 
-  public DELETE(_request: Request) {
+  // Intentionally not using `public` keyword here to mix and match usages
+  DELETE(_request: Request) {
     return new Response("Blocked", { status: 500 });
   }
 
-  public PATCH(_request: Request) {
+  // Intentionally not using `public` keyword here to mix and match usages
+  PATCH(_request: Request) {
     return new Response("Blocked", { status: 405 });
   }
 
-  public PUT(_request: Request) {
+  // Intentionally not using `public` keyword here to mix and match usages
+  PUT(_request: Request) {
     return new Response("Blocked", { status: 501 });
   }
 }
 
-class MiddlewareAll extends Chain.Middleware {
-  public ALL(_request: Request) {
+class MiddlewareALL extends Chain.Middleware {
+  public async ALL(request: Request) {
+    const ogResponse = await super.next<Response>(request);
+    return new Response(`MiddlewareALL touched;` + await ogResponse.text());
+  }
+
+  public POST(_request: Request) {
     return new Response("Alllllll that", { status: StatusCode.Created });
+  }
+
+  public DELETE(_request: Request) {
+    return new Response("Alllllll that", { status: StatusCode.Created });
+  }
+
+  public PATCH(_request: Request) {
+    return new Response("Alllllll that", { status: StatusCode.Created });
+  }
+
+  public PUT(_request: Request) {
+    return new Response("Alllllll that", { status: StatusCode.Created });
+  }
+}
+
+class MiddlewareGET extends Chain.Middleware {
+  public async GET(request: Request) {
+    const ogResponse = await super.next<Response>(request);
+    const body = await ogResponse.text();
+    return new Response(`MiddlewareGET touched;` + body);
+  }
+}
+
+class MiddlewareGETAgain extends Chain.Middleware {
+  public async GET(request: Request) {
+    const ogResponse = await super.next<Response>(request);
+    const body = await ogResponse.text();
+    return new Response(`MiddlewareGETAgain touched;` + body);
+  }
+}
+
+class MiddlewareGETAgain2 extends Chain.Middleware {
+  public async GET(request: Request) {
+    const ogResponse = await super.next<Response>(request);
+    const body = await ogResponse.text();
+    return new Response(`MiddlewareGETAgain2 touched;` + body);
+  }
+}
+
+class MiddlewareGETAgain3 extends Chain.Middleware {
+  public GET(_request: Request) {
+    return new Response(`MiddlewareGETAgain3 touched, but blocking access to the resource`);
   }
 }
 
 const groupWithBlockedMethods = ResourceGroup
   .builder()
   .resources(Home)
-  .withPathPrefixes("/api/v1")
-  .withMiddleware(
-    MiddlewareBlockedMethods,
+  .pathPrefixes("/api/v1")
+  .middleware(
+    new MiddlewareBlockedMethods(),
   )
   .build();
 
 const groupWithAll = ResourceGroup
   .builder()
-  .resources(Users)
-  .withPathPrefixes("/api/v2")
-  .withMiddleware(
-    MiddlewareAll,
+  .resources(UsersAll)
+  .pathPrefixes("/api/v2")
+  .middleware(
+    new MiddlewareALL(),
+  )
+  .build();
+
+const groupWithAllGet = ResourceGroup
+  .builder()
+  .resources(UsersAllGet)
+  .pathPrefixes("/api/v2")
+  .middleware(
+    new MiddlewareALL(),
+    new MiddlewareGET(),
+  )
+  .build();
+
+const groupWithAllGetGetAgain = ResourceGroup
+  .builder()
+  .resources(UsersAllGetGetAgain)
+  .pathPrefixes("/api/v2")
+  .middleware(
+    new MiddlewareALL(),
+    new MiddlewareGET(),
+    new MiddlewareGETAgain(),
+    new MiddlewareGETAgain2(),
+    new MiddlewareGETAgain3(),
   )
   .build();
 
@@ -121,6 +236,8 @@ const chain = Chain
   .resources(
     groupWithBlockedMethods,
     groupWithAll,
+    groupWithAllGet,
+    groupWithAllGetGetAgain,
   )
   .build<Request, Response>();
 

@@ -22,12 +22,11 @@
 // Imports > Core
 import { Resource } from "../../core/http/Resource.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
-import type { IResource } from "../../core/interfaces/IResource.ts";
+
+// Imports > Standard
 import { Middleware } from "./Middleware.ts";
 
-type ResourceCtor = typeof Resource;
-
-type ResourceClasses = (ResourceCtor | ResourceCtor[])[];
+type ResourceClasses = (typeof Resource | typeof Resource[])[];
 
 /**
  * Builder for building a resource group. Resources in a resource group can
@@ -39,8 +38,8 @@ type ResourceClasses = (ResourceCtor | ResourceCtor[])[];
 class Builder implements IBuilder {
   #path_prefixes: string[] = [];
   #middleware: typeof Middleware[] = [];
-  #resources: ResourceCtor[] = [];
-  #group: ResourceCtor[] = [];
+  #resources: typeof Resource[] = [];
+  #group: typeof Resource[] = [];
 
   /**
    * Set the resources for this group so they can share functionality.
@@ -63,11 +62,11 @@ class Builder implements IBuilder {
    *      Coffees,
    *      Teas
    *    )
-   *   .withPathPrefixes( // ... the path prefixes here ...
+   *   .pathPrefixes( // ... the path prefixes here ...
    *      "/api/v1",
    *      "/v1"
    *    )
-   *   .withMiddleware(   // ... and use the middleware here.
+   *   .middleware(   // ... and use the middleware here.
    *      MiddlewareA,
    *      MiddlewareB,
    *    )
@@ -104,12 +103,12 @@ class Builder implements IBuilder {
    *
    * const group = ResourceGroup
    *   .builder()
-   *   .withPathPrefixes("/api/v1")
+   *   .pathPrefixes("/api/v1")
    *   .resources(Coffees) // Coffees.paths becomes ["/api/v1/coffees"]
    *   .build();
    * ```
    */
-  withPathPrefixes(...pathPrefixes: string[]): this {
+  pathPrefixes(...pathPrefixes: string[]): this {
     this.#path_prefixes = pathPrefixes;
     return this;
   }
@@ -128,7 +127,7 @@ class Builder implements IBuilder {
    *
    * const group = ResourceGroup
    *   .builder()
-   *   .withMiddleware( // This middleware ...
+   *   .middleware( // This middleware ...
    *      MiddlewareA,
    *      MiddlewareB
    *   )
@@ -139,7 +138,7 @@ class Builder implements IBuilder {
    *   .build();
    * ```
    */
-  withMiddleware(
+  middleware(
     // TODO(crookse) Fix typing. For now, omit `paths` just to make the compiler
     // happy.
     ...middleware: typeof Middleware[]
@@ -153,51 +152,66 @@ class Builder implements IBuilder {
    * @returns An array of all the resources passed to the `this.resources()`
    * call with shared functionality (path prefixes, middleware, etc.).
    */
-  build(): ResourceCtor[] {
-    this.#group = createGroupWithMiddleware(
+  build(): typeof Resource[] {
+    let ret = [];
+
+    ret = createGroupWithMiddleware(
       this.#middleware,
-      this.#getTarget(),
+      this.#resources,
     );
 
-    this.#group = createGroupWithPrefixes(
+    ret = createGroupWithPrefixes(
       this.#path_prefixes,
-      this.#getTarget(),
+      ret,
     );
 
-    return this.#group;
-  }
-
-  /**
-   * Get the target which is either the resources or the group. If the group has
-   * not been made yet, then we start with the resources as the target to start
-   * building the group. If the  group has beem made, then we continue to build
-   * off the group.
-   * @returns The resources or the group.
-   */
-  #getTarget(): ResourceCtor[] {
-    return this.#group.length === 0 ? this.#resources : this.#group;
+    return ret;
   }
 }
 
 function createGroupWithPrefixes(
   prefixes: string[],
-  resourceClasses: ResourceCtor[],
-) {
+  resourceClasses: typeof Resource[],
+): typeof Resource[] {
   if (!prefixes || !prefixes.length) {
     return resourceClasses;
   }
 
-  return resourceClasses.map(
-    (ResourceClass: ResourceCtor) => {
-      return createResourceWithPrefixes(prefixes, ResourceClass);
-    },
-  );
+  return resourceClasses.map((ResourceClass: typeof Resource) => {
+
+    // Here we are creating the proxy that will be used by the client. The
+    // only purpose of this proxy is to be instantiable so it can be
+    // instantiated by the client and have the paths set using the prefixes.
+    return class PrefixedResourceProxy extends ResourceClass {
+      constructor() {
+        super();
+        this.paths = this.#getPathsWithPrefixes();
+      }
+
+      #getPathsWithPrefixes(): string[] {
+        if (!prefixes || prefixes.length <= 0) {
+          return this.paths;
+        }
+
+        const paths: string[] = [];
+
+        for (const prefix of prefixes) {
+          for (const path of this.paths) {
+            paths.push(prefix + path);
+          }
+        }
+
+        return paths;
+      }
+    };
+  });
 }
 
 function createGroupWithMiddleware(
   middlewareClasses: typeof Middleware[],
-  resourceClasses: ResourceCtor[],
-): ResourceCtor[] {
+  resourceClasses: typeof Resource[],
+): typeof Resource[] {
+
   if (arrayEmpty(middlewareClasses)) {
     return resourceClasses;
   }
@@ -206,137 +220,116 @@ function createGroupWithMiddleware(
     return resourceClasses;
   }
 
-  // If there's only one service, then we just need to wrap the service around
-  // each resource class
-  if (middlewareClasses.length === 1) {
-    return resourceClasses.map((ResourceClass) => {
-      const resource = new ResourceClass();
-      const ServiceClass = middlewareClasses[0];
-      const service = new ServiceClass(resource);
-      return resourceProxy(service, ResourceClass);
-    });
-  }
+  const wrapped = resourceClasses.map((ResourceClass) => {
+    const middlewareCopies = middlewareClasses.slice();
+    let first = new middlewareCopies[0]();
+    let last;
 
-  // TODO(crookse) ngl... i won't be able to read this later even though i wrote
-  // it. just trying to get the code working to make it testable for later
-  // cleaning and refactoring.
-  const wrapped = resourceClasses.map((resourceClass) => {
-    const firstService = middlewareClasses.reduceRight((
-      previous:
-        | IResource
-        | typeof Middleware,
-      current:
-        | IResource
-        | typeof Middleware,
-      index: number,
-    ) => {
-      if (typeof current !== "function") {
-        return previous;
+    // If more than one middleware instance exists, then we link them together
+    // from top top bottom. For example, if the below was given ...
+    //
+    // [
+    //   MiddlewareA,
+    //   MiddlewareB,
+    //   MiddlewareC,
+    //   MiddlewareZ,
+    // ]
+    //
+    // ..., then they would be linked together like ...
+    //
+    // MiddlewareEntryPoint {
+    //   original: MiddlewareALL {
+    //     original: MiddlewareGET {
+    //       original: MiddlewareGETAgain {
+    //         original: MiddlewareGETAgain3 { original: TheOriginalResource }
+    //       }
+    //     }
+    //   }
+    // }
+    //
+    if (middlewareCopies.length > 1) {
+
+      for (const MiddlewareClass of middlewareCopies) {
+        const instance = new MiddlewareClass();
+
+        if (!last) {
+          last = instance;
+          continue;
+        }
+
+        last.setOriginal(instance);
+      }
+    }
+
+    if (!last) {
+      last = first;
+    }
+
+    last.setOriginal(new ResourceClass());
+
+    // // Here we are setting the instantiated resource on the last middleware.
+    // // Only the last middleware has direct access to the resource.
+    // if (middlewareCopies.length > 1) {
+    //   lastMiddleware = middlewareCopies[middlewareCopies.length - 1];
+    // } else {
+    //   lastMiddleware = first;
+    // }
+
+    const resourceClassInstance = new ResourceClass();
+
+    // Here we are creating the proxy that will be used by the client. The
+    // only purpose of this proxy is to be instantiable just like a resource and
+    // is an extension of the resource it is proxying.
+
+    // We extend the original resource class so the paths are kept intact
+    const p = class MiddlewareEntryPoint extends ResourceClass {
+
+      public CONNECT(input: unknown): unknown {
+        return first.CONNECT(input);
       }
 
-      if ((index + 1) === middlewareClasses.length) {
-        const resourceInstance = new resourceClass();
-        const lastService = new current(resourceInstance);
-        return lastService;
+      public DELETE(input: unknown): unknown {
+        return first.DELETE(input);
       }
 
-      return new current(previous as IResource);
-    }, middlewareClasses[middlewareClasses.length - 1]);
+      public GET(input: unknown): unknown {
+        return first.GET(input);
+      }
 
-    return resourceProxy(
-      firstService as Middleware,
-      resourceClass,
-    );
+      public HEAD(input: unknown): unknown {
+        return first.HEAD(input);
+      }
+
+      public OPTIONS(input: unknown): unknown {
+        return first.OPTIONS(input);
+      }
+
+      public PATCH(input: unknown): unknown {
+        return first.PATCH(input);
+      }
+
+      public POST(input: unknown): unknown {
+        return first.POST(input);
+      }
+
+      public PUT(input: unknown): unknown {
+        return first.PUT(input);
+      }
+
+      public TRACE(input: unknown): unknown {
+        return first.TRACE(input);
+      }
+    }
+
+    Object.defineProperty(p, "name", {
+      // @ts-ignore
+      value: resourceClassInstance.constructor.name + "MiddlewareProxy",
+    })
+
+    return p;
   });
 
   return wrapped;
-}
-
-function resourceProxy(
-  service: Middleware,
-  ResourceClass: typeof Resource,
-): typeof Resource {
-  const p = class ResourceWithService extends ResourceClass {
-    CONNECT(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    DELETE(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    GET(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    HEAD(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    OPTIONS(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    PATCH(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    POST(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    PUT(request: unknown): unknown {
-      return service.ALL(request);
-    }
-
-    TRACE(request: unknown): unknown {
-      return service.ALL(request);
-    }
-  };
-
-  return createProxy(p, ResourceClass);
-}
-
-function createResourceWithPrefixes(
-  prefixes: string[],
-  ResourceClass: typeof Resource,
-): typeof Resource {
-  const p = class ResourceWithPrefix extends ResourceClass {
-    constructor() {
-      super();
-      this.paths = this.#getPathsWithPrefixes();
-    }
-
-    #getPathsWithPrefixes(): string[] {
-      if (!prefixes || prefixes.length <= 0) {
-        return this.paths;
-      }
-
-      const paths: string[] = [];
-
-      for (const prefix of prefixes) {
-        for (const path of this.paths) {
-          paths.push(prefix + path);
-        }
-      }
-
-      return paths;
-    }
-  };
-
-  return createProxy(p, ResourceClass);
-}
-
-function createProxy(
-  proxy: typeof Resource,
-  ResourceClass: typeof Resource,
-): typeof Resource {
-  // Keep the original name for debugging purposes
-  Object.defineProperty(proxy, "name", { value: ResourceClass.name });
-
-  // Add some other stuff that I cannot think of right now
-
-  return proxy;
 }
 
 class ResourceGroup {
