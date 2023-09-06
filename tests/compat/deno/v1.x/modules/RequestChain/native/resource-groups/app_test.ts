@@ -26,62 +26,92 @@ import { handleRequest, hostname, port, protocol } from "./app.ts";
 const url = `${protocol}://${hostname}:${port}`;
 
 Deno.test("Native - Using Request/Response", async (t) => {
-  await t.step("Home / paths = /home -> /api/v1/home (blocked)", async (t) => {
-    for (const testCase of testCasesWithMiddlewareMethods()) {
-      const { method, expected, path } = testCase;
+  for (const testCase of testCasesWithMiddlewareMethods()) {
+    const { method, expected, path } = testCase;
 
-      await t.step(`${method} returns ${expected.status}`, async () => {
-        const req = new Request(url + path, {
-          method,
-        });
-
-        const response = await handleRequest(req);
-        const body = await response?.text();
-
-        asserts.assertEquals(response?.status, expected.status);
-        asserts.assertEquals(body, expected.body);
+    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
+      const req = new Request(url + path, {
+        method,
       });
-    }
-  });
 
-  await t.step(
-    "Users / paths = /users -> /api/v2/users (blocked with ALL)",
-    async (t) => {
-      for (const testCase of testCasesWithMiddlewareAll()) {
-        const { method, expected, path } = testCase;
+      const response = await handleRequest(req);
+      const body = await response?.text();
 
-        await t.step(`${method} returns ${expected.status}`, async () => {
-          const req = new Request(url + path, {
-            method,
-          });
+      asserts.assertEquals(body, expected.body);
+      asserts.assertEquals(response?.status, expected.status);
+    });
+  }
 
-          const response = await handleRequest(req);
-          const body = await response?.text();
 
-          asserts.assertEquals(response?.status, expected.status);
-          asserts.assertEquals(body, expected.body);
-        });
-      }
-    },
-  );
+  for (const testCase of testCasesWithMiddlewareAll()) {
+    const { method, expected } = testCase;
 
-  await t.step("Non-existent endpoints", async (t) => {
-    for (const testCase of testCasesNotFound()) {
-      const { method, expected } = testCase;
+    const path = "/api/v2/users-all";
 
-      await t.step(`${method} returns ${expected.status}`, async () => {
-        const req = new Request(url + "/home", {
-          method,
-        });
-
-        const response = await handleRequest(req);
-        const body = await response?.text();
-
-        asserts.assertEquals(response?.status, expected.status);
-        asserts.assertEquals(body, expected.body);
+    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
+      const req = new Request(url + path, {
+        method,
       });
-    }
-  });
+
+      const response = await handleRequest(req);
+      const body = await response?.text();
+
+      asserts.assertEquals(body, expected.body);
+      asserts.assertEquals(response?.status, expected.status);
+    });
+  }
+
+  for (const testCase of testCasesWithMiddlewareAllGet()) {
+    const { method, expected } = testCase;
+
+    const path = "/api/v2/users-all-get";
+
+    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
+      const req = new Request(url + path, {
+        method,
+      });
+
+      const response = await handleRequest(req);
+      const body = await response?.text();
+
+      asserts.assertEquals(body, expected.body);
+      asserts.assertEquals(response?.status, expected.status);
+    });
+  }
+
+  for (const testCase of testCasesWithMiddlewareAllGetGetAgain()) {
+    const { method, expected } = testCase;
+
+    const path = "/api/v2/users-all-get-get-again";
+
+    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
+      const req = new Request(url + path, {
+        method,
+      });
+
+      const response = await handleRequest(req);
+      const body = await response?.text();
+
+      asserts.assertEquals(body, expected.body);
+      asserts.assertEquals(response?.status, expected.status);
+    });
+  }
+
+  for (const testCase of testCasesNotFound()) {
+    const { method, expected } = testCase;
+
+    await t.step(`${method} returns ${expected.status}`, async () => {
+      const req = new Request(url + "/home", {
+        method,
+      });
+
+      const response = await handleRequest(req);
+      const body = await response?.text();
+
+      asserts.assertEquals(response?.status, expected.status);
+      asserts.assertEquals(body, expected.body);
+    });
+  }
 });
 
 function testCasesWithMiddlewareMethods() {
@@ -133,15 +163,13 @@ function testCasesWithMiddlewareAll() {
   return [
     {
       method: "GET",
-      path: "/api/v2/users",
       expected: {
-        status: StatusCode.Created,
-        body: "Alllllll that",
+        status: StatusCode.OK,
+        body: "MiddlewareALL touched;Hello from GET.",
       },
     },
     {
       method: "POST",
-      path: "/api/v2/users",
       expected: {
         status: StatusCode.Created,
         body: "Alllllll that",
@@ -149,7 +177,6 @@ function testCasesWithMiddlewareAll() {
     },
     {
       method: "PUT",
-      path: "/api/v2/users",
       expected: {
         status: StatusCode.Created,
         body: "Alllllll that",
@@ -157,7 +184,6 @@ function testCasesWithMiddlewareAll() {
     },
     {
       method: "DELETE",
-      path: "/api/v2/users",
       expected: {
         status: StatusCode.Created,
         body: "Alllllll that",
@@ -165,7 +191,86 @@ function testCasesWithMiddlewareAll() {
     },
     {
       method: "PATCH",
-      path: "/api/v2/users",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+  ];
+}
+
+function testCasesWithMiddlewareAllGetGetAgain() {
+  return [
+    {
+      method: "GET",
+      expected: {
+        status: StatusCode.OK,
+        body: "MiddlewareALL touched;MiddlewareGET touched;MiddlewareGETAgain touched;MiddlewareGETAgain2 touched;MiddlewareGETAgain3 touched, but blocking access to the resource",
+      },
+    },
+    {
+      method: "POST",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+    {
+      method: "PUT",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+    {
+      method: "DELETE",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+    {
+      method: "PATCH",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+  ];
+}
+
+function testCasesWithMiddlewareAllGet() {
+  return [
+    {
+      method: "GET",
+      expected: {
+        status: StatusCode.OK,
+        body: "MiddlewareALL touched;MiddlewareGET touched;Hello from GET.",
+      },
+    },
+    {
+      method: "POST",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+    {
+      method: "PUT",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+    {
+      method: "DELETE",
+      expected: {
+        status: StatusCode.Created,
+        body: "Alllllll that",
+      },
+    },
+    {
+      method: "PATCH",
       expected: {
         status: StatusCode.Created,
         body: "Alllllll that",

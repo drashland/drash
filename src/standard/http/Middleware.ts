@@ -19,45 +19,129 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { IRequestMethods, IResource } from "../../core/Interfaces.ts";
+import { MethodOf } from "../../core/Types.ts";
+import { Resource } from "../../core/http/Resource.ts";
+
 // Imports > Core
-import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { Status } from "../../core/http/response/Status.ts";
-import type { MethodOf } from "../../core/types/MethodOf.ts";
 
 // Imports > Standard
-import { ResourceProxy } from "./ResourceProxy.ts";
 
-class Middleware extends ResourceProxy {
-  /**
-   * Run this middlware on all requests.
-   * @param request
-   * @returns The result of the call or the resource's HTTP method.
-   */
-  ALL(input: unknown): unknown {
+class Middleware implements IRequestMethods {
+  protected original?: IRequestMethods;
+
+  public setOriginal(original: IRequestMethods) {
+    this.original = original;
+  }
+
+  public next<ReturnValue>(input: unknown): ReturnValue {
     if (
-      this.original_instance && ("ALL" in this.original_instance) &&
-      (typeof this.original_instance.ALL === "function")
+      !input
+      || typeof input !== "object"
+      || !("method" in input)
+      || typeof input.method !== "string"
+      || typeof this.original !== "object"
+      || !(input.method in this.original)
+      || !this.original
+      || typeof this.original[input.method as MethodOf<IResource>] !== "function"
     ) {
-      return this.original_instance.ALL(input);
+      throw new Error("Middleware could not process request further");
     }
 
-    if (!("method" in (input as Record<string, unknown>))) {
-      throw new HTTPError(
-        Status.UnprocessableEntity,
-        `Request method could not be read`,
-      );
+    const method = input.method as MethodOf<IRequestMethods>
+
+    return this.original[method](input) as ReturnValue;
+  }
+
+  /**
+   * Use this method to intercept the request before it is passed to the
+   * resource's HTTP method. With this method, you can short-circuit the
+   * request, modify the request, send the request to the resource based on
+   * conditions, etc.
+   *
+   * To send the request to the resource (or next middleware), call
+   * `this.next<ReturnType>(input)`. See example for more details.
+   *
+   * @param input The input to help produce an output.
+   * @returns An output based on the input.
+   *
+   * @example
+   * ```typescript
+   * class MyMiddleware extends Middleware {
+   *   public ALL(request) {
+   *
+   *     // If the `x-hello` header is valid ...
+   *     if (request.headers.get("x-hello") === "world") {
+   *
+   *       // ..., then allow the request further down the request
+   *       // chain. Also, use `<Resonse>` to specify that the value
+   *       // returned from `this.next()` is a `Response`.
+   *       return this.next<Response>(request);
+   *     }
+   *
+   *     // Otherwise, short-circuit the request by throwing a 401
+   *     // error to the caller
+   *     throw new HTTPError(Status.Unauthorized);
+   *   }
+   * }
+   * ```
+   */
+  public ALL(input: unknown) {
+    return this.next<unknown>(input);
+  }
+
+  public CONNECT(input: unknown): unknown {
+    return this.#delegate(input, "CONNECT");
+  }
+
+  public DELETE(input: unknown): unknown {
+    return this.#delegate(input, "DELETE");
+  }
+
+  public GET(input: unknown): unknown {
+    return this.#delegate(input, "GET");
+  }
+
+  public HEAD(input: unknown): unknown {
+    return this.#delegate(input, "HEAD");
+  }
+
+  public OPTIONS(input: unknown): unknown {
+    return this.#delegate(input, "OPTIONS");
+  }
+
+  public PATCH(input: unknown): unknown {
+    return this.#delegate(input, "PATCH");
+  }
+
+  public POST(input: unknown): unknown {
+    return this.#delegate(input, "POST");
+  }
+
+  public PUT(input: unknown): unknown {
+    return this.#delegate(input, "PUT");
+  }
+
+  public TRACE(input: unknown): unknown {
+    return this.#delegate(input, "TRACE");
+  }
+
+  #delegate(input: unknown, method: MethodOf<Resource>): unknown {
+
+    if (!this.original) {
+      throw new Error("Failed to create middleware. No original.");
     }
 
-    // @ts-ignore TODO(crookse) Typing
-    const method = (input as { method: MethodOf<typeof this> }).method;
 
-    // @ts-ignore TODO(crookse) Typing
-    if (typeof this[method] !== "function") {
-      throw new HTTPError(Status.NotImplemented);
+    if (
+      "ALL" in this
+      && this.ALL
+      && typeof this.ALL === "function"
+    ) {
+      return this.ALL(input);
     }
 
-    // @ts-ignore TODO(crookse) Typing
-    return this[method](input);
+    return this.original![method as MethodOf<typeof this.original>](input);
   }
 }
 
