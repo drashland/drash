@@ -29,36 +29,41 @@ Deno.test("Native - Using Request/Response", async (t) => {
   for (const testCase of testCasesWithMiddlewareMethods()) {
     const { method, expected, path } = testCase;
 
-    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
-      const req = new Request(url + path, {
-        method,
-      });
+    await t.step(
+      `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
+      async (t) => {
+        const req = new Request(url + path, {
+          method,
+        });
 
-      const response = await handleRequest(req);
-      const body = await response?.text();
+        const response = await handleRequest(req);
+        const body = await response?.text();
 
-      asserts.assertEquals(body, expected.body);
-      asserts.assertEquals(response?.status, expected.status);
-    });
+        asserts.assertEquals(body, expected.body);
+        asserts.assertEquals(response?.status, expected.status);
+      },
+    );
   }
-
 
   for (const testCase of testCasesWithMiddlewareAll()) {
     const { method, expected } = testCase;
 
     const path = "/api/v2/users-all";
 
-    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
-      const req = new Request(url + path, {
-        method,
-      });
+    await t.step(
+      `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
+      async (t) => {
+        const req = new Request(url + path, {
+          method,
+        });
 
-      const response = await handleRequest(req);
-      const body = await response?.text();
+        const response = await handleRequest(req);
+        const body = await response?.text();
 
-      asserts.assertEquals(body, expected.body);
-      asserts.assertEquals(response?.status, expected.status);
-    });
+        asserts.assertEquals(body, expected.body);
+        asserts.assertEquals(response?.status, expected.status);
+      },
+    );
   }
 
   for (const testCase of testCasesWithMiddlewareAllGet()) {
@@ -66,17 +71,20 @@ Deno.test("Native - Using Request/Response", async (t) => {
 
     const path = "/api/v2/users-all-get";
 
-    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
-      const req = new Request(url + path, {
-        method,
-      });
+    await t.step(
+      `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
+      async (t) => {
+        const req = new Request(url + path, {
+          method,
+        });
 
-      const response = await handleRequest(req);
-      const body = await response?.text();
+        const response = await handleRequest(req);
+        const body = await response?.text();
 
-      asserts.assertEquals(body, expected.body);
-      asserts.assertEquals(response?.status, expected.status);
-    });
+        asserts.assertEquals(body, expected.body);
+        asserts.assertEquals(response?.status, expected.status);
+      },
+    );
   }
 
   for (const testCase of testCasesWithMiddlewareAllGetGetAgain()) {
@@ -84,17 +92,20 @@ Deno.test("Native - Using Request/Response", async (t) => {
 
     const path = "/api/v2/users-all-get-get-again";
 
-    await t.step(`${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`, async (t) => {
-      const req = new Request(url + path, {
-        method,
-      });
+    await t.step(
+      `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
+      async (t) => {
+        const req = new Request(url + path, {
+          method,
+        });
 
-      const response = await handleRequest(req);
-      const body = await response?.text();
+        const response = await handleRequest(req);
+        const body = await response?.text();
 
-      asserts.assertEquals(body, expected.body);
-      asserts.assertEquals(response?.status, expected.status);
-    });
+        asserts.assertEquals(body, expected.body);
+        asserts.assertEquals(response?.status, expected.status);
+      },
+    );
   }
 
   for (const testCase of testCasesNotFound()) {
@@ -205,7 +216,8 @@ function testCasesWithMiddlewareAllGetGetAgain() {
       method: "GET",
       expected: {
         status: StatusCode.OK,
-        body: "MiddlewareALL touched;MiddlewareGET touched;MiddlewareGETAgain touched;MiddlewareGETAgain2 touched;MiddlewareGETAgain3 touched, but blocking access to the resource",
+        body:
+          "MiddlewareALL touched;MiddlewareGET touched;MiddlewareGETAgain touched;MiddlewareGETAgain2 touched;MiddlewareGETAgain3 touched, but blocking access to the resource",
       },
     },
     {

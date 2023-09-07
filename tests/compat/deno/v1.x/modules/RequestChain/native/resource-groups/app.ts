@@ -186,7 +186,9 @@ class MiddlewareGETAgain2 extends Chain.Middleware {
 
 class MiddlewareGETAgain3 extends Chain.Middleware {
   public GET(_request: Request) {
-    return new Response(`MiddlewareGETAgain3 touched, but blocking access to the resource`);
+    return new Response(
+      `MiddlewareGETAgain3 touched, but blocking access to the resource`,
+    );
   }
 }
 

@@ -19,4 +19,4 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.199.0/testing/asserts.ts";
+export * as asserts from "https://deno.land/std@v0.199.0/assert/mod.ts";

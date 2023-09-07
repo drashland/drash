@@ -178,7 +178,6 @@ function createGroupWithPrefixes(
   }
 
   return resourceClasses.map((ResourceClass: typeof Resource) => {
-
     // Here we are creating the proxy that will be used by the client. The
     // only purpose of this proxy is to be instantiable so it can be
     // instantiated by the client and have the paths set using the prefixes.
@@ -211,7 +210,6 @@ function createGroupWithMiddleware(
   middlewareClasses: typeof Middleware[],
   resourceClasses: typeof Resource[],
 ): typeof Resource[] {
-
   if (arrayEmpty(middlewareClasses)) {
     return resourceClasses;
   }
@@ -248,7 +246,6 @@ function createGroupWithMiddleware(
     // }
     //
     if (middlewareCopies.length > 1) {
-
       for (const MiddlewareClass of middlewareCopies) {
         const instance = new MiddlewareClass();
 
@@ -283,7 +280,6 @@ function createGroupWithMiddleware(
 
     // We extend the original resource class so the paths are kept intact
     const p = class MiddlewareEntryPoint extends ResourceClass {
-
       public CONNECT(input: unknown): unknown {
         return first.CONNECT(input);
       }
@@ -319,12 +315,12 @@ function createGroupWithMiddleware(
       public TRACE(input: unknown): unknown {
         return first.TRACE(input);
       }
-    }
+    };
 
     Object.defineProperty(p, "name", {
       // @ts-ignore
       value: resourceClassInstance.constructor.name + "MiddlewareProxy",
-    })
+    });
 
     return p;
   });

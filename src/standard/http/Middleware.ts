@@ -36,19 +36,19 @@ class Middleware implements IRequestMethods {
 
   public next<ReturnValue>(input: unknown): ReturnValue {
     if (
-      !input
-      || typeof input !== "object"
-      || !("method" in input)
-      || typeof input.method !== "string"
-      || typeof this.original !== "object"
-      || !(input.method in this.original)
-      || !this.original
-      || typeof this.original[input.method as MethodOf<IResource>] !== "function"
+      !input ||
+      typeof input !== "object" ||
+      !("method" in input) ||
+      typeof input.method !== "string" ||
+      typeof this.original !== "object" ||
+      !(input.method in this.original) ||
+      !this.original ||
+      typeof this.original[input.method as MethodOf<IResource>] !== "function"
     ) {
       throw new Error("Middleware could not process request further");
     }
 
-    const method = input.method as MethodOf<IRequestMethods>
+    const method = input.method as MethodOf<IRequestMethods>;
 
     return this.original[method](input) as ReturnValue;
   }
@@ -127,16 +127,14 @@ class Middleware implements IRequestMethods {
   }
 
   #delegate(input: unknown, method: MethodOf<Resource>): unknown {
-
     if (!this.original) {
       throw new Error("Failed to create middleware. No original.");
     }
 
-
     if (
-      "ALL" in this
-      && this.ALL
-      && typeof this.ALL === "function"
+      "ALL" in this &&
+      this.ALL &&
+      typeof this.ALL === "function"
     ) {
       return this.ALL(input);
     }

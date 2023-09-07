@@ -2,6 +2,15 @@ import { HTTPError } from "../../../src/core/errors/HTTPError.ts";
 import { StatusCode } from "../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../src/core/http/response/StatusDescription.ts";
 
+export function assertionMessage(message: string): string {
+  return `\n\n
+-------------- Drash Test Assertion Error Message --------------
+
+${message}
+
+----------------------------------------------------------------`;
+}
+
 export function catchError(error: Error | HTTPError): Response {
   if (
     (error.name === "HTTPError" || error instanceof HTTPError) &&
@@ -18,4 +27,8 @@ export function catchError(error: Error | HTTPError): Response {
     status: StatusCode.InternalServerError,
     statusText: StatusDescription.InternalServerError,
   });
+}
+
+export function testCaseName(n: number) {
+  return `[Test case ${n}${n < 10 ? " " : ""}]`;
 }
