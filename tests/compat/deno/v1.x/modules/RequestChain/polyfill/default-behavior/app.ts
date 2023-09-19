@@ -51,13 +51,13 @@ class Home extends Chain.Resource {
 const chain = Chain
   .builder()
   .resources(Home)
-  .build<Request, Response>();
+  .build();
 
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
   return chain
-    .handle(request)
+    .handle<Response>(request)
     .catch((error: Error | Chain.HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof Chain.HTTPError) &&

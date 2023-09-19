@@ -38,18 +38,21 @@ type Output = {
   resource: IResource;
 };
 
-class RequestParamsParser extends Handler<Input, Promise<Output>> {
-  handle(input: Input): Promise<Output> {
+type WithParams = Request & { params: Params };
+
+class RequestParamsParser extends Handler {
+  handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validateInput(input))
       .then(() => this.#addParams(input.request, input.request_params))
-      .then(() =>
-        super.nextHandler({
-          request: input.request,
-          resource: input.resource,
-        } as Output)
-      );
+      .then(() => {
+        const { request, resource } = input;
+
+        const nextHandlerInput = { request, resource };
+
+        return super.sendToNextHandler<Output>(nextHandlerInput);
+      });
   }
 
   /**

@@ -25,7 +25,7 @@ import { IHandler } from "../../core/interfaces/IHandler.ts";
 /**
  * A class to be extended by handlers so they can share the same interface.
  */
-class Handler<I, O> implements IHandler {
+class Handler implements IHandler {
   /**
    * Handlers can be chained together using this property. See example.
    *
@@ -40,31 +40,23 @@ class Handler<I, O> implements IHandler {
    * handlerA.setNext(handlerB).setNext(handlerC);
    * ```
    */
-  next_handler?: IHandler;
+  protected next: Handler | null = null;
 
-  handle(input: I): O {
-    return this.nextHandler(input);
+  public handle<Output>(input: any): Promise<Output> {
+    return this.sendToNextHandler(input);
   }
 
-  nextHandler<NextI = unknown, NextO = unknown>(input: NextI): NextO {
-    if (!this.next_handler) {
-      throw new Error("No next handler found");
+  public sendToNextHandler<Output>(input: any): Promise<Output> {
+    if (this.next !== null) {
+      return this.next.handle<Output>(input);
     }
 
-    if (!this.next_handler.handle) {
-      throw new Error("Next handler is not valid");
-    }
-
-    if (typeof this.next_handler.handle !== "function") {
-      throw new Error("Next handler cannot process input");
-    }
-
-    return this.next_handler.handle(input) as NextO;
+    throw new Error(`Handler ${this.constructor.name} has no next handler`);
   }
 
-  public setNext(nextHandler: IHandler): IHandler {
-    this.next_handler = nextHandler;
-    return this.next_handler;
+  public setNext(handler: Handler): Handler {
+    this.next = handler;
+    return handler;
   }
 }
 

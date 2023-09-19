@@ -21,7 +21,6 @@
 
 // Imports > Core
 import { Resource } from "../../core/http/Resource.ts";
-import type { IHandler } from "../../core/interfaces/IHandler.ts";
 
 // Imports > Standard
 import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
@@ -43,12 +42,32 @@ class Builder extends AbstractChainBuilder {
   #resources: ResourceClasses[] = [];
   #URLPatternClass?: URLPatternClass;
 
+  public build() {
+    if (!this.#URLPatternClass) {
+      throw new Error(
+        `\`this.urlPatternClass(Resource)\` not called. Cannot create RequestChain without a \`URLPattern\`-like class.`,
+      );
+    }
+
+    const firstHandler = new RequestValidator();
+
+    this
+      .handler(firstHandler)
+      .handler(new ResourcesIndex(this.#URLPatternClass, ...this.#resources))
+      .handler(new ResourceNotFoundHandler())
+      .handler(new RequestParamsParser())
+      .handler(new ResourceCaller())
+      .link();
+
+    return firstHandler;
+  }
+
   /**
    * Add resources to this chain.
    * @param resources
    * @returns This instance for method chaining.
    */
-  resources(...resources: ResourceClasses[]) {
+  public resources(...resources: ResourceClasses[]) {
     this.#resources = resources;
     return this;
   }
@@ -58,27 +77,9 @@ class Builder extends AbstractChainBuilder {
    * @param handler
    * @returns
    */
-  urlPatternClass(urlPatternClass: URLPatternClass): this {
+  public urlPatternClass(urlPatternClass: URLPatternClass): this {
     this.#URLPatternClass = urlPatternClass;
     return this;
-  }
-
-  public build<I, O>(): IHandler<I, Promise<O>> {
-    if (!this.#URLPatternClass) {
-      throw new Error(
-        `\`this.urlPatternClass(Resource)\` not called. Cannot create RequestChain without a \`URLPattern\`-like class.`,
-      );
-    }
-
-    this
-      .handler(new RequestValidator())
-      .handler(new ResourcesIndex(this.#URLPatternClass, ...this.#resources))
-      .handler(new ResourceNotFoundHandler())
-      .handler(new RequestParamsParser())
-      .handler(new ResourceCaller())
-      .link();
-
-    return this.first_handler as IHandler<I, Promise<O>>;
   }
 }
 

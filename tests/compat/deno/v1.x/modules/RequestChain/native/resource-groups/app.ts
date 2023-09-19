@@ -241,13 +241,13 @@ const chain = Chain
     groupWithAllGet,
     groupWithAllGetGetAgain,
   )
-  .build<Request, Response>();
+  .build();
 
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
   return chain
-    .handle(request)
+    .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&

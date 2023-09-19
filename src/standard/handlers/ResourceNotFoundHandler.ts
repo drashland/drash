@@ -38,20 +38,20 @@ type Input = {
   };
 };
 
-class ResourceNotFoundHandler<O = unknown> extends Handler<Input, Promise<O>> {
-  handle(input: Input): Promise<O> {
+class ResourceNotFoundHandler extends Handler {
+  handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validate(input))
-      .then(() => {
-        return super.nextHandler({
+      .then(() =>
+        super.sendToNextHandler<Output>({
           request: input.request,
           resource: input.result.resource,
           request_params: {
             path_params: input.result.path_params,
           },
-        });
-      });
+        })
+      );
   }
 
   #validate(input: unknown): void {

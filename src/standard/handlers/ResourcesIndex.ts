@@ -51,9 +51,7 @@ interface URLPatternClass {
   new (options: { pathname: string }): IURLPattern;
 }
 
-class ResourcesIndex extends AbstractSearchIndex<
-  Promise<SearchResult | null>
-> {
+class ResourcesIndex extends AbstractSearchIndex<SearchResult | null> {
   #cached_search_results: Record<string, SearchResult | null> = {};
   protected index: {
     resource: Resource;
@@ -72,12 +70,17 @@ class ResourcesIndex extends AbstractSearchIndex<
     this.buildIndex(this.resources);
   }
 
-  public handle(request: Input): Promise<SearchResult | null> {
+  public handle<Output>(request: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validateRequest(request))
       .then(() => this.search(request))
-      .then((result) => super.nextHandler({ request, result }));
+      .then((result) =>
+        super.sendToNextHandler<Output>({
+          request,
+          result,
+        })
+      );
   }
 
   protected override buildIndex(resources: ResourceClasses[]): void {

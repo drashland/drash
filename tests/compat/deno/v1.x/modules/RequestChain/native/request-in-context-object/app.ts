@@ -60,7 +60,7 @@ class Home extends Chain.Resource {
 const chain = Chain
   .builder()
   .resources(Home)
-  .build<WebAPIContext, WebAPIContext>();
+  .build();
 
 export const handleRequest = (
   request: Request,
@@ -74,7 +74,7 @@ export const handleRequest = (
   };
 
   return chain
-    .handle(context)
+    .handle<WebAPIContext>(context)
     // Since we are passing in a context and resources are returning the
     // context, then we expect to retrieve a Response object from the context to
     // use as the Response

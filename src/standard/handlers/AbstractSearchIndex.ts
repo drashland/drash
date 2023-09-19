@@ -22,9 +22,7 @@
 // Imports > Standard
 import { Handler } from "./Handler.ts";
 
-abstract class AbstractSearchIndex<
-  SearchResult,
-> extends Handler<unknown, SearchResult> {
+abstract class AbstractSearchIndex<SearchResult> extends Handler {
   /**
    * Build the index that can be searched via `this.search(...)`.
    * @param items The items to go into the index.
@@ -37,7 +35,7 @@ abstract class AbstractSearchIndex<
    * index.
    * @retuns The results of the search.
    */
-  protected abstract search(input: unknown): SearchResult;
+  protected abstract search(input: unknown): Promise<SearchResult>;
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////

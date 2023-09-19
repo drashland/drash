@@ -27,23 +27,29 @@ import { Status } from "../../core/http/response/Status.ts";
 import { Handler } from "./Handler.ts";
 
 type Input = {
-  method: string;
-  url: string;
+  method?: string;
+  url?: string;
 };
 
-class RequestValidator<
-  I extends Input = Input,
-> extends Handler<unknown, Promise<unknown>> {
-  handle(request: I): Promise<unknown> {
+class RequestValidator extends Handler {
+  /**
+   * Validate the given `request`. If valid, the request is sent further down
+   * the chain.
+   *
+   * @param request The request to validate.
+   *
+   * @returns The request if validated.
+   */
+  handle<Output>(req: Input) {
     return Promise
       .resolve()
-      .then(() => this.#validate(request))
+      .then(() => this.#validate(req))
       .then(() => {
-        if (this.next_handler) {
-          return super.nextHandler(request);
+        if (this.next !== null) {
+          return super.sendToNextHandler<Output>(req);
         }
 
-        return request;
+        return req as Output; // Intentional cast for now
       });
   }
 

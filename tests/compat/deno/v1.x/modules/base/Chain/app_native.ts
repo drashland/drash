@@ -63,13 +63,13 @@ const chain = BaseChain
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())
-  .build<Request, Promise<Response>>();
+  .build();
 
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
   return chain
-    .handle(request)
+    .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&

@@ -19,9 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Core
-import type { IHandler } from "../../core/interfaces/IHandler.ts";
-
 // Imports > Standard
 import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
 
@@ -33,16 +30,16 @@ class Builder extends AbstractChainBuilder {
    * Chain all handlers together.
    * @returns The first handler.
    */
-  public build<I, O>(): IHandler<I, O> {
-    this.link();
+  public build() {
+    const firstHandler = this.link();
 
-    if (!this.first_handler) {
+    if (!firstHandler) {
       throw new Error(
         "Chain.Builder: No handlers set. Did you forget to call `this.handlers()`?",
       );
     }
 
-    return this.first_handler as IHandler<I, O>;
+    return firstHandler;
   }
 }
 

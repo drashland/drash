@@ -21,21 +21,16 @@
 
 // Imports > Core
 import { IBuilder } from "../../core/interfaces/IBuilder.ts";
-import { IHandler } from "../../core/interfaces/IHandler.ts";
+
+// Imports > Standard
+import { Handler } from "../handlers/Handler.ts";
 
 abstract class AbstractChainBuilder implements IBuilder {
-  /**
-   * The first handler in the chain.
-   */
-  protected first_handler?: IHandler;
+  readonly handlers: Handler[] = [];
 
-  protected handlers: IHandler[] = [];
+  abstract build(): unknown;
 
-  public handler(handler: IHandler): this {
-    if (!this.first_handler) {
-      this.first_handler = handler;
-    }
-
+  public handler(handler: Handler): this {
     this.handlers.push(handler);
 
     return this;
@@ -45,7 +40,7 @@ abstract class AbstractChainBuilder implements IBuilder {
    * @param handlers The handlers that will be chained together.
    * @returns This instance so you can chain more methods.
    */
-  protected link(): this {
+  protected link() {
     if (!this.handlers) {
       throw new Error("Chain.Builder: `this.handlers` should be an array");
     }
@@ -58,10 +53,8 @@ abstract class AbstractChainBuilder implements IBuilder {
       return previous.setNext(current);
     });
 
-    return this;
+    return this.handlers[0];
   }
-
-  abstract build(): unknown;
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////

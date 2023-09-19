@@ -37,9 +37,8 @@ type ResourceClasses = (typeof Resource | typeof Resource[])[];
  */
 class Builder implements IBuilder {
   #path_prefixes: string[] = [];
-  #middleware: typeof Middleware[] = [];
+  #middleware: Middleware[] = [];
   #resources: typeof Resource[] = [];
-  #group: typeof Resource[] = [];
 
   /**
    * Set the resources for this group so they can share functionality.
@@ -94,7 +93,7 @@ class Builder implements IBuilder {
    * Set the path prefixes for all resources in this group.
    * @param pathPrefixes The path prefixes the resources will use.
    * @returns This instance so you can chain more methods.
-   * ---
+   *
    * @example
    * ```ts
    * class Coffees extends Resource {
@@ -117,7 +116,7 @@ class Builder implements IBuilder {
    * Set the middlware for all resources in this group.
    * @param middleware The middleware the resources will use.
    * @returns This instance so you can chain more methods.
-   * ---
+   *
    * @example
    * ```ts
    * class Coffees extends Resource { ... }
@@ -139,9 +138,7 @@ class Builder implements IBuilder {
    * ```
    */
   middleware(
-    // TODO(crookse) Fix typing. For now, omit `paths` just to make the compiler
-    // happy.
-    ...middleware: typeof Middleware[]
+    ...middleware: Middleware[]
   ): this {
     this.#middleware = middleware;
     return this;
@@ -207,7 +204,7 @@ function createGroupWithPrefixes(
 }
 
 function createGroupWithMiddleware(
-  middlewareClasses: typeof Middleware[],
+  middlewareClasses: Middleware[],
   resourceClasses: typeof Resource[],
 ): typeof Resource[] {
   if (arrayEmpty(middlewareClasses)) {
@@ -220,59 +217,57 @@ function createGroupWithMiddleware(
 
   const wrapped = resourceClasses.map((ResourceClass) => {
     const middlewareCopies = middlewareClasses.slice();
-    let first = new middlewareCopies[0]();
-    let last;
+    let first: Middleware;
 
-    // If more than one middleware instance exists, then we link them together
-    // from top top bottom. For example, if the below was given ...
-    //
-    // [
-    //   MiddlewareA,
-    //   MiddlewareB,
-    //   MiddlewareC,
-    //   MiddlewareZ,
-    // ]
-    //
-    // ..., then they would be linked together like ...
-    //
-    // MiddlewareEntryPoint {
-    //   original: MiddlewareALL {
-    //     original: MiddlewareGET {
-    //       original: MiddlewareGETAgain {
-    //         original: MiddlewareGETAgain3 { original: TheOriginalResource }
-    //       }
-    //     }
-    //   }
-    // }
-    //
-    if (middlewareCopies.length > 1) {
-      for (const MiddlewareClass of middlewareCopies) {
-        const instance = new MiddlewareClass();
+    const resourceInstance = new ResourceClass();
 
-        if (!last) {
-          last = instance;
-          continue;
-        }
+    if (middlewareClasses.length <= 1) {
+      first = middlewareCopies[0];
+      first.setOriginal(resourceInstance);
+    } else {
+      // If more than one middleware instance exists, then we link them together
+      // from top top bottom. For example, if the below was given ...
+      //
+      // [
+      //   MiddlewareA,
+      //   MiddlewareB,
+      //   MiddlewareC,
+      //   MiddlewareZ,
+      // ]
+      //
+      // ..., then they would be linked together like ...
+      //
+      // MiddlewareEntryPoint {
+      //   original: MiddlewareA {
+      //     original: MiddlewareB {
+      //       original: MiddlewareC {
+      //         original: MiddlewareZ { original: TheOriginalResource }
+      //       }
+      //     }
+      //   }
+      // }
+      //
 
-        last.setOriginal(instance);
+      const firstMiddlewareInstance = middlewareCopies.shift();
+
+      if (firstMiddlewareInstance) {
+        first = firstMiddlewareInstance;
+
+        middlewareCopies.reduce(
+          (previousMiddlewareInstance, currentMiddlewareInstance, index) => {
+            // Last middleware instance wraps the resource
+            if (index + 1 === middlewareCopies.length) {
+              currentMiddlewareInstance.setOriginal(resourceInstance);
+            }
+
+            previousMiddlewareInstance.setOriginal(currentMiddlewareInstance);
+
+            return currentMiddlewareInstance;
+          },
+          first,
+        );
       }
     }
-
-    if (!last) {
-      last = first;
-    }
-
-    last.setOriginal(new ResourceClass());
-
-    // // Here we are setting the instantiated resource on the last middleware.
-    // // Only the last middleware has direct access to the resource.
-    // if (middlewareCopies.length > 1) {
-    //   lastMiddleware = middlewareCopies[middlewareCopies.length - 1];
-    // } else {
-    //   lastMiddleware = first;
-    // }
-
-    const resourceClassInstance = new ResourceClass();
 
     // Here we are creating the proxy that will be used by the client. The
     // only purpose of this proxy is to be instantiable just like a resource and
@@ -318,8 +313,7 @@ function createGroupWithMiddleware(
     };
 
     Object.defineProperty(p, "name", {
-      // @ts-ignore
-      value: resourceClassInstance.constructor.name + "MiddlewareProxy",
+      value: resourceInstance.constructor.name + "MiddlewareProxy",
     });
 
     return p;

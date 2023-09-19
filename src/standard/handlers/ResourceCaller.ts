@@ -20,27 +20,32 @@
  */
 
 // Imports > Core
-import { IResource } from "../../core/Interfaces.ts";
 import { MethodOf } from "../../core/Types.ts";
+import { Resource } from "../../core/http/Resource.ts";
 
 // Imports > Standard
 import { Handler } from "./Handler.ts";
 
-type Input = { request: { method: string }; resource: IResource };
+type Input = { request: { method: string }; resource: Resource };
 
-class ResourceCaller<O = unknown> extends Handler<Input, Promise<O>> {
-  handle(input: Input): Promise<O> {
+class ResourceCaller extends Handler {
+  handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validate(input))
       .then(() => this.#sendRequestToResource(input));
   }
 
-  #sendRequestToResource(input: Input): O {
+  #sendRequestToResource<Output>(input: Input): Promise<Output> {
     const httpMethod = input.request.method.toUpperCase();
-    return input.resource[httpMethod as MethodOf<IResource>](
-      input.request,
-    ) as O;
+
+    return Promise
+      .resolve()
+      .then(() => {
+        return input.resource[httpMethod as MethodOf<Resource>](
+          input.request,
+        );
+      }) as Promise<Output>;
   }
 
   #validate(input: unknown): void {

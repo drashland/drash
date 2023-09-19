@@ -66,7 +66,7 @@ class Home extends Chain.Resource {
 const chain = Chain
   .builder()
   .resources(Home)
-  .build<NodeContext, NodeContext>();
+  .build();
 
 export const handleRequest = (
   request: IncomingMessage,
@@ -82,7 +82,7 @@ export const handleRequest = (
   };
 
   return chain
-    .handle(context)
+    .handle<NodeContext>(context)
     // There is no `.then((response) => { ... })` block here because resources
     // use `context.response.end()` which tells Node the ServerResponse ended
     .catch((error: Error | HTTPError) => {

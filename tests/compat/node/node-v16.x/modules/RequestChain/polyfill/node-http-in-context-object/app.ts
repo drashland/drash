@@ -66,7 +66,7 @@ class Home extends Chain.Resource {
 const chain = Chain
   .builder()
   .resources(Home)
-  .build<NodeContext, NodeContext>();
+  .build();
 
 export const handleRequest = (
   request: IncomingMessage,

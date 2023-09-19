@@ -34,6 +34,8 @@ export { Middleware } from "../../standard/http/Middleware.ts";
 export function builder() {
   return RequestChain
     .builder()
-    // @ts-ignore URLPattern exists, just not when dev'ing
+    // @ts-ignore URLPattern is available when using the Deno extension, but we
+    // should not force using a the Deno extension just to accomodate the build
+    // process having this API. Therefore, it is ignored.
     .urlPatternClass(URLPattern);
 }

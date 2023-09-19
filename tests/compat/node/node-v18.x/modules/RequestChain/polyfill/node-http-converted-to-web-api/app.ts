@@ -54,7 +54,7 @@ class Home extends Chain.Resource {
 const chain = Chain
   .builder()
   .resources(Home)
-  .build<Request, Response>();
+  .build();
 
 export const handleRequest = (
   req: IncomingMessage,
@@ -66,7 +66,7 @@ export const handleRequest = (
   });
 
   return chain
-    .handle(request)
+    .handle<Response>(request)
     // All resources will return a Response object that we can use to build the
     // ServerResponse object
     .then((response) => {

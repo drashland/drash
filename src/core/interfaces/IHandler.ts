@@ -22,19 +22,19 @@
 /**
  * A base interface for handler classes.
  */
-export interface IHandler<I = unknown, O = unknown> {
+export interface IHandler<Input = unknown> {
   /**
    * Handle the given input to produce an output. For example, handle a request
    * (the input) to produce a response (the output).
    * @param input The input in question.
    * @return The output.
    */
-  handle(input: I): O;
+  handle<Res>(req: Input): Promise<Res>;
 
   /**
    * Set this handler's next handler.
    * @param nextHandler
    * @returns The next handler.
    */
-  setNext(handler: IHandler): IHandler;
+  setNext(h: IHandler): IHandler;
 }

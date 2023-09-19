@@ -36,7 +36,11 @@ export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-type Ctx = { request: Request; response?: Response; resource?: Resource };
+type Ctx = {
+  request: Request;
+  response?: Response;
+  resource?: Resource;
+};
 
 class Home extends Resource {
   public paths = ["/"];
@@ -62,15 +66,17 @@ class Home extends Resource {
 
 class UseInsteadOfHandleBuilder extends BaseChain.Builder {
   public use(handlerFn: (ctx: Ctx) => void): this {
-    class UseHandler extends Handler<Ctx, Promise<void>> {
-      handle(ctx: Ctx): Promise<void> {
+    class UseHandler extends Handler {
+      handle<Output>(ctx: Ctx) {
         return Promise
           .resolve()
           .then(() => handlerFn(ctx))
           .then(() => {
-            if (this.next_handler) {
-              return super.nextHandler(ctx);
+            if (this.next !== null) {
+              return super.sendToNextHandler<Output>(ctx);
             }
+
+            return ctx as Output; // Intentional cast for now
           });
       }
     }
@@ -90,9 +96,9 @@ class UseInsteadOfHandleBuilder extends BaseChain.Builder {
 // @ts-ignore We know URLPattern exists if dev'ing with Deno's extension
 const resourceIndex = new ResourcesIndex(URLPattern, Home);
 const resourceNotFoundHandler = new ResourceNotFoundHandler();
-class ReturnSearchResult extends Handler<SearchResult, SearchResult> {
-  handle(result: SearchResult): SearchResult {
-    return result;
+class ReturnSearchResult extends Handler {
+  handle<Output extends SearchResult>(result: Output): Promise<Output> {
+    return Promise.resolve(result);
   }
 }
 
@@ -108,7 +114,7 @@ const chain = (new UseInsteadOfHandleBuilder())
   })
   .use(function FindResource(ctx) {
     return resourceIndex
-      .handle(ctx.request) // Last handler is `ReturnSearchResult` and we can chain `then` from it
+      .handle<SearchResult>(ctx.request) // Last handler is `ReturnSearchResult` and we can chain `then` from it
       .then((result) => {
         ctx.resource = result?.resource;
       });
@@ -126,7 +132,7 @@ const chain = (new UseInsteadOfHandleBuilder())
       ctx.response = new Response("Woops", { status: 500 });
     }
   })
-  .build<Ctx, Promise<void>>();
+  .build();
 
 export const handleRequest = (
   request: Request,
@@ -134,7 +140,7 @@ export const handleRequest = (
   const ctx: Ctx = { request };
 
   return chain
-    .handle(ctx)
+    .handle<void>(ctx)
     .then(() => {
       if (!ctx.response) {
         return new Response("No response", { status: 500 });
