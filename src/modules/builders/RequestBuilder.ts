@@ -19,29 +19,52 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import { WithParams } from "../../standard/handlers/RequestParamsParser.ts";
+class RequestBuilder {
+  #request: RequestInit = {};
+  #path = "<path not provided>";
 
-// Imports > Modules
-import { RequestChain } from "../base/RequestChain.ts";
+  path(path: string) {
+    this.#path = path;
+    return this;
+  }
 
-type HttpRequest = WithParams;
+  get() {
+    this.#request.method = "get";
+    return this;
+  }
 
-// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+  post() {
+    this.#request.method = "post";
+    return this;
+  }
 
-export { HTTPError } from "../../core/errors/HTTPError.ts";
-export { Resource } from "../../core/http/Resource.ts";
-export { Middleware } from "../../standard/http/Middleware.ts";
-export type { HttpRequest as Request };
+  put() {
+    this.#request.method = "put";
+    return this;
+  }
+
+  patch() {
+    this.#request.method = "patch";
+    return this;
+  }
+
+  delete() {
+    this.#request.method = "delete";
+    return this;
+  }
+
+  build() {
+    return new Request(this.#path, this.#request);
+  }
+}
 
 /**
- * Get the builder that builds an HTTP request chain.
+ * Get a {@link Request} builder.
+ *
+ * @returns A response builder.
+ *
+ * @see {@link RequestBuilder} for implementation details.
  */
-export function builder() {
-  return RequestChain
-    .builder()
-    // @ts-ignore URLPattern is available when using the Deno extension, but we
-    // should not force using a the Deno extension just to accomodate the build
-    // process having this API. Therefore, it is ignored.
-    .urlPatternClass(URLPattern);
+export function request() {
+  return new RequestBuilder();
 }

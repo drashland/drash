@@ -19,15 +19,16 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IRequestMethods } from "../interfaces/IRequestMethods.ts";
-
 /**
- * A base interface for resource classes.
+ * @template C The class that will be instantiated and returned when calling the
+ * `build()` method.
  */
-export interface IResource extends IRequestMethods {
+interface Builder<C> {
   /**
-   * The paths this resource is accessible at. For example, if this is set to
-   * `["/home"]`, then requests to `/home` will target this resource.
+   * Instantiate the class and return it.
    */
-  paths: string[];
+  build(): C;
 }
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export type { Builder };

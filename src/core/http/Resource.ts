@@ -21,47 +21,46 @@
 
 import { HTTPError } from "../errors/HTTPError.ts";
 import { Status } from "./response/Status.ts";
-import type { IResource } from "../interfaces/IResource.ts";
 
 /**
  * The base resource class for all resources.
  */
-class Resource implements IResource {
+class Resource {
   public paths: string[] = [];
 
-  public CONNECT(_input: unknown): unknown {
+  public CONNECT(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public DELETE(_input: unknown): unknown {
+  public DELETE(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public GET(_input: unknown): unknown {
+  public GET(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public HEAD(_input: unknown): unknown {
+  public HEAD(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public OPTIONS(_input: unknown): unknown {
+  public OPTIONS(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public PATCH(_input: unknown): unknown {
+  public PATCH(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public POST(_input: unknown): unknown {
+  public POST(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public PUT(_input: unknown): unknown {
+  public PUT(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
-  public TRACE(_input: unknown): unknown {
+  public TRACE(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 }

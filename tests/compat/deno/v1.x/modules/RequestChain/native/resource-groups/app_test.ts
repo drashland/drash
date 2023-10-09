@@ -31,7 +31,7 @@ Deno.test("Native - Using Request/Response", async (t) => {
 
     await t.step(
       `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
-      async (t) => {
+      async () => {
         const req = new Request(url + path, {
           method,
         });
@@ -52,7 +52,7 @@ Deno.test("Native - Using Request/Response", async (t) => {
 
     await t.step(
       `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
-      async (t) => {
+      async () => {
         const req = new Request(url + path, {
           method,
         });
@@ -73,7 +73,7 @@ Deno.test("Native - Using Request/Response", async (t) => {
 
     await t.step(
       `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
-      async (t) => {
+      async () => {
         const req = new Request(url + path, {
           method,
         });
@@ -94,7 +94,7 @@ Deno.test("Native - Using Request/Response", async (t) => {
 
     await t.step(
       `${method} ${path} -> Status: ${expected.status}; Body: ${expected.body}`,
-      async (t) => {
+      async () => {
         const req = new Request(url + path, {
           method,
         });

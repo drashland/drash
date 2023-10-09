@@ -21,8 +21,8 @@
 
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
+import { Resource } from "../../core/http/Resource.ts";
 import { Status } from "../../core/http/response/Status.ts";
-import type { IResource } from "../../core/Interfaces.ts";
 
 // Imports > Standard
 import { Handler } from "./Handler.ts";
@@ -33,7 +33,7 @@ type Input = {
   };
 
   result: {
-    resource: IResource;
+    resource: Resource;
     path_params: Record<string, string>;
   };
 };

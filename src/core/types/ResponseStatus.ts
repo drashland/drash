@@ -22,7 +22,7 @@
 import type { ResponseStatusCode } from "./ResponseStatusCode.ts";
 import type { ResponseStatusDescription } from "./ResponseStatusDescription.ts";
 
-export type ResponseStatus = readonly [
-  ResponseStatusCode,
-  ResponseStatusDescription,
-];
+export type ResponseStatus = {
+  readonly code: ResponseStatusCode;
+  readonly description: ResponseStatusDescription;
+};

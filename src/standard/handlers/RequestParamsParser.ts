@@ -20,14 +20,14 @@
  */
 
 // Imports > Core
-import { IResource } from "../../core/Interfaces.ts";
+import { Resource } from "../../core/http/Resource.ts";
 
 // Imports > Standard
 import { Handler } from "../handlers/Handler.ts";
 
 type Input = {
   request: { url: string };
-  resource: IResource;
+  resource: Resource;
   request_params: {
     path_params: Record<string, string | undefined>;
   };
@@ -35,7 +35,7 @@ type Input = {
 
 type Output = {
   request: Input["request"] & { params: Params };
-  resource: IResource;
+  resource: Resource;
 };
 
 type WithParams = Request & { params: Params };
@@ -121,4 +121,4 @@ class Params {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { type Input, type Output, RequestParamsParser };
+export { type Input, type Output, RequestParamsParser, type WithParams };

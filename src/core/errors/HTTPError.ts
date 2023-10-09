@@ -72,7 +72,7 @@ class HTTPError extends Error {
   constructor(status: ResponseStatus, message?: string) {
     super(message);
 
-    const [code, description] = status;
+    const { code, description } = status;
 
     this.status_code = code;
     this.status_code_description = description;

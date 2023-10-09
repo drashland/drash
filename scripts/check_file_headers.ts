@@ -1,4 +1,4 @@
-import { walk } from "https://deno.land/std/fs/walk.ts";
+import { walk, WalkEntry } from "https://deno.land/std@0.201.0/fs/walk.ts";
 
 const write = Deno.args[0] === "--write";
 
@@ -45,7 +45,7 @@ for await (const directory of directoriesToCheck) {
   }
 }
 
-async function check(entry) {
+async function check(entry: WalkEntry) {
   for (const ignore of pathsToIgnore) {
     if (entry.path.includes(ignore)) {
       return;
@@ -77,6 +77,7 @@ ${filesRequiringHeaders.map((f) => f.path).join("\n")}
 `);
 
 if (!write) {
+  console.log(`Use --write option to write file headers in these files\n`);
   Deno.exit(1);
 }
 

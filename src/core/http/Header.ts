@@ -19,29 +19,22 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Imports > Standard
-import { WithParams } from "../../standard/handlers/RequestParamsParser.ts";
-
-// Imports > Modules
-import { RequestChain } from "../base/RequestChain.ts";
-
-type HttpRequest = WithParams;
-
-// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
-
-export { HTTPError } from "../../core/errors/HTTPError.ts";
-export { Resource } from "../../core/http/Resource.ts";
-export { Middleware } from "../../standard/http/Middleware.ts";
-export type { HttpRequest as Request };
-
-/**
- * Get the builder that builds an HTTP request chain.
- */
-export function builder() {
-  return RequestChain
-    .builder()
-    // @ts-ignore URLPattern is available when using the Deno extension, but we
-    // should not force using a the Deno extension just to accomodate the build
-    // process having this API. Therefore, it is ignored.
-    .urlPatternClass(URLPattern);
-}
+export const Header = {
+  AccessControlAllowCredentials: "Access-Control-Allow-Credentials",
+  AccessControlAllowHeaders: "Access-Control-Allow-Headers",
+  AccessControlAllowMethods: "Access-Control-Allow-Methods",
+  AccessControlAllowOrigin: "Access-Control-Allow-Origin",
+  AccessControlExposeHeaders: "Access-Control-Expose-Headers",
+  AccessControlMaxAge: "Access-Control-Max-Age",
+  AccessControlRequestHeaders: "Access-Control-Request-Headers",
+  AccessControlRequestMethod: "Acces-Control-Request-Method",
+  ContentLength: "Content-Length",
+  ContentType: "Content-Type",
+  Date: "Date",
+  ETag: "ETag",
+  IfMatch: "If-Match",
+  IfNoneMatch: "If-None-Match",
+  LastModified: "Last-Modified",
+  RetryAfter: "Retry-After",
+  Vary: "Vary",
+} as const;

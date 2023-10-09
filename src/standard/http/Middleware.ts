@@ -19,38 +19,48 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IRequestMethods, IResource } from "../../core/Interfaces.ts";
 import { MethodOf } from "../../core/Types.ts";
+import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { Resource } from "../../core/http/Resource.ts";
+import { Status } from "../../core/http/response/Status.ts";
 
 // Imports > Core
 
 // Imports > Standard
 
-class Middleware implements IRequestMethods {
-  protected original?: IRequestMethods;
+class Middleware extends Resource {
+  public original?: Resource;
 
-  public setOriginal(original: IRequestMethods) {
+  public setOriginal(original: Resource) {
     this.original = original;
   }
 
   public next<ReturnValue>(input: unknown): ReturnValue {
     if (
       !input ||
-      typeof input !== "object" ||
+      (typeof input !== "object") ||
       !("method" in input) ||
-      typeof input.method !== "string" ||
-      typeof this.original !== "object" ||
-      !(input.method in this.original) ||
+      (typeof input.method !== "string") ||
       !this.original ||
-      typeof this.original[input.method as MethodOf<IResource>] !== "function"
+      (typeof this.original !== "object") ||
+      !(input.method in this.original) ||
+      (typeof this.original[input.method as MethodOf<Resource>]) !== "function"
     ) {
       throw new Error("Middleware could not process request further");
     }
 
-    const method = input.method as MethodOf<IRequestMethods>;
+    const method = input.method as MethodOf<Resource>;
 
-    return this.original[method](input) as ReturnValue;
+    const response = this.original[method](input);
+
+    if (!response) {
+      throw new HTTPError(
+        Status.InternalServerError,
+        "The server was unable to generate a response",
+      );
+    }
+
+    return response as ReturnValue;
   }
 
   /**
@@ -126,7 +136,7 @@ class Middleware implements IRequestMethods {
     return this.#delegate(input, "TRACE");
   }
 
-  #delegate(input: unknown, method: MethodOf<Resource>): unknown {
+  #delegate(input: unknown, method: MethodOf<Middleware>): unknown {
     if (!this.original) {
       throw new Error("Failed to create middleware. No original.");
     }
