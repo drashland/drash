@@ -1,5 +1,5 @@
 import { Errors, IService, Request, Response, Service } from "../../../mod.ts";
-import { createHash, v4 } from "./deps.ts";
+import { toHashString } from "./deps.ts";
 
 /**
  * This allows us to pass the TS compiler, so we can add properties to a method that uses it. See `csrf` method below
@@ -9,9 +9,12 @@ interface F {
   token: string;
 }
 
-const primaryToken = createHash("sha512");
-primaryToken.update(v4.generate());
-const primaryTokenString = primaryToken.toString();
+const primaryTokenString = toHashString(
+  await crypto.subtle.digest(
+    "SHA-512",
+    new TextEncoder().encode(crypto.randomUUID()),
+  ),
+);
 
 type Options = {
   cookie?: boolean;
