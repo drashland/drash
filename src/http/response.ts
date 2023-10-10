@@ -143,7 +143,6 @@ export class DrashResponse {
     // We ignore the following because this means a user can do
     // `const user: IUSer = ...; response.json(user)`, which isn't possible with
     // Record<string, unknown>
-    // deno-lint-ignore ban-types
     json: object,
     status?: number,
     headers: Record<string, string> = {},
