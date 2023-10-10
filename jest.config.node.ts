@@ -10,7 +10,12 @@ const config: Config.InitialOptions = {
     `**/node/${testDirectory}/**/(*.)+(test).+(ts|tsx)`,
   ],
   transform: {
-    "^.+\\.(ts|tsx)?$": "ts-jest",
+    "^.+\\.(ts|tsx)?$": [
+      "ts-jest",
+      {
+        tsconfig: "./tests/compat/node/tsconfig.json",
+      },
+    ],
     "^.+\\.(js|jsx)$": "babel-jest",
   },
 };
