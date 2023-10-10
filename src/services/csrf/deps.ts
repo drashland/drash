@@ -1,2 +1,1 @@
-export { createHash } from "https://deno.land/std@0.158.0/hash/mod.ts";
-export { v4 } from "https://deno.land/std@0.158.0/uuid/mod.ts";
+export { toHashString } from "https://deno.land/std@0.203.0/crypto/mod.ts";

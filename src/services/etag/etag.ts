@@ -1,5 +1,5 @@
 import { IService, Request, Response, Service } from "../../../mod.ts";
-import { createHash } from "./deps.ts";
+import { toHashString } from "./deps.ts";
 
 export class ETagService extends Service implements IService {
   #options: { weak: boolean };
@@ -11,7 +11,7 @@ export class ETagService extends Service implements IService {
     this.#options = options;
   }
 
-  runAfterResource(request: Request, response: Response) {
+  async runAfterResource(request: Request, response: Response) {
     // if response body is empty, send a default etag
     if (
       response.body === null ||
@@ -39,8 +39,8 @@ export class ETagService extends Service implements IService {
     const body = typeof response.body === "string"
       ? new TextEncoder().encode(response.body)
       : response.body as Uint8Array;
-    const hash = createHash("sha1").update(body, "utf8").digest("base64")
-      .toString().substring(0, 27);
+    const hash = toHashString(await crypto.subtle.digest("SHA-1", body))
+      .substring(0, 27);
     const len = body.byteLength;
 
     // create the etag value to use
