@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This script only exists to run Deno in different OSs. This script runs in the
+# CI to build the CJS and ESM libs.
+(
+  rm -rf .drashland/lib && \
+  deno task build:intermediary && \
+  deno task build:esm && \
+  deno task build:cjs && \
+  rm -rf .drashland/lib/intermediary
+)

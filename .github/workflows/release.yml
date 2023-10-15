@@ -2,15 +2,79 @@ name: Release
 on:
   release:
     types: [published]
+
+  # In the even this workflow fails, it can be started manually via `workflow_dispatch`
+  workflow_dispatch:
+
 jobs:
-  publish-egg:
+
+  npm:
     runs-on: ubuntu-latest
     steps:
-      - name: Notify the castle about this release
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+
+      # We need deno because the "Build CJS and ESM" step runs `deno run`
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Pre-check release version
         run: |
-          curl -X POST \
-            -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" \
-            -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Content-Type: application/json" \
-            --data '{"event_type": "release", "client_payload": { "repo": "deno-drash", "module": "drash", "version": "${{ github.ref }}" }}' \
-            https://api.github.com/repos/drashland/castle/dispatches
+          deno run --allow-read ./scripts/pre_check_release.ts ${{ github.event.release.tag_name }}
+
+      # Setup .npmrc file to publish to npm
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@drashland'
+
+      - name: Install Node dependencies
+        run: yarn install
+
+      - name: Build Drash libs
+        run: |
+          deno task build:all:ci
+          cp package.lib.json .drashland/lib/package.json
+
+      # - name: Publish
+      #   run: |
+      #     cd .drashland/lib
+      #     yarn publish --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
+
+  github:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+
+      # We need deno because the "Build CJS and ESM" step runs `deno run`
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      # Setup .npmrc file to publish to github
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@drashland'
+
+      - name: Install deps
+        run: |
+          yarn install
+
+      - name: Build Drash libs
+        run: |
+          deno task build:all:ci
+          cp package.lib.json .drashland/lib/package.json
+
+      # - name: Publish
+      #   run: |
+      #     cd .drashland/lib
+      #     yarn publish --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

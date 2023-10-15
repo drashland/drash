@@ -1,0 +1,166 @@
+name: main
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+
+  compat-cloudflare:
+    name: Compat - Cloudflare
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Deno (for `deno task` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
+      - name: Run Tests
+        run: |
+          deno task build:all:ci && deno task test:compat:cloudflare
+
+  compat-bun:
+    name: Compat - Bun
+
+    strategy:
+      matrix:
+        # Add Windows when https://github.com/oven-sh/bun/issues/43 is complete
+        os: [ubuntu-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Deno (for `deno task` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+
+      - name: Run Tests
+        run: |
+          deno task build:all:ci && ~/.bun/bin/bun test tests/compat/bun
+
+
+  compat-deno:
+    name: Compat - Deno
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Tests
+        run: |
+          deno task test:compat:deno
+
+      - name: Run Tests (concurrency)
+        run: |
+          deno task test:compat:deno:concurrency
+
+  compat-node:
+    name: Compat - Node
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Deno (for `deno task` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Instal Node dependencies
+        run: |
+          yarn install
+
+      - name: Run Tests
+        run: |
+          deno task build:all:ci && deno task test:compat:node
+
+  # benchmarks:
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+
+  #   runs-on: ${{ matrix.os }}
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Install Deno
+  #       uses: denoland/setup-deno@v1
+
+  #     - name: Setup Node 13
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '13'
+
+  #     - name: Install Autocannon
+  #       run: npm install -g autocannon
+
+  #     - name: Run Drash application
+  #       run: deno run --allow-net ./console/benchmark_app.ts &
+
+  #     - name: Run Autocannon against Drash application
+  #       run: autocannon -c 40 -d 10 -j http://localhost:1447
+
+  # code_quality:
+  #   # Only one OS is required since fmt is cross platform
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Install Deno
+  #       uses: denoland/setup-deno@v1
+
+  #     - name: "Check: deno lint"
+  #       run: deno lint src
+
+  #     - name: "Check deno fmt"
+  #       run: deno fmt --check

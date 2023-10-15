@@ -1,0 +1,45 @@
+{
+  "lock": false,
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-explicit-any"
+      ]
+    },
+    "include": ["./src", "./tests"],
+    "exclude": [".deno", ".drashland", "node_modules", "**/_unstable"]
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "exclude": [".deno", ".drashland", "node_modules"]
+  },
+  "tasks": {
+    "build:all:ci": "deno task build:intermediary:ci && deno task build:esm && deno task build:cjs",
+    "build:all": "./scripts/build_all",
+    "build:check": "deno task check:file-headers && deno task yarn:clean && yarn install && deno task build:all && deno task test:all",
+    "check:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
+    "build:cjs": "yarn tsc --project tsconfig.build.cjs.json",
+    "build:esm": "yarn tsc --project tsconfig.build.esm.json",
+    "build:intermediary:ci": "deno fmt && deno run -A ./scripts/lib_builder/build_esm_lib.ts --debug --workspace=./.drashland/lib/intermediary --copy-files=./src",
+    "build:intermediary": "./scripts/lib_builder/build_intermediary",
+    "lint:tests:bun": "deno lint tests/compat/bun",
+    "lint:tests:node": "deno lint tests/compat/node*/*",
+    "release": "yarn publish --access public",
+    "test:all": "deno task test:compat:bun && deno task test:compat:deno && deno task test:compat:node && deno task test:middleware:deno && deno task test:unit",
+    "test:compat:bun": "bun test tests/compat/bun",
+    "test:compat:cloudflare": "yarn jest --config jest.config.cloudflare.ts tests/compat/cloudflare",
+    "test:compat:deno:concurrency": "deno test tests/compat/deno/*/concurrency",
+    "test:compat:deno": "deno test tests/compat/deno --ignore='**/concurrency/*.ts'",
+    "test:compat:node": "yarn jest --config jest.config.node.ts tests/compat/node",
+    "test:middleware:deno": "deno test tests/middleware/deno --allow-net",
+    "test:unit": "deno test tests/unit",
+    "validate:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
+    "yarn:clean": "rm -rf node_modules && rm yarn.lock || true",
+    "yarn:publish": "deno task build:all:ci"
+  }
+}
