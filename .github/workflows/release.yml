@@ -36,11 +36,9 @@ jobs:
       - name: Build Drash libs
         run: |
           deno task build:all:ci
-          cp package.lib.json .drashland/lib/package.json
 
       # - name: Publish
       #   run: |
-      #     cd .drashland/lib
       #     yarn publish --access public
       #   env:
       #     NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
@@ -70,11 +68,9 @@ jobs:
       - name: Build Drash libs
         run: |
           deno task build:all:ci
-          cp package.lib.json .drashland/lib/package.json
 
       # - name: Publish
       #   run: |
-      #     cd .drashland/lib
       #     yarn publish --access public
       #   env:
       #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

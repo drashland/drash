@@ -29,7 +29,7 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/RequestChain/mod.native.ts";
+import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import {
   type Options,

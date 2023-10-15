@@ -34,8 +34,7 @@ import {
   defaultOptions,
   type Options,
 } from "../../../../../../../src/modules/middleware/AcceptHeader/mod.ts";
-import * as Chain from "../../../../../../../src/modules/RequestChain/mod.native.ts";
-import { resource } from "../../../../../../../src/modules/builders/ResourceBuilder.ts";
+import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
@@ -237,14 +236,14 @@ function getTestCases(): TestCase[] {
       chain: chain({
         middleware: [getAcceptHeaderMiddleware({ logs: false })],
         resources: [
-          resource()
-            .paths([
-              "/accept-header",
-            ])
-            .GET((_request: Chain.Request) => {
+          class AcceptHeaderResource extends Chain.Resource {
+            paths = ["/accept-header"];
+
+            GET(_request: Chain.Request) {
               return new Response("Hello from GET.");
-            })
-            .POST((_request: Chain.Request) => {
+            }
+
+            POST(_request: Chain.Request) {
               return new Response(
                 JSON.stringify({ message: "Hello from POST." }),
                 {
@@ -255,14 +254,16 @@ function getTestCases(): TestCase[] {
                   },
                 },
               );
-            })
-            .DELETE((_request: Chain.Request) => {
+            }
+
+            DELETE(_request: Chain.Request) {
               return new Response("Deleted!");
-            })
-            .PATCH((_request: Chain.Request) => {
+            }
+
+            PATCH(_request: Chain.Request) {
               throw new HTTPError(Status.MethodNotAllowed);
-            })
-            .build(),
+            }
+          },
         ],
       }),
       requests: [

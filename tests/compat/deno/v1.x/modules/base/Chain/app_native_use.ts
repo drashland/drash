@@ -21,7 +21,7 @@
 
 import { Chain as BaseChain } from "../../../../../../../src/modules/base/Chain.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
-import { Resource } from "../../../../../../../src/modules/RequestChain/mod.native.ts";
+import { Resource } from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
 import { ResourceNotFoundHandler } from "../../../../../../../src/standard/handlers/ResourceNotFoundHandler.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";

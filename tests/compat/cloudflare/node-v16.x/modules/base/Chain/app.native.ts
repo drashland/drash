@@ -1,10 +1,10 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
  * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
- * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
+ * AUTHORS file at <https://github.comdrash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
- * This file is part of Drash. See <https://github.com/drashland/drash>.
+ * This file is part of Drash. See <https://github.comdrash>.
  *
  * Drash is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -19,17 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Chain as BaseChain } from "../../../../../../../.drashland/lib/esm/modules/base/Chain";
-import { RequestParamsParser } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestParamsParser";
-import { RequestValidator } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestValidator";
-import { ResourceCaller } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceCaller";
-import { ResourceNotFoundHandler } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceNotFoundHandler";
-import { Status } from "../../../../../../../.drashland/lib/esm/core/http/response/Status";
-import { Resource } from "../../../../../../../.drashland/lib/esm/core/http/Resource";
-import { HTTPError } from "../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
-import { ResourcesIndex } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourcesIndex";
+import { Chain as BaseChain } from "../../../../../../../lib/esm/modules/base/Chain";
+import { RequestParamsParser } from "../../../../../../../lib/esm/standard/handlers/RequestParamsParser";
+import { RequestValidator } from "../../../../../../../lib/esm/standard/handlers/RequestValidator";
+import { ResourceCaller } from "../../../../../../../lib/esm/standard/handlers/ResourceCaller";
+import { ResourceNotFoundHandler } from "../../../../../../../lib/esm/standard/handlers/ResourceNotFoundHandler";
+import { Status } from "../../../../../../../lib/esm/core/http/response/Status";
+import { Resource } from "../../../../../../../lib/esm/core/http/Resource";
+import { HTTPError } from "../../../../../../../lib/esm/core/errors/HTTPError";
+import { ResourcesIndex } from "../../../../../../../lib/esm/standard/handlers/ResourcesIndex";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
+import { StatusDescription } from "../../../../../../../lib/esm/core/http/response/StatusDescription";
 
 export const protocol = "http";
 export const hostname = "localhost";

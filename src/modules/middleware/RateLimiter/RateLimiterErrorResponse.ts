@@ -20,7 +20,7 @@
  */
 
 import { ResponseStatus } from "../../../core/Types.ts";
-import { HTTPError } from "../../RequestChain/mod.native.ts";
+import { HTTPError } from "../../chains/RequestChain/mod.native.ts";
 
 class RateLimiterErrorResponse extends HTTPError {
   readonly response: Response;

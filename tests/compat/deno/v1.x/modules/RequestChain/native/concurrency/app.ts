@@ -22,7 +22,7 @@
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
-import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.native.ts";
+import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";

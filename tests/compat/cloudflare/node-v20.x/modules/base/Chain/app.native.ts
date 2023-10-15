@@ -19,17 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HTTPError } from "../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
-import { Resource } from "../../../../../../../.drashland/lib/esm/core/http/Resource";
-import { Status } from "../../../../../../../.drashland/lib/esm/core/http/response/Status";
-import { StatusCode } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
-import { Chain as BaseChain } from "../../../../../../../.drashland/lib/esm/modules/base/Chain";
-import { RequestParamsParser } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestParamsParser";
-import { RequestValidator } from "../../../../../../../.drashland/lib/esm/standard/handlers/RequestValidator";
-import { ResourceCaller } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceCaller";
-import { ResourceNotFoundHandler } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourceNotFoundHandler";
-import { ResourcesIndex } from "../../../../../../../.drashland/lib/esm/standard/handlers/ResourcesIndex";
+import { HTTPError } from "../../../../../../../lib/esm/core/errors/HTTPError";
+import { Resource } from "../../../../../../../lib/esm/core/http/Resource";
+import { Status } from "../../../../../../../lib/esm/core/http/response/Status";
+import { StatusCode } from "../../../../../../../lib/esm/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../lib/esm/core/http/response/StatusDescription";
+import { Chain as BaseChain } from "../../../../../../../lib/esm/modules/base/Chain";
+import { RequestParamsParser } from "../../../../../../../lib/esm/standard/handlers/RequestParamsParser";
+import { RequestValidator } from "../../../../../../../lib/esm/standard/handlers/RequestValidator";
+import { ResourceCaller } from "../../../../../../../lib/esm/standard/handlers/ResourceCaller";
+import { ResourceNotFoundHandler } from "../../../../../../../lib/esm/standard/handlers/ResourceNotFoundHandler";
+import { ResourcesIndex } from "../../../../../../../lib/esm/standard/handlers/ResourcesIndex";
 
 export const protocol = "http";
 export const hostname = "localhost";
