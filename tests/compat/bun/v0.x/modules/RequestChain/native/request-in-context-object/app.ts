@@ -19,11 +19,11 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HTTPError } from "../../../../../../../../.drashland/lib/esm/core/errors/HTTPError";
-import { StatusCode } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../../.drashland/lib/esm/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../.drashland/lib/esm/modules/RequestChain/mod.native";
-import { Status } from "../../../../../../../../.drashland/lib/esm/core/http/response/Status";
+import { HTTPError } from "../../../../../../../../lib/esm/core/errors/HTTPError";
+import { StatusCode } from "../../../../../../../../lib/esm/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../../lib/esm/core/http/response/StatusDescription";
+import * as Chain from "../../../../../../../../lib/esm/modules/chains/RequestChain/mod.native";
+import { Status } from "../../../../../../../../lib/esm/core/http/response/Status";
 
 export const protocol = "http";
 export const hostname = "localhost";

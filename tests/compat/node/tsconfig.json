@@ -3,7 +3,7 @@
     "esModuleInterop": true
   },
   "include": [
-    "../../.drashland/**/*.js",
+    "../../**/*.js",
     "./**/*.ts"
   ]
 }

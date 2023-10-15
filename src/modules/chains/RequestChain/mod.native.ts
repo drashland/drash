@@ -20,19 +20,52 @@
  */
 
 // Imports > Standard
-import { WithParams } from "../../standard/handlers/RequestParamsParser.ts";
+import { WithParams } from "../../../standard/handlers/RequestParamsParser.ts";
 
 // Imports > Modules
-import { RequestChain } from "../base/RequestChain.ts";
+import { RequestChain } from "../../base/RequestChain.ts";
 
-type HttpRequest = WithParams;
+type HTTPRequest = WithParams;
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+//
+// This public API may re-export (or relay) values exported from other modules.
+// For more information on re-export/relay, see the following:
+//
+// https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export#re-exporting_aggregating
+//
 
-export { HTTPError } from "../../core/errors/HTTPError.ts";
-export { Resource } from "../../core/http/Resource.ts";
-export { Middleware } from "../../standard/http/Middleware.ts";
-export type { HttpRequest as Request };
+// Exports > Core
+export { HTTPError } from "../../../core/errors/HTTPError.ts";
+export { Resource } from "../../../core/http/Resource.ts";
+
+// Exports > Standard
+export { Middleware } from "../../../standard/http/Middleware.ts";
+
+// Exports > Local
+export type { HTTPRequest };
+
+/**
+ * This class' purpose is to make importing this module not look and feel weird.
+ * For example, we want the `import` and `require` statements to look like:
+ *
+ * ```js
+ * const { Chain, Resource } = require("...");
+ * import { Chain, Resource } from "...";
+ * ```
+ *
+ * We do not want this (this is fugly):
+ *
+ * ```js
+ * const { builder, Resource } = require("...");
+ * import { builder, Resource } from "...";
+ * ```
+ */
+export class Chain {
+  static builder() {
+    return builder();
+  }
+}
 
 /**
  * Get the builder that builds an HTTP request chain.
@@ -41,7 +74,7 @@ export function builder() {
   return RequestChain
     .builder()
     // @ts-ignore URLPattern is available when using the Deno extension, but we
-    // should not force using a the Deno extension just to accomodate the build
-    // process having this API. Therefore, it is ignored.
+    // should not force using the Deno extension just to accomodate the build
+    // process. Therefore, it is ignored.
     .urlPatternClass(URLPattern);
 }

@@ -21,7 +21,7 @@
 
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
-import * as Chain from "../../../../../../../../src/modules/RequestChain/mod.polyfill.ts";
+import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.polyfill.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";

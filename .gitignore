@@ -8,7 +8,6 @@ yarn.lock
 
 # Directories
 
-.drashland/
 .idea/
 .vim/
 .vscode/
@@ -18,6 +17,10 @@ lib/
 node_modules/
 tmp*/
 tmp/
+
+# Directories (the build directories published to npm)
+
+lib/
 
 # Exceptions
 

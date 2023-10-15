@@ -22,7 +22,7 @@
 import { HTTPError } from "../../../src/core/errors/HTTPError.ts";
 import { StatusCode } from "../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../src/core/http/response/StatusDescription.ts";
-import * as Chain from "../../../src/modules/RequestChain/mod.native.ts";
+import * as Chain from "../../../src/modules/chains/RequestChain/mod.native.ts";
 import { ResourceGroup } from "../../../src/standard/http/ResourceGroup.ts";
 
 export function assertionMessage(...message: string[]): string {

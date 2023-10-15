@@ -2,8 +2,8 @@
   "extends": "./tsconfig.build.base.json",
   "compilerOptions": {
     "module": "commonjs",
-    "outDir": "./.drashland/lib/cjs",
-    "rootDir": "./.drashland/lib/intermediary"
+    "outDir": "./lib/cjs",
+    "rootDir": "./lib/intermediary"
   },
-  "include": ["./.drashland/lib/intermediary"]
+  "include": ["./lib/intermediary"]
 }

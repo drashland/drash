@@ -7,7 +7,7 @@
       ]
     },
     "include": ["./src", "./tests"],
-    "exclude": [".deno", ".drashland", "node_modules", "**/_unstable"]
+    "exclude": [".deno", "node_modules", "**/_unstable"]
   },
   "fmt": {
     "useTabs": false,
@@ -16,7 +16,7 @@
     "semiColons": true,
     "singleQuote": false,
     "proseWrap": "preserve",
-    "exclude": [".deno", ".drashland", "node_modules"]
+    "exclude": [".deno", "lib", "node_modules"]
   },
   "tasks": {
     "build:all:ci": "deno task build:intermediary:ci && deno task build:esm && deno task build:cjs",
@@ -25,11 +25,11 @@
     "check:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
     "build:cjs": "yarn tsc --project tsconfig.build.cjs.json",
     "build:esm": "yarn tsc --project tsconfig.build.esm.json",
-    "build:intermediary:ci": "deno fmt && deno run -A ./scripts/lib_builder/build_esm_lib.ts --debug --workspace=./.drashland/lib/intermediary --copy-files=./src",
+    "build:intermediary:ci": "deno fmt && deno run -A ./scripts/lib_builder/build_esm_lib.ts --debug --workspace=./lib/intermediary --copy-files=./src",
     "build:intermediary": "./scripts/lib_builder/build_intermediary",
     "lint:tests:bun": "deno lint tests/compat/bun",
     "lint:tests:node": "deno lint tests/compat/node*/*",
-    "release": "yarn publish --access public",
+    "publish:dry-run": "npm publish --access restricted --dry-run",
     "test:all": "deno task test:compat:bun && deno task test:compat:deno && deno task test:compat:node && deno task test:middleware:deno && deno task test:unit",
     "test:compat:bun": "bun test tests/compat/bun",
     "test:compat:cloudflare": "yarn jest --config jest.config.cloudflare.ts tests/compat/cloudflare",
@@ -39,7 +39,6 @@
     "test:middleware:deno": "deno test tests/middleware/deno --allow-net",
     "test:unit": "deno test tests/unit",
     "validate:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
-    "yarn:clean": "rm -rf node_modules && rm yarn.lock || true",
-    "yarn:publish": "deno task build:all:ci"
+    "yarn:clean": "rm -rf node_modules && rm yarn.lock || true"
   }
 }
