@@ -1,0 +1,53 @@
+name: v2.x - Code validator
+
+on:
+  pull_request:
+    branches:
+      - v2.x
+  push:
+    branches:
+      - v2.x
+
+jobs:
+
+  api-test:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: 'v2.x'
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Integration Tests
+        run: |
+          deno test -A --unsafely-ignore-certificate-errors tests/integration
+
+      - name: Unit Tests
+        run: deno test -A tests/unit
+
+  code_quality:
+    name: Code Quality
+
+    # Only one OS is required since fmt is cross platform
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: 'v2.x'
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Deno linter
+        run: deno lint
+
+      - name: Run Deno formatter check
+        run: deno fmt --check
