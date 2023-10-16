@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.build.base.json",
+  "compilerOptions": {
+    "outDir": "./lib/esm",
+    "rootDir": "./lib/intermediary"
+  },
+  "include": ["./lib/intermediary"]
+}

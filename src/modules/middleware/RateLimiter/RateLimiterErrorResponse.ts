@@ -19,4 +19,18 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+import { ResponseStatus } from "../../../core/Types.ts";
+import { HTTPError } from "../../chains/RequestChain/mod.native.ts";
+
+class RateLimiterErrorResponse extends HTTPError {
+  readonly response: Response;
+
+  constructor(status: ResponseStatus, response: Response) {
+    super(status);
+    this.response = response;
+  }
+}
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { RateLimiterErrorResponse };

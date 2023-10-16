@@ -19,4 +19,5 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+export type * from "./interfaces/IBuilder.ts";
+export type * from "./interfaces/IHandler.ts";

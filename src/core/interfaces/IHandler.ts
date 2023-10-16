@@ -19,4 +19,22 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+/**
+ * A base interface for handler classes.
+ */
+export interface IHandler<Input = unknown> {
+  /**
+   * Handle the given input to produce an output. For example, handle a request
+   * (the input) to produce a response (the output).
+   * @param input The input in question.
+   * @return The output.
+   */
+  handle<Res>(req: Input): Promise<Res>;
+
+  /**
+   * Set this handler's next handler.
+   * @param nextHandler
+   * @returns The next handler.
+   */
+  setNext(h: IHandler): IHandler;
+}

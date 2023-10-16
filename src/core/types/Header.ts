@@ -19,4 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+import { Header } from "../http/Header.ts";
+
+export type Header = (typeof Header)[keyof typeof Header];

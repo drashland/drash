@@ -19,4 +19,25 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+// Imports > Standard
+import { Handler } from "./Handler.ts";
+
+abstract class AbstractSearchIndex<SearchResult> extends Handler {
+  /**
+   * Build the index that can be searched via `this.search(...)`.
+   * @param items The items to go into the index.
+   */
+  protected abstract buildIndex(items?: unknown): void;
+
+  /**
+   * Search the index.
+   * @param input The data containing the location information for items in the
+   * index.
+   * @retuns The results of the search.
+   */
+  protected abstract search(input: unknown): Promise<SearchResult>;
+}
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { AbstractSearchIndex };

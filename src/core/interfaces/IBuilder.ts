@@ -19,4 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+/**
+ * A base interface for builder classes.
+ */
+export interface IBuilder<Product = unknown> {
+  /**
+   * Build the object.
+   */
+  build(): Product;
+}

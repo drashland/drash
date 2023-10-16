@@ -19,4 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+import { Level } from "./Level.ts";
+
+/**
+ * Log levels in ascending order.
+ */
+export type LogLevel = (typeof Level)[keyof typeof Level];

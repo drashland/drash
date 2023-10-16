@@ -19,4 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+import { StatusDescription } from "../http/response/StatusDescription.ts";
+
+export type ResponseStatusDescription =
+  (typeof StatusDescription)[keyof typeof StatusDescription];

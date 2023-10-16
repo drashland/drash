@@ -19,4 +19,45 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+// Imports > Standard
+import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
+
+/**
+ * Builder for building a chain of handlers.
+ */
+class Builder extends AbstractChainBuilder {
+  /**
+   * Chain all handlers together.
+   * @returns The first handler.
+   */
+  public build() {
+    const firstHandler = this.link();
+
+    if (!firstHandler) {
+      throw new Error(
+        "Chain.Builder: No handlers set. Did you forget to call `this.handlers()`?",
+      );
+    }
+
+    return firstHandler;
+  }
+}
+
+class Chain {
+  /**
+   * @see {@link Builder} for implementation.
+   */
+  static Builder = Builder;
+
+  /**
+   * Get the builder for building a chain of handlers.
+   * @returns An instance of the builder.
+   */
+  static builder(): Builder {
+    return new Builder();
+  }
+}
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { type Builder, Chain };

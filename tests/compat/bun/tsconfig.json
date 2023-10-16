@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "types": [
+      "bun-types"
+    ]
+  },
+  "include": [
+    "../../src/**/*.ts",
+    "./**/*.ts"
+  ]
+}

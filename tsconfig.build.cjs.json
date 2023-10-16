@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.build.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "./lib/cjs",
+    "rootDir": "./lib/intermediary"
+  },
+  "include": ["./lib/intermediary"]
+}

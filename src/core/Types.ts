@@ -19,4 +19,8 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+export type * from "./types/MethodOf.ts";
+export type * from "./types/RequestMethod.ts";
+export type * from "./types/ResponseStatus.ts";
+export type * from "./types/ResponseStatusDescription.ts";
+export type * from "./types/ResponseStatusName.ts";

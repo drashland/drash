@@ -19,4 +19,31 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+// Imports > Standard
+import { AbstractLogger } from "./AbstractLogger.ts";
+import { Level } from "./Level.ts";
+import type { LogLevel } from "./LogLevel.ts";
+
+class ConsoleLogger extends AbstractLogger {
+  /**
+   * Create this logger.
+   * @param name
+   * @param level The highest log message level this logger can write.
+   * @returns
+   */
+  static create(name: string, level: LogLevel = Level.Off): ConsoleLogger {
+    return new ConsoleLogger(name, level);
+  }
+
+  protected write(
+    level: string,
+    message: string,
+    replacements: unknown[],
+  ): void {
+    console.log(this.getFormattedMessage(level, message, replacements));
+  }
+}
+
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export { ConsoleLogger, Level };

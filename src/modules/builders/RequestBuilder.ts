@@ -19,4 +19,52 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+class RequestBuilder {
+  #request: RequestInit = {};
+  #path = "<path not provided>";
+
+  path(path: string) {
+    this.#path = path;
+    return this;
+  }
+
+  get() {
+    this.#request.method = "get";
+    return this;
+  }
+
+  post() {
+    this.#request.method = "post";
+    return this;
+  }
+
+  put() {
+    this.#request.method = "put";
+    return this;
+  }
+
+  patch() {
+    this.#request.method = "patch";
+    return this;
+  }
+
+  delete() {
+    this.#request.method = "delete";
+    return this;
+  }
+
+  build() {
+    return new Request(this.#path, this.#request);
+  }
+}
+
+/**
+ * Get a {@link Request} builder.
+ *
+ * @returns A response builder.
+ *
+ * @see {@link RequestBuilder} for implementation details.
+ */
+export function request() {
+  return new RequestBuilder();
+}

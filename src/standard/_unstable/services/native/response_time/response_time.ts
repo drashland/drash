@@ -19,4 +19,25 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+import * as Interfaces from "../../../src/core/Interfaces.ts";
+
+export class ResponseTimeService implements Interfaces.Service {
+  #startTime = 0;
+
+  #endTime = 0;
+
+  runBeforeResource() {
+    this.#startTime = new Date().getTime();
+  }
+
+  runAfterResource(_request: Interfaces.NativeRequest, response: Response) {
+    this.#endTime = new Date().getTime();
+    const time = (this.#endTime - this.#startTime) + "ms";
+
+    return new Response(response.body, {
+      headers: {
+        "X-RESPONSE-TIME": time.toString(),
+      },
+    });
+  }
+}

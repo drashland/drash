@@ -19,4 +19,16 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+/**
+ * Log levels in ascending order.
+ */
+export const Level = {
+  Off: 0,
+  Fatal: 1,
+  Error: 2,
+  Warn: 3,
+  Info: 4,
+  Debug: 5,
+  Trace: 6,
+  All: 7,
+} as const;

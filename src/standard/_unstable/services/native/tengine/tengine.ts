@@ -19,4 +19,28 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+import * as Interfaces from "../../../src/core/Interfaces.ts";
+import { Jae } from "./jae.ts";
+
+interface IOptions {
+  // deno-lint-ignore camelcase
+  views_path: string;
+}
+
+export class TengineService implements Interfaces.Service {
+  readonly #options: IOptions;
+  #template_engine: Jae;
+
+  constructor(options: IOptions) {
+    this.#options = options;
+    this.#template_engine = new Jae(this.#options.views_path);
+  }
+
+  runAfterResource(_request: Request, response: Response) {
+    response.headers.set("Content-Type", "text/html");
+  }
+
+  render<T extends unknown>(filepath: string, data: T): string {
+    return this.#template_engine.render(filepath, data);
+  }
+}

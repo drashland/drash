@@ -19,4 +19,5 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+export { ConsoleLogger } from "https://deno.land/x/unLogger@v1.1.0/mod.ts";
+export type { LoggerConfigs } from "https://deno.land/x/unLogger@v1.1.0/src/logger.ts";

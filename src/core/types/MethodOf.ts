@@ -19,4 +19,35 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+/**
+ * A utility type that lets the compiler and reader know: the member
+ * assigned this type is a method of the given generic `Object`.
+ *
+ * @example
+ * ```ts
+ * class One {
+ *   a() {}
+ *   b() {}
+ *   c() {}
+ * }
+ *
+ * const methods = ["a", "b", "c"];
+ *
+ * const one = new One();
+ *
+ * one[methods[0]]();
+ * // Element implicitly has an 'any' type because expression of type 'string'
+ * // can't be used to index type 'One'.(7053)
+ *
+ * one[methods[0] as MethodOf<One>]();
+ * // OK
+ * ```
+ */
+export type MethodOf<Object> = {
+  [K in keyof Object]: Object[K] extends Func ? K
+    : never;
+}[keyof Object];
+
+type Func =
+  | ((...args: unknown[]) => unknown)
+  | (() => unknown);

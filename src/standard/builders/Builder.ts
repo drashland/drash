@@ -19,4 +19,16 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+/**
+ * @template C The class that will be instantiated and returned when calling the
+ * `build()` method.
+ */
+interface Builder<C> {
+  /**
+   * Instantiate the class and return it.
+   */
+  build(): C;
+}
+// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
+
+export type { Builder };

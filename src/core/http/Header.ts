@@ -19,4 +19,22 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * as asserts from "https://deno.land/std@v0.204.0/assert/mod.ts";
+export const Header = {
+  AccessControlAllowCredentials: "Access-Control-Allow-Credentials",
+  AccessControlAllowHeaders: "Access-Control-Allow-Headers",
+  AccessControlAllowMethods: "Access-Control-Allow-Methods",
+  AccessControlAllowOrigin: "Access-Control-Allow-Origin",
+  AccessControlExposeHeaders: "Access-Control-Expose-Headers",
+  AccessControlMaxAge: "Access-Control-Max-Age",
+  AccessControlRequestHeaders: "Access-Control-Request-Headers",
+  AccessControlRequestMethod: "Acces-Control-Request-Method",
+  ContentLength: "Content-Length",
+  ContentType: "Content-Type",
+  Date: "Date",
+  ETag: "ETag",
+  IfMatch: "If-Match",
+  IfNoneMatch: "If-None-Match",
+  LastModified: "Last-Modified",
+  RetryAfter: "Retry-After",
+  Vary: "Vary",
+} as const;
