@@ -239,11 +239,11 @@ function getTestCases(): TestCase[] {
           class AcceptHeaderResource extends Chain.Resource {
             paths = ["/accept-header"];
 
-            GET(_request: Chain.Request) {
+            GET(_request: Chain.HTTPRequest) {
               return new Response("Hello from GET.");
             }
 
-            POST(_request: Chain.Request) {
+            POST(_request: Chain.HTTPRequest) {
               return new Response(
                 JSON.stringify({ message: "Hello from POST." }),
                 {
@@ -256,11 +256,11 @@ function getTestCases(): TestCase[] {
               );
             }
 
-            DELETE(_request: Chain.Request) {
+            DELETE(_request: Chain.HTTPRequest) {
               return new Response("Deleted!");
             }
 
-            PATCH(_request: Chain.Request) {
+            PATCH(_request: Chain.HTTPRequest) {
               throw new HTTPError(Status.MethodNotAllowed);
             }
           },

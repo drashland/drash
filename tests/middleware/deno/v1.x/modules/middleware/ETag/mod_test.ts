@@ -340,7 +340,7 @@ function getTestCases(): TestCase[] {
             public paths = ["/users/:id?"];
             #number_of_requests_received = 0;
 
-            public GET(request: Chain.Request) {
+            public GET(request: Chain.HTTPRequest) {
               const id = request.params.pathParam("id");
 
               if (id) {

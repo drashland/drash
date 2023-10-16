@@ -121,7 +121,7 @@ export function chain(options: {
           class Home extends Chain.Resource {
             public paths = ["/"];
 
-            public GET(_request: Chain.Request) {
+            public GET(_request: Chain.HTTPRequest) {
               return new Response("Hello from Home.GET()!");
             }
           },

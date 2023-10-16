@@ -406,7 +406,7 @@ function getTestCases(): (() => TestCase)[] {
             class Throttled extends Chain.Resource {
               public paths = ["/throttled/:id?"];
 
-              public GET(request: Chain.Request) {
+              public GET(request: Chain.HTTPRequest) {
                 const id = request.params.pathParam("id");
 
                 if (id) {
