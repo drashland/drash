@@ -6,8 +6,6 @@
     "target": "es2015"
   },
   "include": [
-    "./core/**/*.ts",
-    "./modules/**/*.ts",
-    "./standard/**/*.ts"
+    "../src/**/*.ts"
   ]
 }

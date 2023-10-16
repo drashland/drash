@@ -1,0 +1,125 @@
+name: v3.x - Publish Release (npm)
+
+on:
+  release:
+    types: [published]
+
+  # In the even this workflow fails, it can be started manually via
+  # `workflow_dispatch`
+  workflow_dispatch:
+
+jobs:
+
+  ##############################################################################
+  # RELEASE VERSION CHECK
+  ##############################################################################
+  #
+  # Sometimes we forget to update the `version` field in the `package.json`
+  # file. It is intentional to manually update that file. As a result, we need
+  # this workflow to check that we updated the version before releasing.
+  #
+  
+  check_release_version:
+    name: Check version in package.json
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Pre-check release version
+        run: |
+          deno run --allow-read ./console/pre_check_release.ts ${{ github.event.release.tag_name }}
+
+  ##############################################################################
+  # CODE QUALITY
+  ##############################################################################
+
+  check_file_headers:
+    name: Check file headers
+    needs: [check_release_version]
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Check file headers
+        run: |
+          deno task check:file-headers
+
+  lint_code:
+    name: Check for lint
+    needs: [check_release_version]
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Deno linter
+        run: deno lint
+
+  code_formatting:
+    name: Check code formatting
+    needs: [check_release_version]
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Deno formatter check
+        run: deno fmt --check
+
+  ##############################################################################
+  # PUBLISH TO REGISTRY
+  ##############################################################################
+
+  publish:
+    name: Publish to registry (https://registry.npmjs.org)
+    needs: [check_release_version, check_file_headers, lint_code, code_formatting]
+    if: startsWith(github.event.release.tag_name, 'v3.')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node (latest)
+        uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@drashland'
+
+      - name: Install Node dependencies
+        run: yarn install
+
+      - name: Build Drash libs
+        run: |
+          deno task build:all:ci
+
+      - name: Publish
+        run: |
+          yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}

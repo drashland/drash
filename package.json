@@ -1,6 +1,6 @@
 {
-  "name": "@crookse/drash",
-  "version": "3.0.0-beta.202310151150",
+  "name": "@drashland/drash",
+  "version": "3.0.0-beta.01",
   "description": "A microframework for building JavaScript HTTP applications",
   "license": "GPL-3.0",
   "repository": {

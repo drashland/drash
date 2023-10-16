@@ -1,0 +1,206 @@
+name: v3.x - Code Validation
+
+on:
+  pull_request:
+    branches:
+      - v3.x
+      - v3.x-beta
+      - v3.x-staging
+  push:
+    branches:
+      - v3.x
+      - v3.x-beta
+      - v3.x-staging
+
+jobs:
+
+  ##############################################################################
+  # CODE QUALITY
+  ##############################################################################
+
+  check_file_headers:
+    name: Check file headers
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Check file headers
+        run: |
+          deno task check:file-headers
+
+  lint_code:
+    name: Check for lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Deno linter
+        run: deno lint
+
+  code_formatting:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Deno formatter check
+        run: deno fmt --check
+
+  ##############################################################################
+  # TESTS - COMPATIBILITY
+  ##############################################################################
+
+  tests_compat_bun:
+    name: Compat - Bun
+    needs: [check_file_headers, lint_code, code_formatting]
+
+    strategy:
+      matrix:
+        # Add Windows when https://github.com/oven-sh/bun/issues/43 is complete
+        os: [ubuntu-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno (for `deno` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+
+      - name: Run Tests
+        run: |
+          deno task build:all:ci && ~/.bun/bin/bun test tests/compat/bun
+
+  tests_compat_cloudflare:
+    name: Compat - Cloudflare
+    needs: [check_file_headers, lint_code, code_formatting]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno (for `deno` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
+      - name: Run Tests
+        run: |
+          deno task build:all:ci && deno task test:compat:cloudflare
+
+  tests_compat_deno:
+    name: Compat - Deno
+    needs: [check_file_headers, lint_code, code_formatting]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Run Tests
+        run: |
+          deno task test:compat:deno
+
+      - name: Run Tests (Concurrency)
+        run: |
+          deno task test:compat:deno:concurrency
+
+      - name: Run Tests (Middleware)
+        run: |
+          dneo task test:middleware:deno
+
+  tests_compat_node:
+    name: Compat - Node
+    needs: [check_file_headers, lint_code, code_formatting]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno (for `deno` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Instal Node dependencies
+        run: |
+          yarn install
+
+      - name: Run Tests
+        run: |
+          deno task build:all:ci && deno task test:compat:node
+
+  ##############################################################################
+  # TESTS - UNIT
+  ##############################################################################
+
+  tests_unit:
+    name: Compat - Node
+    needs: [check_file_headers, lint_code, code_formatting]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno (for `deno` command)
+        uses: denoland/setup-deno@v1
+
+      - name: Run Tests
+        run: |
+          deno task test:unit
