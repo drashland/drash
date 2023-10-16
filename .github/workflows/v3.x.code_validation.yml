@@ -150,7 +150,7 @@ jobs:
 
       - name: Run Tests (Middleware)
         run: |
-          dneo task test:middleware:deno
+          deno task test:middleware:deno
 
   tests_compat_node:
     name: Compat - Node
