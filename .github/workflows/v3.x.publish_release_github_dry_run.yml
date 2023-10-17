@@ -32,7 +32,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version ${{ github.event.release.tag_name }}
+          deno task check:package-json-version ${{ github.event.inputs.tag_name }}
 
   ##############################################################################
   # CODE QUALITY
