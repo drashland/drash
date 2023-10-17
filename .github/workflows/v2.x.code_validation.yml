@@ -1,4 +1,4 @@
-name: v2.x - Code validator
+name: v2.x - Code Validation
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: 'v2.x'
 
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: 'v2.x'
 

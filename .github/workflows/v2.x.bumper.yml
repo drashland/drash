@@ -1,4 +1,4 @@
-name: v2.x - Update deps
+name: v2.x - Bumper
 
 on:
   schedule:
@@ -10,7 +10,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: 'v2.x'
           token: ${{ secrets.CI_USER_PAT }}
@@ -63,4 +63,3 @@ jobs:
         branch: chore/v2.x-update-deps
         labels: |
           Type: Chore
-
