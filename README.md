@@ -4,7 +4,7 @@
 
 Drash - A microframework for building JavaScript/TypeScript HTTP systems.
 
-View the full documentation at https://drash.land/drash/v3.x.
+View the full documentation at https://drash.land/drash-v3.x.
 
 ## Contributing
 
