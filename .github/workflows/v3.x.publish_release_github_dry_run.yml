@@ -29,7 +29,7 @@ jobs:
 
       - name: Pre-check release version
         run: |
-          deno run --allow-read ./console/pre_check_release.ts ${{ github.event.release.tag_name }}
+          deno task check:package-json-version ${{ github.event.release.tag_name }}
 
   ##############################################################################
   # CODE QUALITY

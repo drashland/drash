@@ -32,9 +32,9 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Pre-check release version
+      - name: Perform version check
         run: |
-          deno run --allow-read ./console/pre_check_release.ts ${{ github.event.release.tag_name }}
+          deno task check:package-json-version ${{ github.event.release.tag_name }}
 
   ##############################################################################
   # CODE QUALITY
