@@ -1,11 +1,6 @@
 name: v3.x - Publish Release (GitHub - Dry Run)
 
 on:
-  release:
-    types: [published]
-
-  # In the even this workflow fails, it can be started manually via
-  # `workflow_dispatch`
   workflow_dispatch:
 
 jobs:
