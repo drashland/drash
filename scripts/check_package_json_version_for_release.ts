@@ -7,9 +7,10 @@ const packageJsonContents = new TextDecoder().decode(
 const packageJson = JSON.parse(packageJsonContents);
 const packageJsonVersion = `v${packageJson.version}`;
 
-console.log("\n/////////////////////////////////////////\n")
-console.log("\n//////////// MOMENT OF TRUTH ////////////\n")
-console.log("\n/////////////////////////////////////////\n")
+console.log("\n");
+console.log("/////////////////////////////////////////")
+console.log("//////////// MOMENT OF TRUTH ////////////")
+console.log("/////////////////////////////////////////")
 
 console.log("Checking package.json version with GitHub release tag version ...\n");
 
