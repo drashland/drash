@@ -1,24 +1,42 @@
-const versionToPublish = Deno.args[0];
-
 const packageJsonContents = new TextDecoder().decode(
   Deno.readFileSync("./package.json"),
 );
+
+const isManualRelease = Deno.args.includes("--manual-release");
+
+const versionOptionIndex = Deno.args.indexOf("--version");
+
+if (versionOptionIndex === -1) {
+  console.log(`Option '--version=<version>' was not specified`);
+  Deno.exit(1);
+}
+
+const versionToPublish = Deno.args[versionOptionIndex + 1];
 
 console.log(`
 /////////////////////////////////////////
 //////////// MOMENT OF TRUTH ////////////
 /////////////////////////////////////////
+
+
+Running with script options:
+
+  --manual-release: ${isManualRelease}
+  --version:        ${versionToPublish}
+
 `);
 
 console.log(
-  `Checking package.json version with GitHub release tag version ...\n`,
+  `Checking package.json version with GitHub release tag version ...`,
 );
 
 const packageJson = JSON.parse(packageJsonContents);
 const packageJsonVersion = `v${packageJson.version}`;
 
-console.log(`package.json version:   ${packageJsonVersion}`);
-console.log(`GitHub release version: ${versionToPublish}`);
+console.log(`
+  - package.json version:   ${packageJsonVersion}
+  - GitHub release version: ${versionToPublish}
+`);
 
 if (packageJsonVersion !== versionToPublish) {
   console.log(`
@@ -26,7 +44,7 @@ if (packageJsonVersion !== versionToPublish) {
 !! Version mismatch !!
 !! Version mismatch !!
 
-Stopping release proces
+Stopping release process
 
 !! Version mismatch !!
 !! Version mismatch !!

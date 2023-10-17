@@ -32,7 +32,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version ${{ github.event.inputs.tag_name }}
+          deno task check:package-json-version --version ${{ github.event.inputs.tag_name }}
 
   ##############################################################################
   # CODE QUALITY
@@ -91,6 +91,7 @@ jobs:
   publish:
     name: (dry-run) Publish to registry (https://npm.pkg.github.com)
     needs: [check_release_version, check_file_headers, lint_code, code_formatting]
+
 
     runs-on: ubuntu-latest
 

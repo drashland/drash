@@ -1,12 +1,10 @@
 name: v3.x - Publish Release (GitHub)
 
 on:
+  # This workflow does not need a workflow_dispatch trigger. If this workflow
+  # fails, then re-run it.
   release:
     types: [published]
-
-  # In the even this workflow fails, it can be started manually via
-  # `workflow_dispatch`
-  workflow_dispatch:
 
 jobs:
 
@@ -34,7 +32,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version ${{ github.event.release.tag_name }}
+          deno task check:package-json-version --version ${{ github.event.release.tag_name }}
 
   ##############################################################################
   # CODE QUALITY
@@ -110,9 +108,6 @@ jobs:
         with:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@drashland'
-
-      - name: Install Node dependencies
-        run: yarn install
 
       - name: Build Drash libs
         run: |
