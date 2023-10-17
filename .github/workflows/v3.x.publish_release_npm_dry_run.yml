@@ -89,7 +89,7 @@ jobs:
   ##############################################################################
 
   publish:
-    name: Publish to registry (https://registry.npmjs.org)
+    name: (Dry Run) Publish to registry (https://registry.npmjs.org)
     needs: [check_release_version, check_file_headers, lint_code, code_formatting]
 
     runs-on: ubuntu-latest
