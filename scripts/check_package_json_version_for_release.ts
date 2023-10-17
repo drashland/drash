@@ -4,9 +4,6 @@ const packageJsonContents = new TextDecoder().decode(
   Deno.readFileSync("./package.json"),
 );
 
-const packageJson = JSON.parse(packageJsonContents);
-const packageJsonVersion = `v${packageJson.version}`;
-
 console.log(`
 /////////////////////////////////////////
 //////////// MOMENT OF TRUTH ////////////
@@ -14,6 +11,10 @@ console.log(`
 `);
 
 console.log(`Checking package.json version with GitHub release tag version ...\n`);
+
+const packageJson = JSON.parse(packageJsonContents);
+const packageJsonVersion = `v${packageJson.version}`;
+
 console.log(`package.json version:   ${packageJsonVersion}`);
 console.log(`GitHub release version: ${versionToPublish}`);
 
