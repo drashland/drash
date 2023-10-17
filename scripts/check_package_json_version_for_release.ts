@@ -10,7 +10,9 @@ console.log(`
 /////////////////////////////////////////
 `);
 
-console.log(`Checking package.json version with GitHub release tag version ...\n`);
+console.log(
+  `Checking package.json version with GitHub release tag version ...\n`,
+);
 
 const packageJson = JSON.parse(packageJsonContents);
 const packageJsonVersion = `v${packageJson.version}`;
