@@ -27,7 +27,7 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Pre-check release version
+      - name: Perform version check
         run: |
           deno task check:package-json-version ${{ github.event.release.tag_name }}
 
