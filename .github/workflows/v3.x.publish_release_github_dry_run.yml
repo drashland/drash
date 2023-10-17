@@ -85,11 +85,11 @@ jobs:
         run: deno fmt --check
 
   ##############################################################################
-  # PUBLISH TO REGISTRY
+  # (DRY-RUN) PUBLISH TO REGISTRY
   ##############################################################################
 
   publish:
-    name: (Dry Run) Publish to registry (https://npm.pkg.github.com)
+    name: (dry-run) Publish to registry (https://npm.pkg.github.com)
     needs: [check_release_version, check_file_headers, lint_code, code_formatting]
 
     runs-on: ubuntu-latest
@@ -115,6 +115,13 @@ jobs:
         run: |
           deno task build:all:ci
 
-      - name: Publish (Dry Run)
+      - name: (artifacts) Upload Drash libs
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.tag_name }}
+          path: lib
+          retention-days: 1
+
+      - name: (dry-run) Publish
         run: |
           npm publish --access restricted --dry-run
