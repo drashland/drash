@@ -63,4 +63,3 @@ jobs:
         branch: chore/v2.x-update-deps
         labels: |
           Type: Chore
-
