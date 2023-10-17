@@ -7,28 +7,34 @@ const packageJsonContents = new TextDecoder().decode(
 const packageJson = JSON.parse(packageJsonContents);
 const packageJsonVersion = `v${packageJson.version}`;
 
-console.log("\n");
-console.log("/////////////////////////////////////////");
-console.log("//////////// MOMENT OF TRUTH ////////////");
-console.log("/////////////////////////////////////////");
+console.log(`
+/////////////////////////////////////////
+//////////// MOMENT OF TRUTH ////////////
+/////////////////////////////////////////
+`);
 
-console.log(
-  "Checking package.json version with GitHub release tag version ...\n",
-);
-
+console.log(`Checking package.json version with GitHub release tag version ...\n`);
 console.log(`package.json version:   ${packageJsonVersion}`);
-console.log(`GitHub release version: ${versionToPublish}\n`);
+console.log(`GitHub release version: ${versionToPublish}`);
 
 if (packageJsonVersion !== versionToPublish) {
-  console.log("!! Version mismatch !!");
-  console.log("!! Version mismatch !!");
-  console.log("!! Version mismatch !!");
-  console.log("\n\nStopping release process\n\n");
-  console.log("!! Version mismatch !!");
-  console.log("!! Version mismatch !!");
-  console.log("!! Version mismatch !!");
+  console.log(`
+!! Version mismatch !!
+!! Version mismatch !!
+!! Version mismatch !!
+
+Stopping release proces
+
+!! Version mismatch !!
+!! Version mismatch !!
+!! Version mismatch !!
+`);
+
   Deno.exit(1);
-} else {
-  console.log("Versions match");
-  console.log("\n\nProceeding with release workflow\n\n");
 }
+
+console.log(`
+Versions match
+
+Proceeding with release workflow. Godspeed.
+`);
