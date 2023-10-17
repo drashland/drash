@@ -2,6 +2,9 @@ name: v3.x - Publish Release (GitHub - Dry Run)
 
 on:
   workflow_dispatch:
+    inputs:
+      tag_name:
+        type: string
 
 jobs:
 
