@@ -111,7 +111,7 @@ jobs:
 
       - name: Build Drash libs
         run: |
-          deno task build:all:ci
+          yarn install && deno task build:all:ci
 
       - name: Publish
         run: |
