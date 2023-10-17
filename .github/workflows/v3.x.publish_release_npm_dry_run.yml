@@ -108,13 +108,13 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           scope: '@drashland'
 
-      - name: Install Node dependencies
-        run: yarn install
-
       - name: Build Drash libs
         run: |
           deno task build:all:ci
 
+      # The uploaded artifact will contain the `intermediary` directory. This
+      # directory is not included when publishing to the registry. It is
+      # included in the artifact for debugging purposes.
       - name: (artifacts) Upload Drash libs
         uses: actions/upload-artifact@v3
         with:
