@@ -19,17 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Chain as BaseChain } from "../../../../../../../lib/esm/modules/base/Chain";
-import { RequestParamsParser } from "../../../../../../../lib/esm/standard/handlers/RequestParamsParser";
-import { RequestValidator } from "../../../../../../../lib/esm/standard/handlers/RequestValidator";
-import { ResourceCaller } from "../../../../../../../lib/esm/standard/handlers/ResourceCaller";
-import { ResourceNotFoundHandler } from "../../../../../../../lib/esm/standard/handlers/ResourceNotFoundHandler";
-import { Status } from "../../../../../../../lib/esm/core/http/response/Status";
-import { Resource } from "../../../../../../../lib/esm/core/http/Resource";
-import { HTTPError } from "../../../../../../../lib/esm/core/errors/HTTPError";
-import { ResourcesIndex } from "../../../../../../../lib/esm/standard/handlers/ResourcesIndex";
+import { Chain as BaseChain } from "../../../../../../../lib/modules/base/Chain";
+import { RequestParamsParser } from "../../../../../../../lib/standard/handlers/RequestParamsParser";
+import { RequestValidator } from "../../../../../../../lib/standard/handlers/RequestValidator";
+import { ResourceCaller } from "../../../../../../../lib/standard/handlers/ResourceCaller";
+import { ResourceNotFoundHandler } from "../../../../../../../lib/standard/handlers/ResourceNotFoundHandler";
+import { Status } from "../../../../../../../lib/core/http/response/Status";
+import { Resource } from "../../../../../../../lib/core/http/Resource";
+import { HTTPError } from "../../../../../../../lib/core/errors/HTTPError";
+import { ResourcesIndex } from "../../../../../../../lib/standard/handlers/ResourcesIndex";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../lib/esm/core/http/response/StatusDescription";
+import { StatusDescription } from "../../../../../../../lib/core/http/response/StatusDescription";
 
 export const protocol = "http";
 export const hostname = "localhost";
