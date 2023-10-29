@@ -2,12 +2,7 @@
   "name": "@drashland/drash",
   "version": "3.0.0-preview.01",
   "description": "A microframework for building JavaScript HTTP applications",
-  "license": "GPL-3.0",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/drashland/drash.git"
-  },
-  "author": "Drash Land",
+  "author": "Eric Crooks <eric.crooks.github@gmail.com> (https://crookse.com)",
   "contributors": [
     {
       "name": "Breno",
@@ -18,17 +13,9 @@
       "url": "https://github.com/ebebbington"
     },
     {
-      "name": "Eric",
-      "url": "https://github.com/crookse"
-    },
-    {
       "name": "Sara",
       "url": "https://github.com/saragee3"
     }
-  ],
-  "files": [
-    "./lib/cjs",
-    "./lib/esm"
   ],
   "devDependencies": {
     "@babel/preset-env": "^7.22.10",
@@ -41,7 +28,28 @@
     "jest-environment-miniflare": "2.7.1",
     "ts-jest": "^29.0.1",
     "ts-node": "^10.9.1",
+    "tsup": "^7.2.0",
     "typescript": "5.x",
     "wrangler": "^2.12.0"
+  },
+  "keywords": [
+    "api",
+    "app",
+    "bun",
+    "cloudflare",
+    "deno",
+    "drash",
+    "drashland",
+    "framework",
+    "http",
+    "node",
+    "resource",
+    "rest",
+    "web"
+  ],
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/drashland/drash.git"
   }
 }

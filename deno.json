@@ -19,6 +19,7 @@
     "exclude": [".deno", "lib", "node_modules"]
   },
   "tasks": {
+    "build:tsup": "./scripts/tsupper",
     "build:all:ci": "deno task build:intermediary:ci && deno task build:esm && deno task build:cjs",
     "build:all": "./scripts/build_all",
     "build:check": "deno task check:file-headers && deno task yarn:clean && yarn install && deno task build:all && deno task test:all",

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+(
+  rm -r dist 2>/dev/null
+  rm -r lib 2>/dev/null
+
+  mkdir lib
+
+  yarn tsup src/core --format cjs,esm --no-splitting --dts
+  mv dist lib/core
+
+  yarn tsup src/standard --format cjs,esm --no-splitting --dts
+  mv dist lib/standard
+
+  yarn tsup src/modules --format cjs,esm --no-splitting --dts
+  mv dist lib/modules
+
+  cp README.md lib/README.md && \
+  cp COPYING lib/COPYING && \
+  cp AUTHORS lib/AUTHORS && \
+  deno run --allow-read --allow-write ./scripts/tinyit.ts
+)
