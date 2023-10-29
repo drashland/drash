@@ -5,10 +5,12 @@ const packageJsonContents = new TextDecoder().decode(
 const packageJson = JSON.parse(packageJsonContents);
 
 const {
-    devDependencies,
-    scripts,
-    ...rest
+  devDependencies,
+  scripts,
+  ...rest
 } = packageJson;
 
-
-Deno.writeFileSync("./lib/package.json", new TextEncoder().encode(JSON.stringify(rest, null, 2)));
+Deno.writeFileSync(
+  "./lib/package.json",
+  new TextEncoder().encode(JSON.stringify(rest, null, 2)),
+);
