@@ -111,11 +111,8 @@ jobs:
 
       - name: Build Drash libs
         run: |
-          yarn install && deno task build:all:ci
+          yarn install && deno task build:tsup
 
-      # The uploaded artifact will contain the `intermediary` directory. This
-      # directory is not included when publishing to the registry. It is
-      # included in the artifact for debugging purposes.
       - name: (artifacts) Upload Drash libs
         uses: actions/upload-artifact@v3
         with:
