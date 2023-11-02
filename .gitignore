@@ -3,6 +3,7 @@
 .DS_Store
 .env
 *.log
+bun.lockb
 package-lock.json
 yarn.lock
 
@@ -20,7 +21,7 @@ tmp/
 
 # Directories (the build directories published to npm)
 
-lib/
+dist/
 
 # Exceptions
 

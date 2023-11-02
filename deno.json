@@ -16,7 +16,7 @@
     "semiColons": true,
     "singleQuote": false,
     "proseWrap": "preserve",
-    "exclude": [".deno", "lib", "node_modules"]
+    "exclude": [".deno", "dist", "lib", "node_modules"]
   },
   "tasks": {
     "build:libs": "deno run --allow-read --allow-write --allow-net ./scripts/doit.ts && yarn tsup src --format cjs,esm --no-splitting --dts",
