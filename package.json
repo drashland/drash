@@ -3,6 +3,11 @@
   "version": "3.0.0-preview.01",
   "description": "A microframework for building JavaScript HTTP applications",
   "author": "Eric Crooks <eric.crooks.github@gmail.com> (https://crookse.com)",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/drashland/drash.git"
+  },
   "contributors": [
     {
       "name": "Breno",
@@ -46,10 +51,5 @@
     "resource",
     "rest",
     "web"
-  ],
-  "license": "GPL-3.0",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/drashland/drash.git"
-  }
+  ]
 }

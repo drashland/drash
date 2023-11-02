@@ -7,7 +7,7 @@
       ]
     },
     "include": ["./src", "./tests"],
-    "exclude": [".deno", "node_modules", "**/_unstable"]
+    "exclude": [".deno", "dist", "node_modules", "**/_unstable"]
   },
   "fmt": {
     "useTabs": false,
@@ -19,8 +19,7 @@
     "exclude": [".deno", "lib", "node_modules"]
   },
   "tasks": {
-    "build:tsup": "./scripts/tsupper",
-    "build:all": "./scripts/build_all",
+    "build:libs": "deno run --allow-read --allow-write --allow-net ./scripts/doit.ts && yarn tsup src --format cjs,esm --no-splitting --dts",
     "build:check": "deno task check:file-headers && deno task yarn:clean && yarn install && deno task build:all && deno task test:all",
     "check:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
     "check:package-json-version": "deno run --allow-read ./scripts/check_package_json_version_for_release.ts",
