@@ -21,11 +21,11 @@
 
 import { IncomingMessage, ServerResponse } from "node:http";
 
-import { HTTPError } from "../../../../../../../../lib/core/errors/HTTPError";
-import { StatusCode } from "../../../../../../../../lib/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../../lib/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../lib/modules/chains/RequestChain/mod.polyfill";
-import { Status } from "../../../../../../../../lib/core/http/response/Status";
+import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
+import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
+import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.polyfill";
+import { Status } from "../../../../../../../../dist/core/http/response/Status";
 
 export const protocol = "http";
 export const hostname = "localhost";

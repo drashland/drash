@@ -19,11 +19,11 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HTTPError } from "../../../../../../../../lib/core/errors/HTTPError";
-import { Status } from "../../../../../../../../lib/core/http/response/Status";
-import { StatusCode } from "../../../../../../../../lib/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../../lib/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../lib/modules/chains/RequestChain/mod.polyfill";
+import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
+import { Status } from "../../../../../../../../dist/core/http/response/Status";
+import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
+import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.polyfill";
 
 export const protocol = "http";
 export const hostname = "localhost";

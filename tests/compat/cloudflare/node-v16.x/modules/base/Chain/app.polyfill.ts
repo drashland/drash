@@ -19,17 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HTTPError } from "../../../../../../../lib/core/errors/HTTPError";
-import { Resource } from "../../../../../../../lib/core/http/Resource";
-import { Status } from "../../../../../../../lib/core/http/response/Status";
-import { StatusCode } from "../../../../../../../lib/core/http/response/StatusCode";
-import { StatusDescription } from "../../../../../../../lib/core/http/response/StatusDescription";
-import { Chain as BaseChain } from "../../../../../../../lib/modules/base/Chain";
-import { RequestParamsParser } from "../../../../../../../lib/standard/handlers/RequestParamsParser";
-import { RequestValidator } from "../../../../../../../lib/standard/handlers/RequestValidator";
-import { ResourceCaller } from "../../../../../../../lib/standard/handlers/ResourceCaller";
-import { ResourceNotFoundHandler } from "../../../../../../../lib/standard/handlers/ResourceNotFoundHandler";
-import { ResourcesIndex } from "../../../../../../../lib/standard/handlers/ResourcesIndex";
+import { HTTPError } from "../../../../../../../dist/core/errors/HTTPError";
+import { Resource } from "../../../../../../../dist/core/http/Resource";
+import { Status } from "../../../../../../../dist/core/http/response/Status";
+import { StatusCode } from "../../../../../../../dist/core/http/response/StatusCode";
+import { StatusDescription } from "../../../../../../../dist/core/http/response/StatusDescription";
+import { Chain as BaseChain } from "../../../../../../../dist/modules/base/Chain";
+import { RequestParamsParser } from "../../../../../../../dist/standard/handlers/RequestParamsParser";
+import { RequestValidator } from "../../../../../../../dist/standard/handlers/RequestValidator";
+import { ResourceCaller } from "../../../../../../../dist/standard/handlers/ResourceCaller";
+import { ResourceNotFoundHandler } from "../../../../../../../dist/standard/handlers/ResourceNotFoundHandler";
+import { ResourcesIndex } from "../../../../../../../dist/standard/handlers/ResourcesIndex";
 import { URLPatternPolyfill } from "../../../../../../../src/standard/polyfill/URLPatternPolyfill";
 
 export const protocol = "http";
