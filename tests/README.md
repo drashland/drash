@@ -39,9 +39,9 @@ $ deno task test:compat:deno
 #### Assumptions
 
 - You have Node installed.
-- You built the CJS and ESM modules using `deno task build:all`.
+- You built the CJS and ESM modules using `deno task build:libs`.
   - The tests import code from Drash's built modules, not the code in the `src` directory. Reason being we want the compat testing to include importing the modules that will be published to the npm registry.
-  - The tests will not run without `deno task build:all` being used first.
+  - The tests will not run without `deno task build:libs` being used first.
 
 ### Node versions used
 

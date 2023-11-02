@@ -94,7 +94,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          deno task build:tsup && ~/.bun/bin/bun test tests/compat/bun
+          deno task build:libs && ~/.bun/bin/bun test tests/compat/bun
 
   tests_compat_cloudflare:
     name: Compat - Cloudflare
@@ -123,7 +123,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          deno task build:tsup && deno task test:compat:cloudflare
+          deno task build:libs && deno task test:compat:cloudflare
 
   tests_compat_deno:
     name: Compat - Deno
@@ -179,7 +179,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          deno task build:tsup && deno task test:compat:node
+          deno task build:libs && deno task test:compat:node
 
   ##############################################################################
   # TESTS - UNIT

@@ -111,7 +111,7 @@ jobs:
 
       - name: Build Drash libs
         run: |
-          yarn install && deno task build:tsup
+          yarn install && deno task build:libs
 
       - name: (artifacts) Upload Drash libs
         uses: actions/upload-artifact@v3
