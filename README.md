@@ -8,7 +8,7 @@ Drash - A microframework for building JavaScript/TypeScript HTTP systems.
 
 ### v3.x-beta
 
-- Docs: WIP
+- Docs: https://drash-land-git-v3-drash-land.vercel.app/drash-v3.x/getting-started
 - Branch: https://github.com/drashland/drash/tree/v3.x-beta
 
 ### v2.x
