@@ -115,6 +115,7 @@ jobs:
 
       - name: Publish
         run: |
+          cd dist
           yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}

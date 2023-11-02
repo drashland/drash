@@ -117,7 +117,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.inputs.tag_name }}
-          path: lib
+          path: dist
           retention-days: 1
 
       - name: (dry-run) Publish
