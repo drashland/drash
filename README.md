@@ -2,19 +2,37 @@
 
 [![Drash Land Discord](https://img.shields.io/badge/discord-join-blue?logo=discord)](https://discord.gg/RFsCSaHRWK)
 
-Drash - A microframework for building JavaScript/TypeScript HTTP systems.
+A microframework for building JavaScript/TypeScript HTTP systems.
 
-## Versions
+## Branches / Versions
 
-### v3.x-beta
+### Unstable
 
-- Docs: https://drash-land-git-v3-drash-land.vercel.app/drash-v3.x/getting-started
-- Branch: https://github.com/drashland/drash/tree/v3.x-beta
+These branches are considered unstable (aka not production ready). We cannot provide support for these branches since they contain breaking and weakly tested code. Although code in these branches are not officially released, they are open for use. We recommend you proceed with caution though. Happy dev'ing!
 
-### v2.x
+- `main`
 
-- Docs: https://drash.land/drash-v2.x
-- Branch: https://github.com/drashland/drash/tree/v2.x
+- `{version}-staging` (e.g., `v3.x-staging`)
+
+### Current
+
+These branches/versions are undergoing active development. If you need support, hit us up in our [Discord](https://discord.gg/RFsCSaHRWK) (the `#help` channel).
+
+- `v3.x-beta`
+
+  - Docs: https://drash-land-git-v3-drash-land.vercel.app/drash-v3.x/getting-started
+
+### Long-term support (LTS)
+
+These branches/versions are being maintained until their EOL date.
+
+- `v2.x` - EOL 2023-12-31
+
+  - Docs: https://drash.land/drash-v2.x
+
+## Examples
+
+You can find examples of tiny apps in in the [examples](https://github.com/drashland/drash/tree/v3.x-beta/examples) directory.
 
 ## Contributing
 

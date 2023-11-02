@@ -111,10 +111,11 @@ jobs:
 
       - name: Build Drash libs
         run: |
-          yarn install && deno task build:all:ci
+          yarn install && deno task build:libs
 
       - name: Publish
         run: |
+          cd dist
           yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

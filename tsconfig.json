@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "target": "es2017"
+  },
+  "include": [
+    "./src/core/**/*.ts",
+    "./src/modules/**/*.ts",
+    "./src/standard/**/*.ts"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "allowImportingTsExtensions": true,
+    "target": "es2015"
+  },
+  "include": [
+    "../src/**/*.ts"
+  ]
+}

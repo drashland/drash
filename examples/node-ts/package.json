@@ -1,0 +1,15 @@
+{
+  "name": "preview-2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node-esm app.ts"
+  },
+  "dependencies": {
+    "@drashland/drash": "~3.0.0-preview.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
+}

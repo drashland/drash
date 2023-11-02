@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.deno.json",
+  "include": [
+    "./**/*.ts"
+  ]
+}
