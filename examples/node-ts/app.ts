@@ -1,7 +1,7 @@
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill";
+} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
 import type { RequestMethod } from "@drashland/drash/core/Types.js";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 
@@ -14,7 +14,7 @@ type NodeContext = {
 
 // Create a resource
 class Home extends Resource {
-  paths = ["/"];
+  public paths = ["/"];
 
   GET(context: NodeContext) {
     console.log(`Received request: ${context.request.url}`);

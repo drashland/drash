@@ -1,12 +1,12 @@
-// import {
-//   Chain,
-//   Resource,
-// } from "https://esm.sh/@drashland/drash/modules/chains/RequestChain/mod.native.js";
-
 import {
   Chain,
   Resource,
-} from "npm:@drashland/drash/modules/chains/RequestChain/mod.native.js";
+} from "https://esm.sh/@drashland/drash/modules/chains/RequestChain/mod.native.js";
+
+// import {
+//   Chain,
+//   Resource,
+// } from "npm:@drashland/drash/modules/chains/RequestChain/mod.native.js";
 
 // Create a resource
 class Home extends Resource {

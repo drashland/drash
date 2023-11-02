@@ -1,4 +1,4 @@
-# Drash / Node / ECMAScript (aka ESM)
+# Drash / Node / TypeScript
 
 ## Quickstart
 
@@ -16,7 +16,7 @@
    npm start
    ```
 
-   _Note: `npm start` is defined in the `package.json` file.
+   _Note: `npm start` is defined in the `package.json` file._
 
 1. Go to `http://localhost:1447`.
 
