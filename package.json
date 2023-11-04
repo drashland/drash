@@ -1,6 +1,6 @@
 {
   "name": "@drashland/drash",
-  "version": "3.0.0-preview.4",
+  "version": "3.0.0-beta.1",
   "description": "A microframework for building JavaScript HTTP applications",
   "author": "Eric Crooks <eric.crooks.github@gmail.com> (https://crookse.com)",
   "license": "GPL-3.0",
