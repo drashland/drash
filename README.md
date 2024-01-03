@@ -22,7 +22,6 @@ These branches/versions are being maintained until their EOL date.
 
   - Docs: https://drash.land/drash-v2.x
 
-
 ### Unstable
 
 These branches are considered unstable (aka not production ready). We cannot provide support for these branches since they contain breaking and weakly tested code. Although code in these branches are not officially released, they are open for use. We recommend you proceed with caution though. Happy dev'ing!
