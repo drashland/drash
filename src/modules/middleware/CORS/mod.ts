@@ -88,7 +88,8 @@ class CORSMiddleware extends Middleware {
     const method = request.method.toUpperCase();
 
     if (method === Method.OPTIONS) {
-      return this.OPTIONS(request);
+      const optionsResponse = this.OPTIONS(request);
+      return Promise.resolve(optionsResponse);
     }
 
     const headers = this.getCorsResponseHeaders(request);
@@ -105,8 +106,10 @@ class CORSMiddleware extends Middleware {
             this.appendHeaderValue({ key, value }, headers);
           }
         }
+
+        return resourceResponse;
       })
-      .then(() => {
+      .then((resourceResponse) => {
         return new Response(resourceResponse.body, {
           status: resourceResponse.status || StatusCode.OK,
           statusText: resourceResponse.statusText || StatusDescription.OK,

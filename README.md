@@ -10,17 +10,9 @@ A microframework for building JavaScript/TypeScript HTTP systems.
 
 These branches/versions are undergoing active development. If you need support, hit us up in our [Discord](https://discord.gg/UuYKTVMW) (the `#help` channel).
 
-- `v3.x-beta`
+- `v3.x`
 
   - Docs: https://drash.land/drash-v3.x
-
-### Long-term support (LTS)
-
-These branches/versions are being maintained until their EOL date.
-
-- `v2.x` - EOL 2023-12-31
-
-  - Docs: https://drash.land/drash-v2.x
 
 ### Unstable
 
@@ -28,11 +20,12 @@ These branches are considered unstable (aka not production ready). We cannot pro
 
 - `main`
 
+- `{version}-beta` (e.g., `v3.x-beta`)
 - `{version}-staging` (e.g., `v3.x-staging`)
 
 ## Examples
 
-You can find examples of tiny apps in in the [examples](https://github.com/drashland/drash/tree/v3.x-beta/examples) directory.
+You can find examples of tiny apps in in the [examples](https://github.com/drashland/drash/tree/v3.x/examples) directory.
 
 ## Contributing
 
