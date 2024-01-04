@@ -1228,7 +1228,7 @@ function getCorsMiddleware(
       super(options);
     }
 
-    ALL(request: Request): Response {
+    ALL(request: Request): Promise<Response> {
       return super.ALL(request);
     }
 
