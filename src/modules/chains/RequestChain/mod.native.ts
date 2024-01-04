@@ -24,7 +24,7 @@ import { Resource as CoreResource } from "../../../core/http/Resource.ts";
 
 // Imports > Standard
 import { WithParams } from "../../../standard/handlers/RequestParamsParser.ts";
-import { ResourceGroup } from "../../../standard/http/ResourceGroup";
+import { ResourceGroup } from "../../../standard/http/ResourceGroup.ts";
 
 // Imports > Modules
 import { RequestChain } from "../../base/RequestChain.ts";
