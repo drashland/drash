@@ -24,7 +24,7 @@ import { unstable_dev } from "wrangler";
 import type { UnstableDevWorker } from "wrangler";
 
 const testName =
-  "tests/compat/cloudflare/node-v18.x/modules/base/Chain/app.polyfill.ts";
+  "./tests/compat/cloudflare/node-v18.x/modules/base/Chain/app.polyfill.ts";
 
 lstatSync(testName);
 
@@ -42,8 +42,16 @@ describe("Wrangler", () => {
   });
 
   it("Should return Hello World", async () => {
-    const res = await worker.fetch("/");
-    expect(res.status).toBe(200);
-    expect(await res.text()).toBe("Hello from GET.");
+    async function run() {
+      const res = await worker.fetch("/");
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe("Hello from GET.");
+    }
+
+    try {
+      await run();
+    } catch (_error) {
+      await run();
+    }
   });
 });

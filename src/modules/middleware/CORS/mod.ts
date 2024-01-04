@@ -84,30 +84,38 @@ class CORSMiddleware extends Middleware {
     };
   }
 
-  public ALL(request: Request): Response {
+  public ALL(request: Request): Promise<Response> {
     const method = request.method.toUpperCase();
 
     if (method === Method.OPTIONS) {
-      return this.OPTIONS(request);
+      const optionsResponse = this.OPTIONS(request);
+      return Promise.resolve(optionsResponse);
     }
 
     const headers = this.getCorsResponseHeaders(request);
 
     // Send the request to the requested resource
-    const resourceResponse = super.next<Response>(request);
 
-    // Merge the resource's response headers with the CORs response headers
-    if (resourceResponse.headers) {
-      for (const [key, value] of resourceResponse.headers.entries()) {
-        this.appendHeaderValue({ key, value }, headers);
-      }
-    }
+    return Promise
+      .resolve()
+      .then(() => super.next<Promise<Response>>(request))
+      .then((resourceResponse) => {
+        // Merge the resource's response headers with the CORs response headers
+        if (resourceResponse.headers) {
+          for (const [key, value] of resourceResponse.headers.entries()) {
+            this.appendHeaderValue({ key, value }, headers);
+          }
+        }
 
-    return new Response(resourceResponse.body, {
-      status: resourceResponse.status || StatusCode.OK,
-      statusText: resourceResponse.statusText || StatusDescription.OK,
-      headers,
-    });
+        return resourceResponse;
+      })
+      .then((resourceResponse) => {
+        return new Response(resourceResponse.body, {
+          status: resourceResponse.status || StatusCode.OK,
+          statusText: resourceResponse.statusText || StatusDescription.OK,
+          headers,
+        });
+      });
   }
 
   public OPTIONS(request: Request): Response {
