@@ -31,7 +31,6 @@ lstatSync(testName);
 let worker: UnstableDevWorker;
 
 describe("Wrangler", () => {
-
   beforeAll(async () => {
     worker = await unstable_dev(testName, {
       experimental: { disableExperimentalWarning: true },
