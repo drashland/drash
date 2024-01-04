@@ -28,8 +28,9 @@ const testName =
 
 lstatSync(testName);
 
+let worker: UnstableDevWorker;
+
 describe("Wrangler", () => {
-  let worker: UnstableDevWorker;
 
   beforeAll(async () => {
     worker = await unstable_dev(testName, {
