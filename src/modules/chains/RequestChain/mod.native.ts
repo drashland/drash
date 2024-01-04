@@ -19,8 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Imports > Core
+import { Resource as CoreResource } from "../../../core/http/Resource.ts";
+
 // Imports > Standard
 import { WithParams } from "../../../standard/handlers/RequestParamsParser.ts";
+import { ResourceGroup } from "../../../standard/http/ResourceGroup";
 
 // Imports > Modules
 import { RequestChain } from "../../base/RequestChain.ts";
@@ -37,7 +41,6 @@ type HTTPRequest = WithParams;
 
 // Exports > Core
 export { HTTPError } from "../../../core/errors/HTTPError.ts";
-export { Resource } from "../../../core/http/Resource.ts";
 
 // Exports > Standard
 export { Middleware } from "../../../standard/http/Middleware.ts";
@@ -64,6 +67,12 @@ export type { HTTPRequest };
 export class Chain {
   static builder() {
     return builder();
+  }
+}
+
+export class Resource extends CoreResource {
+  static group() {
+    return ResourceGroup.builder();
   }
 }
 
