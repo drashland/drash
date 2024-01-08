@@ -197,7 +197,7 @@ const groupWithBlockedMethods = ResourceGroup
   .resources(Home)
   .pathPrefixes("/api/v1")
   .middleware(
-    new MiddlewareBlockedMethods(),
+    MiddlewareBlockedMethods,
   )
   .build();
 
@@ -206,7 +206,7 @@ const groupWithAll = ResourceGroup
   .resources(UsersAll)
   .pathPrefixes("/api/v2")
   .middleware(
-    new MiddlewareALL(),
+    MiddlewareALL,
   )
   .build();
 
@@ -215,8 +215,8 @@ const groupWithAllGet = ResourceGroup
   .resources(UsersAllGet)
   .pathPrefixes("/api/v2")
   .middleware(
-    new MiddlewareALL(),
-    new MiddlewareGET(),
+    MiddlewareALL,
+    MiddlewareGET,
   )
   .build();
 
@@ -225,11 +225,11 @@ const groupWithAllGetGetAgain = ResourceGroup
   .resources(UsersAllGetGetAgain)
   .pathPrefixes("/api/v2")
   .middleware(
-    new MiddlewareALL(),
-    new MiddlewareGET(),
-    new MiddlewareGETAgain(),
-    new MiddlewareGETAgain2(),
-    new MiddlewareGETAgain3(),
+    MiddlewareALL,
+    MiddlewareGET,
+    MiddlewareGETAgain,
+    MiddlewareGETAgain2,
+    MiddlewareGETAgain3,
   )
   .build();
 

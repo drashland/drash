@@ -1223,7 +1223,7 @@ function getCorsMiddleware(
     return CORS(options);
   }
 
-  return new class CORSLogged extends CORSMiddleware {
+  return class CORSLogged extends CORSMiddleware {
     constructor() {
       super(options);
     }
@@ -1235,5 +1235,5 @@ function getCorsMiddleware(
     OPTIONS(request: Request) {
       return super.OPTIONS(request);
     }
-  }();
+  };
 }

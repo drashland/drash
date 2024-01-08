@@ -266,7 +266,11 @@ class ETagMiddleware extends Middleware {
  * provided, it uses its default options.
  */
 function ETag(options: Options = defaultOptions) {
-  return new ETagMiddleware(options);
+  return class DefaultETagMiddleware extends ETagMiddleware {
+    constructor() {
+      super(options);
+    }
+  };
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////

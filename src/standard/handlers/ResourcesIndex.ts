@@ -75,12 +75,12 @@ class ResourcesIndex extends AbstractSearchIndex<SearchResult | null> {
       .resolve()
       .then(() => this.#validateRequest(request))
       .then(() => this.search(request))
-      .then((result) =>
-        super.sendToNextHandler<Output>({
+      .then((result) => {
+        return super.sendToNextHandler<Output>({
           request,
           result,
-        })
-      );
+        });
+      });
   }
 
   protected override buildIndex(resources: ResourceClasses[]): void {

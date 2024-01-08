@@ -632,7 +632,7 @@ function getRateLimiterMiddleware(
     return RateLimiter(options);
   }
 
-  return new class RateLimiterLogged extends RateLimiterMiddleware {
+  return class RateLimiterLogged extends RateLimiterMiddleware {
     constructor() {
       super(options);
     }
@@ -657,5 +657,5 @@ function getRateLimiterMiddleware(
           return this.sendResponse(context);
         });
     }
-  }();
+  };
 }

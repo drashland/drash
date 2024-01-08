@@ -328,7 +328,11 @@ class RateLimiterMiddleware extends Middleware {
  * provided, it uses its default options.
  */
 function RateLimiter(options: Options) {
-  return new RateLimiterMiddleware(options);
+  return class DefaultRateLimiterMiddleware extends RateLimiterMiddleware {
+    constructor() {
+      super(options);
+    }
+  };
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////

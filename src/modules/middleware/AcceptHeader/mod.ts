@@ -142,7 +142,11 @@ class AcceptHeaderMiddleware extends Middleware {
  * provided, it uses its default options.
  */
 function AcceptHeader(options: Options = defaultOptions) {
-  return new AcceptHeaderMiddleware(options);
+  return class DefaultAcceptHeaderMiddleware extends AcceptHeaderMiddleware {
+    constructor() {
+      super(options);
+    }
+  };
 }
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////

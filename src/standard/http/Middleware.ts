@@ -64,6 +64,7 @@ class Middleware extends Resource {
   }
 
   /**
+   * @TODO (crookse) Is this needed?
    * Use this method to intercept the request before it is passed to the
    * resource's HTTP method. With this method, you can short-circuit the
    * request, modify the request, send the request to the resource based on
@@ -101,42 +102,52 @@ class Middleware extends Resource {
   }
 
   public CONNECT(input: unknown): unknown {
-    return this.#delegate(input, "CONNECT");
+    return this.#callOriginalHttpMethod(input, "CONNECT");
   }
 
   public DELETE(input: unknown): unknown {
-    return this.#delegate(input, "DELETE");
+    return this.#callOriginalHttpMethod(input, "DELETE");
   }
 
   public GET(input: unknown): unknown {
-    return this.#delegate(input, "GET");
+    return this.#callOriginalHttpMethod(input, "GET");
   }
 
   public HEAD(input: unknown): unknown {
-    return this.#delegate(input, "HEAD");
+    return this.#callOriginalHttpMethod(input, "HEAD");
   }
 
   public OPTIONS(input: unknown): unknown {
-    return this.#delegate(input, "OPTIONS");
+    return this.#callOriginalHttpMethod(input, "OPTIONS");
   }
 
   public PATCH(input: unknown): unknown {
-    return this.#delegate(input, "PATCH");
+    return this.#callOriginalHttpMethod(input, "PATCH");
   }
 
   public POST(input: unknown): unknown {
-    return this.#delegate(input, "POST");
+    return this.#callOriginalHttpMethod(input, "POST");
   }
 
   public PUT(input: unknown): unknown {
-    return this.#delegate(input, "PUT");
+    return this.#callOriginalHttpMethod(input, "PUT");
   }
 
   public TRACE(input: unknown): unknown {
-    return this.#delegate(input, "TRACE");
+    return this.#callOriginalHttpMethod(input, "TRACE");
   }
 
-  #delegate(input: unknown, method: MethodOf<Middleware>): unknown {
+  /**
+   * Call this middleware's original class' HTTP method.
+   * @param input The input passed to this middleware and to forward to the
+   * original class this middleware wraps.
+   * @param method The HTTP method to call on the original.
+   * @returns The result of the original's HTTP method call.
+   */
+  #callOriginalHttpMethod(
+    input: unknown,
+    method: MethodOf<Middleware>,
+  ): unknown {
     if (!this.original) {
       throw new Error("Failed to create middleware. No original.");
     }

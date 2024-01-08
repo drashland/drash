@@ -458,7 +458,7 @@ function getEtagMiddleware(
     return ETag(options);
   }
 
-  return new class ETagLogged extends ETagMiddleware {
+  return class ETagLogged extends ETagMiddleware {
     constructor() {
       super(options);
     }
@@ -491,5 +491,5 @@ function getEtagMiddleware(
           return this.sendResponse(context);
         });
     }
-  }();
+  };
 }

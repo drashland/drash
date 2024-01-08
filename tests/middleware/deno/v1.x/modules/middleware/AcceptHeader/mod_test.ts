@@ -362,7 +362,7 @@ function getAcceptHeaderMiddleware(
     return AcceptHeader(options);
   }
 
-  return new class AcceptHeaderLogged extends AcceptHeaderMiddleware {
+  return class AcceptHeaderLogged extends AcceptHeaderMiddleware {
     constructor() {
       super(options);
     }
@@ -387,5 +387,5 @@ function getAcceptHeaderMiddleware(
           return r;
         });
     }
-  }();
+  };
 }

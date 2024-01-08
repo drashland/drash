@@ -104,7 +104,7 @@ export function query(kvp?: Record<string, string>) {
  * ```
  */
 export function chain(options: {
-  middleware?: Chain.Middleware[];
+  middleware?: typeof Chain.Middleware[];
   resources?: typeof Chain.Resource[];
 }) {
   const {
