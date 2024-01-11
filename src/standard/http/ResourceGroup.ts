@@ -73,7 +73,7 @@ class Builder implements IBuilder {
    * ```
    */
   resources(...resources: ResourceClasses): this {
-    const ret = [];
+    const ret: any = [];
 
     for (const input of resources) {
       if (Array.isArray(input)) {
@@ -150,7 +150,7 @@ class Builder implements IBuilder {
    * call with shared functionality (path prefixes, middleware, etc.).
    */
   build(): typeof Resource[] {
-    let ret = [];
+    let ret: any[] = [];
 
     ret = createGroupWithMiddleware(
       this.#middleware,

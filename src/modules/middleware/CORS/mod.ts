@@ -102,9 +102,9 @@ class CORSMiddleware extends Middleware {
       .then((resourceResponse) => {
         // Merge the resource's response headers with the CORs response headers
         if (resourceResponse.headers) {
-          for (const [key, value] of resourceResponse.headers.entries()) {
+          resourceResponse.headers.forEach((value, key) => {
             this.appendHeaderValue({ key, value }, headers);
-          }
+          });
         }
 
         return resourceResponse;
