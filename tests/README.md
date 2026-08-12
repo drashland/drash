@@ -45,9 +45,9 @@ $ deno task test:compat:deno
 
 ### Node versions used
 
-The tests are split by Node version in separate directories (e.g., `node-v20.x`, `node-v22.x`, `node-v24.x`). When you run the Node compat tests, the directory that will be used will be based on the Node version you are using. For example, if you are using Node 22, then the `node-v22.x` directory will be used and the other directories will be ignored.
+The tests are split by Node version in separate directories (e.g., `node-v20.x`, `node-v22.x`, `node-v24.x`, `node-v26.x`). When you run the Node compat tests, the directory that will be used will be based on the Node version you are using. For example, if you are using Node 22, then the `node-v22.x` directory will be used and the other directories will be ignored.
 
-If there is no directory matching your Node version, the newest directory that is not ahead of it is used instead (e.g., Node 26 would fall back to `node-v24.x`). This keeps the suite running on Node versions that do not have their own directory yet.
+If there is no directory matching your Node version, the newest directory that is not ahead of it is used instead (e.g., Node 28 would fall back to `node-v26.x`). This keeps the suite running on Node versions that do not have their own directory yet.
 
 Using `nvm` (download it at https://github.com/nvm-sh/nvm) can make it easier for you to switch between Node versions to test in specific Node versions (e.g., `nvm use 22` to use Node 22 or `nvm use 24` to use Node 24).
 
