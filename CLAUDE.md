@@ -45,7 +45,7 @@ CI (`.github/workflows/*.code_validation.yml`) gates every test job behind `chec
 
 - **Every `.ts` file under `src/` and `tests/` must carry the GPL file header verbatim** (see `scripts/check_file_headers.ts`). New files fail CI without it.
 - **Compat tests import from `dist/`, not `src/`.** They deliberately exercise the artifact that gets published to npm, so any `src/` change must be followed by `deno task build:libs` before the Node/Bun/Cloudflare compat suites will reflect it. Unit tests (`tests/unit`) import from `src/` and need no build.
-- Node and Cloudflare compat tests are split by Node major (`node-v20.x`, `node-v22.x`, `node-v24.x`). `vitest.config.utils.mts` picks the directory matching the running Node version, falling back to the newest directory not ahead of it. Adding a new Node major means adding a directory, not editing config.
+- Node and Cloudflare compat tests are split by Node major (`node-v20.x`, `node-v22.x`, `node-v24.x`, `node-v26.x`). `vitest.config.utils.mts` picks the directory matching the running Node version, falling back to the newest directory not ahead of it. Adding a new Node major means adding a directory, not editing config.
 - `dist/` is gitignored; it is a build output.
 - Public API is marked in each file by a `// FILE MARKER - PUBLIC API` comment followed by the export statement. Keep exports there.
 - Branch model (from README): `v3.x` is the supported line; `main` and `*-beta` / `*-staging` are unstable. The repo does not accept outside pull requests.
