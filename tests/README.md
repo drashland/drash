@@ -14,7 +14,7 @@ Compat tests assert compatibility in runtimes. They assert request flows using n
 
 #### Assumptions
 
-You have Bun (latest v0.x) installed.
+You have Bun installed.
 
 #### How to run tests
 
@@ -26,7 +26,7 @@ $ deno task test:compat:bun
 
 #### Assumptions
 
-You have Deno (latest v1.x) installed.
+You have Deno (latest v2.x) installed.
 
 #### How to run tests
 
@@ -45,15 +45,17 @@ $ deno task test:compat:deno
 
 ### Node versions used
 
-The tests are split by Node version in separate directories (e.g., `node-v16.x`, `node-v18.x`, etc.). When you run the Node compat tests, the directory that will be used will be based on the Node version you are using. For example, if you are using Node 16, then the `node-v16.x` directory will be used and the `node-v18.x` directory will be ignored.
+The tests are split by Node version in separate directories (e.g., `node-v18.x`, `node-v20.x`, etc.). When you run the Node compat tests, the directory that will be used will be based on the Node version you are using. For example, if you are using Node 18, then the `node-v18.x` directory will be used and the `node-v20.x` directory will be ignored.
 
-Using `nvm` (download it at https://github.com/nvm-sh/nvm) can make it easier for you to switch between Node versions to test in specific Node versions (e.g., `nvm use 16` to use Node 16 or `nvm use 18` to use Node 18).
+If there is no directory matching your Node version, the newest directory that is not ahead of it is used instead (e.g., Node 24 falls back to `node-v20.x`). This keeps the suite running on Node versions that do not have their own directory yet.
+
+Using `nvm` (download it at https://github.com/nvm-sh/nvm) can make it easier for you to switch between Node versions to test in specific Node versions (e.g., `nvm use 20` to use Node 20 or `nvm use 22` to use Node 22).
 
 #### How to run tests
 
 ```
-$ yarn install
-$ deno task build:all
+$ pnpm install
+$ deno task build:libs
 $ deno task test:compat:node
 ```
 

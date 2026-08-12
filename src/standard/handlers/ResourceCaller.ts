@@ -29,7 +29,7 @@ import { Handler } from "./Handler.ts";
 type Input = { request: { method: string }; resource: Resource };
 
 class ResourceCaller extends Handler {
-  handle<Output>(input: Input): Promise<Output> {
+  override handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validate(input))

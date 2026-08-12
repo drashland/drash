@@ -32,10 +32,6 @@ import { ResourceNotFoundHandler } from "../../../../../../../dist/standard/hand
 import { ResourcesIndex } from "../../../../../../../dist/standard/handlers/ResourcesIndex.js";
 import { URLPatternPolyfill } from "../../../../../../../src/standard/polyfill/URLPatternPolyfill.js";
 
-export const protocol = "http";
-export const hostname = "localhost";
-export const port = 1447;
-
 class Home extends Resource {
   public paths = ["/"];
 

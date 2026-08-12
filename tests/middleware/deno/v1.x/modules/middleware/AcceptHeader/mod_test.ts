@@ -237,13 +237,13 @@ function getTestCases(): TestCase[] {
         middleware: [getAcceptHeaderMiddleware({ logs: false })],
         resources: [
           class AcceptHeaderResource extends Chain.Resource {
-            paths = ["/accept-header"];
+            override paths = ["/accept-header"];
 
-            GET(_request: Chain.HTTPRequest) {
+            override GET(_request: Chain.HTTPRequest) {
               return new Response("Hello from GET.");
             }
 
-            POST(_request: Chain.HTTPRequest) {
+            override POST(_request: Chain.HTTPRequest) {
               return new Response(
                 JSON.stringify({ message: "Hello from POST." }),
                 {
@@ -256,11 +256,11 @@ function getTestCases(): TestCase[] {
               );
             }
 
-            DELETE(_request: Chain.HTTPRequest) {
+            override DELETE(_request: Chain.HTTPRequest) {
               return new Response("Deleted!");
             }
 
-            PATCH(_request: Chain.HTTPRequest) {
+            override PATCH(_request: Chain.HTTPRequest) {
               throw new HTTPError(Status.MethodNotAllowed);
             }
           },
@@ -367,7 +367,7 @@ function getAcceptHeaderMiddleware(
       super(options);
     }
 
-    ALL(request: Request): Promise<Response> {
+    override ALL(request: Request): Promise<Response> {
       return Promise
         .resolve()
         .then(() => {

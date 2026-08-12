@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "allowImportingTsExtensions": true,
+    // tsup's `--dts` build injects `baseUrl`, which TypeScript 6.0 deprecates
+    // and 7.0 removes. Remove this once tsup stops setting it.
+    "ignoreDeprecations": "6.0",
     "target": "es2017"
   },
   "include": [

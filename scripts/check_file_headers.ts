@@ -1,4 +1,4 @@
-import { walk, WalkEntry } from "https://deno.land/std@0.201.0/fs/walk.ts";
+import { walk, type WalkEntry } from "@std/fs/walk";
 
 const write = Deno.args[0] === "--write";
 

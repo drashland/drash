@@ -31,10 +31,6 @@ import { ResourceCaller } from "../../../../../../../dist/standard/handlers/Reso
 import { ResourceNotFoundHandler } from "../../../../../../../dist/standard/handlers/ResourceNotFoundHandler.js";
 import { ResourcesIndex } from "../../../../../../../dist/standard/handlers/ResourcesIndex.js";
 
-export const protocol = "http";
-export const hostname = "localhost";
-export const port = 1447;
-
 class Home extends Resource {
   public paths = ["/"];
 

@@ -119,9 +119,9 @@ export function chain(options: {
         .builder()
         .resources(
           class Home extends Chain.Resource {
-            public paths = ["/"];
+            public override paths = ["/"];
 
-            public GET(_request: Chain.HTTPRequest) {
+            public override GET(_request: Chain.HTTPRequest) {
               return new Response("Hello from Home.GET()!");
             }
           },

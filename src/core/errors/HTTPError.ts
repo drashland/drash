@@ -62,7 +62,7 @@ class HTTPError extends Error {
    * console.log(error.name === 'HTTPError');
    * ```
    */
-  public readonly name = "HTTPError";
+  public override readonly name = "HTTPError";
 
   /**
    * @param status A valid response status tuple.

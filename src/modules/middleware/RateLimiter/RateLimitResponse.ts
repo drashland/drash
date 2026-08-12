@@ -82,7 +82,7 @@ class RateLimitResponseBuilder extends ResponseBuilder {
    * - Any value not set in this class will be replaced with the wrapped
    *   response's value
    */
-  public build(): Response {
+  public override build(): Response {
     let status = this.response_init.status;
     if (!status) {
       status = this.decoratee.status;

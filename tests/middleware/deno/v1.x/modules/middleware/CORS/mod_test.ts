@@ -1228,11 +1228,11 @@ function getCorsMiddleware(
       super(options);
     }
 
-    ALL(request: Request): Promise<Response> {
+    override ALL(request: Request): Promise<Response> {
       return super.ALL(request);
     }
 
-    OPTIONS(request: Request) {
+    override OPTIONS(request: Request) {
       return super.OPTIONS(request);
     }
   };

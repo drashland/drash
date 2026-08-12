@@ -84,7 +84,7 @@ class CORSMiddleware extends Middleware {
     };
   }
 
-  public ALL(request: Request): Promise<Response> {
+  public override ALL(request: Request): Promise<Response> {
     const method = request.method.toUpperCase();
 
     if (method === Method.OPTIONS) {
@@ -118,7 +118,7 @@ class CORSMiddleware extends Middleware {
       });
   }
 
-  public OPTIONS(request: Request): Response {
+  public override OPTIONS(request: Request): Response {
     const headers = this.getCorsResponseHeaders(request);
     this.setPreflightHeaders(request, headers);
 
@@ -390,7 +390,7 @@ class CORSMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function CORS(options: Options = defaultOptions) {
+function CORS(options: Options = defaultOptions): new () => CORSMiddleware {
   return class DefaultCORSMiddleware extends CORSMiddleware {
     constructor() {
       super(options);

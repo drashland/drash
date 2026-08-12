@@ -61,7 +61,7 @@ class AcceptHeaderMiddleware extends Middleware {
     };
   }
 
-  public ALL(request: Request) {
+  public override ALL(request: Request) {
     return Promise
       .resolve()
       .then(() => this.handleIfAcceptHeaderMissing(request))
@@ -141,7 +141,9 @@ class AcceptHeaderMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function AcceptHeader(options: Options = defaultOptions) {
+function AcceptHeader(
+  options: Options = defaultOptions,
+): new () => AcceptHeaderMiddleware {
   return class DefaultAcceptHeaderMiddleware extends AcceptHeaderMiddleware {
     constructor() {
       super(options);

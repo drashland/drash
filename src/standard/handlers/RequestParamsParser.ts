@@ -41,7 +41,7 @@ type Output = {
 type WithParams = Request & { params: Params };
 
 class RequestParamsParser extends Handler {
-  handle<Output>(input: Input): Promise<Output> {
+  override handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validateInput(input))

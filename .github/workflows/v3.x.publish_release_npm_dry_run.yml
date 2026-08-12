@@ -16,7 +16,6 @@ jobs:
   # file. It is intentional to manually update that file. As a result, we need
   # this workflow to check that we updated the version before releasing.
   #
-  
   check_release_version:
     name: Check version in package.json
 
@@ -28,7 +27,9 @@ jobs:
           token: ${{ secrets.CI_USER_PAT }}
 
       - name: Install Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
       - name: Perform version check
         run: |
@@ -41,14 +42,16 @@ jobs:
   check_file_headers:
     name: Check file headers
     needs: [check_release_version]
-    
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
       - name: Check file headers
         run: |
@@ -57,14 +60,16 @@ jobs:
   lint_code:
     name: Check for lint
     needs: [check_release_version]
-    
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
       - name: Run Deno linter
         run: deno lint
@@ -72,14 +77,16 @@ jobs:
   code_formatting:
     name: Check code formatting
     needs: [check_release_version]
-    
+
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
       - name: Run Deno formatter check
         run: deno fmt --check
@@ -90,8 +97,12 @@ jobs:
 
   publish:
     name: (dry-run) Publish to registry (https://registry.npmjs.org)
-    needs: [check_release_version, check_file_headers, lint_code, code_formatting]
-
+    needs: [
+      check_release_version,
+      check_file_headers,
+      lint_code,
+      code_formatting,
+    ]
 
     runs-on: ubuntu-latest
 
@@ -101,17 +112,22 @@ jobs:
           token: ${{ secrets.CI_USER_PAT }}
 
       - name: Install Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install Node (latest)
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@drashland'
+          registry-url: "https://registry.npmjs.org"
+          scope: "@drashland"
 
       - name: Build Drash libs
         run: |
-          yarn install && deno task build:libs
+          pnpm install --frozen-lockfile && deno task build:libs
 
       - name: (artifacts) Upload Drash libs
         uses: actions/upload-artifact@v3

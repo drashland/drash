@@ -20,7 +20,7 @@
  */
 
 // Imports > Standard
-import { AbstractLogger } from "./AbstractLogger";
+import { AbstractLogger } from "./AbstractLogger.ts";
 import { Level } from "./Level.ts";
 import type { LogLevel } from "./LogLevel.ts";
 

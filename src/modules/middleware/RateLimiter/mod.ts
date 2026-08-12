@@ -98,7 +98,7 @@ class RateLimiterMiddleware extends Middleware {
     this.#options = options;
   }
 
-  public ALL(request: Request): Promise<Response> {
+  public override ALL(request: Request): Promise<Response> {
     return Promise
       .resolve()
       .then(() => this.setClientInContext(request))
@@ -327,7 +327,7 @@ class RateLimiterMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function RateLimiter(options: Options) {
+function RateLimiter(options: Options): new () => RateLimiterMiddleware {
   return class DefaultRateLimiterMiddleware extends RateLimiterMiddleware {
     constructor() {
       super(options);

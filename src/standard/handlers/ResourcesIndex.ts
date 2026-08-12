@@ -70,7 +70,7 @@ class ResourcesIndex extends AbstractSearchIndex<SearchResult | null> {
     this.buildIndex(this.resources);
   }
 
-  public handle<Output>(request: Input): Promise<Output> {
+  public override handle<Output>(request: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validateRequest(request))

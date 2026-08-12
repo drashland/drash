@@ -39,7 +39,7 @@ type Input = {
 };
 
 class ResourceNotFoundHandler extends Handler {
-  handle<Output>(input: Input): Promise<Output> {
+  override handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validate(input))

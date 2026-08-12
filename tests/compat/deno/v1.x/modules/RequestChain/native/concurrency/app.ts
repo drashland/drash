@@ -29,9 +29,9 @@ export const hostname = "localhost";
 export const port = 1447;
 
 class Accounts extends Chain.Resource {
-  public paths = ["/accounts"];
+  public override paths = ["/accounts"];
 
-  public GET(request: Request) {
+  public override GET(request: Request) {
     if (request.headers.get("x-wait-1")) {
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -79,9 +79,9 @@ class Accounts extends Chain.Resource {
 }
 
 class Users extends Chain.Resource {
-  public paths = ["/users"];
+  public override paths = ["/users"];
 
-  public GET(_request: Request) {
+  public override GET(_request: Request) {
     throw new Chain.HTTPError(Status.MethodNotAllowed);
   }
 }

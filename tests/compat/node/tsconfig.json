@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": [
+      "jest",
+      "node"
+    ]
   },
   "include": [
     "../../**/*.js",

@@ -21,14 +21,14 @@
 
 import { lstatSync } from "fs";
 import { unstable_dev } from "wrangler";
-import type { UnstableDevWorker } from "wrangler";
+import type { Unstable_DevWorker } from "wrangler";
 
 const testName =
   "./tests/compat/cloudflare/node-v18.x/modules/base/Chain/app.native.ts";
 
 lstatSync(testName);
 
-let worker: UnstableDevWorker;
+let worker: Unstable_DevWorker;
 
 describe("Wrangler", () => {
   beforeAll(async () => {

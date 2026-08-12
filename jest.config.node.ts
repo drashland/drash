@@ -1,7 +1,8 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 import type { Config } from "@jest/types";
+import { getTestDirectory } from "./jest.config.utils.mjs";
 
-const testDirectory = getTestDirectory();
+const testDirectory = getTestDirectory("node");
 
 console.log(`\nRunning tests in node/${testDirectory} directory\n`);
 
@@ -21,18 +22,3 @@ const config: Config.InitialOptions = {
 };
 
 export default config;
-
-function getTestDirectory() {
-  console.log(`\nNode version: ${process.version}\n`);
-
-  const matchedVersion = process.version.match(/v[0-9]+/);
-
-  if (!matchedVersion) {
-    console.log(
-      `\nFailed to get test directory. \`process.version\` match returned ${matchedVersion}.\n`,
-    );
-    process.exit(1);
-  }
-
-  return "node-" + matchedVersion[0] + ".x";
-}

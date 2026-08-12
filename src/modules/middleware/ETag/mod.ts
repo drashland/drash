@@ -74,7 +74,7 @@ class ETagMiddleware extends Middleware {
     };
   }
 
-  public ALL(request: Request): Promise<Response> {
+  public override ALL(request: Request): Promise<Response> {
     return Promise
       .resolve()
       .then(() => this.handleEtagMatchesRequestIfMatchHeader(request))
@@ -265,7 +265,7 @@ class ETagMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function ETag(options: Options = defaultOptions) {
+function ETag(options: Options = defaultOptions): new () => ETagMiddleware {
   return class DefaultETagMiddleware extends ETagMiddleware {
     constructor() {
       super(options);
