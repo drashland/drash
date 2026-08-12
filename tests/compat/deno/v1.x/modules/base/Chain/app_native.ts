@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -36,21 +36,21 @@ export const hostname = "localhost";
 export const port = 1447;
 
 class Home extends Resource {
-  public paths = ["/"];
+  public override paths = ["/"];
 
-  public GET(_request: Request) {
+  public override GET(_request: Request) {
     return new Response("Hello from GET.");
   }
 
-  public POST(_request: Request) {
+  public override POST(_request: Request) {
     return new Response("Hello from POST.");
   }
 
-  public DELETE(_request: Request) {
+  public override DELETE(_request: Request) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(_request: Request) {
+  public override PATCH(_request: Request) {
     throw new HTTPError(Status.MethodNotAllowed);
   }
 }

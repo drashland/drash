@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -119,9 +119,9 @@ export function chain(options: {
         .builder()
         .resources(
           class Home extends Chain.Resource {
-            public paths = ["/"];
+            public override paths = ["/"];
 
-            public GET(_request: Chain.HTTPRequest) {
+            public override GET(_request: Chain.HTTPRequest) {
               return new Response("Hello from Home.GET()!");
             }
           },

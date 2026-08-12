@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -31,22 +31,34 @@ export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
+type NodeContext = {
+  url: string;
+  method?: string;
+  request: IncomingMessage;
+  response: ServerResponse<IncomingMessage>;
+};
+
 class Home extends Chain.Resource {
   public paths = ["/"];
 
-  public GET(_request: Request) {
-    return new Response("Hello from GET.");
+  public GET(context: NodeContext) {
+    context.response.setHeader("x-drash", "Home.GET()");
+    context.response.write("Hello from GET.");
+    return context;
   }
 
-  public POST(_request: Request) {
-    return new Response("Hello from POST.");
+  public POST(context: NodeContext) {
+    context.response.setHeader("x-drash", "Home.POST()");
+    context.response.write("Hello from POST.");
   }
 
-  public DELETE(_request: Request) {
+  public DELETE(context: NodeContext) {
+    context.response.setHeader("x-drash", "Home.DELETE()");
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(_request: Request) {
+  public PATCH(context: NodeContext) {
+    context.response.setHeader("x-drash", "Home.PATCH()");
     throw new HTTPError(Status.MethodNotAllowed);
   }
 }
@@ -57,39 +69,37 @@ const chain = Chain
   .build();
 
 export const handleRequest = (
-  req: IncomingMessage,
-  res: ServerResponse,
-): Promise<void> => {
-  // Convert the IncomingMessage object to a Request object
-  const request = new Request(`${protocol}://${hostname}:${port}${req.url}`, {
-    method: req.method,
-  });
+  request: IncomingMessage,
+  response: ServerResponse,
+): Promise<NodeContext> => {
+  // We will keep the IncomingMessage and ServerResponse objects intact and just
+  // provide url and method to let the chain know how to route the request
+  const context = {
+    url: `${protocol}://${hostname}:${port}${request.url}`,
+    method: request.method,
+    request,
+    response,
+  };
 
   return chain
-    .handle<Response>(request)
-    // All resources will return a Response object that we can use to build the
-    // ServerResponse object
-    .then((response) => {
-      res.statusCode = response.status;
-      return response.text();
-    })
-    .then((body) => {
-      res.end(body);
-    })
+    .handle<NodeContext>(context)
+    // There is no `.then((response) => { ... })` block here because resources
+    // use `context.response.end()` which tells Node the ServerResponse ended
     .catch((error: Error | HTTPError) => {
       if (
         (error.name === "HTTPError" || error instanceof HTTPError) &&
         "status_code" in error &&
         "status_code_description" in error
       ) {
-        res.statusCode = error.status_code;
-        res.statusMessage = error.status_code_description;
-        res.end(error.message);
-        return;
+        context.response.statusCode = error.status_code;
+        context.response.statusMessage = error.status_code_description;
+        context.response.end(error.message);
+      } else {
+        context.response.statusCode = StatusCode.InternalServerError;
+        context.response.statusMessage = StatusDescription.InternalServerError;
+        context.response.end(error.message);
       }
 
-      res.statusCode = StatusCode.InternalServerError;
-      res.statusMessage = StatusDescription.InternalServerError;
-      res.end(error.message);
+      return context;
     });
 };

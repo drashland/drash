@@ -9,9 +9,7 @@ on:
       - v2.x
 
 jobs:
-
   api-test:
-
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -20,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 'v2.x'
+          ref: "v2.x"
 
       - name: Install Deno
         uses: denoland/setup-deno@v1
@@ -41,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 'v2.x'
+          ref: "v2.x"
 
       - name: Install Deno
         uses: denoland/setup-deno@v1

@@ -2,7 +2,7 @@ function run(cb: () => void) {
   try {
     cb();
   } catch (e) {
-    console.log(e.message);
+    console.log(e instanceof Error ? e.message : e);
   }
 }
 

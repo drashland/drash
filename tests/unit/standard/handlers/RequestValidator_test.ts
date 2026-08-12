@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -20,6 +20,8 @@
  */
 
 import { asserts } from "../../../deps.ts";
+import { HTTPError } from "../../../../src/core/errors/HTTPError.ts";
+import { StatusCode } from "../../../../src/core/http/response/StatusCode.ts";
 import { RequestValidator } from "../../../../src/standard/handlers/RequestValidator.ts";
 
 const testCasesThrow = [
@@ -70,45 +72,50 @@ const testCasesThrow = [
 ];
 
 Deno.test("RequestValidator", async (t) => {
-  for await (const request of testCasesThrow) {
-    const testName = JSON.stringify(request);
+  for (const request of testCasesThrow) {
+    const testName = JSON.stringify(request.input);
 
     await t.step(`throws if request is \`${testName}\``, async () => {
       const requestValidator = new RequestValidator();
-      try {
-        // @ts-ignore: Igorning because we want to test passing in incorrect
+
+      const error = await asserts.assertRejects(
+        // @ts-ignore: Ignoring because we want to test passing in incorrect
         // values
-        await requestValidator.handle(request.input);
-      } catch (e) {
-        asserts.assertEquals(e.message, request.expected);
-      }
+        () => requestValidator.handle(request.input),
+        HTTPError,
+        request.expected,
+      );
+
+      asserts.assertEquals(error.status_code, StatusCode.UnprocessableEntity);
     });
   }
 
   await t.step("throws if request is not provided", async () => {
     const requestValidator = new RequestValidator();
-    try {
-      // @ts-ignore: Ignorning because we want to test not passing in an arg for
+
+    const error = await asserts.assertRejects(
+      // @ts-ignore: Ignoring because we want to test not passing in an arg for
       // cases where TypeScript is not being used
-      await requestValidator.handle();
-    } catch (e) {
-      asserts.assertEquals(e.message, "Request could not be read");
-    }
+      () => requestValidator.handle(),
+      HTTPError,
+      "Request could not be read",
+    );
+
+    asserts.assertEquals(error.status_code, StatusCode.UnprocessableEntity);
   });
 
   await t.step(
     "does not throw if the object is `{ url: string; method: string }`",
-    () => {
+    async () => {
       const requestValidator = new RequestValidator();
-      try {
-        requestValidator.handle({ url: "", method: "" });
-        asserts.assert(true); // Asserting just so we assert something in this test
-      } catch (e) {
-        throw new Error(
-          "Request object is valid, but the test failed. Error message: " +
-            e.messages,
-        );
-      }
+      const request = { url: "", method: "" };
+
+      // With no next handler in the chain, the validated request is returned
+      // as-is.
+      asserts.assertStrictEquals(
+        await requestValidator.handle(request),
+        request,
+      );
     },
   );
 });

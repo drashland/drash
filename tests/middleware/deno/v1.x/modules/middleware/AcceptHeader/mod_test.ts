@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -237,13 +237,13 @@ function getTestCases(): TestCase[] {
         middleware: [getAcceptHeaderMiddleware({ logs: false })],
         resources: [
           class AcceptHeaderResource extends Chain.Resource {
-            paths = ["/accept-header"];
+            override paths = ["/accept-header"];
 
-            GET(_request: Chain.HTTPRequest) {
+            override GET(_request: Chain.HTTPRequest) {
               return new Response("Hello from GET.");
             }
 
-            POST(_request: Chain.HTTPRequest) {
+            override POST(_request: Chain.HTTPRequest) {
               return new Response(
                 JSON.stringify({ message: "Hello from POST." }),
                 {
@@ -256,11 +256,11 @@ function getTestCases(): TestCase[] {
               );
             }
 
-            DELETE(_request: Chain.HTTPRequest) {
+            override DELETE(_request: Chain.HTTPRequest) {
               return new Response("Deleted!");
             }
 
-            PATCH(_request: Chain.HTTPRequest) {
+            override PATCH(_request: Chain.HTTPRequest) {
               throw new HTTPError(Status.MethodNotAllowed);
             }
           },
@@ -367,7 +367,7 @@ function getAcceptHeaderMiddleware(
       super(options);
     }
 
-    ALL(request: Request): Promise<Response> {
+    override ALL(request: Request): Promise<Response> {
       return Promise
         .resolve()
         .then(() => {

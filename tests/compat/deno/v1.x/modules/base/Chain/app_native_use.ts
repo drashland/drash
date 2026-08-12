@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -43,21 +43,21 @@ type Ctx = {
 };
 
 class Home extends Resource {
-  public paths = ["/"];
+  public override paths = ["/"];
 
-  public GET(ctx: Ctx) {
+  public override GET(ctx: Ctx) {
     ctx.response = new Response(`Hello from GET.`);
   }
 
-  public POST(ctx: Ctx) {
+  public override POST(ctx: Ctx) {
     ctx.response = new Response("Hello from POST.");
   }
 
-  public DELETE(_ctx: Ctx) {
+  public override DELETE(_ctx: Ctx) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(_ctx: Ctx) {
+  public override PATCH(_ctx: Ctx) {
     throw new HTTPError(Status.MethodNotAllowed);
   }
 }
@@ -67,7 +67,7 @@ class Home extends Resource {
 class UseInsteadOfHandleBuilder extends BaseChain.Builder {
   public use(handlerFn: (ctx: Ctx) => void): this {
     class UseHandler extends Handler {
-      handle<Output>(ctx: Ctx) {
+      override handle<Output>(ctx: Ctx) {
         return Promise
           .resolve()
           .then(() => handlerFn(ctx))
@@ -97,7 +97,9 @@ class UseInsteadOfHandleBuilder extends BaseChain.Builder {
 const resourceIndex = new ResourcesIndex(URLPattern, Home);
 const resourceNotFoundHandler = new ResourceNotFoundHandler();
 class ReturnSearchResult extends Handler {
-  handle<Output extends SearchResult>(result: Output): Promise<Output> {
+  override handle<Output extends SearchResult>(
+    result: Output,
+  ): Promise<Output> {
     return Promise.resolve(result);
   }
 }

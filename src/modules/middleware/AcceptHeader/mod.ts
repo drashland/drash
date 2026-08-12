@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -61,7 +61,7 @@ class AcceptHeaderMiddleware extends Middleware {
     };
   }
 
-  public ALL(request: Request) {
+  public override ALL(request: Request) {
     return Promise
       .resolve()
       .then(() => this.handleIfAcceptHeaderMissing(request))
@@ -141,7 +141,9 @@ class AcceptHeaderMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function AcceptHeader(options: Options = defaultOptions) {
+function AcceptHeader(
+  options: Options = defaultOptions,
+): new () => AcceptHeaderMiddleware {
   return class DefaultAcceptHeaderMiddleware extends AcceptHeaderMiddleware {
     constructor() {
       super(options);

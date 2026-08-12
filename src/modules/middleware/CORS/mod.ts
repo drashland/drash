@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -84,7 +84,7 @@ class CORSMiddleware extends Middleware {
     };
   }
 
-  public ALL(request: Request): Promise<Response> {
+  public override ALL(request: Request): Promise<Response> {
     const method = request.method.toUpperCase();
 
     if (method === Method.OPTIONS) {
@@ -118,7 +118,7 @@ class CORSMiddleware extends Middleware {
       });
   }
 
-  public OPTIONS(request: Request): Response {
+  public override OPTIONS(request: Request): Response {
     const headers = this.getCorsResponseHeaders(request);
     this.setPreflightHeaders(request, headers);
 
@@ -390,7 +390,7 @@ class CORSMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function CORS(options: Options = defaultOptions) {
+function CORS(options: Options = defaultOptions): new () => CORSMiddleware {
   return class DefaultCORSMiddleware extends CORSMiddleware {
     constructor() {
       super(options);

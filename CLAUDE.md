@@ -36,7 +36,7 @@ Running a single test:
 ```
 deno test tests/unit/standard/handlers/RequestValidator_test.ts
 deno test tests/compat/deno/v1.x/modules/RequestChain/native/default-behavior/app_test.ts
-pnpm exec jest --config jest.config.node.ts -t "some test name"
+pnpm exec jest --config jest.config.node.mjs -t "some test name"
 ```
 
 CI (`.github/workflows/*.code_validation.yml`) gates every test job behind `check:file-headers`, `deno lint`, and `deno fmt --check`, so run those three before considering a change done.
@@ -82,7 +82,7 @@ Imports flow one direction (`modules` → `standard` → `core`) and are grouped
 
 ### Middleware and resource groups
 
-`Middleware` (`src/standard/http/Middleware.ts`) *extends* `Resource` — it is a decorator, not a separate concept. It holds `this.original` (the wrapped resource or the next middleware) and forwards via `this.next(input)`. An `ALL()` override intercepts every method; otherwise each HTTP method delegates to the original.
+`Middleware` (`src/standard/http/Middleware.ts`) _extends_ `Resource` — it is a decorator, not a separate concept. It holds `this.original` (the wrapped resource or the next middleware) and forwards via `this.next(input)`. An `ALL()` override intercepts every method; otherwise each HTTP method delegates to the original.
 
 `ResourceGroup.Builder` (`src/standard/http/ResourceGroup.ts`) does the wiring at build time by generating anonymous proxy classes:
 

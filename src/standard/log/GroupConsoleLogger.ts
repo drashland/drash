@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -20,7 +20,7 @@
  */
 
 // Imports > Standard
-import { AbstractLogger } from "./AbstractLogger";
+import { AbstractLogger } from "./AbstractLogger.ts";
 import { Level } from "./Level.ts";
 import type { LogLevel } from "./LogLevel.ts";
 

@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -36,23 +36,23 @@ type WebAPIContext = {
 };
 
 class Home extends Chain.Resource {
-  public paths = ["/"];
+  public override paths = ["/"];
 
-  public GET(context: WebAPIContext) {
+  public override GET(context: WebAPIContext) {
     context.response = new Response("Hello from GET.");
     return context;
   }
 
-  public POST(context: WebAPIContext) {
+  public override POST(context: WebAPIContext) {
     context.response = new Response("Hello from POST.");
     return context;
   }
 
-  public DELETE(_context: WebAPIContext) {
+  public override DELETE(_context: WebAPIContext) {
     throw new Error("Hey, I'm the DELETE endpoint. Errrr.");
   }
 
-  public PATCH(_context: WebAPIContext) {
+  public override PATCH(_context: WebAPIContext) {
     throw new Chain.HTTPError(Status.MethodNotAllowed);
   }
 }

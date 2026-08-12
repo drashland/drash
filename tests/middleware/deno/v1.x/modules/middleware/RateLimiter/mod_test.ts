@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -404,9 +404,9 @@ function getTestCases(): (() => TestCase)[] {
           middleware: [getRateLimiterMiddleware(options)],
           resources: [
             class Throttled extends Chain.Resource {
-              public paths = ["/throttled/:id?"];
+              public override paths = ["/throttled/:id?"];
 
-              public GET(request: Chain.HTTPRequest) {
+              public override GET(request: Chain.HTTPRequest) {
                 const id = request.params.pathParam("id");
 
                 if (id) {
@@ -637,7 +637,7 @@ function getRateLimiterMiddleware(
       super(options);
     }
 
-    public ALL(request: Request): Promise<Response> {
+    public override ALL(request: Request): Promise<Response> {
       return Promise
         .resolve()
         .then(() => {

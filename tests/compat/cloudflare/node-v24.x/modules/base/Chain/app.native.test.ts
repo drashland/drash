@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -21,15 +21,15 @@
 
 import { lstatSync } from "fs";
 import { unstable_dev } from "wrangler";
-import type { UnstableDevWorker } from "wrangler";
+import type { Unstable_DevWorker } from "wrangler";
 
 const testName =
-  "./tests/compat/cloudflare/node-v18.x/modules/base/Chain/app.polyfill.ts";
+  "./tests/compat/cloudflare/node-v24.x/modules/base/Chain/app.native.ts";
 
 lstatSync(testName);
 
 describe("Wrangler", () => {
-  let worker: UnstableDevWorker;
+  let worker: Unstable_DevWorker;
 
   beforeAll(async () => {
     worker = await unstable_dev(testName, {

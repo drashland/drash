@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -30,11 +30,6 @@ import { RequestValidator } from "../../../../../../../dist/standard/handlers/Re
 import { ResourceCaller } from "../../../../../../../dist/standard/handlers/ResourceCaller.js";
 import { ResourceNotFoundHandler } from "../../../../../../../dist/standard/handlers/ResourceNotFoundHandler.js";
 import { ResourcesIndex } from "../../../../../../../dist/standard/handlers/ResourcesIndex.js";
-import { URLPatternPolyfill } from "../../../../../../../src/standard/polyfill/URLPatternPolyfill.js";
-
-export const protocol = "http";
-export const hostname = "localhost";
-export const port = 1447;
 
 class Home extends Resource {
   public paths = ["/"];
@@ -59,7 +54,8 @@ class Home extends Resource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new ResourcesIndex(URLPatternPolyfill, Home)) // Using native `URLPattern`
+  // @ts-ignore URLPattern exists
+  .handler(new ResourcesIndex(URLPattern, Home))
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())

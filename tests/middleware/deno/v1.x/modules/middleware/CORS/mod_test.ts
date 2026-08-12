@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -1228,11 +1228,11 @@ function getCorsMiddleware(
       super(options);
     }
 
-    ALL(request: Request): Promise<Response> {
+    override ALL(request: Request): Promise<Response> {
       return super.ALL(request);
     }
 
-    OPTIONS(request: Request) {
+    override OPTIONS(request: Request) {
       return super.OPTIONS(request);
     }
   };

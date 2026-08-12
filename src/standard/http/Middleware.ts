@@ -1,6 +1,6 @@
 /**
  * Drash - A microframework for building JavaScript/TypeScript HTTP systems.
- * Copyright (C) 2023  Drash authors. The Drash authors are listed in the
+ * Copyright (C) 2023-2026  Drash authors. The Drash authors are listed in the
  * AUTHORS file at <https://github.com/drashland/drash/AUTHORS>. This notice
  * applies to Drash version 3.X.X and any later version.
  *
@@ -101,39 +101,39 @@ class Middleware extends Resource {
     return this.next<unknown>(input);
   }
 
-  public CONNECT(input: unknown): unknown {
+  public override CONNECT(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "CONNECT");
   }
 
-  public DELETE(input: unknown): unknown {
+  public override DELETE(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "DELETE");
   }
 
-  public GET(input: unknown): unknown {
+  public override GET(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "GET");
   }
 
-  public HEAD(input: unknown): unknown {
+  public override HEAD(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "HEAD");
   }
 
-  public OPTIONS(input: unknown): unknown {
+  public override OPTIONS(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "OPTIONS");
   }
 
-  public PATCH(input: unknown): unknown {
+  public override PATCH(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "PATCH");
   }
 
-  public POST(input: unknown): unknown {
+  public override POST(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "POST");
   }
 
-  public PUT(input: unknown): unknown {
+  public override PUT(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "PUT");
   }
 
-  public TRACE(input: unknown): unknown {
+  public override TRACE(input: unknown): unknown {
     return this.#callOriginalHttpMethod(input, "TRACE");
   }
 
