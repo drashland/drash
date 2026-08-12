@@ -41,8 +41,15 @@ const packageJsonContents = new TextDecoder().decode(
 
 const packageJson = JSON.parse(packageJsonContents);
 
+// These fields describe how this repo is developed, not how the published
+// package is consumed. `engines` in particular is driven by the dev toolchain
+// (vite, via vitest), so publishing it would constrain consumers to a Node
+// range that Drash itself does not require.
 const {
   devDependencies,
+  engines,
+  packageManager,
+  pnpm,
   scripts,
   ...rest
 } = packageJson;
