@@ -24,13 +24,13 @@ import { unstable_dev } from "wrangler";
 import type { Unstable_DevWorker } from "wrangler";
 
 const testName =
-  "./tests/compat/cloudflare/node-v20.x/modules/base/Chain/app.native.ts";
+  "./tests/compat/cloudflare/node-v22.x/modules/base/Chain/app.polyfill.ts";
 
 lstatSync(testName);
 
-let worker: Unstable_DevWorker;
-
 describe("Wrangler", () => {
+  let worker: Unstable_DevWorker;
+
   beforeAll(async () => {
     worker = await unstable_dev(testName, {
       experimental: { disableExperimentalWarning: true },
@@ -47,11 +47,10 @@ describe("Wrangler", () => {
       expect(res.status).toBe(200);
       expect(await res.text()).toBe("Hello from GET.");
     }
-
     try {
       await run();
     } catch (_error) {
-      await run();
+      await run(); // Try again
     }
   });
 });

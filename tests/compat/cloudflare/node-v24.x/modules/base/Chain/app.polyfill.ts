@@ -30,6 +30,7 @@ import { RequestValidator } from "../../../../../../../dist/standard/handlers/Re
 import { ResourceCaller } from "../../../../../../../dist/standard/handlers/ResourceCaller.js";
 import { ResourceNotFoundHandler } from "../../../../../../../dist/standard/handlers/ResourceNotFoundHandler.js";
 import { ResourcesIndex } from "../../../../../../../dist/standard/handlers/ResourcesIndex.js";
+import { URLPatternPolyfill } from "../../../../../../../src/standard/polyfill/URLPatternPolyfill.js";
 
 class Home extends Resource {
   public paths = ["/"];
@@ -54,8 +55,7 @@ class Home extends Resource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  // @ts-ignore URLPattern exists while dev'ing
-  .handler(new ResourcesIndex(URLPattern, Home)) // Using native `URLPattern`
+  .handler(new ResourcesIndex(URLPatternPolyfill, Home))
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())

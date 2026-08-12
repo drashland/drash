@@ -24,7 +24,7 @@ import { unstable_dev } from "wrangler";
 import type { Unstable_DevWorker } from "wrangler";
 
 const testName =
-  "./tests/compat/cloudflare/node-v18.x/modules/base/Chain/app.polyfill.ts";
+  "./tests/compat/cloudflare/node-v24.x/modules/base/Chain/app.polyfill.ts";
 
 lstatSync(testName);
 
@@ -47,11 +47,10 @@ describe("Wrangler", () => {
       expect(res.status).toBe(200);
       expect(await res.text()).toBe("Hello from GET.");
     }
-
     try {
       await run();
     } catch (_error) {
-      await run();
+      await run(); // Try again
     }
   });
 });

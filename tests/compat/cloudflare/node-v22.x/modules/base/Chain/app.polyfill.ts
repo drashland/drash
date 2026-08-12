@@ -55,7 +55,7 @@ class Home extends Resource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new ResourcesIndex(URLPatternPolyfill, Home)) // Using native `URLPattern`
+  .handler(new ResourcesIndex(URLPatternPolyfill, Home))
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())

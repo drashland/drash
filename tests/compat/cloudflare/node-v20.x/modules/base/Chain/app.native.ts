@@ -54,8 +54,8 @@ class Home extends Resource {
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  // @ts-ignore URLPattern exists
-  .handler(new ResourcesIndex(URLPattern, Home))
+  // @ts-ignore URLPattern exists while dev'ing
+  .handler(new ResourcesIndex(URLPattern, Home)) // Using native `URLPattern`
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())
