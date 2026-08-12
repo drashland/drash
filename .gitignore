@@ -12,6 +12,7 @@ yarn.lock
 .idea/
 .vim/
 .vscode/
+.wrangler/
 benchmarks/
 dist/
 lib/
