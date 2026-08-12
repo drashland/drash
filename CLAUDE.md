@@ -36,7 +36,7 @@ Running a single test:
 ```
 deno test tests/unit/standard/handlers/RequestValidator_test.ts
 deno test tests/compat/deno/v1.x/modules/RequestChain/native/default-behavior/app_test.ts
-pnpm exec jest --config jest.config.node.ts -t "some test name"
+pnpm exec jest --config jest.config.node.mjs -t "some test name"
 ```
 
 CI (`.github/workflows/*.code_validation.yml`) gates every test job behind `check:file-headers`, `deno lint`, and `deno fmt --check`, so run those three before considering a change done.

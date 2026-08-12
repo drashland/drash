@@ -71,7 +71,7 @@ jobs:
       matrix:
         # Add Windows when https://github.com/oven-sh/bun/issues/43 is complete
         os: [ubuntu-latest, macos-latest]
-        node-version: [22.x, 24.x]
+        node-version: [20.x, 22.x, 24.x]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -109,7 +109,7 @@ jobs:
   #   strategy:
   #     matrix:
   #       os: [ubuntu-latest, windows-latest, macos-latest]
-  #       node-version: [22.x, 24.x]
+  #       node-version: [20.x, 22.x, 24.x]
   #   runs-on: ${{ matrix.os }}
 
   #   steps:
@@ -167,7 +167,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [22.x, 24.x]
+        node-version: [20.x, 22.x, 24.x]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -205,7 +205,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [22.x, 24.x]
+        node-version: [20.x, 22.x, 24.x]
     runs-on: ${{ matrix.os }}
 
     steps:

@@ -1,12 +1,16 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-import type { Config } from "@jest/types";
+// This config is plain ESM JavaScript, not TypeScript. Jest loads a TypeScript
+// config through ts-node, which type checks it. That fails on Node versions
+// without native type stripping because `@jest/types` is not a direct
+// dependency and so is not resolvable under pnpm's isolated `node_modules`.
+
 import { getTestDirectory } from "./jest.config.utils.mjs";
 
 const testDirectory = getTestDirectory("cloudflare");
 
 console.log(`\nRunning tests in cloudflare/${testDirectory} directory\n`);
 
-const config: Config.InitialOptions = {
+/** @type {import("jest").Config} */
+const config = {
   testMatch: [
     `**/cloudflare/${testDirectory}/**/(*.)+(test).+(ts|tsx)`,
   ],
