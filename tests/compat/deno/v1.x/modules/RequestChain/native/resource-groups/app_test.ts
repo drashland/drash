@@ -20,7 +20,7 @@
  */
 
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
-import { asserts } from "../../../../../../../deps.ts";
+import * as asserts from "@std/assert";
 import { handleRequest, hostname, port, protocol } from "./app.ts";
 
 const url = `${protocol}://${hostname}:${port}`;

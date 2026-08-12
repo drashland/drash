@@ -28,7 +28,7 @@ import {
   Options,
 } from "../../../../../../../src/modules/middleware/CORS/mod.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
-import { asserts } from "../../../../../../deps.ts";
+import * as asserts from "@std/assert";
 import { catchError, query } from "../../../../utils.ts";
 import { assertionMessage, chain, testCaseName } from "../../../../utils.ts";
 

@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { asserts } from "../../../deps.ts";
+import * as asserts from "@std/assert";
 import { HTTPError } from "../../../../src/core/errors/HTTPError.ts";
 import { StatusCode } from "../../../../src/core/http/response/StatusCode.ts";
 import { RequestValidator } from "../../../../src/standard/handlers/RequestValidator.ts";

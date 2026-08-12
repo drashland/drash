@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { asserts } from "../../../../../../deps.ts";
+import * as asserts from "@std/assert";
 import {
   assertionMessage,
   chain,
