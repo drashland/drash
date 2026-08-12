@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-1. Install [Node](https://nodejs.org) (v16+).
+1. Install [Node](https://nodejs.org) (v20+).
 
 1. Install dependencies in `package.json`.
 
@@ -13,20 +13,18 @@
 1. Run the Drash app using Cloudflare's [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/).
 
    ```bash
-   npx wrangler@latest dev app.js
+   npm start
    ```
 
-   _Note: At the time of writing this tutorial, latest `wrangler` version is 3.15.0_
+   _Note: `npm start` is defined in the `package.json` file and runs `wrangler dev app.js`._
 
    You should see output similar to:
 
    ```text
-   ⛅️ wrangler 3.15.0
+   ⛅️ wrangler 4.121.0
    -------------------
    ⎔ Starting local server...
-   [mf:inf] Ready on http://0.0.0.0:8787
-   [mf:inf] - http://127.0.0.1:8787
-   [mf:inf] - http://192.168.1.139:8787
+   [wrangler:inf] Ready on http://localhost:8787
    ```
 
 1. Go to Wrangler local server at `http://0.0.0.0:8787`.

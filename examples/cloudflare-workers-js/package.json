@@ -1,13 +1,16 @@
 {
-  "name": "drash-cloudflare-js",
+  "name": "drash-example-cloudflare-workers-js",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node app.js"
+    "start": "wrangler dev app.js"
   },
   "dependencies": {
-    "@drashland/drash": "~3.0.0-preview.3"
+    "@drashland/drash": "3.0.0-beta.2"
+  },
+  "devDependencies": {
+    "wrangler": "^4.121.0"
   }
 }
