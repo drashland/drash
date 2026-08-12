@@ -2,7 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "types": [
-      "jest",
+      "vitest/globals",
       "node"
     ]
   },

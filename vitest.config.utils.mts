@@ -1,8 +1,4 @@
-// Shared helpers for `jest.config.node.ts` and `jest.config.cloudflare.ts`.
-//
-// This is plain ESM JavaScript (not TypeScript) because Jest loads its config
-// as a native ES module, where a relative import of a `.ts` file does not
-// resolve.
+// Shared helper for `vitest.config.node.mts` and `vitest.config.cloudflare.mts`.
 
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -15,12 +11,11 @@ import { join } from "node:path";
  * that is not ahead of it, so newer Node versions run the suite instead of
  * silently matching nothing.
  *
- * @param {"cloudflare" | "node"} suite The directory under `tests/compat` to
- * resolve within.
+ * @param suite The directory under `tests/compat` to resolve within.
  *
- * @returns {string} The name of the directory to run (e.g., `node-v20.x`).
+ * @returns The name of the directory to run (e.g., `node-v20.x`).
  */
-export function getTestDirectory(suite) {
+export function getTestDirectory(suite: "cloudflare" | "node"): string {
   console.log(`\nNode version: ${process.version}\n`);
 
   const matchedVersion = process.version.match(/v([0-9]+)/);
@@ -38,7 +33,7 @@ export function getTestDirectory(suite) {
   })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name.match(/^node-v([0-9]+)\.x$/))
-    .filter((match) => match !== null)
+    .filter((match): match is RegExpMatchArray => match !== null)
     .map((match) => Number(match[1]))
     .sort((a, b) => a - b);
 
