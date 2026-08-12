@@ -3,7 +3,7 @@
     "esModuleInterop": true,
     "types": [
       "@cloudflare/workers-types",
-      "jest",
+      "vitest/globals",
       "node"
     ]
   },

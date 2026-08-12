@@ -10,7 +10,7 @@ The source is written in Deno style (`.ts` extensions in import specifiers, JSR/
 
 ## Commands
 
-All tasks run through Deno (`deno task <name>`), even the ones that shell out to pnpm/jest/bun. Package manager is pnpm.
+All tasks run through Deno (`deno task <name>`), even the ones that shell out to pnpm/vitest/bun. Package manager is pnpm.
 
 ```
 deno task build:libs             # doit.ts (stage dist/) + tsup CJS/ESM/dts build
@@ -36,7 +36,7 @@ Running a single test:
 ```
 deno test tests/unit/standard/handlers/RequestValidator_test.ts
 deno test tests/compat/deno/v1.x/modules/RequestChain/native/default-behavior/app_test.ts
-pnpm exec jest --config jest.config.node.mjs -t "some test name"
+pnpm exec vitest run --config vitest.config.node.mts -t "some test name"
 ```
 
 CI (`.github/workflows/*.code_validation.yml`) gates every test job behind `check:file-headers`, `deno lint`, and `deno fmt --check`, so run those three before considering a change done.
@@ -45,7 +45,7 @@ CI (`.github/workflows/*.code_validation.yml`) gates every test job behind `chec
 
 - **Every `.ts` file under `src/` and `tests/` must carry the GPL file header verbatim** (see `scripts/check_file_headers.ts`). New files fail CI without it.
 - **Compat tests import from `dist/`, not `src/`.** They deliberately exercise the artifact that gets published to npm, so any `src/` change must be followed by `deno task build:libs` before the Node/Bun/Cloudflare compat suites will reflect it. Unit tests (`tests/unit`) import from `src/` and need no build.
-- Node and Cloudflare compat tests are split by Node major (`node-v18.x`, `node-v20.x`, …). `jest.config.utils.mjs` picks the directory matching the running Node version, falling back to the newest directory not ahead of it. Adding a new Node major means adding a directory, not editing config.
+- Node and Cloudflare compat tests are split by Node major (`node-v20.x`, `node-v22.x`, `node-v24.x`). `vitest.config.utils.mts` picks the directory matching the running Node version, falling back to the newest directory not ahead of it. Adding a new Node major means adding a directory, not editing config.
 - `dist/` is gitignored; it is a build output.
 - Public API is marked in each file by a `// FILE MARKER - PUBLIC API` comment followed by the export statement. Keep exports there.
 - Branch model (from README): `v3.x` is the supported line; `main` and `*-beta` / `*-staging` are unstable. The repo does not accept outside pull requests.
@@ -96,7 +96,7 @@ Bundled middleware in `src/modules/middleware/` (`AcceptHeader`, `CORS`, `ETag`,
 ## Test layout
 
 - `tests/unit` — assertions against `core`/`standard`/`modules` from `src/` (Deno test runner).
-- `tests/compat/{bun,deno,node,cloudflare}` — full request-flow apps per runtime, each split into `native/` and `polyfill/` variants and into scenario directories (`default-behavior`, `concurrency`, `resource-groups`, `request-in-context-object`, `node-http-in-context-object`, …). Deno/Bun use `*_test.ts`; Node/Cloudflare use `*.test.ts` under jest.
+- `tests/compat/{bun,deno,node,cloudflare}` — full request-flow apps per runtime, each split into `native/` and `polyfill/` variants and into scenario directories (`default-behavior`, `concurrency`, `resource-groups`, `request-in-context-object`, `node-http-in-context-object`, …). Deno/Bun use `*_test.ts`; Node/Cloudflare use `*.test.ts` under vitest.
 - `tests/middleware/deno` — behavioral tests for the bundled middleware, run with `--allow-net`.
 - `tests/README.md` documents per-runtime prerequisites.
 

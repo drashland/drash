@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { asserts } from "../../../../../../deps.ts";
+import * as asserts from "@std/assert";
 import { handleRequest, hostname, port, protocol } from "./app_polyfill.ts";
 
 const url = `${protocol}://${hostname}:${port}`;

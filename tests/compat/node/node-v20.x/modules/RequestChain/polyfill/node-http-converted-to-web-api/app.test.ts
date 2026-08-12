@@ -24,7 +24,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 
 import { handleRequest } from "./app";
 
-describe.only("Native - Convert IncomingMessage/ServerResponse to Request/Response", () => {
+describe("Native - Convert IncomingMessage/ServerResponse to Request/Response", () => {
   describe.each(testCases())(
     "Home / paths = /",
     ({ method, expected }) => {
