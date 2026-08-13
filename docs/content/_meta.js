@@ -12,7 +12,9 @@ export default {
       toc: false,
     },
   },
+  "getting-started": "Getting Started",
   quickstart: "Quickstart",
   concepts: "Concepts",
   reference: "Reference",
+  misc: "Misc",
 };

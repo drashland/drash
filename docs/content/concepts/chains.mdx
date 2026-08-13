@@ -1,0 +1,197 @@
+---
+title: Chains
+---
+
+# Chains
+
+## What Is a Chain?
+
+In the context of Drash, a chain is a set of handlers connected together to form a variant of the [Chain of Responsibility](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern) pattern. Each handler receives an **input** and returns an **output**. Chains are responsible for:
+
+- connecting handlers together;
+- receiving inputs from clients;
+- sending inputs to handlers; and
+- returning outputs from handlers to clients.
+
+In simplest form, their flow looks like:
+
+```mermaid
+flowchart LR
+  h1([Handler1])
+  h2([Handler2])
+  h3([Another])
+  h4([Resource])
+
+  subgraph chain[Drash Chain]
+    direction LR
+    h1 <--> h2 <--> h3 <--> h4
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+  class h1,h2,h3,h4 blue
+```
+
+When you build HTTP applications with Drash, you start by creating a chain (specifically the [Request Chain](/reference/chain)). From there, you give it [resources](/concepts/resources) — the classes you use to process requests and respond to them.
+
+## Where Is the Chain Placed?
+
+**The chain is placed by you, behind your chosen runtime's HTTP server.**
+
+A chain on its own does nothing. It needs a runtime to receive HTTP requests, and it needs to be connected to that runtime's HTTP server. Once the server is running and clients are making requests — and once your resources talk to whatever services hold your data — the full picture looks like:
+
+```mermaid
+flowchart LR
+    browser([Browser])
+    runtimes([HTTP Server])
+    h1([Handler1])
+    h2([Handler2])
+    h3([Another])
+    h4([Resource])
+
+    subgraph lifecycle[ ]
+      direction LR
+      subgraph client[Client]
+        browser
+      end
+      subgraph runtime[Runtime]
+        browser <--> runtimes
+      end
+      subgraph chain[Drash Chain]
+        direction LR
+        runtimes <--> h1 <--> h2 <--> h3 <--> h4
+      end
+      subgraph external[Some Service]
+        h4 <--> apiEndpoint([API Endpoint])
+      end
+    end
+
+    style lifecycle fill:#ffffff,color:#ffffff;
+    style external fill:#ffffff,stroke:#ffffff,color:#4299e1;
+    style client fill:#fc8181,stroke:#fc8181,stroke-width:2px,color:#fff5f5;
+    style runtime fill:#38b2ac,stroke:#38b2ac,stroke-width:2px,color:#e6fffa;
+    style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+
+    classDef red fill:#fff5f5,stroke:#fc8181,stroke-width:2px,color:#c53030;
+    classDef green fill:#e6fffa,stroke:#38b2ac,stroke-width:2px,color:#234e52;
+    classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+    classDef ext fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+
+    class browser red
+    class runtimes green
+    class h1,h2,h3,h4 blue
+    class apiEndpoint ext
+```
+
+Clients could make requests to the API Endpoint _through_ the runtime's HTTP server and Drash's chain.
+
+## The Standard Chain
+
+`Chain.builder()` assembles these handlers, in this fixed order:
+
+| # | Handler                   | What it does                                                           |
+| - | ------------------------- | ---------------------------------------------------------------------- |
+| 1 | `RequestValidator`        | Rejects input lacking a readable `url` or `method`                     |
+| 2 | `ResourcesIndex`          | Matches `input.url` against each resource's `paths` using `URLPattern` |
+| 3 | `ResourceNotFoundHandler` | Throws `HTTPError(404)` when the index matched nothing                 |
+| 4 | `RequestParamsParser`     | Defines a non-enumerable `params` property on the request              |
+| 5 | `ResourceCaller`          | Invokes `resource[METHOD](request)`                                    |
+
+The order is not configurable through the builder. What you control is the set of resources, and the middleware wrapped around them.
+
+## What Data Does It Process?
+
+Drash's chains process the data you give them. **You are in charge of defining what goes into the chain and what comes out.** Handlers pass along the input you gave them, enriched — not a fixed request type. That is why Node can hand the chain a plain context object while Deno hands it a Web `Request`, and both work.
+
+The data must meet these requirements:
+
+1. The data must be a single object.
+1. The object must have a `url: string` property, and it must be a _fully qualified URL_:
+
+   ```ts
+   // Good
+   const url: string = "http://localhost:1447/accounts/1337";
+
+   // Bad
+   const url: string = "/accounts/1337";
+   ```
+
+1. The object must have a `method: string` property that is a valid [HTTP request method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
+
+   ```ts
+   // Uppercase is OK
+   const method: string = "GET";
+
+   // Lowercase is also OK
+   const method: string = "get";
+   ```
+
+`RequestValidator` enforces exactly that much, and throws `HTTPError(422)` otherwise:
+
+```text
+Request could not be read
+Request HTTP method could not be read
+Request URL could not be read
+```
+
+### Examples of Correct Data
+
+The minimum:
+
+```ts
+const minimal = {
+  url: "http://localhost:1447/accounts/1337",
+  method: "get",
+};
+```
+
+In Node, you might find yourself using something like:
+
+```js
+const context = {
+  url: "http://localhost:1447/accounts/1337",
+  method: "get",
+  request, // IncomingMessage
+  response, // ServerResponse
+  // ... add as many fields as you wish
+};
+```
+
+### Data Exchange Summarized
+
+- The Client and Runtime exchange [HTTP messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages). That process is defined by the Client and Runtime.
+- The Runtime and Drash Chain exchange inputs and outputs, whose types are defined by the Runtime and you. If the Runtime is Deno, its HTTP server gives you a `Request`; you pass it to the chain and have the chain return a `Response`, which is what Deno's HTTP server wants back.
+- If Some Service exists, the data exchanged between it and the chain is defined by Some Service.
+
+## Errors Propagate to You
+
+`chain.handle()` returns a promise. Errors thrown anywhere in the chain — including a resource method — reject that promise. Drash writes nothing to the socket, so **your `.catch()` is the only thing standing between an error and the client**.
+
+```ts
+chain
+  .handle<Response>(request)
+  .catch((error) => {
+    // You decide what the client sees.
+  });
+```
+
+This is deliberate: translating an error into a response is runtime-specific, and Drash does not own your response object. See [HTTPError](/reference/http-error).
+
+## Path Matching
+
+`ResourcesIndex` appends `{/}?` to every path before compiling it, so `/users` matches `/users/` too. Match results are cached by fully-qualified URL.
+
+Because matching is `URLPattern`-based, path parameters use `URLPattern` syntax:
+
+```ts
+class Users extends Resource {
+  paths = ["/users/:id?"];
+}
+```
+
+Retrieve them via [`request.params`](/reference/resource#request-params), and see [Dynamic paths](/reference/resource#dynamic-paths) for the full syntax.
+
+## Next Steps
+
+- Read about [how resources play a role in the chain](/concepts/resources).
+- [Create a tiny HTTP application](/quickstart/step-by-step-guide) using the Request Chain module.

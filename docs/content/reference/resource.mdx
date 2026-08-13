@@ -22,6 +22,70 @@ public paths = ["/", "/home", "/users/:id?"];
 
 Drash appends `{/}?` to each pattern when compiling, so `/users` also matches `/users/`.
 
+## Dynamic paths
+
+Paths can carry parameters and regular expressions, so one resource can cover many endpoints.
+
+### Required path params
+
+```ts filename="ResourceWithPathParam.ts"
+class ResourceWithPathParam extends Resource {
+  paths = ["/:my_param"];
+
+  GET(request: Chain.HTTPRequest) {
+    return new Response(`You passed in: ${request.params.pathParam("my_param")}`);
+  }
+}
+```
+
+```text
+GET /hello      ->  You passed in: hello
+GET /world      ->  You passed in: world
+```
+
+### Optional path params
+
+A trailing `?` makes a param optional, so the resource matches with or without it.
+
+```ts filename="Users.ts"
+class Users extends Resource {
+  // id is required; the rest are optional
+  paths = ["/users/:id/:name?/:age?/:city?"];
+
+  GET(request: Chain.HTTPRequest) {
+    const id = request.params.pathParam("id");
+    const name = request.params.pathParam("name");
+    return new Response([id, name].filter(Boolean).join(" | "));
+  }
+}
+```
+
+```text
+GET /users/1             ->  1
+GET /users/1/            ->  1
+GET /users/1/John        ->  1 | John
+GET /users/1/John/       ->  1 | John
+```
+
+You can have as many optional params as you like, but **required params must come before optional ones**.
+
+### Regular expression paths
+
+```ts filename="RegexPathResource.ts"
+class RegexPathResource extends Resource {
+  paths = ["/([0-9]$)"];
+
+  GET(_request: Request) {
+    return new Response("GOT!");
+  }
+}
+```
+
+```text
+GET /1  ->  GOT!
+GET /2  ->  GOT!
+```
+
 ## HTTP methods
 
 Override any of:
@@ -30,7 +94,9 @@ Override any of:
 
 Each receives the input that was passed to `chain.handle()` and returns whatever your runtime needs.
 
-**Every method you do not override throws `HTTPError(501 Not Implemented)`.** That is the base class behavior, so a resource with only `GET` answers `501` — not `405` — for a `POST` to a path it owns.
+**Every method you do not override throws `HTTPError(501 Not Implemented)`.** That is the base class behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1), so a resource with only `GET` answers `501` — not `405` — for a `POST` to a path it owns.
+
+Methods may be synchronous or asynchronous; `chain.handle()` awaits whatever they return.
 
 ```ts
 class Home extends Resource {

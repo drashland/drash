@@ -1,4 +1,5 @@
 export default {
+  "step-by-step-guide": "Step-by-step guide",
   deno: "Deno",
   node: "Node",
   bun: "Bun",

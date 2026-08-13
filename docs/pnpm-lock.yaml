@@ -10,6 +10,12 @@ overrides:
 importers:
   .:
     dependencies:
+      "@theguild/remark-mermaid":
+        specifier: ^0.3.0
+        version: 0.3.0(react@19.2.8)
+      mermaid:
+        specifier: ^11.16.1
+        version: 11.16.1
       next:
         specifier: ^16.3.0
         version: 16.3.0(@types/node@24.13.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)

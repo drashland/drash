@@ -1,0 +1,38 @@
+---
+title: Introduction
+---
+
+# Introduction
+
+Welcome! We're glad you're here!
+
+Want to skip ahead and build something? Head straight to the [step-by-step guide](/quickstart/step-by-step-guide), or the quickstart for your runtime: [Deno](/quickstart/deno), [Node](/quickstart/node), [Bun](/quickstart/bun), [Cloudflare Workers](/quickstart/cloudflare-workers).
+
+## What is Drash?
+
+Drash is a microframework for building JavaScript HTTP applications. It can be used in Deno, Node, Cloudflare Workers, Bun, and any other environment that can run JavaScript. It can also be used alongside your current JavaScript HTTP application — giving you the ability to reroute some requests to Drash or migrate smoothly and safely to a complete Drash solution.
+
+For the ideas behind it, read [Framework](/concepts/framework) and [Chains](/concepts/chains).
+
+### Migration Guide
+
+_Apologies! For your awareness, we are still working on the migration guide from v2 to v3, so stay tuned!_
+
+## Features
+
+- Ships with zero dependencies <sup>1</sup>
+- Runtime agnostic <sup>2</sup>
+- Extensively documented so you can develop with confidence
+- Hella typed so you can use it with your TypeScript codebase
+- Built to work as an [ECMAScript Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) and a [CommonJS Module](https://nodejs.org/modules.html)
+- Dynamic paths (e.g., `/users/:id`) <sup>3</sup>
+
+---
+
+Notes
+
+<small>
+  1. We're all about this zero deps life. [porsager/postgres](https://github.com/porsager/postgres) knows what's up.
+  2. Drash's compatibility suites run against Deno 2.x, Node 20/22/24/26, Bun, and Cloudflare Workers. If your environment uses another version, your experience may vary since we have no control over runtime version incompatibilities.
+  3. Drash has modules that use [`URLPattern`](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) or a polyfill for it, so you can choose a module that works in your chosen runtime. See [Native vs. polyfill](/concepts/native-vs-polyfill).
+</small>

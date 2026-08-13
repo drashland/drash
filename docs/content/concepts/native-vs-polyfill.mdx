@@ -18,7 +18,7 @@ They export **the same surface** — `Chain`, `Resource`, `Middleware`, `HTTPErr
 
 Pick `mod.native` if your runtime has a global `URLPattern` you trust, and `mod.polyfill` otherwise. Choosing wrong fails loudly and early — `mod.native` on a runtime without `URLPattern` throws while the chain is being built, not on the first request.
 
-If you are unsure, `mod.polyfill` works everywhere. The polyfill is bundled, so it costs a little size but no network or peer dependency.
+If you are unsure, `mod.polyfill` should work everywhere. The polyfill is bundled, so it costs a little size but no network or peer dependency.
 
 ## Swapping the implementation directly
 
@@ -35,7 +35,3 @@ const chain = RequestChain
 ```
 
 The class must be constructible as `new URLPatternClass({ pathname })` and expose `exec()`, matching the Web `URLPattern` contract.
-
-## For contributors
-
-`mod.native.ts` and `mod.polyfill.ts` are parallel files. **A change to one must be mirrored in the other** — the compat test suites exist in `native/` and `polyfill/` pairs specifically to catch drift between them.

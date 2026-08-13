@@ -1,4 +1,6 @@
 export default {
-  "chain-of-responsibility": "Chain of responsibility",
+  framework: "Framework",
+  chains: "Chains",
+  resources: "Resources",
   "native-vs-polyfill": "Native vs. polyfill",
 };

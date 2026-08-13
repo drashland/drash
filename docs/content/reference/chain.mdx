@@ -1,6 +1,13 @@
 # Chain
 
-The chain is what you build once at startup and call per request.
+The Request Chain module provides the code you use to build HTTP applications. It implements the ideas on the [Chains](/concepts/chains) page: you build a chain once at startup and call it per request.
+
+<Callout type="info">
+  If you have used previous versions of Drash, this chain is essentially Drash
+  v1.x and v2.x in a more portable format.
+</Callout>
+
+The syntax is nearly identical across runtimes, because Drash is [runtime agnostic](/concepts/framework#runtime-agnostic). See the [quickstarts](/quickstart/deno) for a complete app per runtime.
 
 ## `Chain.builder()`
 

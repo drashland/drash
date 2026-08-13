@@ -66,6 +66,32 @@ chain
   });
 ```
 
+### Example error handlers are educational
+
+<Callout type="warning">
+  The short `.catch()` blocks throughout these docs exist to keep the
+  surrounding example readable. **They are not suitable for production.**
+</Callout>
+
+Specifically:
+
+- **They return `500` for everything.** Not every error is a `500`; you need logic to pick the right status, which is what the block above does via `status_code`.
+- **They send `error.message` as the body unchecked.** That message may come from deep in your stack ("Unable to read from users table. User ID 108 does not exist."), and returning it verbatim leaks information about your system.
+- **They use `console.log`.** In production this would be a logging library:
+
+  ```ts
+  .catch((error) => {
+    logger.error(error.message);
+    logger.trace(error);
+
+    return new Response("Something went wrong");
+  });
+  ```
+
+### Where to import it from
+
+The chain modules re-export `HTTPError` for convenience, which is why the examples import it alongside `Chain` and `Resource`. You can import it from the core codebase instead if that suits you better — it is the same class, and Drash's own internals throw it, so every error from the framework is uniform.
+
 ### Why the `name` check
 
 `error instanceof HTTPError` can be `false` even for a genuine Drash error — when the error crosses a module realm, or when two copies of Drash are loaded (a bundler duplicating the package, or mixed CJS/ESM resolution).
@@ -81,4 +107,4 @@ chain
 | `500`  | `Middleware.next()`       | The wrapped resource method returned nothing |
 | `501`  | `Resource`                | An HTTP method was not overridden            |
 
-See [Chain of responsibility](/concepts/chain-of-responsibility).
+See [Chains](/concepts/chains).

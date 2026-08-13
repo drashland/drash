@@ -2,6 +2,12 @@
 
 `Middleware` **extends `Resource`**. It is a decorator, not a separate concept — which is why it has the same HTTP method surface and why it can stand in for the resource it wraps.
 
+<Callout type="info">
+  In [v2.x](https://drash.land/drash/v2.x/tutorials/services/basics) these were
+  called "services". From v3 onward they are "middleware", matching [MDN's
+  definition](https://developer.mozilla.org/en-US/docs/Glossary/Middleware).
+</Callout>
+
 ```ts
 import {
   HTTPError,
@@ -41,6 +47,27 @@ return this.next<Response>(request);
 | The wrapped call returns a falsy value                  | `HTTPError(500, "The server was unable to generate a response")` |
 
 That second row is the one that surprises people. A resource method that writes to a response object and returns nothing works fine unwrapped, but **fails once you put middleware around it** — `next()` has nothing to return. Return a value from resource methods you intend to wrap.
+
+## Per-method middleware
+
+`Middleware` extends the same core `Resource` that your resources extend, so a middleware class inherits the whole HTTP method surface. Define only the methods you care about:
+
+- to act on GET requests, add a `GET` method to your middleware;
+- to act on POST requests, add a `POST` method;
+- and so on.
+
+```ts
+class LogGETRequests extends Middleware {
+  public GET(request: Request) {
+    console.log(`Incoming request: ${request.method} ${request.url}`);
+    return super.GET(request);
+  }
+}
+```
+
+`super.GET(request)` and `this.next<Response>(request)` do the same thing here. `Middleware` overrides every HTTP method to forward to `this.original`, so `super.GET()` lands on that forwarding implementation rather than on the core `Resource` method that throws `501`.
+
+Use `ALL` when the behavior applies to every method; use per-method overrides when it does not.
 
 ## `this.original`
 
