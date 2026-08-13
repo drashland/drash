@@ -1,0 +1,118 @@
+# Resource
+
+A resource maps a set of paths to HTTP method handlers. It is the unit you write most.
+
+```ts
+class Users extends Resource {
+  public paths = ["/users/:id?"];
+
+  public GET(request: Chain.HTTPRequest) {
+    return new Response(`User ${request.params.pathParam("id")}`);
+  }
+}
+```
+
+## `paths`
+
+An array of `URLPattern` pathname patterns.
+
+```ts
+public paths = ["/", "/home", "/users/:id?"];
+```
+
+Drash appends `{/}?` to each pattern when compiling, so `/users` also matches `/users/`.
+
+## HTTP methods
+
+Override any of:
+
+`CONNECT` `DELETE` `GET` `HEAD` `OPTIONS` `PATCH` `POST` `PUT` `TRACE`
+
+Each receives the input that was passed to `chain.handle()` and returns whatever your runtime needs.
+
+**Every method you do not override throws `HTTPError(501 Not Implemented)`.** That is the base class behavior, so a resource with only `GET` answers `501` — not `405` — for a `POST` to a path it owns.
+
+```ts
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    return new Response("Hello");
+  }
+
+  // POST, PUT, DELETE, ... all throw 501
+}
+```
+
+To return `405` instead, override the method and throw explicitly:
+
+```ts
+public PATCH(_request: Request) {
+  throw new HTTPError(Status.MethodNotAllowed);
+}
+```
+
+## Return values
+
+Whatever a method returns becomes the resolved value of `chain.handle()`. On Deno, Bun, and Workers that is a `Response`. On Node, where you write to `ServerResponse` directly, returning nothing is normal.
+
+A method that returns nothing **while wrapped in middleware** is an error: `Middleware.next()` throws `HTTPError(500, "The server was unable to generate a response")` when the wrapped call produces no value. Middleware has to have something to hand back.
+
+## Request params
+
+`RequestParamsParser` attaches a non-enumerable `params` object to the request. Type the parameter as `Chain.HTTPRequest` to see it:
+
+```ts
+import * as Chain from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+
+class Users extends Resource {
+  public paths = ["/users/:id?"];
+
+  public GET(request: Chain.HTTPRequest) {
+    const id = request.params.pathParam("id");
+    const sort = request.params.queryParam("sort");
+    return new Response(`id=${id} sort=${sort}`);
+  }
+}
+```
+
+| Method             | Returns               | Notes                                    |
+| ------------------ | --------------------- | ---------------------------------------- |
+| `pathParam(name)`  | `string \| undefined` | From the matched `URLPattern`            |
+| `queryParam(name)` | `string \| undefined` | From the query string — see caveat below |
+
+Both return `undefined` for a missing name rather than throwing.
+
+<Callout type="warning">
+  **`queryParam()` does not return the first query parameter.** It is built from
+  `new URLSearchParams(request.url)`, which parses the entire URL as a query
+  string rather than just the part after `?`. The first parameter's name is
+  absorbed into the URL prefix, so for
+  `http://localhost:1447/users/1?sort=asc&page=2`:
+
+```ts
+request.params.queryParam("sort"); // undefined
+request.params.queryParam("page"); // "2"
+```
+
+  Every parameter after the first behaves correctly. Until this is fixed, read
+  the query string yourself when you need the first parameter:
+
+```ts
+const sort = new URL(request.url).searchParams.get("sort");
+```
+
+</Callout>
+
+## `Resource.group()`
+
+Shorthand for a resource group builder. See [Resource groups](/reference/resource-group).
+
+```ts
+const group = Resource
+  .group()
+  .middleware(Auth)
+  .pathPrefixes("/api/v1")
+  .resources(Users)
+  .build();
+```

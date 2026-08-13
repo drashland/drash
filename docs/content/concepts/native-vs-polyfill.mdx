@@ -1,0 +1,41 @@
+# Native vs. polyfill
+
+Drash has two consumer entry points:
+
+```
+@drashland/drash/modules/chains/RequestChain/mod.native.js
+@drashland/drash/modules/chains/RequestChain/mod.polyfill.js
+```
+
+They export **the same surface** — `Chain`, `Resource`, `Middleware`, `HTTPError`, and the `HTTPRequest` type. The only difference is which `URLPattern` implementation is handed to the chain builder:
+
+| Entry point    | `URLPattern` used                    | Use it on                |
+| -------------- | ------------------------------------ | ------------------------ |
+| `mod.native`   | The runtime's global `URLPattern`    | Deno, Cloudflare Workers |
+| `mod.polyfill` | Drash's bundled `URLPatternPolyfill` | Node, Bun                |
+
+## Which do I pick?
+
+Pick `mod.native` if your runtime has a global `URLPattern` you trust, and `mod.polyfill` otherwise. Choosing wrong fails loudly and early — `mod.native` on a runtime without `URLPattern` throws while the chain is being built, not on the first request.
+
+If you are unsure, `mod.polyfill` works everywhere. The polyfill is bundled, so it costs a little size but no network or peer dependency.
+
+## Swapping the implementation directly
+
+Both entry points are thin wrappers over the same builder. If you want to supply your own `URLPattern`-compatible class, use `urlPatternClass()`:
+
+```ts
+import { RequestChain } from "@drashland/drash/modules/base/RequestChain.js";
+
+const chain = RequestChain
+  .builder()
+  .urlPatternClass(MyURLPattern)
+  .resources(Home)
+  .build();
+```
+
+The class must be constructible as `new URLPatternClass({ pathname })` and expose `exec()`, matching the Web `URLPattern` contract.
+
+## For contributors
+
+`mod.native.ts` and `mod.polyfill.ts` are parallel files. **A change to one must be mirrored in the other** — the compat test suites exist in `native/` and `polyfill/` pairs specifically to catch drift between them.

@@ -1,0 +1,77 @@
+# Middleware
+
+`Middleware` **extends `Resource`**. It is a decorator, not a separate concept — which is why it has the same HTTP method surface and why it can stand in for the resource it wraps.
+
+```ts
+import {
+  HTTPError,
+  Middleware,
+} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+
+class Auth extends Middleware {
+  public ALL(request: Request) {
+    if (request.headers.get("x-api-key") !== "secret") {
+      throw new HTTPError(401);
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+## `ALL(input)`
+
+Intercepts every HTTP method. Override it to short-circuit, modify, or conditionally forward a request.
+
+If you do not override `ALL`, each HTTP method forwards to the wrapped resource individually.
+
+## `this.next<T>(input)`
+
+Passes the input to the wrapped resource — or to the next middleware in the nest — and returns its value.
+
+```ts
+return this.next<Response>(request);
+```
+
+`next()` throws if:
+
+| Condition                                               | Thrown                                                           |
+| ------------------------------------------------------- | ---------------------------------------------------------------- |
+| Input has no readable string `method`, or no `original` | `Error("Middleware could not process request further")`          |
+| The wrapped call returns a falsy value                  | `HTTPError(500, "The server was unable to generate a response")` |
+
+That second row is the one that surprises people. A resource method that writes to a response object and returns nothing works fine unwrapped, but **fails once you put middleware around it** — `next()` has nothing to return. Return a value from resource methods you intend to wrap.
+
+## `this.original`
+
+The wrapped resource, or the next middleware in the chain. `setOriginal()` is called for you by the [resource group](/reference/middleware/resource-group) builder; you rarely touch either directly.
+
+## Ordering
+
+`.middleware(A, B, C)` nests outermost-first:
+
+```
+A { original: B { original: C { original: resourceInstance } } }
+```
+
+So `A.ALL()` runs first, and `C` is closest to your resource.
+
+## Per-resource instances
+
+Middleware instances are constructed **fresh per resource**. Two resources sharing a middleware class do not share an instance.
+
+Do not introduce shared or singleton middleware state across resources — and do not keep per-request state on `this`, since one instance serves concurrent requests for its resource.
+
+## Applying middleware
+
+Via a [resource group](/reference/middleware/resource-group):
+
+```ts
+const group = Resource
+  .group()
+  .middleware(Auth)
+  .resources(Users)
+  .build();
+
+const chain = Chain.builder().resources(...group).build();
+```

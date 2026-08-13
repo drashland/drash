@@ -1,0 +1,70 @@
+# RateLimiter
+
+Limits how many requests a client may make within a rolling time window, and sets the `X-RateLimit-*` headers.
+
+```ts
+import {
+  RateLimiter,
+} from "@drashland/drash/modules/middleware/RateLimiter/mod.js";
+
+const group = Resource
+  .group()
+  .middleware(RateLimiter({
+    max_requests: 100,
+    rate_limit_time_window_length: 60000,
+    client_id_header_name: "x-api-key",
+    throw_if_connection_header_name_missing: true,
+  }))
+  .resources(Users)
+  .build();
+```
+
+Unlike the other bundled middleware, **`RateLimiter(options)` takes no defaults object** — its `Options` fields are all required, so pass every one.
+
+## Options
+
+| Option                                    | Type      | Notes                                 |
+| ----------------------------------------- | --------- | ------------------------------------- |
+| `max_requests`                            | `number`  | Requests allowed per window           |
+| `rate_limit_time_window_length`           | `number`  | Window length in milliseconds         |
+| `client_id_header_name`                   | `string`  | Request header identifying the client |
+| `throw_if_connection_header_name_missing` | `boolean` | Throw when that header is absent      |
+
+The documented defaults in the source are `max_requests: 3`, `rate_limit_time_window_length: 60000` (1 minute), and `client_id_header_name: "x-drash-ratelimit-client-id"` — useful as a starting point, but supply your own.
+
+## Identifying clients
+
+Clients are identified **solely by the `client_id_header_name` header** — there is no IP fallback. A client that omits it either shares a bucket with every other such client, or is rejected when `throw_if_connection_header_name_missing` is `true`.
+
+Since the header is client-supplied, anyone can present a fresh value to get a fresh budget. Treat this as request shaping for cooperative clients, not as an abuse control, unless the header is one you authenticate (an API key you issue).
+
+## Response headers
+
+| Header                  | Meaning                             |
+| ----------------------- | ----------------------------------- |
+| `X-RateLimit-Limit`     | `max_requests`                      |
+| `X-RateLimit-Remaining` | Requests left in the current window |
+| `X-RateLimit-Reset`     | When the window resets              |
+| `X-Retry-After`         | Sent with `429` responses           |
+
+Exceeding the limit throws an `HTTPError` with status `429 Too Many Requests`.
+
+<Callout type="info">
+  The retry header is `X-Retry-After`, **not** the standard `Retry-After`.
+  Clients and proxies that honor `Retry-After` automatically will not see this
+  one, so a caller has to read `X-Retry-After` explicitly to back off.
+</Callout>
+
+## State and scope
+
+Counters live **in memory, per middleware instance**. Because resource groups construct middleware fresh per resource, two resources in a group each get their own independent counters rather than sharing one budget.
+
+In-memory state also means limits are per process. Across multiple instances or workers, each keeps its own counts; a shared store would be needed for a global limit.
+
+## Exports
+
+| Export                  | What it is                                      |
+| ----------------------- | ----------------------------------------------- |
+| `RateLimiter`           | Factory returning a configured middleware class |
+| `RateLimiterMiddleware` | The middleware class, for subclassing           |
+| `Options`               | The options type                                |

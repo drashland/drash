@@ -1,0 +1,56 @@
+# Deno
+
+Deno provides `URLPattern` natively, so use the **native** entry point.
+
+## App
+
+```ts
+import {
+  Chain,
+  Resource,
+} from "https://esm.sh/@drashland/drash/modules/chains/RequestChain/mod.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response(`Hello from Home.GET()!`);
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+Deno.serve({
+  hostname: "localhost",
+  port: 1447,
+  handler: (request: Request): Promise<Response> => {
+    return chain
+      .handle<Response>(request)
+      .catch(() => {
+        return new Response("Sorry, but we hit an error!", {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      });
+  },
+});
+```
+
+## Run
+
+```bash
+deno run --allow-net app.ts
+```
+
+Then visit `http://localhost:1447`.
+
+## Notes
+
+Deno's native `Request` is passed straight through, so your resource methods receive a real `Request` and return a real `Response`.
+
+`chain.handle()` returns a promise that rejects on error — including [`HTTPError`](/reference/http-error). Nothing is written to the socket for you, so the `.catch()` is where you decide what the client sees. See [HTTPError](/reference/http-error) for translating errors into responses.
+
+A runnable version of this app lives in [`examples/deno`](https://github.com/drashland/drash/tree/main/examples/deno).

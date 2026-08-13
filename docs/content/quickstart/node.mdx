@@ -1,0 +1,83 @@
+# Node
+
+Node's `URLPattern` support varies by version, so use the **polyfill** entry point.
+
+## Install
+
+```bash
+npm install @drashland/drash
+```
+
+## App
+
+Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not a Web `Request`. Drash does not convert them for you — you hand the chain a **context object** carrying whatever your resources need. The chain only requires `url` and `method`.
+
+```js
+import {
+  Chain,
+  Resource,
+} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+import { createServer } from "node:http";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Hello from Home.GET()!");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+const hostname = "localhost";
+const port = 1447;
+
+const server = createServer((request, response) => {
+  const context = {
+    url: `http://${hostname}:${port}${request.url}`,
+    method: request.method,
+    request,
+    response,
+  };
+
+  return chain
+    .handle(context)
+    .catch((error) => {
+      response.statusCode = 500;
+      response.statusMessage = "Internal Server Error";
+      response.end("Sorry, but we hit an error!");
+    });
+});
+
+server.listen(port, hostname);
+```
+
+## Run
+
+```bash
+node app.js
+```
+
+## Notes
+
+`url` must be absolute. `request.url` from `node:http` is path-only (`/users/1`), which is why the example prefixes it with the scheme and host — a bare path will not match.
+
+Because the resource writes to `context.response` directly, `GET()` returns nothing. That is fine here: the response is already committed to the socket by the time the chain resolves.
+
+If you would rather work with Web `Request`/`Response` objects in Node, convert at the boundary and pass the `Request` in directly, as the Deno guide does.
+
+Runnable versions live in [`examples/node-js-esm`](https://github.com/drashland/drash/tree/main/examples/node-js-esm), [`examples/node-js-cjs`](https://github.com/drashland/drash/tree/main/examples/node-js-cjs), and [`examples/node-ts`](https://github.com/drashland/drash/tree/main/examples/node-ts).
+
+### CommonJS
+
+The same app in CJS differs only in the import:
+
+```js
+const {
+  Chain,
+  Resource,
+} = require("@drashland/drash/modules/chains/RequestChain/mod.polyfill");
+```

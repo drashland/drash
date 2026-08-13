@@ -1,0 +1,31 @@
+{
+  "name": "drash-docs",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentation site for Drash, built with Nextra.",
+  "license": "GPL-3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "//zod-override": "nextra-theme-docs' Layout destructures `children` out of its props and then validates the rest against a schema that still requires `children`. That only passes while `z.custom()` tolerates a missing key, which zod changed in 4.4.0. Unpin once Nextra fixes the schema.",
+  "pnpm": {
+    "overrides": {
+      "zod": "4.3.0"
+    }
+  },
+  "dependencies": {
+    "next": "^16.3.0",
+    "nextra": "^4.6.1",
+    "nextra-theme-docs": "^4.6.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.8",
+    "typescript": "~6.0.3"
+  }
+}

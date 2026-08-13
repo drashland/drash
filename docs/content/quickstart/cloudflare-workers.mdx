@@ -1,0 +1,74 @@
+# Cloudflare Workers
+
+Workers provide `URLPattern` natively, so use the **native** entry point.
+
+## Install
+
+```bash
+npm install @drashland/drash
+npm install --save-dev wrangler
+```
+
+## App
+
+A Worker's module entry point is a default export with a `fetch` method. Build the chain once at module scope — it is reused across requests in the same isolate.
+
+```js
+import {
+  Chain,
+  Resource,
+} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Hello from Home.GET()!");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+const handleRequest = (request, _bindings) => {
+  return chain
+    .handle(request)
+    .catch(() => {
+      return new Response("Sorry, but we hit an error!", {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
+    });
+};
+
+export default { fetch: handleRequest };
+```
+
+## Run
+
+```bash
+npx wrangler dev app.js
+```
+
+Then visit the address wrangler prints (`http://localhost:8787` by default).
+
+## Notes
+
+**Every named export of a Worker entry module must be a function, a class, or an `ExportedHandler`.** `workerd` treats named exports as potential entrypoints and validates them at startup, so a stray constant like:
+
+```js
+export const hostname = "localhost";
+```
+
+aborts the Worker before it serves anything, with an error naming that export:
+
+```text
+Uncaught TypeError: Incorrect type for map entry 'hostname':
+the provided value is not of type 'function or ExportedHandler'.
+```
+
+Keep configuration values as module-local `const`s, not exports.
+
+A runnable version lives in [`examples/cloudflare-workers-js`](https://github.com/drashland/drash/tree/main/examples/cloudflare-workers-js).

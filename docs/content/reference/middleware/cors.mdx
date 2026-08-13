@@ -1,0 +1,70 @@
+# CORS
+
+Handles CORS preflight (`OPTIONS`) requests and sets CORS response headers.
+
+```ts
+import { CORS } from "@drashland/drash/modules/middleware/CORS/mod.js";
+
+const group = Resource
+  .group()
+  .middleware(CORS({ access_control_allow_origin: ["https://example.com"] }))
+  .resources(Users)
+  .build();
+```
+
+`CORS(options)` returns a middleware **class** bound to those options, ready to pass to `.middleware()`. Call it with no arguments to use the defaults.
+
+## Options
+
+| Option                             | Type                   | Default                               |
+| ---------------------------------- | ---------------------- | ------------------------------------- |
+| `access_control_allow_origin`      | `(string \| RegExp)[]` | `["*"]`                               |
+| `access_control_allow_methods`     | `RequestMethod[]`      | `GET, HEAD, PUT, PATCH, POST, DELETE` |
+| `access_control_allow_headers`     | `string[]`             | `[]`                                  |
+| `access_control_allow_credentials` | `boolean`              | `false`                               |
+| `access_control_expose_headers`    | `string[]`             | `[]`                                  |
+| `access_control_max_age`           | `number`               | unset                                 |
+| `options_success_status`           | `ResponseStatus`       | `Status.NoContent` (204)              |
+
+### `access_control_allow_origin`
+
+Entries may be strings or regular expressions, which is how you allow a family of origins:
+
+```ts
+CORS({
+  access_control_allow_origin: [
+    "https://example.com",
+    /^https:\/\/[a-z0-9-]+\.example\.com$/,
+  ],
+});
+```
+
+A regex is matched against the request's `origin` header. Anchor it — an unanchored pattern like `/example\.com/` also matches `https://example.com.attacker.test`.
+
+### `access_control_allow_credentials`
+
+When `true`, sets `Access-Control-Allow-Credentials: true`. Browsers reject a credentialed response whose `Access-Control-Allow-Origin` is `*`, so pair this with an explicit origin list.
+
+## Exports
+
+| Export           | What it is                                      |
+| ---------------- | ----------------------------------------------- |
+| `CORS`           | Factory returning a configured middleware class |
+| `CORSMiddleware` | The middleware class, for subclassing           |
+| `defaultOptions` | The defaults above                              |
+| `Options`        | The options type                                |
+
+Subclass `CORSMiddleware` when you need to extend behavior:
+
+```ts
+class LoggedCORS extends CORSMiddleware {
+  constructor() {
+    super({ access_control_allow_origin: ["https://example.com"] });
+  }
+
+  override OPTIONS(request: Request) {
+    console.log("preflight", request.url);
+    return super.OPTIONS(request);
+  }
+}
+```

@@ -1,0 +1,70 @@
+# Chain
+
+The chain is what you build once at startup and call per request.
+
+## `Chain.builder()`
+
+Returns a builder preconfigured with the `URLPattern` implementation for your entry point.
+
+```ts
+const chain = Chain
+  .builder()
+  .resources(Home, Users)
+  .build();
+```
+
+### `.resources(...resources)`
+
+Registers resource classes. Pass **classes, not instances** — Drash constructs them.
+
+Accepts any mix of classes and arrays of classes, which is what lets you splat a [resource group](/reference/resource-group) in:
+
+```ts
+const chain = Chain
+  .builder()
+  .resources(Home, ...Resource.group().resources(Users).build())
+  .build();
+```
+
+Calling `.resources()` more than once **replaces** the set rather than appending. Pass everything in one call.
+
+### `.urlPatternClass(urlPatternClass)`
+
+Overrides the `URLPattern` implementation. The `mod.native` and `mod.polyfill` entry points call this for you; see [Native vs. polyfill](/concepts/native-vs-polyfill).
+
+### `.build()`
+
+Wires the handlers together and returns the head of the chain.
+
+## `chain.handle(input)`
+
+Runs a request through the chain.
+
+```ts
+const response = await chain.handle<Response>(request);
+```
+
+The type parameter is the value you expect back — it is what the resource method returned, passed through unchanged. Drash does not construct it.
+
+`input` needs a readable `url` and `method` and nothing else. It can be a Web `Request`, or a plain object carrying whatever your resources need:
+
+```ts
+chain.handle({
+  url: `http://${hostname}:${port}${request.url}`,
+  method: request.method,
+  request,
+  response,
+});
+```
+
+`url` must be absolute.
+
+### Errors
+
+The returned promise rejects on any error raised in the chain. Always attach a `.catch()` — see [HTTPError](/reference/http-error).
+
+### Concurrency
+
+One chain instance handles concurrent requests. Build it once at module scope and reuse it; do not build per request.
+
+Resources are constructed by the chain, so **do not store per-request state on `this`** in a resource or middleware. State kept on the instance is shared across every in-flight request.
