@@ -122,11 +122,15 @@ public PATCH(_request: Request) {
 
 Whatever an HTTP method returns becomes the resolved value of `chain.handle()`. For runtimes that support Web `Request`/`Response`, the HTTP method should return `Response`. Otherwise, the HTTP method should return whatever the runtime needs. In Node, you do not have to return anything since it expects you to write directly to the `ServerResponse` object it gives you.
 
-A method that returns nothing **while wrapped in middleware** is an error: `Middleware.next()` throws `HTTPError(500, "The server was unable to generate a response")` when the wrapped call produces no value. Middleware has to have something to hand back.
+<Callout type="warning" emoji={null}>
+__HTTP methods in middleware__
+
+An HTTP method wrapped in middleware must return a value. Otherwise, `Middleware.next()` (under the hood) throws an error because it expects a return value from the wrapped method.
+</Callout>
 
 ## Request params
 
-`RequestParamsParser` attaches a non-enumerable `params` object to the request. Type the parameter as `Chain.HTTPRequest` to see it:
+`RequestParamsParser` attaches a non-enumerable `params` object to the request. Use the `Chain.HTTPRequest` type on the request argument to see it:
 
 ```ts
 import * as Chain from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
@@ -134,13 +138,17 @@ import * as Chain from "@drashland/drash/modules/chains/RequestChain/mod.native.
 class Users extends Resource {
   public paths = ["/users/:id?"];
 
-  public GET(request: Chain.HTTPRequest) {
+  public GET(
+    request: Chain.HTTPRequest // <--- Has Chain.HTTPRequest type
+  ) {
     const id = request.params.pathParam("id");
     const sort = request.params.queryParam("sort");
     return new Response(`id=${id} sort=${sort}`);
   }
 }
 ```
+
+`Chain.HTTPRequest` has the following methods:
 
 | Method             | Returns               | Notes                                    |
 | ------------------ | --------------------- | ---------------------------------------- |
