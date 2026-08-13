@@ -1,13 +1,13 @@
 # Chain
 
-The Request Chain module provides the code you use to build HTTP applications. It implements the ideas on the [Chains](/concepts/chains) page: you build a chain once at startup and call it per request.
+The Request Chain module provides the code you use to build HTTP applications. It implements the ideas on the [Chains](/docs/concepts/chains) page: you build a chain once at startup and call it per request.
 
 <Callout type="info">
   If you have used previous versions of Drash, this chain is essentially Drash
   v1.x and v2.x in a more portable format.
 </Callout>
 
-The syntax is nearly identical across runtimes, because Drash is [runtime agnostic](/concepts/framework#runtime-agnostic). See the [quickstarts](/quickstart/deno) for a complete app per runtime.
+The syntax is nearly identical across runtimes, because Drash is [runtime agnostic](/docs/concepts/framework#runtime-agnostic). See the [quickstarts](/docs/quickstart/deno) for a complete app per runtime.
 
 ## `Chain.builder()`
 
@@ -24,7 +24,7 @@ const chain = Chain
 
 Registers resource classes. Pass **classes, not instances** — Drash constructs them.
 
-Accepts any mix of classes and arrays of classes, which is what lets you splat a [resource group](/reference/resource-group) in:
+Accepts any mix of classes and arrays of classes, which is what lets you splat a [resource group](/docs/reference/resource-group) in:
 
 ```ts
 const chain = Chain
@@ -37,7 +37,7 @@ Calling `.resources()` more than once **replaces** the set rather than appending
 
 ### `.urlPatternClass(urlPatternClass)`
 
-Overrides the `URLPattern` implementation. The `mod.native` and `mod.polyfill` entry points call this for you; see [Native vs. polyfill](/concepts/native-vs-polyfill).
+Overrides the `URLPattern` implementation. The `mod.native` and `mod.polyfill` entry points call this for you; see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
 ### `.build()`
 
@@ -68,7 +68,7 @@ chain.handle({
 
 ### Errors
 
-The returned promise rejects on any error raised in the chain. Always attach a `.catch()` — see [HTTPError](/reference/http-error).
+The returned promise rejects on any error raised in the chain. Always attach a `.catch()` — see [HTTPError](/docs/reference/http-error).
 
 ### Concurrency
 

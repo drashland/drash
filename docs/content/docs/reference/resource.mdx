@@ -92,9 +92,9 @@ Override any of:
 
 `CONNECT` `DELETE` `GET` `HEAD` `OPTIONS` `PATCH` `POST` `PUT` `TRACE`
 
-Each receives the input that was passed to `chain.handle()` and returns whatever your runtime needs.
+Each receives the input that was passed to `chain.handle()` and you return whatever your runtime needs.
 
-**Every method you do not override throws `HTTPError(501 Not Implemented)`.** That is the base class behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1), so a resource with only `GET` answers `501` — not `405` — for a `POST` to a path it owns.
+**Every method you do not override throws `HTTPError(501 Not Implemented)`.** That is the base class behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
 
 Methods may be synchronous or asynchronous; `chain.handle()` awaits whatever they return.
 
@@ -118,9 +118,9 @@ public PATCH(_request: Request) {
 }
 ```
 
-## Return values
+## Return Values
 
-Whatever a method returns becomes the resolved value of `chain.handle()`. On Deno, Bun, and Workers that is a `Response`. On Node, where you write to `ServerResponse` directly, returning nothing is normal.
+Whatever an HTTP method returns becomes the resolved value of `chain.handle()`. For runtimes that support Web `Request`/`Response`, the HTTP method should return `Response`. Otherwise, the HTTP method should return whatever the runtime needs. In Node, you do not have to return anything since it expects you to write directly to the `ServerResponse` object it gives you.
 
 A method that returns nothing **while wrapped in middleware** is an error: `Middleware.next()` throws `HTTPError(500, "The server was unable to generate a response")` when the wrapped call produces no value. Middleware has to have something to hand back.
 
@@ -172,7 +172,7 @@ const sort = new URL(request.url).searchParams.get("sort");
 
 ## `Resource.group()`
 
-Shorthand for a resource group builder. See [Resource groups](/reference/resource-group).
+Shorthand for a resource group builder. See [Resource groups](/docs/reference/resource-group).
 
 ```ts
 const group = Resource

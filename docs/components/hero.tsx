@@ -47,7 +47,7 @@ export function Hero() {
           <div className={styles.actions}>
             <Link
               className={`${styles.button} ${styles.primary}`}
-              href="/quickstart/deno"
+              href="/docs/quickstart/deno"
             >
               Get started →
             </Link>

@@ -3,6 +3,8 @@ import { Banner, Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
 import Image from "next/image";
 import "nextra-theme-docs/style.css";
+// Imported after the theme so these rules win without !important.
+import "./globals.css";
 
 export const metadata = {
   title: {
@@ -63,7 +65,10 @@ export default async function RootLayout({
           footer={footer}
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/drashland/drash/tree/main/docs"
-          sidebar={{ defaultMenuCollapseLevel: 1 }}
+          // Level 1 (the top-level sections) stays expanded; collapsing starts
+          // at level 2, which is the only depth that still toggles. See
+          // app/globals.css for the rules that drop the level-1 toggle.
+          sidebar={{ defaultMenuCollapseLevel: 2 }}
         >
           {children}
         </Layout>

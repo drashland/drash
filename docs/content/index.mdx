@@ -39,7 +39,7 @@ Deno.serve({ hostname: "localhost", port: 1447 }, (request: Request) => {
 });
 ```
 
-Deno has a global `URLPattern`, so it uses the **native** entry point. [Full guide →](/quickstart/deno)
+Deno has a global `URLPattern`, so it uses the **native** entry point. [Full guide →](/docs/quickstart/deno)
 
   </Tabs.Tab>
   <Tabs.Tab>
@@ -78,7 +78,7 @@ createServer((request, response) => {
 }).listen(1447, "localhost");
 ```
 
-Node passes a **context object** rather than a Web `Request`, and uses the **polyfill** entry point. [Full guide →](/quickstart/node)
+Node passes a **context object** rather than a Web `Request`, and uses the **polyfill** entry point. [Full guide →](/docs/quickstart/node)
 
   </Tabs.Tab>
   <Tabs.Tab>
@@ -110,7 +110,7 @@ Bun.serve({
 });
 ```
 
-Bun gives you Web `Request`/`Response`, but uses the **polyfill** entry point. [Full guide →](/quickstart/bun)
+Bun gives you Web `Request`/`Response`, but uses the **polyfill** entry point. [Full guide →](/docs/quickstart/bun)
 
   </Tabs.Tab>
   <Tabs.Tab>
@@ -141,12 +141,12 @@ export default {
 };
 ```
 
-Workers have a global `URLPattern`, so they use the **native** entry point. Keep config values as module-local `const`s — `workerd` rejects non-function named exports. [Full guide →](/quickstart/cloudflare-workers)
+Workers have a global `URLPattern`, so they use the **native** entry point. Keep config values as module-local `const`s — `workerd` rejects non-function named exports. [Full guide →](/docs/quickstart/cloudflare-workers)
 
   </Tabs.Tab>
 </Tabs>
 
-The two entry points differ only in which `URLPattern` implementation they use. See [Native vs. polyfill](/concepts/native-vs-polyfill).
+The two entry points differ only in which `URLPattern` implementation they use. See [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
 ## Install
 
@@ -165,9 +165,9 @@ import {
 
 ## Where to go next
 
-- [Chains](/concepts/chains) — how a request actually flows, and why that matters when you write middleware.
-- [Resource](/reference/resource) — the unit you write most.
-- [Bundled middleware](/reference/middleware) — CORS, ETag, AcceptHeader, and RateLimiter.
+- [Chains](/docs/concepts/chains) — how a request actually flows, and why that matters when you write middleware.
+- [Resource](/docs/reference/resource) — the unit you write most.
+- [Bundled middleware](/docs/reference/middleware) — CORS, ETag, AcceptHeader, and RateLimiter.
 
 ## Versions
 

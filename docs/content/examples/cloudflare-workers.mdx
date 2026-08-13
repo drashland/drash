@@ -1,0 +1,118 @@
+---
+title: Cloudflare Workers
+description: Drash / Cloudflare Workers / ECMAScript — a complete, runnable example.
+---
+
+# Drash / Cloudflare Workers / ECMAScript (aka ESM)
+
+## Steps
+
+<Steps>
+
+### Install Node
+
+Install [Node](https://nodejs.org) (v20+).
+
+### Install dependencies
+
+Install the dependencies in `package.json`.
+
+```bash
+npm install
+```
+
+### Create the following file
+
+```js filename="app.js"
+import {
+  Chain,
+  Resource,
+} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+
+// Create a resource
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    console.log(`Received request: ${request.url}`);
+    return new Response(`Hello from Home.GET()! (written at ${new Date()})`);
+  }
+}
+
+// Build the chain and add the resource
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+// Export the object with the fetch function that Cloudflare requires
+export default {
+  // This `fetch` function would be written as `async fetch(request)` if you
+  // were using `await`
+  fetch(request) {
+    // Pass the request to the chain
+    return chain
+      .handle(request)
+      .catch((error) => {
+        if (request.url.includes("favicon")) {
+          return new Response();
+        }
+
+        console.log(`Request URL hit an error: ${request.url}:\n`);
+        console.log({ error });
+        return new Response(
+          "Sorry, but we hit an error!",
+          {
+            status: 500,
+            statusText: "Internal Server Error",
+          },
+        );
+      });
+  },
+};
+```
+
+### Run the Drash app
+
+Run it using Cloudflare's [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/).
+
+```bash
+npm start
+```
+
+_Note: `npm start` is defined in the `package.json` file and runs `wrangler dev app.js`._
+
+You should see output similar to:
+
+```text
+⛅️ wrangler 4.121.0
+-------------------
+⎔ Starting local server...
+[wrangler:inf] Ready on http://localhost:8787
+```
+
+### Open it
+
+Go to the Wrangler local server at http://localhost:8787. You should see something like the following:
+
+```text
+Hello from Home.GET()! (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+```
+
+</Steps>
+
+## Notes
+
+Workers provide a global `URLPattern`, so this uses the **native** entry point. The chain is built once at module scope and reused across requests in the same isolate.
+
+<Callout type="warning">
+  **Every named export of a Worker entry module must be a function, a class, or
+  an `ExportedHandler`.** `workerd` treats named exports as potential
+  entrypoints and validates them at startup, so a stray constant like
+  `export const hostname = "localhost"` aborts the Worker before it serves
+  anything.
+</Callout>
+
+That is why this example has no `hostname`/`port` constants, unlike the others — wrangler decides the address, and exporting them would break the Worker. Keep any configuration values as module-local `const`s.
+
+This example is in the repository at [`examples/cloudflare-workers-js`](https://github.com/drashland/drash/tree/main/examples/cloudflare-workers-js).

@@ -1,0 +1,43 @@
+---
+title: Examples
+description: Complete, runnable Drash applications for Deno, Node, Bun, and Cloudflare Workers.
+---
+
+# Examples
+
+Each of these is a complete, runnable application. They live in the [`examples`](https://github.com/drashland/drash/tree/main/examples) directory of the repository, so you can clone the repo and run any of them directly.
+
+They all do the same thing — answer `GET /` from a single `Home` resource — so you can compare what changes between runtimes and what does not.
+
+<Cards num={2}>
+  <Cards.Card title="Deno" href="/examples/deno" arrow />
+  <Cards.Card title="Node" href="/examples/node" arrow />
+  <Cards.Card title="Bun" href="/examples/bun" arrow />
+  <Cards.Card
+    title="Cloudflare Workers"
+    href="/examples/cloudflare-workers"
+    arrow
+  />
+</Cards>
+
+## What changes between them
+
+| | Entry point | What the resource receives |
+| --- | --- | --- |
+| Deno | `mod.native.js` | Web `Request` |
+| Node (ESM / CJS / TS) | `mod.polyfill.js` | Context object you build |
+| Bun | `mod.polyfill.js` | Web `Request` |
+| Cloudflare Workers | `mod.native.js` | Web `Request` |
+
+The resource and the chain are identical in every one. What differs is the entry point — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill) — and how your runtime hands you a request.
+
+<Callout type="gray">
+  Every example catches `favicon` requests in its `.catch()`. Browsers request
+  `/favicon.ico` automatically, and no resource owns that path, so the chain
+  throws a `404` for it. That check keeps the noise out of the console; it is
+  not something your own app needs.
+</Callout>
+
+## Looking for a walkthrough instead?
+
+These pages show finished apps. If you want the reasoning built up step by step, read the [step-by-step guide](/docs/quickstart/step-by-step-guide).

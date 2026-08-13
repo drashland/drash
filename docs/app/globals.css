@@ -1,0 +1,30 @@
+/*
+ * Top-level sidebar sections are always-open headings rather than toggles.
+ *
+ * Nextra expresses sidebar depth through nested `ul`s, so these selectors reach
+ * only the first level. Nested folders (for example Reference > Middleware) sit
+ * inside a deeper `ul` and keep their toggle.
+ *
+ * `defaultMenuCollapseLevel: 2` in app/layout.tsx is what leaves this level
+ * expanded in the first place; these rules remove the affordance to close it.
+ *
+ * Two selectors because the desktop sidebar and the mobile nav nest their first
+ * `ul` at different depths.
+ */
+.nextra-sidebar > div > div > ul > li > button,
+.nextra-mobile-nav > ul > li > button {
+  pointer-events: none;
+  font-weight: 600;
+  color: var(--color-gray-900, inherit);
+}
+
+.dark .nextra-sidebar > div > div > ul > li > button,
+.dark .nextra-mobile-nav > ul > li > button {
+  color: var(--color-gray-100, inherit);
+}
+
+/* The chevron implies a toggle that is no longer there. */
+.nextra-sidebar > div > div > ul > li > button > svg,
+.nextra-mobile-nav > ul > li > button > svg {
+  display: none;
+}

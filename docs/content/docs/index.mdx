@@ -1,0 +1,33 @@
+---
+title: Documentation
+description: Guides, concepts, and API reference for Drash.
+---
+
+# Documentation
+
+Drash ships no server. You build a chain of handlers and pass a request into `chain.handle()` from whatever server your runtime already gives you. These pages cover how to do that, why it is built that way, and what every piece does.
+
+New here? Start with the [introduction](/docs/getting-started/introduction), then build something with the [step-by-step guide](/docs/quickstart/step-by-step-guide).
+
+<Cards num={2}>
+  <Cards.Card
+    title="Getting Started"
+    href="/docs/getting-started/introduction"
+    arrow
+  />
+  <Cards.Card title="Quickstart" href="/docs/quickstart" arrow />
+  <Cards.Card title="Concepts" href="/docs/concepts/framework" arrow />
+  <Cards.Card title="Reference" href="/docs/reference/chain" arrow />
+</Cards>
+
+## What is where
+
+| Section                                             | What it covers                                                                     |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Getting Started](/docs/getting-started/introduction) | What Drash is, and what you need installed before you begin                          |
+| [Quickstart](/docs/quickstart)                        | A complete app per runtime, plus a step-by-step walkthrough                           |
+| [Concepts](/docs/concepts/framework)                  | The framework's shape, the handler chain, resources, and the native/polyfill split    |
+| [Reference](/docs/reference/chain)                    | Chain, Resource, Middleware, resource groups, `HTTPError`, and the bundled middleware |
+| [Glossary](/docs/misc/glossary)                       | Terms used throughout these pages                                                    |
+
+Looking for finished applications you can run? Those are under [Examples](/examples).

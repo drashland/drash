@@ -19,10 +19,17 @@ export default withNextra({
   },
   // Pages serves /foo as /foo/index.html.
   trailingSlash: true,
-  // The repo root holds its own pnpm-lock.yaml for the framework, so Next
-  // infers the wrong workspace root without this.
   turbopack: {
+    // The repo root holds its own pnpm-lock.yaml for the framework, so Next
+    // infers the wrong workspace root without this.
     root: import.meta.dirname,
+    // Nextra compiles every MDX file to import its component map from the
+    // virtual module `next-mdx-import-source-file`. Turbopack needs to be told
+    // what that resolves to; without the alias the map can come back empty and
+    // MDX renders undefined components.
+    resolveAlias: {
+      "next-mdx-import-source-file": "./mdx-components.js",
+    },
   },
   // Next writes AGENTS.md/CLAUDE.md into this directory on every dev run.
   // The docs package does not need its own agent instructions.

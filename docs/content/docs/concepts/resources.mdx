@@ -6,34 +6,35 @@ title: Resources
 
 ## What Is a Resource?
 
-Like [MDN's pages on fetching resources over HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview), a resource in Drash is the target of an HTTP request. In Drash, resources are classes with [pathnames](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname) (we call these **paths**) and [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
+Like [MDN's pages on fetching resources over HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview), a resource in Drash is the target of an HTTP request. In Drash, resources are classes with [pathnames](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname) (aka **paths**) and [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
 
 ```ts
 class MyResource {
-  paths = [       // These are the pathnames (we use `paths` for short)
+  paths = [          // These are the pathnames (we use `paths` for short)
     "/teas",
   ];
 
-  GET(...) {...}  // A GET /teas request routes to this method
-  POST(...) {...} // A POST /teas request routes to this method
-  PUT(...) {...}  // A PUT /teas request routes to this method
+  GET(...) {...}     // Handles GET /teas
+  POST(...) {...}    // Handles POST /teas
+  PUT(...) {...}     // Handles PUT /teas
+  DELETE(...) {...}  // Handles DELETE /teas
 
   // ... and other HTTP request methods
 }
 ```
 
-For the full API — what the methods receive, what happens to the ones you leave out, and how to read params — see [Resource](/reference/resource).
+For the full API — what the methods receive, what happens to the ones you leave out, and how to read params — see [Resource](/docs/reference/resource).
 
 ## Why Use Classes?
 
 **We (the maintainers) prefer classes when processing resources internally.**
 
-Drash does not use an Express-like syntax (e.g., `app.get("/teas", someCallback)`) and does not use the term "controllers" like in the [MVC](https://developer.mozilla.org/en-US/docs/Glossary/MVC) pattern. Instead, Drash uses classes and the term "resources". The original reasoning is in our article [Why We Built Drash](https://dev.to/drash_land/why-was-drash-built-4bob). Since publishing it we have made changes — removing `this.request` and `this.response` among them — based on developer experience feedback and a goal of a maintainable framework that scales across runtimes.
+Drash does not use an Express-like syntax (e.g., `app.get("/teas", someCallback)`) and does not use the term "controllers" like in the [MVC](https://developer.mozilla.org/en-US/docs/Glossary/MVC) pattern. Instead, Drash uses classes and the term "resources". The original reasoning is in our article [Why We Built Drash](https://dev.to/drash_land/why-was-drash-built-4bob). Since then, we have made changes — removing `this.request` and `this.response` among them — based on developer experience feedback and a goal of a maintainable framework that scales across runtimes.
 
-To compare against a framework that uses `app.get()`:
+See the following compare against a framework that uses `app.get()`:
 
-<Tabs items={["Express", "Drash"]}>
-  <Tabs.Tab>
+<Compare>
+  <CompareItem label="Express">
 
 ```js
 const express = require("express");
@@ -46,8 +47,8 @@ app.get("/", (req, res) => {
 app.listen(1447);
 ```
 
-  </Tabs.Tab>
-  <Tabs.Tab>
+  </CompareItem>
+  <CompareItem label="Drash">
 
 ```ts
 import {
@@ -65,13 +66,16 @@ class MyResource extends Resource {
 
 const chain = Chain.builder().resources(MyResource).build();
 
-Deno.serve({ port: 1447 }, (request) => chain.handle<Response>(request));
+Deno.serve(
+  { port: 1447 },
+  (request) => chain.handle<Response>(request)
+);
 ```
 
-  </Tabs.Tab>
-</Tabs>
+  </CompareItem>
+</Compare>
 
-Resources are not tied to Web `Request`/`Response`. Where a runtime hands you something else — Node's `IncomingMessage`/`ServerResponse`, say — the resource receives whatever context object you passed to `chain.handle()`. See [Chains](/concepts/chains#what-data-does-it-process) and the [Node quickstart](/quickstart/node).
+Resources are not tied to Web `Request` and `Response`. You can pass in a `context` object to `chain.handle()` and it will be received by the resource that matches that context object's `url` field.
 
 ## Very Strict Interface
 
@@ -82,13 +86,17 @@ For example, for a resource handling users, we hope your thought process is:
 - your resource should be named `Users`;
 - its `paths` should contain `/users`;
 - the logic in its HTTP methods should be user-related; and
-- it should be the only resource in a file named `Users.ts`.
+- it should be the only resource in a file named `Users.ts` or `Users.js`.
 
 In other frameworks, being unopinionated can lead to files holding multiple endpoints that do not match the file's name. Adding structure here is deliberate.
 
 ## The Core Resource
 
-All resources extend the `Resource` class in Drash's core code. Extending it gives every resource the same interface and the same default behavior — throwing `501 Not Implemented` for any HTTP request method you did not implement. That choice follows [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
+All resources extend the `Resource` class in Drash's core code. Extending it gives every resource the same interface and the same default behavior — throwing `501 Not Implemented` for any HTTP request method you did not implement. That choice follows [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1):
+
+> When a request method is received that is unrecognized or not implemented by an origin server, the origin server SHOULD respond with the 501 (Not Implemented) status code.
+
+Below is how the `501` code is implemented in Drash's core code:
 
 ```ts filename="src/core/http/Resource.ts"
 class Resource {
@@ -112,7 +120,7 @@ So given a resource that implements only `GET`, **any** request to it that is **
   Throwing `501 Not Implemented` is the default behavior **for all resources**,
   unless you create your own base resource class with different defaults. If you
   want `405 Method Not Allowed` instead, override the method and throw it — see
-  [Resource](/reference/resource).
+  [Resource](/docs/reference/resource).
 </Callout>
 
 ## Chain Resource Classes
@@ -142,5 +150,5 @@ class MyResource extends Resource {
 
 ## Next Steps
 
-- [Create a tiny HTTP application](/quickstart/step-by-step-guide) using the Request Chain module.
-- [Resource reference](/reference/resource) for paths, params, and dynamic path syntax.
+- [Create a tiny HTTP application](/docs/quickstart/step-by-step-guide) using the Request Chain module.
+- [Resource reference](/docs/reference/resource) for paths, params, and dynamic path syntax.

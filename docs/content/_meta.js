@@ -16,21 +16,17 @@ export default {
       toc: false,
     },
   },
-  // `type: "page"` puts an entry in the top bar instead of the sidebar. These
-  // two are links rather than pages of their own, so they carry an `href`.
+  // `type: "page"` puts an entry in the top bar instead of the sidebar, and
+  // each such folder gets a sidebar built only from its own children. Both of
+  // these are real folders, which is what keeps the two sidebars separate —
+  // a top-level entry without `type: "page"` would instead show up in every
+  // sidebar on the site.
   docs: {
     title: "Docs",
     type: "page",
-    href: "/getting-started/introduction",
   },
   examples: {
     title: "Examples",
     type: "page",
-    href: "/quickstart/examples",
   },
-  "getting-started": "Getting Started",
-  quickstart: "Quickstart",
-  concepts: "Concepts",
-  reference: "Reference",
-  misc: "Misc",
 };
