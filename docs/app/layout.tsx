@@ -1,6 +1,7 @@
 import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import { Banner, Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
+import Image from "next/image";
 import "nextra-theme-docs/style.css";
 
 export const metadata = {
@@ -12,9 +13,25 @@ export const metadata = {
     "A strongly typed, runtime-agnostic web framework for building structured HTTP services in JavaScript, built on Web Standards.",
 };
 
+const logo = (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+    <Image
+      src="/drash-round-250.png"
+      alt=""
+      width={40}
+      height={40}
+      // The source is 250x250. Cap the rendered box at 40px and let it scale
+      // down on narrow viewports rather than crowding the nav.
+      style={{ maxWidth: "40px", maxHeight: "40px", height: "auto" }}
+      priority
+    />
+    <b>Drash</b>
+  </span>
+);
+
 const navbar = (
   <Navbar
-    logo={<b>Drash</b>}
+    logo={logo}
     projectLink="https://github.com/drashland/drash"
   />
 );
