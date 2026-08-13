@@ -5,4 +5,5 @@ export default {
   node: "Node",
   bun: "Bun",
   "cloudflare-workers": "Cloudflare Workers",
+  examples: "Examples",
 };
