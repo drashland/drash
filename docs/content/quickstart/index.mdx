@@ -1,0 +1,50 @@
+---
+title: Quickstart
+description: Get a Drash HTTP application running in Deno, Node, Bun, or Cloudflare Workers.
+---
+
+# Quickstart
+
+Drash ships no server. You build a chain of handlers and pass a request into `chain.handle()` from whatever server your runtime already gives you — so the setup differs only in how your runtime hands you that request.
+
+Pick your runtime below, or walk through the build one step at a time.
+
+## Learn it step by step
+
+<Cards num={1}>
+  <Cards.Card
+    title="Step-by-step guide"
+    href="/quickstart/step-by-step-guide"
+    arrow
+  />
+</Cards>
+
+Builds the same app in four stages — resource, chain, server, error handling — with the reasoning at each step. Start here if this is your first Drash application.
+
+## Or jump to your runtime
+
+<Cards num={2}>
+  <Cards.Card title="Deno" href="/quickstart/deno" arrow />
+  <Cards.Card title="Node" href="/quickstart/node" arrow />
+  <Cards.Card title="Bun" href="/quickstart/bun" arrow />
+  <Cards.Card
+    title="Cloudflare Workers"
+    href="/quickstart/cloudflare-workers"
+    arrow
+  />
+</Cards>
+
+Each page has a complete, runnable application and the notes specific to that runtime.
+
+| Runtime            | Entry point       | Request shape                       |
+| ------------------ | ----------------- | ----------------------------------- |
+| Deno               | `mod.native.js`   | Web `Request` / `Response`          |
+| Node               | `mod.polyfill.js` | Context object you build            |
+| Bun                | `mod.polyfill.js` | Web `Request` / `Response`          |
+| Cloudflare Workers | `mod.native.js`   | Web `Request` / `Response`          |
+
+The two entry points differ only in which `URLPattern` implementation they use — see [Native vs. polyfill](/concepts/native-vs-polyfill).
+
+## Before you start
+
+If you do not have a runtime installed yet, or have never stood up an HTTP server in it, read [Prerequisites](/getting-started/prerequisites) first.

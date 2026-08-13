@@ -1,4 +1,5 @@
 export default {
+  index: "Overview",
   "step-by-step-guide": "Step-by-step guide",
   deno: "Deno",
   node: "Node",

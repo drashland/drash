@@ -24,13 +24,13 @@ These codebases are explained in further detail below (click Core, Standard, or 
 
 ### Runtime Agnostic
 
-Drash puts you in charge of choosing your runtime environment. It is runtime agnostic. This means if you want to use that new new stuff and run Drash in Deno, then you can do that. If you want to use Node for compatibility reasons, then you can do that. If you are working on a JavaScriptCore project utilizing a NoSQL JavaScript library and want to use Drash in that, then you can do that too. Drash does not lock you into using a specific runtime. If your chosen runtime can run JavaScript, then you can probably run Drash in it.
+Drash is runtime-agnostic: use it with Deno Deploy, Node, JavaScriptCore, or virtually any environment that runs JavaScript. It doesn’t lock you into a specific runtime.
 
-Unlike previous versions of Drash where Drash is a Deno HTTP server wrapper, Drash v3 is a runtime agnostic codebase that can be used to create different types of functionality in different runtimes. This allows Drash to be applied to more use cases and help with interoperability between runtimes. For example, the Modules codebase contains a Request Chain module which imports Core and Standard code to build the HTTP lifecycle used in Drash v1 and v2. Essentially, Drash is now a consumer of its own APIs.
+Unlike earlier versions, Drash v3 is runtime-agnostic rather than a Deno HTTP-server wrapper. Its modular design supports broader use cases and cross-runtime interoperability. Drash itself now builds on its own Core and Standard APIs to construct the HTTP lifecycle.
 
 ### What Does Drash Mean?
 
-The name "Drash" comes from the DRASH tent system used in the military. The DRASH tent system is designed to be set up and torn down with minimal people in minutes. It comes with a lot of modularity &mdash; meaning you can set up a single tent and add to it to create a huge network of tents. The Drash framework was built with these DRASH features in mind. I ([Eric](https://github.com/crookse)) thought of the DRASH tent system while building Drash because thinking about software that could be "set up and torn down in minutes with lots of plug-n-play modularity" reminded me about the times I had to set up and tear down DRASH tents in the military.
+Drash" is named after the military DRASH tent system: quick to set up or tear down and built for modular expansion. While developing the framework, the [creator](https://github.com/crookse) drew on his experience assembling DRASH tents and applied the same plug-and-play philosophy to software.
 
 ## Core
 
@@ -38,21 +38,15 @@ This part of the codebase provides types, interfaces, and classes (with minimal 
 
 To separate concerns, Core does not import code from Standard or Modules.
 
-Tutorials on how to use Core code can be found in the left sidebar under the __API__ section.
-
 ## Standard
 
 This part of the codebase is similar to Deno's Standard Library and Go's Standard Library, but smaller. Standard code is intended to be used as standalone code and code to help build modules in the Modules codebase (e.g., Request Chain module).
 
 To separate concerns, Standard code only imports from Standard and Core. It does not import from Modules.
 
-Tutorials on how to use Standard code can be found in the left sidebar under the __API__ section.
-
 ## Modules
 
 This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., Request Chain module). Modules import from Base modules (described below), Standard, and Core.
-
-Tutorials on how to use modules can be found in the left sidebar under the __Modules__ section.
 
 ### Module Types
 

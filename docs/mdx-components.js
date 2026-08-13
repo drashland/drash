@@ -1,13 +1,8 @@
-import {
-  Callout,
-  Cards,
-  FileTree,
-  Steps,
-  Table,
-  Tabs,
-} from "nextra/components";
+import { Cards, FileTree, Steps, Tabs } from "nextra/components";
 import { useMDXComponents as getDocsMDXComponents } from "nextra-theme-docs";
+import { Callout } from "./components/callout";
 import { SeeAlso } from "./components/see-also";
+import { Table, Td, Th, Tr } from "./components/table";
 
 const docsComponents = getDocsMDXComponents();
 
@@ -20,7 +15,12 @@ export const useMDXComponents = (components) => ({
   FileTree,
   SeeAlso,
   Steps,
-  Table,
   Tabs,
+  // Markdown tables render through these, so every table in the docs picks up
+  // the scroll container and styling without any per-page markup.
+  table: Table,
+  td: Td,
+  th: Th,
+  tr: Tr,
   ...components,
 });

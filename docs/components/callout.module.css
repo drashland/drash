@@ -1,0 +1,81 @@
+/*
+ * Callouts are asides, so they read a step down from body copy. Inner elements
+ * size in `em` so they stay proportional to whatever this is set to.
+ */
+.callout {
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.callout code {
+  font-size: 0.92em;
+}
+
+.callout :is(ul, ol) {
+  margin-block: 0.5em;
+}
+
+.callout :is(p, li) {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.callout pre {
+  font-size: 0.95em;
+}
+
+/*
+ * `type="gray"` is ours, not Nextra's, and renders its own element — so it has
+ * to supply the box itself. The metrics here mirror Nextra's callouts so the
+ * two sit on the same vertical rhythm.
+ */
+.gray {
+  --callout-gray-border: rgb(15 23 42 / 0.14);
+  --callout-gray-bg: rgb(241 245 249 / 0.7);
+  --callout-gray-fg: rgb(51 65 85);
+
+  display: block;
+  margin-top: 1.25em;
+  padding: 0.75em 1em;
+  border: 1px solid var(--callout-gray-border);
+  border-radius: 0.5rem;
+  background: var(--callout-gray-bg);
+  color: var(--callout-gray-fg);
+  overflow-x: auto;
+}
+
+/* No stray leading/trailing gap from the first and last child paragraphs. */
+.gray > :first-child {
+  margin-top: 0;
+}
+
+.gray > :last-child {
+  margin-bottom: 0;
+}
+
+:global(html.dark) .gray {
+  --callout-gray-border: rgb(148 163 184 / 0.22);
+  --callout-gray-bg: rgb(30 41 59 / 0.45);
+  --callout-gray-fg: rgb(203 213 225);
+}
+
+/* Links stay legible without reintroducing a second hue. */
+.gray a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.gray a:hover {
+  text-decoration: none;
+}
+
+/* Keep inline code monochrome so the block stays single-hue. */
+.gray code {
+  background: rgb(15 23 42 / 0.06);
+  color: inherit;
+}
+
+:global(html.dark) .gray code {
+  background: rgb(148 163 184 / 0.14);
+}

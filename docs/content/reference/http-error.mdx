@@ -77,15 +77,21 @@ Specifically:
 
 - **They return `500` for everything.** Not every error is a `500`; you need logic to pick the right status, which is what the block above does via `status_code`.
 - **They send `error.message` as the body unchecked.** That message may come from deep in your stack ("Unable to read from users table. User ID 108 does not exist."), and returning it verbatim leaks information about your system.
-- **They use `console.log`.** In production this would be a logging library:
+- **They use `console.log`.** In production, this should be replaced with a logging library. For example:
 
   ```ts
-  .catch((error) => {
-    logger.error(error.message);
-    logger.trace(error);
+  import { logger } from "my-logging-lib"
 
-    return new Response("Something went wrong");
-  });
+  chain
+    .handle<Response>(request)
+    .catch((error: Error | HTTPError) => {
+      logger.error(error.message);
+      logger.trace(error);
+
+      //
+      // ... rest of code that returns error responses
+      //
+    });
   ```
 
 ### Where to import it from
