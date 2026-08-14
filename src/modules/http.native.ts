@@ -20,14 +20,14 @@
  */
 
 // Imports > Core
-import { Resource as CoreResource } from "../../../core/http/Resource.ts";
+import { Resource as CoreResource } from "../core/http/Resource.ts";
 
 // Imports > Standard
-import { WithParams } from "../../../standard/handlers/RequestParamsParser.ts";
-import { ResourceGroup } from "../../../standard/http/ResourceGroup.ts";
+import { WithParams } from "../standard/handlers/RequestParamsParser.ts";
+import { ResourceGroup } from "../standard/http/ResourceGroup.ts";
 
 // Imports > Modules
-import { RequestChain } from "../../base/RequestChain.ts";
+import { requestChain } from "./builders/RequestChainBuilder.ts";
 
 type HTTPRequest = WithParams;
 
@@ -40,10 +40,10 @@ type HTTPRequest = WithParams;
 //
 
 // Exports > Core
-export { HTTPError } from "../../../core/errors/HTTPError.ts";
+export { HTTPError } from "../core/errors/HTTPError.ts";
 
 // Exports > Standard
-export { Middleware } from "../../../standard/http/Middleware.ts";
+export { Middleware } from "../standard/http/Middleware.ts";
 
 // Exports > Local
 export type { HTTPRequest };
@@ -66,7 +66,11 @@ export type { HTTPRequest };
  */
 export class Chain {
   static builder() {
-    return builder();
+    return requestChain()
+      // @ts-ignore URLPattern is available when using the Deno extension, but we
+      // should not force using the Deno extension just to accomodate the build
+      // process. Therefore, it is ignored.
+      .urlPatternClass(URLPattern);
   }
 }
 
@@ -74,16 +78,4 @@ export class Resource extends CoreResource {
   static group() {
     return ResourceGroup.builder();
   }
-}
-
-/**
- * Get the builder that builds an HTTP request chain.
- */
-function builder() {
-  return RequestChain
-    .builder()
-    // @ts-ignore URLPattern is available when using the Deno extension, but we
-    // should not force using the Deno extension just to accomodate the build
-    // process. Therefore, it is ignored.
-    .urlPatternClass(URLPattern);
 }

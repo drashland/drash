@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as asserts from "@std/assert";
+import { assertEquals } from "@std/assert";
 import {
   assertionMessage,
   chain,
@@ -29,7 +29,7 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import * as Chain from "../../../../../../../src/modules/http.native.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import {
   type Options,
@@ -217,7 +217,7 @@ async function assert(
   actualResponse: Response,
   expectedResponse: Expected,
 ) {
-  asserts.assertEquals(
+  assertEquals(
     await actualResponse.clone().text(),
     expectedResponse.body,
     assertionMessage(
@@ -228,7 +228,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("x-ratelimit-limit"),
     expectedResponse.headers.get("x-ratelimit-limit"),
     assertionMessage(
@@ -239,7 +239,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("x-ratelimit-remaining"),
     expectedResponse.headers.get("x-ratelimit-remaining"),
     assertionMessage(
@@ -258,7 +258,7 @@ async function assert(
   );
 
   if (rateLimitResetActual === null || rateLimitResetExpected === null) {
-    asserts.assertEquals(
+    assertEquals(
       rateLimitResetActual, // This should be null ...
       rateLimitResetExpected, // ... and this should be null
       assertionMessage(
@@ -275,7 +275,7 @@ async function assert(
     const timeSetInExpectedHeader = parseInt(rateLimitResetExpected); // This occurs first (when the test runs)
     const timeWhenMiddlewareProcessedRequest = parseInt(rateLimitResetActual); // This occurs second (during the test)
 
-    asserts.assertEquals(
+    assertEquals(
       timeSetInExpectedHeader <= timeWhenMiddlewareProcessedRequest,
       true,
       assertionMessage(
@@ -291,7 +291,7 @@ async function assert(
     const timeNow = Date.now() +
       middlewareOptions.rate_limit_time_window_length;
 
-    asserts.assertEquals(
+    assertEquals(
       timeWhenMiddlewareProcessedRequest <= timeNow,
       true,
       assertionMessage(
@@ -304,7 +304,7 @@ async function assert(
       ),
     );
 
-    asserts.assertEquals(
+    assertEquals(
       new Date(timeWhenMiddlewareProcessedRequest).toUTCString(),
       actualResponse.headers.get("retry-after")!,
       assertionMessage(
@@ -321,7 +321,7 @@ async function assert(
   const actualContentType = actualResponse.headers.get("content-type");
 
   if (actualContentType) {
-    asserts.assertEquals(
+    assertEquals(
       actualContentType,
       expectedResponse.headers.get("content-type"),
       assertionMessage(
@@ -336,7 +336,7 @@ async function assert(
   const xThrottledHeader = actualResponse.headers.get("x-throttled");
 
   if (xThrottledHeader) {
-    asserts.assertEquals(
+    assertEquals(
       xThrottledHeader,
       expectedResponse.headers.get("x-throttled"),
       assertionMessage(
@@ -348,7 +348,7 @@ async function assert(
     );
   }
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("x-retry-after"),
     expectedResponse.headers.get("x-retry-after"),
     assertionMessage(
@@ -359,7 +359,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.status,
     expectedResponse.status,
     assertionMessage(
@@ -370,7 +370,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.statusText,
     expectedResponse.statusText,
     assertionMessage(

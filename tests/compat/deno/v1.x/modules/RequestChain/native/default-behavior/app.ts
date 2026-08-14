@@ -20,7 +20,10 @@
  */
 
 import { HTTPError } from "../../../../../../../../src/core/errors/HTTPError.ts";
-import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import {
+  Chain,
+  Resource,
+} from "../../../../../../../../src/modules/http.native.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
@@ -29,7 +32,7 @@ export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public override paths = ["/"];
 
   public override GET(_request: Request) {

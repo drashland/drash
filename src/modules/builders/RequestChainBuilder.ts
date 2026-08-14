@@ -39,7 +39,7 @@ type ResourceClasses = typeof Resource | typeof Resource[];
 /**
  * The public surface of the request chain builder.
  *
- * This is what {@link RequestChain.builder} hands back. It deliberately omits the
+ * This is what {@link requestChain} hands back. It deliberately omits the
  * `handler()` and `handlers` members inherited from `AbstractChainBuilder`: the
  * request chain's handlers, and the order they run in, are decided by
  * {@link Builder.build} and are not the consumer's to change.
@@ -47,8 +47,12 @@ type ResourceClasses = typeof Resource | typeof Resource[];
  * The chaining methods return `Builder` rather than `this` on purpose. `this` would
  * resolve back to the implementing class and put the hidden members back within
  * reach on every call after the first.
+ *
+ * Exported because {@link requestChain} is annotated with it. Without a named,
+ * exported return type, declaration emit has to describe the unexported
+ * implementation class structurally and fails on its private members (TS4094).
  */
-interface Builder {
+export interface Builder {
   /**
    * Add resources to this chain.
    * @param resources The resource classes this chain should route requests to.
@@ -116,12 +120,13 @@ class RequestChainBuilder extends AbstractChainBuilder implements Builder {
   }
 }
 
-class RequestChain {
-  static builder(): Builder {
-    return new RequestChainBuilder();
-  }
+/**
+ * Get an HTTP request chain builder.
+ *
+ * @returns An HTTP request chain builder.
+ *
+ * @see {@link RequestChainBuilder} for implementation details.
+ */
+export function requestChain(): Builder {
+  return new RequestChainBuilder();
 }
-
-// FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
-
-export { type Builder, RequestChain };

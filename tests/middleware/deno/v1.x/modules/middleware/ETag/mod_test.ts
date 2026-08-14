@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as asserts from "@std/assert";
+import { assertEquals } from "@std/assert";
 import {
   assertionMessage,
   catchError,
@@ -30,7 +30,7 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import * as Chain from "../../../../../../../src/modules/http.native.ts";
 import {
   defaultOptions,
   ETag,
@@ -203,7 +203,7 @@ async function assert(
   actualResponse: Response,
   expectedResponse: Expected,
 ) {
-  asserts.assertEquals(
+  assertEquals(
     await actualResponse.clone().text(),
     expectedResponse.body,
     assertionMessage(
@@ -214,7 +214,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("etag"),
     expectedResponse.headers?.etag,
     assertionMessage(
@@ -230,7 +230,7 @@ async function assert(
   );
 
   // The `last-modified` header should be dated as "right now" because
-  asserts.assertEquals(
+  assertEquals(
     actualLastModifiedDate.toISOString().replace(
       /:[0-9]+\.+[0-9]+Z/,
       "",
@@ -244,7 +244,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.status,
     expectedResponse.status,
     assertionMessage(
@@ -255,7 +255,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.statusText,
     expectedResponse.statusText,
     assertionMessage(

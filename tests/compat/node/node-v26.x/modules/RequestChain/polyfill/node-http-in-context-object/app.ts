@@ -24,7 +24,10 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.polyfill";
+import {
+  Chain,
+  Resource,
+} from "../../../../../../../../dist/modules/http.polyfill";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
 
 export const protocol = "http";
@@ -38,7 +41,7 @@ type NodeContext = {
   response: ServerResponse<IncomingMessage>;
 };
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(context: NodeContext) {

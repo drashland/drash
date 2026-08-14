@@ -2,7 +2,8 @@
   "lock": false,
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/fs": "jsr:@std/fs@^1.0.19"
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@drashland/drash/": "./dist/"
   },
   "lint": {
     "rules": {

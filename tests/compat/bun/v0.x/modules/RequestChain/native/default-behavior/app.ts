@@ -23,13 +23,16 @@ import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.native";
+import {
+  Chain,
+  Resource,
+} from "../../../../../../../../dist/modules/http.native";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(_request: Request) {

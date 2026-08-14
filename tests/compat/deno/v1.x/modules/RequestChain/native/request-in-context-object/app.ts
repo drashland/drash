@@ -21,7 +21,11 @@
 
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
-import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import {
+  Chain,
+  HTTPError,
+  Resource,
+} from "../../../../../../../../src/modules/http.native.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
@@ -35,7 +39,7 @@ type WebAPIContext = {
   response?: Response;
 };
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public override paths = ["/"];
 
   public override GET(context: WebAPIContext) {
@@ -53,7 +57,7 @@ class Home extends Chain.Resource {
   }
 
   public override PATCH(_context: WebAPIContext) {
-    throw new Chain.HTTPError(Status.MethodNotAllowed);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 
@@ -91,9 +95,9 @@ export const handleRequest = (
         },
       );
     })
-    .catch((error: Error | Chain.HTTPError) => {
+    .catch((error: Error | HTTPError) => {
       if (
-        (error.name === "HTTPError" || error instanceof Chain.HTTPError) &&
+        (error.name === "HTTPError" || error instanceof HTTPError) &&
         "status_code" in error &&
         "status_code_description" in error
       ) {
