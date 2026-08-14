@@ -333,4 +333,4 @@ Resources only recognize absolute URLs. Node’s `request.url` returns only a pa
 
 Node uses the **polyfill** entry point, and its `node:http` server does not give you a Web `Request` — so the resource receives a **context object** that you build. The chain only requires a readable `url` and `method`; everything else on it is yours.
 
-Because the resource writes to `context.response` directly, `GET()` returns nothing. That is fine here — the response is already committed to the socket by the time the chain resolves. It stops being fine once you wrap the resource in [middleware](/docs/reference/middleware), which needs a return value to pass along.
+Because the resource writes to `context.response` directly, `GET()` returns nothing. That is fine here — the response is already committed to the socket by the time the chain resolves. It stops being fine once you wrap the resource in [middleware](/docs/concepts/middleware), which needs a return value to pass along.
