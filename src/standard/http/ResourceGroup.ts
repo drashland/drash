@@ -345,8 +345,6 @@ function createGroupWithMiddleware(
 }
 
 class ResourceGroup {
-  static Builder = Builder;
-
   static builder(): Builder {
     return new Builder();
   }
