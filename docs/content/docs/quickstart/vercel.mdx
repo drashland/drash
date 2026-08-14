@@ -1,0 +1,120 @@
+# Vercel
+
+Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node version, so use the **polyfill** entry point.
+
+## Install
+
+```bash
+npm install @drashland/drash
+npm install --global vercel
+```
+
+## App
+
+Vercel gives you two ways to serve a request, and they hand your resource different things. A function in `api/` receives a Web `Request`, so it goes straight into the chain. A `server` entrypoint receives Node's `IncomingMessage`/`ServerResponse`, so it takes a **context object** like the [Node guide](/docs/quickstart/node).
+
+<Tabs items={["api/ (fetch)", "server.ts"]}>
+  <Tabs.Tab>
+
+A file in `api/` becomes a function with no extra configuration. `api/index.ts` is served at `/api`, so that is the path the resource claims.
+
+```ts
+import {
+  Chain,
+  Resource,
+} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/api"];
+
+  GET(request: Request) {
+    return new Response("Hello from Home.GET()!");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+export default {
+  fetch(request: Request) {
+    return chain
+      .handle<Response>(request)
+      .catch(() => {
+        return new Response("Sorry, but we hit an error!", {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      });
+  },
+};
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+Vercel detects a `server` entrypoint at the project root that calls `server.listen()`, and routes requests to it.
+
+```ts
+import {
+  Chain,
+  Resource,
+} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+import { createServer } from "node:http";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Hello from Home.GET()!");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+const server = createServer((request, response) => {
+  const context = {
+    url: `http://${request.headers.host ?? "localhost"}${request.url}`,
+    method: request.method,
+    request,
+    response,
+  };
+
+  return chain
+    .handle(context)
+    .catch((error) => {
+      response.statusCode = 500;
+      response.statusMessage = "Internal Server Error";
+      response.end("Sorry, but we hit an error!");
+    });
+});
+
+server.listen(Number(process.env.PORT ?? 3000));
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+## Run
+
+```bash
+vercel dev
+```
+
+Then visit `http://localhost:3000/api` for the `api/` function, or `http://localhost:3000` for the `server` entrypoint. Pass `--listen` to use a different port.
+
+## Notes
+
+**The resource's `paths` must match the function's route.** A function at `api/index.ts` is served at `/api`, so a resource with `paths = ["/"]` will never match and every request answers `404`. This is the easiest thing to get wrong here — it does not come up in the other runtimes, where you own the whole URL space.
+
+`url` must be absolute in the `server` entrypoint. `request.url` from `node:http` is path-only (`/users/1`), which is why the example builds it from the `host` header — a bare path will not match.
+
+The port passed to `server.listen()` is only used when you run the file locally. On Vercel it is ignored; requests are routed through an internal port.
+
+If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your `package.json` or name the file `.mjs`. The polyfill entry point is an ES module, and Vercel does not allow `require` in these functions.
+
+This guide uses the Node runtime because [Vercel recommends it over the Edge runtime](https://vercel.com/docs/functions/runtimes/edge), and Next.js 16.3 dropped support for `runtime = 'edge'` on routes and pages. If you do target the Edge runtime, it provides a global `URLPattern`, so the **native** entry point applies there instead — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
