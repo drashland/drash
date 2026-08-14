@@ -79,7 +79,7 @@ export class Resource extends CoreResource {
 /**
  * Get the builder that builds an HTTP request chain.
  */
-export function builder() {
+function builder() {
   return RequestChain
     .builder()
     // @ts-ignore URLPattern is available when using the Deno extension, but we

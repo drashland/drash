@@ -24,6 +24,7 @@ import { Resource } from "../../core/http/Resource.ts";
 
 // Imports > Standard
 import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
+import { Handler } from "../../standard/handlers/Handler.ts";
 import { RequestParamsParser } from "../../standard/handlers/RequestParamsParser.ts";
 import { RequestValidator } from "../../standard/handlers/RequestValidator.ts";
 import { ResourceCaller } from "../../standard/handlers/ResourceCaller.ts";
@@ -36,9 +37,49 @@ import {
 type ResourceClasses = typeof Resource | typeof Resource[];
 
 /**
- * Builder for building a chain of handlers.
+ * The public surface of the request chain builder.
+ *
+ * This is what {@link RequestChain.builder} hands back. It deliberately omits the
+ * `handler()` and `handlers` members inherited from `AbstractChainBuilder`: the
+ * request chain's handlers, and the order they run in, are decided by
+ * {@link Builder.build} and are not the consumer's to change.
+ *
+ * The chaining methods return `Builder` rather than `this` on purpose. `this` would
+ * resolve back to the implementing class and put the hidden members back within
+ * reach on every call after the first.
  */
-class Builder extends AbstractChainBuilder {
+interface Builder {
+  /**
+   * Add resources to this chain.
+   * @param resources The resource classes this chain should route requests to.
+   * @returns This instance for method chaining.
+   */
+  resources(...resources: ResourceClasses[]): Builder;
+
+  /**
+   * Set the `URLPattern`-like class used to match requests to resources.
+   *
+   * Required — {@link Builder.build} throws without it. Runtimes with a native
+   * `URLPattern` pass that; the rest pass a polyfill.
+   *
+   * @param urlPatternClass The `URLPattern`-like class to match request URLs with.
+   * @returns This instance for method chaining.
+   */
+  urlPatternClass(urlPatternClass: URLPatternClass): Builder;
+
+  /**
+   * Wire the handlers together.
+   * @returns The head of the chain. Send requests through it with `.handle()`.
+   */
+  build(): Handler;
+}
+
+/**
+ * Builder for building a chain of handlers.
+ *
+ * Not exported. Consumers receive it as {@link Builder}, the narrower type above.
+ */
+class RequestChainBuilder extends AbstractChainBuilder implements Builder {
   #resources: ResourceClasses[] = [];
   #URLPatternClass?: URLPatternClass;
 
@@ -62,21 +103,13 @@ class Builder extends AbstractChainBuilder {
     return firstHandler;
   }
 
-  /**
-   * Add resources to this chain.
-   * @param resources
-   * @returns This instance for method chaining.
-   */
+  /** See {@link Builder.resources}. */
   public resources(...resources: ResourceClasses[]) {
     this.#resources = resources;
     return this;
   }
 
-  /**
-   * Set the handler that matches requests to resources.
-   * @param handler
-   * @returns
-   */
+  /** See {@link Builder.urlPatternClass}. */
   public urlPatternClass(urlPatternClass: URLPatternClass): this {
     this.#URLPatternClass = urlPatternClass;
     return this;
@@ -85,7 +118,7 @@ class Builder extends AbstractChainBuilder {
 
 class RequestChain {
   static builder(): Builder {
-    return new Builder();
+    return new RequestChainBuilder();
   }
 }
 
