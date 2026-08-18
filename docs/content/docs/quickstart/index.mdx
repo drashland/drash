@@ -46,10 +46,10 @@ Each page has a complete, runnable application and the notes specific to that ru
 
 | Runtime            | `URLPattern`                   | Request shape              | Entry point       |
 | ------------------ | ------------------------------ | -------------------------- | ----------------- |
-| Deno               | Global — used directly         | Web `Request` / `Response` | `mod.native.js`   |
-| Node               | Varies by version — polyfilled | Context object you build   | `mod.polyfill.js` |
-| Bun                | Not dependable — polyfilled    | Web `Request` / `Response` | `mod.polyfill.js` |
-| Cloudflare Workers | Global — used directly         | Web `Request` / `Response` | `mod.native.js`   |
+| Deno               | Global — used directly         | Web `Request` / `Response` | `http.native.js`   |
+| Node               | Varies by version — polyfilled | Context object you build   | `http.polyfill.js` |
+| Bun                | Not dependable — polyfilled    | Web `Request` / `Response` | `http.polyfill.js` |
+| Cloudflare Workers | Global — used directly         | Web `Request` / `Response` | `http.native.js`   |
 
 The two entry points differ only in which `URLPattern` implementation they use — see [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more.
 
