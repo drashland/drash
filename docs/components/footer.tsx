@@ -50,7 +50,8 @@ export function DrashFooter() {
         <div className={styles.brand}>
           <span className={styles.wordmark}>Drash</span>
           <p className={styles.tagline}>
-            Built for people.<br />Programmable by agents.<br/> Native to the web.
+            Built for people.<br />Programmable by agents.<br />{" "}
+            Native to the web.
           </p>
         </div>
 
