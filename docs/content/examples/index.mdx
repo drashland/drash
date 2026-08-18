@@ -24,10 +24,10 @@ They all do the same thing — answer `GET /` from a single `Home` resource — 
 
 | | Entry point | What the resource receives |
 | --- | --- | --- |
-| Deno | `mod.native.js` | Web `Request` |
-| Node (ESM / CJS / TS) | `mod.polyfill.js` | Context object you build |
-| Bun | `mod.polyfill.js` | Web `Request` |
-| Cloudflare Workers | `mod.native.js` | Web `Request` |
+| Deno | `http.native.js` | Web `Request` |
+| Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
+| Bun | `http.polyfill.js` | Web `Request` |
+| Cloudflare Workers | `http.native.js` | Web `Request` |
 
 The resource and the chain are identical in every one. What differs is the entry point — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill) — and how your runtime hands you a request.
 
