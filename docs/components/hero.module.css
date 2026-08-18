@@ -1,4 +1,12 @@
-.hero {
+/*
+ * Palette shared by the hero and the agent section below it. It has to live on
+ * both: custom properties inherit down the tree, and these two are siblings, so
+ * declaring them only on .hero would leave the agent card's
+ * `var(--hero-code-bg)` unresolved — which computes to a transparent background
+ * rather than the dark one.
+ */
+.hero,
+.agent {
   --hero-fg: #0b1220;
   --hero-muted: #4a5568;
   --hero-accent: #2563eb;
@@ -7,7 +15,9 @@
   --hero-border: rgb(15 23 42 / 0.1);
   --hero-code-bg: #0b1220;
   --hero-code-fg: #e2e8f0;
+}
 
+.hero {
   position: relative;
   isolation: isolate;
   padding: 4.5rem 1.5rem 3rem;
@@ -20,7 +30,8 @@
   border-bottom: 1px solid var(--hero-border);
 }
 
-:global(html.dark) .hero {
+:global(html.dark) .hero,
+:global(html.dark) .agent {
   --hero-fg: #f1f5f9;
   --hero-muted: #94a3b8;
   --hero-accent: #60a5fa;
@@ -167,33 +178,6 @@
   background: var(--hero-code-bg);
   box-shadow: rgba(2, 6, 23, 0.28) 0px 8px 70px;
   overflow: hidden;
-  transition: transform 0.15s ease;
-}
-
-/*
- * Feedback for the pause. Hovering the card — or focusing one of its tabs —
- * stops the 5s runtime rotation, and without a visible change that pause looks
- * like the carousel simply stalled.
- *
- * `:focus-within` mirrors the hover because the component pauses on focus too
- * (onFocus/onBlur on this element), so keyboard users get the same signal.
- *
- * -4px rather than the -2px the .feature tiles use: the same nudge reads as
- * noise on an element this large.
- */
-.codeCard:hover,
-.codeCard:focus-within {
-  transform: translateY(-4px);
-}
-
-/*
- * Honour the same preference the rotation itself honours. The card still shifts
- * so the affordance survives — it just arrives instantly instead of gliding.
- */
-@media (prefers-reduced-motion: reduce) {
-  .codeCard {
-    transition: none;
-  }
 }
 
 .codeBar {
@@ -271,12 +255,18 @@
    * which counts because the global reset sets `box-sizing: border-box`.
    * Re-derive this if the imports, the shared block, or the longest tail change.
    *
-   * The Claude tab leans on this harder than the runtimes do: its prompt is
-   * four lines against their twenty-odd, so without the floor the card would
-   * collapse every time the rotation reached it. The empty space below the
-   * prompt reads as terminal, which is why it needs no filling.
+   * Only the runtime tabs are measured here. The agent transcript sits in its
+   * own card below and opts out via `.transcript`.
    */
   min-height: 37.25rem;
+}
+
+/*
+ * The transcript card is a single fixed block, so it has no sibling to match
+ * heights with — the switcher's floor would only pad it with dead space.
+ */
+.transcript {
+  min-height: 0;
 }
 
 /* The file name is the first thing to go when the bar gets tight. */
@@ -310,6 +300,27 @@
  */
 .dim {
   color: #64748b;
+}
+
+/* Agent section */
+.agent {
+  max-width: 46rem;
+  margin: 3.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.agentTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--hero-fg);
+  text-align: center;
+}
+
+/* The card supplies its own 3rem gap; the heading sits closer than that. */
+.agent .codeCard {
+  margin-top: 1.25rem;
 }
 
 /* Feature grid */

@@ -11,6 +11,11 @@ const features = [
       "Drash runs with Deno.serve, node:http, Bun.serve, and a Cloudflare Worker fetch. Build once. Run everywhere.",
   },
   {
+    title: "No framework lock-in",
+    body:
+      "The only lock-in you take on is your runtime's — move to another one and your resources and chain come with you.",
+  },
+  {
     title: "Structure by default",
     body:
       "Strict interfaces forces separation of concerns — keeping you and your code focused on clean architecture.",
@@ -90,11 +95,6 @@ type Tab = {
   head?: Token[];
   /** Appended to `shared`: how this runtime hands the chain a request. */
   tail?: Token[];
-  /**
-   * Replaces `shared` and `tail` outright, for a tab that is not runtime code.
-   * Exactly one tab uses it; a tab supplies `tail` or `body`, never both.
-   */
-  body?: Token[];
 };
 
 /**
@@ -137,7 +137,7 @@ const tabs: Tab[] = [
       ["({\n    url: ", null],
       ["`http://localhost:1447${request.url}`", str],
       [
-        ",\n    method: request.method,\n    request,\n    response\n  });\n}).",
+        ",\n    method: request.method,\n    request,\n    response\n  })}).",
         null,
       ],
       ["listen", fn],
@@ -158,7 +158,7 @@ const tabs: Tab[] = [
       ["from", kw],
       [" ", null],
       ['"npm:@drashland/drash/modules/http.native.js"', str],
-      [";\n\n", null],
+      [";\n\n\n", null],
     ],
     tail: [
       ["Deno.", null],
@@ -192,7 +192,7 @@ const tabs: Tab[] = [
       ["from", kw],
       [" ", null],
       ['"@drashland/drash/modules/http.polyfill.js"', str],
-      [";\n\n", null],
+      [";\n\n\n", null],
     ],
     tail: [
       ["Bun.", null],
@@ -223,7 +223,7 @@ const tabs: Tab[] = [
       ["from", kw],
       [" ", null],
       ['"@drashland/drash/modules/http.native.js"', str],
-      [";\n\n", null],
+      [";\n\n\n", null],
     ],
     tail: [
       ["export", kw],
@@ -238,50 +238,30 @@ const tabs: Tab[] = [
       ["(request);\n  },\n};", null],
     ],
   },
-  {
-    id: "claude",
-    label: "Claude",
-    file: "terminal",
-    /*
-     * A transcript, not a snippet: the prompt from "Or let your agent do it"
-     * below, then the runtime picker it produces. `/agents.md` is served from
-     * public/, so the URL a reader types here is the file Claude fetches.
-     *
-     * Two limits shape the copy. Lines are wrapped at 80 columns, since `.code`
-     * scrolls rather than wraps and anything longer runs off the card. And the
-     * whole panel stays inside the 22-line height the runtime tabs set (see the
-     * `min-height` note in hero.module.css) so the card does not grow when the
-     * rotation reaches this tab — which is what keeps the descriptions to one
-     * line each.
-     */
-    body: [
-      ["$ ", cmt],
-      ["claude", fn],
-      ["\n\n", null],
-      ["> ", cmt],
-      [
-        "Read https://drash.crookse.com/agents.md and set up a Drash project.\n\n",
-        str,
-      ],
-      ["  Which runtime should the Drash project target?\n\n", null],
-      ["❯ 1. Deno (Recommended)\n", fn],
-      [
-        "     Native entry point, Deno.serve, and a pinned dep in deno.json.\n",
-        dim,
-      ],
-      ["  2. Node\n", null],
-      [
-        "     Polyfill entry point, node:http, request in a context object.\n",
-        dim,
-      ],
-      ["  3. Bun\n", null],
-      ["     Polyfill entry point, fed by Bun.serve.\n", dim],
-      ["  4. Cloudflare Workers\n", null],
-      ["     Native entry point, fed by a Worker fetch handler.\n", dim],
-      ["  5. Type something.", null],
-    ],
-  },
 ];
+
+/**
+ * The agent transcript, shown in its own card below the runtime switcher rather
+ * than as a fifth tab. It is not a runtime you would pick between — it is the
+ * alternative to picking one — so putting it in the rotation implied a false
+ * equivalence, and its 16 lines against the runtimes' 24 made the card jump.
+ *
+ * Lines wrap at 80 columns: `.code` scrolls rather than wraps, so anything
+ * longer runs off the card.
+ */
+const transcript: { file: string; body: Token[] } = {
+  file: "terminal",
+  body: [
+    ["$ ", cmt],
+    ["claude", fn],
+    ["\n\n", null],
+    ["> ", cmt],
+    [
+      "Read https://drash.crookse.com/agents.md and set up a Drash project.\n\n",
+      str,
+    ],
+  ],
+};
 
 function renderTokens(tokens: Token[], keyPrefix: string) {
   return tokens.map(([text, cls], i) =>
@@ -296,7 +276,12 @@ const ROTATE_MS = 2000;
 
 export function Hero() {
   const [active, setActive] = useState(0);
-  /** Pointer is over the card, or one of its tabs has keyboard focus. */
+  /**
+   * A tab has keyboard focus. Hover deliberately does not pause: the card is a
+   * showcase, not something a reader is expected to copy from, so drifting the
+   * pointer across it should not halt the rotation. Keyboard focus is different
+   * — reaching a tab takes intent, and it is the step before a click.
+   */
   const [paused, setPaused] = useState(false);
   /** A tab was clicked. The reader has taken over; this is never cleared. */
   const [stopped, setStopped] = useState(false);
@@ -344,13 +329,13 @@ export function Hero() {
     <>
       <section className={styles.hero}>
         <div className={styles.inner}>
-          <span className={styles.eyebrow}>
+          {/* <span className={styles.eyebrow}>
             <span className={styles.dot} />
             v3 is in beta
-          </span>
+          </span> */}
 
           <h1 className={styles.title}>
-            Better web apps,<br />
+            Better web apps<br />
             <span className={styles.gradient}>without the framework tax</span>
           </h1>
 
@@ -380,14 +365,14 @@ export function Hero() {
             /*
              * onFocus/onBlur rather than a :focus-within rule: React maps them to
              * native focusin/focusout, which bubble, so focusing a tab button
-             * inside the card pauses it too. That covers keyboard users without
-             * per-button handlers.
+             * inside the card pauses it without per-button handlers.
+             *
+             * There is no pointer equivalent by design — see the `paused` note
+             * above.
              */
           }
           <div
             className={styles.codeCard}
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
           >
@@ -441,15 +426,9 @@ export function Hero() {
               aria-labelledby={`hero-tab-${current.id}`}
             >
               <code>
-                {current.body
-                  ? renderTokens(current.body, current.id)
-                  : (
-                    <>
-                      {renderTokens(current.head ?? [], `${current.id}-head`)}
-                      {renderTokens(shared, "shared")}
-                      {renderTokens(current.tail ?? [], current.id)}
-                    </>
-                  )}
+                {renderTokens(current.head ?? [], `${current.id}-head`)}
+                {renderTokens(shared, "shared")}
+                {renderTokens(current.tail ?? [], current.id)}
               </code>
             </pre>
           </div>
@@ -463,6 +442,39 @@ export function Hero() {
             <p className={styles.featureBody}>{feature.body}</p>
           </div>
         ))}
+      </section>
+
+      <section className={styles.agent}>
+        <h2 className={styles.agentTitle}>Let your agent set it up</h2>
+        {
+          /*
+           * The agent transcript. No tab strip and no `role="tabpanel"` — it
+           * is a single fixed block, not one of a set — and `.transcript`
+           * drops the min-height the switcher needs so this card sits at its
+           * own natural height.
+           */
+        }
+        <div className={styles.codeCard}>
+          <div className={styles.codeBar}>
+            <span
+              className={styles.codeDot}
+              style={{ background: "#ff5f57" }}
+            />
+            <span
+              className={styles.codeDot}
+              style={{ background: "#febc2e" }}
+            />
+            <span
+              className={styles.codeDot}
+              style={{ background: "#28c840" }}
+            />
+            <span className={styles.codeFile}>{transcript.file}</span>
+          </div>
+
+          <pre className={`${styles.code} ${styles.transcript}`}>
+            <code>{renderTokens(transcript.body, "transcript")}</code>
+          </pre>
+        </div>
       </section>
     </>
   );
