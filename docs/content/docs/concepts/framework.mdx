@@ -78,12 +78,12 @@ Middleware modules provide your applications with features like CORS, ETag heade
 
 ### Module Interoperability
 
-Modules ship in matched pairs — a `mod.native` file and a `mod.polyfill` file in the same directory:
+Modules ship in matched pairs — a `.native` file and a `.polyfill` file side by side:
 
 <FileTree>
-  <FileTree.Folder name="src/modules/chains/RequestChain" defaultOpen>
-    <FileTree.File name="mod.native.ts" />
-    <FileTree.File name="mod.polyfill.ts" />
+  <FileTree.Folder name="src/modules" defaultOpen>
+    <FileTree.File name="http.native.ts" />
+    <FileTree.File name="http.polyfill.ts" />
   </FileTree.Folder>
 </FileTree>
 

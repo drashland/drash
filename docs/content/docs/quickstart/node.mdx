@@ -16,7 +16,7 @@ Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not a Web `
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
 
 class Home extends Resource {
@@ -79,5 +79,5 @@ The same app in CJS differs only in the import:
 const {
   Chain,
   Resource,
-} = require("@drashland/drash/modules/chains/RequestChain/mod.polyfill");
+} = require("@drashland/drash/modules/http.polyfill");
 ```

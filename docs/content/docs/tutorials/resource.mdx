@@ -133,7 +133,7 @@ An HTTP method wrapped in middleware must return a value. Otherwise, `Middleware
 `RequestParamsParser` attaches a non-enumerable `params` object to the request. Use the `Chain.HTTPRequest` type on the request argument to see it:
 
 ```ts
-import * as Chain from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+import * as Chain from "@drashland/drash/modules/http.native.js";
 
 class Users extends Resource {
   public paths = ["/users/:id?"];

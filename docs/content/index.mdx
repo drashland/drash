@@ -23,7 +23,7 @@ The same chain runs everywhere. What changes is which entry point you import and
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+} from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource {
   paths = ["/"];
@@ -51,7 +51,7 @@ Deno has a global `URLPattern`, so it uses the **native** entry point. [Full gui
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
 
 class Home extends Resource {
@@ -90,7 +90,7 @@ Node passes a **context object** rather than a Web `Request`, and uses the **pol
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 
 class Home extends Resource {
   paths = ["/"];
@@ -122,7 +122,7 @@ Bun gives you Web `Request`/`Response`, but uses the **polyfill** entry point. [
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+} from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource {
   paths = ["/"];
@@ -157,7 +157,7 @@ The two entry points differ only in which `URLPattern` implementation they use. 
 Hand this to your coding agent:
 
 ```text
-Read drash.crookse.com/agents.md and set up a Drash/Deno project
+Read https://drash.crookse.com/agents.md and set up a Drash project.
 ```
 
   </Tabs.Tab>

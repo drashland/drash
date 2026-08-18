@@ -54,7 +54,7 @@ app.listen(1447);
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+} from "@drashland/drash/modules/http.native.js";
 
 class MyResource extends Resource {
   paths = ["/"];
@@ -137,7 +137,7 @@ Chains implement their own base `Resource` so the maintainers can:
 ```ts filename="MyResource.ts"
 import {
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.native.js";
+} from "@drashland/drash/modules/http.native.js";
 
 class MyResource extends Resource {
   paths = ["/teas"];

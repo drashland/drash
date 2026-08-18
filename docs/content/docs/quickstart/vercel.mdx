@@ -22,7 +22,7 @@ A file in `api/` becomes a function with no extra configuration. `api/index.ts` 
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 
 class Home extends Resource {
   paths = ["/api"];
@@ -60,7 +60,7 @@ Vercel detects a `server` entrypoint at the project root that calls `server.list
 import {
   Chain,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
 
 class Home extends Resource {
