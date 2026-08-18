@@ -50,8 +50,7 @@ export function DrashFooter() {
         <div className={styles.brand}>
           <span className={styles.wordmark}>Drash</span>
           <p className={styles.tagline}>
-            A runtime-agnostic framework for building structured HTTP services
-            in JavaScript.
+            Built for people.<br />Programmable by agents.<br/> Native to the web.
           </p>
         </div>
 

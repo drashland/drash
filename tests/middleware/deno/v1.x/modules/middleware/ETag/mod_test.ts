@@ -289,11 +289,11 @@ function getTestCases(): TestCase[] {
             path: "/",
           },
           expected_response: {
-            body: "Hello from Home.GET()!",
+            body: "Oh so easy",
             status: StatusCode.OK,
             statusText: StatusDescription.OK,
             headers: {
-              etag: `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`,
+              etag: `"a-T2ggc28gZWFzeQ=="`,
             },
           },
         },
@@ -301,7 +301,7 @@ function getTestCases(): TestCase[] {
         {
           request: {
             headers: {
-              "if-none-match": `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`,
+              "if-none-match": `"a-T2ggc28gZWFzeQ=="`,
             },
             method: Method.GET,
             path: "/",
@@ -309,7 +309,7 @@ function getTestCases(): TestCase[] {
           expected_response: {
             body: "", // Body should be empty when using `.text()`
             headers: {
-              etag: `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`, // We should get the same etag back
+              etag: `"a-T2ggc28gZWFzeQ=="`, // We should get the same etag back
             },
             status: StatusCode.NotModified, // Response should be considered "not modified"
             statusText: StatusDescription.NotModified,
@@ -322,9 +322,9 @@ function getTestCases(): TestCase[] {
             path: "/",
           },
           expected_response: {
-            body: "Hello from Home.GET()!", // Body should be the body in the first request
+            body: "Oh so easy", // Body should be the body in the first request
             headers: {
-              etag: `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`, // We should get the same etag back
+              etag: `"a-T2ggc28gZWFzeQ=="`, // We should get the same etag back
             },
             status: StatusCode.OK, // Response is new so it SHOULD NOT be considered "not modified"
             statusText: StatusDescription.OK,

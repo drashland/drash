@@ -266,12 +266,17 @@
    * against Cloudflare's 5), so the card would resize as you switch runtimes and
    * shove the page around. Hold the height of the tallest variant.
    *
-   * 22 lines (14 shared + 8) x 1.445rem line box (0.85rem x 1.7) = 31.79rem,
-   * plus the 2.45rem of vertical padding, which counts because the global reset
-   * sets `box-sizing: border-box`. Re-derive this if the shared block or the
-   * longest tail changes.
+   * 24 lines (3 import + 14 shared + 7 tail, Node being tallest) x 1.445rem
+   * line box (0.85rem x 1.7) = 34.68rem, plus the 2.45rem of vertical padding,
+   * which counts because the global reset sets `box-sizing: border-box`.
+   * Re-derive this if the imports, the shared block, or the longest tail change.
+   *
+   * The Claude tab leans on this harder than the runtimes do: its prompt is
+   * four lines against their twenty-odd, so without the floor the card would
+   * collapse every time the rotation reached it. The empty space below the
+   * prompt reads as terminal, which is why it needs no filling.
    */
-  min-height: 34.25rem;
+  min-height: 37.25rem;
 }
 
 /* The file name is the first thing to go when the bar gets tight. */
@@ -296,6 +301,15 @@
 .cmt {
   color: #64748b;
   font-style: italic;
+}
+
+/*
+ * Secondary text in the Claude tab's terminal — the line under each runtime
+ * option. Same muted colour as `.cmt` without the italic, which belongs to code
+ * comments and reads wrong in a transcript.
+ */
+.dim {
+  color: #64748b;
 }
 
 /* Feature grid */

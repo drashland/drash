@@ -1,37 +1,19 @@
 # Native vs. Polyfill
 
-Drash has two consumer entry points:
+In some cases, Drash's modules have two consumer entry points:
+
+- `<module_name>.native.js`
+- `<module_name>.polyfill.js`
+
+This is to accomodate runtimes that do not fully support Web Standards. In other words, they do not fully implement [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API).
+
+For example, the HTTP module has the following entry points:
 
 ```
-@drashland/drash/modules/chains/RequestChain/mod.native.js
-@drashland/drash/modules/chains/RequestChain/mod.polyfill.js
+@drashland/drash/modules/http.native.js   // Supports global URLPattern
+@drashland/drash/modules/http.polyfill.js // Requires polyfill for URLPattern in older versions
 ```
 
-They export **the same surface** — `Chain`, `Resource`, `Middleware`, `HTTPError`, and the `HTTPRequest` type. The only difference is which `URLPattern` implementation is handed to the chain builder:
+The HTTP modules export **the same surface** — `Chain`, `Resource`, `Middleware`, `HTTPError`, and the `HTTPRequest` type. The only difference is which `URLPattern` implementation is used under the hood:
 
-| Entry point    | `URLPattern` used                    | Use it on                |
-| -------------- | ------------------------------------ | ------------------------ |
-| `mod.native`   | The runtime's global `URLPattern`    | Deno, Cloudflare Workers |
-| `mod.polyfill` | Drash's bundled `URLPatternPolyfill` | Node, Bun                |
-
-## Which do I pick?
-
-Pick `mod.native` if your runtime has a global `URLPattern` you trust, and `mod.polyfill` otherwise. Choosing wrong fails loudly and early — `mod.native` on a runtime without `URLPattern` throws while the chain is being built, not on the first request.
-
-If you are unsure, `mod.polyfill` should work everywhere. The polyfill is bundled, so it costs a little size but no network or peer dependency.
-
-## Swapping the implementation directly
-
-Both entry points are thin wrappers over the same builder. If you want to supply your own `URLPattern`-compatible class, use `urlPatternClass()`:
-
-```ts
-import { RequestChain } from "@drashland/drash/modules/base/RequestChain.js";
-
-const chain = RequestChain
-  .builder()
-  .urlPatternClass(MyURLPattern)
-  .resources(Home)
-  .build();
-```
-
-The class must be constructible as `new URLPatternClass({ pathname })` and expose `exec()`, matching the Web `URLPattern` contract.
+Tutorials will call out if there is a need for you to choose. If you are unsure, polyfill modules should work everywhere. Polyfill modules are bundled, so they cost little size but no network or peer dependency.

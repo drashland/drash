@@ -63,11 +63,17 @@
  * next item's own margin instead of stacking on top of it, which keeps the gap
  * at exactly this value rather than this plus 0.5em.
  *
- * Direct-child `:has()` matches the observed shape — a block sitting at the top
- * level of the item — so a nested list with its own code blocks does not also
- * inflate its parent. Naming the element also outweighs the `my-[.5em]` utility.
+ * The `pre` in the selector is load-bearing. Nextra puts `.nextra-code` on both
+ * block and inline code, and in a tight markdown list the inline `<code>` is a
+ * direct child of the `<li>` — so matching `.nextra-code` alone also stretched
+ * ordinary prose items that merely mention `package.json`. Only a block has a
+ * `pre` inside it, which is the real distinction being drawn here.
+ *
+ * Direct-child `:has()` keeps it to a block at the top level of the item, so a
+ * nested list with its own code blocks does not also inflate its parent. Naming
+ * the element outweighs the `my-[.5em]` utility.
  */
-main li:has(> .nextra-code) {
+main li:has(> .nextra-code pre) {
   margin-bottom: 1.5em;
 }
 
@@ -157,8 +163,24 @@ nav.nextra-toc ul {
   padding-inline: 0.5rem;
 }
 
+/*
+ * Every entry renders identically regardless of heading depth.
+ *
+ * Nextra puts `font-semibold` on depth-2 entries only, so `## Next Steps` was
+ * styled differently from the `###` entries around it. The flatten rule above
+ * already neutralises the weight, but these pin size and weight on the entries
+ * themselves so nothing depends on that rule winning the cascade, and so a
+ * future theme change cannot reintroduce a per-depth difference.
+ *
+ * `text-sm` is what the panel's own container sets; naming it here means the
+ * entries match it explicitly rather than by inheritance.
+ */
 nav.nextra-toc ul a {
   padding-inline: 0.5rem;
+  font-size: var(--x-text-sm);
+  line-height: var(--x-text-sm--line-height);
+  font-weight: 400;
+  --tw-font-weight: 400;
 }
 
 .dark nav.nextra-toc a.x\:text-primary-600 {
@@ -252,4 +274,49 @@ body > div:has(> footer > [data-drash-footer]) > hr {
 
 .dark .nextra-cards > .nextra-card:hover {
   background-color: #262626;
+}
+
+/*
+ * The end-state directory tree fills the content column.
+ *
+ * Nextra puts `x:inline-flex` on the file tree's `ul`, so the bordered box
+ * shrink-wraps its widest row. On the step-by-step guide the tree holds a single
+ * entry (`app.ts`), which leaves a thumbnail-sized card adrift at the left of a
+ * full-width tab panel, directly under code blocks that span the whole column.
+ *
+ * Switching to block-level `flex` is the entire fix — a block-level flex
+ * container fills its containing block on its own, so no `width` is needed. The
+ * `x:flex-col` on the same element is untouched, so the rows still stack.
+ *
+ * Keyed off the `[data-drash-end-state-tree]` marker on our own component, like
+ * the footer rules above: attribute plus class outweighs Nextra's single-class
+ * `x:inline-flex` regardless of import order, and it leaves any other
+ * `<FileTree>` on the site with its shrink-to-fit box.
+ */
+[data-drash-end-state-tree] .nextra-filetree {
+  display: flex;
+}
+
+/*
+ * ...and sits on its own surface rather than the page background.
+ *
+ * Nextra gives the file tree a border and no fill, so on the docs background the
+ * box reads as a rule drawn on the page instead of a panel on it. This is the
+ * same treatment — and the same reasoning — as the cards above: a real surface
+ * turns the border into a boundary between two colours.
+ *
+ * Nothing in the theme sets a background here, so no specificity contest; the
+ * marker keeps it to this component.
+ */
+[data-drash-end-state-tree] .nextra-filetree {
+  background-color: #fff;
+}
+
+/*
+ * Dark mode follows the cards again: a raised neutral, not white. neutral-900
+ * sits just above Nextra's dark page background, which is the separation this
+ * is after — white on near-black would be a different problem.
+ */
+.dark [data-drash-end-state-tree] .nextra-filetree {
+  background-color: #171717;
 }

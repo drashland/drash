@@ -34,10 +34,14 @@ const kw = styles.kw;
 const fn = styles.fn;
 const str = styles.str;
 const cmt = styles.cmt;
+const dim = styles.dim;
 
 /**
  * Everything above the server binding. Identical for every runtime — which is
  * the point the switcher is making, so it stays fixed while the tail swaps.
+ *
+ * The Claude tab is the exception: it shows a prompt rather than an app, so it
+ * supplies a `body` and skips this entirely.
  */
 const shared: Token[] = [
   ["class", kw],
@@ -72,15 +76,50 @@ const shared: Token[] = [
   ["\n", null],
 ];
 
+type Tab = {
+  id: string;
+  label: string;
+  /** Shown at the end of the title bar, where an editor shows the filename. */
+  file: string;
+  /**
+   * Prepended to `shared`: what this runtime imports. Separate from `shared`
+   * because the entry point differs — native where the runtime has a global
+   * `URLPattern`, polyfill otherwise — and Node additionally pulls in
+   * `node:http`.
+   */
+  head?: Token[];
+  /** Appended to `shared`: how this runtime hands the chain a request. */
+  tail?: Token[];
+  /**
+   * Replaces `shared` and `tail` outright, for a tab that is not runtime code.
+   * Exactly one tab uses it; a tab supplies `tail` or `body`, never both.
+   */
+  body?: Token[];
+};
+
 /**
  * The tail differs only in how each runtime hands you a request. Kept short on
  * purpose: the full, copy-pasteable versions live in "Pick your runtime" below.
+ *
+ * Claude sits last, after the runtimes it would write for you.
  */
-const runtimes: { id: string; label: string; file: string; tail: Token[] }[] = [
+const tabs: Tab[] = [
   {
     id: "deno",
     label: "Deno",
     file: "app.ts",
+    head: [
+      ["import", kw],
+      [" { ", null],
+      ["Chain", fn],
+      [", ", null],
+      ["Resource", fn],
+      [" } ", null],
+      ["from", kw],
+      [" ", null],
+      ['"npm:@drashland/drash/modules/http.native.js"', str],
+      [";\n\n", null],
+    ],
     tail: [
       ["Deno.", null],
       ["serve", fn],
@@ -103,6 +142,26 @@ const runtimes: { id: string; label: string; file: string; tail: Token[] }[] = [
     id: "node",
     label: "Node",
     file: "app.js",
+    head: [
+      ["import", kw],
+      [" { ", null],
+      ["Chain", fn],
+      [", ", null],
+      ["Resource", fn],
+      [" } ", null],
+      ["from", kw],
+      [" ", null],
+      ['"@drashland/drash/modules/http.polyfill.js"', str],
+      [";\n", null],
+      ["import", kw],
+      [" { ", null],
+      ["createServer", fn],
+      [" } ", null],
+      ["from", kw],
+      [" ", null],
+      ['"node:http"', str],
+      [";\n\n", null],
+    ],
     tail: [
       ["createServer", fn],
       ["((request, response) => {\n  ", null],
@@ -123,6 +182,18 @@ const runtimes: { id: string; label: string; file: string; tail: Token[] }[] = [
     id: "bun",
     label: "Bun",
     file: "app.js",
+    head: [
+      ["import", kw],
+      [" { ", null],
+      ["Chain", fn],
+      [", ", null],
+      ["Resource", fn],
+      [" } ", null],
+      ["from", kw],
+      [" ", null],
+      ['"@drashland/drash/modules/http.polyfill.js"', str],
+      [";\n\n", null],
+    ],
     tail: [
       ["Bun.", null],
       ["serve", fn],
@@ -142,6 +213,18 @@ const runtimes: { id: string; label: string; file: string; tail: Token[] }[] = [
     id: "cloudflare",
     label: "Cloudflare",
     file: "worker.js",
+    head: [
+      ["import", kw],
+      [" { ", null],
+      ["Chain", fn],
+      [", ", null],
+      ["Resource", fn],
+      [" } ", null],
+      ["from", kw],
+      [" ", null],
+      ['"@drashland/drash/modules/http.native.js"', str],
+      [";\n\n", null],
+    ],
     tail: [
       ["export", kw],
       [" ", null],
@@ -155,6 +238,47 @@ const runtimes: { id: string; label: string; file: string; tail: Token[] }[] = [
       ["(request);\n  },\n};", null],
     ],
   },
+  {
+    id: "claude",
+    label: "Claude",
+    file: "terminal",
+    /*
+     * A transcript, not a snippet: the prompt from "Or let your agent do it"
+     * below, then the runtime picker it produces. `/agents.md` is served from
+     * public/, so the URL a reader types here is the file Claude fetches.
+     *
+     * Two limits shape the copy. Lines are wrapped at 80 columns, since `.code`
+     * scrolls rather than wraps and anything longer runs off the card. And the
+     * whole panel stays inside the 22-line height the runtime tabs set (see the
+     * `min-height` note in hero.module.css) so the card does not grow when the
+     * rotation reaches this tab — which is what keeps the descriptions to one
+     * line each.
+     */
+    body: [
+      ["$ ", cmt],
+      ["claude", fn],
+      ["\n\n", null],
+      ["> ", cmt],
+      ["Read drash.crookse.com/agents.md and set up a Drash project.\n", str],
+      ["  Ask me what runtime I want to use.\n\n", str],
+      ["  Which runtime should the Drash project target?\n\n", null],
+      ["❯ 1. Deno (Recommended)\n", fn],
+      [
+        "     Native entry point, Deno.serve, and a pinned dep in deno.json.\n",
+        dim,
+      ],
+      ["  2. Node\n", null],
+      [
+        "     Polyfill entry point, node:http, request in a context object.\n",
+        dim,
+      ],
+      ["  3. Bun\n", null],
+      ["     Polyfill entry point, fed by Bun.serve.\n", dim],
+      ["  4. Cloudflare Workers\n", null],
+      ["     Native entry point, fed by a Worker fetch handler.\n", dim],
+      ["  5. Type something.", null],
+    ],
+  },
 ];
 
 function renderTokens(tokens: Token[], keyPrefix: string) {
@@ -165,7 +289,7 @@ function renderTokens(tokens: Token[], keyPrefix: string) {
   );
 }
 
-/** How long each runtime stays on screen before the card advances. */
+/** How long each tab stays on screen before the card advances. */
 const ROTATE_MS = 2000;
 
 export function Hero() {
@@ -205,14 +329,14 @@ export function Hero() {
     if (stopped || paused || reduceMotion) return;
 
     const id = setInterval(
-      () => setActive((index) => (index + 1) % runtimes.length),
+      () => setActive((index) => (index + 1) % tabs.length),
       ROTATE_MS,
     );
 
     return () => clearInterval(id);
   }, [stopped, paused, reduceMotion]);
 
-  const runtime = runtimes[active];
+  const current = tabs[active];
 
   return (
     <>
@@ -224,12 +348,13 @@ export function Hero() {
           </span>
 
           <h1 className={styles.title}>
-            Better HTTP services,<br />
+            Better web apps,<br />
             <span className={styles.gradient}>without the framework tax</span>
           </h1>
 
           <p className={styles.lead}>
-            Build once. Run across JavaScript runtimes. Built on Web Standards.
+            {/* Build once. Run across JavaScript runtimes. Built on Web Standards. */}
+            Built for people. Programmable by agents. Native to the web.
           </p>
 
           <div className={styles.actions}>
@@ -278,8 +403,12 @@ export function Hero() {
                 style={{ background: "#28c840" }}
               />
 
-              <div className={styles.tabs} role="tablist" aria-label="Runtime">
-                {runtimes.map((item, index) => (
+              <div
+                className={styles.tabs}
+                role="tablist"
+                aria-label="Getting started"
+              >
+                {tabs.map((item, index) => (
                   <button
                     key={item.id}
                     type="button"
@@ -300,18 +429,25 @@ export function Hero() {
                 ))}
               </div>
 
-              <span className={styles.codeFile}>{runtime.file}</span>
+              <span className={styles.codeFile}>{current.file}</span>
             </div>
 
             <pre
               className={styles.code}
               id="hero-code"
               role="tabpanel"
-              aria-labelledby={`hero-tab-${runtime.id}`}
+              aria-labelledby={`hero-tab-${current.id}`}
             >
               <code>
-                {renderTokens(shared, "shared")}
-                {renderTokens(runtime.tail, runtime.id)}
+                {current.body
+                  ? renderTokens(current.body, current.id)
+                  : (
+                    <>
+                      {renderTokens(current.head ?? [], `${current.id}-head`)}
+                      {renderTokens(shared, "shared")}
+                      {renderTokens(current.tail ?? [], current.id)}
+                    </>
+                  )}
               </code>
             </pre>
           </div>

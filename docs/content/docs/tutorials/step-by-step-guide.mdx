@@ -3,6 +3,7 @@ title: Step-By-Step Guide
 ---
 
 import CalloutFaviconError from "@/components/CalloutFaviconError.mdx";
+import EndStateTree from "@/components/EndStateTree.tsx";
 
 # Step-By-Step Guide
 
@@ -30,22 +31,28 @@ To gain familiarity with:
 
 ### End State
 
-At the end of this tutorial, you will end up with a single file: `app.ts` (or `app.js` if you're using JavaScript).
+<EndStateTree
+  tree={[
+    "app.ts"
+  ]}
+/>
 
 ### Before You Get Started
 
 - All of the code will be written in the same file for simplicity.
 - Each next step __adds__ code to the step before it. The code that is highlighted is the code that is being __added__.
 - The code comments explain the code in a line-by-line manner. Please read them to gain a better understanding of the code.
-- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields required by chains. These fields are mentioned in [Concepts > Chains > What Data Does It Process?](/drash-v3.x/concepts/chains#what-data-does-it-process).
+- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields required by chains. These fields are mentioned in [Concepts > Chains > What Data Does It Process?](/docs/concepts/chains#what-data-does-it-process).
+- Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
+### Steps and Verification
 
-<Tabs items={["Deno"]}>
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
   <Tabs.Tab>
 
-### Steps
+**Steps**
 
-1. Create a resource class.
+1. Define a resource using the `Resource` class.
 
     ```ts filename="app.ts" showLineNumbers
     import {
@@ -61,7 +68,7 @@ At the end of this tutorial, you will end up with a single file: `app.ts` (or `a
     }
     ```
 
-1. Build a `Chain` object.
+1. Build a chain object using the `Chain` class.
 
     ```ts filename="app.ts" showLineNumbers {2,13-17}
     import {
@@ -106,9 +113,9 @@ At the end of this tutorial, you will end up with a single file: `app.ts` (or `a
     }
 
     const chain = Chain
-      .builder()       // Get the chain's builder so we can build the chain easily.
-      .resources(Home) // Add the `Home` resource to the chain.
-      .build();        // Build the chain.
+      .builder()                     // Get the chain's builder so we can build the chain easily.
+      .resources(Home)               // Add the `Home` resource to the chain.
+      .build();                      // Build the chain.
 
     Deno.serve({
       hostname: "localhost",
@@ -117,7 +124,7 @@ At the end of this tutorial, you will end up with a single file: `app.ts` (or `a
         return chain                 // Let the chain
           .handle<Response>(request) // handle the response
           .catch(() => {             // Catch errors and
-            return new Response(     // send a 500 response (Note: not suitable for production)
+            return new Response(     // send a 500 response
               "Oops.",
               { status: 500 }
             );
@@ -126,12 +133,242 @@ At the end of this tutorial, you will end up with a single file: `app.ts` (or `a
     });
     ```
 
-### Verification
+**Verification**
 
 1. Run the app.
 
     ```bash filename="Terminal"
     deno run --allow-net app.ts
+    ```
+
+    Deno denies network access unless you ask for it, which is what `--allow-net` grants. Without that flag the app exits with a permission error before it can listen.
+
+1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+    ```text
+    Oh so easy
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+**Steps**
+
+1. Define a resource using the `Resource` class.
+
+    ```js filename="app.js" showLineNumbers
+    import {
+      Resource,
+    } from "@drashland/drash/modules/http.polyfill.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(context) {
+        context.response.end("Oh so easy");
+      }
+    }
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` — not a Web `Request` and `Response`. Because of that, this resource writes to `context.response` directly instead of returning a response. The `context` object is built in step 3.
+    </Callout>
+
+1. Build a chain object using the `Chain` class.
+
+    ```js filename="app.js" showLineNumbers {2,13-17}
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash/modules/http.polyfill.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(context) {
+        context.response.end("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()       // Get the chain's builder so we can build the chain easily.
+      .resources(Home) // Add the `Home` resource to the chain.
+      .build();        // Build the chain.
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    Drash uses the builder pattern to create objects. You will see `.build()` calls many times throughout these documentation pages.
+    </Callout>
+
+1. Plug the chain into the server.
+
+    ```js filename="app.js" showLineNumbers {5,19-39}
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash/modules/http.polyfill.js";
+    import { createServer } from "node:http";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(context) {
+        context.response.end("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()                                         // Get the chain's builder so we can build the chain easily.
+      .resources(Home)                                   // Add the `Home` resource to the chain.
+      .build();                                          // Build the chain.
+
+    const hostname = "localhost";
+    const port = 1447;
+
+    const server = createServer((request, response) => {
+      const context = {                                  // Build the context object the chain will process.
+        url: `http://${hostname}:${port}${request.url}`, // `url` must be absolute. `request.url` is path-only here.
+        method: request.method,                          // `method` tells the chain which resource method to call.
+        request,                                         // Passed along so resources can read the raw request.
+        response,                                        // Passed along so resources can write the response.
+      };
+
+      return chain                                       // Let the chain
+        .handle(context)                                 // handle the context object
+        .catch(() => {                                   // Catch errors and
+          response.statusCode = 500;                     // send a 500 response
+          response.end("Oops.");
+        });
+    });
+
+    server.listen(port, hostname);
+    ```
+
+**Verification**
+
+1. Install Drash.
+
+    ```bash filename="Terminal"
+    npm init -y
+    npm install @drashland/drash
+    ```
+
+1. Run the app.
+
+    ```bash filename="Terminal"
+    node app.js
+    ```
+
+    The file above uses `import` statements, so Node needs to treat it as an ES module. Either add `"type": "module"` to your `package.json` or rename the file to `app.mjs`.
+
+1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+    ```text
+    Oh so easy
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+**Steps**
+
+1. Define a resource using the `Resource` class.
+
+    ```ts filename="app.ts" showLineNumbers
+    import {
+      Resource,
+    } from "@drashland/drash/modules/http.polyfill.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request) {
+        return new Response("Oh so easy");
+      }
+    }
+    ```
+
+1. Build a chain object using the `Chain` class.
+
+    ```ts filename="app.ts" showLineNumbers {2,13-17}
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash/modules/http.polyfill.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()       // Get the chain's builder so we can build the chain easily.
+      .resources(Home) // Add the `Home` resource to the chain.
+      .build();        // Build the chain.
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    Drash uses the builder pattern to create objects. You will see `.build()` calls many times throughout these documentation pages.
+    </Callout>
+
+1. Plug the chain into the server.
+
+    ```ts filename="app.ts" showLineNumbers {18-32}
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash/modules/http.polyfill.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()                     // Get the chain's builder so we can build the chain easily.
+      .resources(Home)               // Add the `Home` resource to the chain.
+      .build();                      // Build the chain.
+
+    Bun.serve({
+      hostname: "localhost",
+      port: 1447,
+      fetch(request) {
+        return chain                 // Let the chain
+          .handle(request)           // handle the response
+          .catch(() => {             // Catch errors and
+            return new Response(     // send a 500 response
+              "Oops.",
+              { status: 500 }
+            );
+          });
+      },
+    });
+    ```
+
+**Verification**
+
+1. Install Drash.
+
+    ```bash filename="Terminal"
+    bun install @drashland/drash
+    ```
+
+1. Run the app.
+
+    ```bash filename="Terminal"
+    bun run app.ts
     ```
 
 1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
@@ -141,7 +378,127 @@ At the end of this tutorial, you will end up with a single file: `app.ts` (or `a
     ```
 
   </Tabs.Tab>
+  <Tabs.Tab>
+
+**Steps**
+
+1. Define a resource using the `Resource` class.
+
+    ```js filename="app.js" showLineNumbers
+    import {
+      Resource,
+    } from "@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request) {
+        return new Response("Oh so easy");
+      }
+    }
+    ```
+
+1. Build a chain object using the `Chain` class.
+
+    ```js filename="app.js" showLineNumbers {2,13-17}
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()       // Get the chain's builder so we can build the chain easily.
+      .resources(Home) // Add the `Home` resource to the chain.
+      .build();        // Build the chain.
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    Drash uses the builder pattern to create objects. You will see `.build()` calls many times throughout these documentation pages.
+
+    The chain is built once at module scope — outside the `fetch` handler — so the same chain is reused across every request handled by that isolate.
+    </Callout>
+
+1. Plug the chain into the server.
+
+    ```js filename="app.js" showLineNumbers {18-30}
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()                     // Get the chain's builder so we can build the chain easily.
+      .resources(Home)               // Add the `Home` resource to the chain.
+      .build();                      // Build the chain.
+
+    export default {
+      fetch(request, _bindings) {
+        return chain                 // Let the chain
+          .handle(request)           // handle the response
+          .catch(() => {             // Catch errors and
+            return new Response(     // send a 500 response
+              "Oops.",
+              { status: 500 }
+            );
+          });
+      },
+    };
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    A Worker has no `listen()` call. Its entry point is a default export with a `fetch` method, and the runtime calls it for you. Keep any other module-level exports as functions — `workerd` rejects non-function named exports.
+    </Callout>
+
+**Verification**
+
+1. Install Drash and `wrangler`.
+
+    ```bash filename="Terminal"
+    npm init -y
+    npm install @drashland/drash
+    npm install --save-dev wrangler
+    ```
+
+    _Note: `wrangler` is needed to run a local Cloudflare server._
+
+1. Run the app.
+
+    ```bash filename="Terminal"
+    npx wrangler dev app.js
+    ```
+
+    Unlike the other runtimes, the port is chosen by `wrangler` rather than by your code, so the `hostname` and `port` fields you would write for Deno or Bun have no equivalent here.
+
+1. With the app running, go to the address `wrangler` prints (`http://localhost:8787` by default) in your browser. You should see something like:
+
+    ```text
+    Oh so easy
+    ```
+
+  </Tabs.Tab>
 </Tabs>
+
+## Issues
 
 <CalloutFaviconError />
 

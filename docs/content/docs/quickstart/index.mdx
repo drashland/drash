@@ -9,9 +9,9 @@ Drash ships no server. You build a chain of handlers and pass a request into it 
 
 Pick your runtime below, or walk through the build one step at a time.
 
-## Learn it step by step
+## First Drash application? Start here.
 
-First Drash application? Start with our step-by-step guide.
+### Learn it step by step
 
 <Cards num={1}>
   <Cards.Card
@@ -20,6 +20,15 @@ First Drash application? Start with our step-by-step guide.
     arrow
   />
 </Cards>
+
+### Or let your agent learn it
+
+Hand this to your coding agent:
+
+```text
+Read drash.crookse.com/agents.md and set up a Drash project.
+Ask me what runtime I want to use.
+```
 
 ## Or jump to your runtime
 
@@ -36,14 +45,14 @@ First Drash application? Start with our step-by-step guide.
 
 Each page has a complete, runnable application and the notes specific to that runtime.
 
-| Runtime            | Entry point       | Request shape                       |
-| ------------------ | ----------------- | ----------------------------------- |
-| Deno               | `mod.native.js`   | Web `Request` / `Response`          |
-| Node               | `mod.polyfill.js` | Context object you build            |
-| Bun                | `mod.polyfill.js` | Web `Request` / `Response`          |
-| Cloudflare Workers | `mod.native.js`   | Web `Request` / `Response`          |
+| Runtime            | `URLPattern`                   | Request shape              | Entry point       |
+| ------------------ | ------------------------------ | -------------------------- | ----------------- |
+| Deno               | Global — used directly         | Web `Request` / `Response` | `mod.native.js`   |
+| Node               | Varies by version — polyfilled | Context object you build   | `mod.polyfill.js` |
+| Bun                | Not dependable — polyfilled    | Web `Request` / `Response` | `mod.polyfill.js` |
+| Cloudflare Workers | Global — used directly         | Web `Request` / `Response` | `mod.native.js`   |
 
-The two entry points differ only in which `URLPattern` implementation they use — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+The two entry points differ only in which `URLPattern` implementation they use — see [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more.
 
 ## Before you start
 

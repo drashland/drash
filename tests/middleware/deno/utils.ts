@@ -127,7 +127,7 @@ export function chain(options: {
             public override paths = ["/"];
 
             public override GET(_request: HTTPRequest) {
-              return new Response("Hello from Home.GET()!");
+              return new Response("Oh so easy");
             }
           },
           ...resources,
