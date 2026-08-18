@@ -47,109 +47,7 @@ To gain familiarity with:
 
 ### Steps and Verification
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
-  <Tabs.Tab>
-
-**Steps**
-
-1. Define a resource using the `Resource` class.
-
-    ```ts filename="app.ts" showLineNumbers
-    import {
-      Resource,
-    } from "npm:@drashland/drash/modules/http.native.js";
-
-    class Home extends Resource {
-      paths = ["/"];
-
-      GET(request: Request) {
-        return new Response("Oh so easy");
-      }
-    }
-    ```
-
-1. Build a chain object using the `Chain` class.
-
-    ```ts filename="app.ts" showLineNumbers {2,13-17}
-    import {
-      Chain,
-      Resource
-    } from "npm:@drashland/drash/modules/http.native.js";
-
-    class Home extends Resource {
-      paths = ["/"];
-    
-      GET(request: Request) {
-        return new Response("Oh so easy");
-      }
-    }
-
-    const chain = Chain
-      .builder()       // Get the chain's builder so we can build the chain easily.
-      .resources(Home) // Add the `Home` resource to the chain.
-      .build();        // Build the chain.
-    ```
-
-    <Callout type="gray">
-    **Good to know**
-
-    Drash uses the builder pattern to create objects. You will see `.build()` calls many times throughout these documentation pages.
-    </Callout>
-
-1. Plug the chain into the server.
-
-    ```ts filename="app.ts" showLineNumbers {18-32}
-    import {
-      Chain,
-      Resource
-    } from "npm:@drashland/drash/modules/http.native.js";
-
-    class Home extends Resource {
-      paths = ["/"];
-    
-      GET(request: Request) {
-        return new Response("Oh so easy");
-      }
-    }
-
-    const chain = Chain
-      .builder()                     // Get the chain's builder so we can build the chain easily.
-      .resources(Home)               // Add the `Home` resource to the chain.
-      .build();                      // Build the chain.
-
-    Deno.serve({
-      hostname: "localhost",
-      port: 1447,
-      handler: (request: Request) => {
-        return chain                 // Let the chain
-          .handle<Response>(request) // handle the response
-          .catch(() => {             // Catch errors and
-            return new Response(     // send a 500 response
-              "Oops.",
-              { status: 500 }
-            );
-          });
-      }
-    });
-    ```
-
-**Verification**
-
-1. Run the app.
-
-    ```bash filename="Terminal"
-    deno run --allow-net app.ts
-    ```
-
-    Deno denies network access unless you ask for it, which is what `--allow-net` grants. Without that flag the app exits with a permission error before it can listen.
-
-1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
-
-    ```text
-    Oh so easy
-    ```
-
-  </Tabs.Tab>
+<Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]}>
   <Tabs.Tab>
 
 **Steps**
@@ -264,6 +162,108 @@ To gain familiarity with:
     ```
 
     The file above uses `import` statements, so Node needs to treat it as an ES module. Either add `"type": "module"` to your `package.json` or rename the file to `app.mjs`.
+
+1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+    ```text
+    Oh so easy
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+**Steps**
+
+1. Define a resource using the `Resource` class.
+
+    ```ts filename="app.ts" showLineNumbers
+    import {
+      Resource,
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request: Request) {
+        return new Response("Oh so easy");
+      }
+    }
+    ```
+
+1. Build a chain object using the `Chain` class.
+
+    ```ts filename="app.ts" showLineNumbers {2,13-17}
+    import {
+      Chain,
+      Resource
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request: Request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()       // Get the chain's builder so we can build the chain easily.
+      .resources(Home) // Add the `Home` resource to the chain.
+      .build();        // Build the chain.
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    Drash uses the builder pattern to create objects. You will see `.build()` calls many times throughout these documentation pages.
+    </Callout>
+
+1. Plug the chain into the server.
+
+    ```ts filename="app.ts" showLineNumbers {18-32}
+    import {
+      Chain,
+      Resource
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request: Request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()                     // Get the chain's builder so we can build the chain easily.
+      .resources(Home)               // Add the `Home` resource to the chain.
+      .build();                      // Build the chain.
+
+    Deno.serve({
+      hostname: "localhost",
+      port: 1447,
+      handler: (request: Request) => {
+        return chain                 // Let the chain
+          .handle<Response>(request) // handle the response
+          .catch(() => {             // Catch errors and
+            return new Response(     // send a 500 response
+              "Oops.",
+              { status: 500 }
+            );
+          });
+      }
+    });
+    ```
+
+**Verification**
+
+1. Run the app.
+
+    ```bash filename="Terminal"
+    deno run --allow-net app.ts
+    ```
+
+    Deno denies network access unless you ask for it, which is what `--allow-net` grants. Without that flag the app exits with a permission error before it can listen.
 
 1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
 
