@@ -14,8 +14,8 @@ run command. Everything else on this page is the same everywhere.
 **Ask the user which runtime this project targets, and wait for the answer.** Do
 not pick one for them, and do not start writing files first.
 
-- **Deno** — Native entry point, `Deno.serve`, and a pinned dep in `deno.json`
 - **Node** — Polyfill entry point, `node:http`, request in a context object
+- **Deno** — Native entry point, `Deno.serve`, and a pinned dep in `deno.json`
 - **Bun** — Polyfill entry point, fed by `Bun.serve`
 - **Cloudflare Workers** — Native entry point, fed by a Worker `fetch` handler
 
@@ -28,8 +28,8 @@ floor below, stop and tell the user — do not install or upgrade it for them.
 
 | Runtime            | Minimum                                       |
 | ------------------ | --------------------------------------------- |
-| Deno               | 2.x                                           |
 | Node               | 20                                            |
+| Deno               | 2.x                                           |
 | Bun                | 1.x                                           |
 | Cloudflare Workers | `compatibility_date` of `2025-05-01` or later |
 
@@ -39,11 +39,19 @@ at any date, but `URLPattern` is not one implementation: dates before
 `2025-05-01` get workerd's original one, which is **not** compliant with the
 WHATWG URLPattern Standard, and `2025-05-01` onward get the spec-compliant one
 (the `urlpattern_standard` flag). Drash's native build matches against the
-global `URLPattern`, so pin the standard one:
+global `URLPattern`, so pin the standard one in `wrangler.jsonc`:
 
 ```jsonc
-{ "compatibility_date": "2025-05-01" }
+{
+  "name": "my-worker",
+  "main": "app.js",
+  "compatibility_date": "2025-05-01"
+}
 ```
+
+`wrangler dev app.js` does run with no config file at all, but then the
+compatibility date is whatever wrangler defaults to — which is the thing this
+section is warning about. Write the file.
 
 Reach for the `urlpattern_original` flag only if something else in the Worker
 depends on the old behavior.
@@ -53,13 +61,16 @@ work from, and where the docs are.
 
 ## 1. Add Drash
 
+Work in the current directory. Do not create a project subdirectory unless the
+user asks for one.
+
 v3 is in beta and published releases have moved between `preview` and `beta`
 tags, so pin a version rather than tracking a range.
 
 | Runtime            | Install                                              |
 | ------------------ | ---------------------------------------------------- |
-| Deno               | `deno add npm:@drashland/drash`                      |
 | Node               | `npm install @drashland/drash`                       |
+| Deno               | `deno add npm:@drashland/drash`                      |
 | Bun                | `bun install @drashland/drash`                       |
 | Cloudflare Workers | `npm install @drashland/drash` + `npm i -D wrangler` |
 
@@ -75,6 +86,36 @@ deno info npm:@drashland/drash              # Deno
 
 If what you find disagrees with §2, the installed package wins.
 
+### What else to create
+
+The dependency alone is not a project. Create what your runtime's row lists, and
+nothing more:
+
+| Runtime            | Also create                                       |
+| ------------------ | ------------------------------------------------- |
+| Node               | `package.json` with `"type": "module"`            |
+| Deno               | nothing — `deno add` already wrote `deno.json`    |
+| Bun                | `package.json` with `"type": "module"`            |
+| Cloudflare Workers | `package.json` as for Node, plus `wrangler.jsonc` |
+
+**Do not skip this on Node.** The polyfill entry point is an ES module, so a
+`.js` file importing it is ambiguous without the field. On Node 20.0–20.18 that
+is fatal: `SyntaxError: Cannot use import statement outside a module`. From Node
+20.19 and 22.7 onward, syntax detection rescues it, but Node warns
+(`MODULE_TYPELESS_PACKAGE_JSON`) and re-parses the file on every start.
+`npm install` does not add the field for you — add it:
+
+```json
+{ "type": "module" }
+```
+
+The alternative is to name the file `app.mjs` and run `node app.mjs`. If you are
+writing CommonJS on purpose, leave `"type"` unset and use the extensionless
+`require` form from §2 instead.
+
+`bun install` and `npm install` both create `package.json` if it is missing, but
+neither sets `"type"`. The `wrangler.jsonc` for Workers is in §0.
+
 ## 2. Which entry point
 
 Two builds, differing only in the `URLPattern` implementation they use. This is
@@ -82,10 +123,10 @@ decided by the runtime, not by preference:
 
 | Runtime            | `URLPattern`      | Entry point                |
 | ------------------ | ----------------- | -------------------------- |
-| Deno               | Global            | `modules/http.native.js`   |
-| Cloudflare Workers | Global            | `modules/http.native.js`   |
 | Node               | Varies by version | `modules/http.polyfill.js` |
+| Deno               | Global            | `modules/http.native.js`   |
 | Bun                | Not dependable    | `modules/http.polyfill.js` |
+| Cloudflare Workers | Global            | `modules/http.native.js`   |
 
 ```ts
 import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
@@ -149,71 +190,29 @@ const chain = Chain.builder().resources(Home, Users).build();
 ```
 
 What a request method receives and returns depends on what you feed the chain,
-which is §4. On Deno, Bun, and Workers it is a Web `Request` and you return a
-`Response`, as above. On Node it is a context object you build, and you write to
-it rather than returning. §4 has both.
+which is §4. On Node it is a context object you build, and you write to it
+rather than returning. On Deno, Bun, and Workers it is a Web `Request` and you
+return a `Response`, as above. §4 has a complete file for each.
 
-## 4. Wire it to the server
+## 4. The whole app, one file per runtime
 
 `chain.handle()` returns a promise and **rejects on error, including a 404**.
 Nothing downstream turns that into a response, so **always attach a `.catch()`**
 — it is the only thing standing between the user and a hung request.
 
-### Deno
+Each block below is a complete file. Write your runtime's block, under the
+filename in its heading, in the current directory. Do not stitch together blocks
+from two different runtimes.
 
-```ts
-Deno.serve({
-  hostname: "localhost",
-  port: 1447,
-  handler: (request: Request) =>
-    chain
-      .handle<Response>(request)
-      .catch(() => new Response("Internal Server Error", { status: 500 })),
-});
-```
+### Node — `app.js`
 
-### Bun
-
-Identical to Deno apart from the entry point and the server call. Both pass a
-Web `Request` straight through and return a Web `Response`.
-
-```ts
-Bun.serve({
-  hostname: "localhost",
-  port: 1447,
-  fetch: (request: Request) =>
-    chain
-      .handle<Response>(request)
-      .catch(() => new Response("Internal Server Error", { status: 500 })),
-});
-```
-
-### Cloudflare Workers
-
-A Worker's entry module is a default export with a `fetch` method.
-
-```js
-export default {
-  fetch: (request, _bindings) =>
-    chain
-      .handle(request)
-      .catch(() => new Response("Internal Server Error", { status: 500 })),
-};
-```
-
-**Every named export of a Worker entry module must be a function, a class, or an
-`ExportedHandler`.** `workerd` validates named exports at startup, so a stray
-`export const hostname = "localhost";` aborts the Worker before it serves
-anything. Keep configuration as module-local `const`s, not exports.
-
-### Node
-
-Node is the one that does not look like the others. `node:http` gives you
-`IncomingMessage` and `ServerResponse`, not a Web `Request`, and **Drash does
-not convert them for you.** You hand the chain a **context object** carrying
+This is the only runtime here that does not hand your resources a Web `Request`.
+`node:http` gives you `IncomingMessage` and `ServerResponse`, and **Drash does
+not convert them for you.** You pass the chain a **context object** carrying
 whatever your resources need; the chain itself only requires `url` and `method`.
 
 ```js
+import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
 
 const hostname = "localhost";
@@ -227,7 +226,15 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain.builder().resources(Home).build();
+class Users extends Resource {
+  paths = ["/users/:id"];
+
+  GET(context) {
+    context.response.end(`User ${context.params.pathParam("id")}`);
+  }
+}
+
+const chain = Chain.builder().resources(Home, Users).build();
 
 const server = createServer((request, response) => {
   const context = {
@@ -246,7 +253,9 @@ const server = createServer((request, response) => {
 server.listen(port, hostname);
 ```
 
-Two things to get right, both of which fail quietly:
+This file needs `"type": "module"` in `package.json` — see §1.
+
+Two more things to get right, both of which fail quietly:
 
 - **`url` must be absolute.** `request.url` from `node:http` is path-only
   (`/users/1`). A bare path matches nothing and every route 404s.
@@ -255,15 +264,123 @@ Two things to get right, both of which fail quietly:
   reply never reaches the socket.
 
 If you would rather write resources against Web `Request`/`Response` under Node,
-convert at the boundary and pass a real `Request` into the chain instead. Then
-§3 applies unchanged.
+convert at the boundary and pass a real `Request` into the chain instead. The
+Deno block below then applies almost unchanged.
+
+### Deno — `app.ts`
+
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Hello");
+  }
+}
+
+class Users extends Resource {
+  paths = ["/users/:id"];
+
+  GET(request: Request) {
+    return new Response(`User ${request.params.pathParam("id")}`);
+  }
+}
+
+const chain = Chain.builder().resources(Home, Users).build();
+
+Deno.serve({
+  hostname: "localhost",
+  port: 1447,
+  handler: (request: Request) =>
+    chain
+      .handle<Response>(request)
+      .catch(() => new Response("Internal Server Error", { status: 500 })),
+});
+```
+
+### Bun — `app.ts`
+
+Identical to Deno apart from the entry point and the server call. Both pass a
+Web `Request` straight through and return a Web `Response`.
+
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Hello");
+  }
+}
+
+class Users extends Resource {
+  paths = ["/users/:id"];
+
+  GET(request: Request) {
+    return new Response(`User ${request.params.pathParam("id")}`);
+  }
+}
+
+const chain = Chain.builder().resources(Home, Users).build();
+
+Bun.serve({
+  hostname: "localhost",
+  port: 1447,
+  fetch: (request: Request) =>
+    chain
+      .handle<Response>(request)
+      .catch(() => new Response("Internal Server Error", { status: 500 })),
+});
+```
+
+### Cloudflare Workers — `app.js`
+
+A Worker's entry module is a default export with a `fetch` method. The chain is
+built at module scope and reused across requests in the same isolate.
+
+```js
+import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Hello");
+  }
+}
+
+class Users extends Resource {
+  paths = ["/users/:id"];
+
+  GET(request) {
+    return new Response(`User ${request.params.pathParam("id")}`);
+  }
+}
+
+const chain = Chain.builder().resources(Home, Users).build();
+
+export default {
+  fetch: (request, _bindings) =>
+    chain
+      .handle(request)
+      .catch(() => new Response("Internal Server Error", { status: 500 })),
+};
+```
+
+**Every named export of a Worker entry module must be a function, a class, or an
+`ExportedHandler`.** `workerd` validates named exports at startup, so a stray
+`export const hostname = "localhost";` aborts the Worker before it serves
+anything. Keep configuration as module-local `const`s, not exports.
 
 ## 5. Run it
 
 | Runtime            | Run                           |
 | ------------------ | ----------------------------- |
-| Deno               | `deno run --allow-net app.ts` |
 | Node               | `node app.js`                 |
+| Deno               | `deno run --allow-net app.ts` |
 | Bun                | `bun run app.ts`              |
 | Cloudflare Workers | `npx wrangler dev app.js`     |
 
