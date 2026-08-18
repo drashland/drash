@@ -259,8 +259,10 @@ const tabs: Tab[] = [
       ["claude", fn],
       ["\n\n", null],
       ["> ", cmt],
-      ["Read drash.crookse.com/agents.md and set up a Drash project.\n", str],
-      ["  Ask me what runtime I want to use.\n\n", str],
+      [
+        "Read https://drash.crookse.com/agents.md and set up a Drash project.\n\n",
+        str,
+      ],
       ["  Which runtime should the Drash project target?\n\n", null],
       ["❯ 1. Deno (Recommended)\n", fn],
       [
