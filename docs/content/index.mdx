@@ -9,7 +9,10 @@ import { Hero } from "../components/hero";
 
 <div className="x:mx-auto x:max-w-4xl x:px-6 x:mt-16">
 
-## Pick your runtime
+## Set up your project
+
+<Tabs items={["Pick your runtime", "Or let your agent do it"]}>
+  <Tabs.Tab>
 
 The same chain runs everywhere. What changes is which entry point you import and how your runtime hands you a request.
 
@@ -26,7 +29,7 @@ class Home extends Resource {
   paths = ["/"];
 
   GET(request: Request) {
-    return new Response("Hello from Home.GET()!");
+    return new Response("Oh so easy");
   }
 }
 
@@ -55,7 +58,7 @@ class Home extends Resource {
   paths = ["/"];
 
   GET(context) {
-    context.response.end("Hello from Home.GET()!");
+    context.response.end("Oh so easy");
   }
 }
 
@@ -93,7 +96,7 @@ class Home extends Resource {
   paths = ["/"];
 
   GET(request: Request) {
-    return new Response("Hello from Home.GET()!");
+    return new Response("Oh so easy");
   }
 }
 
@@ -125,7 +128,7 @@ class Home extends Resource {
   paths = ["/"];
 
   GET(request) {
-    return new Response("Hello from Home.GET()!");
+    return new Response("Oh so easy");
   }
 }
 
@@ -148,26 +151,23 @@ Workers have a global `URLPattern`, so they use the **native** entry point. Keep
 
 The two entry points differ only in which `URLPattern` implementation they use. See [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
-## Install
+  </Tabs.Tab>
+  <Tabs.Tab>
 
-```bash
-npm install @drashland/drash
+Hand this to your coding agent:
+
+```text
+Read drash.crookse.com/agents.md and set up a Drash/Deno project
 ```
 
-Deno can import it over HTTP without installing anything:
-
-```ts
-import {
-  Chain,
-  Resource,
-} from "https://esm.sh/@drashland/drash/modules/chains/RequestChain/mod.native.js";
-```
+  </Tabs.Tab>
+</Tabs>
 
 ## Where to go next
 
 - [Chains](/docs/concepts/chains) — how a request actually flows, and why that matters when you write middleware.
-- [Resource](/docs/reference/resource) — the unit you write most.
-- [Bundled middleware](/docs/concepts/middleware) — CORS, ETag, AcceptHeader, and RateLimiter.
+- [Resource](/docs/tutorials/resource) — the unit you write most.
+- [Bundled middleware](/docs/middleware) — CORS, ETag, AcceptHeader, and RateLimiter.
 
 ## Versions
 

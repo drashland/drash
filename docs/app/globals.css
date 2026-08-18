@@ -1,4 +1,25 @@
 /*
+ * Tailwind first, then the Nextra theme, then this file's own rules.
+ *
+ * The theme import moved here from app/layout.tsx so the order Nextra's Tailwind
+ * guide calls for is expressible: Tailwind's base has to land before the theme's,
+ * and the overrides below still have to land after it. Keeping the theme import
+ * in layout.tsx would have forced Tailwind after it.
+ *
+ * Nextra is itself built with Tailwind v4 under an `x:` prefix, so its utilities
+ * and ours cannot collide by name.
+ */
+@import "tailwindcss";
+@import "nextra-theme-docs/style.css";
+
+/*
+ * Point `dark:` at Nextra's `.dark` class instead of the `prefers-color-scheme`
+ * media query Tailwind defaults to. Without this, `dark:` variants would ignore
+ * the site's own theme toggle and follow the OS setting instead.
+ */
+@variant dark (&:where(.dark *));
+
+/*
  * Top-level sidebar sections are always-open headings rather than toggles.
  *
  * Nextra expresses sidebar depth through nested `ul`s, so these selectors reach
@@ -27,4 +48,208 @@
 .nextra-sidebar > div > div > ul > li > button > svg,
 .nextra-mobile-nav > ul > li > button > svg {
   display: none;
+}
+
+/*
+ * Room after a code block that ends a list item.
+ *
+ * Nextra gives a code block `mt-[1.25em]` above it and nothing below, while list
+ * items carry `my-[.5em]`. Adjacent item margins collapse, so a step that ends
+ * in a code block gets only 0.5em before the next step — a quarter of the space
+ * above the block, and far too tight coming off something tall. The numbered
+ * steps on the step-by-step guide are where it shows worst.
+ *
+ * The margin goes on the item rather than the block so it collapses with the
+ * next item's own margin instead of stacking on top of it, which keeps the gap
+ * at exactly this value rather than this plus 0.5em.
+ *
+ * Direct-child `:has()` matches the observed shape — a block sitting at the top
+ * level of the item — so a nested list with its own code blocks does not also
+ * inflate its parent. Naming the element also outweighs the `my-[.5em]` utility.
+ */
+main li:has(> .nextra-code) {
+  margin-bottom: 1.5em;
+}
+
+/*
+ * Normal weight throughout the right sidebar — the whole panel, no exceptions.
+ *
+ * Nextra sets three weights in there: `font-semibold` on the "On This Page"
+ * label and on every depth-2 entry, and `font-medium` on the feedback, edit,
+ * and scroll-to-top controls at the bottom. Entries can also wrap inline
+ * `<code>` when a heading contains it, which is why this matches every
+ * descendant rather than a list of element names.
+ *
+ * `nav.nextra-toc *` rather than `.nextra-toc *`: the universal selector adds
+ * nothing to specificity, so the bare class form would tie with Tailwind's
+ * single-class utilities and leave the winner to stylesheet order. Qualifying
+ * with the element name breaks the tie.
+ *
+ * `--tw-font-weight` is reset alongside it because Tailwind's weight utilities
+ * set that custom property as well as `font-weight`, and it inherits — leaving
+ * it at semibold lets any descendant rule that reads it pull the bold value
+ * back in.
+ */
+nav.nextra-toc,
+nav.nextra-toc * {
+  font-weight: 400;
+  --tw-font-weight: 400;
+}
+
+/*
+ * ...except the "On This Page" label, which keeps the theme's semibold so it
+ * still reads as a heading over the entries beneath it.
+ *
+ * `p` is unambiguous here — the title is the only paragraph in the panel, and
+ * naming the element also outweighs the universal selector above. Restoring via
+ * the theme's own variable rather than a hardcoded 600 keeps it in step if
+ * Nextra ever retunes its scale.
+ */
+nav.nextra-toc p {
+  font-weight: var(--x-font-weight-semibold);
+  --tw-font-weight: var(--x-font-weight-semibold);
+}
+
+/*
+ * Give the active TOC entry the same colours as the active left-sidebar link.
+ *
+ * Out of the box the theme only tints the active entry's text (primary-600) and
+ * gives it no background at all, so the two sidebars mark "you are here"
+ * differently. These reuse the exact tokens the left sidebar uses —
+ * primary-100/primary-800 in light, primary-400 at 10% / primary-600 in dark —
+ * rather than hardcoded hexes, so both stay in step if the primary hue is
+ * retuned.
+ *
+ * The hook is the `x:text-primary-600` class the theme puts on the active
+ * anchor; it is applied client-side as you scroll, so it never appears in the
+ * exported HTML. There is no aria-current on TOC links to key off instead.
+ */
+nav.nextra-toc a.x\:text-primary-600 {
+  background-color: var(--x-color-primary-100);
+  color: var(--x-color-primary-800);
+  /*
+   * The negative margin cancels the padding so the highlight grows outward
+   * instead of pushing the label across. Padding alone would shunt the active
+   * entry 0.5rem to the right of its neighbours, and since the active entry
+   * changes as you scroll, that reads as the list twitching. 0.5rem matches the
+   * `px-2` on the left sidebar's links, and the parent `ul` has 1rem of padding
+   * to absorb the overhang.
+   */
+  /* `rounded` on the left sidebar's links resolves to this same token. */
+  border-radius: var(--x-radius-sm);
+}
+
+/*
+ * Room for the highlight, without disturbing the nesting.
+ *
+ * The padding goes on every entry rather than just the active one, so nothing
+ * shifts as the active entry changes on scroll. An earlier version used a
+ * negative `margin-inline` on the active entry instead, which broke sub-entries:
+ * the theme indents them with `ms-3`/`ms-6`/`ms-9`, and setting `margin-inline`
+ * overwrites that start margin, so a nested entry snapped flush left the moment
+ * it went active. Touching only padding leaves those margins alone.
+ *
+ * The list's own inline padding drops by the same 0.5rem the entries gain, so
+ * the text stays exactly where it was and only the highlight extends outward.
+ * `p-4` still supplies the vertical padding.
+ */
+nav.nextra-toc ul {
+  padding-inline: 0.5rem;
+}
+
+nav.nextra-toc ul a {
+  padding-inline: 0.5rem;
+}
+
+.dark nav.nextra-toc a.x\:text-primary-600 {
+  background-color: color-mix(
+    in oklab,
+    var(--x-color-primary-400) 10%,
+    transparent
+  );
+  color: var(--x-color-primary-600);
+}
+
+/*
+ * Breathing room between the breadcrumb and the page heading.
+ *
+ * Set on the heading rather than as a `margin-bottom` on the breadcrumb: the
+ * two are not siblings (the h1 sits inside `<main>`, the breadcrumb outside
+ * it), so a bottom margin would have to collapse through `<main>` to reach the
+ * gap, and the result would depend on whether that collapse happens. The
+ * heading's own top margin is the only one between them, so overriding it makes
+ * the gap exactly 50px.
+ *
+ * Gated behind `.nextra-breadcrumb ~` so it only applies where a breadcrumb is
+ * actually rendered — the landing page turns breadcrumbs off and keeps its own
+ * spacing. The selector also has to outweigh the `x:mt-2` utility on the h1,
+ * which a bare element selector would lose to.
+ */
+.nextra-breadcrumb ~ main > h1:first-child {
+  margin-top: 50px;
+}
+
+/*
+ * Full-bleed dark footer band.
+ *
+ * Nextra splits the footer in two: an unclassed wrapper `div` that is a direct
+ * child of `body` and paints the band's background, and the `<footer>` inside
+ * it, which is centred and capped at the content width. So the wrapper is what
+ * has to be painted, and the footer's own cap and padding have to go, or the
+ * dark colour stops partway across the screen.
+ *
+ * Both selectors key off the `[data-drash-footer]` marker on our own component
+ * rather than Nextra's utility classes, which are generated and change between
+ * releases. Matching an attribute also beats Tailwind's single-class
+ * specificity, which a plain element selector would lose to.
+ */
+body > div:has(> footer > [data-drash-footer]) {
+  background: #0b1220;
+}
+
+body > div:has(> footer > [data-drash-footer]) > footer {
+  max-width: none;
+  width: 100%;
+  padding: 0;
+  display: block;
+}
+
+/* The divider is redundant once the band is a different colour to the page. */
+body > div:has(> footer > [data-drash-footer]) > hr {
+  display: none;
+}
+
+/*
+ * Card links sit on their own surface instead of the page background.
+ *
+ * Nextra ships `.nextra-card` with `x:bg-transparent`, so a card reads as just a
+ * border — on the docs background the fill is identical to the page and the
+ * shape washes out. These give it a real surface so the border is a boundary
+ * between two colors rather than a line drawn on one.
+ *
+ * Descendant selectors (two classes) rather than `.nextra-card` alone: the
+ * Tailwind utility it has to beat is also a single class, which would leave the
+ * winner decided by stylesheet order. The `:hover` rules add a third component
+ * so they stay ahead of Nextra's own `x:hover:*` background utilities.
+ */
+.nextra-cards > .nextra-card {
+  background-color: #fff;
+}
+
+.nextra-cards > .nextra-card:hover {
+  background-color: #f8fafc; /* slate-50, matching Nextra's own hover tint */
+}
+
+/*
+ * Dark mode gets a raised neutral rather than white — the goal is separation
+ * from the page, and a white card on a near-black page is a different problem,
+ * not a fix. neutral-900 sits just above Nextra's dark background, and
+ * neutral-800 keeps the hover a step lighter still.
+ */
+.dark .nextra-cards > .nextra-card {
+  background-color: #171717;
+}
+
+.dark .nextra-cards > .nextra-card:hover {
+  background-color: #262626;
 }

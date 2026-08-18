@@ -1,6 +1,6 @@
 # Chain
 
-The Request Chain module provides the code you use to build HTTP applications. It implements the ideas on the [Chains](/docs/concepts/chains) page: you build a chain once at startup and call it per request.
+The HTTP Chain module provides the code you use to build HTTP applications. It implements the ideas on the [Chains](/docs/concepts/chains) page: you build a chain once at startup and call it per request.
 
 <Callout type="info">
   If you have used previous versions of Drash, this chain is essentially Drash
@@ -24,7 +24,7 @@ const chain = Chain
 
 Registers resource classes. Pass **classes, not instances** — Drash constructs them.
 
-Accepts any mix of classes and arrays of classes, which is what lets you splat a [resource group](/docs/reference/resource-group) in:
+Accepts any mix of classes and arrays of classes, which is what lets you splat a [resource group](/reference/standard/resource-group) in:
 
 ```ts
 const chain = Chain
@@ -68,7 +68,7 @@ chain.handle({
 
 ### Errors
 
-The returned promise rejects on any error raised in the chain. Always attach a `.catch()` — see [HTTPError](/docs/reference/http-error).
+The returned promise rejects on any error raised in the chain. Always attach a `.catch()` — see [HTTPError](/reference/core/http-error).
 
 ### Concurrency
 

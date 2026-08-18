@@ -1,0 +1,106 @@
+# Chain
+
+The HTTP module's `Chain` class provides the code you use to build HTTP applications. It implements the ideas on the [Chains](/docs/concepts/chains) page: you build a chain once at startup and call it per request.
+
+<Callout type="info">
+  If you have used previous versions of Drash, this chain is essentially Drash
+  v1.x and v2.x in a more portable format.
+</Callout>
+
+The chain's syntax is nearly identical across runtimes, because Drash is [runtime agnostic](/docs/concepts/framework#runtime-agnostic). See the [quickstarts](/docs/quickstart/deno) for a complete app per runtime.
+
+## `Chain.builder()`
+
+Returns a builder preconfigured with the `URLPattern` implementation for your entry point.
+
+```ts
+const chain = Chain
+  .builder()
+  .resources(Home, Users)
+  .build();
+```
+
+### `.resources(...resources)`
+
+Registers resource classes. Pass **classes, not instances** — Drash constructs them. For example:
+
+```ts
+// Good
+
+class Home extends Resource { /* ... */ }
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+```
+```ts
+// Bad
+
+class Home extends Resource { /* ... */ }
+
+const chain = Chain
+  .builder()
+  .resources(new Home()) // <--- DO NOT DO THIS
+  .build();
+```
+
+Calling `.resources()` more than once **replaces** the set rather than appending. Pass everything in one call.
+
+### `.urlPatternClass(urlPatternClass)`
+
+Overrides the `URLPattern` implementation. The `mod.native` and `mod.polyfill` entry points call this for you, but you can call it and pass in your own implementation. For example:
+
+```ts
+
+class MyCustomerURLPatternClass extends CustomURLPattern {
+  exec(): URLPatternPolyfillExec | null {
+    /* Your implementation */
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .urlPatternClass(MyCustomURLPatternClass) // <--- 
+  .build();
+```
+
+See [Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more.
+
+### `.build()`
+
+Wires the handlers together and returns the head of the chain.
+
+## `chain.handle(input)`
+
+Runs a request through the chain.
+
+```ts
+const response = await chain.handle<Response>(request);
+```
+
+The type parameter is the value you expect back — it is what the resource method returned, passed through unchanged. Drash does not construct it.
+
+`input` needs a readable `url` and `method` and nothing else. It can be a Web `Request`, or a plain object carrying whatever your resources need:
+
+```ts
+chain.handle({
+  url: `http://${hostname}:${port}${request.url}`,
+  method: request.method,
+  request,
+  response,
+});
+```
+
+`url` must be absolute.
+
+### Errors
+
+The returned promise rejects on any error raised in the chain. Always attach a `.catch()` — see [HTTPError](/reference/core/http-error).
+
+### Concurrency
+
+One chain instance handles concurrent requests. Build it once at module scope and reuse it; do not build per request.
+
+Resources are constructed by the chain, so **do not store per-request state on `this`** in a resource or middleware. State kept on the instance is shared across every in-flight request.

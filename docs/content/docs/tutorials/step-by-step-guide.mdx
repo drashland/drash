@@ -1,0 +1,152 @@
+---
+title: Step-By-Step Guide
+---
+
+import CalloutFaviconError from "@/components/CalloutFaviconError.mdx";
+
+# Step-By-Step Guide
+
+Building a tiny HTTP application
+
+## Overview
+
+This guide helps you build a tiny HTTP application using the HTTP module's `Chain` class. If you want a finished app instead of a walkthrough, view the [examples](/examples).
+
+### Recommended reading
+
+- Complete the [Prerequisites](/docs/getting-started/prerequisites)
+- Read the concepts on [chains](/docs/concepts/chains) and [resources](/docs/concepts/resources)
+
+### Objectives
+
+To gain familiarity with:
+
+- the HTTP module's `Chain` class;
+- how a chain is used in different runtimes;
+- receiving and handling requests; and
+- responding to requests.
+
+## Instructions
+
+### End State
+
+At the end of this tutorial, you will end up with a single file: `app.ts` (or `app.js` if you're using JavaScript).
+
+### Before You Get Started
+
+- All of the code will be written in the same file for simplicity.
+- Each next step __adds__ code to the step before it. The code that is highlighted is the code that is being __added__.
+- The code comments explain the code in a line-by-line manner. Please read them to gain a better understanding of the code.
+- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields required by chains. These fields are mentioned in [Concepts > Chains > What Data Does It Process?](/drash-v3.x/concepts/chains#what-data-does-it-process).
+
+
+<Tabs items={["Deno"]}>
+  <Tabs.Tab>
+
+### Steps
+
+1. Create a resource class.
+
+    ```ts filename="app.ts" showLineNumbers
+    import {
+      Resource,
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request: Request) {
+        return new Response("Oh so easy");
+      }
+    }
+    ```
+
+1. Build a `Chain` object.
+
+    ```ts filename="app.ts" showLineNumbers {2,13-17}
+    import {
+      Chain,
+      Resource
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request: Request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()       // Get the chain's builder so we can build the chain easily.
+      .resources(Home) // Add the `Home` resource to the chain.
+      .build();        // Build the chain.
+    ```
+
+    <Callout type="gray">
+    **Good to know**
+
+    Drash uses the builder pattern to create objects. You will see `.build()` calls many times throughout these documentation pages.
+    </Callout>
+
+1. Plug the chain into the server.
+
+    ```ts filename="app.ts" showLineNumbers {18-32}
+    import {
+      Chain,
+      Resource
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+    
+      GET(request: Request) {
+        return new Response("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()       // Get the chain's builder so we can build the chain easily.
+      .resources(Home) // Add the `Home` resource to the chain.
+      .build();        // Build the chain.
+
+    Deno.serve({
+      hostname: "localhost",
+      port: 1447,
+      handler: (request: Request) => {
+        return chain                 // Let the chain
+          .handle<Response>(request) // handle the response
+          .catch(() => {             // Catch errors and
+            return new Response(     // send a 500 response (Note: not suitable for production)
+              "Oops.",
+              { status: 500 }
+            );
+          });
+      }
+    });
+    ```
+
+### Verification
+
+1. Run the app.
+
+    ```bash filename="Terminal"
+    deno run --allow-net app.ts
+    ```
+
+1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+    ```text
+    Oh so easy
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+<CalloutFaviconError />
+
+## Next Steps
+
+- Handle [path and query params](/docs/tutorials/resource#request-params)
+- Learn to [handle errors](/reference/core/http-error) more robustly
+- Add [middleware](/docs/middleware) with a [resource group](/reference/standard/resource-group)

@@ -26,8 +26,10 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.8",
+    "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3"
   }
 }

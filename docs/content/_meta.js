@@ -17,8 +17,8 @@ export default {
     },
   },
   // `type: "page"` puts an entry in the top bar instead of the sidebar, and
-  // each such folder gets a sidebar built only from its own children. Both of
-  // these are real folders, which is what keeps the two sidebars separate —
+  // each such folder gets a sidebar built only from its own children. All three
+  // of these are real folders, which is what keeps their sidebars separate —
   // a top-level entry without `type: "page"` would instead show up in every
   // sidebar on the site.
   docs: {
@@ -27,6 +27,10 @@ export default {
   },
   examples: {
     title: "Examples",
+    type: "page",
+  },
+  reference: {
+    title: "Reference",
     type: "page",
   },
 };

@@ -2,8 +2,9 @@ import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import { Banner, Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
 import Image from "next/image";
-import "nextra-theme-docs/style.css";
-// Imported after the theme so these rules win without !important.
+import { DrashFooter } from "../components/footer";
+// Pulls in Tailwind, then nextra-theme-docs/style.css, then this site's own
+// overrides — in that order. See the comment at the top of the file.
 import "./globals.css";
 
 export const metadata = {
@@ -40,7 +41,7 @@ const navbar = (
 
 const footer = (
   <Footer>
-    GPL-3.0 © Drash authors
+    <DrashFooter />
   </Footer>
 );
 

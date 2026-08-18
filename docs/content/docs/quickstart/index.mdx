@@ -5,21 +5,21 @@ description: Get a Drash HTTP application running in Deno, Node, Bun, or Cloudfl
 
 # Quickstart
 
-Drash ships no server. You build a chain of handlers and pass a request into `chain.handle()` from whatever server your runtime already gives you — so the setup differs only in how your runtime hands you that request.
+Drash ships no server. You build a chain of handlers and pass a request into it from whatever server your runtime already gives you (`Deno.serve()`, `Bun.serve()`, etc.) — so the setup differs only in how your runtime hands you that request.
 
 Pick your runtime below, or walk through the build one step at a time.
 
 ## Learn it step by step
 
+First Drash application? Start with our step-by-step guide.
+
 <Cards num={1}>
   <Cards.Card
     title="Step-by-step guide"
-    href="/docs/quickstart/step-by-step-guide"
+    href="/docs/tutorials/step-by-step-guide"
     arrow
   />
 </Cards>
-
-Builds the same app in four stages — resource, chain, server, error handling — with the reasoning at each step. Start here if this is your first Drash application.
 
 ## Or jump to your runtime
 

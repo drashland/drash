@@ -15,7 +15,7 @@ class Home extends Resource {
   GET(request: Request) {
     console.log(`Received request: ${request.url}`);
     return new Response(
-      `Hello from Home.GET()! (written at ${new Date()})`,
+      `Oh so easy (written at ${new Date()})`,
     );
   }
 }

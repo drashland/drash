@@ -40,13 +40,13 @@ To separate concerns, Core does not import code from Standard or Modules.
 
 ## Standard
 
-This part of the codebase is similar to Deno's Standard Library and Go's Standard Library, but smaller. Standard code is intended to be used as standalone code and code to help build modules in the Modules codebase (e.g., Request Chain module).
+This part of the codebase is similar to Deno's Standard Library and Go's Standard Library, but smaller. Standard code is intended to be used as standalone code and code to help build modules in the Modules codebase (e.g., HTTP module).
 
 To separate concerns, Standard code only imports from Standard and Core. It does not import from Modules.
 
 ## Modules
 
-This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., Request Chain module). Modules import from Base modules (described below), Standard, and Core.
+This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., HTTP module's `Chain` class). Modules import from Base modules (described below), Standard, and Core.
 
 ### Module Types
 
@@ -70,7 +70,7 @@ Builders are classes that provide ways for you to build objects using a builder 
 
 #### Chains
 
-Chains are modules that implement the [Chain of Responsibility](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern) pattern. Chains are explained on the [Concepts > Chains](/docs/concepts/chains) page.
+[Chains](/docs/concepts/chains) are modules that implement the [Chain of Responsibility](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern) pattern.
 
 #### Middleware
 
@@ -101,4 +101,4 @@ Read about [chains](/docs/concepts/chains) and how you can use one to create an 
 
 ### Want to Jump Ahead?
 
-- [Create a tiny HTTP application](/docs/quickstart/step-by-step-guide) using the Request Chain module
+- [Create a tiny HTTP application](/docs/tutorials/step-by-step-guide)

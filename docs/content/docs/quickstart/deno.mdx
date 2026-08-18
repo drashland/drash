@@ -14,7 +14,7 @@ class Home extends Resource {
   paths = ["/"];
 
   GET(request: Request) {
-    return new Response(`Hello from Home.GET()!`);
+    return new Response(`Oh so easy`);
   }
 }
 
@@ -51,6 +51,6 @@ Then visit `http://localhost:1447`.
 
 Deno's native `Request` is passed straight through, so your resource methods receive a real `Request` and return a real `Response`.
 
-`chain.handle()` returns a promise that rejects on error — including [`HTTPError`](/docs/reference/http-error). Nothing is written to the socket for you, so the `.catch()` is where you decide what the client sees. See [HTTPError](/docs/reference/http-error) for translating errors into responses.
+`chain.handle()` returns a promise that rejects on error — including [`HTTPError`](/reference/core/http-error). Nothing is written to the socket for you, so the `.catch()` is where you decide what the client sees. See [HTTPError](/reference/core/http-error) for translating errors into responses.
 
 A runnable version of this app lives in [`examples/deno`](https://github.com/drashland/drash/tree/main/examples/deno).

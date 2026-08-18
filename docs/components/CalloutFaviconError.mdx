@@ -1,0 +1,21 @@
+import { Callout } from "nextra/components"
+
+<details>
+<summary><small>Seeing <code className="nx-border-black nx-border-opacity-[0.04] nx-bg-opacity-[0.03] nx-bg-black nx-break-words nx-rounded-md nx-border nx-py-0.5 nx-px-[.25em] dark:nx-border-white/10 dark:nx-bg-white/10">HTTPError: Not Found</code> messages? Click here</small></summary>
+<p className="nx-mt-6 px-5 nx-leading-7">If you see __HTTPError: Not Found__ in the terminal where you are running your app, it is most likely from a `favicon.ico` request from your browser.</p>
+<p className="nx-mt-6 px-5 nx-leading-7">You can ignore this error or (if you want to exercise your resource creation skills) you can create a resource that handles GET requests to the `/favicon.ico` path. From there, you can use your chosen runtime's reading APIs (e.g., `readFile()`) to send a `favicon.ico` file in the body of the response. For example, the `favico.ico` response you build could look something like:</p>
+<div className="nx-mt-6 px-5">
+```ts
+return new Response(
+    await readFile("favicon.ico"),
+    {
+        status: 200,
+        statusText: "OK",
+        headers: {
+            "content-type": "image/x-icon",
+        }
+    }
+);
+```
+</div>
+</details>

@@ -43,7 +43,7 @@ class Home extends Resource {
 
   GET(context) {
     console.log(`Received request: ${context.request.url}`);
-    context.response.end(`Hello from Home.GET()! (written at ${new Date()})`);
+    context.response.end(`Oh so easy (written at ${new Date()})`);
   }
 }
 
@@ -105,7 +105,7 @@ _Note: `npm start` is defined in the `package.json` file._
 Go to http://localhost:1447. You should see something like the following:
 
 ```text
-Hello from Home.GET()! (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
 ```
 
 </Steps>
@@ -146,7 +146,7 @@ class Home extends Resource {
 
   GET(context) {
     console.log(`Received request: ${context.request.url}`);
-    context.response.end(`Hello from Home.GET()! (written at ${new Date()})`);
+    context.response.end(`Oh so easy (written at ${new Date()})`);
   }
 }
 
@@ -206,7 +206,7 @@ _Note: `npm start` is defined in the `package.json` file._
 Go to http://localhost:1447. You should see something like the following:
 
 ```text
-Hello from Home.GET()! (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
 ```
 
 </Steps>
@@ -255,7 +255,7 @@ class Home extends Resource {
 
   GET(context: NodeContext) {
     console.log(`Received request: ${context.request.url}`);
-    context.response.end(`Hello from Home.GET()! (written at ${new Date()})`);
+    context.response.end(`Oh so easy (written at ${new Date()})`);
   }
 }
 
@@ -315,7 +315,7 @@ _Note: `npm start` is defined in the `package.json` file._
 Go to http://localhost:1447. You should see something like the following:
 
 ```text
-Hello from Home.GET()! (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
 ```
 
 </Steps>
@@ -333,4 +333,4 @@ Resources only recognize absolute URLs. Node’s `request.url` returns only a pa
 
 Node uses the **polyfill** entry point, and its `node:http` server does not give you a Web `Request` — so the resource receives a **context object** that you build. The chain only requires a readable `url` and `method`; everything else on it is yours.
 
-Because the resource writes to `context.response` directly, `GET()` returns nothing. That is fine here — the response is already committed to the socket by the time the chain resolves. It stops being fine once you wrap the resource in [middleware](/docs/concepts/middleware), which needs a return value to pass along.
+Because the resource writes to `context.response` directly, `GET()` returns nothing. That is fine here — the response is already committed to the socket by the time the chain resolves. It stops being fine once you wrap the resource in [middleware](/docs/middleware), which needs a return value to pass along.

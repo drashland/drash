@@ -12,6 +12,12 @@
   isolation: isolate;
   padding: 4.5rem 1.5rem 3rem;
   overflow: hidden;
+  /*
+   * Closes the hero off against the feature grid below. `--hero-border` is the
+   * same gray the eyebrow, code card, and feature tiles use, and it is
+   * redefined in the dark block above, so this tracks the theme on its own.
+   */
+  border-bottom: 1px solid var(--hero-border);
 }
 
 :global(html.dark) .hero {
@@ -159,8 +165,35 @@
   border-radius: 0.85rem;
   border: 1px solid var(--hero-border);
   background: var(--hero-code-bg);
-  box-shadow: 0 18px 50px rgb(2 6 23 / 0.28);
+  box-shadow: rgba(2, 6, 23, 0.28) 0px 8px 70px;
   overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+/*
+ * Feedback for the pause. Hovering the card — or focusing one of its tabs —
+ * stops the 5s runtime rotation, and without a visible change that pause looks
+ * like the carousel simply stalled.
+ *
+ * `:focus-within` mirrors the hover because the component pauses on focus too
+ * (onFocus/onBlur on this element), so keyboard users get the same signal.
+ *
+ * -4px rather than the -2px the .feature tiles use: the same nudge reads as
+ * noise on an element this large.
+ */
+.codeCard:hover,
+.codeCard:focus-within {
+  transform: translateY(-4px);
+}
+
+/*
+ * Honour the same preference the rotation itself honours. The card still shifts
+ * so the affordance survives — it just arrives instantly instead of gliding.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .codeCard {
+    transition: none;
+  }
 }
 
 .codeBar {
@@ -178,11 +211,45 @@
   display: inline-block;
 }
 
+/* Pushed to the far end so the runtime tabs sit between it and the dots. */
 .codeFile {
-  margin-inline-start: 0.6rem;
+  margin-inline-start: auto;
   font-size: 0.78rem;
   color: #94a3b8;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Runtime switcher */
+.tabs {
+  display: flex;
+  gap: 0.15rem;
+  margin-inline-start: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.2rem 0.55rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #94a3b8;
+  font: inherit;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.tab:hover {
+  color: #e2e8f0;
+  background: rgb(148 163 184 / 0.12);
+}
+
+.tabActive,
+.tabActive:hover {
+  color: #0b1220;
+  background: #e2e8f0;
+  font-weight: 600;
 }
 
 .code {
@@ -194,6 +261,24 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   color: var(--hero-code-fg);
   background: transparent;
+  /*
+   * The tails differ in length (Node's context object is the tallest at 8 lines
+   * against Cloudflare's 5), so the card would resize as you switch runtimes and
+   * shove the page around. Hold the height of the tallest variant.
+   *
+   * 22 lines (14 shared + 8) x 1.445rem line box (0.85rem x 1.7) = 31.79rem,
+   * plus the 2.45rem of vertical padding, which counts because the global reset
+   * sets `box-sizing: border-box`. Re-derive this if the shared block or the
+   * longest tail changes.
+   */
+  min-height: 34.25rem;
+}
+
+/* The file name is the first thing to go when the bar gets tight. */
+@media (max-width: 560px) {
+  .codeFile {
+    display: none;
+  }
 }
 
 .kw {
