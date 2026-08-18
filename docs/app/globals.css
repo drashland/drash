@@ -51,6 +51,24 @@
 }
 
 /*
+ * Let collapsed <details> content shrink to the box.
+ *
+ * Nextra animates the disclosure with a grid wrapper, and its single child is
+ * therefore a grid item. Grid items default to `min-width: auto`, which refuses
+ * to shrink below the item's min-content width — so a wide child inside, such
+ * as a code block, sets the width for everything beside it. The prose then lays
+ * out at that wider measure and the `overflow-hidden` on <details> clips it,
+ * which reads as text running past the box rather than wrapping.
+ *
+ * `min-width: 0` opts out of that automatic minimum. The prose wraps to the
+ * visible width again, and the code block scrolls inside its own
+ * `overflow-x-auto` instead of stretching its siblings.
+ */
+main details > div > div {
+  min-width: 0;
+}
+
+/*
  * Room after a code block that ends a list item.
  *
  * Nextra gives a code block `mt-[1.25em]` above it and nothing below, while list
