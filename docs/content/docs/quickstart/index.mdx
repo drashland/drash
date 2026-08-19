@@ -11,25 +11,27 @@ Pick your runtime below, or walk through the build one step at a time.
 
 ## First Drash application? Start here.
 
-### Learn it step by step
+Learn it step by step:
 
 <Cards num={1}>
   <Cards.Card
-    title="Step-by-step guide"
+    title="View the Step-By-Step Guide"
     href="/docs/tutorials/step-by-step-guide"
     arrow
   />
 </Cards>
 
-### Or let your agent learn it
-
-Hand this to your coding agent:
+Or hand this to your coding agent:
 
 ```text
 Read https://drash.crookse.com/agents.md and set up a Drash project.
 ```
 
-## Or jump to your runtime
+_Your coding agent should ask you if you want to set up a Drash project for Node, Deno, Bun, or Cloudflare._
+
+## Choose a Quickstart Guide
+
+View the quickstart that applies to you.
 
 <Cards num={2}>
   <Cards.Card title="Deno" href="/docs/quickstart/deno" arrow />
@@ -42,7 +44,7 @@ Read https://drash.crookse.com/agents.md and set up a Drash project.
   />
 </Cards>
 
-Each page has a complete, runnable application and the notes specific to that runtime.
+Each page has a complete, runnable application and notes specific to that runtime.
 
 | Runtime            | `URLPattern`                   | Request shape              | Entry point       |
 | ------------------ | ------------------------------ | -------------------------- | ----------------- |
@@ -53,6 +55,9 @@ Each page has a complete, runnable application and the notes specific to that ru
 
 The two entry points differ only in which `URLPattern` implementation they use — see [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more.
 
-## Before you start
+## Before You Get Started
 
-If you do not have a runtime installed yet, or have never stood up an HTTP server in it, read [Prerequisites](/docs/getting-started/prerequisites) first.
+Read the [Prerequisites](/docs/getting-started/prerequisites) first if:
+
+- You do not have a runtime installed yet
+- You have never stood up an HTTP server in it
