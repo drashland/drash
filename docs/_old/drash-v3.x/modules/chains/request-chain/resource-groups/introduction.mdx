@@ -1,0 +1,54 @@
+import { Callout } from "nextra/components";
+
+# Resource Groups
+
+## Summary
+
+Resources can be grouped to share functionality (e.g., middleware, path prefixes, etc.). Adding middleware and/or path prefixes to resources can only be done using a resource group. This is true for one or many resources.
+
+## Syntax
+
+Creating a resource group can be done using the Request Chain module's `Resource` class (specifically the static `Resource.group()` method). This looks like:
+
+```typescript showLineNumbers
+// Code is shortened for brevity
+
+import { Resource } from "https://esm.sh/@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native.ts"
+
+// Create the resource group
+const groupedResources = Resource
+  .group()            // Get the class' builder for quickly building a group
+  .resources(         // Add these resources
+    ResourceA,
+    ResourceB,
+    ResourceC,
+  )
+  .pathPrefixes(      // Prefix all paths in all resources with these prefixes
+    "/api/v1"
+    "/api/v1.x/"
+  )
+  .middleware(        // Add these middleware classes to each resource
+    SomeMiddlewareA,  // During runtime, SomeMiddlewareA will run first, then ...
+    SomeMiddlewareB,  // ... SomeMiddlewareB will run, then the resource will be called
+  )
+  .build();           // Build the group
+
+// Create the chain and add the resource group to it
+const chain = Chain
+  .builder()
+  .resources(groupedResources)
+  .build();
+```
+
+<Callout type="info" emoji={null}>
+The `Resource.group()` method calls `ResourceGroup.builder()` under the hood. It is the same as you importing the `ResourceGroup` class from the Standard codebase and calling `ResourceGroup.builder()`.
+</Callout>
+
+## Next Steps
+
+Feel free to follow our recommendation or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- Learn how to create and add [middleware](./middleware) to your resources
+- Learn how to add [path prefixes](./path-prefixes) to your resources' paths

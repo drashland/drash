@@ -1,0 +1,30 @@
+{
+  "-logo-": {
+    "title": "-logo-",
+    "type": "separator"
+  },
+  "getting-started": {
+    "title": "Getting Started",
+    "type": "separator"
+  },
+  "concepts": {
+    "title": "Concepts",
+    "type": "separator"
+  },
+  "modules": {
+    "title": "Modules",
+    "type": "separator"
+  },
+  "standard": {
+    "title": "Standard",
+    "type": "separator"
+  },
+  "core": {
+    "title": "Core",
+    "type": "separator"
+  },
+  "misc": {
+    "title": "Misc",
+    "type": "separator"
+  }
+}

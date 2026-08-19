@@ -1,0 +1,110 @@
+import { Tab, Tabs } from "nextra/components"
+
+# Errors
+
+## 404 Not Found
+
+By default, [404 Not Found](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404) errors will be thrown in the scenarios below.
+
+### Scenarios
+
+#### Path Not Found
+
+A 404 Not Found error will be thrown in this scenario if the following happens:
+
+- a client makes a request to a path; and
+- that path does not exist in any resource
+
+__Example__
+
+<Tabs items={["Deno v1.46.x (TS)"]}>
+<Tab>
+```ts showLineNumbers
+// Create a resource
+class Home extends Chain.Resource {
+  public paths = ["/"];
+
+  public GET(req: Request): Response {
+    return new Response("Hello!");
+  }
+}
+
+// Build the chain and add the resource to it
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+// Create a request to the `/test` path
+const request = new Request("http://localhost:1447/test");
+
+// Handle the request
+//
+// The `/test` path doesn't exist, so the `.catch()` block will be called
+chain
+  .handle(request)
+  .then((response) => response.text())
+  .then((text) => console.log(text))
+  .catch((error) => {
+    console.log(`\nError! See below:\n`);
+    console.log(error);
+  });
+```
+</Tab>
+</Tabs>
+
+#### Resource Not Added
+
+A 404 Not Found error will be thrown in this scenario if the following happens:
+
+- a client makes a request to a path;
+- the path exists in a resource; and
+- the resource is not added to the chain
+
+__Example__
+
+<Tabs items={["Deno v1.46.x (TS)"]}>
+
+<Tab>
+```ts
+// Create a resource
+class Home extends Chain.Resource {
+  public paths = ["/"];
+
+  public GET(req: Request): Response {
+    return new Response("Hello!");
+  }
+}
+
+// Build the chain and add don't add the resource to it
+const chain = Chain
+  .builder()
+  .resources()
+  .build();
+
+// Create a request to the resource's `/` path
+const request = new Request("http://localhost:1447/");
+
+// Handle the request
+//
+// The resource wasn't added which means its `/` path wasn't added. As a result,
+// the `.catch()` block will be called.
+chain
+  .handle(request)
+  .then((response) => response.text())
+  .then((text) => console.log(text))
+  .catch((error) => {
+    console.log(`\nError! See below:\n`);
+    console.log(error);
+  });
+```
+</Tab>
+</Tabs>
+
+## Next Steps
+
+Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- [Create a tiny HTTP application](/drash-v3.x/modules/chains/request-chain/step-by-step-guide) using the Request Chain module

@@ -1,0 +1,204 @@
+import { Callout } from "nextra/components"
+import { LinkExternal } from "@/src/components/nextra/LinkExternal"
+
+# Introduction
+
+## Before You Get Started
+
+On this page, we will show you the fundamentals of error handling in a Drash application.
+
+### Recommended Reading
+
+- Read our concepts on [chains](/drash-v3.x/concepts/chains)
+
+### Objectives
+
+To gain familiarity with:
+
+- Drash's `HTTPError` class
+- Determining a proper HTTP status code to send in a response
+- Error handling solutions
+
+## Code Blocks Are Educational
+
+You might see example code blocks across this site with an error handling solution like the following highlighted section:
+
+```typescript showLineNumbers {11-17}
+// Deno v1.46.x (TS)
+
+// ...
+// ... code is shortened for brevity
+// ...
+
+const serveHandler = (request: Request): Promise<Response> => {
+
+  return chain
+    .handle(request)
+    .catch((e) => {
+      console.log({ e });
+      return new Response(
+        e.message,
+        { status: 500 }
+      );
+    });
+};
+
+console.log(`\nDrash is running at http://${hostname}:${port}`);
+
+await serve(serveHandler, { port });
+```
+
+The above error handling solution is simple and this is intentional. Example code blocks have error handlers written this way because error handling is not the focus of the code being shown. __They exist to support the code block, are for educational purposes only, and they are not suitable for the real world (aka, running in a production environment)__. Some reasons being:
+
+- __It always returns a `500` error response.__ Not all errors are `500` errors though. So more code is needed to determine the best `status` to use in the response.
+- __The response body is `e.message`, but no code was used to check if `e.message` exists or if it should even be sent in the response.__ In some cases, `e.message` could be from an error that occurred deep in your code (like a database error that says, "Unable to read from users table. User ID 108 does not exist."). If this happens and the `message` is sent in the response, information about your system could be exposed.
+- __Using `console.log({ error })` is not standard practice in a production app.__ Typically, you would see the `console.log()` call replaced with a logging library call (like winston) and could be written similar to the following:
+
+  ```typescript showLineNumbers {11-18}
+  // Deno v1.46.x (TS)
+ 
+  // ...
+  // ... code is shortened for brevity
+  // ...
+  
+  const serveHandler = (request: Request): Promise<Response> => {
+  
+    return chain
+      .handle(request)
+      .catch((e) => {
+        logger.error(error.message); // Log the error message
+        logger.trace(error);         // For debugging purposes, log the error object
+
+        return new Response(
+          "Some response body",      // The response body is not `e.message`
+        )
+      });
+  };
+  
+  console.log(`\nDrash is running at http://${hostname}:${port}`);
+  
+  await serve(serveHandler, { port });
+  ```
+
+## The `HTTPError` Class
+
+### Drash Uses This
+
+Drash's internals use its core `HTTPError` class. The chain modules (e.g., the Request Chain module) import this class and export it for you to use (aka a re-export as stated in the <LinkExternal href="https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export#re-exporting_aggregating">Re-exporting / Aggregating section of the MDN Web Docs</LinkExternal>). This class is used across the entire framework to ensure all errors are uniform.
+
+<Callout type="info" emoji={null}>
+The chain modules re-export the `HTTPError` class for your convenience. If you want, you can import the `HTTPError` class from the Core codebase if that fits your needs. It is not required that you import the `HTTPError` class from a chain module.
+</Callout>
+
+### Our Recommendation
+
+When throwing errors from your resources, we highly recommend:
+
+- throwing an `HTTPError` object;
+- checking for `HTTPError` objects in your chain's `.catch()` block;
+- using the caught `HTTPError` objects to build responses.
+
+We believe the above approach will allow you to easily build uniform error responses since the `HTTPError` class:
+
+- requires an HTTP status code or a `ResponseStatus` object as its first constructor argument;
+- uses its first argument to set its `status_code` property;
+- uses its first argument to set its `status_code_description` property; and
+- takes in an optional error message as its second constructor argument.
+
+As an example, code is provided below showing how the above approach could be implemented in Deno.
+
+```typescript showLineNumbers
+// Deno v1.46.x (TS)
+
+// Drash imports
+import * as RequestChain from "https://esm.sh/@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/native.ts";
+
+// Deno imports
+import { serve } from "https://deno.land/std/http/server.ts";
+
+class Home extends RequestChain.Resource {
+  public paths = ["/"];
+
+  public GET(request: Request): Response {
+
+    if (!request.headers.has("x-some-header")) {
+      throw new RequestChain.HTTPError(
+        401,
+        "x-some-header is missing"
+      );
+    }
+
+    return new Response(`Oh so easy (written at ${new Date()})`);
+  }
+}
+
+const chain = RequestChain
+  .builder()
+  .resources(Home)
+  .build();
+
+const hostname = "localhost";
+const port = 1447;
+
+const serveHandler = (request: Request): Promise<Response> => {
+
+  return chain
+    // Image the request went to the `Home` resource and did not have
+    // `x-some-header`. This would cause the `Home` resource to throw the
+    // `HTTPError` object and it would be caught in the `.catch()` block below.
+    .handle(request)
+    .catch((e: Error | RequestChain.HTTPError) => {
+
+      // Given we caught an error, we check if it is an HTTPError
+      if (
+        (e.name === "HTTPError")
+        || (e instanceof RequestChain.HTTPError)
+      ) {
+
+        // If so, then you can ...
+        return new Response(
+          // ... use the error message it has ("x-some-header missing")
+          e.message,
+          {
+            // ... use its status_code property (which would be 401)
+            status: e.status_code,
+            // ... and use its status_description property (which would be "Unauthorized")
+            statusText: e.status_code_description,
+          }
+        );
+      }
+
+      // If it is not an HTTPError, then ...
+
+      // ... log the error message so it shows up in your logs -- allowing you
+      // to identify that an error other than HTTPError was thrown
+      logger.error(e.message);
+
+      // ... log the entire error for debugging purposes (when trace logging is
+      // turned on in your environment)
+      logger.trace(e);
+
+      // ... and return a generic response so your app's information is not
+      // exposed
+      return new Response(
+        "The server could not generate a response",
+        {
+          status: 500,
+          statusText: "Internal Server Error",
+        }
+      );
+    });
+};
+
+console.log(`\nDrash is running at http://${hostname}:${port}`);
+
+await serve(serveHandler, { port });
+```
+
+## Next Steps
+
+Feel free to follow our recommendation or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- Get a feel for [throwing and catching errors](/drash-v3.x/modules/chains/request-chain/error-handling/handle-errors)

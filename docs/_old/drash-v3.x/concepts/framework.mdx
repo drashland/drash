@@ -1,0 +1,142 @@
+---
+head_title: Concepts - Framework
+---
+
+
+import {
+  FileTree,
+  Callout,
+  Tab,
+  Tabs,
+} from "nextra-theme-docs";
+import { CodeLinkExternal } from "@/src/components/nextra/CodeLinkExternal"
+import { CalloutSilent } from "@/src/components/nextra/CalloutSilent"
+import { LinkExternalDiscord } from "@/src/components/nextra/LinkExternalDiscord"
+import { LinkExternal } from "@/src/components/nextra/LinkExternal"
+
+# Framework
+
+## Overview
+
+Drash is a microframework for building JavaScript HTTP applications. It has zero dependencies, is approachable through its digestible documentation (at least this is our hope), and &mdash; being [runtime agnostic](#runtime-agnostic) &mdash; puts you in charge of choosing your runtime environment.
+
+### What Is a Microframework?
+
+Unlike other HTTP frameworks that do a lot of configuring/boostrapping for you ("automagically" or "out-of-the-box"), Drash provides you with simple building blocks to create your HTTP applications. You can think of these building blocks as <LinkExternal href="https://www.lego.com/en-us">LEGO</LinkExternal> pieces &mdash; you pick the pieces you want and use them how you want and where you want. This concept enables you to take your Drash applications and plug them into different JavaScript runtimes, use them with different databases, connect them to larger systems, and more (as you will learn when reading the [Runtime Agnostic](#runtime-agnostic) section below).
+
+### Codebases
+
+The entire Drash framework is made up of the following codebases:
+
+- Core
+- Standard
+- Modules
+
+These codebases are explained in further detail below (click Core, Standard, or Modules in the right sidebar to quickly navigate to each).
+
+### Runtime Agnostic
+
+Drash puts you in charge of choosing your runtime environment. It is runtime agnostic. This means if you want to use that new new stuff and run Drash in Deno, then you can do that. If you want to use Node for compatibility reasons, then you can do that. If you are working on a JavaScriptCore project utilizing a NoSQL JavaScript library and want to use Drash in that, then you can do that too. Drash does not lock you into using a specific runtime. If your chosen runtime can run JavaScript, then you can probably run Drash in it.
+
+Unlike previous versions of Drash where Drash is a Deno HTTP server wrapper, Drash v3 is a runtime agnostic codebase that can be used to create different types of functionality in different runtimes. This allows Drash to be applied to more use cases and help with interoperability between runtimes. For example, the Modules codebase contains a Request Chain module which imports Core and Standard code to build the HTTP lifecycle used in Drash v1 and v2. Essentially, Drash is now a consumer of its own APIs.
+
+### What Does Drash Mean?
+
+The name "Drash" comes from the DRASH tent system used in the military. The DRASH tent system is designed to be set up and torn down with minimal people in minutes. It comes with a lot of modularity &mdash; meaning you can set up a single tent and add to it to create a huge network of tents. The Drash framework was built with these DRASH features in mind. I (<LinkExternal href="https://github.com/crookse">Eric</LinkExternal>) thought of the DRASH tent system while building Drash because thinking about software that could be "set up and torn down in minutes with lots of plug-n-play modularity" reminded me about the times I had to set up and tear down DRASH tents in the military.
+
+## Core
+
+This part of the codebase provides types, interfaces, and classes (with minimal implementation). It contains the lowest level APIs and is intended to help build the Standard and Modules codebases.
+
+To separate concerns, Core does not import code from Standard or Modules.
+
+Tutorials on how to use Core code can be found in the left sidebar under the __API__ section.
+
+## Standard
+
+This part of the codebase is similar to Deno's Standard Library and Go's Standard Library, but smaller. Standard code is intended to be used as standalone code and code to help build modules in the Modules codebase (e.g., Request Chain module).
+
+To separate concerns, Standard code only imports from Standard and Core. It does not import from Modules.
+
+Tutorials on how to use Standard code can be found in the left sidebar under the __API__ section.
+
+## Modules
+
+This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., Request Chain module). Modules import from Base modules (described below), Standard, and Core.
+
+Tutorials on how to use modules can be found in the left sidebar under the __Modules__ section.
+
+### Module Types
+
+The Modules codebase is organized by module type. Each module is placed into a separate directory based on its type. The directories are:
+
+<FileTree>
+  <FileTree.Folder name="src/modules" defaultOpen>
+    <FileTree.Folder name="base" />
+    <FileTree.Folder name="builders" />
+    <FileTree.Folder name="chains" />
+    <FileTree.Folder name="middleware" />
+  </FileTree.Folder>
+</FileTree>
+
+#### Base
+
+Base modules contain code that provide default functionality for other modules.
+
+#### Builders
+
+Builders are classes that provide ways for you to build objects using a builder pattern. This is similar to <CodeLinkExternal href="https://projectlombok.org/features/Builder">@Builder</CodeLinkExternal> in Project Lombok.
+
+#### Chains
+
+Chains are modules that implement the <LinkExternal href="https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern">Chain of Responsibility</LinkExternal> pattern. Chains are explained on the [Concepts > Chains](/drash-v3.x/concepts/chains) page.
+
+#### Middleware
+
+Middleware modules provide your applications with features like CORS, ETag headers, rate limiting, etc. In Drash v2.x, we called these "services," but we decided to change the name (again) to "middleware" because it is more widely used.
+
+### Module Interoperability
+
+You might find modules with the following names:
+
+- `mod.native.ts`
+- `mod.polyfill.ts`
+- `mod.native.js`
+- `mod.polyfill.js`
+
+#### Native
+
+Native modules are files in directories with the name `mod.native.ts`. The "native" name means the module contains JavaScript native APIs only (like `URLPattern`) and no polyfills.
+
+We know native code is not supported in all runtimes, so native modules have a polyfill counterpart which is described in more detail below.
+
+#### Polyfill
+
+Polyfill modules are copies of their native counterparts in the same directory with the name `mod.polyfill.ts`. For example, the Request Chain module has the following modules:
+
+<FileTree>
+  <FileTree.Folder name="src/modules/chains/RequestChain" defaultOpen>
+    <FileTree.File name="mod.native.ts" />
+    <FileTree.File name="mod.polyfill.ts" />
+  </FileTree.Folder>
+</FileTree>
+
+Polyfill modules polyfill any JavaScript native code that is not supported in **all runtimes**. They only exist to allow higher cross-compatibility between runtime environments. For example, if you are building a Request Chain application in Node where `URLPattern` is not supported and you are planning to switch to Deno where `URLPattern` is supported, then you can:
+
+- use the `mod.polyfill.ts` file of the Request Chain module;
+- build your application in Node just like you would if you were using the `mod.native.ts` file of the Request Chain module; and
+- switch to Deno where `URLPattern` is supported at a later time and use `mod.native.ts`.
+
+One benefit of the above approach is you would not need to migrate your Request Chain application's code before switching to Deno. You would only need to change out your HTTP server (from Node to Deno) and use the `mod.native.ts` file of the Request Chain module instead of the `mod.polyfill.ts` file.
+
+## Next Steps
+
+Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+Read about [chains](/drash-v3.x/concepts/chains) and how you can use one to create an application.
+
+### Want to Jump Ahead?
+
+- [Create a tiny HTTP application](/drash-v3.x/modules/chains/request-chain/step-by-step-guide) using the Request Chain module
