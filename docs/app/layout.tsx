@@ -2,10 +2,28 @@ import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import { Banner, Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
 import Image from "next/image";
+import { Roboto_Condensed } from "next/font/google";
 import { DrashFooter } from "../components/footer";
 // Pulls in Tailwind, then nextra-theme-docs/style.css, then this site's own
 // overrides — in that order. See the comment at the top of the file.
 import "./globals.css";
+
+/*
+ * Headings only — body text stays on the system stack, so this adds one font to
+ * the page rather than replacing the typography wholesale.
+ *
+ * next/font downloads the file at build time and serves it from our own origin,
+ * so there is no request to Google at runtime and nothing to break under
+ * `output: "export"`. `display: "swap"` means headings render in the fallback
+ * immediately rather than sitting invisible while the font loads.
+ *
+ * Swapping the family is a one-line change: replace the import and this call.
+ */
+const headingFont = Roboto_Condensed({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-heading",
+});
 
 export const metadata = {
   title: {
@@ -57,7 +75,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html
+      lang="en"
+      dir="ltr"
+      className={headingFont.variable}
+      suppressHydrationWarning
+    >
       <Head />
       <body>
         <Layout

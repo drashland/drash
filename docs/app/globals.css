@@ -51,6 +51,27 @@
 }
 
 /*
+ * Condensed headings.
+ *
+ * Nextra's headings set weight, size, and tracking but inherit the family, so a
+ * single font-family override reaches all of them without touching anything
+ * else. The system sans stays as the fallback, which is what renders during
+ * `display: swap` and if the file fails to load.
+ *
+ * Deliberately every heading level, including the ones outside page content —
+ * the footer's column labels and the feature tiles read as headings too, and
+ * leaving them on the body font would make the change look half-applied.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), var(--x-font-sans);
+}
+
+/*
  * Let collapsed <details> content shrink to the box.
  *
  * Nextra animates the disclosure with a grid wrapper, and its single child is
