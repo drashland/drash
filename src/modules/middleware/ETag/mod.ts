@@ -128,9 +128,9 @@ class ETagMiddleware extends Middleware {
       // Edge case: We need to check if the etag was already cached. If we do
       // not do this, then we could end up sending a 304 for a response that
       // this middleware has not processed yet. This can happen if a client
-      // sends a request with an etag (for shits and giggles) and the response
+      // sends a request with an etag (for shizz and giggles) and the response
       // to that request's etag matches. In this case, we need to send the
-      // repsonse as if it was being requested for the first time. After that,
+      // response as if it was being requested for the first time. After that,
       // we cache the etag so subsequent requests result in a 304 response.
       if (this.requestIsCached(context.request)) {
         context.response = new Response(null, {

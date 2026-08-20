@@ -68,7 +68,7 @@ export class Chain {
   static builder() {
     return requestChain()
       // @ts-ignore URLPattern is available when using the Deno extension, but we
-      // should not force using the Deno extension just to accomodate the build
+      // should not force using the Deno extension just to accommodate the build
       // process. Therefore, it is ignored.
       .urlPatternClass(URLPattern);
   }

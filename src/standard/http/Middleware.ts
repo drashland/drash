@@ -85,7 +85,7 @@ class Middleware extends Resource {
    *     if (request.headers.get("x-hello") === "world") {
    *
    *       // ..., then allow the request further down the request
-   *       // chain. Also, use `<Resonse>` to specify that the value
+   *       // chain. Also, use `<Response>` to specify that the value
    *       // returned from `this.next()` is a `Response`.
    *       return this.next<Response>(request);
    *     }

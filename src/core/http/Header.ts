@@ -27,7 +27,7 @@ export const Header = {
   AccessControlExposeHeaders: "Access-Control-Expose-Headers",
   AccessControlMaxAge: "Access-Control-Max-Age",
   AccessControlRequestHeaders: "Access-Control-Request-Headers",
-  AccessControlRequestMethod: "Acces-Control-Request-Method",
+  AccessControlRequestMethod: "Access-Control-Request-Method",
   ContentLength: "Content-Length",
   ContentType: "Content-Type",
   Date: "Date",

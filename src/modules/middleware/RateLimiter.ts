@@ -40,7 +40,7 @@ type PreNextContext = {
   /**
    * The current client being processed.
    *
-   * If `null`, an attempt was tried to identify the client, but no identifer
+   * If `null`, an attempt was tried to identify the client, but no identifier
    * (e.g., the `client_id_header_name` option) was provided to help identify
    * and track the client.
    */
@@ -135,7 +135,7 @@ class RateLimiterMiddleware extends Middleware {
   protected sendResponse(context: Context) {
     const client = context.client;
 
-    // No client, just send the repsonse that was set in the context object
+    // No client, just send the response that was set in the context object
     if (!client) {
       return context.response;
     }
@@ -296,7 +296,7 @@ class RateLimiterMiddleware extends Middleware {
       .build();
 
     // Chains are expected to be set up to catch this error and handle it
-    // accordingly -- either using the `errorResponse` as it is built abve or
+    // accordingly -- either using the `errorResponse` as it is built above or
     // doing something else that meets their requirements.
     //
     // We do not return `new Response("Too many requests", { status: 429 })`

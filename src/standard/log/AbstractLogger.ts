@@ -29,7 +29,7 @@ import type { LogLevel } from "./LogLevel.ts";
  */
 abstract class AbstractLogger implements Logger {
   /**
-   * The name of this logger. Can be used when writing messsages.
+   * The name of this logger. Can be used when writing messages.
    */
   protected name: string;
 
@@ -87,7 +87,7 @@ abstract class AbstractLogger implements Logger {
 
   /**
    * Can this logger log the given message level?
-   * @param messageLevel The mesage level in question.
+   * @param messageLevel The message level in question.
    * @returns True if yes, false if no.
    */
   protected canLog(messageLevel: LogLevel): boolean {

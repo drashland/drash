@@ -37,7 +37,7 @@ import { Status } from "../../../core/http/response/Status.ts";
 // TODO(crookse)
 // - [ ] Alphabetize
 // - [ ] Doc blocks
-// - [ ] Parse the Acces-Control-Request-Method header according to https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Method
+// - [ ] Parse the Access-Control-Request-Method header according to https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Method
 // - [ ] Handle responses that affect the Vary header
 // - [ ] Compare to https://fetch.spec.whatwg.org/#concept-cors-check
 

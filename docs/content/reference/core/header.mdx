@@ -19,7 +19,7 @@ response.headers.set(Header.ContentType, "application/json");
 | `AccessControlExposeHeaders`   | `Access-Control-Expose-Headers`      |
 | `AccessControlMaxAge`          | `Access-Control-Max-Age`             |
 | `AccessControlRequestHeaders`  | `Access-Control-Request-Headers`     |
-| `AccessControlRequestMethod`   | `Acces-Control-Request-Method`       |
+| `AccessControlRequestMethod`   | `Access-Control-Request-Method`      |
 | `ContentLength`                | `Content-Length`                     |
 | `ContentType`                  | `Content-Type`                       |
 | `Date`                         | `Date`                               |
@@ -29,16 +29,6 @@ response.headers.set(Header.ContentType, "application/json");
 | `LastModified`                 | `Last-Modified`                      |
 | `RetryAfter`                   | `Retry-After`                        |
 | `Vary`                         | `Vary`                               |
-
-<Callout type="warning">
-  __`AccessControlRequestMethod` is misspelled in the source.__ Its value is
-  `"Acces-Control-Request-Method"` — one `s` — not
-  `"Access-Control-Request-Method"`. Any comparison against a real request header
-  of that name fails.
-
-  Until it is corrected, write the header name literally rather than using this
-  constant.
-</Callout>
 
 ## Type
 

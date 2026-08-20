@@ -113,7 +113,7 @@ class Builder implements IBuilder {
   }
 
   /**
-   * Set the middlware for all resources in this group.
+   * Set the middleware for all resources in this group.
    * @param middleware The middleware the resources will use.
    * @returns This instance so you can chain more methods.
    *

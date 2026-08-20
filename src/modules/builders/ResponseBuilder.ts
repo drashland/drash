@@ -109,9 +109,9 @@ class ResponseBuilder implements Builder<Response> {
   }
 
   /**
-   * Set the {@link ResponseInit.statuText} property.
+   * Set the {@link ResponseInit.statusText} property.
    *
-   * @param statusText See {@link ResponseInit.statuText}.
+   * @param statusText See {@link ResponseInit.statusText}.
    *
    * @returns This instance.
    *
