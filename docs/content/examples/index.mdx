@@ -9,13 +9,25 @@ Each of these is a complete, runnable application. They live in the [`examples`]
 
 They all do the same thing — answer `GET /` from a single `Home` resource — so you can compare what changes between runtimes and what does not.
 
+Each runtime is a section in the sidebar, and each page under it is one flavor of that example.
+
 <Cards num={2}>
-  <Cards.Card title="Deno" href="/examples/deno" arrow />
-  <Cards.Card title="Node" href="/examples/node" arrow />
-  <Cards.Card title="Bun" href="/examples/bun" arrow />
+  <Cards.Card title="Deno / TypeScript" href="/examples/deno/typescript" arrow />
   <Cards.Card
-    title="Cloudflare Workers"
-    href="/examples/cloudflare-workers"
+    title="Node / JavaScript (ESM)"
+    href="/examples/node/javascript-esm"
+    arrow
+  />
+  <Cards.Card
+    title="Node / JavaScript (CJS)"
+    href="/examples/node/javascript-cjs"
+    arrow
+  />
+  <Cards.Card title="Node / TypeScript" href="/examples/node/typescript" arrow />
+  <Cards.Card title="Bun / TypeScript" href="/examples/bun/typescript" arrow />
+  <Cards.Card
+    title="Cloudflare Workers / JavaScript (ESM)"
+    href="/examples/cloudflare-workers/javascript-esm"
     arrow
   />
 </Cards>

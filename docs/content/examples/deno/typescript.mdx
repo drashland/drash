@@ -1,5 +1,5 @@
 ---
-title: Deno
+title: TypeScript
 description: Drash / Deno / TypeScript — a complete, runnable example.
 ---
 
@@ -26,29 +26,26 @@ import {
 //   Resource,
 // } from "npm:@drashland/drash/modules/http.native.js";
 
-// Create a resource
-class Home extends Resource {
-  paths = ["/"];
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
 
-  GET(request: Request) {
+  GET(request: Request) {        // Handle GET requests to those paths.
     console.log(`Received request: ${request.url}`);
-    return new Response(
+
+    return new Response(         // This is what `chain.handle()` resolves with.
       `Oh so easy (written at ${new Date()})`,
     );
   }
 }
 
-// Build the chain and add the resource
 const chain = Chain
-  .builder()
-  .resources(Home)
-  .build();
+  .builder()                     // Get the chain's builder so we can build the chain easily.
+  .resources(Home)               // Add the `Home` resource to the chain.
+  .build();                      // Build the chain.
 
-// Define server variables for reuse below
-const hostname = "localhost";
+const hostname = "localhost";    // Define server variables for reuse below.
 const port = 1447;
 
-// Create and start the server
 Deno.serve({
   hostname,
   port,
@@ -56,15 +53,14 @@ Deno.serve({
     console.log(`\nDrash running at http://${hostname}:${port}`);
   },
   handler: (request: Request): Promise<Response> => {
-    // Pass the request to the chain
-    return chain
-      .handle<Response>(request)
-      .catch((error) => {
+    return chain                 // Let the chain
+      .handle<Response>(request) // handle the request, and
+      .catch((error) => {        // catch anything it throws.
         if (request.url.includes("favicon")) {
-          return new Response();
+          return new Response(); // Browsers ask for this; ignore it.
         }
 
-        return new Response(
+        return new Response(     // Everything else gets a 500.
           "Sorry, but we hit an error!",
           {
             status: 500,

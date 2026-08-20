@@ -1,9 +1,9 @@
 ---
-title: Cloudflare Workers
-description: Drash / Cloudflare Workers / ECMAScript — a complete, runnable example.
+title: JavaScript (ESM)
+description: Drash / Cloudflare Workers / JavaScript (ESM) — a complete, runnable example.
 ---
 
-# Drash / Cloudflare Workers / ECMAScript (aka ESM)
+# Drash / Cloudflare Workers / JavaScript (ESM)
 
 ## Steps
 
@@ -29,38 +29,38 @@ import {
   Resource,
 } from "@drashland/drash/modules/http.native.js";
 
-// Create a resource
-class Home extends Resource {
-  paths = ["/"];
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
 
-  GET(request) {
+  GET(request) {                 // Handle GET requests to those paths.
     console.log(`Received request: ${request.url}`);
-    return new Response(`Oh so easy (written at ${new Date()})`);
+
+    return new Response(         // This is what `chain.handle()` resolves with.
+      `Oh so easy (written at ${new Date()})`,
+    );
   }
 }
 
-// Build the chain and add the resource
 const chain = Chain
-  .builder()
-  .resources(Home)
-  .build();
+  .builder()                     // Get the chain's builder so we can build the chain easily.
+  .resources(Home)               // Add the `Home` resource to the chain.
+  .build();                      // Build the chain.
 
-// Export the object with the fetch function that Cloudflare requires
+// Cloudflare requires a default export with a `fetch` function on it. Write
+// this as `async fetch(request)` if you need `await` inside it.
 export default {
-  // This `fetch` function would be written as `async fetch(request)` if you
-  // were using `await`
-  fetch(request) {
-    // Pass the request to the chain
-    return chain
-      .handle(request)
-      .catch((error) => {
+  fetch(request) {               // Handle every request Cloudflare routes here.
+    return chain                 // Let the chain
+      .handle(request)           // handle the request, and
+      .catch((error) => {        // catch anything it throws.
         if (request.url.includes("favicon")) {
-          return new Response();
+          return new Response(); // Browsers ask for this; ignore it.
         }
 
         console.log(`Request URL hit an error: ${request.url}:\n`);
         console.log({ error });
-        return new Response(
+
+        return new Response(     // Everything else gets a 500.
           "Sorry, but we hit an error!",
           {
             status: 500,
