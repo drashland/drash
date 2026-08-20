@@ -11,9 +11,9 @@ const features = [
       "Drash runs with Deno.serve, node:http, Bun.serve, and a Cloudflare Worker fetch. Build once. Run everywhere.",
   },
   {
-    title: "No framework lock-in",
+    title: "Zero dependencies",
     body:
-      "The only lock-in you take on is your runtime's — move to another one and your resources and chain come with you.",
+      "Built for a minimal footprint, seamless portability, transparent behavior, and a reliable core.",
   },
   {
     title: "Structure by default",
@@ -86,13 +86,6 @@ type Tab = {
   label: string;
   /** Shown at the end of the title bar, where an editor shows the filename. */
   file: string;
-  /**
-   * Prepended to `shared`: what this runtime imports. Separate from `shared`
-   * because the entry point differs — native where the runtime has a global
-   * `URLPattern`, polyfill otherwise — and Node additionally pulls in
-   * `node:http`.
-   */
-  head?: Token[];
   /** Appended to `shared`: how this runtime hands the chain a request. */
   tail?: Token[];
 };
@@ -108,26 +101,6 @@ const tabs: Tab[] = [
     id: "node",
     label: "Node",
     file: "app.js",
-    head: [
-      ["import", kw],
-      [" { ", null],
-      ["Chain", fn],
-      [", ", null],
-      ["Resource", fn],
-      [" } ", null],
-      ["from", kw],
-      [" ", null],
-      ['"@drashland/drash/modules/http.polyfill.js"', str],
-      [";\n", null],
-      ["import", kw],
-      [" { ", null],
-      ["createServer", fn],
-      [" } ", null],
-      ["from", kw],
-      [" ", null],
-      ['"node:http"', str],
-      [";\n\n", null],
-    ],
     tail: [
       ["createServer", fn],
       ["((request, response) => {\n  ", null],
@@ -137,29 +110,17 @@ const tabs: Tab[] = [
       ["({\n    url: ", null],
       ["`http://localhost:1447${request.url}`", str],
       [
-        ",\n    method: request.method,\n    request,\n    response\n  })}).",
+        ",\n    method: request.method,\n    request,\n    response,\n  });\n}).",
         null,
       ],
       ["listen", fn],
-      ["(1447)", null],
+      ["(1447);", null],
     ],
   },
   {
     id: "deno",
     label: "Deno",
     file: "app.ts",
-    head: [
-      ["import", kw],
-      [" { ", null],
-      ["Chain", fn],
-      [", ", null],
-      ["Resource", fn],
-      [" } ", null],
-      ["from", kw],
-      [" ", null],
-      ['"npm:@drashland/drash/modules/http.native.js"', str],
-      [";\n\n\n", null],
-    ],
     tail: [
       ["Deno.", null],
       ["serve", fn],
@@ -175,25 +136,13 @@ const tabs: Tab[] = [
       ["handle", fn],
       ["<", null],
       ["Response", fn],
-      [">(request);\n  }\n});", null],
+      [">(request);\n  },\n});", null],
     ],
   },
   {
     id: "bun",
     label: "Bun",
     file: "app.js",
-    head: [
-      ["import", kw],
-      [" { ", null],
-      ["Chain", fn],
-      [", ", null],
-      ["Resource", fn],
-      [" } ", null],
-      ["from", kw],
-      [" ", null],
-      ['"@drashland/drash/modules/http.polyfill.js"', str],
-      [";\n\n\n", null],
-    ],
     tail: [
       ["Bun.", null],
       ["serve", fn],
@@ -213,18 +162,6 @@ const tabs: Tab[] = [
     id: "cloudflare",
     label: "Cloudflare",
     file: "worker.js",
-    head: [
-      ["import", kw],
-      [" { ", null],
-      ["Chain", fn],
-      [", ", null],
-      ["Resource", fn],
-      [" } ", null],
-      ["from", kw],
-      [" ", null],
-      ['"@drashland/drash/modules/http.native.js"', str],
-      [";\n\n\n", null],
-    ],
     tail: [
       ["export", kw],
       [" ", null],
@@ -338,7 +275,10 @@ export function Hero() {
 
           <h1 className={styles.title}>
             Better web apps<br />
-            <span className={styles.gradient}>without the framework tax</span>
+            <span className={styles.gradient}>
+              <span className="italic underline">without</span>{" "}
+              the framework tax
+            </span>
           </h1>
 
           <p className={styles.lead}>
@@ -428,7 +368,6 @@ export function Hero() {
               aria-labelledby={`hero-tab-${current.id}`}
             >
               <code>
-                {renderTokens(current.head ?? [], `${current.id}-head`)}
                 {renderTokens(shared, "shared")}
                 {renderTokens(current.tail ?? [], current.id)}
               </code>

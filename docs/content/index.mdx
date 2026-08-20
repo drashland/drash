@@ -12,10 +12,10 @@ import { Hero } from "../components/hero";
 ## Works with
 
 Drash targets the runtime you already have. The only thing that changes between
-them is the entry point you import and how your server hands the chain a
+them is the entry point you import and how your server hands it a
 request.
 
-| Runtime            | Minimum         | Web `Request` / `Response` at the server boundary |
+| Runtime            | Minimum Version         | Web `Request` / `Response` at the server boundary |
 | ------------------ | --------------- | ------------------------------------------------- |
 | Node               | 20.x            | No — `node:http` gives you a context object        |
 | Deno               | 2.x             | Yes — `Deno.serve` passes a `Request`              |

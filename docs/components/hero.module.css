@@ -250,15 +250,15 @@
    * against Cloudflare's 5), so the card would resize as you switch runtimes and
    * shove the page around. Hold the height of the tallest variant.
    *
-   * 24 lines (3 import + 14 shared + 7 tail, Node being tallest) x 1.445rem
-   * line box (0.85rem x 1.7) = 34.68rem, plus the 2.45rem of vertical padding,
-   * which counts because the global reset sets `box-sizing: border-box`.
-   * Re-derive this if the imports, the shared block, or the longest tail change.
+   * 22 lines (14 shared + 8 tail, Node being tallest) x 1.445rem line box
+   * (0.85rem x 1.7) = 31.79rem, plus the 2.45rem of vertical padding, which
+   * counts because the global reset sets `box-sizing: border-box`.
+   * Re-derive this if the shared block or the longest tail changes.
    *
    * Only the runtime tabs are measured here. The agent transcript sits in its
    * own card below and opts out via `.transcript`.
    */
-  min-height: 37.25rem;
+  min-height: 34.25rem;
 }
 
 /*
