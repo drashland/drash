@@ -1,6 +1,6 @@
 # Builders
 
-Three builders live in Modules. One assembles the request chain; the other two are conveniences for constructing requests and responses.
+Below are factory functions that create builders. Builders follow the [builder pattern](https://refactoring.guru/design-patterns/builder).
 
 ## `requestChain()`
 
@@ -8,7 +8,13 @@ Three builders live in Modules. One assembles the request chain; the other two a
 import { requestChain } from "@drashland/drash/modules/builders/RequestChainBuilder.js";
 ```
 
-Returns the request chain builder. `Chain.builder()` calls this and then supplies the `URLPattern` class, so an app normally uses [`Chain.builder()`](/reference/modules/http/chain) instead.
+Returns a builder to help you create a request chain.
+
+<Callout type="gray">
+__Good to know__
+
+The HTTP module's [`Chain.builder()`](/reference/modules/http/chain#builder) calls this and supplies a `URLPattern` implementation under the hood, so building an app is normally done using [`Chain.builder()`](/reference/modules/http/chain#builder), not `requestChain()`.
+</Callout>
 
 The returned object is typed as the `Builder` interface, which exposes exactly three methods:
 
@@ -72,7 +78,7 @@ Returns a `RequestBuilder`. It exists mainly for tests, where constructing reque
 
 There is no method for `HEAD`, `OPTIONS`, `CONNECT`, or `TRACE`. Construct those with `new Request()` directly.
 
-## Middleware response builders
+## Middleware Response Builders
 
 Two of the bundled middleware extend `ResponseBuilder` with their own subclass, and export it. You would use these only when building a response the middleware would otherwise build for you.
 
@@ -94,4 +100,4 @@ Two more exports belong to the [RateLimiter](/reference/modules/middleware/rate-
 
 ## Notes
 
-All three builders implement [`IBuilder`](/reference/core/types#ibuilderproduct), so `build()` is always the terminal call and always returns the finished product.
+`build()` is always the terminal call and always returns the finished product. The contract for that is [`IBuilder`](/reference/core/types#ibuilderproduct) in Core, which `AbstractChainBuilder` and the resource group builder implement. `ResponseBuilder` implements a structurally identical `Builder<Response>` declared in Standard, and `RequestBuilder` declares no contract at all — it just has `build()`.

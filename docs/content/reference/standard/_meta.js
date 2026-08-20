@@ -4,7 +4,7 @@ export default {
   index: "Overview",
   handlers: "Handlers",
   middleware: "Middleware",
-  "resource-group": "Resource groups",
+  "resource-group": "Resource Groups",
   loggers: "Loggers",
   "url-pattern": "URLPattern",
 };

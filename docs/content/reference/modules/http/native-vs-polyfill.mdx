@@ -25,7 +25,7 @@ Both entry points export the same five members. Nothing is available from one an
 | `HTTPError`   | class | [HTTPError](/reference/core/http-error)                    |
 | `HTTPRequest` | type  | The request shape a resource method receives               |
 
-## What each one injects
+## What Each One Injects
 
 Each entry point calls [`.urlPatternClass()`](/reference/modules/http/chain#urlpatternclass) on your behalf. For example:
 
@@ -36,13 +36,13 @@ Each entry point calls [`.urlPatternClass()`](/reference/modules/http/chain#urlp
 
 If you need a custom implementation, you can call `.urlPatternClass()` yourself. See [Modules > HTTP > Chain > urlPatternClass()](/reference/modules/http/chain#urlpatternclass) to learn more.
 
-## Choosing one
+## Choosing One
 
 Use `http.native.js` where the runtime provides a global `URLPattern`, and `http.polyfill.js` everywhere else. The [Quickstart overview](/docs/quickstart) lists which runtimes fall on which side.
 
 If you are unsure, the polyfill entry point works everywhere, including runtimes that do have a global `URLPattern`.
 
-## Choosing wrong
+## Choosing Wrong
 
 Picking `http.native.js` on a runtime with no global `URLPattern` fails while the chain is being built, not on the first request:
 
@@ -52,6 +52,6 @@ Picking `http.native.js` on a runtime with no global `URLPattern` fails while th
 
 Because chains are normally built once at startup, this surfaces as soon as the process boots rather than as an intermittent routing failure under traffic.
 
-## Supplying your own
+## Supplying Your Own
 
 Neither entry point locks you in. `Chain.builder()` accepts any `URLPattern`-compatible class through [`.urlPatternClass()`](/reference/modules/http/chain#urlpatternclass), which overrides whatever the entry point injected.

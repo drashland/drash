@@ -45,11 +45,11 @@ new HTTPError(status, message?)
 
 ## Notes
 
-### Where to import it from?
+### Where to Import It From?
 
 The chain modules re-export `HTTPError` for convenience, which is why the examples import it alongside `Chain` and `Resource`. You can import it from the core codebase instead if that suits you better — it is the same class, and Drash's own internals throw it, so every error from the framework is uniform.
 
-### Why the `name` check?
+### Why the `name` Check?
 
 `error instanceof HTTPError` can be `false` even for a genuine Drash error — when the error crosses a module realm, or when two copies of Drash are loaded (a bundler duplicating the package, or mixed CJS/ESM resolution).
 

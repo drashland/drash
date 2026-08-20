@@ -54,7 +54,7 @@ Links `handler` after this one and __returns the handler it was given__, not `th
 a.setNext(b).setNext(c); // a -> b -> c
 ```
 
-## The request chain's handlers
+## The Request Chain's Handlers
 
 [`Chain.builder()`](/reference/modules/http/chain) links these five, in this order. The order is fixed and is not the consumer's to change.
 
@@ -104,11 +104,13 @@ Its `handler()` and `handlers` members are what [`Chain.builder()`](/reference/m
 
 ## `AbstractSearchIndex`
 
-The base `ResourcesIndex` extends. It holds the caching and lookup shape so an index over something other than resources can reuse it.
+A base class for defining objects that have a cache and lookup state.
+
+The `ResourcesIndex` class extends this — caching resource so routing a request to a resource becomes a simple lookup.
 
 ## Notes
 
-### Writing your own handler
+### Writing Your Own Handler
 
 Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side — both land in `chain.handle().catch()`.
 

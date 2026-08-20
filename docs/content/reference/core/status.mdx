@@ -67,12 +67,12 @@ StatusName.NotFound; // "NotFound"
 
 ## Notes
 
-### Why a pair and not a number
+### Why a Pair and Not a Number
 
 `HTTPError` needs both halves — `status_code` for the response status and `status_code_description` for its `statusText` — and taking them as one object means they cannot disagree. Passing `401` alone would leave the class to look the description up, and passing both separately would let a caller pair `401` with `"Not Found"`.
 
 This is why `new HTTPError(401)` does not type check. Pass `Status.Unauthorized`.
 
-### Not re-exported
+### Not Re-Exported
 
 `Status` is not among the exports of `modules/http.native.js` or `modules/http.polyfill.js`. Import it from its own subpath, as shown above, even in files that get `HTTPError` from the HTTP module.

@@ -13,7 +13,7 @@ Drash is split into three codebases, and this reference follows that split. Impo
   <Cards.Card title="Modules" href="/reference/modules" arrow />
 </Cards>
 
-## The three layers
+## The Three Layers
 
 | Layer                              | What it holds                                                                                             | Imports        |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
@@ -21,7 +21,7 @@ Drash is split into three codebases, and this reference follows that split. Impo
 | [Standard](/reference/standard)    | Standalone library code, in the spirit of Deno's or Go's standard library — handlers, middleware, loggers. | Core           |
 | [Modules](/reference/modules)      | The pieces that do the work: the HTTP module, the bundled middleware, the builders.                        | Standard, Core |
 
-## Where to start
+## Where to Start
 
 Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Chain`, `Resource`, `Middleware`, and `HTTPError` from one specifier.
 
@@ -35,7 +35,7 @@ Most applications only touch Modules. The two entry points — `modules/http.nat
 | Add a step of your own to the chain      | [Handlers](/reference/standard/handlers)                          |
 | Supply your own `URLPattern`             | [URLPattern](/reference/standard/url-pattern)                     |
 
-## Looking for something else?
+## Looking for Something Else?
 
 - [Middleware](/docs/tutorials/middleware) — writing your own, and the four bundled ones.
 - [Creating a Resource](/docs/resources/creating-a-resource) — paths, HTTP methods, and dynamic paths.

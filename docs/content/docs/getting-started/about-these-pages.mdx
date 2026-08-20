@@ -21,7 +21,7 @@ Although Drash has zero dependencies — meaning you could run it in the browser
 
 All Deno `import` statements will prefix packages with the `npm:` specifier for simplicity. We assume you are familiar with Deno's specifiers, but here is a link to learn more just in case: https://deno.com/blog/not-using-npm-specifiers-doing-it-wrong.
 
-## Page order
+## Page Order
 
 The pages in the sidebar are ordered (from top to bottom) in a way that we feel will help you:
 
@@ -34,7 +34,7 @@ It is not required that you read the pages in order, but we greatly recommend it
 | ------------------------------------------------ | ------------------------------------------------------------------------------------ |
 | [Getting Started](/docs/getting-started)         | What Drash is, what you need installed, and building your first app step by step     |
 | [Quickstart](/docs/quickstart)                   | A complete app per runtime                                                           |
-| [Concepts](/docs/concepts/framework)             | The framework's shape, the request chain, resources, and the native/polyfill modules |
+| [Concepts](/docs/concepts/framework)             | The framework's shape, the request chain, resources, builders, and the native/polyfill modules |
 | [Resources](/docs/resources/creating-a-resource) | Writing resources, and grouping them to share prefixes and middleware                |
 | [Requests](/docs/requests/handling-requests)     | What a resource receives, and reading path and query params                          |
 | [Tutorials](/docs/tutorials/middleware)          | Using pre-built middleware, writing your own, and handling errors                    |
@@ -42,18 +42,19 @@ It is not required that you read the pages in order, but we greatly recommend it
 
 Looking for finished applications you can run? Those are under [Examples](/examples).
 
-## Concepts pages
+## Concepts Pages
 
 Some pages will recommend you read pages under the [Concepts](/docs/concepts/framework). Concepts go over:
 
 - a breakdown of the [framework](/docs/concepts/framework);
 - how [chains](/docs/concepts/chains) work under the hood;
-- how [resources](/docs/concepts/resources) play a role in the chains; and
+- how [resources](/docs/concepts/resources) play a role in the chains;
+- why [builders](/docs/concepts/builders) assemble your application; and
 - why [native and polyfill](/docs/concepts/native-vs-polyfill) modules exist.
 
 It is not required that you read the Concepts pages, but we greatly recommend it so you are aware of the design decisions made in Drash and how it works under the hood.
 
-## Tutorial format
+## Tutorial Format
 
 All tutorial pages have an **Instructions** section. They guide you in building applications from the ground up. Their page format is explained below:
 
@@ -87,18 +88,18 @@ View our [Glossary](/docs/misc/glossary) page for definitions of terms (words/ph
 <Callout type="info" emoji={null}>
 All of the terms and acronyms we use are used in the context of Drash unless otherwise stated.
 </Callout>
-## A note from us
+## A Note from Us
 
 We strive to prevent ambiguity in our writing as much as possible. We want you to be able to understand the code you are using so you can develop with confidence. However, we don't always get it right (our apologies in advance!). If our writing isn't clear, has typos, is not accessible, or you have suggestions to help improve these pages, please let us know by [filing an issue](https://github.com/drashland/drash/issues). We appreciate everyone's help in making these pages better for everyone!
 
-## Next steps
+## Next Steps
 
 Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure.
 
-### Our recommendations
+### Our Recommendations
 
 - Follow the [prerequisites](/docs/getting-started/prerequisites) to set up your local environment.
 
-### Want to jump ahead?
+### Want to Jump Ahead?
 
 - [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide) using the HTTP module's `Chain` class.

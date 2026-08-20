@@ -11,7 +11,7 @@ Every chain built by the HTTP module's `Chain.builder()` runs a `RequestParamsPa
 
 You do not add the parser yourself. It is one of the handlers the request chain wires up for you, so `params` is present on every request that reaches a resource.
 
-### Recommended reading
+### Recommended Reading
 
 - Read the concepts on [chains](/docs/concepts/chains)
 - Read [Creating a Resource](/docs/resources/creating-a-resource) to see how paths are declared
@@ -24,11 +24,11 @@ To gain familiarity with:
 - typing the request so your editor knows `params` exists; and
 - the two methods `params` provides.
 
-## What A Resource Receives
+## What a Resource Receives
 
 An HTTP method receives whatever was passed to `chain.handle()`. On runtimes with Web `Request`/`Response` that is the `Request` object itself. On Node it is the context object you built. In both cases the chain has already attached `params` to it by the time your method runs.
 
-## Typing The Request
+## Typing the Request
 
 `params` is attached at runtime, so a plain `Request` type does not know about it. Use the `HTTPRequest` type the HTTP module exports and your editor will autocomplete both methods:
 

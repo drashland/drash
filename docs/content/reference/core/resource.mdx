@@ -42,7 +42,7 @@ The argument is typed `unknown` because a resource receives whatever was passed 
 
 The return value is `unknown` for the same reason. Whatever you return becomes the resolved value of `chain.handle()`.
 
-### Default behavior
+### Default Behavior
 
 __Every method throws `HTTPError(Status.NotImplemented)`.__ That is the entire base implementation:
 
@@ -79,7 +79,7 @@ const group = Resource
 
 ## Notes
 
-### Subclassing for your own defaults
+### Subclassing for Your Own Defaults
 
 Because the 501 behavior lives in this class, a base class of your own changes it for everything below it:
 

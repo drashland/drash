@@ -32,7 +32,7 @@ Core carries almost no behavior. `HTTPError` and `Resource` are the only two exp
 
 Every path above is a subpath of `@drashland/drash`. There are two aggregate modules as well — `core/Interfaces.js` and `core/Types.js` — which re-export the interfaces and types above so you can pull several from one specifier.
 
-## What you actually import
+## What You Actually Import
 
 Most of Core reaches you through the HTTP module rather than directly. `HTTPError` and `Resource` are both re-exported by `modules/http.native.js` and `modules/http.polyfill.js`, so a normal app imports them from there.
 

@@ -7,14 +7,26 @@ In some cases, Drash's modules have two consumer entry points:
 
 This is to accomodate runtimes that do not fully support Web Standards. In other words, they do not fully implement [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API).
 
-For example, the HTTP module has the following entry points:
+Simply put:
 
-```
-@drashland/drash/modules/http.native.js   // Supports global URLPattern
-@drashland/drash/modules/http.polyfill.js // Requires polyfill for URLPattern in older versions
-```
+- If your runtime fully supports Web Standards, use native modules.
+- If you runtime does not fully support Web Stanards, use polyfill modules.
 
-The HTTP modules export **the same surface** — `Chain`, `Resource`, `Middleware`, `HTTPError`, and the `HTTPRequest` type. The only difference is which `URLPattern` implementation is used under the hood.
+## HTTP Module Example
+
+As an example, the HTTP module has the following entry points:
+
+- `@drashland/drash/modules/http.native.js`: Supports global URLPattern
+- `@drashland/drash/modules/http.polyfill.js`: Requires polyfill for `URLPattern` in older runtimes
+
+Both entry points export **the same surface**:
+- `Chain`
+- `Resource`
+- `Middleware`
+- `HTTPError`
+- `type HTTPRequest`
+
+The only difference is which `URLPattern` implementation is used under the hood.
 
 ___Tutorials will call out if there is a need for you to choose.___
 

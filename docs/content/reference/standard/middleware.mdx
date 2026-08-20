@@ -54,7 +54,7 @@ public setOriginal(original: Resource)
 
 Sets what this middleware wraps. Called by [`ResourceGroup`](/reference/standard/resource-group) at build time — you do not call it yourself.
 
-### The nine HTTP methods
+### The Nine HTTP Methods
 
 `CONNECT` `DELETE` `GET` `HEAD` `OPTIONS` `PATCH` `POST` `PUT` `TRACE`
 
@@ -82,7 +82,7 @@ Where `Middleware` exists to intercept, `ResourceProxy` exists to stand in — i
 
 ## Notes
 
-### Instances are per-resource
+### Instances Are Per-Resource
 
 A group constructs middleware fresh for each resource in it. Two resources sharing an `Auth` middleware do not share an `Auth` instance, so state on `this` never leaks between them.
 

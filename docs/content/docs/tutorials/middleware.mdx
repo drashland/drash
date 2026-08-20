@@ -53,7 +53,7 @@ __Always return a value from resources that use middleware__
 That second row is the one that surprises people. A resource method that writes to a response object and returns nothing works fine unwrapped, but **fails once you put middleware around it** — `next()` has nothing to return. Return a value from resource methods you intend to wrap.
 </Callout>
 
-## Per-method middleware
+## Per-Method Middleware
 
 `Middleware` extends the same core `Resource` that your resources extend, so a middleware class inherits the whole HTTP method surface. Define only the methods you care about:
 
@@ -102,7 +102,7 @@ A {
 
 So `A` runs first, `B` runs second, and `C` runs last before the request hits your resource.
 
-## Per-resource instances
+## Per-Resource Instances
 
 Middleware instances are constructed **fresh per resource**. Two resources sharing a middleware class do not share an instance.
 
@@ -110,7 +110,7 @@ Middleware instances are constructed **fresh per resource**. Two resources shari
 Do not introduce shared or singleton middleware state across resources — and do not keep per-request state on `this`, since one instance serves concurrent requests for its resource.
 </Callout>
 
-## Applying middleware
+## Applying Middleware
 
 You apply middleware by [grouping resources](/docs/resources/grouping-resources).
 
@@ -124,7 +124,7 @@ const group = Resource
 const chain = Chain.builder().resources(...group).build();
 ```
 
-## Pre-built middleware
+## Pre-Built Middleware
 
 Drash ships with the following pre-built middleware modules. Each is documented in the [Reference](/reference) pages with its options, defaults,
 and exports:

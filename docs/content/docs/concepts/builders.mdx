@@ -1,0 +1,132 @@
+---
+title: Builders
+---
+
+# Builders
+
+## What Is a Builder?
+
+A builder collects configuration through chained method calls and hands back a finished object when you call `build()`. You might have already used one in other frameworks or libraries.
+
+```ts
+const chain = Chain
+  .builder()                  // Get a builder
+  .resources(Users, Coffees)  // Configure it
+  .build();                   // Get the finished chain
+```
+
+Drash hands you a builder instead of a constructor so that each piece of configuration is named at the call site. A constructor would put the same information in a positional argument list or an options object, where `resources` is a property you have to look up rather than a method you call.
+
+Every builder in Drash shares one shape: a `build()` method that returns the finished product. That shape is the [`IBuilder`](/reference/core/types#ibuilderproduct) interface.
+
+## `build()` Is the Last Call
+
+Every method on a builder except `build()` returns the builder. **Those calls are order-independent** — the two lines below produce the same group:
+
+```ts
+Resource.group().middleware(Auth).pathPrefixes("/api/v1").resources(Users).build();
+Resource.group().resources(Users).pathPrefixes("/api/v1").middleware(Auth).build();
+```
+
+`build()` is the exception. It returns the product rather than the builder, so it ends the chain and nothing can follow it.
+
+`build()` is also where a builder checks that it has what it needs. The chain builder cannot match a request URL to a resource without a `URLPattern`-like class, so it throws rather than building something that would fail later:
+
+```text
+`this.urlPatternClass(Resource)` not called. Cannot create RequestChain without a `URLPattern`-like class.
+```
+
+**You see this at startup, not on the first request that happens to reach the gap.** In practice you will not hit it: `Chain.builder()` supplies the `URLPattern` class for you (see [below](#builders-are-where-native-and-polyfill-differ)). It is reachable only if you call the lower-level `requestChain()` factory directly.
+
+## The Builders You Will Use
+
+| Builder            | You get it from                     | `build()` returns                  |
+| ------------------ | ----------------------------------- | ---------------------------------- |
+| Chain builder      | `Chain.builder()`                   | The chain head — call `handle()` on it |
+| Resource group     | `Resource.group()`                  | An array of resource classes       |
+| Response builder   | `response()`                        | A Web `Response`                   |
+| Request builder    | `request()`                         | A Web `Request`                    |
+
+Only the first two appear in a typical application. `response()` and `request()` are conveniences — a resource returning `new Response(...)` directly is equally valid.
+
+For the methods each one exposes, see [Builders](/reference/modules/builders) and [Resource groups](/reference/standard/resource-group) in the reference.
+
+## What a Builder Will Not Let You Configure
+
+A builder decides what is yours to configure. The chain builder and the resource group builder make opposite choices here, and **the difference is intentional.**
+
+The resource group builder lets you call anything in any order, because order carries no meaning: prefixing paths and wrapping resources in middleware are independent of each other.
+
+The chain builder does not. Its handlers run in a fixed order, and that order is decided by `build()` — see [Chains](/docs/concepts/chains) for the sequence. So the type you receive from `Chain.builder()` exposes three methods and nothing else:
+
+```ts
+interface Builder {
+  resources(...resources: ResourceClasses[]): Builder;
+  urlPatternClass(urlPatternClass: URLPatternClass): Builder;
+  build(): Handler;
+}
+```
+
+The underlying class inherits a `handler()` method and a `handlers` array that could reorder or replace the chain. Neither appears above. Note also that each method returns `Builder` rather than `this` — that is not an oversight. Returning `this` would resolve back to the implementing class and put the inherited members within reach again on every call after the first.
+
+The restriction is a narrower type, not a runtime check. It costs nothing at request time.
+
+## Builders Are Where Native and Polyfill Differ
+
+Drash's HTTP module ships as two entry points that export the same surface. Under the hood, their builders are where they diverge:
+
+<Compare>
+  <CompareItem label="http.native.js">
+
+```ts
+// This uses the global URLPattern
+// (provided by the runtime)
+
+export class Chain {
+  static builder() {
+    return requestChain()
+      .urlPatternClass(URLPattern);
+  }
+}
+```
+
+  </CompareItem>
+  <CompareItem label="http.polyfill.js">
+
+```ts
+// This uses Drash's URLPattern polyfill
+// (assumes URLPattern does not exist)
+
+export class Chain {
+  static builder() {
+    return requestChain()
+      .urlPatternClass(URLPatternPolyfill);
+  }
+}
+```
+
+  </CompareItem>
+</Compare>
+
+Same builder, same three methods, one different argument. Because the difference is applied here — before you receive the builder — the rest of your application is identical on every runtime, and you never call `.urlPatternClass()` yourself.
+
+<Callout type="info">
+__Providing your own custom `URLPattern`__
+
+See the `.urlPatternClass()` [example](/reference/modules/http/chain/#urlpatternclass) to provide your own custom `URLPattern`.
+</Callout>
+
+This is also why `Chain` exists as a class with a single static method. It holds `builder()` so that your import reads `Chain.builder()` rather than a bare `builder()`.
+
+See [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more about which entry point to choose.
+
+## Build Time, Not Request Time
+
+Builders do their work once when your application starts. All calls to `.build()` do not happen again. There is no router re-deriving routes on each request, and no middleware stack being reassembled — by the time a request arrives, the objects it travels through already exist.
+
+This is the trade-off a builder buys you: startup does more work so that each request does less.
+
+## Next Steps
+
+- Browse the [Modules > Builders](/reference/modules/builders) to learn more about Drash's builders.
+- [Group your resources](/docs/resources/grouping-resources) to share middleware and path prefixes.

@@ -24,7 +24,7 @@ interface IBuilder<Product = unknown> {
 }
 ```
 
-Implemented by every builder in the codebase — the chain builder, the resource group builder, and the response builder. `Product` is what `build()` returns.
+Implemented by `AbstractChainBuilder` and the resource group builder. `Product` is what `build()` returns. Standard declares a structurally identical `Builder<C>` that `ResponseBuilder` implements instead — see [Builders](/reference/modules/builders#notes).
 
 ### `IHandler<Input>`
 

@@ -6,7 +6,7 @@ Throwing, catching, and responding to errors
 
 Drash does not send error responses for you. It ships no server, so it has nothing to send a response with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `chain.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
 
-### Recommended reading
+### Recommended Reading
 
 - Read the concepts on [chains](/docs/concepts/chains)
 - Complete the [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) so you have a `.catch()` block to work in
