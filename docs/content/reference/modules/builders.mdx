@@ -100,4 +100,4 @@ Two more exports belong to the [RateLimiter](/reference/modules/middleware/rate-
 
 ## Notes
 
-`build()` is always the terminal call and always returns the finished product. The contract for that is [`IBuilder`](/reference/core/interfaces#ibuilderproduct) in Core, which `AbstractChainBuilder` and the resource group builder implement. `ResponseBuilder` implements a structurally identical `Builder<Response>` declared in Standard, and `RequestBuilder` declares no contract at all — it just has `build()`.
+`build()` is always the terminal call and always returns the finished product. The contract for that is [`IBuilder`](/reference/core/interfaces#ibuilderproduct) in Core, which `AbstractChainBuilder` and the resource group builder implement. `ResponseBuilder` implements a structurally identical [`Builder<Response>`](/reference/standard/builders/builder) declared in Standard, and `RequestBuilder` declares no contract at all — it just has `build()`.

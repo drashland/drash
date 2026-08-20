@@ -80,7 +80,7 @@ Throws `HTTPError(Status.UnprocessableEntity)` — a `422` — with one of three
 
 Builds a `URLPattern` per resource path and matches the request URL against them. It appends `{/}?` to each path, which is why a trailing slash matches either way, and it caches results by fully-qualified URL.
 
-Its constructor takes the `URLPattern`-like class to use — see [URLPattern](/reference/standard/polyfill/url-pattern).
+Its constructor takes the `URLPattern`-like class to use — see [URLPattern](/reference/standard/polyfill).
 
 ### `ResourceNotFoundHandler`
 
@@ -98,9 +98,7 @@ Uppercases `input.request.method` and calls `input.resource[method](input.reques
 
 ## `AbstractChainBuilder`
 
-The base for chain builders. Its `link()` takes a list of handlers, wires them with `setNext()`, and returns the head — the object whose `handle()` you call.
-
-Its `handler()` and `handlers` members are what [`Chain.builder()`](/reference/modules/chain) deliberately hides: the request chain's handlers and their order are decided by `build()`.
+The base for chain builders — it is what wires these handlers together. See [AbstractChainBuilder](/reference/standard/chains/abstract-chain-builder).
 
 ## `AbstractSearchIndex`
 

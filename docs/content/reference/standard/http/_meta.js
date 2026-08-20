@@ -2,4 +2,5 @@
 export default {
   middleware: "Middleware",
   "resource-group": "ResourceGroup",
+  "resource-proxy": "ResourceProxy",
 };
