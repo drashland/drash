@@ -1,0 +1,59 @@
+# URLPattern
+
+The chain matches request URLs with a `URLPattern`-like class. Which one it uses is the only difference between the native and polyfill entry points.
+
+```ts
+import { URLPatternPolyfill } from "@drashland/drash/standard/polyfill/URLPatternPolyfill.js";
+
+const chain = Chain
+  .builder()
+  .urlPatternClass(URLPatternPolyfill)
+  .resources(Home)
+  .build();
+```
+
+## The contract
+
+Whatever class you supply must be constructible with `{ pathname }` and expose `exec()`:
+
+```ts
+new URLPatternClass({ pathname: string });
+
+exec(url: string): { pathname: { groups: Record<string, string> } } | null;
+```
+
+`exec()` returns `null` for no match. On a match, the path params live in `pathname.groups`.
+
+## `URLPatternPolyfill`
+
+The implementation handed to the chain by `modules/http.polyfill.js`, for runtimes without a global `URLPattern` — Node and Bun.
+
+| Member     | Type     | Notes                                     |
+| ---------- | -------- | ----------------------------------------- |
+| `pathname` | `string` | The pattern this instance was built with  |
+| `exec(url)`| method   | Returns the match result, or `null`       |
+
+## `CustomUrlPattern`
+
+The pattern-compiling class `URLPatternPolyfill` is built on. It exports an `ExecResult` type describing the shape above.
+
+You would reach for this directly only when building a matcher of your own rather than a chain.
+
+## Which one you get
+
+| Entry point                  | `URLPattern` used        |
+| ---------------------------- | ------------------------ |
+| `modules/http.native.js`     | The runtime's global     |
+| `modules/http.polyfill.js`   | `URLPatternPolyfill`     |
+
+Both entry points call `.urlPatternClass()` for you. Calling it yourself overrides whatever the entry point injected — see [Native vs. Polyfill](/reference/modules/http/native-vs-polyfill).
+
+<Callout type="info" emoji={null}>
+`.urlPatternClass()` is __required__. A chain built without one throws at `build()`:
+
+```text
+`this.urlPatternClass(Resource)` not called. Cannot create RequestChain without a `URLPattern`-like class.
+```
+
+That is why the entry points exist at all — each calls it for you.
+</Callout>

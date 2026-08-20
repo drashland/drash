@@ -8,21 +8,35 @@ description: API reference for Drash, organised by the Core, Standard, and Modul
 Drash is split into three codebases, and this reference follows that split. Imports flow one direction — Modules → Standard → Core — which is what keeps each layer independently useful. [Framework](/docs/concepts/framework) covers the reasoning; these pages cover the API.
 
 <Cards num={3}>
-  <Cards.Card title="Core" href="/reference/core/http-error" arrow />
-  <Cards.Card title="Standard" href="/reference/standard/resource-group" arrow />
-  <Cards.Card title="Modules" href="/reference/modules/http/chain" arrow />
+  <Cards.Card title="Core" href="/reference/core" arrow />
+  <Cards.Card title="Standard" href="/reference/standard" arrow />
+  <Cards.Card title="Modules" href="/reference/modules" arrow />
 </Cards>
 
 ## The three layers
 
-| Layer                                          | What it holds                                                                                  |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [Core](/reference/core/http-error)             | Types, interfaces, and classes with minimal implementation — the lowest-level APIs. Imports nothing else. |
-| [Standard](/reference/standard/resource-group) | Standalone library code, in the spirit of Deno's or Go's standard library. Imports only Core.     |
-| [Modules](/reference/modules/http/chain)            | The pieces that do the work, such as the Request Chain. Imports Standard and Core.               |
+| Layer                              | What it holds                                                                                             | Imports        |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
+| [Core](/reference/core)            | Types, interfaces, enums, `HTTPError`, and the base `Resource`. The lowest-level APIs.                     | Nothing        |
+| [Standard](/reference/standard)    | Standalone library code, in the spirit of Deno's or Go's standard library — handlers, middleware, loggers. | Core           |
+| [Modules](/reference/modules)      | The pieces that do the work: the HTTP module, the bundled middleware, the builders.                        | Standard, Core |
+
+## Where to start
+
+Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Chain`, `Resource`, `Middleware`, and `HTTPError` from one specifier.
+
+| If you want to                          | Read                                                              |
+| --------------------------------------- | ----------------------------------------------------------------- |
+| Build and run a chain                    | [Chain](/reference/modules/http/chain)                            |
+| Write a resource                         | [Resource](/reference/core/resource)                              |
+| Throw and catch errors                   | [HTTPError](/reference/core/http-error)                           |
+| Attach middleware or prefixes            | [Resource groups](/reference/standard/resource-group)             |
+| Use a bundled middleware                 | [CORS](/reference/modules/middleware/cors) and its siblings       |
+| Add a step of your own to the chain      | [Handlers](/reference/standard/handlers)                          |
+| Supply your own `URLPattern`             | [URLPattern](/reference/standard/url-pattern)                     |
 
 ## Looking for something else?
 
-- [Middleware](/docs/middleware) — the `Middleware` class and the four bundled middleware.
-- [Resource](/docs/tutorials/resource) — paths, HTTP methods, and request params.
+- [Middleware](/docs/tutorials/middleware) — writing your own, and the four bundled ones.
+- [Creating a Resource](/docs/resources/creating-a-resource) — paths, HTTP methods, and dynamic paths.
 - [Examples](/examples) — complete applications you can run.

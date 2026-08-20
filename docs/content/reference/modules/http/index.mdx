@@ -1,0 +1,27 @@
+---
+title: HTTP
+description: The module that turns requests into responses — the Chain class and the two entry points that ship it.
+---
+
+# HTTP
+
+The HTTP module is what you import to build an application. It exports everything
+needed to receive a request and answer it:
+
+| Export        | Kind  | Documented in                                              |
+| ------------- | ----- | ---------------------------------------------------------- |
+| `Chain`       | class | [Chain](/reference/modules/http/chain)                     |
+| `Resource`    | class | [Creating a Resource](/docs/resources/creating-a-resource) |
+| `Middleware`  | class | [Middleware](/docs/tutorials/middleware)                   |
+| `HTTPError`   | class | [HTTPError](/reference/core/http-error)                    |
+| `HTTPRequest` | type  | The shape a resource method receives                       |
+
+It ships as two interchangeable entry points: a native and a polyfill module. They differ only in which `URLPattern` implementation they hand the chain.
+
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
+```
+
+Middleware that ships alongside it — `AcceptHeader`, `CORS`, `ETag`, and
+`RateLimiter` — is imported separately and documented under
+[Middleware](/reference/modules/middleware/cors).

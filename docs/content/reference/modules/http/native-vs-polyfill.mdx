@@ -11,28 +11,28 @@ import { ... } from "@drashland/drash/modules/http.native.js";
 import { ... } from "@drashland/drash/modules/http.polyfill.js";
 ```
 
-For the reasoning behind the split, see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill) under Concepts.
+For the reasoning behind the split, see the [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) page.
 
 ## Exports
 
 Both entry points export the same five members. Nothing is available from one and missing from the other, so switching between them never changes an import list:
 
-| Export                | Kind  | Reference                                                        |
-| --------------------- | ----- | ---------------------------------------------------------------- |
-| `Chain`               | class | [Chain](/reference/modules/http/chain)                            |
-| `Resource`            | class | [Resource](/docs/tutorials/resource)                              |
-| `Middleware`          | class | [Middleware](/docs/middleware)                                    |
-| `HTTPError`           | class | [HTTPError](/reference/core/http-error)                           |
-| `HTTPRequest`         | type  | The request shape a resource method receives                       |
+| Export        | Kind  | Reference                                                  |
+| ------------- | ----- | ---------------------------------------------------------- |
+| `Chain`       | class | [Chain](/reference/modules/http/chain)                     |
+| `Resource`    | class | [Creating a Resource](/docs/resources/creating-a-resource) |
+| `Middleware`  | class | [Middleware](/docs/tutorials/middleware)                   |
+| `HTTPError`   | class | [HTTPError](/reference/core/http-error)                    |
+| `HTTPRequest` | type  | The request shape a resource method receives               |
 
 ## What each one injects
 
 Each entry point calls [`.urlPatternClass()`](/reference/modules/http/chain#urlpatternclass) on your behalf. For example:
 
-| Entry point          | `URLPattern` used                    | Source of the implementation                     |
-| -------------------- | ------------------------------------ | ------------------------------------------------ |
-| `http.native.js`     | `.urlPatternClass(URLPattern)`    | The runtime                                       |
-| `http.polyfill.js`   | `.urlPatternClass(URLPatternPolyfill)` | Drash's implementation |
+| Entry point        | `URLPattern` used                      | Source of the implementation |
+| ------------------ | -------------------------------------- | ---------------------------- |
+| `http.native.js`   | `.urlPatternClass(URLPattern)`         | The runtime                  |
+| `http.polyfill.js` | `.urlPatternClass(URLPatternPolyfill)` | Drash's implementation       |
 
 If you need a custom implementation, you can call `.urlPatternClass()` yourself. See [Modules > HTTP > Chain > urlPatternClass()](/reference/modules/http/chain#urlpatternclass) to learn more.
 
@@ -54,4 +54,4 @@ Because chains are normally built once at startup, this surfaces as soon as the 
 
 ## Supplying your own
 
-Neither entry point locks you in. `Chain.builder()` accepts any `URLPattern`-compatible class through [`.urlPatternClass()`](/reference/modules/http/chain#urlpatternclassurlpatternclass), which overrides whatever the entry point injected.
+Neither entry point locks you in. `Chain.builder()` accepts any `URLPattern`-compatible class through [`.urlPatternClass()`](/reference/modules/http/chain#urlpatternclass), which overrides whatever the entry point injected.

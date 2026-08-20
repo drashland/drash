@@ -46,31 +46,20 @@ To separate concerns, Standard code only imports from Standard and Core. It does
 
 ## Modules
 
-This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., HTTP module's `Chain` class). Modules import from Base modules (described below), Standard, and Core.
+This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., HTTP module's `Chain` class). Modules import other modules, Standard, and Core.
 
-### Module Types
+You will find the following directories in this codebase:
 
-The Modules codebase is organized by module type. Each module is placed into a separate directory based on its type. The directories are:
-
-```
-src/modules
-  |-- base
-  |-- builders
-  |-- chains
-  |-- middleware
-```
-
-#### Base
-
-Base modules contain code that provide default functionality for other modules.
+<FileTree>
+  <FileTree.Folder name="src/modules" defaultOpen>
+    <FileTree.Folder name="builders" />
+    <FileTree.Folder name="middleware" />
+  </FileTree.Folder>
+</FileTree>
 
 #### Builders
 
 Builders are classes that provide ways for you to build objects using a builder pattern. This is similar to [`@Builder`](https://projectlombok.org/features/Builder) in Project Lombok.
-
-#### Chains
-
-[Chains](/docs/concepts/chains) are modules that implement the [Chain of Responsibility](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern) pattern.
 
 #### Middleware
 
@@ -78,18 +67,9 @@ Middleware modules provide your applications with features like CORS, ETag heade
 
 ### Module Interoperability
 
-Modules ship in matched pairs — a `.native` file and a `.polyfill` file side by side:
+Modules may ship in matched pairs — a `.native` file and a `.polyfill` file side by side for maximum interoperability.
 
-<FileTree>
-  <FileTree.Folder name="src/modules" defaultOpen>
-    <FileTree.File name="http.native.ts" />
-    <FileTree.File name="http.polyfill.ts" />
-  </FileTree.Folder>
-</FileTree>
-
-They export the same surface; only the `URLPattern` implementation differs. Because the surface matches, moving between runtimes means swapping the import and your HTTP server, not rewriting the application.
-
-[Native vs. Polyfill](/docs/concepts/native-vs-polyfill) covers which one to pick and how to supply your own `URLPattern`.
+The [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) page covers this topic in more detail.
 
 ## Next Steps
 
@@ -101,4 +81,4 @@ Read about [chains](/docs/concepts/chains) and how you can use one to create an 
 
 ### Want to Jump Ahead?
 
-- [Create a tiny HTTP application](/docs/tutorials/step-by-step-guide)
+- [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide)

@@ -1,0 +1,94 @@
+# Resource
+
+The base class every resource extends. It maps a set of paths to HTTP method handlers, and supplies a default for each method you do not write.
+
+```ts
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class Users extends Resource {
+  public paths = ["/users/:id?"];
+
+  public GET(request: Request) {
+    return new Response("Hello");
+  }
+}
+```
+
+<Callout type="info" emoji={null}>
+This is the class in `core/http/Resource.js`. The HTTP module re-exports it with a `static group()` method added — see [`Resource.group()`](#resourcegroup) below.
+</Callout>
+
+## Properties
+
+| Property | Type       | Default | Notes                                     |
+| -------- | ---------- | ------- | ----------------------------------------- |
+| `paths`  | `string[]` | `[]`    | The paths this resource answers to        |
+
+A resource with an empty `paths` array is never matched. Paths may contain params (`/users/:id`), optional params (`/users/:id?`), and regular expressions (`/([0-9]$)`) — see [Creating a Resource](/docs/resources/creating-a-resource) for the syntax.
+
+## Methods
+
+The class defines one method per HTTP method:
+
+`CONNECT` `DELETE` `GET` `HEAD` `OPTIONS` `PATCH` `POST` `PUT` `TRACE`
+
+Each has the same signature:
+
+```ts
+public GET(request: unknown): unknown
+```
+
+The argument is typed `unknown` because a resource receives whatever was passed to `chain.handle()` — a Web `Request` on Deno, Bun, and Cloudflare, or a context object on Node. Narrow it in your subclass. Use [`HTTPRequest`](/reference/modules/http) when you want `request.params` typed.
+
+The return value is `unknown` for the same reason. Whatever you return becomes the resolved value of `chain.handle()`.
+
+### Default behavior
+
+__Every method throws `HTTPError(Status.NotImplemented)`.__ That is the entire base implementation:
+
+```ts
+public GET(_request: unknown): unknown {
+  throw new HTTPError(Status.NotImplemented);
+}
+```
+
+So a resource that defines only `GET` answers `501 Not Implemented` to the other eight, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1). To send `405` instead, override the method and throw it yourself:
+
+```ts
+public PATCH(_request: unknown) {
+  throw new HTTPError(Status.MethodNotAllowed);
+}
+```
+
+Methods may be synchronous or asynchronous. The chain awaits whatever they return.
+
+## `Resource.group()`
+
+Added by the HTTP module, not by the core class. It returns a `ResourceGroup.Builder`:
+
+```ts
+const group = Resource
+  .group()
+  .middleware(Auth)
+  .pathPrefixes("/api/v1")
+  .resources(Users)
+  .build();
+```
+
+`Resource.group()` and `ResourceGroup.builder()` are the same call. See [Resource groups](/reference/standard/resource-group) for the builder API and [Resource Groups](/docs/resources/resource-groups) for the tutorial.
+
+## Notes
+
+### Subclassing for your own defaults
+
+Because the 501 behavior lives in this class, a base class of your own changes it for everything below it:
+
+```ts
+class BaseResource extends Resource {
+  public override PATCH(_request: unknown) {
+    throw new HTTPError(Status.MethodNotAllowed);
+  }
+}
+```
+
+Every resource extending `BaseResource` answers `405` to `PATCH` without repeating the override.

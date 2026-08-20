@@ -1,0 +1,56 @@
+# Header
+
+Header names used by Drash's own middleware, as string constants.
+
+```ts
+import { Header } from "@drashland/drash/core/http/Header.js";
+
+response.headers.set(Header.ContentType, "application/json");
+```
+
+## Values
+
+| Key                            | Value                                |
+| ------------------------------ | ------------------------------------ |
+| `AccessControlAllowCredentials`| `Access-Control-Allow-Credentials`   |
+| `AccessControlAllowHeaders`    | `Access-Control-Allow-Headers`       |
+| `AccessControlAllowMethods`    | `Access-Control-Allow-Methods`       |
+| `AccessControlAllowOrigin`     | `Access-Control-Allow-Origin`        |
+| `AccessControlExposeHeaders`   | `Access-Control-Expose-Headers`      |
+| `AccessControlMaxAge`          | `Access-Control-Max-Age`             |
+| `AccessControlRequestHeaders`  | `Access-Control-Request-Headers`     |
+| `AccessControlRequestMethod`   | `Acces-Control-Request-Method`       |
+| `ContentLength`                | `Content-Length`                     |
+| `ContentType`                  | `Content-Type`                       |
+| `Date`                         | `Date`                               |
+| `ETag`                         | `ETag`                               |
+| `IfMatch`                      | `If-Match`                           |
+| `IfNoneMatch`                  | `If-None-Match`                      |
+| `LastModified`                 | `Last-Modified`                      |
+| `RetryAfter`                   | `Retry-After`                        |
+| `Vary`                         | `Vary`                               |
+
+<Callout type="warning">
+  __`AccessControlRequestMethod` is misspelled in the source.__ Its value is
+  `"Acces-Control-Request-Method"` — one `s` — not
+  `"Access-Control-Request-Method"`. Any comparison against a real request header
+  of that name fails.
+
+  Until it is corrected, write the header name literally rather than using this
+  constant.
+</Callout>
+
+## Type
+
+`Header` is declared `as const`, so the companion type is a union of the values rather than `string`:
+
+```ts
+import type { Header } from "@drashland/drash/core/types/Header.js";
+// "Access-Control-Allow-Credentials" | "Content-Type" | ...
+```
+
+The const and the type share a name and live at different paths. Import the type with `import type` from `core/types/Header.js`, and the const from `core/http/Header.js`.
+
+## Notes
+
+This list is not exhaustive and is not meant to be. It covers the headers the bundled middleware read and write — [CORS](/reference/modules/middleware/cors), [ETag](/reference/modules/middleware/etag), and [RateLimiter](/reference/modules/middleware/rate-limiter). Any other header name is a plain string.

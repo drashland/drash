@@ -1,0 +1,93 @@
+# Middleware
+
+`Middleware` extends [`Resource`](/reference/core/resource). It is a decorator, not a separate concept — which is why it has the same nine HTTP methods and can stand in for the resource it wraps.
+
+```ts
+import { Middleware } from "@drashland/drash/modules/http.native.js";
+import { HTTPError } from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Auth extends Middleware {
+  public ALL(request: Request) {
+    if (request.headers.get("x-api-key") !== "secret") {
+      throw new HTTPError(Status.Unauthorized);
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+## Properties
+
+| Property   | Type       | Notes                                                     |
+| ---------- | ---------- | --------------------------------------------------------- |
+| `original` | `Resource` | The wrapped resource, or the next middleware. Optional.   |
+
+## Methods
+
+### `ALL(input)`
+
+```ts
+public ALL(input: unknown): unknown
+```
+
+Intercepts every HTTP method. Override it to short-circuit, modify, or conditionally forward a request. The base implementation forwards.
+
+When `ALL()` is overridden, the nine per-method overrides route through it, so one definition covers `GET`, `POST`, and the rest.
+
+### `next<ReturnValue>(input)`
+
+```ts
+public next<ReturnValue>(input: unknown): ReturnValue
+```
+
+Calls the same HTTP method on `this.original` and returns its value. This is how a middleware forwards.
+
+__It throws if the wrapped method returned nothing__ — `HTTPError(Status.InternalServerError)` with the message `The server was unable to generate a response`. A resource method wrapped in middleware must return a value, even on runtimes like Node where an unwrapped resource can write to the response object and return nothing.
+
+### `setOriginal(original)`
+
+```ts
+public setOriginal(original: Resource)
+```
+
+Sets what this middleware wraps. Called by [`ResourceGroup`](/reference/standard/resource-group) at build time — you do not call it yourself.
+
+### The nine HTTP methods
+
+`CONNECT` `DELETE` `GET` `HEAD` `OPTIONS` `PATCH` `POST` `PUT` `TRACE`
+
+Each is overridden from `Resource` to delegate rather than throw `501`. Override one directly to intercept a single method:
+
+```ts
+class PostOnly extends Middleware {
+  public override POST(request: Request) {
+    // runs only for POST
+    return this.next<Response>(request);
+  }
+}
+```
+
+## `ResourceProxy`
+
+Also in Standard, and the other half of how groups are wired. It extends `Resource`, holds an `original_instance`, and forwards all nine methods to it.
+
+| Member                         | Notes                                                    |
+| ------------------------------ | -------------------------------------------------------- |
+| `paths`                        | Copied from the original when `setOriginal()` is called  |
+| `setOriginal(originalInstance)` | Sets the wrapped instance and adopts its `paths`         |
+
+Where `Middleware` exists to intercept, `ResourceProxy` exists to stand in — it is the shape [`ResourceGroup`](/reference/standard/resource-group) generates when it needs a class that behaves like your resource but is a different class.
+
+## Notes
+
+### Instances are per-resource
+
+A group constructs middleware fresh for each resource in it. Two resources sharing an `Auth` middleware do not share an `Auth` instance, so state on `this` never leaks between them.
+
+### Ordering
+
+`.middleware(A, B)` produces `A{original: B{original: resource}}`. `A` sees the request first and the response last.
+
+See the [Middleware tutorial](/docs/tutorials/middleware) for writing them and [Resource Groups](/docs/resources/resource-groups) for attaching them.

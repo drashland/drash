@@ -1,0 +1,42 @@
+---
+title: Standard
+description: API reference for src/standard — Drash's standard library layer.
+---
+
+# Standard
+
+Standalone library code, in the spirit of Deno's or Go's standard library. Standard imports only [Core](/reference/core) and is imported by [Modules](/reference/modules).
+
+This is where the default implementations live: the chain handlers, the `Middleware` class, the resource group builder, the loggers, and the `URLPattern` polyfill.
+
+## Exports
+
+| Export                    | Kind     | Import from                                | Documented in                                       |
+| ------------------------- | -------- | ------------------------------------------ | --------------------------------------------------- |
+| `Handler`                 | class    | `standard/handlers/Handler.js`             | [Handlers](/reference/standard/handlers)            |
+| `RequestValidator`        | class    | `standard/handlers/RequestValidator.js`    | [Handlers](/reference/standard/handlers)            |
+| `ResourcesIndex`          | class    | `standard/handlers/ResourcesIndex.js`      | [Handlers](/reference/standard/handlers)            |
+| `ResourceNotFoundHandler` | class    | `standard/handlers/ResourceNotFoundHandler.js` | [Handlers](/reference/standard/handlers)        |
+| `RequestParamsParser`     | class    | `standard/handlers/RequestParamsParser.js` | [Handlers](/reference/standard/handlers)            |
+| `ResourceCaller`          | class    | `standard/handlers/ResourceCaller.js`      | [Handlers](/reference/standard/handlers)            |
+| `AbstractSearchIndex`     | class    | `standard/handlers/AbstractSearchIndex.js` | [Handlers](/reference/standard/handlers)            |
+| `AbstractChainBuilder`    | class    | `standard/chains/AbstractChainBuilder.js`  | [Handlers](/reference/standard/handlers)            |
+| `Middleware`              | class    | `standard/http/Middleware.js`              | [Middleware](/reference/standard/middleware)        |
+| `ResourceProxy`           | class    | `standard/http/ResourceProxy.js`           | [Middleware](/reference/standard/middleware)        |
+| `ResourceGroup`           | class    | `standard/http/ResourceGroup.js`           | [Resource groups](/reference/standard/resource-group) |
+| `Builder`                 | class    | `standard/builders/Builder.js`             | [Resource groups](/reference/standard/resource-group) |
+| `AbstractLogger`          | class    | `standard/log/AbstractLogger.js`           | [Loggers](/reference/standard/loggers)              |
+| `ConsoleLogger`           | class    | `standard/log/ConsoleLogger.js`            | [Loggers](/reference/standard/loggers)              |
+| `GroupConsoleLogger`      | class    | `standard/log/GroupConsoleLogger.js`       | [Loggers](/reference/standard/loggers)              |
+| `Level`                   | const    | `standard/log/Level.js`                    | [Loggers](/reference/standard/loggers)              |
+| `Logger`                  | interface| `standard/log/Logger.js`                   | [Loggers](/reference/standard/loggers)              |
+| `URLPatternPolyfill`      | class    | `standard/polyfill/URLPatternPolyfill.js`  | [URLPattern](/reference/standard/url-pattern)       |
+| `CustomUrlPattern`        | class    | `standard/polyfill/CustomURLPattern.js`    | [URLPattern](/reference/standard/url-pattern)       |
+
+Every path above is a subpath of `@drashland/drash`.
+
+## What you actually import
+
+Almost nothing here, in a normal app. `Middleware` and `ResourceGroup` reach you through the HTTP module — `Middleware` is re-exported directly, and `ResourceGroup` through [`Resource.group()`](/reference/core/resource#resourcegroup).
+
+The rest is here for the two cases where you go past the defaults: building a chain of your own out of `Handler` subclasses, and supplying your own `URLPattern` implementation.

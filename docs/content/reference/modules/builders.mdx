@@ -1,0 +1,97 @@
+# Builders
+
+Three builders live in Modules. One assembles the request chain; the other two are conveniences for constructing requests and responses.
+
+## `requestChain()`
+
+```ts
+import { requestChain } from "@drashland/drash/modules/builders/RequestChainBuilder.js";
+```
+
+Returns the request chain builder. `Chain.builder()` calls this and then supplies the `URLPattern` class, so an app normally uses [`Chain.builder()`](/reference/modules/http/chain) instead.
+
+The returned object is typed as the `Builder` interface, which exposes exactly three methods:
+
+| Method                       | Returns   | Notes                                              |
+| ---------------------------- | --------- | -------------------------------------------------- |
+| `resources(...resources)`    | `Builder` | The resource classes this chain routes to          |
+| `urlPatternClass(cls)`       | `Builder` | Required — `build()` throws without it             |
+| `build()`                    | `Handler` | The chain head, whose `handle()` you call          |
+
+The `handler()` and `handlers` members inherited from `AbstractChainBuilder` are deliberately not on this interface. The request chain's handlers, and the order they run in, are decided by `build()` and are not the consumer's to change — see [Handlers](/reference/standard/handlers).
+
+## `response()`
+
+```ts
+import { response } from "@drashland/drash/modules/builders/ResponseBuilder.js";
+
+const res = response()
+  .status(201)
+  .statusText("Created")
+  .headers({ "content-type": "application/json" })
+  .body(JSON.stringify({ id: 1 }))
+  .build();
+```
+
+Returns a `ResponseBuilder`, which implements `IBuilder<Response>`.
+
+| Method                | Notes                                          |
+| --------------------- | ---------------------------------------------- |
+| `body(body)`          | `BodyInit \| null`                             |
+| `headers(headers)`    | `Record<string, string>`. Merges, not replaces |
+| `status(status)`      | `number`                                       |
+| `statusText(text)`    | `string`                                       |
+| `build()`             | Returns a Web `Response`                       |
+
+Every method except `build()` returns the builder, so calls chain in any order.
+
+This is a convenience, not a requirement. A resource returning `new Response(...)` directly is equally valid, and on runtimes without Web `Response` this builder is not what you want.
+
+## `request()`
+
+```ts
+import { request } from "@drashland/drash/modules/builders/RequestBuilder.js";
+
+const req = request()
+  .path("http://localhost:1447/users/1")
+  .get()
+  .build();
+```
+
+Returns a `RequestBuilder`. It exists mainly for tests, where constructing requests by hand gets repetitive.
+
+| Method       | Notes                             |
+| ------------ | --------------------------------- |
+| `path(path)` | The URL                           |
+| `get()`      | Sets the method to `GET`          |
+| `post()`     | Sets the method to `POST`         |
+| `put()`      | Sets the method to `PUT`          |
+| `patch()`    | Sets the method to `PATCH`        |
+| `delete()`   | Sets the method to `DELETE`       |
+| `build()`    | Returns a Web `Request`           |
+
+There is no method for `HEAD`, `OPTIONS`, `CONNECT`, or `TRACE`. Construct those with `new Request()` directly.
+
+## Middleware response builders
+
+Two of the bundled middleware extend `ResponseBuilder` with their own subclass, and export it. You would use these only when building a response the middleware would otherwise build for you.
+
+| Export                     | Extends           | Import from                                            |
+| -------------------------- | ----------------- | ------------------------------------------------------ |
+| `ETagResponseBuilder`      | `ResponseBuilder` | `modules/middleware/ETag/ETagResponse.js`              |
+| `RateLimitResponseBuilder` | `ResponseBuilder` | `modules/middleware/rate_limiter/RateLimitResponse.js` |
+
+Both take an existing `Response` in their constructor and add the headers their middleware is responsible for. Each module also exports a `response()` factory, the same shape as `response()` above.
+
+Two more exports belong to the [RateLimiter](/reference/modules/middleware/rate-limiter):
+
+| Export                     | Kind  | Notes                                                                     |
+| -------------------------- | ----- | ------------------------------------------------------------------------- |
+| `RateLimitedClient`        | class | Per-client request accounting. Getters for `num_requests_made`, `requests_remaining`, `hit_request_limit`, and the window timings |
+| `RateLimiterErrorResponse` | class | Extends [`HTTPError`](/reference/core/http-error), carrying the `Response` the middleware built alongside the status |
+
+`RateLimiterErrorResponse` is the one worth knowing about when writing a `.catch()` block: it is an `HTTPError`, so an `error.name === "HTTPError"` check catches it, and it carries a ready-made response.
+
+## Notes
+
+All three builders implement [`IBuilder`](/reference/core/types#ibuilderproduct), so `build()` is always the terminal call and always returns the finished product.

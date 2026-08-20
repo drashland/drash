@@ -1,0 +1,45 @@
+---
+title: Core
+description: API reference for src/core — the lowest layer of Drash.
+---
+
+# Core
+
+The lowest layer. Core holds types, interfaces, enums, the base `Resource` class, and `HTTPError`. It imports nothing else in the codebase, so anything here can be used on its own.
+
+Core carries almost no behavior. `HTTPError` and `Resource` are the only two exports that do anything at runtime, and what `Resource` does is throw.
+
+## Exports
+
+| Export                    | Kind        | Import from                                        | Documented in                             |
+| ------------------------- | ----------- | -------------------------------------------------- | ----------------------------------------- |
+| `HTTPError`               | class       | `core/errors/HTTPError.js`                          | [HTTPError](/reference/core/http-error)   |
+| `Resource`                | class       | `core/http/Resource.js`                             | [Resource](/reference/core/resource)      |
+| `Status`                  | const       | `core/http/response/Status.js`                      | [Status](/reference/core/status)          |
+| `StatusCode`              | const       | `core/http/response/StatusCode.js`                  | [Status](/reference/core/status)          |
+| `StatusDescription`       | const       | `core/http/response/StatusDescription.js`           | [Status](/reference/core/status)          |
+| `StatusName`              | const       | `core/http/response/StatusName.js`                  | [Status](/reference/core/status)          |
+| `Header`                  | const       | `core/http/Header.js`                               | [Header](/reference/core/header)          |
+| `Method`                  | const       | `core/http/request/Method.js`                       | [Method](/reference/core/method)          |
+| `IBuilder`                | interface   | `core/interfaces/IBuilder.js`                       | [Types](/reference/core/types)            |
+| `IHandler`                | interface   | `core/interfaces/IHandler.js`                       | [Types](/reference/core/types)            |
+| `MethodOf`                | type        | `core/types/MethodOf.js`                            | [Types](/reference/core/types)            |
+| `RequestMethod`           | type        | `core/types/RequestMethod.js`                       | [Types](/reference/core/types)            |
+| `ResponseStatus`          | type        | `core/types/ResponseStatus.js`                      | [Types](/reference/core/types)            |
+| `ResponseStatusCode`      | type        | `core/types/ResponseStatusCode.js`                  | [Types](/reference/core/types)            |
+| `ResponseStatusDescription` | type      | `core/types/ResponseStatusDescription.js`           | [Types](/reference/core/types)            |
+| `ResponseStatusName`      | type        | `core/types/ResponseStatusName.js`                  | [Types](/reference/core/types)            |
+
+Every path above is a subpath of `@drashland/drash`. There are two aggregate modules as well — `core/Interfaces.js` and `core/Types.js` — which re-export the interfaces and types above so you can pull several from one specifier.
+
+## What you actually import
+
+Most of Core reaches you through the HTTP module rather than directly. `HTTPError` and `Resource` are both re-exported by `modules/http.native.js` and `modules/http.polyfill.js`, so a normal app imports them from there.
+
+`Status` is the exception worth knowing: it is __not__ re-exported, and `HTTPError` requires it. That import is:
+
+```ts
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+```
+
+See [Modules > HTTP > Native vs. Polyfill](/reference/modules/http/native-vs-polyfill) for the full re-export list in the HTTP module.

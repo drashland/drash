@@ -85,25 +85,34 @@ flowchart LR
 
 Clients could make requests to the API Endpoint _through_ the runtime's HTTP server and Drash's chain.
 
-## The Standard Chain
+## The HTTP Module's Chain
 
-`Chain.builder()` assembles these handlers, in this fixed order:
+The HTTP module's `Chain` assembles the following handlers in this order:
 
 | # | Handler                   | What it does                                                           |
 | - | ------------------------- | ---------------------------------------------------------------------- |
-| 1 | `RequestValidator`        | Rejects input lacking a readable `url` or `method`                     |
-| 2 | `ResourcesIndex`          | Matches `input.url` against each resource's `paths` using `URLPattern` |
-| 3 | `ResourceNotFoundHandler` | Throws `HTTPError(404)` when the index matched nothing                 |
-| 4 | `RequestParamsParser`     | Defines a non-enumerable `params` property on the request              |
-| 5 | `ResourceCaller`          | Invokes `resource[METHOD](request)`                                    |
+| 1 | `RequestValidator`        | Rejects inputs lacking a readable `url` or `method` field.                     |
+| 2 | `ResourcesIndex`          | Matches `input.url` against each resource's `paths` using `URLPattern` or a polyfilled `URLPattern`. |
+| 3 | `ResourceNotFoundHandler` | Throws `HTTPError(404)` when the `ResourcesIndex` handler cannot find a matching resource.                 |
+| 4 | `RequestParamsParser`     | Defines a non-enumerable `params` property on the request. Access it via `request.params`.              |
+| 5 | `ResourceCaller`          | Invokes `resource[METHOD](request)` (e.g., `UsersResource.GET(request)`).                                    |
 
-The order is not configurable through the builder. What you control is the set of resources, and the middleware wrapped around them.
+The order is not configurable through the builder. What you control is the set of resources or resource groups you provide. For example:
+
+```ts
+const chain = Chain
+  .builder()            // Assembles all handlers above
+  .resources(/* ... */) // Your resources come after so they can be called by `ResourceCaller`
+  .build()              // Builds the chain in the above order
+```
 
 ## What Data Does It Process?
 
-Drash's chains process the data you give them. **You are in charge of defining what goes into the chain and what comes out.** Handlers pass along the input you gave them, enriched — not a fixed request type. That is why Node can hand the chain a plain context object while Deno hands it a Web `Request`, and both work.
+Drash's chains process the data you give them. **You are in charge of defining what goes into the chain and what comes out.** Handlers pass along the input you gave them, not a fixed request type. That is why Node can hand the chain a plain context object while Deno hands it a Web `Request`, and both work.
 
-The data must meet these requirements:
+### Requirements
+
+The only requirements are:
 
 1. The data must be a single object.
 1. The object must have a `url: string` property, and it must be a _fully qualified URL_:
@@ -126,13 +135,23 @@ The data must meet these requirements:
    const method: string = "get";
    ```
 
-`RequestValidator` enforces exactly that much, and throws `HTTPError(422)` otherwise:
+Given the above, the single data object could look like:
 
-```text
-Request could not be read
-Request HTTP method could not be read
-Request URL could not be read
+```ts
+const input = {
+  url: "http://localhost:1447/accounts/1337",
+  method: "get",
+  //
+  // ... other fields
+  //
+}
 ```
+
+The `RequestValidator` handler the above shape and throws `HTTPError(422)` with one of the following error messages if that shape is not met:
+
+- Request could not be read
+- Request HTTP method could not be read
+- Request URL could not be read
 
 ### Examples of Correct Data
 
@@ -157,15 +176,9 @@ const context = {
 };
 ```
 
-### Data Exchange Summarized
-
-- The Client and Runtime exchange [HTTP messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages). That process is defined by the Client and Runtime.
-- The Runtime and Drash Chain exchange inputs and outputs, whose types are defined by the Runtime and you. If the Runtime is Deno, its HTTP server gives you a `Request`; you pass it to the chain and have the chain return a `Response`, which is what Deno's HTTP server wants back.
-- If Some Service exists, the data exchanged between it and the chain is defined by Some Service.
-
 ## Errors Propagate to You
 
-`chain.handle()` returns a promise. Errors thrown anywhere in the chain — including a resource method — reject that promise. Drash writes nothing to the socket, so **your `.catch()` is the only thing standing between an error and the client**.
+`chain.handle()` returns a `Promise`. Errors thrown anywhere in the chain — including a resource method — reject that promise. Drash writes nothing to the socket, so **your `.catch()` is the only thing standing between an error and the client**.
 
 ```ts
 chain
@@ -179,7 +192,7 @@ This is deliberate: translating an error into a response is runtime-specific, an
 
 ## Path Matching
 
-`ResourcesIndex` appends `{/}?` to every path before compiling it, so `/users` matches `/users/` too. Match results are cached by fully-qualified URL.
+The `ResourcesIndex` handler appends `{/}?` to every path before compiling it, so `/users` matches `/users/` too. Match results are cached by fully-qualified URL.
 
 Because matching is `URLPattern`-based, path parameters use `URLPattern` syntax:
 
@@ -189,9 +202,11 @@ class Users extends Resource {
 }
 ```
 
-Retrieve them via [`request.params`](/docs/tutorials/resource#request-params), and see [Dynamic paths](/docs/tutorials/resource#dynamic-paths) for the full syntax.
+You can access request params via [`request.params`](/docs/requests/handling-requests).
+
+See [Resources > Creating a Resource > Dynamic Paths](/docs/resources/creating-a-resource#dynamic-paths) for the full syntax.
 
 ## Next Steps
 
 - Read about [how resources play a role in the chain](/docs/concepts/resources).
-- [Create a tiny HTTP application](/docs/tutorials/step-by-step-guide).
+- [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide).

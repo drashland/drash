@@ -23,7 +23,7 @@ class MyResource {
 }
 ```
 
-For the full API — what the methods receive, what happens to the ones you leave out, and how to read params — see [Resource](/docs/tutorials/resource).
+For the full API — what the methods receive, what happens to the ones you leave out, and how to read params — see [Creating a Resource](/docs/resources/creating-a-resource).
 
 ## Why Use Classes?
 
@@ -120,7 +120,7 @@ So given a resource that implements only `GET`, **any** request to it that is **
   Throwing `501 Not Implemented` is the default behavior **for all resources**,
   unless you create your own base resource class with different defaults. If you
   want `405 Method Not Allowed` instead, override the method and throw it — see
-  [Resource](/docs/tutorials/resource).
+  [Creating a Resource](/docs/resources/creating-a-resource).
 </Callout>
 
 ## Chain Resource Classes
@@ -150,5 +150,5 @@ class MyResource extends Resource {
 
 ## Next Steps
 
-- [Create a tiny HTTP application](/docs/tutorials/step-by-step-guide).
-- [Resource reference](/docs/tutorials/resource) for paths, params, and dynamic path syntax.
+- [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide).
+- [Creating a Resource](/docs/resources/creating-a-resource) for paths, params, and dynamic path syntax.

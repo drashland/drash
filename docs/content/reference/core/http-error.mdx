@@ -5,14 +5,17 @@ The uniform error type for HTTP failures. Throw it from resources and middleware
 ```ts
 import {
   HTTPError,
+  Resource,
+  type HTTPRequest,
 } from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
 
 class Users extends Resource {
   public paths = ["/users/:id"];
 
-  public GET(request: Chain.HTTPRequest) {
+  public GET(request: HTTPRequest) {
     if (!request.headers.get("authorization")) {
-      throw new HTTPError(401, "Get out!");
+      throw new HTTPError(Status.Unauthorized, "Get out!");
     }
 
     return new Response("Authed");
@@ -40,71 +43,19 @@ new HTTPError(status, message?)
 | `status_code`             | `number` | `401`            |
 | `status_code_description` | `string` | `"Unauthorized"` |
 
-## Catching it
+## Notes
 
-`chain.handle()` rejects; nothing is written for you. This is the standard translation:
-
-```ts
-chain
-  .handle<Response>(request)
-  .catch((error: Error | HTTPError) => {
-    if (
-      (error.name === "HTTPError" || error instanceof HTTPError) &&
-      "status_code" in error &&
-      "status_code_description" in error
-    ) {
-      return new Response(error.message, {
-        status: error.status_code,
-        statusText: error.status_code_description,
-      });
-    }
-
-    return new Response("Internal Server Error", {
-      status: 500,
-      statusText: "Internal Server Error",
-    });
-  });
-```
-
-### Example error handlers are educational
-
-<Callout type="warning">
-  The short `.catch()` blocks throughout these docs exist to keep the
-  surrounding example readable. **They are not suitable for production.**
-</Callout>
-
-Specifically:
-
-- **They return `500` for everything.** Not every error is a `500`; you need logic to pick the right status, which is what the block above does via `status_code`.
-- **They send `error.message` as the body unchecked.** That message may come from deep in your stack ("Unable to read from users table. User ID 108 does not exist."), and returning it verbatim leaks information about your system.
-- **They use `console.log`.** In production, this should be replaced with a logging library. For example:
-
-  ```ts
-  import { logger } from "my-logging-lib"
-
-  chain
-    .handle<Response>(request)
-    .catch((error: Error | HTTPError) => {
-      logger.error(error.message);
-      logger.trace(error);
-
-      //
-      // ... rest of code that returns error responses
-      //
-    });
-  ```
-
-### Where to import it from
+### Where to import it from?
 
 The chain modules re-export `HTTPError` for convenience, which is why the examples import it alongside `Chain` and `Resource`. You can import it from the core codebase instead if that suits you better — it is the same class, and Drash's own internals throw it, so every error from the framework is uniform.
 
-### Why the `name` check
+### Why the `name` check?
 
 `error instanceof HTTPError` can be `false` even for a genuine Drash error — when the error crosses a module realm, or when two copies of Drash are loaded (a bundler duplicating the package, or mixed CJS/ESM resolution).
 
 `HTTPError` therefore carries a literal `name = "HTTPError"`, and checking `error.name` first is the reliable test. Check both, as above.
 
-## Statuses Drash throws on its own
+## Default Errors Thrown Internally
 
 | Status | Raised by                 | When                                         |
 | ------ | ------------------------- | -------------------------------------------- |
@@ -112,5 +63,3 @@ The chain modules re-export `HTTPError` for convenience, which is why the exampl
 | `422`  | `RequestValidator`        | Input has no readable `url` or `method`      |
 | `500`  | `Middleware.next()`       | The wrapped resource method returned nothing |
 | `501`  | `Resource`                | An HTTP method was not overridden            |
-
-See [Chains](/docs/concepts/chains).

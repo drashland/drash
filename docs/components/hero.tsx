@@ -329,10 +329,12 @@ export function Hero() {
     <>
       <section className={styles.hero}>
         <div className={styles.inner}>
-          {/* <span className={styles.eyebrow}>
+          {
+            /* <span className={styles.eyebrow}>
             <span className={styles.dot} />
             v3 is in beta
-          </span> */}
+          </span> */
+          }
 
           <h1 className={styles.title}>
             Better web apps<br />

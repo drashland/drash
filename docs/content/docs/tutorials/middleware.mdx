@@ -13,11 +13,12 @@ import {
   HTTPError,
   Middleware,
 } from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
 
 class Auth extends Middleware {
   public ALL(request: Request) {
     if (request.headers.get("x-api-key") !== "secret") {
-      throw new HTTPError(401);
+      throw new HTTPError(Status.Unauthorized);
     }
 
     return this.next<Response>(request);
@@ -102,3 +103,18 @@ const group = Resource
 
 const chain = Chain.builder().resources(...group).build();
 ```
+
+## Bundled middleware
+
+Four middleware ship with Drash. Each is documented with its options, defaults,
+and exports under Reference:
+
+| Middleware                                                         | What it does                                                        |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| [AcceptHeader](/reference/modules/middleware/accept-header)         | Rejects requests whose `Accept` header the resource cannot satisfy   |
+| [CORS](/reference/modules/middleware/cors)                          | Answers preflight `OPTIONS` requests and sets CORS response headers  |
+| [ETag](/reference/modules/middleware/etag)                          | Adds `ETag` headers and answers `304 Not Modified` on a match        |
+| [RateLimiter](/reference/modules/middleware/rate-limiter)           | Limits requests per client and sets the `X-RateLimit-*` headers      |
+
+They are ordinary middleware — each is a class you pass to `.middleware()`, and
+everything on this page applies to them too.

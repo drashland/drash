@@ -1,0 +1,51 @@
+---
+title: Modules
+description: API reference for src/modules — the composed, user-facing layer of Drash.
+---
+
+# Modules
+
+The pieces that do the work, composed from [Standard](/reference/standard) and [Core](/reference/core). This is the layer an application imports from.
+
+## Exports
+
+| Export                     | Kind     | Import from                              | Documented in                                          |
+| -------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------ |
+| `Chain`                    | class    | `modules/http.native.js` / `.polyfill.js` | [Chain](/reference/modules/http/chain)                 |
+| `Resource`                 | class    | `modules/http.native.js` / `.polyfill.js` | [Resource](/reference/core/resource)                   |
+| `Middleware`               | class    | `modules/http.native.js` / `.polyfill.js` | [Middleware](/reference/standard/middleware)           |
+| `HTTPError`                | class    | `modules/http.native.js` / `.polyfill.js` | [HTTPError](/reference/core/http-error)                |
+| `HTTPRequest`              | type     | `modules/http.native.js` / `.polyfill.js` | [HTTP](/reference/modules/http)                        |
+| `requestChain`             | function | `modules/builders/RequestChainBuilder.js` | [Builders](/reference/modules/builders)                |
+| `request`                  | function | `modules/builders/RequestBuilder.js`      | [Builders](/reference/modules/builders)                |
+| `response`                 | function | `modules/builders/ResponseBuilder.js`     | [Builders](/reference/modules/builders)                |
+| `ResponseBuilder`          | class    | `modules/builders/ResponseBuilder.js`     | [Builders](/reference/modules/builders)                |
+| `AcceptHeader`             | function | `modules/middleware/AcceptHeader/mod.js`  | [AcceptHeader](/reference/modules/middleware/accept-header) |
+| `CORS`                     | function | `modules/middleware/CORS/mod.js`          | [CORS](/reference/modules/middleware/cors)             |
+| `ETag`                     | function | `modules/middleware/ETag/mod.js`          | [ETag](/reference/modules/middleware/etag)             |
+| `RateLimiter`              | function | `modules/middleware/RateLimiter.js`       | [RateLimiter](/reference/modules/middleware/rate-limiter) |
+
+Each bundled middleware also exports its `XMiddleware` class, its `Options` type, and its `defaultOptions` — see the individual pages.
+
+## The two entry points
+
+`modules/http.native.js` and `modules/http.polyfill.js` export the same five members. The only difference is which `URLPattern` implementation they hand the chain.
+
+| Entry point                | For                              |
+| -------------------------- | -------------------------------- |
+| `modules/http.native.js`   | Deno, Cloudflare Workers         |
+| `modules/http.polyfill.js` | Node, Bun                        |
+
+See [Native vs. Polyfill](/reference/modules/http/native-vs-polyfill).
+
+<Callout type="warning" emoji={null}>
+__Any change to one entry point has to be mirrored in the other.__ They are separate files with the same surface, and the compat tests exist in `native/` and `polyfill/` pairs for that reason.
+</Callout>
+
+## Sections
+
+<Cards num={2}>
+  <Cards.Card title="HTTP" href="/reference/modules/http" arrow />
+  <Cards.Card title="Middleware" href="/reference/modules/middleware/cors" arrow />
+  <Cards.Card title="Builders" href="/reference/modules/builders" arrow />
+</Cards>

@@ -21,7 +21,9 @@ type CalloutProps = Omit<NextraCalloutProps, "type"> & {
  * would draw a second border inside Nextra's own, and its icon slot would
  * still reserve space with no icon in it.
  */
-export function Callout({ className, emoji, type, ...props }: CalloutProps) {
+export function Callout(
+  { className, emoji = null, type, ...props }: CalloutProps,
+) {
   if (type === "gray") {
     return (
       <div

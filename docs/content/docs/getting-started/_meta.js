@@ -5,4 +5,5 @@ export default {
   index: "Introduction",
   "about-these-pages": "About These Pages",
   prerequisites: "Prerequisites",
+  "step-by-step-guide": "Step-By-Step Guide",
 };

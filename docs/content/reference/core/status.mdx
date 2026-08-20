@@ -1,0 +1,78 @@
+# Status
+
+Four lookup tables describing HTTP response statuses. `Status` is the one you use; the other three are the pieces it is built from.
+
+```ts
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+throw new HTTPError(Status.Unauthorized);
+// -> status_code             = 401
+// -> status_code_description = "Unauthorized"
+// -> message                 = "Unauthorized"
+```
+
+## `Status`
+
+```ts
+Status: Record<ResponseStatusName, {
+  readonly code: ResponseStatusCode;
+  readonly description: ResponseStatusDescription;
+}>
+```
+
+Maps a status name to a `{ code, description }` pair. This pair is the `ResponseStatus` type, and it is what [`HTTPError`](/reference/core/http-error) takes as its first constructor argument.
+
+| Expression                     | Value                                     |
+| ------------------------------ | ----------------------------------------- |
+| `Status.OK`                    | `{ code: 200, description: "OK" }`        |
+| `Status.NotFound`              | `{ code: 404, description: "Not Found" }` |
+| `Status.NotFound.code`         | `404`                                     |
+| `Status.NotFound.description`  | `"Not Found"`                             |
+
+There are 62 entries, covering the informational, successful, redirection, client error, and server error ranges.
+
+## `StatusCode`
+
+```ts
+StatusCode: Record<ResponseStatusName, number>
+```
+
+Name to number, without the description.
+
+```ts
+import { StatusCode } from "@drashland/drash/core/http/response/StatusCode.js";
+
+StatusCode.NotFound; // 404
+```
+
+## `StatusDescription`
+
+Name to the reason phrase.
+
+```ts
+import { StatusDescription } from "@drashland/drash/core/http/response/StatusDescription.js";
+
+StatusDescription.NotFound; // "Not Found"
+```
+
+## `StatusName`
+
+The names themselves, which is what makes `ResponseStatusName` a union of literals rather than `string`.
+
+```ts
+import { StatusName } from "@drashland/drash/core/http/response/StatusName.js";
+
+StatusName.NotFound; // "NotFound"
+```
+
+## Notes
+
+### Why a pair and not a number
+
+`HTTPError` needs both halves — `status_code` for the response status and `status_code_description` for its `statusText` — and taking them as one object means they cannot disagree. Passing `401` alone would leave the class to look the description up, and passing both separately would let a caller pair `401` with `"Not Found"`.
+
+This is why `new HTTPError(401)` does not type check. Pass `Status.Unauthorized`.
+
+### Not re-exported
+
+`Status` is not among the exports of `modules/http.native.js` or `modules/http.polyfill.js`. Import it from its own subpath, as shown above, even in files that get `HTTPError` from the HTTP module.

@@ -1,0 +1,172 @@
+---
+title: AcceptHeader
+description: Enforces that a request's Accept header is present and satisfied by the response's Content-Type.
+---
+
+# AcceptHeader
+
+<Callout type="info" emoji={null}>
+This middleware is stricter than it looks. Out of the box it rejects any request
+that does not send an `Accept` header &mdash; and plenty of clients do not.
+</Callout>
+
+## Summary
+
+The AcceptHeader middleware checks a request's `Accept` header against the
+`Content-Type` of the response your resource produced. It is added to resources
+using a [resource group](/reference/standard/resource-group).
+
+The highlighted section below shows how it is added:
+
+<Tabs items={["Deno v1.46.x"]}>
+
+<Tabs.Tab>
+
+```typescript showLineNumbers  {8}
+// Code is shortened for brevity
+
+import { Resource } from "@drashland/drash/modules/http.native.js";
+import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader/mod.js";
+
+const group = Resource
+  .group()
+  .middleware(AcceptHeader()) // Calling it with no options uses the defaults
+  .resources(Users)
+  .build();
+```
+
+</Tabs.Tab>
+</Tabs>
+
+Like the other bundled middleware, `AcceptHeader` is a __factory__. Calling it
+returns a middleware class with your options already bound to it.
+
+## Configuring Options
+
+### The Defaults
+
+| Option                              | Type      | Default | Behavior When `true`                                              |
+| ----------------------------------- | --------- | ------- | ----------------------------------------------------------------- |
+| `throw_if_accept_header_missing`    | `boolean` | `true`  | Throws when the request has no `Accept` header                    |
+| `throw_if_accept_header_mismatched` | `boolean` | `true`  | Throws when the response `Content-Type` does not satisfy `Accept` |
+
+Options you leave out keep their defaults &mdash; the middleware merges what you
+pass over `defaultOptions`, so a partial object is safe.
+
+<Callout type="warning" emoji={null}>
+__Both default to `true`.__ Adding this middleware with no options makes an
+absent `Accept` header a failure. Clients that omit it &mdash; plain `curl`,
+some health checkers &mdash; will start failing.
+</Callout>
+
+### Allowing Requests Without an Accept Header
+
+If you want the content-type check but not the "you must ask" rule, turn the
+first one off:
+
+```typescript showLineNumbers
+// A request with no Accept header is allowed through. If it does send one, it
+// is still checked against the response.
+AcceptHeader({
+  throw_if_accept_header_missing: false,
+});
+```
+
+### Allowing Mismatched Content Types
+
+The reverse: keep requiring the header, but do not police what your resources
+answer with:
+
+```typescript showLineNumbers
+// The client must say what it accepts. What comes back is not checked against
+// it.
+AcceptHeader({
+  throw_if_accept_header_mismatched: false,
+});
+```
+
+Turning both off leaves the middleware sitting in the chain doing nothing.
+Remove it instead:
+
+```typescript showLineNumbers
+// Pointless. Neither check runs.
+AcceptHeader({
+  throw_if_accept_header_missing: false,
+  throw_if_accept_header_mismatched: false,
+});
+```
+
+## How It Works
+
+### TLDR
+
+The middleware reads the request's `Accept` header on the way in, lets your
+resource produce a response, then compares that response's `Content-Type`
+against what the client asked for. Either check can throw.
+
+### Detailed Explanation
+
+Unlike CORS, this middleware never answers a request itself. It runs on the way
+in, calls your resource, and then inspects what came back &mdash; which is why
+the mismatch check can exist at all. The `Content-Type` does not exist until the
+resource has produced it.
+
+`*/*` satisfies any content type. A specific `Accept` such as `application/json`
+is satisfied when the response's `Content-Type` matches it.
+
+### Data Flow
+
+<div className="tutorials:chains:introduction flowchart-drash-chain">
+```mermaid
+flowchart LR
+  req([Request])
+  h1([AcceptHeader])
+  h2([MyResource])
+  h3([AcceptHeader])
+  res([Response])
+
+  subgraph chain[Request Flow]
+    direction LR
+    req --> h1 --> h2 --> h3 --> res
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+
+  class req,h1,h2,h3,res blue
+```
+</div>
+
+As you can see above, the middleware is involved __twice__: once before the
+resource to check the header is there, and once after it to check the response
+satisfies it.
+
+## Extending This Middleware
+
+The module exports the class as well as the factory, so you can extend it:
+
+```typescript showLineNumbers
+import { AcceptHeaderMiddleware } from "@drashland/drash/modules/middleware/AcceptHeader/mod.js";
+
+class LoggedAcceptHeader extends AcceptHeaderMiddleware {
+  constructor() {
+    // Your options go here, the same ones you would pass to AcceptHeader().
+    super({ throw_if_accept_header_missing: false });
+  }
+
+  public override ALL(request: Request) {
+    console.log(`Accept: ${request.headers.get("accept")}`);
+
+    // Hand it back to the original middleware and get out of the way.
+    return super.ALL(request);
+  }
+}
+```
+
+| Export                   | What It Is                                           |
+| ------------------------ | ---------------------------------------------------- |
+| `AcceptHeader`           | The factory. Returns a configured middleware class   |
+| `AcceptHeaderMiddleware` | The middleware class itself, for extending           |
+| `defaultOptions`         | The defaults listed above                            |
+| `Options`                | The options type                                     |

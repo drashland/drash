@@ -1,0 +1,238 @@
+# Error Handling
+
+Throwing, catching, and responding to errors
+
+## Overview
+
+Drash does not send error responses for you. It ships no server, so it has nothing to send a response with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `chain.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
+
+### Recommended reading
+
+- Read the concepts on [chains](/docs/concepts/chains)
+- Complete the [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) so you have a `.catch()` block to work in
+
+### Objectives
+
+To gain familiarity with:
+
+- Drash's `HTTPError` class;
+- the errors Drash throws on your behalf; and
+- building responses from caught errors.
+
+## The `HTTPError` Class
+
+Drash's internals use the core `HTTPError` class, and the HTTP module re-exports it for your convenience. Every error the framework throws is one of these, which is what makes a single `.catch()` block enough.
+
+```ts
+import {
+  HTTPError,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    if (!request.headers.has("x-some-header")) {
+      throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
+    }
+
+    return new Response("Hello!");
+  }
+}
+```
+
+<Callout type="warning" emoji={null}>
+__The first argument is a status object, not a number.__ `HTTPError` takes a `ResponseStatus` — a `{ code, description }` pair — so `new HTTPError(401)` does not type check. Import `Status` and pass `Status.Unauthorized`.
+
+`Status` is not re-exported by the HTTP module. It has its own import:
+
+```ts
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+```
+</Callout>
+
+The class gives you everything a response needs:
+
+| Member                    | Type     | Notes                                              |
+| ------------------------- | -------- | -------------------------------------------------- |
+| `status_code`             | `number` | Taken from the status object's `code`               |
+| `status_code_description` | `string` | Taken from the status object's `description`        |
+| `message`                 | `string` | The second constructor argument — __optional__      |
+| `name`                    | `string` | Always `"HTTPError"`                                |
+
+The message is optional because it defaults: leave it out and `message` becomes the status description, so `new HTTPError(Status.NotFound)` already has `"Not Found"` as its message.
+
+`name` is always `"HTTPError"` so you can identify one in environments where `instanceof` fails — across a bundle boundary, for instance, where two copies of the class exist and `instanceof` returns `false` against the wrong one.
+
+## Default Errors
+
+Some errors are thrown for you, before your resource is ever called.
+
+### 404 Not Found
+
+Thrown by the chain's `ResourceNotFoundHandler` in two scenarios.
+
+__The path does not exist in any resource.__ A client requests a path, and no resource in the chain declares it:
+
+```ts
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    return new Response("Hello!");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+// `/test` is not in any resource's paths, so this rejects with a 404
+const request = new Request("http://localhost:1447/test");
+
+chain
+  .handle<Response>(request)
+  .then((response) => response.text())
+  .then((text) => console.log(text))
+  .catch((error) => console.log(error.status_code)); // 404
+```
+
+__The resource was never added to the chain.__ The path exists in a resource, but that resource was not passed to `.resources()`:
+
+```ts
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    return new Response("Hello!");
+  }
+}
+
+// `Home` is never added, so its `/` path is never indexed
+const chain = Chain
+  .builder()
+  .resources()
+  .build();
+
+const request = new Request("http://localhost:1447/");
+
+chain
+  .handle<Response>(request)
+  .catch((error) => console.log(error.status_code)); // 404
+```
+
+The second one is worth knowing because the symptom and the cause look unrelated. The path is right there in the resource, and the response is still a 404.
+
+### 501 Not Implemented
+
+Thrown by the base `Resource` class. Every HTTP method you do not override throws `HTTPError(Status.NotImplemented)`, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
+
+To send `405 Method Not Allowed` instead, override the method and throw it yourself:
+
+```ts
+public PATCH(_request: Request) {
+  throw new HTTPError(Status.MethodNotAllowed);
+}
+```
+
+### 422 Unprocessable Entity
+
+Thrown by the chain's `RequestValidator`, the first handler in the chain, when the input it was handed cannot be read. This is a wiring problem, not a client problem — it usually means the object passed to `chain.handle()` is not the shape the chain expects.
+
+| Message                                  | Cause                                      |
+| ---------------------------------------- | ------------------------------------------ |
+| `Request could not be read`              | The input is falsy, or is not an object    |
+| `Request HTTP method could not be read`  | No `method` property, or it is not a string |
+| `Request URL could not be read`          | No `url` property, or it is not a string    |
+
+### 500 Internal Server Error
+
+Thrown by `Middleware.next()` when the resource method it wrapped returned nothing — `The server was unable to generate a response`. A middleware-wrapped HTTP method has to return a value.
+
+## Catching Errors
+
+The recommended approach is to check for `HTTPError` in your `.catch()` block and use it to build the response. Anything that is __not__ an `HTTPError` came from your own code and should not be shown to the client:
+
+```ts
+import {
+  Chain,
+  HTTPError,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    if (!request.headers.has("x-some-header")) {
+      throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
+    }
+
+    return new Response("Hello!");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+Deno.serve({ port: 1447 }, (request: Request) => {
+  return chain
+    .handle<Response>(request)
+    .catch((e: Error | HTTPError) => {
+      // Errors Drash threw are safe to surface: their messages are ones you
+      // or the framework wrote deliberately.
+      if (e.name === "HTTPError" || e instanceof HTTPError) {
+        const error = e as HTTPError;
+
+        return new Response(error.message, {
+          status: error.status_code,
+          statusText: error.status_code_description,
+        });
+      }
+
+      // Everything else came from your own code. Log it ...
+      logger.error(e.message); // so it shows up in your logs
+      logger.trace(e);         // the whole object, for debugging
+
+      // ... and return something generic so your internals stay private.
+      return new Response("The server could not generate a response", {
+        status: 500,
+        statusText: "Internal Server Error",
+      });
+    });
+});
+```
+
+The `e.name === "HTTPError"` check comes first on purpose. It works in the bundle-boundary case described above, where `instanceof` would return `false` on a perfectly valid `HTTPError`.
+
+## Code Blocks Are Educational
+
+You will see error handlers across this site written as briefly as this:
+
+```ts
+return chain
+  .handle<Response>(request)
+  .catch((e) => {
+    console.log({ e });
+    return new Response(e.message, { status: 500 });
+  });
+```
+
+That is deliberate. Those blocks exist to support whatever the page is actually teaching, and __they are not suitable for production__:
+
+- __It always returns a `500`.__ Not every error is a 500. A missing resource is a 404 and a missing header is a 401, and both would be reported wrong here.
+- __The body is `e.message`, unchecked.__ That message could have come from deep in your own code — `"Unable to read from users table. User ID 108 does not exist."` — and sending it hands a client a description of your database.
+- __`console.log()` is not logging.__ In a real app that would be a logging library call, with the message and the error object going to different levels.
+
+The [Catching Errors](#catching-errors) block above is the one to copy.
+
+## Next Steps
+
+- Read the [`HTTPError`](/reference/core/http-error) reference for the full API
+- Group resources so they can share [middleware](/docs/resources/resource-groups) that throws consistent errors

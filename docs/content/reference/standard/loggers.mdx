@@ -1,0 +1,83 @@
+# Loggers
+
+A small logging surface used by Drash internally and available to you. Nothing in the request chain logs on its own.
+
+```ts
+import { ConsoleLogger } from "@drashland/drash/standard/log/ConsoleLogger.js";
+import { Level } from "@drashland/drash/standard/log/Level.js";
+
+const logger = ConsoleLogger.create("app", Level.Debug);
+
+logger.info("Server started");
+```
+
+## `Logger`
+
+The interface the loggers implement. Six methods, one per level:
+
+```ts
+interface Logger {
+  debug(...messages: unknown[]): unknown;
+  error(...messages: unknown[]): unknown;
+  fatal(...messages: unknown[]): unknown;
+  info(...messages: unknown[]): unknown;
+  trace(...messages: unknown[]): unknown;
+  warn(...messages: unknown[]): unknown;
+}
+```
+
+`AbstractLogger` narrows these to `(message: unknown, ...replacements: unknown[])`, treating the first argument as the message and the rest as substitutions into it.
+
+## `Level`
+
+The severity scale. A logger writes a message when the message's level is at or below the logger's own.
+
+| Name    | Value |
+| ------- | ----- |
+| `Off`   | `0`   |
+| `Fatal` | `1`   |
+| `Error` | `2`   |
+| `Warn`  | `3`   |
+| `Info`  | `4`   |
+| `Debug` | `5`   |
+| `Trace` | `6`   |
+| `All`   | `7`   |
+
+`Off` silences everything; `All` writes everything. The default is `Off`, so a logger created without a level writes nothing.
+
+## `AbstractLogger`
+
+Implements `Logger` and all six methods, plus the level filtering and message formatting. It leaves one method abstract:
+
+```ts
+protected abstract write(...messages: unknown[]): unknown;
+```
+
+Subclass it and implement `write()` to send messages somewhere other than the console. `ConsoleLogger` implements it as `write(level, message, replacements)`.
+
+Formatting pads the logger name to 25 characters with dots, so lines from differently-named loggers align.
+
+## `ConsoleLogger`
+
+`AbstractLogger` with `write()` calling `console.log()`.
+
+### `ConsoleLogger.create(name, level?)`
+
+```ts
+static create(name: string, level: LogLevel = Level.Off): ConsoleLogger
+```
+
+| Parameter | Type       | Notes                                                   |
+| --------- | ---------- | ------------------------------------------------------- |
+| `name`    | `string`   | Appears in the message prefix                           |
+| `level`   | `LogLevel` | Optional. __Defaults to `Level.Off`__ — nothing is written |
+
+The default is the thing to watch. `ConsoleLogger.create("app")` produces a logger that silently discards every message.
+
+## `GroupConsoleLogger`
+
+The same surface, for grouping related messages under one heading. Also exposes `Level`.
+
+## Notes
+
+These loggers are deliberately minimal, and Drash does not require you to use them. For production logging, the [Error Handling](/docs/tutorials/error-handling) page shows the shape to aim for — a real logging library in your `.catch()` block, with the message and the error object going to different levels.

@@ -1,0 +1,40 @@
+# Method
+
+The nine HTTP methods a resource can implement, as string constants.
+
+```ts
+import { Method } from "@drashland/drash/core/http/request/Method.js";
+
+Method.GET; // "GET"
+```
+
+## Values
+
+| Key       | Value     |
+| --------- | --------- |
+| `CONNECT` | `CONNECT` |
+| `DELETE`  | `DELETE`  |
+| `GET`     | `GET`     |
+| `HEAD`    | `HEAD`    |
+| `OPTIONS` | `OPTIONS` |
+| `PATCH`   | `PATCH`   |
+| `POST`    | `POST`    |
+| `PUT`     | `PUT`     |
+| `TRACE`   | `TRACE`   |
+
+Key and value are identical for every entry. The constant exists for the type it produces, not for the indirection.
+
+## Type
+
+```ts
+import type { RequestMethod } from "@drashland/drash/core/types/RequestMethod.js";
+// "CONNECT" | "DELETE" | "GET" | ...
+```
+
+`RequestMethod` is derived from `Method`, so the two cannot drift apart.
+
+## Notes
+
+This list is the whole surface a resource can implement. [`Resource`](/reference/core/resource) defines exactly these nine methods.
+
+The chain's `ResourceCaller` uppercases the incoming method and calls `resource[method]` directly. A request carrying a method outside this set resolves to `undefined` and fails with a `TypeError` rather than an `HTTPError`, so it does not arrive in your `.catch()` block as a tidy status — see [Error Handling](/docs/tutorials/error-handling).
