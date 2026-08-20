@@ -20,21 +20,21 @@
  */
 
 // Imports > Core
-import { HTTPError } from "../../../core/errors/HTTPError.ts";
-import { Header } from "../../../core/http/Header.ts";
-import { Status } from "../../../core/http/response/Status.ts";
-import { StatusCode } from "../../../core/http/response/StatusCode.ts";
-import { StatusDescription } from "../../../core/http/response/StatusDescription.ts";
+import { HTTPError } from "../../core/errors/HTTPError.ts";
+import { Header } from "../../core/http/Header.ts";
+import { Status } from "../../core/http/response/Status.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { StatusDescription } from "../../core/http/response/StatusDescription.ts";
 
 // Imports > Standard
-import { Middleware } from "../../../standard/http/Middleware.ts";
-import { response } from "./RateLimitResponse.ts";
+import { Middleware } from "../../standard/http/Middleware.ts";
+import { response } from "./rate_limiter/RateLimitResponse.ts";
 
 // Imports > Modules
-import { RateLimitedClient } from "./RateLimitedClient.ts";
+import { RateLimitedClient } from "./rate_limiter/RateLimitedClient.ts";
 
 // Imports > Local
-import { RateLimiterErrorResponse } from "./RateLimiterErrorResponse.ts";
+import { RateLimiterErrorResponse } from "./rate_limiter/RateLimiterErrorResponse.ts";
 
 type PreNextContext = {
   /**
@@ -56,28 +56,35 @@ type Context = PreNextContext & {
 type Options = {
   /**
    * How much time (in milliseconds) a client is allocated the `max_requests`.
+   * Defaults to `6000` (1 minute).
    */
-  rate_limit_time_window_length: number;
+  rate_limit_time_window_length?: number;
 
   /**
    * Number of requests a client is allowed within the `rate_limit_window`.
+   * Defaults to `3`.
    */
-  max_requests: number;
+  max_requests?: number;
 
   /**
-   * The header containing the connection information (e.g., a client's address)
-   * that is subject to rate limiting.
+   * The header name containing the value that is subject to rate limiting.
+   * Defaults to `x-drash-ratelimit-client-id`.
    */
-  client_id_header_name: string;
+  client_id_header_name?: string;
 
   /**
-   * Should the middleware throw an HTTP 400 error if the connection information
+   * Should the middleware throw an HTTP 400 error if `client_id_header_name`
    * header is missing?
+   * Defaults to `true`.
    */
-  throw_if_connection_header_name_missing: boolean;
+  throw_if_connection_header_name_missing?: boolean;
 };
 
-const defaultOptions: Options = {
+/**
+ * Every option has a default, so `Options` is entirely optional and this is the
+ * fully-populated form the middleware works from after merging.
+ */
+const defaultOptions: Required<Options> = {
   client_id_header_name: "x-drash-ratelimit-client-id",
   max_requests: 3,
   rate_limit_time_window_length: 60000, // 1 minute
@@ -85,7 +92,12 @@ const defaultOptions: Options = {
 };
 
 class RateLimiterMiddleware extends Middleware {
-  #options: Options;
+  /**
+   * Held as `Required<Options>` because it is the result of merging over
+   * `defaultOptions` — every field is present by construction, so the reads
+   * below need no narrowing.
+   */
+  #options: Required<Options>;
   #request_store: Record<string, RateLimitedClient> = {};
 
   /**
@@ -93,9 +105,12 @@ class RateLimiterMiddleware extends Middleware {
    *
    * @param options See {@link Options}.
    */
-  constructor(options: Options = defaultOptions) {
+  constructor(options: Options = {}) {
     super();
-    this.#options = options;
+    this.#options = {
+      ...defaultOptions,
+      ...options,
+    };
   }
 
   public override ALL(request: Request): Promise<Response> {
@@ -327,7 +342,7 @@ class RateLimiterMiddleware extends Middleware {
  * instantiated, it instantiates with the provided `options`. If no options are
  * provided, it uses its default options.
  */
-function RateLimiter(options: Options): new () => RateLimiterMiddleware {
+function RateLimiter(options: Options = {}): new () => RateLimiterMiddleware {
   return class DefaultRateLimiterMiddleware extends RateLimiterMiddleware {
     constructor() {
       super(options);
@@ -337,4 +352,4 @@ function RateLimiter(options: Options): new () => RateLimiterMiddleware {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { type Options, RateLimiter, RateLimiterMiddleware };
+export { defaultOptions, type Options, RateLimiter, RateLimiterMiddleware };

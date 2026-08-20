@@ -35,8 +35,8 @@ import {
   type Options,
   RateLimiter,
   RateLimiterMiddleware,
-} from "../../../../../../../src/modules/middleware/RateLimiter/mod.ts";
-import { RateLimiterErrorResponse } from "../../../../../../../src/modules/middleware/RateLimiter/RateLimiterErrorResponse.ts";
+} from "../../../../../../../src/modules/middleware/RateLimiter.ts";
+import { RateLimiterErrorResponse } from "../../../../../../../src/modules/middleware/rate_limiter/RateLimiterErrorResponse.ts";
 import { Header } from "../../../../../../../src/core/http/Header.ts";
 
 type TestCase = {
@@ -145,7 +145,7 @@ function runTests() {
               await assert(
                 "Deno",
                 testCaseIndex,
-                testCase.middleware_options,
+                { ...defaultOptions, ...testCase.middleware_options },
                 req,
                 requestIndex,
                 response,
@@ -192,7 +192,7 @@ function runTests() {
               await assert(
                 "Drash",
                 testCaseIndex,
-                testCase.middleware_options,
+                { ...defaultOptions, ...testCase.middleware_options },
                 req,
                 requestIndex,
                 response,
@@ -211,7 +211,11 @@ function runTests() {
 async function assert(
   system: "Drash" | "Deno",
   testCaseIndex: number,
-  middlewareOptions: Options,
+  // `Required<Options>` because the assertions do arithmetic on these values.
+  // Options became optional when RateLimiter gained a defaults merge, so the
+  // effective options — not the partial ones a caller may pass — are what the
+  // expected header values have to be derived from.
+  middlewareOptions: Required<Options>,
   request: Request,
   requestIndex: number,
   actualResponse: Response,
@@ -614,7 +618,7 @@ function getTestCases(): (() => TestCase)[] {
   ];
 }
 
-const defaultOptions: Options = {
+const defaultOptions: Required<Options> = {
   rate_limit_time_window_length: 10000, // 10 seconds
   max_requests: 3,
   client_id_header_name: "x-client-id",
