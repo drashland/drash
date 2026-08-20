@@ -1,21 +1,11 @@
 # Resource
 
-The base class every resource extends. It maps a set of paths to HTTP method handlers, and supplies a default for each method you do not write.
+The base class every resource ultimately extends. It maps a set of paths to HTTP method handlers, and supplies a default for each method you do not write.
 
-```ts
-import { Resource } from "@drashland/drash/modules/http.native.js";
+<Callout type="gray">
+__Good to know__
 
-class Users extends Resource {
-  public paths = ["/users/:id?"];
-
-  public GET(request: Request) {
-    return new Response("Hello");
-  }
-}
-```
-
-<Callout type="info" emoji={null}>
-This is the class in `core/http/Resource.js`. The HTTP module re-exports it with a `static group()` method added — see [`Resource.group()`](#resourcegroup) below.
+The HTTP module extends this core `Resource` class and exports its own.
 </Callout>
 
 ## Properties
@@ -61,21 +51,6 @@ public PATCH(_request: unknown) {
 ```
 
 Methods may be synchronous or asynchronous. The chain awaits whatever they return.
-
-## `Resource.group()`
-
-Added by the HTTP module, not by the core class. It returns a `ResourceGroup.Builder`:
-
-```ts
-const group = Resource
-  .group()
-  .middleware(Auth)
-  .pathPrefixes("/api/v1")
-  .resources(Users)
-  .build();
-```
-
-`Resource.group()` and `ResourceGroup.builder()` are the same call. See [Resource groups](/reference/standard/resource-group) for the builder API and [Grouping Resources](/docs/resources/resource-groups) for the tutorial.
 
 ## Notes
 

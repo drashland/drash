@@ -17,27 +17,27 @@ A resource group is not a runtime object. It is built at build time and returns 
 
 To gain familiarity with:
 
-- grouping resources using `Resource.group()`;
+- grouping resources using `ResourceGroup.builder()`;
 - prefixing every path in the group; and
 - attaching middleware to every resource in the group.
 
 ## Syntax
 
-A group is built with the `Resource` class' static `group()` method:
+A group is built with the `ResourceGroup` class' static `builder()` method:
 
 ```ts
 import {
   Chain,
-  Resource,
+  ResourceGroup,
 } from "@drashland/drash/modules/http.native.js";
 
-const group = Resource
-  .group()           // Get the resource group builder
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
   .resources(        // Add these resources to the group
     ResourceA,
     ResourceB,
   )
-  .pathPrefixes(     // Prefix every path in every resource above
+  .prefix(           // Prefix every path in every resource above
     "/api/v1",
   )
   .middleware(       // Wrap every resource above with this middleware
@@ -53,24 +53,24 @@ const chain = Chain
 ```
 
 <Callout type="info" emoji={null}>
-`Resource.group()` calls `ResourceGroup.builder()` under the hood. It is the same as importing the `ResourceGroup` class from the Standard codebase and calling `ResourceGroup.builder()` yourself. For the full builder API, see [Resource groups](/reference/standard/resource-group).
+For the full builder API, see [Resource groups](/reference/standard/resource-group).
 </Callout>
 
 The builder methods can be called in any order. Only `.build()` has to come last.
 
 ## Path Prefixes
 
-`.pathPrefixes()` rewrites the `paths` property of every resource in the group:
+`.prefix()` sets path prefixes — it rewrites the `paths` property of every resource in the group:
 
 ```ts
 class Coffees extends Resource {
   public paths = ["/coffees"];
 }
 
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .resources(Coffees)
-  .pathPrefixes("/api/v1")
+  .prefix("/api/v1")
   .build();
 
 // Coffees.paths is now ["/api/v1/coffees"]
@@ -84,10 +84,10 @@ class Coffees extends Resource {
   public paths = ["/coffees", "/teas"];
 }
 
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .resources(Coffees)
-  .pathPrefixes("/api/v1", "/api/latest")
+  .prefix("/api/v1", "/api/latest")
   .build();
 
 // Coffees.paths is now:
@@ -105,8 +105,8 @@ Prefixes are concatenated, not joined. `"/api/v1"` plus `"/coffees"` gives `"/ap
 `.middleware()` wraps every resource in the group, in the order you pass them:
 
 ```ts
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .resources(Users, Orders)
   .middleware(
     Auth,   // Runs first

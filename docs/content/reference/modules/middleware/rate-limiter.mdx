@@ -26,11 +26,11 @@ The highlighted section below shows how it is added:
 ```typescript showLineNumbers  {8-11}
 // Code is shortened for brevity
 
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
 import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js";
 
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .middleware(RateLimiter({
     max_requests: 100,                  // 100 requests ...
     rate_limit_time_window_length: 60000, // ... per minute

@@ -27,8 +27,8 @@ import {
   type HTTPRequest,
   Middleware,
   Resource,
+  ResourceGroup,
 } from "../../../src/modules/http.native.ts";
-import { ResourceGroup } from "../../../src/standard/http/ResourceGroup.ts";
 
 export function assertionMessage(...message: string[]): string {
   return `\n\n

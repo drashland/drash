@@ -37,6 +37,6 @@ Every path above is a subpath of `@drashland/drash`.
 
 ## What You Actually Import
 
-Almost nothing here, in a normal app. `Middleware` and `ResourceGroup` reach you through the HTTP module — `Middleware` is re-exported directly, and `ResourceGroup` through [`Resource.group()`](/reference/core/resource#resourcegroup).
+Almost nothing here, in a normal app. `Middleware` and `ResourceGroup` both reach you re-exported directly from the HTTP module, so import them from there rather than by the paths above.
 
 The rest is here for the two cases where you go past the defaults: building a chain of your own out of `Handler` subclasses, and supplying your own `URLPattern` implementation.

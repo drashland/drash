@@ -24,8 +24,8 @@ Every builder in Drash shares one shape: a `build()` method that returns the fin
 Every method on a builder except `build()` returns the builder. **Those calls are order-independent** — the two lines below produce the same group:
 
 ```ts
-Resource.group().middleware(Auth).pathPrefixes("/api/v1").resources(Users).build();
-Resource.group().resources(Users).pathPrefixes("/api/v1").middleware(Auth).build();
+ResourceGroup.builder().middleware(Auth).prefix("/api/v1").resources(Users).build();
+ResourceGroup.builder().resources(Users).prefix("/api/v1").middleware(Auth).build();
 ```
 
 `build()` is the exception. It returns the product rather than the builder, so it ends the chain and nothing can follow it.
@@ -43,7 +43,7 @@ Resource.group().resources(Users).pathPrefixes("/api/v1").middleware(Auth).build
 | Builder            | You get it from                     | `build()` returns                  |
 | ------------------ | ----------------------------------- | ---------------------------------- |
 | Chain builder      | `Chain.builder()`                   | The chain head — call `handle()` on it |
-| Resource group     | `Resource.group()`                  | An array of resource classes       |
+| Resource group     | `ResourceGroup.builder()`                  | An array of resource classes       |
 | Response builder   | `response()`                        | A Web `Response`                   |
 | Request builder    | `request()`                         | A Web `Request`                    |
 

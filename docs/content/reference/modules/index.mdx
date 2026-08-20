@@ -14,6 +14,7 @@ The pieces that do the work, composed from [Standard](/reference/standard) and [
 | `Chain`                    | class    | `modules/http.native.js` / `.polyfill.js` | [Chain](/reference/modules/http/chain)                 |
 | `Resource`                 | class    | `modules/http.native.js` / `.polyfill.js` | [Resource](/reference/core/resource)                   |
 | `Middleware`               | class    | `modules/http.native.js` / `.polyfill.js` | [Middleware](/reference/standard/middleware)           |
+| `ResourceGroup`            | class    | `modules/http.native.js` / `.polyfill.js` | [Resource groups](/reference/standard/resource-group)  |
 | `HTTPError`                | class    | `modules/http.native.js` / `.polyfill.js` | [HTTPError](/reference/core/http-error)                |
 | `HTTPRequest`              | type     | `modules/http.native.js` / `.polyfill.js` | [HTTP](/reference/modules/http)                        |
 | `requestChain`             | function | `modules/builders/RequestChainBuilder.js` | [Builders](/reference/modules/builders)                |
@@ -29,7 +30,7 @@ Each bundled middleware also exports its `XMiddleware` class, its `Options` type
 
 ## The Two Entry Points
 
-`modules/http.native.js` and `modules/http.polyfill.js` export the same five members. The only difference is which `URLPattern` implementation they hand the chain.
+`modules/http.native.js` and `modules/http.polyfill.js` export the same members. The only difference is which `URLPattern` implementation they use under the hood.
 
 | Entry point                | For                              |
 | -------------------------- | -------------------------------- |

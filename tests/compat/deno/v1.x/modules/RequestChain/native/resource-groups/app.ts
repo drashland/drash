@@ -24,10 +24,10 @@ import {
   Chain,
   Middleware,
   Resource,
+  ResourceGroup,
 } from "../../../../../../../../src/modules/http.native.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
-import { ResourceGroup } from "../../../../../../../../src/standard/http/ResourceGroup.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
@@ -199,7 +199,7 @@ class MiddlewareGETAgain3 extends Middleware {
 const groupWithBlockedMethods = ResourceGroup
   .builder()
   .resources(Home)
-  .pathPrefixes("/api/v1")
+  .prefix("/api/v1")
   .middleware(
     MiddlewareBlockedMethods,
   )
@@ -208,7 +208,7 @@ const groupWithBlockedMethods = ResourceGroup
 const groupWithAll = ResourceGroup
   .builder()
   .resources(UsersAll)
-  .pathPrefixes("/api/v2")
+  .prefix("/api/v2")
   .middleware(
     MiddlewareALL,
   )
@@ -217,7 +217,7 @@ const groupWithAll = ResourceGroup
 const groupWithAllGet = ResourceGroup
   .builder()
   .resources(UsersAllGet)
-  .pathPrefixes("/api/v2")
+  .prefix("/api/v2")
   .middleware(
     MiddlewareALL,
     MiddlewareGET,
@@ -227,7 +227,7 @@ const groupWithAllGet = ResourceGroup
 const groupWithAllGetGetAgain = ResourceGroup
   .builder()
   .resources(UsersAllGetGetAgain)
-  .pathPrefixes("/api/v2")
+  .prefix("/api/v2")
   .middleware(
     MiddlewareALL,
     MiddlewareGET,

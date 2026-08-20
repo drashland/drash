@@ -26,11 +26,11 @@ The highlighted sections below show how it is added:
 ```typescript showLineNumbers  {8-10}
 // Code is shortened for brevity
 
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Chain, ResourceGroup } from "@drashland/drash/modules/http.native.js";
 import { CORS } from "@drashland/drash/modules/middleware/CORS/mod.js";
 
-const groupedResources = Resource
-  .group()
+const groupedResources = ResourceGroup
+  .builder()
   .middleware(        // Add the middleware to each resource in this group
     CORS(),           // Calling CORS() with no options uses the defaults
   )
@@ -83,11 +83,11 @@ instead. Entries can be strings or regular expressions:
 <Tabs.Tab>
 
 ```typescript showLineNumbers {6-11}
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
 import { CORS } from "@drashland/drash/modules/middleware/CORS/mod.js";
 
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .middleware(CORS({
     access_control_allow_origin: [
       "https://example.com",                  // An exact origin

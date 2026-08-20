@@ -24,7 +24,6 @@ import { Resource as CoreResource } from "../core/http/Resource.ts";
 
 // Imports > Standard
 import { WithParams } from "../standard/handlers/RequestParamsParser.ts";
-import { ResourceGroup } from "../standard/http/ResourceGroup.ts";
 
 // Imports > Modules
 import { requestChain } from "./builders/RequestChainBuilder.ts";
@@ -44,6 +43,7 @@ export { HTTPError } from "../core/errors/HTTPError.ts";
 
 // Exports > Standard
 export { Middleware } from "../standard/http/Middleware.ts";
+export { ResourceGroup } from "../standard/http/ResourceGroup.ts";
 
 // Exports > Local
 export type { HTTPRequest };
@@ -74,8 +74,12 @@ export class Chain {
   }
 }
 
-export class Resource extends CoreResource {
-  static group() {
-    return ResourceGroup.builder();
-  }
-}
+/**
+ * Intentionally empty.
+ *
+ * Each chain module exports its own `Resource` so a chain can diverge from the
+ * core class later — handling a different input type, or changing the
+ * request-resource-response lifecycle — without touching Core. Extend this one,
+ * not the core class.
+ */
+export class Resource extends CoreResource {}

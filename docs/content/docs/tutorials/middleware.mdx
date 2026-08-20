@@ -115,8 +115,8 @@ Do not introduce shared or singleton middleware state across resources — and d
 You apply middleware by [grouping resources](/docs/resources/grouping-resources).
 
 ```ts
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .middleware(Auth)
   .resources(Users)
   .build();
@@ -139,14 +139,14 @@ and exports:
 Each pre-built middleware module is a class you pass to `.middleware()`. For example:
 
 ```ts
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
 import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader.js";
 import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
 import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
 import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js";
  
-const group = Resource
-  .group()
+const group = ResourceGroup
+  .builder()
   .middleware(
     AcceptHeader(),
     CORS(),
