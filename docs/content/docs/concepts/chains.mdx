@@ -32,7 +32,7 @@ flowchart LR
   class h1,h2,h3,h4 blue
 ```
 
-When you build HTTP applications with Drash, you start by creating a chain (specifically the HTTP module's [Chain](/reference/modules/http/chain)). From there, you give it [resources](/docs/concepts/resources) — the classes you use to process requests and respond to them.
+When you build HTTP applications with Drash, you start by creating a chain (specifically the HTTP module's [Chain](/reference/modules/chain)). From there, you give it [resources](/docs/concepts/resources) — the classes you use to process requests and respond to them.
 
 ## Where Is the Chain Placed?
 
@@ -188,7 +188,7 @@ chain
   });
 ```
 
-This is deliberate: translating an error into a response is runtime-specific, and Drash does not own your response object. See [HTTPError](/reference/core/http-error).
+This is deliberate: translating an error into a response is runtime-specific, and Drash does not own your response object. See [HTTPError](/reference/core/errors/http-error).
 
 ## Path Matching
 

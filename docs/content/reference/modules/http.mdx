@@ -10,11 +10,11 @@ needed to receive a request and answer it:
 
 | Export        | Kind  | Documented in                                              |
 | ------------- | ----- | ---------------------------------------------------------- |
-| `Chain`       | class | [Chain](/reference/modules/http/chain)                     |
+| `Chain`       | class | [Chain](/reference/modules/chain)                     |
 | `Resource`    | class | [Creating a Resource](/docs/resources/creating-a-resource) |
 | `Middleware`  | class | [Middleware](/docs/tutorials/middleware)                   |
-| `ResourceGroup` | class | [Resource groups](/reference/standard/resource-group)    |
-| `HTTPError`   | class | [HTTPError](/reference/core/http-error)                    |
+| `ResourceGroup` | class | [Resource groups](/reference/standard/http/resource-group)    |
+| `HTTPError`   | class | [HTTPError](/reference/core/errors/http-error)                    |
 | `HTTPRequest` | type  | The shape a resource method receives                       |
 
 It ships as two interchangeable entry points: a native and a polyfill module. They differ only in which `URLPattern` implementation they hand the chain.

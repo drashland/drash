@@ -46,7 +46,7 @@ You would reach for this directly only when building a matcher of your own rathe
 | `modules/http.native.js`     | The runtime's global     |
 | `modules/http.polyfill.js`   | `URLPatternPolyfill`     |
 
-Both entry points call `.urlPatternClass()` for you. Calling it yourself overrides whatever the entry point injected — see [Native vs. Polyfill](/reference/modules/http/native-vs-polyfill).
+Both entry points call `.urlPatternClass()` for you. Calling it yourself overrides whatever the entry point injected — see [Native vs. Polyfill](/reference/modules/native-vs-polyfill).
 
 <Callout type="info" emoji={null}>
 `.urlPatternClass()` is __required__. A chain built without one throws at `build()`:

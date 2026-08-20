@@ -23,17 +23,17 @@ Drash is split into three codebases, and this reference follows that split. Impo
 
 ## Where to Start
 
-Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Chain`, `Resource`, `Middleware`, and `HTTPError` from one specifier.
+Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Chain`, `Resource`, `Middleware`, `ResourceGroup`, and `HTTPError` from one specifier.
 
 | If you want to                          | Read                                                              |
 | --------------------------------------- | ----------------------------------------------------------------- |
-| Build and run a chain                    | [Chain](/reference/modules/http/chain)                            |
-| Write a resource                         | [Resource](/reference/core/resource)                              |
-| Throw and catch errors                   | [HTTPError](/reference/core/http-error)                           |
-| Attach middleware or prefixes            | [Resource groups](/reference/standard/resource-group)             |
+| Build and run a chain                    | [Chain](/reference/modules/chain)                            |
+| Write a resource                         | [Resource](/reference/core/http/resource)                              |
+| Throw and catch errors                   | [HTTPError](/reference/core/errors/http-error)                           |
+| Attach middleware or prefixes            | [Resource groups](/reference/standard/http/resource-group)             |
 | Use a bundled middleware                 | [CORS](/reference/modules/middleware/cors) and its siblings       |
 | Add a step of your own to the chain      | [Handlers](/reference/standard/handlers)                          |
-| Supply your own `URLPattern`             | [URLPattern](/reference/standard/url-pattern)                     |
+| Supply your own `URLPattern`             | [URLPattern](/reference/standard/polyfill/url-pattern)                     |
 
 ## Looking for Something Else?
 

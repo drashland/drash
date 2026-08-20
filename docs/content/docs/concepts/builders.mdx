@@ -17,7 +17,7 @@ const chain = Chain
 
 Drash hands you a builder instead of a constructor so that each piece of configuration is named at the call site. A constructor would put the same information in a positional argument list or an options object, where `resources` is a property you have to look up rather than a method you call.
 
-Every builder in Drash shares one shape: a `build()` method that returns the finished product. That shape is the [`IBuilder`](/reference/core/types#ibuilderproduct) interface.
+Every builder in Drash shares one shape: a `build()` method that returns the finished product. That shape is the [`IBuilder`](/reference/core/interfaces#ibuilderproduct) interface.
 
 ## `build()` Is the Last Call
 
@@ -49,7 +49,7 @@ ResourceGroup.builder().resources(Users).prefix("/api/v1").middleware(Auth).buil
 
 Only the first two appear in a typical application. `response()` and `request()` are conveniences — a resource returning `new Response(...)` directly is equally valid.
 
-For the methods each one exposes, see [Builders](/reference/modules/builders) and [Resource groups](/reference/standard/resource-group) in the reference.
+For the methods each one exposes, see [Builders](/reference/modules/builders) and [Resource groups](/reference/standard/http/resource-group) in the reference.
 
 ## What a Builder Will Not Let You Configure
 
@@ -113,7 +113,7 @@ Same builder, same three methods, one different argument. Because the difference
 <Callout type="info">
 __Providing your own custom `URLPattern`__
 
-See the `.urlPatternClass()` [example](/reference/modules/http/chain/#urlpatternclass) to provide your own custom `URLPattern`.
+See the `.urlPatternClass()` [example](/reference/modules/chain/#urlpatternclass) to provide your own custom `URLPattern`.
 </Callout>
 
 This is also why `Chain` exists as a class with a single static method. It holds `builder()` so that your import reads `Chain.builder()` rather than a bare `builder()`.

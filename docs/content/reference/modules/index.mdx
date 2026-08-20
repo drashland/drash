@@ -11,11 +11,11 @@ The pieces that do the work, composed from [Standard](/reference/standard) and [
 
 | Export                     | Kind     | Import from                              | Documented in                                          |
 | -------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------ |
-| `Chain`                    | class    | `modules/http.native.js` / `.polyfill.js` | [Chain](/reference/modules/http/chain)                 |
-| `Resource`                 | class    | `modules/http.native.js` / `.polyfill.js` | [Resource](/reference/core/resource)                   |
-| `Middleware`               | class    | `modules/http.native.js` / `.polyfill.js` | [Middleware](/reference/standard/middleware)           |
-| `ResourceGroup`            | class    | `modules/http.native.js` / `.polyfill.js` | [Resource groups](/reference/standard/resource-group)  |
-| `HTTPError`                | class    | `modules/http.native.js` / `.polyfill.js` | [HTTPError](/reference/core/http-error)                |
+| `Chain`                    | class    | `modules/http.native.js` / `.polyfill.js` | [Chain](/reference/modules/chain)                 |
+| `Resource`                 | class    | `modules/http.native.js` / `.polyfill.js` | [Resource](/reference/core/http/resource)                   |
+| `Middleware`               | class    | `modules/http.native.js` / `.polyfill.js` | [Middleware](/reference/standard/http/middleware)           |
+| `ResourceGroup`            | class    | `modules/http.native.js` / `.polyfill.js` | [Resource groups](/reference/standard/http/resource-group)  |
+| `HTTPError`                | class    | `modules/http.native.js` / `.polyfill.js` | [HTTPError](/reference/core/errors/http-error)                |
 | `HTTPRequest`              | type     | `modules/http.native.js` / `.polyfill.js` | [HTTP](/reference/modules/http)                        |
 | `requestChain`             | function | `modules/builders/RequestChainBuilder.js` | [Builders](/reference/modules/builders)                |
 | `request`                  | function | `modules/builders/RequestBuilder.js`      | [Builders](/reference/modules/builders)                |
@@ -37,7 +37,7 @@ Each bundled middleware also exports its `XMiddleware` class, its `Options` type
 | `modules/http.native.js`   | Deno, Cloudflare Workers         |
 | `modules/http.polyfill.js` | Node, Bun                        |
 
-See [Native vs. Polyfill](/reference/modules/http/native-vs-polyfill).
+See [Native vs. Polyfill](/reference/modules/native-vs-polyfill).
 
 <Callout type="warning" emoji={null}>
 __Any change to one entry point has to be mirrored in the other.__ They are separate files with the same surface, and the compat tests exist in `native/` and `polyfill/` pairs for that reason.

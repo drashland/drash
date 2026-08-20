@@ -13,14 +13,14 @@ Core carries almost no behavior. `HTTPError` and `Resource` are the only two exp
 
 | Export                    | Kind        | Import from                                        | Documented in                             |
 | ------------------------- | ----------- | -------------------------------------------------- | ----------------------------------------- |
-| `HTTPError`               | class       | `core/errors/HTTPError.js`                          | [HTTPError](/reference/core/http-error)   |
-| `Resource`                | class       | `core/http/Resource.js`                             | [Resource](/reference/core/resource)      |
-| `Status`                  | const       | `core/http/response/Status.js`                      | [Status](/reference/core/status)          |
-| `StatusCode`              | const       | `core/http/response/StatusCode.js`                  | [Status](/reference/core/status)          |
-| `StatusDescription`       | const       | `core/http/response/StatusDescription.js`           | [Status](/reference/core/status)          |
-| `StatusName`              | const       | `core/http/response/StatusName.js`                  | [Status](/reference/core/status)          |
-| `Header`                  | const       | `core/http/Header.js`                               | [Header](/reference/core/header)          |
-| `Method`                  | const       | `core/http/request/Method.js`                       | [Method](/reference/core/method)          |
+| `HTTPError`               | class       | `core/errors/HTTPError.js`                          | [HTTPError](/reference/core/errors/http-error)   |
+| `Resource`                | class       | `core/http/Resource.js`                             | [Resource](/reference/core/http/resource)      |
+| `Status`                  | const       | `core/http/response/Status.js`                      | [Status](/reference/core/http/response/status)          |
+| `StatusCode`              | const       | `core/http/response/StatusCode.js`                  | [Status](/reference/core/http/response/status)          |
+| `StatusDescription`       | const       | `core/http/response/StatusDescription.js`           | [Status](/reference/core/http/response/status)          |
+| `StatusName`              | const       | `core/http/response/StatusName.js`                  | [Status](/reference/core/http/response/status)          |
+| `Header`                  | const       | `core/http/Header.js`                               | [Header](/reference/core/http/header)          |
+| `Method`                  | const       | `core/http/request/Method.js`                       | [Method](/reference/core/http/request/method)          |
 | `IBuilder`                | interface   | `core/interfaces/IBuilder.js`                       | [Types](/reference/core/types)            |
 | `IHandler`                | interface   | `core/interfaces/IHandler.js`                       | [Types](/reference/core/types)            |
 | `MethodOf`                | type        | `core/types/MethodOf.js`                            | [Types](/reference/core/types)            |
@@ -42,4 +42,4 @@ Most of Core reaches you through the HTTP module rather than directly. `HTTPErro
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 ```
 
-See [Modules > HTTP > Native vs. Polyfill](/reference/modules/http/native-vs-polyfill) for the full re-export list in the HTTP module.
+See [Modules > HTTP > Native vs. Polyfill](/reference/modules/native-vs-polyfill) for the full re-export list in the HTTP module.

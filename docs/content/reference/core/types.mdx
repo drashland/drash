@@ -1,51 +1,18 @@
-# Types and Interfaces
+# Types
 
-The type-only surface of Core. None of these exist at runtime.
+The types in `core/types/`. Type-only — none of these exist at runtime.
 
 ```ts
 import type { ResponseStatus } from "@drashland/drash/core/types/ResponseStatus.js";
-import type { IHandler } from "@drashland/drash/core/interfaces/IHandler.js";
 ```
 
-Two aggregate modules re-export these so you can take several from one specifier:
+The `Types.js` aggregate re-exports them so you can take several from one specifier:
 
 ```ts
-import type { IBuilder, IHandler } from "@drashland/drash/core/Interfaces.js";
 import type { RequestMethod, ResponseStatus } from "@drashland/drash/core/Types.js";
 ```
 
-## Interfaces
-
-### `IBuilder<Product>`
-
-```ts
-interface IBuilder<Product = unknown> {
-  build(): Product;
-}
-```
-
-Implemented by `AbstractChainBuilder` and the resource group builder. `Product` is what `build()` returns. Standard declares a structurally identical `Builder<C>` that `ResponseBuilder` implements instead — see [Builders](/reference/modules/builders#notes).
-
-### `IHandler<Input>`
-
-```ts
-interface IHandler<Input = unknown> {
-  handle<Res>(req: Input): Promise<Res>;
-  setNext(h: IHandler): IHandler;
-}
-```
-
-The contract for a link in the chain. [`Handler`](/reference/standard/handlers) is the Standard implementation of it.
-
-`setNext()` returns the handler it was given, not `this`, which is what lets a chain be linked in one pass:
-
-```ts
-a.setNext(b).setNext(c); // a -> b -> c
-```
-
-## Types
-
-### `ResponseStatus`
+## `ResponseStatus`
 
 ```ts
 type ResponseStatus = {
@@ -54,9 +21,9 @@ type ResponseStatus = {
 };
 ```
 
-The pair [`HTTPError`](/reference/core/http-error) takes as its first argument. Every value in [`Status`](/reference/core/status) is one of these.
+The pair [`HTTPError`](/reference/core/errors/http-error) takes as its first argument. Every value in [`Status`](/reference/core/http/response/status) is one of these.
 
-### `ResponseStatusCode`
+## `ResponseStatusCode`
 
 ```ts
 type ResponseStatusCode = (typeof StatusCode)[keyof typeof StatusCode];
@@ -64,11 +31,11 @@ type ResponseStatusCode = (typeof StatusCode)[keyof typeof StatusCode];
 
 A union of the 62 numeric codes, not `number`.
 
-### `ResponseStatusDescription`
+## `ResponseStatusDescription`
 
 A union of the 62 reason phrases, derived from `StatusDescription`.
 
-### `ResponseStatusName`
+## `ResponseStatusName`
 
 ```ts
 type ResponseStatusName = (typeof StatusName)[keyof typeof StatusName];
@@ -76,19 +43,19 @@ type ResponseStatusName = (typeof StatusName)[keyof typeof StatusName];
 
 A union of the 62 status names — `"OK" | "NotFound" | …`. This is the key type of the `Status`, `StatusCode`, and `StatusDescription` records, which is what keeps all three in step.
 
-### `RequestMethod`
+## `RequestMethod`
 
 ```ts
 type RequestMethod = (typeof Method)[keyof typeof Method];
 ```
 
-`"CONNECT" | "DELETE" | "GET" | "HEAD" | "OPTIONS" | "PATCH" | "POST" | "PUT" | "TRACE"`. Derived from [`Method`](/reference/core/method).
+`"CONNECT" | "DELETE" | "GET" | "HEAD" | "OPTIONS" | "PATCH" | "POST" | "PUT" | "TRACE"`. Derived from [`Method`](/reference/core/http/request/method).
 
-### `Header`
+## `Header`
 
-A union of the header name strings in [`Header`](/reference/core/header). The const and the type share a name — the const is at `core/http/Header.js`, the type at `core/types/Header.js`.
+A union of the header name strings in [`Header`](/reference/core/http/header). The const and the type share a name — the const is at `core/http/Header.js`, the type at `core/types/Header.js`.
 
-### `MethodOf<Object>`
+## `MethodOf<Object>`
 
 ```ts
 type MethodOf<Object> = {
@@ -107,3 +74,5 @@ The union of keys on `Object` whose values are functions. Used internally as `Me
 ## Notes
 
 Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports — harmless under a bundler, and a resolution error without one.
+
+See also [Interfaces](/reference/core/interfaces).

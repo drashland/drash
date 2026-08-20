@@ -15,7 +15,7 @@ produce the response the ETag is calculated from.
 
 The ETag middleware adds `ETag` and `Last-Modified` headers to responses, and
 answers `304 Not Modified` when a client's `If-None-Match` matches. It is added
-to resources using a [resource group](/reference/standard/resource-group).
+to resources using a [resource group](/reference/standard/http/resource-group).
 
 The highlighted section below shows how it is added:
 

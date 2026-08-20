@@ -16,7 +16,7 @@ class Timer extends Handler {
 
 ## `Handler`
 
-The base class. Implements [`IHandler`](/reference/core/types#ihandlerinput).
+The base class. Implements [`IHandler`](/reference/core/interfaces#ihandlerinput).
 
 ### `handle<Output>(input)`
 
@@ -56,7 +56,7 @@ a.setNext(b).setNext(c); // a -> b -> c
 
 ## The Request Chain's Handlers
 
-[`Chain.builder()`](/reference/modules/http/chain) links these five, in this order. The order is fixed and is not the consumer's to change.
+[`Chain.builder()`](/reference/modules/chain) links these five, in this order. The order is fixed and is not the consumer's to change.
 
 | # | Handler                   | What it does                                                          |
 | - | ------------------------- | --------------------------------------------------------------------- |
@@ -80,7 +80,7 @@ Throws `HTTPError(Status.UnprocessableEntity)` — a `422` — with one of three
 
 Builds a `URLPattern` per resource path and matches the request URL against them. It appends `{/}?` to each path, which is why a trailing slash matches either way, and it caches results by fully-qualified URL.
 
-Its constructor takes the `URLPattern`-like class to use — see [URLPattern](/reference/standard/url-pattern).
+Its constructor takes the `URLPattern`-like class to use — see [URLPattern](/reference/standard/polyfill/url-pattern).
 
 ### `ResourceNotFoundHandler`
 
@@ -100,7 +100,7 @@ Uppercases `input.request.method` and calls `input.resource[method](input.reques
 
 The base for chain builders. Its `link()` takes a list of handlers, wires them with `setNext()`, and returns the head — the object whose `handle()` you call.
 
-Its `handler()` and `handlers` members are what [`Chain.builder()`](/reference/modules/http/chain) deliberately hides: the request chain's handlers and their order are decided by `build()`.
+Its `handler()` and `handlers` members are what [`Chain.builder()`](/reference/modules/chain) deliberately hides: the request chain's handlers and their order are decided by `build()`.
 
 ## `AbstractSearchIndex`
 
@@ -114,4 +114,4 @@ The `ResourcesIndex` class extends this — caching resource so routing a reques
 
 Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side — both land in `chain.handle().catch()`.
 
-A handler that needs to run after the resource cannot be expressed this way, because the chain has no return path. That is what [middleware](/reference/standard/middleware) is for — it wraps the resource rather than preceding it.
+A handler that needs to run after the resource cannot be expressed this way, because the chain has no return path. That is what [middleware](/reference/standard/http/middleware) is for — it wraps the resource rather than preceding it.

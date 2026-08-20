@@ -13,7 +13,7 @@ Returns a builder to help you create a request chain.
 <Callout type="gray">
 __Good to know__
 
-The HTTP module's [`Chain.builder()`](/reference/modules/http/chain#builder) calls this and supplies a `URLPattern` implementation under the hood, so building an app is normally done using [`Chain.builder()`](/reference/modules/http/chain#builder), not `requestChain()`.
+The HTTP module's [`Chain.builder()`](/reference/modules/chain#builder) calls this and supplies a `URLPattern` implementation under the hood, so building an app is normally done using [`Chain.builder()`](/reference/modules/chain#builder), not `requestChain()`.
 </Callout>
 
 The returned object is typed as the `Builder` interface, which exposes exactly three methods:
@@ -94,10 +94,10 @@ Two more exports belong to the [RateLimiter](/reference/modules/middleware/rate-
 | Export                     | Kind  | Notes                                                                     |
 | -------------------------- | ----- | ------------------------------------------------------------------------- |
 | `RateLimitedClient`        | class | Per-client request accounting. Getters for `num_requests_made`, `requests_remaining`, `hit_request_limit`, and the window timings |
-| `RateLimiterErrorResponse` | class | Extends [`HTTPError`](/reference/core/http-error), carrying the `Response` the middleware built alongside the status |
+| `RateLimiterErrorResponse` | class | Extends [`HTTPError`](/reference/core/errors/http-error), carrying the `Response` the middleware built alongside the status |
 
 `RateLimiterErrorResponse` is the one worth knowing about when writing a `.catch()` block: it is an `HTTPError`, so an `error.name === "HTTPError"` check catches it, and it carries a ready-made response.
 
 ## Notes
 
-`build()` is always the terminal call and always returns the finished product. The contract for that is [`IBuilder`](/reference/core/types#ibuilderproduct) in Core, which `AbstractChainBuilder` and the resource group builder implement. `ResponseBuilder` implements a structurally identical `Builder<Response>` declared in Standard, and `RequestBuilder` declares no contract at all — it just has `build()`.
+`build()` is always the terminal call and always returns the finished product. The contract for that is [`IBuilder`](/reference/core/interfaces#ibuilderproduct) in Core, which `AbstractChainBuilder` and the resource group builder implement. `ResponseBuilder` implements a structurally identical `Builder<Response>` declared in Standard, and `RequestBuilder` declares no contract at all — it just has `build()`.
