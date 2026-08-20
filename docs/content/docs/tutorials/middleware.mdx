@@ -47,7 +47,11 @@ return this.next<Response>(request);
 | Input has no readable string `method`, or no `original` | `Error("Middleware could not process request further")`          |
 | The wrapped call returns a falsy value                  | `HTTPError(500, "The server was unable to generate a response")` |
 
+<Callout type="warning">
+__Always return a value from resources that use middleware__
+
 That second row is the one that surprises people. A resource method that writes to a response object and returns nothing works fine unwrapped, but **fails once you put middleware around it** — `next()` has nothing to return. Return a value from resource methods you intend to wrap.
+</Callout>
 
 ## Per-method middleware
 
@@ -57,18 +61,26 @@ That second row is the one that surprises people. A resource method that writes 
 - to act on POST requests, add a `POST` method;
 - and so on.
 
+Take a look at the following example:
+
 ```ts
 class LogGETRequests extends Middleware {
-  public GET(request: Request) {
+
+  public GET(request) {
+
     console.log(`Incoming request: ${request.method} ${request.url}`);
+
     return super.GET(request);
+    // This is the same as `this.next(request);`
   }
 }
 ```
 
-`super.GET(request)` and `this.next<Response>(request)` do the same thing here. `Middleware` overrides every HTTP method to forward to `this.original`, so `super.GET()` lands on that forwarding implementation rather than on the core `Resource` method that throws `501`.
+`super.GET(request)` and `this.next(request)` do the same thing here. `Middleware` overrides every HTTP method to forward to `this.original`, so `super.GET()` is forwarded to `this.original.GET()`, not the core `Resource` method that throws the default `501 Not Implemented` error.
 
+<Callout type="info">
 Use `ALL` when the behavior applies to every method; use per-method overrides when it does not.
+</Callout>
 
 ## `this.original`
 
@@ -79,20 +91,28 @@ The wrapped resource, or the next middleware in the chain. `setOriginal()` is ca
 `.middleware(A, B, C)` nests outermost-first:
 
 ```
-A { original: B { original: C { original: resourceInstance } } }
+A {
+  original: B { 
+    original: C { 
+      original: resourceInstance
+    }
+  }
+}
 ```
 
-So `A.ALL()` runs first, and `C` is closest to your resource.
+So `A` runs first, `B` runs second, and `C` runs last before the request hits your resource.
 
 ## Per-resource instances
 
 Middleware instances are constructed **fresh per resource**. Two resources sharing a middleware class do not share an instance.
 
+<Callout type="warning">
 Do not introduce shared or singleton middleware state across resources — and do not keep per-request state on `this`, since one instance serves concurrent requests for its resource.
+</Callout>
 
 ## Applying middleware
 
-Via a [resource group](/reference/standard/resource-group):
+You apply middleware by [grouping resources](/docs/resources/grouping-resources).
 
 ```ts
 const group = Resource
@@ -104,10 +124,10 @@ const group = Resource
 const chain = Chain.builder().resources(...group).build();
 ```
 
-## Bundled middleware
+## Pre-built middleware
 
-Four middleware ship with Drash. Each is documented with its options, defaults,
-and exports under Reference:
+Drash ships with the following pre-built middleware modules. Each is documented in the [Reference](/reference) pages with its options, defaults,
+and exports:
 
 | Middleware                                                         | What it does                                                        |
 | ------------------------------------------------------------------ | ------------------------------------------------------------------- |
@@ -116,5 +136,23 @@ and exports under Reference:
 | [ETag](/reference/modules/middleware/etag)                          | Adds `ETag` headers and answers `304 Not Modified` on a match        |
 | [RateLimiter](/reference/modules/middleware/rate-limiter)           | Limits requests per client and sets the `X-RateLimit-*` headers      |
 
-They are ordinary middleware — each is a class you pass to `.middleware()`, and
-everything on this page applies to them too.
+Each pre-built middleware module is a class you pass to `.middleware()`. For example:
+
+```ts
+import { Resource } from "@drashland/drash/modules/http.native.js";
+import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
+import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js";
+ 
+const group = Resource
+  .group()
+  .middleware(
+    AcceptHeader(),
+    CORS(),
+    ETag(),
+    RateLimiter(),
+  )
+  .resources(/* shortened for brevity */)
+  .build();
+```

@@ -1,12 +1,12 @@
-# Resource Groups
+# Grouping Resources
 
 Sharing path prefixes and middleware across resources
 
 ## Overview
 
-Resources can be grouped so they share functionality. A group is the __only__ way to attach middleware or path prefixes to a resource — there is no per-resource setting for either. This is true whether the group holds one resource or twenty.
+Resources can be grouped so they share functionality. A group is the __only__ way to attach middleware or path prefixes to a resource — there is no per-resource setting for either. This is true whether the group holds one resource or many.
 
-A group is not a runtime object. `.build()` returns a plain array of resource classes, which is exactly what `Chain.builder().resources()` already accepts.
+A resource group is not a runtime object. It is built at build time and returns an array of resource classes, which is exactly what the HTTP module's `Chain.builder().resources()` method already accepts.
 
 ### Recommended reading
 
@@ -17,7 +17,7 @@ A group is not a runtime object. `.build()` returns a plain array of resource cl
 
 To gain familiarity with:
 
-- building a group with `Resource.group()`;
+- grouping resources using `Resource.group()`;
 - prefixing every path in the group; and
 - attaching middleware to every resource in the group.
 
@@ -31,26 +31,24 @@ import {
   Resource,
 } from "@drashland/drash/modules/http.native.js";
 
-const groupedResources = Resource
-  .group()          // Get the builder
-  .resources(       // Add these resources to the group
+const group = Resource
+  .group()           // Get the resource group builder
+  .resources(        // Add these resources to the group
     ResourceA,
     ResourceB,
-    ResourceC,
   )
-  .pathPrefixes(    // Prefix every path in every resource above
+  .pathPrefixes(     // Prefix every path in every resource above
     "/api/v1",
   )
-  .middleware(      // Wrap every resource above with this middleware
-    SomeMiddlewareA, // Runs first, then ...
-    SomeMiddlewareB, // ... this runs, then the resource is called
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
   )
-  .build();         // Returns typeof Resource[]
+  .build();          // Returns an array of resource classes
 
-// Add the group to the chain the same way you add a single resource
 const chain = Chain
   .builder()
-  .resources(groupedResources)
+  .resources(group)  // Add the group to the chain the same way you add a single resource
   .build();
 ```
 
