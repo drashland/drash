@@ -38,16 +38,84 @@
   pointer-events: none;
   font-weight: 600;
   color: var(--color-gray-900, inherit);
+  /* Same declaration as the h1-h6 rule below, so the two cannot drift. These
+   * read as headings, so they should be set like headings. */
+  font-family: var(--font-heading), var(--x-font-sans);
+  /* Nextra puts every sidebar entry on `text-sm`, so a section heading was the
+   * same size as the pages under it. One step up separates the two; the items
+   * stay at 0.875rem. Roboto Condensed is narrower than the body face, so this
+   * reads closer to level with it than the numbers suggest. */
+  font-size: 1rem;
+  /* Nextra marks the active entry with `bg-primary-100`, and a section whose
+   * own index is the current route (/reference/core, /docs/getting-started)
+   * picks it up. That is misleading here: the heading is not clickable, and the
+   * Overview item directly beneath it points at the same route and is already
+   * highlighted. Keep headings looking identical whatever page you are on.
+   *
+   * The `color` and `font-weight` above already win over the active styles;
+   * only the background needed neutralising. */
+  background-color: transparent;
 }
 
 .dark .nextra-sidebar > div > div > ul > li > button,
 .dark .nextra-mobile-nav > ul > li > button {
   color: var(--color-gray-100, inherit);
+  /* Repeated for dark: `dark:bg-primary-400/10` compiles to a two-class
+   * selector, which outranks the single-class rule above. */
+  background-color: transparent;
 }
 
 /* The chevron implies a toggle that is no longer there. */
 .nextra-sidebar > div > div > ul > li > button > svg,
 .nextra-mobile-nav > ul > li > button > svg {
+  display: none;
+}
+
+/*
+ * Separate the sections.
+ *
+ * The top-level list is a grid whose items are the sections themselves, so the
+ * row gap is the space between one section's last item and the next section's
+ * heading. Nextra's `gap-1` (0.25rem) is the same spacing used between items
+ * *within* a section, which left the two indistinguishable — especially now
+ * that first-level items are no longer indented under their heading.
+ *
+ * Only the outer list is touched; nested lists keep their own tighter spacing.
+ */
+.nextra-sidebar > div > div > ul,
+.nextra-mobile-nav > ul {
+  row-gap: 1.5rem;
+}
+
+/*
+ * A level-1 section is a heading, not a folder you opened, so its items should
+ * not be indented under it.
+ *
+ * Nextra gives every nested list `ms-3 ps-3`, which puts a first-level item's
+ * text at 3rem while its heading sits at 1.5rem (both get the list's `p-4` and
+ * the button's `px-2`; only the item pays the extra 0.75rem twice). Cancelling
+ * the two lands it exactly on the heading, with no magic number to keep in sync
+ * if that base padding ever changes.
+ *
+ * Only the first nested list is flattened. Real nesting below it — Errors >
+ * HTTPError, HTTP > Request > Method — sits one `li > div > ul` deeper, out of
+ * reach of a chain anchored at the sidebar root, and keeps its indent.
+ *
+ * This overrides utility classes by structure, so it is tied to Nextra's
+ * sidebar markup: if an upgrade reshapes it, these rules stop applying silently
+ * rather than erroring. The nested list carrying `ms-3 ps-3` is the thing to
+ * re-check.
+ */
+.nextra-sidebar > div > div > ul > li > div > ul,
+.nextra-mobile-nav > ul > li > div > ul {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+/* The guide line is drawn at the list's start edge, so without the indent it
+ * would run down through the text instead of beside it. */
+.nextra-sidebar > div > div > ul > li > div > ul::before,
+.nextra-mobile-nav > ul > li > div > ul::before {
   display: none;
 }
 
