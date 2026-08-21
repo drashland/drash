@@ -19,14 +19,14 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Header } from "../../../core/http/Header.ts";
-import { Middleware } from "../../../standard/http/Middleware.ts";
-import { response } from "./ETagResponse.ts";
-import { ResponseStatus, ResponseStatusName } from "../../../core/Types.ts";
-import { Status } from "../../../core/http/response/Status.ts";
-import { StatusCode } from "../../../core/http/response/StatusCode.ts";
-import { StatusDescription } from "../../../core/http/response/StatusDescription.ts";
-import { HTTPError } from "../../../core/errors/HTTPError.ts";
+import { Header } from "../../core/http/Header.ts";
+import { Middleware } from "../../standard/http/Middleware.ts";
+import { response } from "./e_tag/ETagResponse.ts";
+import { ResponseStatus, ResponseStatusName } from "../../core/Types.ts";
+import { Status } from "../../core/http/response/Status.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { StatusDescription } from "../../core/http/response/StatusDescription.ts";
+import { HTTPError } from "../../core/errors/HTTPError.ts";
 
 type Options = {
   /** The maximum length of the ETag header. */

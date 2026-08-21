@@ -19,9 +19,9 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Status } from "../../../core/http/response/Status.ts";
-import { HTTPError } from "../../../core/errors/HTTPError.ts";
-import { Middleware } from "../../../standard/http/Middleware.ts";
+import { Status } from "../../core/http/response/Status.ts";
+import { HTTPError } from "../../core/errors/HTTPError.ts";
+import { Middleware } from "../../standard/http/Middleware.ts";
 
 type Options = {
   /** Throw if the response's Content-Type header does not match the request's Accept header? */

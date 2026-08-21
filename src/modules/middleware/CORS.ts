@@ -24,15 +24,15 @@ import {
   RequestMethod,
   ResponseStatus,
   ResponseStatusName,
-} from "../../../core/Types.ts";
-import { Method } from "../../../core/http/request/Method.ts";
-import { StatusCode } from "../../../core/http/response/StatusCode.ts";
-import { StatusDescription } from "../../../core/http/response/StatusDescription.ts";
-import { Header } from "../../../core/http/Header.ts";
+} from "../../core/Types.ts";
+import { Method } from "../../core/http/request/Method.ts";
+import { StatusCode } from "../../core/http/response/StatusCode.ts";
+import { StatusDescription } from "../../core/http/response/StatusDescription.ts";
+import { Header } from "../../core/http/Header.ts";
 
 // Imports > Standard
-import { Middleware } from "../../../standard/http/Middleware.ts";
-import { Status } from "../../../core/http/response/Status.ts";
+import { Middleware } from "../../standard/http/Middleware.ts";
+import { Status } from "../../core/http/response/Status.ts";
 
 // TODO(crookse)
 // - [ ] Alphabetize

@@ -33,7 +33,7 @@ import {
   AcceptHeaderMiddleware,
   defaultOptions,
   type Options,
-} from "../../../../../../../src/modules/middleware/AcceptHeader/mod.ts";
+} from "../../../../../../../src/modules/middleware/AcceptHeader.ts";
 import * as Chain from "../../../../../../../src/modules/http.native.ts";
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import { Status } from "../../../../../../../src/core/http/response/Status.ts";
