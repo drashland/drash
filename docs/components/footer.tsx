@@ -26,7 +26,7 @@ const columns: { heading: string; links: [string, string][] }[] = [
       ["Quickstart", "/docs/quickstart"],
       ["Step-by-step guide", "/docs/getting-started/step-by-step-guide"],
       ["Creating a Resource", "/docs/resources/creating-a-resource"],
-      ["Middleware", "/docs/tutorials/middleware"],
+      ["Middleware", "/docs/middleware"],
       ["Examples", "/examples"],
     ],
   },

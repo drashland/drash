@@ -11,7 +11,7 @@ A resource group is not a runtime object. It is built at build time and returns 
 ### Recommended Reading
 
 - Read [Creating a Resource](/docs/resources/creating-a-resource)
-- Read the [Middleware](/docs/tutorials/middleware) tutorial before attaching any
+- Read the [Middleware](/docs/middleware) tutorial before attaching any
 
 ### Objectives
 
@@ -24,6 +24,103 @@ To gain familiarity with:
 ## Syntax
 
 A group is built with the `ResourceGroup` class' static `builder()` method:
+
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Chain,
+  ResourceGroup,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const chain = Chain
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Chain,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const chain = Chain
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Chain,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const chain = Chain
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
 
 ```ts
 import {
@@ -52,11 +149,15 @@ const chain = Chain
   .build();
 ```
 
+</Tabs.Tab>
+
+</Tabs>
+
 <Callout type="info" emoji={null}>
 For the full builder API, see [Resource groups](/reference/standard/http/resource-group).
 </Callout>
 
-The builder methods can be called in any order. Only `.build()` has to come last.
+The builder methods can be called in any order. Only `build()` has to come last.
 
 ## Path Prefixes
 
@@ -117,17 +218,17 @@ const group = ResourceGroup
 
 Each resource gets its __own__ middleware instances. `Users` and `Orders` do not share an `Auth` object, so state stored on a middleware instance never leaks between resources.
 
-See the [Middleware](/docs/tutorials/middleware) tutorial for how to write one, and [Bundled middleware](/docs/tutorials/middleware#bundled-middleware) for the ones Drash ships.
+See the [Middleware](/docs/middleware) tutorial for how to write one, and [Pre-Built Middleware](/docs/middleware#pre-built-middleware) for the ones Drash ships.
 
 ## How It Works
 
 ### TLDR
 
-`.build()` generates anonymous proxy classes around each resource — one layer for middleware, one for prefixes — and returns those proxies instead of your original classes.
+`build()` generates anonymous proxy classes around each resource — one layer for middleware, one for prefixes — and returns those proxies instead of your original classes.
 
 ### Detailed Explanation
 
-`.build()` applies the two features in a fixed order:
+`build()` applies the two features in a fixed order:
 
 1. __Middleware first.__ Each resource class is wrapped in a `MiddlewareEntryPoint` class whose HTTP methods delegate to the first middleware in the chain. The middleware are nested, so `.middleware(A, B)` produces `A{original: B{original: resource}}`.
 2. __Prefixes second.__ The result is wrapped again in a `PrefixedResourceProxy`, which extends the class from step 1 and rewrites `this.paths` in its constructor.
@@ -136,5 +237,5 @@ Your original resource class is never mutated. The group hands the chain a subcl
 
 ## Next Steps
 
-- Write your own [middleware](/docs/tutorials/middleware)
-- Give the group's resources proper error responses with [error handling](/docs/tutorials/error-handling)
+- Write your own [middleware](/docs/middleware)
+- Give the group's resources proper error responses with [error handling](/docs/error-handling)

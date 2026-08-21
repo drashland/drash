@@ -32,11 +32,15 @@ An HTTP method receives whatever was passed to `chain.handle()`. On runtimes wit
 
 `params` is attached at runtime, so a plain `Request` type does not know about it. Use the `HTTPRequest` type the HTTP module exports and your editor will autocomplete both methods:
 
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+
+<Tabs.Tab>
+
 ```ts
 import {
   Resource,
   type HTTPRequest,
-} from "@drashland/drash/modules/http.native.js";
+} from "npm:@drashland/drash/modules/http.native.js";
 
 class Users extends Resource {
   public paths = ["/users/:id?"];
@@ -50,6 +54,73 @@ class Users extends Resource {
   }
 }
 ```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class Users extends Resource {
+  paths = ["/users/:id?"];
+
+  // `HTTPRequest` types a Web `Request`, so it does not apply here — Node hands
+  // the chain a context object and `params` is attached to that instead.
+  GET(context) {
+    const id = context.params.pathParam("id");
+    const sort = context.params.queryParam("sort");
+
+    context.response.end(`id=${id} sort=${sort}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Users extends Resource {
+  public paths = ["/users/:id?"];
+
+  public GET(request: HTTPRequest) {
+    // `request.params` is known to the type checker here
+    const id = request.params.pathParam("id");
+    const sort = request.params.queryParam("sort");
+
+    return new Response(`id=${id} sort=${sort}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class Users extends Resource {
+  paths = ["/users/:id?"];
+
+  GET(request) {
+    const id = request.params.pathParam("id");
+    const sort = request.params.queryParam("sort");
+
+    return new Response(`id=${id} sort=${sort}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+</Tabs>
 
 <Callout type="info" emoji={null}>
 `HTTPRequest` is a __type__, not a class. Import it with `type` so it is erased at build time rather than becoming a runtime import.

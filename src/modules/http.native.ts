@@ -77,7 +77,7 @@ export class Chain {
 /**
  * Intentionally empty.
  *
- * Each chain module exports its own `Resource` so a chain can diverge from the
+ * This module exports its own `Resource` so a chain can diverge from the
  * core class later — handling a different input type, or changing the
  * request-resource-response lifecycle — without touching Core. Extend this one,
  * not the core class.

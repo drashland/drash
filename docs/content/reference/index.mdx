@@ -19,7 +19,7 @@ Drash is split into three codebases, and this reference follows that split. Impo
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
 | [Core](/reference/core)            | Types, interfaces, enums, `HTTPError`, and the base `Resource`. The lowest-level APIs.                     | Nothing        |
 | [Standard](/reference/standard)    | Standalone library code, in the spirit of Deno's or Go's standard library — handlers, middleware, loggers. | Core           |
-| [Modules](/reference/modules)      | The pieces that do the work: the HTTP module, the bundled middleware, the builders.                        | Standard, Core |
+| [Modules](/reference/modules)      | The pieces that do the work: the HTTP module, the pre-built middleware, the builders.                        | Standard, Core |
 
 ## Where to Start
 
@@ -31,12 +31,12 @@ Most applications only touch Modules. The two entry points — `modules/http.nat
 | Write a resource                         | [Resource](/reference/core/http/resource)                              |
 | Throw and catch errors                   | [HTTPError](/reference/core/errors/http-error)                           |
 | Attach middleware or prefixes            | [Resource groups](/reference/standard/http/resource-group)             |
-| Use a bundled middleware                 | [CORS](/reference/modules/middleware/cors) and its siblings       |
+| Use a pre-built middleware                 | [CORS](/reference/modules/middleware/cors) and its siblings       |
 | Add a step of your own to the chain      | [Handlers](/reference/standard/handlers)                          |
 | Supply your own `URLPattern`             | [URLPattern](/reference/standard/polyfill)                     |
 
 ## Looking for Something Else?
 
-- [Middleware](/docs/tutorials/middleware) — writing your own, and the four bundled ones.
+- [Middleware](/docs/middleware) — writing your own, and the four bundled ones.
 - [Creating a Resource](/docs/resources/creating-a-resource) — paths, HTTP methods, and dynamic paths.
 - [Examples](/examples) — complete applications you can run.

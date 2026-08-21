@@ -24,7 +24,7 @@ Both entry points export the same six members. Nothing is available from one and
 | `Chain`         | class | [Chain](/reference/modules/http-native#chain)             |
 | `ResourceGroup` | class | [ResourceGroup](/reference/standard/http/resource-group) |
 | `Resource`    | class | [Creating a Resource](/docs/resources/creating-a-resource) |
-| `Middleware`  | class | [Middleware](/docs/tutorials/middleware)                   |
+| `Middleware`  | class | [Middleware](/docs/middleware)                   |
 | `HTTPError`   | class | [HTTPError](/reference/core/errors/http-error)                    |
 | `HTTPRequest` | type  | The request shape a resource method receives               |
 
@@ -53,7 +53,7 @@ Picking `http.native.js` on a runtime with no global `URLPattern` fails while th
 `this.urlPatternClass(Resource)` not called. Cannot create RequestChain without a `URLPattern`-like class.
 ```
 
-Because chains are normally built once at startup, this surfaces as soon as the process boots rather than as an intermittent routing failure under traffic.
+Because the HTTP module's `Chain` is normally built once at startup, this surfaces as soon as the process boots rather than as an intermittent routing failure under traffic.
 
 ## Supplying Your Own
 

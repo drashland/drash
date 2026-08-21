@@ -12,11 +12,11 @@ interface Builder<C> {
 }
 ```
 
-`C` is what `build()` returns — the finished product, not the builder.
+`C` is what `build()` returns — the finished object (aka product), not the builder.
 
 ## Who Implements It
 
-| Implementer                | Product    | Declared in                                            |
+| Implementer                | Object (aka Product)    | Declared in                                            |
 | -------------------------- | ---------- | ------------------------------------------------------ |
 | `ResponseBuilder`          | `Response` | `modules/builders/ResponseBuilder.js`                  |
 | `ETagResponseBuilder`      | `Response` | `modules/middleware/e_tag/ETagResponse.js`              |

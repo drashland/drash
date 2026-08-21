@@ -29,7 +29,7 @@ const api = ResourceGroup.builder().prefix("/api").resources(v1).build();
 
 ## `.middleware(...middleware)`
 
-Wraps every resource in the group, outermost-first. See [Middleware ordering](/docs/tutorials/middleware#ordering).
+Wraps every resource in the group, outermost-first. See [Middleware ordering](/docs/middleware#ordering).
 
 Each resource gets its **own** middleware instances.
 

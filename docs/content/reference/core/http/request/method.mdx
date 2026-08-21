@@ -37,4 +37,4 @@ import type { RequestMethod } from "@drashland/drash/core/types/RequestMethod.js
 
 This list is the whole surface a resource can implement. [`Resource`](/reference/core/http/resource) defines exactly these nine methods.
 
-The chain's `ResourceCaller` uppercases the incoming method and calls `resource[method]` directly. A request carrying a method outside this set resolves to `undefined` and fails with a `TypeError` rather than an `HTTPError`, so it does not arrive in your `.catch()` block as a tidy status — see [Error Handling](/docs/tutorials/error-handling).
+The chain's `ResourceCaller` uppercases the incoming method and calls `resource[method]` directly. A request carrying a method outside this set resolves to `undefined` and fails with a `TypeError` rather than an `HTTPError`, so it does not arrive in your `.catch()` block as a tidy status — see [Error Handling](/docs/error-handling).

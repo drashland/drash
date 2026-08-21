@@ -4,6 +4,7 @@ export default {
   concepts: "Concepts",
   resources: "Resources",
   requests: "Requests",
-  tutorials: "Tutorials",
+  middleware: "Middleware",
+  "error-handling": "Error Handling",
   misc: "Misc",
 };

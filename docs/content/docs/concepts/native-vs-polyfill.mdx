@@ -12,22 +12,51 @@ Simply put:
 - If your runtime fully supports Web Standards, use native modules.
 - If you runtime does not fully support Web Stanards, use polyfill modules.
 
-## HTTP Module Example
-
-As an example, the HTTP module has the following entry points:
-
-- `@drashland/drash/modules/http.native.js`: Supports global URLPattern
-- `@drashland/drash/modules/http.polyfill.js`: Requires polyfill for `URLPattern` in older runtimes
-
-Both entry points export **the same surface**:
-- `Chain`
-- `Resource`
-- `Middleware`
-- `HTTPError`
-- `type HTTPRequest`
-
-The only difference is which `URLPattern` implementation is used under the hood.
-
 ___Tutorials will call out if there is a need for you to choose.___
 
 If you are unsure, polyfill modules should work everywhere. Polyfill modules are bundled, so they cost little size but no network or peer dependency.
+
+## HTTP Module Example
+
+Drash's HTTP module ships as two entry points that export the same surface. Under the hood, their builders are where they diverge:
+
+<Compare>
+  <CompareItem label="http.native.js">
+
+```ts
+export class Chain {
+  static builder() {
+    return requestChain()
+      .urlPatternClass(URLPattern);
+      //               ^^^^^^^^^^
+      //               Uses the global URLPattern (expects the runtime to provide it)
+  }
+}
+```
+
+  </CompareItem>
+  <CompareItem label="http.polyfill.js">
+
+```ts
+export class Chain {
+  static builder() {
+    return requestChain()
+      .urlPatternClass(URLPatternPolyfill);
+      //               ^^^^^^^^^^^^^^^^^^
+      //               Uses Drash's polyfill (assumes the runtime does not provide URLPattern))
+  }
+}
+```
+
+  </CompareItem>
+</Compare>
+
+Same builder, same three methods, one different argument. Because the difference is applied for you — before you receive the builder — the rest of your application is identical on every runtime, and you do not have to call `.urlPatternClass()` yourself.
+
+<Callout type="info">
+__Providing your own custom `URLPattern`__
+
+See the `.urlPatternClass()` [example](/reference/modules/http-native#urlpatternclass) to provide your own custom `URLPattern`.
+</Callout>
+
+This is also why `Chain` exists as a class with a single static method. It holds `builder()` so that your code reads as `Chain.builder()` rather than a bare `builder()` function call.
