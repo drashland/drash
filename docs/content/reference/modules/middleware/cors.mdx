@@ -27,7 +27,7 @@ The highlighted sections below show how it is added:
 // Code is shortened for brevity
 
 import { Chain, ResourceGroup } from "@drashland/drash/modules/http.native.js";
-import { CORS } from "@drashland/drash/modules/middleware/CORS/mod.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
 
 const groupedResources = ResourceGroup
   .builder()
@@ -84,7 +84,7 @@ instead. Entries can be strings or regular expressions:
 
 ```typescript showLineNumbers {6-11}
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
-import { CORS } from "@drashland/drash/modules/middleware/CORS/mod.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
 
 const group = ResourceGroup
   .builder()
@@ -272,7 +272,7 @@ As you can see above, the preflight request stops at the middleware.
 The module exports the class as well as the factory, so you can extend it:
 
 ```typescript showLineNumbers
-import { CORSMiddleware } from "@drashland/drash/modules/middleware/CORS/mod.js";
+import { CORSMiddleware } from "@drashland/drash/modules/middleware/CORS.js";
 
 class LoggedCORS extends CORSMiddleware {
   constructor() {

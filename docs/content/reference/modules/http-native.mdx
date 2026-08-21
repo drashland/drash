@@ -1,13 +1,33 @@
-# Chain
+---
+title: http.native
+---
 
-The HTTP module's `Chain` class provides the code you use to build HTTP applications. It implements the ideas on the [Concepts > Chains](/docs/concepts/chains) page.
+# http.native
 
-<Callout type="info">
-  If you have used previous versions of Drash, this chain is essentially Drash
-  v1.x and v2.x in a more portable format.
-</Callout>
+The native entry point, `modules/http.native.js`. It hands the chain the runtime's own
+global `URLPattern`.
 
-The chain's syntax is nearly identical across runtimes, because Drash is [runtime agnostic](/docs/concepts/framework#runtime-agnostic).
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+```
+
+Use it where the runtime implements `URLPattern` — Deno and Cloudflare Workers. Where it
+does not, use [`http.polyfill`](/reference/modules/http-polyfill), which exports the same
+surface and differs only in the `URLPattern` class it injects.
+
+## Exports
+
+| Export          | Kind  | Reference                                                     |
+| --------------- | ----- | ------------------------------------------------------------- |
+| `Chain`         | class | [Below](#chain)                                               |
+| `Resource`      | class | [Creating a Resource](/docs/resources/creating-a-resource)    |
+| `Middleware`    | class | [Middleware](/reference/standard/http/middleware)             |
+| `ResourceGroup` | class | [ResourceGroup](/reference/standard/http/resource-group)      |
+| `HTTPError`     | class | [HTTPError](/reference/core/errors/http-error)                |
+| `HTTPRequest`   | type  | The request shape a resource method receives                  |
+
+The `Chain` class below is declared in this file and in `http.polyfill.js`. Its API is
+identical in both.
 
 ## `Chain`
 

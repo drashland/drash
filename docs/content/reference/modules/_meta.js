@@ -4,9 +4,8 @@ export default {
   index: "Overview",
   builders: "Builders",
   // src/modules holds http.native.ts and http.polyfill.ts as files, not an
-  // http/ directory, so these sit here rather than in a folder.
-  http: "HTTP",
-  "native-vs-polyfill": "Native vs. Polyfill",
-  chain: "Chain",
+  // http/ directory, so these are pages here rather than a folder.
+  "http-native": "http.native",
+  "http-polyfill": "http.polyfill",
   middleware: "Middleware",
 };

@@ -27,7 +27,7 @@ The highlighted section below shows how it is added:
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
-import { ETag } from "@drashland/drash/modules/middleware/ETag/mod.js";
+import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
 
 const group = ResourceGroup
   .builder()
@@ -169,7 +169,7 @@ sending the body, not producing it.
 The module exports the class as well as the factory, so you can extend it:
 
 ```typescript showLineNumbers
-import { ETagMiddleware } from "@drashland/drash/modules/middleware/ETag/mod.js";
+import { ETagMiddleware } from "@drashland/drash/modules/middleware/ETag.js";
 
 class LoggedETag extends ETagMiddleware {
   constructor() {
@@ -192,3 +192,28 @@ class LoggedETag extends ETagMiddleware {
 | `ETagMiddleware` | The middleware class itself, for extending         |
 | `defaultOptions` | The defaults listed above                          |
 | `Options`        | The options type                                   |
+
+## Related Files
+
+`ETag.ts` is the middleware. The one class it is built from lives in
+`modules/middleware/e_tag/`. You reach for it only when building an ETag response the
+middleware would otherwise build for you.
+
+### `ETagResponse`
+
+```ts
+import { ETagResponseBuilder } from "@drashland/drash/modules/middleware/e_tag/ETagResponse.js";
+```
+
+`ETagResponseBuilder` extends
+[`ResponseBuilder`](/reference/modules/builders/response-builder), taking an existing
+`Response` in its constructor and adding the ETag header to it. The module also exports a
+`response(response)` factory of the same shape as the other builders.
+
+| Method                   | Returns           | Notes                                                       |
+| ------------------------ | ----------------- | ----------------------------------------------------------- |
+| `addETagHeader(options)` | `Promise<this>`   | Computes the ETag and sets the header.                      |
+| `etagHeader(options)`    | `Promise<string>` | `"<hexLength>-<hash>"`, prefixed `W/` when `options.weak`.  |
+| `hash(maxLength)`        | `Promise<string>` | `btoa()` of the body, truncated. Defaults to 27 characters. |
+
+It does not override `build()` — the inherited one applies.

@@ -224,3 +224,60 @@ class LoggedRateLimiter extends RateLimiterMiddleware {
 | `RateLimiterMiddleware` | The middleware class itself, for extending         |
 | `defaultOptions`        | The defaults listed above                          |
 | `Options`               | The options type                                   |
+
+## Related Files
+
+`RateLimiter.ts` is the middleware. The three classes it is built from live in
+`modules/middleware/rate_limiter/`. You reach for these only when handling a rate-limit
+response yourself.
+
+### `RateLimitedClient`
+
+```ts
+import { RateLimitedClient } from "@drashland/drash/modules/middleware/rate_limiter/RateLimitedClient.js";
+```
+
+Per-client request accounting — one instance tracks one client's activity inside the
+current window. Every member is a getter; the class exposes no public setters.
+
+| Getter                                | Notes                                                     |
+| ------------------------------------- | --------------------------------------------------------- |
+| `num_requests_made`                   | Requests made in the window. Starts at 0.                 |
+| `requests_remaining`                  | What is left before the limit is hit.                     |
+| `max_requests_allowed_in_time_window` | The configured ceiling.                                   |
+| `hit_request_limit`                   | `true` once `num_requests_made` exceeds the ceiling.      |
+| `current_request_time`                | Timestamp of the request being handled. `-1` before any.  |
+| `rate_limit_window_end_time`          | When the current window closes.                           |
+| `rate_limit_window_time_elapsed`      | How far into the window this client is.                   |
+
+### `RateLimiterErrorResponse`
+
+```ts
+import { RateLimiterErrorResponse } from "@drashland/drash/modules/middleware/rate_limiter/RateLimiterErrorResponse.js";
+
+constructor(status: ResponseStatus, response: Response)
+```
+
+Extends [`HTTPError`](/reference/core/errors/http-error), carrying the `Response` the
+middleware already built alongside the status.
+
+**This is the one worth knowing about in a `.catch()` block.** Because it is an
+`HTTPError`, an `error.name === "HTTPError"` check catches it — and unlike a bare
+`HTTPError`, it hands you a ready-made response with the `X-RateLimit-*` headers already
+set.
+
+### `RateLimitResponse`
+
+```ts
+import { RateLimitResponseBuilder } from "@drashland/drash/modules/middleware/rate_limiter/RateLimitResponse.js";
+```
+
+`RateLimitResponseBuilder` extends
+[`ResponseBuilder`](/reference/modules/builders/response-builder), taking an existing
+`Response` in its constructor and adding the rate-limit headers to it. The module also
+exports a `response(response)` factory.
+
+| Method                        | Notes                                                                                         |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `addRateLimitHeaders(values)` | Sets `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset`.    |
+| `build()`                     | Overridden. Values set on the builder win; anything unset falls back to the wrapped response. |

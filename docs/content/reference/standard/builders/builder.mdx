@@ -19,7 +19,7 @@ interface Builder<C> {
 | Implementer                | Product    | Declared in                                            |
 | -------------------------- | ---------- | ------------------------------------------------------ |
 | `ResponseBuilder`          | `Response` | `modules/builders/ResponseBuilder.js`                  |
-| `ETagResponseBuilder`      | `Response` | `modules/middleware/ETag/ETagResponse.js`              |
+| `ETagResponseBuilder`      | `Response` | `modules/middleware/e_tag/ETagResponse.js`              |
 | `RateLimitResponseBuilder` | `Response` | `modules/middleware/rate_limiter/RateLimitResponse.js` |
 
 The last two extend `ResponseBuilder`, so they inherit the contract rather than declaring it again. See [Builders](/reference/modules/builders) for what each one does.
@@ -49,4 +49,4 @@ Worth knowing before you go looking for one:
 | `Builder<C>`            | `standard/builders/Builder.js`             | This page — Standard's contract                                 |
 | `Builder`               | `modules/builders/RequestChainBuilder.js`  | The chain builder's own public surface, unrelated to the others |
 
-The third is what [`Chain.builder()`](/reference/modules/chain) returns. Despite the name, it does **not** implement either contract above — it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.
+The third is what [`Chain.builder()`](/reference/modules/http-native) returns. Despite the name, it does **not** implement either contract above — it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.

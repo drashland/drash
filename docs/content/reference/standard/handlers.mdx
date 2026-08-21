@@ -56,7 +56,7 @@ a.setNext(b).setNext(c); // a -> b -> c
 
 ## The Request Chain's Handlers
 
-[`Chain.builder()`](/reference/modules/chain) links these five, in this order. The order is fixed and is not the consumer's to change.
+[`Chain.builder()`](/reference/modules/http-native) links these five, in this order. The order is fixed and is not the consumer's to change.
 
 | # | Handler                   | What it does                                                          |
 | - | ------------------------- | --------------------------------------------------------------------- |
@@ -90,7 +90,7 @@ Throws `HTTPError(Status.NotFound)` when the index produced no result. Throws `H
 
 Defines `params` on the request with `Object.defineProperty`, non-enumerable, exposing `pathParam(name)` and `queryParam(name)`. See [Handling Requests](/docs/requests/handling-requests).
 
-Exports the `WithParams` type, which the HTTP module re-exports as [`HTTPRequest`](/reference/modules/http).
+Exports the `WithParams` type, which the HTTP module re-exports as [`HTTPRequest`](/reference/modules/http-native).
 
 ### `ResourceCaller`
 

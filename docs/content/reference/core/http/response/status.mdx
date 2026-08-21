@@ -1,7 +1,5 @@
 # Status
 
-Four lookup tables describing HTTP response statuses. `Status` is the one you use; the other three are the pieces it is built from.
-
 ```ts
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 
@@ -11,7 +9,7 @@ throw new HTTPError(Status.Unauthorized);
 // -> message                 = "Unauthorized"
 ```
 
-## `Status`
+Maps a status name to a `{ code, description }` pair:
 
 ```ts
 Status: Record<ResponseStatusName, {
@@ -20,7 +18,9 @@ Status: Record<ResponseStatusName, {
 }>
 ```
 
-Maps a status name to a `{ code, description }` pair. This pair is the `ResponseStatus` type, and it is what [`HTTPError`](/reference/core/errors/http-error) takes as its first constructor argument.
+That pair is the [`ResponseStatus`](/reference/core/types#responsestatus) type, and it is
+what [`HTTPError`](/reference/core/errors/http-error) takes as its first constructor
+argument.
 
 | Expression                     | Value                                     |
 | ------------------------------ | ----------------------------------------- |
@@ -29,50 +29,26 @@ Maps a status name to a `{ code, description }` pair. This pair is the `Response
 | `Status.NotFound.code`         | `404`                                     |
 | `Status.NotFound.description`  | `"Not Found"`                             |
 
-There are 62 entries, covering the informational, successful, redirection, client error, and server error ranges.
+62 entries, covering the informational, successful, redirection, client error, and server
+error ranges.
 
-## `StatusCode`
+**This is the one you use.** Its values are composed from
+[`StatusCode`](/reference/core/http/response/status-code) and
+[`StatusDescription`](/reference/core/http/response/status-description), which exist so the
+two halves cannot drift apart. [`StatusName`](/reference/core/http/response/status-name)
+supplies the keys all three share.
 
-```ts
-StatusCode: Record<ResponseStatusName, number>
-```
+## Why a Pair and Not a Number
 
-Name to number, without the description.
-
-```ts
-import { StatusCode } from "@drashland/drash/core/http/response/StatusCode.js";
-
-StatusCode.NotFound; // 404
-```
-
-## `StatusDescription`
-
-Name to the reason phrase.
-
-```ts
-import { StatusDescription } from "@drashland/drash/core/http/response/StatusDescription.js";
-
-StatusDescription.NotFound; // "Not Found"
-```
-
-## `StatusName`
-
-The names themselves, which is what makes `ResponseStatusName` a union of literals rather than `string`.
-
-```ts
-import { StatusName } from "@drashland/drash/core/http/response/StatusName.js";
-
-StatusName.NotFound; // "NotFound"
-```
-
-## Notes
-
-### Why a Pair and Not a Number
-
-`HTTPError` needs both halves — `status_code` for the response status and `status_code_description` for its `statusText` — and taking them as one object means they cannot disagree. Passing `401` alone would leave the class to look the description up, and passing both separately would let a caller pair `401` with `"Not Found"`.
+`HTTPError` needs both halves — `status_code` for the response status and
+`status_code_description` for its `statusText` — and taking them as one object means they
+cannot disagree. Passing `401` alone would leave the class to look the description up, and
+passing both separately would let a caller pair `401` with `"Not Found"`.
 
 This is why `new HTTPError(401)` does not type check. Pass `Status.Unauthorized`.
 
-### Not Re-Exported
+## Not Re-Exported
 
-`Status` is not among the exports of `modules/http.native.js` or `modules/http.polyfill.js`. Import it from its own subpath, as shown above, even in files that get `HTTPError` from the HTTP module.
+Neither `Status` nor its three companions are among the exports of
+`modules/http.native.js` or `modules/http.polyfill.js`. Import each from its own subpath,
+as shown above, even in files that get `HTTPError` from the HTTP module.

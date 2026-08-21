@@ -1,0 +1,23 @@
+---
+title: Builders
+---
+
+# Builders
+
+Factory functions that create builders, following the
+[builder pattern](https://refactoring.guru/design-patterns/builder). One page per file in
+`modules/builders/`.
+
+| File                      | Factory           | `build()` returns             |
+| ------------------------- | ----------------- | ----------------------------- |
+| [`RequestChainBuilder`](/reference/modules/builders/request-chain-builder) | `requestChain()` | The chain head |
+| [`ResponseBuilder`](/reference/modules/builders/response-builder)          | `response()`     | A Web `Response` |
+| [`RequestBuilder`](/reference/modules/builders/request-builder)            | `request()`      | A Web `Request` |
+
+`build()` is always the terminal call and always returns the finished product. Which
+contract each one declares differs — see
+[Builder](/reference/standard/builders/builder#three-things-named-builder).
+
+The two middleware response builders that extend `ResponseBuilder` are documented on their
+own middleware pages: [ETag](/reference/modules/middleware/etag) and
+[RateLimiter](/reference/modules/middleware/rate-limiter).

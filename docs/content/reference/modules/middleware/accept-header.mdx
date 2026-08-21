@@ -26,7 +26,7 @@ The highlighted section below shows how it is added:
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
-import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader/mod.js";
+import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader.js";
 
 const group = ResourceGroup
   .builder()
@@ -147,7 +147,7 @@ satisfies it.
 The module exports the class as well as the factory, so you can extend it:
 
 ```typescript showLineNumbers
-import { AcceptHeaderMiddleware } from "@drashland/drash/modules/middleware/AcceptHeader/mod.js";
+import { AcceptHeaderMiddleware } from "@drashland/drash/modules/middleware/AcceptHeader.js";
 
 class LoggedAcceptHeader extends AcceptHeaderMiddleware {
   constructor() {

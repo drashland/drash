@@ -1,25 +1,28 @@
 ---
-title: Native vs. Polyfill
+title: http.polyfill
 ---
 
-# Native vs. Polyfill
+# http.polyfill
 
-The HTTP module ships two consumer entry points. They are interchangeable: same exports, same behavior, same types. The only difference is which `URLPattern` implementation gets wired into the chain for you.
+The polyfill entry point, `modules/http.polyfill.js`. It hands the chain Drash's bundled
+`URLPatternPolyfill` instead of the runtime's global.
 
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
 ```
-import { ... } from "@drashland/drash/modules/http.native.js";
-import { ... } from "@drashland/drash/modules/http.polyfill.js";
-```
 
-For the reasoning behind the split, see the [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) page.
+Use it where the runtime has no global `URLPattern`, or when you are unsure — the polyfill
+is bundled, so it costs a little size but no network or peer dependency. The `Chain` API is
+documented on [`http.native`](/reference/modules/http-native#chain); it is identical here.
 
 ## Exports
 
-Both entry points export the same five members. Nothing is available from one and missing from the other, so switching between them never changes an import list:
+Both entry points export the same six members. Nothing is available from one and missing from the other, so switching between them never changes an import list:
 
 | Export        | Kind  | Reference                                                  |
 | ------------- | ----- | ---------------------------------------------------------- |
-| `Chain`       | class | [Chain](/reference/modules/chain)                     |
+| `Chain`         | class | [Chain](/reference/modules/http-native#chain)             |
+| `ResourceGroup` | class | [ResourceGroup](/reference/standard/http/resource-group) |
 | `Resource`    | class | [Creating a Resource](/docs/resources/creating-a-resource) |
 | `Middleware`  | class | [Middleware](/docs/tutorials/middleware)                   |
 | `HTTPError`   | class | [HTTPError](/reference/core/errors/http-error)                    |
@@ -27,14 +30,14 @@ Both entry points export the same five members. Nothing is available from one an
 
 ## What Each One Injects
 
-Each entry point calls [`.urlPatternClass()`](/reference/modules/chain#urlpatternclass) on your behalf. For example:
+Each entry point calls [`.urlPatternClass()`](/reference/modules/http-native#urlpatternclass) on your behalf. For example:
 
 | Entry point        | `URLPattern` used                      | Source of the implementation |
 | ------------------ | -------------------------------------- | ---------------------------- |
 | `http.native.js`   | `.urlPatternClass(URLPattern)`         | The runtime                  |
 | `http.polyfill.js` | `.urlPatternClass(URLPatternPolyfill)` | Drash's implementation       |
 
-If you need a custom implementation, you can call `.urlPatternClass()` yourself. See [Modules > HTTP > Chain > urlPatternClass()](/reference/modules/chain#urlpatternclass) to learn more.
+If you need a custom implementation, you can call `.urlPatternClass()` yourself. See [Modules > HTTP > Chain > urlPatternClass()](/reference/modules/http-native#urlpatternclass) to learn more.
 
 ## Choosing One
 
@@ -54,4 +57,4 @@ Because chains are normally built once at startup, this surfaces as soon as the 
 
 ## Supplying Your Own
 
-Neither entry point locks you in. `Chain.builder()` accepts any `URLPattern`-compatible class through [`.urlPatternClass()`](/reference/modules/chain#urlpatternclass), which overrides whatever the entry point injected.
+Neither entry point locks you in. `Chain.builder()` accepts any `URLPattern`-compatible class through [`.urlPatternClass()`](/reference/modules/http-native#urlpatternclass), which overrides whatever the entry point injected.

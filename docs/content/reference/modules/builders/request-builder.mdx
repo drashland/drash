@@ -1,0 +1,31 @@
+---
+title: RequestBuilder
+---
+
+# RequestBuilder
+
+```ts
+import { request } from "@drashland/drash/modules/builders/RequestBuilder.js";
+
+const req = request()
+  .path("http://localhost:1447/users/1")
+  .get()
+  .build();
+```
+
+Returns a `RequestBuilder`. It exists mainly for tests, where constructing requests by hand gets repetitive.
+
+| Method       | Notes                             |
+| ------------ | --------------------------------- |
+| `path(path)` | The URL                           |
+| `get()`      | Sets the method to `GET`          |
+| `post()`     | Sets the method to `POST`         |
+| `put()`      | Sets the method to `PUT`          |
+| `patch()`    | Sets the method to `PATCH`        |
+| `delete()`   | Sets the method to `DELETE`       |
+| `build()`    | Returns a Web `Request`           |
+
+There is no method for `HEAD`, `OPTIONS`, `CONNECT`, or `TRACE`. Construct those with `new Request()` directly.
+
+Declares no contract at all — it simply has a `build()` method. See
+[the three things named `Builder`](/reference/standard/builders/builder#three-things-named-builder).

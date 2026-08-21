@@ -11,19 +11,19 @@ The pieces that do the work, composed from [Standard](/reference/standard) and [
 
 | Export                     | Kind     | Import from                              | Documented in                                          |
 | -------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------ |
-| `Chain`                    | class    | `modules/http.native.js` / `.polyfill.js` | [Chain](/reference/modules/chain)                 |
+| `Chain`                    | class    | `modules/http.native.js` / `.polyfill.js` | [Chain](/reference/modules/http-native)                 |
 | `Resource`                 | class    | `modules/http.native.js` / `.polyfill.js` | [Resource](/reference/core/http/resource)                   |
 | `Middleware`               | class    | `modules/http.native.js` / `.polyfill.js` | [Middleware](/reference/standard/http/middleware)           |
 | `ResourceGroup`            | class    | `modules/http.native.js` / `.polyfill.js` | [Resource groups](/reference/standard/http/resource-group)  |
 | `HTTPError`                | class    | `modules/http.native.js` / `.polyfill.js` | [HTTPError](/reference/core/errors/http-error)                |
-| `HTTPRequest`              | type     | `modules/http.native.js` / `.polyfill.js` | [HTTP](/reference/modules/http)                        |
-| `requestChain`             | function | `modules/builders/RequestChainBuilder.js` | [Builders](/reference/modules/builders)                |
-| `request`                  | function | `modules/builders/RequestBuilder.js`      | [Builders](/reference/modules/builders)                |
-| `response`                 | function | `modules/builders/ResponseBuilder.js`     | [Builders](/reference/modules/builders)                |
-| `ResponseBuilder`          | class    | `modules/builders/ResponseBuilder.js`     | [Builders](/reference/modules/builders)                |
-| `AcceptHeader`             | function | `modules/middleware/AcceptHeader/mod.js`  | [AcceptHeader](/reference/modules/middleware/accept-header) |
-| `CORS`                     | function | `modules/middleware/CORS/mod.js`          | [CORS](/reference/modules/middleware/cors)             |
-| `ETag`                     | function | `modules/middleware/ETag/mod.js`          | [ETag](/reference/modules/middleware/etag)             |
+| `HTTPRequest`              | type     | `modules/http.native.js` / `.polyfill.js` | [HTTP](/reference/modules/http-native)                        |
+| `requestChain`             | function | `modules/builders/RequestChainBuilder.js` | [RequestChainBuilder](/reference/modules/builders/request-chain-builder)                |
+| `request`                  | function | `modules/builders/RequestBuilder.js`      | [RequestBuilder](/reference/modules/builders/request-builder)                |
+| `response`                 | function | `modules/builders/ResponseBuilder.js`     | [ResponseBuilder](/reference/modules/builders/response-builder)                |
+| `ResponseBuilder`          | class    | `modules/builders/ResponseBuilder.js`     | [ResponseBuilder](/reference/modules/builders/response-builder)                |
+| `AcceptHeader`             | function | `modules/middleware/AcceptHeader.js`  | [AcceptHeader](/reference/modules/middleware/accept-header) |
+| `CORS`                     | function | `modules/middleware/CORS.js`          | [CORS](/reference/modules/middleware/cors)             |
+| `ETag`                     | function | `modules/middleware/ETag.js`          | [ETag](/reference/modules/middleware/etag)             |
 | `RateLimiter`              | function | `modules/middleware/RateLimiter.js`       | [RateLimiter](/reference/modules/middleware/rate-limiter) |
 
 Each bundled middleware also exports its `XMiddleware` class, its `Options` type, and its `defaultOptions` — see the individual pages.
@@ -37,7 +37,7 @@ Each bundled middleware also exports its `XMiddleware` class, its `Options` type
 | `modules/http.native.js`   | Deno, Cloudflare Workers         |
 | `modules/http.polyfill.js` | Node, Bun                        |
 
-See [Native vs. Polyfill](/reference/modules/native-vs-polyfill).
+See [Native vs. Polyfill](/reference/modules/http-polyfill).
 
 <Callout type="warning" emoji={null}>
 __Any change to one entry point has to be mirrored in the other.__ They are separate files with the same surface, and the compat tests exist in `native/` and `polyfill/` pairs for that reason.
@@ -46,7 +46,7 @@ __Any change to one entry point has to be mirrored in the other.__ They are sepa
 ## Sections
 
 <Cards num={2}>
-  <Cards.Card title="HTTP" href="/reference/modules/http" arrow />
+  <Cards.Card title="HTTP" href="/reference/modules/http-native" arrow />
   <Cards.Card title="Middleware" href="/reference/modules/middleware/cors" arrow />
   <Cards.Card title="Builders" href="/reference/modules/builders" arrow />
 </Cards>
