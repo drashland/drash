@@ -89,10 +89,13 @@ export default async function RootLayout({
           footer={footer}
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/drashland/drash/tree/main/docs"
-          // Level 1 (the top-level sections) stays expanded; collapsing starts
-          // at level 2, which is the only depth that still toggles. See
-          // app/globals.css for the rules that drop the level-1 toggle.
-          sidebar={{ defaultMenuCollapseLevel: 2 }}
+          // Levels 1 and 2 stay expanded, so a section's folders (Core >
+          // Errors, Modules > Middleware, ...) show their pages without a
+          // click. Collapsing starts at level 3 — the folders nested inside
+          // those, such as Core > HTTP > Request. Level-2 folders keep their
+          // toggle so a reader can still close them; see app/globals.css for
+          // the rules that drop the toggle at level 1 only.
+          sidebar={{ defaultMenuCollapseLevel: 3 }}
         >
           {children}
         </Layout>

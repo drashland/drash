@@ -26,8 +26,9 @@
  * only the first level. Nested folders (for example Reference > Middleware) sit
  * inside a deeper `ul` and keep their toggle.
  *
- * `defaultMenuCollapseLevel: 2` in app/layout.tsx is what leaves this level
+ * `defaultMenuCollapseLevel: 3` in app/layout.tsx is what leaves this level
  * expanded in the first place; these rules remove the affordance to close it.
+ * That setting also expands level 2, but those folders keep their toggle.
  *
  * Two selectors because the desktop sidebar and the mobile nav nest their first
  * `ul` at different depths.
