@@ -10,19 +10,34 @@
 
 ## Ordering
 
-`.middleware(A, B, C)` nests outermost-first:
+`.middleware(A, B, C)` nests outermost-first — each middleware wraps the next, and the
+innermost one wraps your resource:
 
-```
-A {
-  original: B { 
-    original: C { 
-      original: resourceInstance
-    }
-  }
-}
+```mermaid
+flowchart LR
+  req([Request])
+  a([A])
+  b([B])
+  c([C])
+  resource([Resource])
+
+  subgraph mw[".middleware(A, B, C)"]
+    direction LR
+    a <--> b <--> c <--> resource
+  end
+
+  req <--> a
+
+  style mw fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+  classDef red fill:#fff5f5,stroke:#fc8181,stroke-width:2px,color:#c53030;
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+  class req red
+  class a,b,c,resource blue
 ```
 
-So `A` runs first, `B` runs second, and `C` runs last before the request hits your resource.
+A request travels inward — `A`, then `B`, then `C` — before it reaches your resource. The
+response travels back out the same way, so anything a middleware does *after* its
+`this.next()` call runs in the reverse order: `C`, then `B`, then `A`.
 
 ## Per-Resource Instances
 
