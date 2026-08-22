@@ -1,0 +1,92 @@
+---
+title: server.ts
+description: Drash / Vercel / server.ts — a complete, runnable example.
+---
+
+# Drash / Vercel / server.ts
+
+Vercel detects a `server` entrypoint at the project root that calls `server.listen()`, and
+routes requests to it. It receives Node's `IncomingMessage`/`ServerResponse`, so it takes a
+**context object** like the [Node example](/examples/node/typescript).
+
+## Steps
+
+<Steps>
+
+### Install Drash and the Vercel CLI
+
+```bash
+npm install @drashland/drash
+npm install --global vercel
+```
+
+### Create the Following File
+
+```ts filename="server.ts"
+import {
+  Chain,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { createServer } from "node:http";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+
+const server = createServer((request, response) => {
+  const context = {
+    url: `http://${request.headers.host ?? "localhost"}${request.url}`,
+    method: request.method,
+    request,
+    response,
+  };
+
+  return chain
+    .handle(context)
+    .catch((error) => {
+      response.statusCode = 500;
+      response.statusMessage = "Internal Server Error";
+      response.end("Sorry, but we hit an error!");
+    });
+});
+
+server.listen(Number(process.env.PORT ?? 3000));
+```
+
+### Run the Drash App
+
+```bash
+vercel dev
+```
+
+### Open It
+
+Go to http://localhost:3000. Pass `--listen` to use a different port.
+
+</Steps>
+
+## Notes
+
+`url` must be absolute. `request.url` from `node:http` is path-only (`/users/1`), which is
+why the example builds it from the `host` header — a bare path will not match.
+
+The port passed to `server.listen()` is only used when you run the file locally. On Vercel
+it is ignored; requests are routed through an internal port.
+
+Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node
+version, so this uses the **polyfill** entry point.
+
+If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your
+`package.json` or name the file `.mjs`. The polyfill entry point is an ES module, and
+Vercel does not allow `require` in these functions.
+
+For the other Vercel entrypoint, see [api/ (fetch)](/examples/vercel/api).

@@ -1,0 +1,58 @@
+# Deno
+
+This quickstart guide assumes you have Deno 2.x+ installed.
+
+## Steps
+
+1. Create your `app.ts` file.
+
+    ```ts filename="app.ts"
+    import {
+      Chain,
+      Resource,
+    } from "npm:@drashland/drash/modules/http.native.js";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request: Request) {
+        return new Response(`Oh so easy`);
+      }
+    }
+
+    const chain = Chain
+      .builder()
+      .resources(Home)
+      .build();
+
+    Deno.serve({
+      hostname: "localhost",
+      port: 1447,
+      handler: (request: Request): Promise<Response> => {
+        return chain
+          .handle<Response>(request)
+          .catch(() => {
+            return new Response("Sorry, but we hit an error!", {
+              status: 500,
+              statusText: "Internal Server Error",
+            });
+          });
+      },
+    });
+    ```
+
+1. Run your `app.ts` file.
+
+    ```bash
+    deno run --allow-net app.ts
+    ```
+
+1. Visit http://localhost:1447 to verify your app is running.
+
+## Notes
+
+Deno's native `Request` is passed straight through, so your resource methods receive a real `Request`.
+
+Deno expects a native `Response`, so your resources should return a real `Response`.
+
+`chain.handle()` returns a promise that rejects on error — including [`HTTPError`](/reference/core/errors/http-error). Nothing is written to the socket for you, so the `.catch()` block is where you decide what the client sees. See [HTTPError](/reference/core/errors/http-error) to learn more about handling and returning error responses.

@@ -1,0 +1,106 @@
+/*
+ * Dark in both themes, the way deno.com's footer is. The page beneath is light
+ * in light mode, so the band reads as a deliberate close to the page rather
+ * than as part of it. app/globals.css paints Nextra's full-bleed footer wrapper
+ * the same colour so the band runs edge to edge.
+ */
+.root {
+  --footer-bg: #0b1220;
+  --footer-fg: #94a3b8;
+  --footer-strong: #f1f5f9;
+  --footer-rule: rgb(148 163 184 / 0.14);
+
+  width: 100%;
+  background: var(--footer-bg);
+  color: var(--footer-fg);
+  text-align: left;
+}
+
+.inner {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 2.5rem;
+  display: grid;
+  gap: 3rem;
+  /* Brand block holds its width; the link columns take the rest. */
+  grid-template-columns: minmax(14rem, 1fr) 2.2fr;
+}
+
+.wordmark {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--footer-strong);
+}
+
+.tagline {
+  margin: 0.6rem 0 0;
+  max-width: 22rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.columns {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+}
+
+.heading {
+  margin: 0 0 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--footer-strong);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.link {
+  color: var(--footer-fg);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.link:hover,
+.link:focus-visible {
+  color: var(--footer-strong);
+  text-decoration: underline;
+}
+
+.bottom {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 2.5rem;
+  border-top: 1px solid var(--footer-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+}
+
+.bottomright {
+  text-align: right;
+}
+
+/* Stack the brand above the columns before they get too narrow to read. */
+@media (max-width: 60rem) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+}

@@ -1,0 +1,214 @@
+---
+title: http.native
+---
+
+# http.native
+
+The native entry point, `modules/http.native.js`. It hands the chain the runtime's own
+global `URLPattern`.
+
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+```
+
+Use it where the runtime implements `URLPattern` — Deno and Cloudflare Workers. Where it
+does not, use [`http.polyfill`](/reference/modules/http-polyfill), which exports the same
+surface and differs only in the `URLPattern` class it injects.
+
+## Exports
+
+| Export          | Kind  | Reference                                                     |
+| --------------- | ----- | ------------------------------------------------------------- |
+| `Chain`         | class | [Below](#chain)                                               |
+| `Resource`      | class | [Creating a Resource](/docs/resources/creating-a-resource)    |
+| `Middleware`    | class | [Middleware](/reference/standard/http/middleware)             |
+| `ResourceGroup` | class | [ResourceGroup](/reference/standard/http/resource-group)      |
+| `HTTPError`     | class | [HTTPError](/reference/core/errors/http-error)                |
+| `HTTPRequest`   | type  | The request shape a resource method receives                  |
+
+The `Chain` class below is declared in this file and in `http.polyfill.js`. Its API is
+identical in both.
+
+## `Chain`
+
+### `.builder()`
+
+Returns a builder preconfigured with handlers.
+
+```ts
+import { Chain } from "@drashland/drash/modules/http.native.js";
+
+const chain = Chain
+  .builder()
+```
+
+The preconfigured handlers are added in this order:
+
+| # | Handler                   | What it does                                                           |
+| - | ------------------------- | ---------------------------------------------------------------------- |
+| 1 | `RequestValidator`        | Rejects inputs lacking a readable `url` or `method` field.                     |
+| 2 | `ResourcesIndex`          | Matches `input.url` against each resource's `paths` using `URLPattern` or a polyfilled `URLPattern`. |
+| 3 | `ResourceNotFoundHandler` | Throws `HTTPError(404)` when the `ResourcesIndex` handler cannot find a matching resource.                 |
+| 4 | `RequestParamsParser`     | Defines a non-enumerable `params` property on the request. Access it via `request.params`.              |
+| 5 | `ResourceCaller`          | Invokes `resource[METHOD](request)` (e.g., `UsersResource.GET(request)`).                                    |
+
+The order is not configurable through the builder. What you control is the set of resources or resource groups you provide. For example:
+
+```ts
+import { Chain } from "@drashland/drash/modules/http.native.js";
+
+const chain = Chain
+  .builder()            // Assembles all handlers above
+  .resources(/* ... */) // Your resources come after so they can be called by `ResourceCaller`
+  .build()              // Builds the chain in the above order
+```
+
+### `.resources()`
+
+Registers resource classes with the chain. Pass **classes, not instances** — Drash constructs them under the hood. For example:
+
+```ts
+// Good
+
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource { /* ... */ }
+
+const chain = Chain
+  .builder()
+  .resources(Home)
+  .build();
+```
+
+```ts
+// Bad
+
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource { /* ... */ }
+
+const chain = Chain
+  .builder()
+  .resources(new Home()) // <--- DO NOT DO THIS
+  .build();
+```
+
+Calling `.resources()` more than once **replaces** the set rather than appending. Pass everything in one call.
+
+### `.urlPatternClass()`
+
+Overrides the `URLPattern` implementation. By default, the native and polyfill modules call this for you, but you can call it and pass in your own implementation. For example:
+
+```ts
+import { Chain } from "@drashland/drash/modules/http.polyfill.js";
+import { CustomUrlPattern, ExecResult } from "@drashland/drash/standard/polyfill/CustomURLPattern.js";
+
+class MyCustomURLPatternClass extends CustomUrlPattern {
+  override exec(url: string): ExecResult | null {
+
+    /* Your URLPattern implementation */
+
+    return null;
+  }
+}
+
+const chain = Chain
+  .builder()
+  .urlPatternClass(MyCustomURLPatternClass) // Overrides the default implementation
+  .build();
+```
+
+<Callout type="warning">
+Use the polyfill module if you want to override the `URLPattern` implementation. If you use the native module, it will attempt a global `URLPattern` call and that could cause an error.
+</Callout>
+
+### `.build()`
+
+Wires the handlers together and returns the head of the chain.
+
+## `chain.handle(input)`
+
+Runs a request through the chain.
+
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+
+class IndexResource extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(/* your resources */)
+  .build();
+
+const response = await chain.handle<Response>(new Request("http://localhost:1447/"));
+// => Oh so easy
+```
+
+The type parameter is the value you expect back — it is what the resource method returned, passed through unchanged. Drash does not construct it.
+
+The `chain.handle(input)` method's `input` argument requires a fully qualified `url` and HTTP `method`. It can be a Web `Request`, or a plain object carrying whatever your resources need:
+
+```ts
+// Example of a context object being used in Node
+
+const context = {
+  url: `http://${hostname}:${port}${request.url}`,
+  method: request.method,
+  request,  // IncomingMessage
+  response, // ServerResponse
+}
+
+chain.handle(context);
+```
+
+```ts
+// A Web Request already includes a `url` and `method` field,
+// so it can be passed as is
+
+const request = new Request("http://localhost:1447")
+
+chain.handle(request);
+```
+
+### Errors
+
+The returned promise rejects on any error raised in the chain. Always attach a `.catch()` block — see [HTTPError](/reference/core/errors/http-error).
+
+```ts
+import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+
+class IndexResource extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    throw new Error("Error from GET"); // Throw an error to exercise the `.catch()` block
+  }
+}
+
+const chain = Chain
+  .builder()
+  .resources(/* your resources */)
+  .build();
+
+const response = chain
+  .handle<Response>(new Request("http://localhost:1447/"))
+  .catch((error) => {
+    //
+    // The `error` will be the `Error from GET` error thrown in `IndexResource`
+    //
+    // Do some error handling here
+    //
+  })
+```
+
+### Concurrency
+
+One chain instance handles concurrent requests. Build it once at module scope and reuse it; do not build per request.
+
+Resources are constructed by the chain, so **do not store per-request state on `this`** in a resource or middleware. State kept on the instance is shared across every in-flight request.

@@ -1,0 +1,115 @@
+# Handlers
+
+A chain is a linked list of handlers. Each one does its work, then passes an input object to the next.
+
+```ts
+import { Handler } from "@drashland/drash/standard/handlers/Handler.js";
+
+class Timer extends Handler {
+  override handle<Output>(input: unknown): Promise<Output> {
+    console.time("request");
+
+    return super.sendToNextHandler<Output>(input);
+  }
+}
+```
+
+## `Handler`
+
+The base class. Implements [`IHandler`](/reference/core/interfaces#ihandlerinput).
+
+### `handle<Output>(input)`
+
+```ts
+public handle<Output>(input: any): Promise<Output>
+```
+
+The entry point. The base implementation forwards straight to the next handler, so a subclass that overrides it is expected to call `sendToNextHandler()` when it is done.
+
+The `input` is deliberately untyped. Handlers mutate and enrich it as it travels, so what the last handler sees is not what the first received.
+
+### `sendToNextHandler<Output>(input)`
+
+```ts
+public sendToNextHandler<Output>(input: any): Promise<Output>
+```
+
+Passes the input along. __Throws if there is no next handler__:
+
+```text
+Handler {name} has no next handler
+```
+
+The last handler in a chain must therefore return a value rather than forward one. In the request chain that is `ResourceCaller`, which calls your resource and returns what it returned.
+
+### `setNext(handler)`
+
+```ts
+public setNext(handler: Handler): Handler
+```
+
+Links `handler` after this one and __returns the handler it was given__, not `this`. That return is what lets a whole chain be linked in one pass:
+
+```ts
+a.setNext(b).setNext(c); // a -> b -> c
+```
+
+## The Request Chain's Handlers
+
+[`Chain.builder()`](/reference/modules/http-native) links these five, in this order. The order is fixed and is not the consumer's to change.
+
+| # | Handler                   | What it does                                                          |
+| - | ------------------------- | --------------------------------------------------------------------- |
+| 1 | `RequestValidator`        | Rejects input with no readable `url` or `method`                       |
+| 2 | `ResourcesIndex`          | Matches `input.url` against every resource's paths                     |
+| 3 | `ResourceNotFoundHandler` | Throws `404` when the index found nothing                              |
+| 4 | `RequestParamsParser`     | Attaches the non-enumerable `params` object to the request             |
+| 5 | `ResourceCaller`          | Calls `resource[METHOD](request)` and returns the result               |
+
+### `RequestValidator`
+
+Throws `HTTPError(Status.UnprocessableEntity)` — a `422` — with one of three messages:
+
+| Message                                 | Cause                                       |
+| --------------------------------------- | ------------------------------------------- |
+| `Request could not be read`             | Input is falsy, or is not an object         |
+| `Request HTTP method could not be read` | No `method` property, or it is not a string |
+| `Request URL could not be read`         | No `url` property, or it is not a string    |
+
+### `ResourcesIndex`
+
+Builds a `URLPattern` per resource path and matches the request URL against them. It appends `{/}?` to each path, which is why a trailing slash matches either way, and it caches results by fully-qualified URL.
+
+Its constructor takes the `URLPattern`-like class to use — see [URLPattern](/reference/standard/polyfill).
+
+### `ResourceNotFoundHandler`
+
+Throws `HTTPError(Status.NotFound)` when the index produced no result. Throws `HTTPError(Status.InternalServerError)` with `Request could not be read` if the input itself is malformed at this stage.
+
+### `RequestParamsParser`
+
+Defines `params` on the request with `Object.defineProperty`, non-enumerable, exposing `pathParam(name)` and `queryParam(name)`. See [Handling Requests](/docs/requests/handling-requests).
+
+Exports the `WithParams` type, which the HTTP module re-exports as [`HTTPRequest`](/reference/modules/http-native).
+
+### `ResourceCaller`
+
+Uppercases `input.request.method` and calls `input.resource[method](input.request)`. Whatever that returns becomes the resolved value of `chain.handle()`.
+
+## `AbstractChainBuilder`
+
+The base for chain builders — it is what wires these handlers together. See [AbstractChainBuilder](/reference/standard/chains/abstract-chain-builder).
+
+## `AbstractSearchIndex`
+
+A base class for defining objects that have a cache and lookup state.
+
+The `ResourcesIndex` class extends this — caching resource so routing a request to a resource becomes a simple lookup.
+
+## Notes
+
+### Writing Your Own Handler
+
+Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side — both land in `chain.handle().catch()`.
+
+A handler that needs to run after the resource cannot be expressed this way, because the chain has no return path. That is what [middleware](/reference/standard/http/middleware) is for — it wraps the resource rather than preceding it.

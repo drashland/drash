@@ -22,7 +22,10 @@
 import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.native";
+import {
+  Chain,
+  Resource,
+} from "../../../../../../../../dist/modules/http.native";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
 
 export const protocol = "http";
@@ -36,7 +39,7 @@ type WebAPIContext = {
   response?: Response;
 };
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(context: WebAPIContext) {

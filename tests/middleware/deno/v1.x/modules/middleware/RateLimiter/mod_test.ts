@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as asserts from "@std/assert";
+import { assertEquals } from "@std/assert";
 import {
   assertionMessage,
   chain,
@@ -29,14 +29,14 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import * as Chain from "../../../../../../../src/modules/http.native.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import {
   type Options,
   RateLimiter,
   RateLimiterMiddleware,
-} from "../../../../../../../src/modules/middleware/RateLimiter/mod.ts";
-import { RateLimiterErrorResponse } from "../../../../../../../src/modules/middleware/RateLimiter/RateLimiterErrorResponse.ts";
+} from "../../../../../../../src/modules/middleware/RateLimiter.ts";
+import { RateLimiterErrorResponse } from "../../../../../../../src/modules/middleware/rate_limiter/RateLimiterErrorResponse.ts";
 import { Header } from "../../../../../../../src/core/http/Header.ts";
 
 type TestCase = {
@@ -73,7 +73,7 @@ const url = `${protocol}://${hostname}:${port}`;
 // chain. If the chain is recreated during each test case, then the ETag
 // middleware will lose its cache of generated etags. Without this cache, the
 // tests will fail. Reason being the tests need to exercise subsequent requests
-// to make sure the ETag middleare is doing its job. For example, one request
+// to make sure the ETag middleware is doing its job. For example, one request
 // will be sent and it will be given an ETag header value. That value will be
 // cached by the ETag middleware. When a second request is sent, the ETag
 // middleware will:
@@ -145,7 +145,7 @@ function runTests() {
               await assert(
                 "Deno",
                 testCaseIndex,
-                testCase.middleware_options,
+                { ...defaultOptions, ...testCase.middleware_options },
                 req,
                 requestIndex,
                 response,
@@ -192,7 +192,7 @@ function runTests() {
               await assert(
                 "Drash",
                 testCaseIndex,
-                testCase.middleware_options,
+                { ...defaultOptions, ...testCase.middleware_options },
                 req,
                 requestIndex,
                 response,
@@ -211,13 +211,17 @@ function runTests() {
 async function assert(
   system: "Drash" | "Deno",
   testCaseIndex: number,
-  middlewareOptions: Options,
+  // `Required<Options>` because the assertions do arithmetic on these values.
+  // Options became optional when RateLimiter gained a defaults merge, so the
+  // effective options — not the partial ones a caller may pass — are what the
+  // expected header values have to be derived from.
+  middlewareOptions: Required<Options>,
   request: Request,
   requestIndex: number,
   actualResponse: Response,
   expectedResponse: Expected,
 ) {
-  asserts.assertEquals(
+  assertEquals(
     await actualResponse.clone().text(),
     expectedResponse.body,
     assertionMessage(
@@ -228,7 +232,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("x-ratelimit-limit"),
     expectedResponse.headers.get("x-ratelimit-limit"),
     assertionMessage(
@@ -239,7 +243,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("x-ratelimit-remaining"),
     expectedResponse.headers.get("x-ratelimit-remaining"),
     assertionMessage(
@@ -258,7 +262,7 @@ async function assert(
   );
 
   if (rateLimitResetActual === null || rateLimitResetExpected === null) {
-    asserts.assertEquals(
+    assertEquals(
       rateLimitResetActual, // This should be null ...
       rateLimitResetExpected, // ... and this should be null
       assertionMessage(
@@ -275,7 +279,7 @@ async function assert(
     const timeSetInExpectedHeader = parseInt(rateLimitResetExpected); // This occurs first (when the test runs)
     const timeWhenMiddlewareProcessedRequest = parseInt(rateLimitResetActual); // This occurs second (during the test)
 
-    asserts.assertEquals(
+    assertEquals(
       timeSetInExpectedHeader <= timeWhenMiddlewareProcessedRequest,
       true,
       assertionMessage(
@@ -291,7 +295,7 @@ async function assert(
     const timeNow = Date.now() +
       middlewareOptions.rate_limit_time_window_length;
 
-    asserts.assertEquals(
+    assertEquals(
       timeWhenMiddlewareProcessedRequest <= timeNow,
       true,
       assertionMessage(
@@ -304,7 +308,7 @@ async function assert(
       ),
     );
 
-    asserts.assertEquals(
+    assertEquals(
       new Date(timeWhenMiddlewareProcessedRequest).toUTCString(),
       actualResponse.headers.get("retry-after")!,
       assertionMessage(
@@ -321,7 +325,7 @@ async function assert(
   const actualContentType = actualResponse.headers.get("content-type");
 
   if (actualContentType) {
-    asserts.assertEquals(
+    assertEquals(
       actualContentType,
       expectedResponse.headers.get("content-type"),
       assertionMessage(
@@ -336,7 +340,7 @@ async function assert(
   const xThrottledHeader = actualResponse.headers.get("x-throttled");
 
   if (xThrottledHeader) {
-    asserts.assertEquals(
+    assertEquals(
       xThrottledHeader,
       expectedResponse.headers.get("x-throttled"),
       assertionMessage(
@@ -348,7 +352,7 @@ async function assert(
     );
   }
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("x-retry-after"),
     expectedResponse.headers.get("x-retry-after"),
     assertionMessage(
@@ -359,7 +363,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.status,
     expectedResponse.status,
     assertionMessage(
@@ -370,7 +374,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.statusText,
     expectedResponse.statusText,
     assertionMessage(
@@ -614,7 +618,7 @@ function getTestCases(): (() => TestCase)[] {
   ];
 }
 
-const defaultOptions: Options = {
+const defaultOptions: Required<Options> = {
   rate_limit_time_window_length: 10000, // 10 seconds
   max_requests: 3,
   client_id_header_name: "x-client-id",

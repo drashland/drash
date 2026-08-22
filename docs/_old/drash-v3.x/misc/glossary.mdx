@@ -1,0 +1,203 @@
+---
+head_title: Glossary
+---
+
+import { SeeAlso } from "@/src/components/SeeAlso";
+import { CodeLinkExternal } from "@/src/components/nextra/CodeLinkExternal";
+import { Tabs, Tab } from "nextra/components";
+import { LinkExternal } from "@/src/components/nextra/LinkExternal";
+
+# Glossary
+
+This page (inspired by <LinkExternal href="https://developer.mozilla.org/en-US/docs/Glossary">MDN Web Docs Glossary</LinkExternal>) contains the definitions of the terms and acronyms we use.
+
+__All of the terms and acronyms we use are used in the context of Drash unless otherwise stated.__
+
+## Terms
+
+We know some of the words/phrases (aka terms) we use may be used widely outside of Drash, so we have provided the terms and definitions below to prevent ambiguity and confusion. For example, "runtime" is used in Java __Runtime__ Environment, Red Hat __Runtimes__, and Node (a JavaScript __runtime__). However, in the context of Drash, the word "runtime" refers to JavaScript runtime environments like Deno, Node, Cloudflare Workers, Bun, the browser, etc.
+
+### Client
+
+Any "thing" that makes an request to your resources.
+
+<SeeAlso items={{
+  "chain": "Chain",
+  "request": "Request",
+  "resource": "Resource",
+}}/>
+
+### Chain
+
+A chain is explained on the [Concepts > Chains](/drash-v3.x/concepts/chains) page.
+
+<SeeAlso items={{
+  "handler": "Handler",
+}}/>
+
+### Directory
+
+This is an alias for "folder," but we like to use "directory" instead of "folder" across the Drash v3.x documentation pages.
+
+### Environment
+
+This is a broad term that can mean many things depending on the context. This includes, but is not limited to:
+
+- The computer you are using to write your code (aka your [machine](#machine))
+- The runtime you are using to run your code
+- Your <LinkExternal href="https://en.wikipedia.org/wiki/Integrated_development_environment">IDE</LinkExternal>
+- The machine that is running your code in Azure, AWS, etc.
+- The machine running your CI/CD workflows (e.g, GitHub Actions, Azure Pipelines, etc.)
+- A Docker container
+
+It can also mean a combination of the above. The below diagram shows how an environment can be a single thing or a combination of environments.
+
+```
+Your laptop               -> Environment for: Your IDE + Your terminal
+|
+|-- Your IDE              -> Environment for: Your code + Some IDE plugin
+|   |-- Some IDE plugin
+|   |-- Your code
+|
+|-- Your terminal         -> Environment for: Deno
+    |-- Deno              -> Environment for: Your app
+        |-- Your app
+
+```
+
+<SeeAlso items={{
+  "local-environment": "Local Environment",
+  "machine": "Machine",
+  "runtime": "Runtime",
+}}/>
+
+### Handler
+
+A class with a `handle(input: Input): Output` method. Handlers are part of a chain. Their job is to process HTTP requests.
+
+They look like the following:
+
+```ts
+// Typically, concrete handler classes extend an abstract handler class. It
+// looks like this:
+
+abstract class AbstractHandler<Input, Output> implements IHandler<Input, Output> {
+  next_handler: IHandler<Input, Output> | null = null;
+
+  abstract handle(input: Input): Output;
+}
+
+// When a concrete handler class is defined, it implements the `handle` method
+// like this:
+
+class BeItKnownThisIsMyHandler extends AbstractHandler<Request, Response> {
+  handle(request: Request): Response {
+    if (request.method === "GET") {
+      return new Response("Got.");
+    }
+
+    return new Response("Not got.");
+  }
+}
+```
+
+
+<SeeAlso items={{
+  "chain": "Chain",
+}}/>
+
+### Inputs
+
+The data passed to each handler in a chain to help it produce an output.
+
+
+<SeeAlso items={{
+  "handler": "Handler",
+  "chain": "Chain",
+  "outputs": "Outputs"
+}}/>
+
+### Local Environment
+
+The computer you are using to write and run your code (e.g., your laptop or desktop computer). This is a more specific form of an [Environment](#environment) explained above. An environment is a broad term and can mean remote computers (e.g., machines in Azure running your code), your IDE, or even a Docker container. When we use the term "local environment," we ___always___ mean the computer you are using to write and run your code.
+
+<SeeAlso items={{
+  "environment": "Environment",
+}}/>
+
+### Machine
+
+This is an alias for "computer" and we use these two terms synonymously.
+
+### Node
+
+This is an alias for the Node.js runtime.
+
+### Outputs
+
+The data returned from each handler in a chain in response to an input.
+
+
+<SeeAlso items={{
+  "chain": "Chain",
+  "handler": "Handler",
+  "inputs": "Inputs",
+}}/>
+
+### Paths
+
+The paths defined in a resource class' `paths` property. These paths have the same definition as the <CodeLinkExternal href="https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname">URL.pathname</CodeLinkExternal> property.
+
+Below is what the `paths` property looks like in a resource class:
+
+```ts {2-4}
+class MyResource {
+  public paths = [
+    "/teas",
+  ];
+
+  // ...
+  // ... rest of the resource class implementation (code is shortened for brevity)
+  // ...
+}
+```
+
+### Request
+
+This is an alias for <LinkExternal href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#http_requests">HTTP Request</LinkExternal>.
+
+### Resource
+
+A chain is explained on the [Concepts > Resources](/drash-v3.x/concepts/resources) page.
+
+### Runtime
+
+Runtime refers to a JavaScript runtime like Deno, Node, Bun, Cloudflare Workers, and the browser.
+
+## Acronyms
+
+We try to write these documentation pages briefly and clearly. However, it can get repetitive to write the same words over and over when a well-known acronym exists for them. If you see acronyms, you can find their definitions here.
+
+### CJS
+
+__Definition:__ CommonJS Module
+
+### ESM
+
+ECMAScript Module
+
+### JS
+
+JavaScript
+
+### JS ESM
+
+These two acronyms are usually applied to example code block tabs. It means, "The example code for this tab is written in JavaScript using Drash as an ECMAScript Module."
+
+### TLDR
+
+This is an alias for <LinkExternal href="https://www.merriam-webster.com/dictionary/TL%3BDR">TL;DR</LinkExternal>, but without the semicolon.
+
+### TS
+
+TypeScript

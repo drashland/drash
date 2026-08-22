@@ -1,0 +1,150 @@
+# Dynamic Paths
+
+Just like other frameworks, Drash resources have the ability to parse paths like the following:
+
+- `/path/:id`
+- `/path/:id?`
+- `/[a-z]/[0-9]`
+
+## Regular Path Params
+
+Resources are able to specify path params in their paths to allow them to cover multiple endpoints. For example:
+
+```typescript filename="ResourceWithPathParam.ts"
+import { Resource } from "https://esm.sh/@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native.ts"
+
+class ResourceWithPathParam extends Resource {
+
+  public paths = [
+    "/:my_param",
+  ];
+
+  public GET(request: Request) {
+
+    const param = request.params.pathParam("my_param");
+
+    return new Response(`You passed in: ${param}`);
+  }
+}
+```
+
+Examples of requests that this resource would handle and the responses they would receive are:
+
+```
+Requests            Responses
+ 
+GET /hello      ->  You passed in: hello
+GET /world      ->  You passed in: world
+GET /something  ->  You passed in: something
+```
+
+To learn more about handling path params, view the [Requests > Path Params](/drash-v3.x/modules/chains/request-chain/requests/path-params) page.
+
+## Optional Path Params
+
+Path params can also be optional using a question mark (`?`). This allows a resource to accept a request with a URI that does or does not have the path param. For example:
+
+```typescript filename="Users.ts"
+import { Resource } from "https://esm.sh/@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native.ts"
+
+class Users extends Resource {
+  // id   = required
+  // name = optional because of the trailing question mark
+  // age  = optional because of the trailing question mark
+  // city = optional because of the trailing question mark
+  public paths = [
+    "/users/:id/:name?/:age?/:city?",
+  ];
+
+  public GET(request: Request) {
+    let body = "GOT";
+
+    const id = request.params.pathParam("id");
+    const name = request.params.pathParam("name");
+    const age = request.params.pathParam("age");
+    const city = request.params.pathParam("city");
+
+    if (id) {
+      body += ` | ${id}`;
+    }
+
+    if (name) {
+      body += ` | ${name}`;
+    }
+
+    if (age) {
+      body += ` | ${age}`;
+    }
+
+    if (city) {
+      body += ` | ${city}`;
+    }
+
+    return new Response(body);
+  }
+}
+```
+
+You can have as many optional params as you wish, but required params ___MUST COME BEFORE___ optional params (notice how the `id` param is required and comes ___before___ the optional params).
+
+
+Examples of requests that this resource would handle and the responses they would receive are:
+
+```
+Requests                       Responses
+ 
+GET /users/1               ->  GOT | 1
+GET /users/1/              ->  GOT | 1
+GET /users/1/John          ->  GOT | 1 | John
+GET /users/1/John/         ->  GOT | 1 | John
+GET /users/1/John/54       ->  GOT | 1 | John | 54
+GET /users/1/John/54/      ->  GOT | 1 | John | 54
+GET /users/1/John/54/UK    ->  GOT | 1 | John | 54 | UK
+GET /users/1/John/54/UK/   ->  GOT | 1 | John | 54 | UK
+```
+
+## Regular Expression Paths
+
+Resources are able to specify regular expressions in their paths to allow them to cover multiple endpoints.
+
+```typescript filename="RegexPathResource.ts"
+import { Resource } from "https://esm.sh/@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native.ts"
+
+class RegexPathResource extends Resource {
+  public paths = [
+    "/([0-9]$)",
+  ];
+
+  public GET(request: Request) {
+    return new Response("GOT!");
+  }
+}
+```
+
+Examples of requests that this resource would handle and the responses they would receive are:
+
+```
+Requests    Responses
+ 
+GET /1  ->  GOT!
+GET /2  ->  GOT!
+GET /3  ->  GOT!
+GET /9  ->  GOT!
+```
+
+This resource would not handle the following requests because they do not match the regular expression:
+
+```
+GET /11
+GET /12
+GET /13
+GET /99
+```
+
+## Next Steps
+
+Feel free to follow our recommendation or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- Learn how [resource groups](/drash-v3.x/modules/chains/request-chain/resource-groups/introduction) can help you build prefixed resources, resources with middleware, and more

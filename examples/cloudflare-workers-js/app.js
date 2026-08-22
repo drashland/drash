@@ -9,7 +9,7 @@ class Home extends Resource {
 
   GET(request) {
     console.log(`Received request: ${request.url}`);
-    return new Response(`Hello from Home.GET()! (written at ${new Date()})`);
+    return new Response(`Oh so easy (written at ${new Date()})`);
   }
 }
 
@@ -32,7 +32,7 @@ export default {
           return new Response();
         }
 
-        console.log(`Request URL hit an error: ${context.url}:\n`);
+        console.log(`Request URL hit an error: ${request.url}:\n`);
         console.log({ error });
         return new Response(
           "Sorry, but we hit an error!",

@@ -1,0 +1,167 @@
+---
+title: Creating Middleware
+---
+
+# Creating Middleware
+
+A middleware is a class extending `Middleware`. Override the HTTP methods you care about,
+and call `this.next()` where the request should carry on to the resource. For what
+middleware *is* and how to attach one, see the
+[Overview](/docs/middleware).
+
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+
+<Tabs.Tab>
+
+```ts
+import {
+  HTTPError,
+  Middleware,
+} from "npm:@drashland/drash/modules/http.native.js";
+import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
+
+class Auth extends Middleware {
+  public ALL(request: Request) {
+    if (request.headers.get("x-api-key") !== "secret") {
+      throw new HTTPError(Status.Unauthorized);
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  HTTPError,
+  Middleware,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Auth extends Middleware {
+  public ALL(request: Request) {
+    if (request.headers.get("x-api-key") !== "secret") {
+      throw new HTTPError(Status.Unauthorized);
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  HTTPError,
+  Middleware,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Auth extends Middleware {
+  public ALL(request: Request) {
+    if (request.headers.get("x-api-key") !== "secret") {
+      throw new HTTPError(Status.Unauthorized);
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  HTTPError,
+  Middleware,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Auth extends Middleware {
+  public ALL(request: Request) {
+    if (request.headers.get("x-api-key") !== "secret") {
+      throw new HTTPError(Status.Unauthorized);
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+## `ALL(input)`
+
+Intercepts every HTTP method. Override it to short-circuit, modify, or conditionally forward a request.
+
+If you do not override `ALL`, each HTTP method forwards to the wrapped resource individually.
+
+## `this.next<T>(input)`
+
+Passes the input to the wrapped resource — or to the next middleware in the nest — and returns its value.
+
+```ts
+return this.next<Response>(request);
+```
+
+`next()` throws if:
+
+| Condition                                               | Thrown                                                           |
+| ------------------------------------------------------- | ---------------------------------------------------------------- |
+| Input has no readable string `method`, or no `original` | `Error("Middleware could not process request further")`          |
+| The wrapped call returns a falsy value                  | `HTTPError(500, "The server was unable to generate a response")` |
+
+<Callout type="warning">
+__Always return a value from resources that use middleware__
+
+That second row is the one that surprises people. A resource method that writes to a response object and returns nothing works fine unwrapped, but **fails once you put middleware around it** — `next()` has nothing to return. Return a value from resource methods you intend to wrap.
+</Callout>
+
+## Per-Method Middleware
+
+`Middleware` extends the same core `Resource` that your resources extend, so a middleware class inherits the whole HTTP method surface. Define only the methods you care about:
+
+- to act on GET requests, add a `GET` method to your middleware;
+- to act on POST requests, add a `POST` method;
+- and so on.
+
+Take a look at the following example:
+
+```ts
+class LogGETRequests extends Middleware {
+
+  public GET(request) {
+
+    console.log(`Incoming request: ${request.method} ${request.url}`);
+
+    return super.GET(request);
+    // This is the same as `this.next(request);`
+  }
+}
+```
+
+`super.GET(request)` and `this.next(request)` do the same thing here. `Middleware` overrides every HTTP method to forward to `this.original`, so `super.GET()` is forwarded to `this.original.GET()`, not the core `Resource` method that throws the default `501 Not Implemented` error.
+
+<Callout type="info">
+Use `ALL` when the behavior applies to every method; use per-method overrides when it does not.
+</Callout>
+
+## `this.original`
+
+The wrapped resource, or the next middleware in the chain. `setOriginal()` is called for you by the [resource group](/reference/standard/http/resource-group) builder; you rarely touch either directly.
+
+## Next Steps
+
+- [Apply your middleware](/docs/middleware#applying-middleware) to a group of resources.
+- Browse the [pre-built middleware](/docs/middleware#pre-built-middleware) Drash ships.

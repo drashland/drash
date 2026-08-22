@@ -1,0 +1,318 @@
+---
+head_title: Modules - Request Chain - Step-By-Step Guide
+---
+
+import { Callout, Steps, Tab, Tabs } from "nextra/components";
+import { Link } from "@/src/components/nextra/Link";
+import { EndStateTree } from "@/src/components/nextra/EndStateTree";
+import { CodeLinkExternal } from "@/src/components/nextra/CodeLinkExternal";
+import { CalloutSilent } from "@/src/components/nextra/CalloutSilent";
+import CalloutFaviconError from "@/src/components/nextra/CalloutFaviconError.mdx"
+import RunYourCodeStep from "@/src/components/nextra/RunYourCodeStep.mdx"
+import DetailsAddingMoreResources from "@/src/components/nextra/DetailsAddingMoreResources.mdx"
+
+# Step-By-Step Guide
+
+## Overview
+
+In this guide, we will show you how to use the Request Chain module to create a tiny HTTP application that can receive requests and send responses.
+
+### Recommended Reading
+
+- Complete the instructions outlined on the [Prerequisites](/drash-v3.x/getting-started/prerequisites) page
+- Read our concepts on [chains](/drash-v3.x/concepts/chains) and [resources](/drash-v3.x/concepts/resources)
+
+### Objectives
+
+To gain familiarity with:
+
+- Drash's Request Chain (without using the <CodeLinkExternal href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">await</CodeLinkExternal> operator);
+- how it can be used in different runtimes;
+- how you can use resources to handle requests; and
+- how you can send responses based on those requests.
+
+## Instructions
+
+### End State
+
+<EndStateTree
+  tree={[
+    "app.ts"
+  ]}
+/>
+
+### Before You Get Started
+
+- The comments in the code explain the code in a line-by-line manner. Please read the comments to gain an understanding of the code.
+- Each code block __adds__ code to the code block __before__ it (if any). Code is highlighted to show the code that is being __added__.
+- The Node code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields required by chains. These fields are mentioned in [Concepts > Chains > What Data Does It Process?](/drash-v3.x/concepts/chains#what-data-does-it-process).
+
+<Tabs items={[
+  "Deno v1.46.x (TS)",
+  "Node v18.x (JS)",
+]}>
+
+### Steps
+
+<Tab>
+
+1. Build the chain.
+
+    ```typescript showLineNumbers filename="path/to/your/project/app.ts" copy
+    import {
+      Chain
+    } from "npm:@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native";
+
+    const chain = Chain
+      .builder()                    // Get the chain's builder so we can build the chain easily.
+      .build();                     // Build the chain.
+    ```
+
+1. Add a resource to the chain.
+
+    ```typescript showLineNumbers {3, 5-19, 23-25} filename="path/to/your/project/app.ts" copy
+    import {
+      Chain,
+      Resource
+    } from "npm:@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request: Request) {
+        const { method, url } = request;
+        const date = new Date();
+
+        return new Response(
+          `Request received: ` +
+          `${method} ${url}` +
+          `\nWritten at: ${date}`
+        );
+      }
+    }
+
+    const chain = Chain
+      .builder()                    // Get the chain's builder so we can build the chain easily.
+      .resources(
+        Home,                       // Add the `Home` resource to the chain.
+      )
+      .build();                     // Build the chain.
+    ```
+
+    <DetailsAddingMoreResources />
+
+1. Plug the chain into the server.
+
+    ```typescript showLineNumbers {13, 27-50} filename="path/to/your/project/app.ts" copy
+    import {
+      Chain,
+      Resource
+    } from "npm:@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(request: Request) {
+        const { method, url } = request;
+        const date = new Date();
+
+        return new Response(        // This will be returned by the chain's `.handle()` method.
+          `Request received: ` +
+          `${method} ${url}` +
+          `\nWritten at: ${date}`
+        );
+      }
+    }
+
+    const chain = Chain
+      .builder()                    // Get the chain's builder so we can build the chain easily.
+      .resources(
+        Home,                       // Add the `Home` resource to the chain.
+      )
+      .build();                     // Build the chain.
+
+    // Create and start the server
+    Deno.serve({
+      port: 1447,
+      hostname: "localhost",
+      handler: (                    // Define the request handler function that the server will use.
+        req: Request                // This handler will receive a request. We will take this ...
+                                    // ... request and use it below in the `chain.handle(req)` call.
+
+      ): Promise<Response> => {     // We expect the chain to return a promised `Response` so we
+                                    // define that return typing here.
+
+        return chain                // As stated above, we can use the chain and ...
+          .handle<Response>(req)    // ... call its `.handle()` method with the above request.
+
+          .catch((e: Error) => {    // If the chain throws an error, we need to catch and handle it.
+            console.log(e);         // In this case, we just log the error and ... 
+            return new Response(    // ... return a generic error response.
+              e.message,
+              { status: 500 },
+            );
+          });
+      },
+    });
+    ```
+
+</Tab>
+<Tab>
+1. Build the chain.
+
+    ```javascript showLineNumbers filename="path/to/your/project/app.ts" copy
+    import {
+      Chain
+    } from "@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native";
+
+    const chain = Chain
+      .builder()                    // Get the chain's builder so we can build the chain easily.
+      .build();                     // Build the chain.
+    ```
+
+1. Add a resource to the chain.
+
+    ```javascript showLineNumbers {3, 5-19, 23-25} filename="path/to/your/project/app.ts" copy
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(context) {
+        const { method, url } = request;
+        const date = new Date();
+
+        context.res.write(
+          `Request received: ` +
+          `${method} ${url}` +
+          `\nWritten at: ${date}`
+        );
+      }
+    }
+
+    const chain = Chain
+      .builder()                    // Get the chain's builder so we can build the chain easily.
+      .resources(
+        Home,                       // Add the `Home` resource to the chain.
+      )
+      .build();                     // Build the chain.
+    ```
+
+    <DetailsAddingMoreResources />
+
+1. Plug the chain into the server.
+
+    ```javascript showLineNumbers {5, 14, 28-75} filename="path/to/your/project/app.js" copy
+    import {
+      Chain,
+      Resource
+    } from "@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native";
+    import { createServer } from "node:http";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(context) {
+        const { method, url } = request;
+        const date = new Date();
+
+        context.res.write(          // This response will end up in the chain's `.then()` block.
+          `Request received: ` +
+          `${method} ${url}` +
+          `\nWritten at: ${date}`
+        );
+      }
+    }
+
+    const chain = Chain
+      .builder()                    // Get the chain's builder so we can build the chain easily.
+      .resources(
+        Home,                       // Add the `Home` resource to the chain.
+      )
+      .build();                     // Build the chain.
+
+    const hostname = "localhost";   // Define the server's hostname variable for reuse below.
+    const port = 1447;              // Define the serer's port variable for reuse below.
+
+    const baseUrl = `http://${hostname}:${port}`
+
+    const server = createserver((   // Create the server object that gives you the request and
+      req,                          // response objects you can use to create a `context` object.
+      res                           // Creating the `context` object is done below.
+    ) => {
+
+      const context = {             // Create the `context` object that will be sent into the chain.
+        url: baseUrl + req.url,     // When sent into the chain, it will be accessible in the `Home`
+        method: request.method,     // resource. As a reminder, `url` field must be a full URL. This
+        req,                        // mentioned on the "Concepts > Chains" page.
+
+        res,                        // When this `context` object reaches the `Home` resource, this
+      };                            // `res` field can be used to write the response (as done
+                                    // above via `context.res.write()`.
+
+      return chain
+        .handle(context)            // Pass the `context` object to the chain. The `Home` resource will
+                                    // access the `context.res` object to write a response.
+
+        .then(() => {               // When the `.handle()` method resolves, we can execute this block.
+          console.log(context)      // For debugging purposes, we can just log the context. Since Node
+                                    // does not require anything to be returned, we can stop our code at
+                                    // this `console.log` statement and Node will handle the
+                                    // `context.res` object under its hood.
+        })
+
+        .catch((e) => {             // If the chain throws an error, we need to catch and handle it.
+          console.log(e);           // In this case, we just log the error and ... 
+          context.res.write(        // ... return a generic error response.
+            e.message,
+          );
+          context.res.status = 500;
+        });
+    });
+
+    server.listen(                  // Start the server
+      port,
+      hostname,
+      () => {
+        console.log(`\nDrash is running at http://${hostname}:${port}`);
+      }
+    );
+    ```
+</Tab>
+</Tabs>
+
+## Verification
+
+<RunYourCodeStep />
+
+### Verify Your Code
+
+Once your app is running, you can go to `http://localhost:1447` in your browser.
+
+You should see something similar to the following:
+
+```
+Request received: GET http://localhost:1447/
+Written at: Sun Aug 20 2023 19:47:48 GMT-0400 (Eastern Daylight Time)
+```
+
+If the above check passed, then your app is working as expected.
+
+### Troubleshooting
+
+If you do not see the issue you are facing below, know that you can always get help in our [Discord server](https://discord.gg/UuYKTVMW) (specifically the `#help` channel).
+
+<CalloutFaviconError />
+
+## Next Steps
+
+Feel free to follow our recommendation or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- Handle [request path params](./requests/path-params)
+- Handle [request query params](./requests/query-params)
+- Learn how to [handle errors](/drash-v3.x/modules/chains/request-chain/error-handling) in a more robust manner

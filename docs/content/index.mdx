@@ -1,0 +1,36 @@
+---
+title: Drash
+description: A strongly typed, runtime-agnostic web framework for building structured HTTP services in JavaScript, built on Web Standards.
+---
+
+import { Hero } from "../components/hero";
+
+<Hero />
+
+<div className="x:mx-auto x:max-w-4xl x:px-6 x:mt-16">
+
+## Works With
+
+Drash targets the runtime you already have. The only thing that changes between
+them is the entry point you import and how your server hands it a
+request.
+
+| Runtime            | Minimum Version         | Web `Request` / `Response` at the server boundary |
+| ------------------ | --------------- | ------------------------------------------------- |
+| Node               | 20.x            | No — `node:http` gives you a context object        |
+| Deno               | 2.x             | Yes — `Deno.serve` passes a `Request`              |
+| Bun                | 1.x             | Yes — `Bun.serve` passes a `Request`               |
+| Cloudflare Workers | Current runtime | Yes — the Worker `fetch` handler passes a `Request` |
+
+## Where to Next
+
+The docs walk you through building an application, the examples are finished apps
+you can run, and the reference documents the API surface.
+
+<Cards num={3}>
+  <Cards.Card title="Docs" href="/docs/getting-started" arrow />
+  <Cards.Card title="Examples" href="/examples" arrow />
+  <Cards.Card title="Reference" href="/reference" arrow />
+</Cards>
+
+</div>

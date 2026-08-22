@@ -1,0 +1,54 @@
+# ResourceProxy
+
+A [`Resource`](/reference/core/http/resource) that forwards every HTTP method to another resource instance.
+
+```ts
+import { ResourceProxy } from "@drashland/drash/standard/http/ResourceProxy.js";
+```
+
+<Callout type="warning" emoji={null}>
+__Nothing in the framework uses this class.__ It is exported, but no other file in
+`src/` imports it. [`ResourceGroup`](/reference/standard/http/resource-group) generates its
+own proxy classes inline rather than extending this one. Treat it as available, not as
+load-bearing.
+</Callout>
+
+## Properties
+
+| Property            | Type       | Notes                                                     |
+| ------------------- | ---------- | --------------------------------------------------------- |
+| `paths`             | `string[]` | Copied from the original in `setOriginal()`.              |
+| `original_instance` | `Resource` | Protected. The resource being forwarded to. Optional.     |
+
+## Methods
+
+### `setOriginal(originalInstance)`
+
+Sets the resource to forward to, and copies its `paths` onto the proxy so routing still
+resolves. Returns the instance it was given.
+
+### The Nine HTTP Methods
+
+`CONNECT`, `DELETE`, `GET`, `HEAD`, `OPTIONS`, `PATCH`, `POST`, `PUT`, and `TRACE` each
+forward to the same method on `original_instance`:
+
+```ts
+public GET(request: unknown): unknown {
+  return this.original_instance?.GET(request);
+}
+```
+
+## How It Differs from `Middleware`
+
+[`Middleware`](/reference/standard/http/middleware) is the class the framework actually
+uses to wrap a resource. The two look similar but behave differently:
+
+| | `ResourceProxy` | `Middleware` |
+| --- | --- | --- |
+| Forwards by | A fixed method per verb | Reading `input.method` at call time |
+| Missing original | Optional chaining — returns `undefined` | Throws |
+| Copies `paths` | Yes, in `setOriginal()` | No |
+| `ALL()` hook | None | Intercepts every method |
+
+The optional chaining is the part to be careful with: a proxy with no original returns
+`undefined` rather than failing, and the chain turns that into a `500` further along.

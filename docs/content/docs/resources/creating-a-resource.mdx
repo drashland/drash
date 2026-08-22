@@ -1,0 +1,142 @@
+# Creating a Resource
+
+A resource is a class that maps a set of paths to its HTTP method handlers. Drash defines resources according to the MDN:
+
+- [What is a URL?](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#path_to_resource)
+- [Overview of HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview)
+
+Unlike other frameworks, Drash does not use `app.get()` and does not use controllers. Instead, Drash uses resources. You create a resource by defining a resource class, its routes as its `paths` property, and its HTTP method handlers as public methods that match the HTTP method name. For example:
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class IndexResource extends Resource {
+  public paths = ["/"];
+
+  public GET(request) {
+    return new Response(`Received GET request`);
+  }
+
+  public POST(request) {
+    return new Response(`Received POST request`);
+  }
+}
+```
+
+- If a resource specifies `/` in its `paths` property, then clients can go to `{your-site.com}/`.
+- If a resource specifies `/my-resource` in its `paths` property, then clients can go to `{your-site.com}/my-resource`.
+- and so on...
+
+Any path that does not exist in any resource is considered a non-accessible URI. Non-accessible URIs ultimately lead to a `404 Not Found` error response.
+
+Any HTTP method that is not defined in a resource ultimately leads to a `501 Not Implemented` error response.
+
+## Dynamic Paths
+
+Paths can carry parameters and regular expressions, so one resource can cover many endpoints.
+
+### Required Path Params
+
+Required path params follow the `:name_of_your_path_param` syntax.
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class ResourceWithPathParam extends Resource {
+  public paths = ["/:my_cool_param"];
+
+  public GET(request) {
+    return new Response(`You passed in: ${request.params.pathParam("my_cool_param")}`);
+  }
+}
+```
+
+Making the following requests will result in the following responses:
+
+| Request | Response | 
+| - | - |
+| `GET /hello` | `You passed in: hello` |
+| `GET /world` | `You passed in: world` |
+
+### Optional Path Params
+
+A trailing `?` makes a param optional, so the resource matches with or without it.
+
+<Callout type="info">
+You can have as many optional params as you like, but **required params must come before optional ones**.
+</Callout>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class UsersResource extends Resource {
+  // id is required; the rest are optional
+  public paths = ["/users/:id/:name?/:age?/:city?"];
+
+  public GET(request) {
+    const id = request.params.pathParam("id");
+    const name = request.params.pathParam("name");
+    return new Response([id, name].filter(Boolean).join(" | "));
+  }
+}
+```
+
+Making the following requests will result in the following responses:
+
+| Request | Response | 
+| - | - |
+| `GET /users/1`       | `1` |
+| `GET /users/1/`      | `1` |
+| `GET /users/1/John`  | `1 \| John` |
+| `GET /users/1/John/` | `1 \| John` |
+
+### Regular Expression Paths
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class RegexPathResource extends Resource {
+  public paths = ["/([0-9]$)"];
+
+  public GET(request) {
+    return new Response("GOT!");
+  }
+}
+```
+
+| Request | Response | 
+| - | - |
+| `GET /1`  | `GOT!` |
+| `GET /2`  | `GOT!` |
+
+## HTTP Methods
+
+### Defining HTTP Methods
+
+You can define any of the following methods in your resource.
+
+- `CONNECT`
+- `DELETE
+- `GET`
+- `HEAD`
+- `OPTIONS`
+- `PATCH`
+- `POST
+- `PUT`
+- `TRACE`
+
+Each receives the input that was passed to `chain.handle()` and you return whatever your runtime needs.
+
+**Every method you do not define throws a `501 Not Implemented` error response.** That is the base class' default behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
+
+Methods may be synchronous or asynchronous; `chain.handle()` awaits whatever they return.
+
+### Return Values
+
+Whatever an HTTP method returns becomes the resolved value of `chain.handle()`. For runtimes that support Web `Request`/`Response`, the HTTP method should return `Response`. Otherwise, the HTTP method should return whatever the runtime needs. In Node, you do not have to return anything since it expects you to write directly to the `ServerResponse` object it gives you.
+
+<Callout type="warning" emoji={null}>
+__HTTP methods in middleware__
+
+An HTTP method wrapped in middleware must return a value. Otherwise, `Middleware.next()` (under the hood) throws an error because it expects a return value from the wrapped method.
+</Callout>

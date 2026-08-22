@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as asserts from "@std/assert";
+import { assertEquals } from "@std/assert";
 import {
   assertionMessage,
   catchError,
@@ -33,8 +33,8 @@ import {
   AcceptHeaderMiddleware,
   defaultOptions,
   type Options,
-} from "../../../../../../../src/modules/middleware/AcceptHeader/mod.ts";
-import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+} from "../../../../../../../src/modules/middleware/AcceptHeader.ts";
+import * as Chain from "../../../../../../../src/modules/http.native.ts";
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
@@ -196,7 +196,7 @@ async function assert(
   actualResponse: Response,
   expectedResponse: Expected,
 ) {
-  asserts.assertEquals(
+  assertEquals(
     await actualResponse.clone().text(),
     expectedResponse.body,
     assertionMessage(
@@ -207,7 +207,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.status,
     expectedResponse.status,
     assertionMessage(
@@ -218,7 +218,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.statusText,
     expectedResponse.statusText,
     assertionMessage(

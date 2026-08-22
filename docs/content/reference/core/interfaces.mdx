@@ -1,0 +1,42 @@
+# Interfaces
+
+The interfaces in `core/interfaces/`. Type-only — none of these exist at runtime.
+
+```ts
+import type { IBuilder, IHandler } from "@drashland/drash/core/Interfaces.js";
+```
+
+Each also has its own specifier, e.g. `@drashland/drash/core/interfaces/IHandler.js`.
+
+## `IBuilder<Product>`
+
+```ts
+interface IBuilder<Product = unknown> {
+  build(): Product;
+}
+```
+
+Implemented by `AbstractChainBuilder` and the resource group builder. `Product` is what `build()` returns. Standard declares a structurally identical `Builder<C>` that `ResponseBuilder` implements instead — see [Builders](/reference/standard/builders/builder#three-things-named-builder).
+
+## `IHandler<Input>`
+
+```ts
+interface IHandler<Input = unknown> {
+  handle<Res>(req: Input): Promise<Res>;
+  setNext(h: IHandler): IHandler;
+}
+```
+
+The contract for a link in the chain. [`Handler`](/reference/standard/handlers) is the Standard implementation of it.
+
+`setNext()` returns the handler it was given, not `this`, which is what lets a chain be linked in one pass:
+
+```ts
+a.setNext(b).setNext(c); // a -> b -> c
+```
+
+## Notes
+
+Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports — harmless under a bundler, and a resolution error without one.
+
+See also [Types](/reference/core/types).

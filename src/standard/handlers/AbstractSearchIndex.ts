@@ -33,7 +33,7 @@ abstract class AbstractSearchIndex<SearchResult> extends Handler {
    * Search the index.
    * @param input The data containing the location information for items in the
    * index.
-   * @retuns The results of the search.
+   * @returns The results of the search.
    */
   protected abstract search(input: unknown): Promise<SearchResult>;
 }

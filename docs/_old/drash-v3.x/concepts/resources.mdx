@@ -1,0 +1,678 @@
+---
+head_title: Concepts - Resources
+---
+
+import { Callout, Tabs, Tab } from "nextra/components"
+import { LinkExternal } from "@/src/components/nextra/LinkExternal"
+
+# Resources
+
+## What Is a Resource?
+
+Just like the <LinkExternal href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview">MDN's documentation pages on fetching resources via HTTP</LinkExternal>, a resource in Drash is the target of an HTTP request. In Drash, resources are represented using classes with <LinkExternal href="https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname">pathnames</LinkExternal> (we call these __paths__) and <LinkExternal href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">HTTP request methods</LinkExternal>. Resource classes are written like:
+
+```ts
+class MyResource {
+
+  public paths = [       // These are the pathnames (we use `paths` for short)
+    "/teas",
+  ];
+
+  public GET(...) {...}  // If a client makes a GET /teas request, Drash will
+                         // route that request to this `GET(...)` method
+
+  public POST(...) {...} // If a client makes a POST /teas request, Drash will
+                         // route that request to this `POST(...)` method
+
+  public PUT(...) {...}  // If a client makes a PUT /teas request, Drash will
+                         // route that request to this `PUT(...)` method
+
+  // ... and other HTTP request methods (code is shortened for brevity)
+}
+```
+
+## Why Use Classes?
+
+### TLDR
+
+We (the maintainers) prefer to use classes when processing resources internally.
+
+### Detailed Explanation
+
+Drash does not use an Express-like syntax (e.g., `app.get("/teas", someCallback)`) and does not use the term "controllers" like in the <LinkExternal href="https://developer.mozilla.org/en-US/docs/Glossary/MVC">MVC</LinkExternal> pattern to handle requests. Instead, Drash uses classes and uses the term "resources" to handle requests. The initial reason we went with resources and a class syntax is explained in our article: <LinkExternal href="https://dev.to/drash_land/why-was-drash-built-4bob">Why We Built Drash</LinkExternal>. Since publishing that article, we have made a few changes (removing `this.request` and `this.response` being one of those changes) based on developer experience feedback and a goal of creating a maintainable framework that scales across JavaScript runtimes.
+
+To give you a better idea of how Drash compares to a framework that uses `app.get()`, see the JavaScript code blocks below showing how GET requests can be handled in Express and Drash's Request Chain.
+
+__Express__
+
+This code is based on <LinkExternal href="https://expressjs.com/en/4x/api.html#app">Express v4.x</LinkExternal>.
+
+```js
+const express = require("express");
+const app = express();
+const port = 1447;
+
+app.get("/", (req, res) => {
+  res.send(req.method + " received!");
+});
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+})
+```
+
+__Drash Request Chain using a context object__
+
+The example below shows a resource from the Request Chain module using a "context" object like in Koa.
+
+<Tabs items={["Deno v1.46.x / TS", "Node v18.x / ESM JS"]}>
+<Tab>
+```typescript
+import { Chain, Resource } from "http://esm.sh/drash/modules/chains/RequestChain/mod.native.ts";
+import { serve } from "https://deno.land/std@.../http/server.ts";
+const port = 1447;
+
+// Create a resource
+
+class MyResource extends Resource {
+  public paths = ["/"];
+  public GET(context) {
+    context.res = new Response(context.req.method + " received!");
+  }
+}
+
+// Create the chain
+
+const chain = Chain
+  .builder()
+  .resources(MyResource)
+  .build();
+
+// Plug the chain into Deno
+
+const handler = (req) => {
+  const context = {
+    url: req.url,
+    method: req.method,
+    req,
+  };
+
+
+  return chain
+    .handle(context)
+    .then(() => context.res);
+};
+
+console.log(`Server listening at http://localhost:${port}`);
+await serve(handler, { port });
+```
+</Tab>
+<Tab>
+```javascript
+const { Chain, Resource } = require("@drashland/drash/modules/chains/RequestChain/mod.polyfill");
+const http = require("http");
+const port = 1447;
+
+// Create a resource
+
+class MyResource extends Resource {
+  public paths = ["/"];
+  public GET(context) {
+    context.res.send(context.req.method + " received!");
+  }
+}
+
+// Create the chain
+
+const chain = Chain
+  .builder()
+  .resources(MyResource)
+  .build();
+
+// Plug the chain into Node
+
+const server = http.createServer((req, res) => {
+  const context = {
+    url: req.url,
+    method: req.method,
+    req,
+    res,
+  };
+
+  return chain
+    .handle(context);
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+```
+</Tab>
+</Tabs>
+
+__Drash Request Chain using Web APIs__
+
+The example below shows a resource from the Request Chain module using Web APIs (`Request` and `Response`).
+
+<Tabs items={["Deno 1.37.x / TS", "Node v18.x / ESM JS"]}>
+<Tab>
+```typescript
+import { Chain, Resource } from "http://esm.sh/drash/modules/chains/RequestChain/mod.native.ts";
+import { serve } from "https://deno.land/std@.../http/server.ts";
+const port = 1447;
+
+// Create a resource
+
+class MyResource extends Resource {
+  public paths = ["/"];
+  public GET(request) {
+    return new Response(request.method + " received!");
+  }
+}
+
+// Create the chain
+
+const chain = Chain
+  .builder()
+  .resources(MyResource)
+  .build();
+
+// Plug the chain into Deno
+
+const handler = (request) => {
+  return chain
+    .handle(request);
+};
+
+console.log(`Server listening at http://localhost:${port}`);
+await serve(handler, { port });
+```
+</Tab>
+<Tab>
+```javascript
+const { Chain, Resource } = require("@drashland/drash/modules/chains/RequestChain/mod.polyfill");
+const http = require("http");
+const port = 1447;
+
+// Create a resource
+
+class MyResource extends Resource {
+  paths = ["/"];
+  GET(request) {
+    return new Response(request.method + " received!");
+  }
+}
+
+// Create the chain
+
+const chain = Chain
+  .builder()
+  .resources(MyResource)
+  .build();
+
+// Plug the chain into Node
+
+const server = http.createServer((req, res) => {
+
+  // Convert Node's `req` object to a Web API Request object
+  const request = new Request(
+    `${protocol}://${hostname}:${port}${req.url}`,
+    { method: req.method }
+  );
+
+  return chain
+    .handle(request)
+    // Use the resource's response to build the `res` object provided by Node
+    .then((resourceResponse) => {
+      res.statusCode = resourceResponse.status;
+      return resourceResponse.text();
+    })
+    .then((text) => res.end(text));
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+```
+</Tab>
+</Tabs>
+
+## Very Strict Interface
+
+You might notice (now or when you start working with resource classes) that the syntax is very strict. __This is intentional.__ We made resource classes follow a strict interface in hopes that it promotes <LinkExternal href="https://en.wikipedia.org/wiki/Separation_of_concerns">separation of concerns</LinkExternal>.
+
+For example, if you want to create a resource class to handle users, then we hope your thought process will be:
+
+- your resource should be named `Users`;
+- its `paths` should contain `/users`;
+- the logic contained in its HTTP methods should be user-related; and
+- it should be the only resource in a file named `Users.ts`.
+
+The above thought process is something we beleive will help you separate concerns when building with Drash. In other frameworks, the flexibility of being unopinionated could lead to files having multiple endpoints that do not align with the files' names. This is one reason we decided to add structure (aka us being more opinionated) to Drash resources.
+
+## The Core Resource
+
+### TLDR
+
+All resources extend the `Resource` class located in Drash's core code. Extending this class allows all resources to share the same interface and default behavior &mdash; throwing a `501 Not Implemented` error for any HTTP request method not implemented. The decision to throw a `501 Not Implemented` error is based on <LinkExternal href="https://datatracker.ietf.org/doc/html/rfc7231#section-4.1">RFC 7231 Section 4.1</LinkExternal>.
+
+### Detailed Explanation
+
+Drash's core code contains the core resource class: `Resource`. Its only purpose is to provide a base resource class that the Standard and Modules codebases can use. This ensures all resources share a single source of default behavior.
+
+The core `Resource` class has implementations for all of the HTTP request methods. Those implementations throw a `501 Not Implemented` error. Throw a `501 Not Implemented` error is based on <LinkExternal href="https://datatracker.ietf.org/doc/html/rfc7231#section-4.1">RFC 7231 Section 4.1</LinkExternal>. The implementations are written like:
+
+```ts filename="src/core/http/Resource.ts"
+class Resource {
+  public paths: string[] = [];
+
+  public GET(_request: unknown): unknown {
+    throw new HTTPError(Status.NotImplemented);
+  }
+
+  public POST(_request: unknown): unknown {
+    throw new HTTPError(Status.NotImplemented);
+  }
+
+  public PUT(_request: unknown): unknown {
+    throw new HTTPError(Status.NotImplemented);
+  }
+
+  // ... and so on for the other HTTP request methods (code shortened for brevity)
+}
+```
+
+Given the above code, if we have a `MyResource` class that extends `Resource` like ...
+
+```typescript filename="MyResource.ts"
+ // Import path is shortened for brevity
+import { Resource } from ".../path/to/core/http/Resource.ts";
+
+class MyResource extends Resource {
+
+  public paths = ["/my-resource"];
+
+  public GET(request: Request): Response {
+    return new Response(`Your ${request.method} request was received!`);
+  }
+
+}
+```
+
+... then ___any request___ to `MyResource` that is ___not a GET request___ will result in a `501 Not Implemented` error being thrown.
+
+<Callout type="warning" emoji={null}>
+Throwing a `501 Not Implemented` error is the default behavior ___for all resources___ (unless you create your own base resource class that implements a different default behavior).
+</Callout>
+
+## Chain Resource Classes
+
+### TLDR
+
+All chain modules (in the [Modules](/drash-v3.x/concepts/framework#modules) part of the codebase) export a `Resource` class. You must extend this class to create your resources. Otherwise, your application might not work as expected.
+
+### Detailed Explanation
+
+All chains implement their own base `Resource` class. This class extends the core `Resource` class. We (the maintainers) do it this way because it allows us:
+
+- create chains that can handle varying data types;
+- isolate request-resource-response lifecycle behaviors to specific chains (promoting separation of concerns);
+- create new chains to support future JavaScript runtimes and their HTTP servers; and
+- keep the default behavior intact.
+
+When you use a chain, you will extend its `Resource` class to create your resources. For example, the code below shows you how you would extend the base `Resource` class from the Request Chain module:
+
+```typescript filename="MyResource.ts"
+// Import path is shortened for brevity
+import { Resource } from "../path/to/modules/chains/RequestChain/mod.native.ts";
+
+class MyResource extends RequestChain.Resource {
+  public paths = ["/teas"];
+
+  public GET(request: Request): Response {
+    // ... do something (code is shortened for brevity)
+  }
+}
+```
+
+## HTTP request methods
+
+### Adding HTTP request methods
+
+Giving your resource classes the ability to handle requests with different HTTP request methods (e.g., GET, POST, PUT, etc.) is done by adding the HTTP request methods in your resource classes. For example:
+
+- If you want to handle GET requests, then define a `GET()` method in your resources
+- If you want to handle POST requests, then define a `POST()` method in your resources
+- If you want to handle PUT requests, then define a `PUT()` method in your resources
+- ... and so on for the other HTTP request methods
+
+You can define the following HTTP request methods in your resources:
+
+- [CONNECT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT)
+- [DELETE](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/DELETE)
+- [GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET)
+- [HEAD](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD)
+- [OPTIONS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS)
+- [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH)
+- [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST)
+- [PUT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT)
+- [TRACE](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE)
+
+### Synchronous/Asynchronous
+
+Your resources' HTTP request methods can be synchronous or asynchronous. For example:
+
+<Tabs items={["Synchronous HTTP request methods", "Asynchronous HTTP request methods"]}>
+
+<Tab>
+```typescript filename="Home.ts"
+// Import path is shortened for brevity
+import { Resource } from "...";
+
+export default class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request): Response {
+    try {
+      return this.getSomeJSONResponse("GET");
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  public POST(request: Request): Response {
+    try {
+      return this.getSomeJSONResponse("POST");
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  public PUT(request: Request): Response {
+    try {
+      return this.getSomeJSONResponse("PUT");
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  public DELETE(request: Request): Response {
+    try {
+      return this.getSomeJSONResponse("DELETE");
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  protected getSomeJSONResponse(httpMethod: string): Response {
+    // Pretend we did a synchronous operation to get this JSON
+    const json = JSON.stringify({ result: `Sync ${httpMethod} request done.`});
+    return new Response(json);
+  }
+
+  protected handleError(e: Error): Response {
+    return new Response("Fail", { status: 500 });
+  }
+}
+```
+</Tab>
+<Tab>
+```typescript filename="Home.ts"
+// Import path is shortened for brevity
+import { Resource } from "...";
+
+export default class Home extends Resource {
+  public paths = ["/"];
+
+  public async GET(request: Request): Promise<Response> {
+    return this
+      .getSomeJSONResponse("GET")
+      .catch((e) => {
+        return this.handleError(e);
+      });
+  }
+
+  public async POST(request: Request): Promise<Response> {
+    return this
+      .getSomeJSONResponse("POST")
+      .catch((e) => {
+        return this.handleError(e);
+      });
+  }
+
+  public async PUT(request: Request): Promise<Response> {
+    return this
+      .getSomeJSONResponse("PUT")
+      .catch((e) => {
+        return this.handleError(e);
+      });
+  }
+
+  public async DELETE(request: Request): Promise<Response> {
+    return this
+      .getSomeJSONResponse("DELETE")
+      .catch((e) => {
+        return this.handleError(e);
+      });
+  }
+
+  protected async getSomeJSONResponse(httpMethod: string): Promise<Response> {
+    // Pretend we did an asynchronous operation to get this JSON
+    const json = JSON.stringify({ result: `Async ${httpMethod} request done.`});
+    return Promise.resolve(new Response(json));
+  }
+
+  protected handleError(e: Error): Response {
+    return Promise.resolve(new Response("Fail", { status: 500 }));
+  }
+}
+```
+</Tab>
+</Tabs>
+
+## Next Steps
+
+Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- [Create a tiny HTTP application](/drash-v3.x/modules/chains/request-chain/step-by-step-guide) using the Request Chain module
+
+
+{/* ## Some Insight on Web Servers
+
+<Callout type="info">
+We feel the information below is optional reading material. However, read on if you wish! The information below will give you more context on Drash applications in web servers.
+</Callout>
+
+### What Is a Web Server?
+
+Very simply put (like _very very very_ simply put and only in the context of the software side of a server), a server is software that serves your content (e.g., some JSON data, a PDF, a text file, HTML, etc.) to clients or processes some code . In the context of Drash:
+- Your server is the server object you create in your chosen runtime. For example, in Node v16.x it could look like:
+
+  ```ts
+  const server = createServer((request, response) => {
+    // ... do some stuff (code shortened for brevity)
+  });
+  ```
+- Your content is anything you return from the [resources](/drash-v3.x/concepts/resources) you create. For example, the below code shows a combination of text content being returned from 3 different resources:
+  ```ts
+  type Context = { request: Request; response?: Response };
+
+  // Respond with the following content for GET /coffee requests
+  //
+  //   "Hello from GET /coffee"
+  //
+  class Coffee extends ContextChain.Resource {
+    public paths = ["/coffee"];
+
+    public GET(context: Context): Context {
+      context.response = new Response("Hello from GET /coffee"); // This is your content
+      return context;
+    }
+  }
+
+  // Respond with the following content for GET /tea requests
+  //
+  //   "Hello from GET /tea"
+  //
+  class Tea extends ContextChain.Resource {
+    public paths = ["/tea"];
+
+    public GET(context: Context): Context {
+      context.response = new Response("Hello from GET /tea"); // This is your content
+      return context;
+    }
+  }
+
+  // Respond with the following content for GET /lemonade requests
+  //
+  //   "Hello from GET /lemonade"
+  //
+  class Lemonade extends ContextChain.Resource {
+    public paths = ["/lemonade"];
+
+    public GET(context: Context): Context {
+      context.response = new Response("Hello from GET /lemonade"); // This is your content
+      return context;
+    }
+  }
+  ```
+- Your clients are the [user agents](https://developer.mozilla.org/en-US/docs/Glossary/User_agent) requesting your resources. For example, this could be people (end users) using browsers (user agents) to view your resources. In diagram form, this looks like:
+  ```mermaid
+  flowchart LR
+    subgraph "[ End Users ]"
+    Person1
+    Person2
+    Person3
+    end
+    subgraph "[ User Agents ]"
+    Person1 --uses--> GoogleChrome
+    Person2 --uses--> Firefox
+    Person3 --uses--> Safari
+    end
+    subgraph "[ Resources ]"
+    GoogleChrome --to request data at--> /coffee
+    Firefox --to request data at--> /tea
+    Safari --to request data at--> /lemonade
+    end
+  ```
+
+### Server Object Examples
+
+Each runtime has its own way of helping you building a server object. Below are examples showing you how to build server objects in Deno, Node, and Bun; and what it takes to add Drash code to a Node application.
+
+<Callout type="warning">
+The code below doesn't work. They're just examples to help you:
+
+- See the differences between building server objects in different runtimes; and
+- See the syntax used to build server objects
+
+Also, the code below could be outdated since we have no control over the APIs these runtimes provide, so please always refer to their documentation pages to ensure you are using the most up-to-date code.
+</Callout>
+
+#### Creating a Server in Deno
+
+Learn more about Deno at https://deno.land
+
+```js filename="deno-server.js"
+const hostname = "localhost";
+const port = 1337;
+
+console.log(`Server running at http://${hostname}:${port}/`);
+
+Deno.serve((request) => {
+  return new Response("Hey, this is a Deno server!");
+});
+```
+
+#### Creating a Server in Node
+
+Learn more about Node at https://nodejs.org/
+
+```js filename="node-server.js"
+const http = require("http");
+
+const hostname = "localhost";
+const port = 1447;
+
+const server = http.createServer((request, response) => {
+  res.end("Hey, this is a Node server!");
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+```
+
+#### Creating a Server in Bun
+
+Learn more about Bun at https://bun.sh/
+
+```js filename="bun-server.js"
+const hostname = "localhost";
+const port = 1557;
+
+Bun.serve({
+  fetch(request) {
+    return new Response("Hey, this is a Bun server!");
+  }
+});
+
+console.log(`Server running at http://${hostname}:${port}/`);
+```
+
+#### Adding Drash To The Flow (Using Node)
+
+Using the __Creating a Server in Node__ example code above, the code to create a very small Drash application could look like:
+
+```diff filename="app.js" s/howLineNumbers {5-22,25-41}
+   const http = require("http");
+
+   const hostname = "localhost";
+   const port = 1447;
++
++  // Introduce Drash's ContextChain APIs. These APIs help you build request-resource-response
++  // lifecycles using a context object. This context object holds a request and a response object.
++  // Under the hood, Drash uses the Chain of Responsibility pattern to process the context object.
++  // In this example, we only need the chain, so we'll grab that.
++  const { RequestHandler } = require("drash/standard/chains/ContextChain");
++
++  const requestHandler = RequestHandler
++    .builder()                    // Get the handler's builder to build the handler faster
++
++    .resources(                   // Tell the handler which resources it can handle
++      AccountsResource,           //   - It can handle an AccountsResource (at the /accounts endpoint)
++      OrdersResource              //   - It can handle an OrdersResource (at the /orders endpoint)
++    )                             //   - The above resources' implementations are omitted for brevity
++
++    .build();                     // Build the handler object with the above resources. This handler
++                                  // will have a handle() method that the request and response obejcts
++                                  // can be passed to for further processing.
+
+   const server = http.createServer((request, response) => {
+-    res.end("Hey, this is a Node server!");
++    const r = requestHandler
++      .handle({                   // Give the request and response to the handler. Under the hood,
++        request,                  // Drash will pass these to the resource that can handle them based
++        response                  // on the request's URL. For example, if the request URL has
++      })                          // /accounts, then Drash will pass these objects to the
++                                  // AccountsResource. If the request URL has /orders, then Drash will
++                                  // pass these objects to the OrdersResource.
++
++      .then((context) => {        // Once Drash is done handling the request, you'll get the request
++        context.response.end();   // and response back in a context object. From here, you can handle
++      })                          // the response further or tell the server the message is complete
++                                  // by calling response.end().
++
++      .catch((e) => {             // If errors occur in Drash, you can catch them and handle them as
++        response.end(e.message);  // you deem fit, or you can just tell the server the message is
++      });                         // complete by calling response.end() with the error message.
+   });
+
+   server.listen(port, hostname, () => {
+     console.log(`Server running at http://${hostname}:${port}/`);
+   });
+```
+
+*/}

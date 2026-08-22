@@ -1,0 +1,65 @@
+# HTTPError
+
+The uniform error type for HTTP failures. Throw it from resources and middleware; catch it where you turn errors into responses.
+
+```ts
+import {
+  HTTPError,
+  Resource,
+  type HTTPRequest,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Users extends Resource {
+  public paths = ["/users/:id"];
+
+  public GET(request: HTTPRequest) {
+    if (!request.headers.get("authorization")) {
+      throw new HTTPError(Status.Unauthorized, "Get out!");
+    }
+
+    return new Response("Authed");
+  }
+}
+```
+
+## Constructor
+
+```ts
+new HTTPError(status, message?)
+```
+
+| Parameter | Type             | Notes                                                 |
+| --------- | ---------------- | ----------------------------------------------------- |
+| `status`  | `ResponseStatus` | A status tuple, e.g. `Status.Unauthorized`            |
+| `message` | `string`         | Optional. Defaults to the description for that status |
+
+## Properties
+
+| Property                  | Type     | Example          |
+| ------------------------- | -------- | ---------------- |
+| `name`                    | `string` | `"HTTPError"`    |
+| `message`                 | `string` | `"Get out!"`     |
+| `status_code`             | `number` | `401`            |
+| `status_code_description` | `string` | `"Unauthorized"` |
+
+## Notes
+
+### Where to Import It From?
+
+The HTTP module re-exports `HTTPError` for convenience, which is why the examples import it alongside `Chain` and `Resource`. You can import it from the core codebase instead if that suits you better — it is the same class, and Drash's own internals throw it, so every error from the framework is uniform.
+
+### Why the `name` Check?
+
+`error instanceof HTTPError` can be `false` even for a genuine Drash error — when the error crosses a module realm, or when two copies of Drash are loaded (a bundler duplicating the package, or mixed CJS/ESM resolution).
+
+`HTTPError` therefore carries a literal `name = "HTTPError"`, and checking `error.name` first is the reliable test. Check both, as above.
+
+## Default Errors Thrown Internally
+
+| Status | Raised by                 | When                                         |
+| ------ | ------------------------- | -------------------------------------------- |
+| `404`  | `ResourceNotFoundHandler` | No resource matched the URL                  |
+| `422`  | `RequestValidator`        | Input has no readable `url` or `method`      |
+| `500`  | `Middleware.next()`       | The wrapped resource method returned nothing |
+| `501`  | `Resource`                | An HTTP method was not overridden            |

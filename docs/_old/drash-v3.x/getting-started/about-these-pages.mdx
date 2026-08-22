@@ -1,0 +1,102 @@
+---
+head_title: Getting Started - About These Pages
+---
+
+import { Callout } from "nextra/components";
+import { CalloutSilent } from "@/src/components/nextra/CalloutSilent";
+import { LinkExternal } from "@/src/components/nextra/LinkExternal";
+
+# About These Pages
+
+## Assumptions
+
+Most of these pages (especially those with an __Instructions__ section) will assume:
+
+1. you have a JavaScript runtime installed (as stated on the [Prerequisites](/drash-v3.x/getting-started/prerequisites) page);
+1. you have some knowledge and understanding of the JavaScript runtime you have installed (e.g., you know how to use a `package.json` in Node); and
+1. you are building server-side HTTP applications.
+
+Drash has zero dependencies which means you could run it in the browser, but these documentation pages are written assuming you are using Drash to build server-side HTTP applications. Pages discussing how to build applications in the browser will be written at a later time.
+
+## Concepts Pages
+
+Some pages will recommend that you read the pages under the __Concepts__ section in the left sidebar. The Concepts pages go over:
+
+- a breakdown of the [framework](/drash-v3.x/concepts/framework);
+- how [chains](/drash-v3.x/concepts/chains) (used to build HTTP applications) work under the hood; and 
+- how [resources](/drash-v3.x/concepts/resources) play a role in the chains.
+
+It is not required that you read the Concepts pages, but we greatly recommend it so you are aware of the design decisions made in Drash and how it works under the hood.
+
+## Page Order
+
+The pages in the sidebar are ordered (from top to bottom) in a way that we feel will help you:
+
+1. start building applications quickly; and
+1. understand the code you are writing/using.
+
+It is not required that you read the pages in order, but we greatly recommend it for the reasons stated above.
+
+## Tutorial Format
+
+Some of these pages are written in tutorial format (we call them tutorial pages). The tutorial pages have an __Instructions__ section that guide you towards building applications from the ground up. As an example, the tutorial pages look the following outline:
+
+<div className="nx-border nx-rounded mt-5 p-5">
+
+__Overview__
+
+This section will include:
+
+- a high-level overview of what the tutorial teaches;
+- recommended reading we feel you should do before following the tutorial; and
+- the knowledge and confidence we hope you will gain after you complete the tutorial.
+
+__Instructions__
+
+This section contains a list of steps (like a step-by-step instruction manual) that help you build a tiny HTTP application from scratch. This section will provide:
+
+- the end state of the project's directory structure (aka directory tree);
+- example code (for different runtimes); and
+- comments in the code to explain what the code does.
+
+__Verification__
+
+This section will include steps to help you verify the code you wrote is working.
+
+<CalloutSilent>
+__Read your chosen runtime's documentation:__ This section will mention running your code, but you will have to refer to your chosen runtime's documentation pages on running your code. Running your code will vary between runtimes and operating systems, so it is best for you to read the documentation provided by your chosen runtime (instead of these pages trying to relay that information).
+</CalloutSilent>
+
+__Next Steps__
+
+This is the last section of the page. It will include our recommendations on what you could do next. Feel free to follow our recommendations or navigate the documentation pages at your leisure.
+
+</div>
+
+## Modules, Standard, Core
+
+You will notice the Modules, Standard, and Core sections in the left sidebar. These three sections reflect the codebases of the entire Drash framework. They are ordered as Modules, Standard, and Code to reflect how user-oriented and straightforward they are to use. For example, Modules comes first because its the codebase that contain the most functionality to help you bulid applications. Core is last because it contains the lowest level APIs.
+
+## Glossary
+
+Unlike previous versions of Drash, v3.x comes with a [Glossary](/drash-v3.x/misc/glossary) page. This is heavily inspired by <LinkExternal href="https://developer.mozilla.org/en-US/docs/Glossary">MDN Web Docs Glossary</LinkExternal> and it contains definitions of the terms (words/phrases) and acronyms we use.
+
+__All of the terms and acronyms we use are used in the context of Drash unless otherwise stated.__
+
+## A Note From Us
+
+We strive to prevent ambiguity in our writing as much as possible. We want you to be able to understand the code you are using so you can develop with confidence. However, we don't always get it right (our apologies in advance!). If our writing isn't clear, has typos, not accessible, or you have suggestions to help improve these pages, please let us know by [filing an issue](https://github.com/drashland/website-v2/issues). We appreciate everyone's help in making these pages better for everyone!
+
+Also, we apologize for not providing verification steps like we did in v2.x. We know that degrades developer experience, but we can't keep up with the changes made in all of the runtimes. Doing so would become a maintenance nightmare for us and we want to ensure our focus is on Drash, not what the runtimes are doing.
+
+## Next Steps
+
+Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure. on your own.
+
+### Our Recommendations
+
+- Follow the [prerequisites](/drash-v3.x/getting-started/prerequisites) to set up your local environment
+
+### Want to Jump Ahead?
+
+- [Create a tiny HTTP application](/drash-v3.x/modules/chains/request-chain/step-by-step-guide) using the Request Chain module

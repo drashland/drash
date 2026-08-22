@@ -1,0 +1,57 @@
+.grid {
+  --compare-border: rgb(15 23 42 / 0.12);
+  --compare-label: rgb(71 85 105);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+:global(html.dark) .grid {
+  --compare-border: rgb(148 163 184 / 0.2);
+  --compare-label: rgb(148 163 184);
+}
+
+/* Side by side only when there is room for two readable columns. */
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.item {
+  /* Without this, a long code line stretches the column instead of scrolling
+   * inside it, and the grid blows past the page width. */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--compare-label);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 1px solid var(--compare-border);
+}
+
+/*
+ * Nextra wraps each code block in `div.nextra-code` around the `pre`, so both
+ * levels have to stretch for the shorter sample to match the taller one —
+ * flexing only the wrapper would leave the `pre` at its natural height.
+ */
+.item > :global(.nextra-code) {
+  /* Nextra's own top margin would double up under the label. */
+  margin-top: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.item > :global(.nextra-code) > :global(pre) {
+  flex: 1;
+}

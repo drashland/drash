@@ -98,7 +98,7 @@ class URLPatternPolyfill {
 
   /**
    * Get resource paths for the path in question. The path in question should
-   * have at least one optional param. An optiona param is like :id in the
+   * have at least one optional param. An optional param is like :id in the
    * following path:
    *
    *     /my-path/:id?

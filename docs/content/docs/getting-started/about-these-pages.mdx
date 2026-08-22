@@ -1,0 +1,105 @@
+---
+title: About These Pages
+description: What these pages assume, how they are ordered, and how to read them.
+---
+
+# About These Pages
+
+## Assumptions
+
+Most of these pages — especially those with an **Instructions** section — assume:
+
+1. you have a JavaScript runtime installed (as stated on the [Prerequisites](/docs/getting-started/prerequisites) page);
+2. you have some knowledge and understanding of the JavaScript runtime you have installed (e.g., you know how to use a `package.json` in Node or `deno.json` file in Deno); and
+3. you are building server-side HTTP applications.
+
+### Zero Dependencies
+
+Although Drash has zero dependencies — meaning you could run it in the browser, these pages are written assuming you are using Drash to build server-side HTTP applications.
+
+### Deno Import Statements
+
+All Deno `import` statements will prefix packages with the `npm:` specifier for simplicity. We assume you are familiar with Deno's specifiers, but here is a link to learn more just in case: https://deno.com/blog/not-using-npm-specifiers-doing-it-wrong.
+
+## Page Order
+
+The pages in the sidebar are ordered (from top to bottom) in a way that we feel will help you:
+
+1. start building applications quickly; and
+2. understand the code you are writing/using.
+
+It is not required that you read the pages in order, but we greatly recommend it for the reasons stated above.
+
+| Section                                          | What it covers                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| [Getting Started](/docs/getting-started)         | What Drash is, what you need installed, and building your first app step by step     |
+| [Quickstart](/docs/quickstart)                   | A complete app per runtime                                                           |
+| [Concepts](/docs/concepts/framework)             | The framework's shape, the request chain, resources, builders, and the native/polyfill modules |
+| [Resources](/docs/resources/creating-a-resource) | Writing resources, and grouping them to share prefixes and middleware                |
+| [Requests](/docs/requests/handling-requests)     | What a resource receives, and reading path and query params                          |
+| [Tutorials](/docs/middleware)          | Using pre-built middleware, writing your own, and handling errors                    |
+| [Glossary](/docs/misc/glossary)                  | Terms used throughout these pages                                                    |
+
+Looking for finished applications you can run? Those are under [Examples](/examples).
+
+## Concepts Pages
+
+Some pages will recommend you read pages under the [Concepts](/docs/concepts/framework). Concepts go over:
+
+- a breakdown of the [framework](/docs/concepts/framework);
+- how [chains](/docs/concepts/chains) work under the hood;
+- how [resources](/docs/concepts/resources) play a role in the HTTP module's `Chain`;
+- why [builders](/docs/concepts/builders) assemble your application; and
+- why [native and polyfill](/docs/concepts/native-vs-polyfill) modules exist.
+
+It is not required that you read the Concepts pages, but we greatly recommend it so you are aware of the design decisions made in Drash and how it works under the hood.
+
+## Tutorial Format
+
+All tutorial pages have an **Instructions** section. They guide you in building applications from the ground up. Their page format is explained below:
+
+| Section          | What it contains                                                                                                                                          |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Overview**     | A high-level overview of what the tutorial teaches, recommended reading beforehand, and the knowledge we hope you gain by the end.                           |
+| **Instructions** | Steps that build a tiny HTTP application from scratch — the end state of the directory tree, example code for different runtimes, and comments explaining it. |
+| **Verification** | Steps to help you verify the code you wrote is working.                                                                                                     |
+| **Next Steps**   | Our recommendations on what to do next. Follow them or navigate the pages at your leisure.                                                                   |
+
+<Callout type="info" emoji={null}>
+**You must read your runtime's documentation**
+
+These pages reference running your code (e.g., `deno run --allow-net app.ts`). Since instructions vary by runtime and operating system, it is best you read your runtime's documentation on running code.
+</Callout>
+
+## Core, Standard, and Modules
+
+You will notice the Core, Standard, and Modules sections under the [Reference](/reference) pages. These three sections reflect the codebases of the entire Drash framework, and are ordered lowest-level first:
+
+- **Core** — types, interfaces, and classes with minimal implementation. It contains the lowest level APIs and helps build the Standard and Modules codebases.
+- **Standard** — similar to Deno's and Go's standard libraries, but smaller. Intended as standalone code and as code to help build the Modules codebase.
+- **Modules** — implements the most functionality, such as processing HTTP requests. Imports from Standard and Core.
+
+The [Framework](/docs/concepts/framework) page covers these codebases in more detail.
+
+## Glossary
+
+View our [Glossary](/docs/misc/glossary) page for definitions of terms (words/phrases) and acronyms we use. It is heavily inspired by the [MDN Web Docs Glossary](https://developer.mozilla.org/en-US/docs/Glossary) for clarity and ease of use.
+
+<Callout type="info" emoji={null}>
+All of the terms and acronyms we use are used in the context of Drash unless otherwise stated.
+</Callout>
+## A Note from Us
+
+We strive to prevent ambiguity in our writing as much as possible. We want you to be able to understand the code you are using so you can develop with confidence. However, we don't always get it right (our apologies in advance!). If our writing isn't clear, has typos, is not accessible, or you have suggestions to help improve these pages, please let us know by [filing an issue](https://github.com/drashland/drash/issues). We appreciate everyone's help in making these pages better for everyone!
+
+## Next Steps
+
+Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure.
+
+### Our Recommendations
+
+- Follow the [prerequisites](/docs/getting-started/prerequisites) to set up your local environment.
+
+### Want to Jump Ahead?
+
+- [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide) using the HTTP module's `Chain` class.

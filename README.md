@@ -2,6 +2,20 @@
 
 A strongly typed, runtime-agnostic web framework for building structured HTTP services in JavaScript, built on Web Standards.
 
+## Documentation
+
+https://drashland.github.io/drash
+
+Sources live in [`docs/`](./docs), built with [Nextra](https://nextra.site) and deployed to GitHub Pages by `.github/workflows/docs.yml`. The docs are a separate package with their own `package.json`, so working on Drash itself never installs Next or React.
+
+To preview locally:
+
+```
+$ deno task docs:dev
+```
+
+Then go to `http://localhost:3000`. The site is served from the root; if it ever needs to live under a subpath, set `DOCS_BASE_PATH` to that prefix.
+
 ## Branches / Versions
 
 ### Current

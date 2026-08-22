@@ -1,0 +1,116 @@
+---
+title: JavaScript (CJS)
+description: Drash / Node / JavaScript (CJS) — a complete, runnable example.
+---
+
+# Drash / Node / JavaScript (CJS)
+
+## Steps
+
+<Steps>
+
+### Install Node
+
+Install [Node](https://nodejs.org) (v20+).
+
+### Install Dependencies
+
+Install the dependencies in `package.json`.
+
+```bash
+mkdir my-project
+npm init -y
+npm install @drashland/drash
+```
+
+### Create the Following File
+
+```js filename="app.js"
+const {
+  Chain,
+  Resource,
+} = require("@drashland/drash/modules/http.polyfill");
+const { createServer } = require("node:http");
+
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
+
+  GET(context) {                 // Node hands you the context object, not a Request.
+    console.log(`Received request: ${context.request.url}`);
+    context.response.end(        // Write straight to Node's ServerResponse.
+      `Oh so easy (written at ${new Date()})`,
+    );
+  }
+}
+
+const chain = Chain
+  .builder()                     // Get the chain's builder so we can build the chain easily.
+  .resources(Home)               // Add the `Home` resource to the chain.
+  .build();                      // Build the chain.
+
+const hostname = "localhost";    // Define server variables for reuse below.
+const port = 1447;
+
+const server = createServer((request, response) => {
+  // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not
+  // a Web `Request`. Drash does not convert them for you — you hand the chain
+  // a context object carrying whatever your resources need. The chain itself
+  // only requires `url` and `method`.
+  const context = {
+    url: `http://${hostname}:${port}${request.url}`,
+    method: request.method,
+    request,
+    response,
+  };
+
+  return chain                   // Let the chain
+    .handle(context)             // handle the context object, and
+    .catch((error) => {          // catch anything it throws.
+      if (context.url.includes("favicon")) {
+        return response.end();   // Browsers ask for this; ignore it.
+      }
+
+      console.log(`Request URL hit an error: ${context.url}:\n`);
+      console.log({ error });
+
+      response.statusCode = 500; // Everything else gets a 500.
+      response.statusMessage = "Internal Server Error";
+      response.end("Sorry, but we hit an error!");
+    });
+});
+
+// Start the server.
+server.listen(port, hostname, () => {
+  console.log(`\nDrash running at http://${hostname}:${port}`);
+});
+```
+
+The only differences from the [ESM variant](/examples/node/javascript-esm) are the `require()` calls, and that the polyfill specifier drops its `.js` extension.
+
+### Run the Drash App
+
+```bash
+npm start
+```
+
+_Note: `npm start` is defined in the `package.json` file._
+
+### Open It
+
+Go to http://localhost:1447. You should see something like the following:
+
+```text
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+```
+
+</Steps>
+
+## Notes
+
+Resources only recognize absolute URLs. Node's `request.url` returns only a path, so it must be converted to a full URL first. For example:
+
+`/users/1` --> `http://localhost:1447/users/1`
+
+Node uses the **polyfill** entry point, and its `node:http` server does not give you a Web `Request` — so the resource receives a **context object** that you build. The chain only requires a readable `url` and `method`; everything else on it is yours.
+
+This example is in the repository at [`examples/node-js-cjs`](https://github.com/drashland/drash/tree/main/examples/node-js-cjs).

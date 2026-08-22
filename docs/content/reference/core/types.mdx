@@ -1,0 +1,78 @@
+# Types
+
+The types in `core/types/`. Type-only — none of these exist at runtime.
+
+```ts
+import type { ResponseStatus } from "@drashland/drash/core/types/ResponseStatus.js";
+```
+
+The `Types.js` aggregate re-exports them so you can take several from one specifier:
+
+```ts
+import type { RequestMethod, ResponseStatus } from "@drashland/drash/core/Types.js";
+```
+
+## `ResponseStatus`
+
+```ts
+type ResponseStatus = {
+  readonly code: ResponseStatusCode;
+  readonly description: ResponseStatusDescription;
+};
+```
+
+The pair [`HTTPError`](/reference/core/errors/http-error) takes as its first argument. Every value in [`Status`](/reference/core/http/response/status) is one of these.
+
+## `ResponseStatusCode`
+
+```ts
+type ResponseStatusCode = (typeof StatusCode)[keyof typeof StatusCode];
+```
+
+A union of the 62 numeric codes, not `number`.
+
+## `ResponseStatusDescription`
+
+A union of the 62 reason phrases, derived from `StatusDescription`.
+
+## `ResponseStatusName`
+
+```ts
+type ResponseStatusName = (typeof StatusName)[keyof typeof StatusName];
+```
+
+A union of the 62 status names — `"OK" | "NotFound" | …`. This is the key type of the `Status`, `StatusCode`, and `StatusDescription` records, which is what keeps all three in step.
+
+## `RequestMethod`
+
+```ts
+type RequestMethod = (typeof Method)[keyof typeof Method];
+```
+
+`"CONNECT" | "DELETE" | "GET" | "HEAD" | "OPTIONS" | "PATCH" | "POST" | "PUT" | "TRACE"`. Derived from [`Method`](/reference/core/http/request/method).
+
+## `Header`
+
+A union of the header name strings in [`Header`](/reference/core/http/header). The const and the type share a name — the const is at `core/http/Header.js`, the type at `core/types/Header.js`.
+
+## `MethodOf<Object>`
+
+```ts
+type MethodOf<Object> = {
+  [K in keyof Object]: Object[K] extends Func ? K
+    : never;
+}[keyof Object];
+
+// Func is local to the module, not exported
+type Func =
+  | ((...args: unknown[]) => unknown)
+  | (() => unknown);
+```
+
+The union of keys on `Object` whose values are functions. Used internally as `MethodOf<Resource>` so that indexing a resource by a method name stays type-checked instead of falling back to `any`.
+
+## Notes
+
+Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports — harmless under a bundler, and a resolution error without one.
+
+See also [Interfaces](/reference/core/interfaces).

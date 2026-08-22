@@ -23,7 +23,10 @@ import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.polyfill";
+import {
+  Chain,
+  Resource,
+} from "../../../../../../../../dist/modules/http.polyfill";
 
 export const protocol = "http";
 export const hostname = "localhost";
@@ -36,7 +39,7 @@ type WebAPIContext = {
   response?: Response;
 };
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(context: WebAPIContext) {

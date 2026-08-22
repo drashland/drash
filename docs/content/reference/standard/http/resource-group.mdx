@@ -1,0 +1,67 @@
+# ResourceGroup
+
+A resource group applies middleware and path prefixes to a set of resources at **build time**, by generating proxy classes. There is no runtime router doing this work per request.
+
+**A group is the only way to attach middleware or path prefixes to a resource** — that holds whether you are grouping one resource or many.
+
+```ts
+const group = ResourceGroup
+  .builder()
+  .middleware(Auth, Logging)
+  .prefix("/api/v1")
+  .resources(Users, Coffees)
+  .build();
+
+const chain = Chain
+  .builder()
+  .resources(...group)
+  .build();
+```
+
+## `.resources(...resources)`
+
+The resource classes in the group. Accepts classes or arrays of classes, and flattens them — so groups nest:
+
+```ts
+const v1 = ResourceGroup.builder().prefix("/v1").resources(Users).build();
+const api = ResourceGroup.builder().prefix("/api").resources(v1).build();
+```
+
+## `.middleware(...middleware)`
+
+Wraps every resource in the group, outermost-first. See [Middleware ordering](/docs/middleware#ordering).
+
+Each resource gets its **own** middleware instances.
+
+## `.prefix(...prefixes)`
+
+Sets the **path** prefixes for the group. Prepends each prefix to every `paths` entry of
+every resource in the group.
+
+```ts
+ResourceGroup.builder().prefix("/api/v1").resources(Users).build();
+// Users.paths ["/users"] becomes ["/api/v1/users"]
+```
+
+Passing multiple prefixes produces a path per prefix — useful for versioning the same resource at several mount points.
+
+## `.build()`
+
+Returns an **array of resource classes**, so spread it into `.resources()`:
+
+```ts
+.resources(...group)
+```
+
+Passing the array directly also works, since both builders flatten arrays — but spreading reads better and behaves the same.
+
+## What It Generates
+
+Two proxy layers, applied per resource class:
+
+| Call              | Generated class         | What it does                                                                      |
+| ----------------- | ----------------------- | --------------------------------------------------------------------------------- |
+| `.middleware()`   | `MiddlewareEntryPoint`  | Extends the original resource; each HTTP method delegates to the first middleware |
+| `.prefix()`      | `PrefixedResourceProxy` | Rewrites `this.paths` in its constructor                                          |
+
+`MiddlewareEntryPoint` extends the original resource class specifically so `paths` stays intact through the wrapping.

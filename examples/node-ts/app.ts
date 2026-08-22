@@ -18,7 +18,7 @@ class Home extends Resource {
 
   GET(context: NodeContext) {
     console.log(`Received request: ${context.request.url}`);
-    context.response.end(`Hello from Home.GET()! (written at ${new Date()})`);
+    context.response.end(`Oh so easy (written at ${new Date()})`);
   }
 }
 

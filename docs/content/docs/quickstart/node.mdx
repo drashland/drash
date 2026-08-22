@@ -1,0 +1,200 @@
+# Node
+
+This quickstart guide assumes you have Node v20.x+ installed.
+
+## Steps
+
+<Tabs items={["ESM", "CommonJS"]}>
+  <Tabs.Tab>
+
+1. Initialize your project and install Drash.
+
+    ```bash
+    npm init -y
+    npm pkg set type=module
+    npm install @drashland/drash
+    ```
+
+    `npm init -y` creates a CommonJS project. `npm pkg set type=module` switches
+    it to ESM, which is what lets `app.js` use `import`.
+
+1. Create your `app.js` file.
+
+    ```js
+    // Node's `URLPattern` support varies by version, so use the polyfill entry point
+    import {
+      Chain,
+      Resource,
+    } from "@drashland/drash/modules/http.polyfill.js";
+    import { createServer } from "node:http";
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(context) {
+        context.response.end("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()
+      .resources(Home)
+      .build();
+
+    const hostname = "localhost";
+    const port = 1447;
+
+    const server = createServer((request, response) => {
+
+      // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`,
+      // not a Web `Request`. Drash does not convert them for you — you hand the
+      // chain a `context` object carrying whatever your resources need. The
+      // chain only requires `url` and `method`.
+      const context = {
+        url: `http://${hostname}:${port}${request.url}`,
+        method: request.method,
+        request,
+        response,
+      };
+
+      return chain
+        .handle(context)
+        .catch((error) => {
+          response.statusCode = 500;
+          response.statusMessage = "Internal Server Error";
+          response.end("Sorry, but we hit an error!");
+        });
+    });
+
+    server.listen(port, hostname);
+    ```
+
+1. Run your `app.js` file.
+
+    ```bash
+    node app.js
+    ```
+
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+
+1. Initialize your project and install Drash.
+
+    ```bash
+    npm init -y
+    npm install @drashland/drash
+    ```
+
+    `npm init -y` already creates a CommonJS project, so there is nothing to
+    change before `app.js` can use `require()`.
+
+1. Create your `app.js` file.
+
+    ```js
+    // Node's `URLPattern` support varies by version, so use the polyfill entry point
+    const {
+      Chain,
+      Resource,
+    } = require("@drashland/drash/modules/http.polyfill");
+    const { createServer } = require("node:http");
+
+    class Home extends Resource {
+      paths = ["/"];
+
+      GET(context) {
+        context.response.end("Oh so easy");
+      }
+    }
+
+    const chain = Chain
+      .builder()
+      .resources(Home)
+      .build();
+
+    const hostname = "localhost";
+    const port = 1447;
+
+    const server = createServer((request, response) => {
+
+      // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`,
+      // not a Web `Request`. Drash does not convert them for you — you hand the
+      // chain a `context` object carrying whatever your resources need. The
+      // chain only requires `url` and `method`.
+      const context = {
+        url: `http://${hostname}:${port}${request.url}`,
+        method: request.method,
+        request,
+        response,
+      };
+
+      return chain
+        .handle(context)
+        .catch((error) => {
+          response.statusCode = 500;
+          response.statusMessage = "Internal Server Error";
+          response.end("Sorry, but we hit an error!");
+        });
+    });
+
+    server.listen(port, hostname);
+    ```
+
+1. Run your `app.js` file.
+
+    ```bash
+    node app.js
+    ```
+
+  </Tabs.Tab>
+
+</Tabs>
+
+## Notes
+
+
+### Context Objects
+
+The `url` field in the `context` object must be absolute. `request.url` from `node:http` is path-only (`/users/1`), which is why the code above prefixes it with the hostname and port. A bare path will not match to a resource under Drash's hood.
+
+
+### Writing to the Response
+
+Because the resource writes to `context.response` directly, `GET()` returns nothing. That is fine here: the response is already committed to the socket by the time the chain resolves.
+
+### Changing to Web Request and Response
+
+If you would rather work with Web `Request`/`Response` objects in Node:
+
+- convert Node's `request` to a native Web `Request`;
+- send the `Request` to `chain.handle()`; 
+- return a `Response` from your resources; and
+- handle the response in the `createServer()` block.
+
+For example:
+
+```js
+const server = createServer((request, response) => {
+
+  const url = url: `http://${hostname}:${port}${request.url}`;
+
+  const nativeRequest = new Request(url, {
+    method: request.method,
+    body: /* the request body or whatever you want to pass in */,
+    // ... other Request fields you want to include
+  });
+
+  return chain
+    .handle(context)
+    .then((nativeResponseFromResource) => {
+      // Do something with the response
+    })
+    .catch((error) => {
+      response.statusCode = 500;
+      response.statusMessage = "Internal Server Error";
+      response.end("Sorry, but we hit an error!");
+    });
+});
+
+server.listen(port, hostname);
+```

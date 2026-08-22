@@ -61,7 +61,7 @@ class Builder implements IBuilder {
    *      Coffees,
    *      Teas
    *    )
-   *   .pathPrefixes( // ... the path prefixes here ...
+   *   .prefix(       // ... the path prefixes here ...
    *      "/api/v1",
    *      "/v1"
    *    )
@@ -91,7 +91,11 @@ class Builder implements IBuilder {
 
   /**
    * Set the path prefixes for all resources in this group.
-   * @param pathPrefixes The path prefixes the resources will use.
+   *
+   * Accepts more than one prefix. Each prefix produces its own copy of every
+   * path in the group, so a resource can be mounted at several places at once.
+   *
+   * @param prefixes The path prefixes the resources will use.
    * @returns This instance so you can chain more methods.
    *
    * @example
@@ -102,18 +106,18 @@ class Builder implements IBuilder {
    *
    * const group = ResourceGroup
    *   .builder()
-   *   .pathPrefixes("/api/v1")
+   *   .prefix("/api/v1")
    *   .resources(Coffees) // Coffees.paths becomes ["/api/v1/coffees"]
    *   .build();
    * ```
    */
-  pathPrefixes(...pathPrefixes: string[]): this {
-    this.#path_prefixes = pathPrefixes;
+  prefix(...prefixes: string[]): this {
+    this.#path_prefixes = prefixes;
     return this;
   }
 
   /**
-   * Set the middlware for all resources in this group.
+   * Set the middleware for all resources in this group.
    * @param middleware The middleware the resources will use.
    * @returns This instance so you can chain more methods.
    *
@@ -345,8 +349,6 @@ function createGroupWithMiddleware(
 }
 
 class ResourceGroup {
-  static Builder = Builder;
-
   static builder(): Builder {
     return new Builder();
   }

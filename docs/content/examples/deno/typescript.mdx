@@ -1,0 +1,97 @@
+---
+title: TypeScript
+description: Drash / Deno / TypeScript — a complete, runnable example.
+---
+
+# Drash / Deno / TypeScript
+
+## Steps
+
+<Steps>
+
+### Install Deno
+
+Install [Deno](https://deno.com).
+
+### Create the Following File
+
+```ts filename="app.ts"
+import {
+  Chain,
+  Resource,
+} from "https://esm.sh/@drashland/drash/modules/http.native.js";
+
+// import {
+//   Chain,
+//   Resource,
+// } from "npm:@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
+
+  GET(request: Request) {        // Handle GET requests to those paths.
+    console.log(`Received request: ${request.url}`);
+
+    return new Response(         // This is what `chain.handle()` resolves with.
+      `Oh so easy (written at ${new Date()})`,
+    );
+  }
+}
+
+const chain = Chain
+  .builder()                     // Get the chain's builder so we can build the chain easily.
+  .resources(Home)               // Add the `Home` resource to the chain.
+  .build();                      // Build the chain.
+
+const hostname = "localhost";    // Define server variables for reuse below.
+const port = 1447;
+
+Deno.serve({
+  hostname,
+  port,
+  onListen: ({ hostname, port }) => {
+    console.log(`\nDrash running at http://${hostname}:${port}`);
+  },
+  handler: (request: Request): Promise<Response> => {
+    return chain                 // Let the chain
+      .handle<Response>(request) // handle the request, and
+      .catch((error) => {        // catch anything it throws.
+        if (request.url.includes("favicon")) {
+          return new Response(); // Browsers ask for this; ignore it.
+        }
+
+        return new Response(     // Everything else gets a 500.
+          "Sorry, but we hit an error!",
+          {
+            status: 500,
+            statusText: "Internal Server Error",
+          },
+        );
+      });
+  },
+});
+```
+
+### Run the Drash App
+
+```bash
+deno run --allow-net app.ts
+```
+
+### Open It
+
+Go to http://localhost:1447. You should see something like the following:
+
+```text
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+```
+
+</Steps>
+
+## Notes
+
+There is no install step for dependencies — Deno resolves the import over HTTP. The commented-out block shows the `npm:` specifier if you would rather resolve through npm.
+
+Deno provides a global `URLPattern`, so this uses the **native** entry point. Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns — so the request goes straight through with no context object in between.
+
+This example is in the repository at [`examples/deno`](https://github.com/drashland/drash/tree/main/examples/deno).

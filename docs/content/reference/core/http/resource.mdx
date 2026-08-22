@@ -1,0 +1,69 @@
+# Resource
+
+The base class every resource ultimately extends. It maps a set of paths to HTTP method handlers, and supplies a default for each method you do not write.
+
+<Callout type="gray">
+__Good to know__
+
+The HTTP module extends this core `Resource` class and exports its own.
+</Callout>
+
+## Properties
+
+| Property | Type       | Default | Notes                                     |
+| -------- | ---------- | ------- | ----------------------------------------- |
+| `paths`  | `string[]` | `[]`    | The paths this resource answers to        |
+
+A resource with an empty `paths` array is never matched. Paths may contain params (`/users/:id`), optional params (`/users/:id?`), and regular expressions (`/([0-9]$)`) — see [Creating a Resource](/docs/resources/creating-a-resource) for the syntax.
+
+## Methods
+
+The class defines one method per HTTP method:
+
+`CONNECT` `DELETE` `GET` `HEAD` `OPTIONS` `PATCH` `POST` `PUT` `TRACE`
+
+Each has the same signature:
+
+```ts
+public GET(request: unknown): unknown
+```
+
+The argument is typed `unknown` because a resource receives whatever was passed to `chain.handle()` — a Web `Request` on Deno, Bun, and Cloudflare, or a context object on Node. Narrow it in your subclass. Use [`HTTPRequest`](/reference/modules/http-native) when you want `request.params` typed.
+
+The return value is `unknown` for the same reason. Whatever you return becomes the resolved value of `chain.handle()`.
+
+### Default Behavior
+
+__Every method throws `HTTPError(Status.NotImplemented)`.__ That is the entire base implementation:
+
+```ts
+public GET(_request: unknown): unknown {
+  throw new HTTPError(Status.NotImplemented);
+}
+```
+
+So a resource that defines only `GET` answers `501 Not Implemented` to the other eight, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1). To send `405` instead, override the method and throw it yourself:
+
+```ts
+public PATCH(_request: unknown) {
+  throw new HTTPError(Status.MethodNotAllowed);
+}
+```
+
+Methods may be synchronous or asynchronous. The chain awaits whatever they return.
+
+## Notes
+
+### Subclassing for Your Own Defaults
+
+Because the 501 behavior lives in this class, a base class of your own changes it for everything below it:
+
+```ts
+class BaseResource extends Resource {
+  public override PATCH(_request: unknown) {
+    throw new HTTPError(Status.MethodNotAllowed);
+  }
+}
+```
+
+Every resource extending `BaseResource` answers `405` to `PATCH` without repeating the override.

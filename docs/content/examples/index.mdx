@@ -1,0 +1,57 @@
+---
+title: Examples
+description: Complete, runnable Drash applications for Deno, Node, Bun, Cloudflare Workers, and Vercel.
+---
+
+# Examples
+
+Each of these is a complete, runnable application. They live in the [`examples`](https://github.com/drashland/drash/tree/main/examples) directory of the repository, so you can clone the repo and run any of them directly.
+
+They all do the same thing — answer `GET /` from a single `Home` resource — so you can compare what changes between runtimes and what does not.
+
+Each runtime is a section in the sidebar, and each page under it is one flavor of that example.
+
+<Cards num={2}>
+  <Cards.Card title="Deno / TypeScript" href="/examples/deno/typescript" arrow />
+  <Cards.Card
+    title="Node / JavaScript (ESM)"
+    href="/examples/node/javascript-esm"
+    arrow
+  />
+  <Cards.Card
+    title="Node / JavaScript (CJS)"
+    href="/examples/node/javascript-cjs"
+    arrow
+  />
+  <Cards.Card title="Node / TypeScript" href="/examples/node/typescript" arrow />
+  <Cards.Card title="Bun / TypeScript" href="/examples/bun/typescript" arrow />
+  <Cards.Card title="Vercel / api/ (fetch)" href="/examples/vercel/api" arrow />
+  <Cards.Card title="Vercel / server.ts" href="/examples/vercel/server" arrow />
+  <Cards.Card
+    title="Cloudflare Workers / JavaScript (ESM)"
+    href="/examples/cloudflare-workers/javascript-esm"
+    arrow
+  />
+</Cards>
+
+## What Changes Between Them
+
+| | Entry point | What the resource receives |
+| --- | --- | --- |
+| Deno | `http.native.js` | Web `Request` |
+| Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
+| Bun | `http.polyfill.js` | Web `Request` |
+| Cloudflare Workers | `http.native.js` | Web `Request` |
+
+The resource and the chain are identical in every one. What differs is the entry point — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill) — and how your runtime hands you a request.
+
+<Callout type="gray">
+  Every example catches `favicon` requests in its `.catch()`. Browsers request
+  `/favicon.ico` automatically, and no resource owns that path, so the chain
+  throws a `404` for it. That check keeps the noise out of the console; it is
+  not something your own app needs.
+</Callout>
+
+## Looking for a Walkthrough Instead?
+
+These pages show finished apps. If you want the reasoning built up step by step, read the [step-by-step guide](/docs/getting-started/step-by-step-guide).

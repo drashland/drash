@@ -1,0 +1,14 @@
+.seeAlso {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.label {
+  font-weight: 600;
+  margin-inline-end: 0.15rem;
+}
+
+.label::after {
+  content: ":";
+}

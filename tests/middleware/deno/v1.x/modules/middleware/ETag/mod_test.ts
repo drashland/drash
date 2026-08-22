@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as asserts from "@std/assert";
+import { assertEquals } from "@std/assert";
 import {
   assertionMessage,
   catchError,
@@ -30,13 +30,13 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import * as Chain from "../../../../../../../src/modules/http.native.ts";
 import {
   defaultOptions,
   ETag,
   ETagMiddleware,
   type Options,
-} from "../../../../../../../src/modules/middleware/ETag/mod.ts";
+} from "../../../../../../../src/modules/middleware/ETag.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 
 type TestCase = {
@@ -72,7 +72,7 @@ const url = `${protocol}://${hostname}:${port}`;
 // chain. If the chain is recreated during each test case, then the ETag
 // middleware will lose its cache of generated etags. Without this cache, the
 // tests will fail. Reason being the tests need to exercise subsequent requests
-// to make sure the ETag middleare is doing its job. For example, one request
+// to make sure the ETag middleware is doing its job. For example, one request
 // will be sent and it will be given an ETag header value. That value will be
 // cached by the ETag middleware. When a second request is sent, the ETag
 // middleware will:
@@ -203,7 +203,7 @@ async function assert(
   actualResponse: Response,
   expectedResponse: Expected,
 ) {
-  asserts.assertEquals(
+  assertEquals(
     await actualResponse.clone().text(),
     expectedResponse.body,
     assertionMessage(
@@ -214,7 +214,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.headers.get("etag"),
     expectedResponse.headers?.etag,
     assertionMessage(
@@ -230,7 +230,7 @@ async function assert(
   );
 
   // The `last-modified` header should be dated as "right now" because
-  asserts.assertEquals(
+  assertEquals(
     actualLastModifiedDate.toISOString().replace(
       /:[0-9]+\.+[0-9]+Z/,
       "",
@@ -244,7 +244,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.status,
     expectedResponse.status,
     assertionMessage(
@@ -255,7 +255,7 @@ async function assert(
     ),
   );
 
-  asserts.assertEquals(
+  assertEquals(
     actualResponse.statusText,
     expectedResponse.statusText,
     assertionMessage(
@@ -289,11 +289,11 @@ function getTestCases(): TestCase[] {
             path: "/",
           },
           expected_response: {
-            body: "Hello from Home.GET()!",
+            body: "Oh so easy",
             status: StatusCode.OK,
             statusText: StatusDescription.OK,
             headers: {
-              etag: `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`,
+              etag: `"a-T2ggc28gZWFzeQ=="`,
             },
           },
         },
@@ -301,7 +301,7 @@ function getTestCases(): TestCase[] {
         {
           request: {
             headers: {
-              "if-none-match": `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`,
+              "if-none-match": `"a-T2ggc28gZWFzeQ=="`,
             },
             method: Method.GET,
             path: "/",
@@ -309,7 +309,7 @@ function getTestCases(): TestCase[] {
           expected_response: {
             body: "", // Body should be empty when using `.text()`
             headers: {
-              etag: `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`, // We should get the same etag back
+              etag: `"a-T2ggc28gZWFzeQ=="`, // We should get the same etag back
             },
             status: StatusCode.NotModified, // Response should be considered "not modified"
             statusText: StatusDescription.NotModified,
@@ -322,9 +322,9 @@ function getTestCases(): TestCase[] {
             path: "/",
           },
           expected_response: {
-            body: "Hello from Home.GET()!", // Body should be the body in the first request
+            body: "Oh so easy", // Body should be the body in the first request
             headers: {
-              etag: `"16-SGVsbG8gZnJvbSBIb21lLkdFVCgpIQ=="`, // We should get the same etag back
+              etag: `"a-T2ggc28gZWFzeQ=="`, // We should get the same etag back
             },
             status: StatusCode.OK, // Response is new so it SHOULD NOT be considered "not modified"
             statusText: StatusDescription.OK,

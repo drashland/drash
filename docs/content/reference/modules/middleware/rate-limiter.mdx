@@ -1,0 +1,283 @@
+---
+title: RateLimiter
+description: Limits requests per client within a rolling window and sets the X-RateLimit-* headers.
+---
+
+# RateLimiter
+
+<Callout type="info" emoji={null}>
+Clients are identified by a header they send themselves. Unless that header is
+one you issue and verify, treat this as request shaping for cooperative clients
+&mdash; not as an abuse control.
+</Callout>
+
+## Summary
+
+The RateLimiter middleware counts requests per client within a rolling time
+window and rejects the ones over the limit. It is added to resources using a
+[resource group](/reference/standard/http/resource-group).
+
+The highlighted section below shows how it is added:
+
+<Tabs items={["Deno"]}>
+
+<Tabs.Tab>
+
+```typescript showLineNumbers  {8-11}
+// Code is shortened for brevity
+
+import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
+import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(RateLimiter({
+    max_requests: 100,                  // 100 requests ...
+    rate_limit_time_window_length: 60000, // ... per minute
+    client_id_header_name: "x-api-key", // Counted against this header's value
+  }))
+  .resources(Users)
+  .build();
+```
+
+</Tabs.Tab>
+</Tabs>
+
+Like the other pre-built middleware, `RateLimiter` is a __factory__. Calling it
+returns a middleware class with your options already bound to it.
+
+## Configuring Options
+
+### The Defaults
+
+| Option                                    | Type      | Default                         | Notes                                 |
+| ----------------------------------------- | --------- | ------------------------------- | ------------------------------------- |
+| `max_requests`                            | `number`  | `3`                             | Requests allowed per window           |
+| `rate_limit_time_window_length`           | `number`  | `60000`                         | Window length in milliseconds         |
+| `client_id_header_name`                   | `string`  | `"x-drash-ratelimit-client-id"` | Request header identifying the client |
+| `throw_if_connection_header_name_missing` | `boolean` | `true`                          | Throw when that header is absent      |
+
+Options you leave out keep their defaults, so each example below sets only what
+it is demonstrating.
+
+### Tuning the Window
+
+`max_requests` and `rate_limit_time_window_length` are read together, and the
+second is in __milliseconds__:
+
+```typescript showLineNumbers
+// 100 requests per minute.
+RateLimiter({ max_requests: 100, rate_limit_time_window_length: 60000 });
+
+// 10 requests per second, for a burst-sensitive endpoint.
+RateLimiter({ max_requests: 10, rate_limit_time_window_length: 1000 });
+
+// The defaults: 3 requests per minute.
+RateLimiter();
+```
+
+### Identifying Clients
+
+`client_id_header_name` names the request header the limiter counts against. The
+default is `x-drash-ratelimit-client-id`, which nothing sets for you &mdash;
+point it at a header your clients or your proxy actually send:
+
+```typescript showLineNumbers
+// Behind a proxy that forwards the caller's address.
+RateLimiter({
+  client_id_header_name: "x-forwarded-for",
+});
+```
+
+There is __no IP fallback__. A client is whatever that header says it is, so
+anyone can present a fresh value and get a fresh budget.
+
+### Handling a Missing Header
+
+`throw_if_connection_header_name_missing` decides what happens when a request
+arrives without that header. `true` rejects it with a `400`; `false` lets it
+straight through, since there is no client to count:
+
+```typescript showLineNumbers
+// Fail open. A request with no identifying header is not counted at all.
+RateLimiter({
+  throw_if_connection_header_name_missing: false,
+});
+```
+
+<Callout type="warning" emoji={null}>
+Setting this to `false` makes the limit __trivially avoidable__ &mdash; omit the
+header and you are never counted. Prefer `true` unless something upstream
+guarantees the header is present.
+</Callout>
+
+## How It Works
+
+### TLDR
+
+The middleware reads the client's header, counts the request against that
+client's budget, and either passes the request to your resource or throws a
+`429`. Either way the response comes back tagged with `X-RateLimit-*` headers.
+
+### Detailed Explanation
+
+Unlike ETag, this middleware does its work __before__ your resource. A request
+over the limit never reaches the resource at all, which is the point &mdash; the
+work is what you are trying to avoid.
+
+Exceeding the limit throws an `HTTPError` with status `429 Too Many Requests`.
+Responses carry:
+
+| Header                  | Meaning                             |
+| ----------------------- | ----------------------------------- |
+| `X-RateLimit-Limit`     | `max_requests`                      |
+| `X-RateLimit-Remaining` | Requests left in the current window |
+| `X-RateLimit-Reset`     | When the window resets              |
+| `X-Retry-After`         | Sent with `429` responses           |
+
+<Callout type="warning" emoji={null}>
+The retry header is `X-Retry-After`, __not__ the standard `Retry-After`. Clients
+and proxies that back off automatically on `Retry-After` will not see this one.
+</Callout>
+
+### State and Scope
+
+Counters live __in memory, per middleware instance__. Because resource groups
+construct middleware fresh per resource, two resources in the same group each
+get their own independent counters rather than sharing one budget.
+
+In-memory state also means limits are per process. Across several instances or
+workers each keeps its own counts, so a shared store would be needed for a
+global limit.
+
+### Data Flow
+
+<div className="tutorials:chains:introduction flowchart-drash-chain">
+```mermaid
+flowchart LR
+  req([Request])
+  h1([RateLimiter])
+  h2([MyResource])
+  res([200 + X-RateLimit-*])
+
+  subgraph chain[Under the Limit]
+    direction LR
+    req --> h1 --> h2 --> res
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+
+  class req,h1,h2,res blue
+```
+</div>
+
+<div className="tutorials:chains:introduction flowchart-drash-chain">
+```mermaid
+flowchart LR
+  req([Request])
+  h1([RateLimiter])
+  res([429 + X-Retry-After])
+
+  subgraph chain[Over the Limit]
+    direction LR
+    req --> h1 --> res
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+
+  class req,h1,res blue
+```
+</div>
+
+As you can see above, a rejected request stops at the middleware and your
+resource is never called.
+
+## Extending This Middleware
+
+The module exports the class as well as the factory, so you can extend it:
+
+```typescript showLineNumbers
+import { RateLimiterMiddleware } from "@drashland/drash/modules/middleware/RateLimiter.js";
+
+class LoggedRateLimiter extends RateLimiterMiddleware {
+  constructor() {
+    // Your options go here, the same ones you would pass to RateLimiter().
+    super({ max_requests: 100 });
+  }
+
+  public override ALL(request: Request) {
+    console.log(`Client: ${request.headers.get("x-api-key")}`);
+
+    // Hand it back to the original middleware and get out of the way.
+    return super.ALL(request);
+  }
+}
+```
+
+| Export                  | What It Is                                         |
+| ----------------------- | -------------------------------------------------- |
+| `RateLimiter`           | The factory. Returns a configured middleware class |
+| `RateLimiterMiddleware` | The middleware class itself, for extending         |
+| `defaultOptions`        | The defaults listed above                          |
+| `Options`               | The options type                                   |
+
+## Related Files
+
+`RateLimiter.ts` is the middleware. The three classes it is built from live in
+`modules/middleware/rate_limiter/`. You reach for these only when handling a rate-limit
+response yourself.
+
+### `RateLimitedClient`
+
+```ts
+import { RateLimitedClient } from "@drashland/drash/modules/middleware/rate_limiter/RateLimitedClient.js";
+```
+
+Per-client request accounting — one instance tracks one client's activity inside the
+current window. Every member is a getter; the class exposes no public setters.
+
+| Getter                                | Notes                                                     |
+| ------------------------------------- | --------------------------------------------------------- |
+| `num_requests_made`                   | Requests made in the window. Starts at 0.                 |
+| `requests_remaining`                  | What is left before the limit is hit.                     |
+| `max_requests_allowed_in_time_window` | The configured ceiling.                                   |
+| `hit_request_limit`                   | `true` once `num_requests_made` exceeds the ceiling.      |
+| `current_request_time`                | Timestamp of the request being handled. `-1` before any.  |
+| `rate_limit_window_end_time`          | When the current window closes.                           |
+| `rate_limit_window_time_elapsed`      | How far into the window this client is.                   |
+
+### `RateLimiterErrorResponse`
+
+```ts
+import { RateLimiterErrorResponse } from "@drashland/drash/modules/middleware/rate_limiter/RateLimiterErrorResponse.js";
+
+constructor(status: ResponseStatus, response: Response)
+```
+
+Extends [`HTTPError`](/reference/core/errors/http-error), carrying the `Response` the
+middleware already built alongside the status.
+
+**This is the one worth knowing about in a `.catch()` block.** Because it is an
+`HTTPError`, an `error.name === "HTTPError"` check catches it — and unlike a bare
+`HTTPError`, it hands you a ready-made response with the `X-RateLimit-*` headers already
+set.
+
+### `RateLimitResponse`
+
+```ts
+import { RateLimitResponseBuilder } from "@drashland/drash/modules/middleware/rate_limiter/RateLimitResponse.js";
+```
+
+`RateLimitResponseBuilder` extends
+[`ResponseBuilder`](/reference/modules/builders/response-builder), taking an existing
+`Response` in its constructor and adding the rate-limit headers to it. The module also
+exports a `response(response)` factory.
+
+| Method                        | Notes                                                                                         |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `addRateLimitHeaders(values)` | Sets `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset`.    |
+| `build()`                     | Overridden. Values set on the builder win; anything unset falls back to the wrapped response. |

@@ -1,0 +1,41 @@
+import { Callout, Tabs, Tab } from "nextra/components";
+import { LinkExternal } from "@/src/components/nextra/LinkExternal";
+
+# Path Prefixes
+
+Path prefixes can be added to your group of resources using the following syntax:
+
+<Tabs items={["Deno v1.46.x"]}>
+
+<Tab>
+
+```typescript showLineNumbers  {12-15}
+// Code is shortened for brevity
+
+import { Chain, Resource } from "https://esm.sh/@drashland/drash@v3.0.0-beta.1/modules/chains/RequestChain/mod.native.ts";
+ 
+const groupedResources = Resource
+  .group()            // Get the class' builder for quickly building a group
+  .resources(         // Add these resources
+    ResourceA,
+    ResourceB,
+    ResourceC,
+  )
+  .pathPrefixes(      // Add these path prefixes
+    "/api/v1",
+    "/api/latest",
+  )
+  .build();           // Build the group
+
+// Create the chain and add the resource group to it
+const chain = Chain
+  .builder()
+  .resources(groupedResources)
+  .build();
+```
+
+</Tab>
+
+</Tabs>
+
+The above syntax will add the `/api/v1` path prefix to __all__ paths in `ResourceA`, `ResourceB`, and `ResourceC`.
