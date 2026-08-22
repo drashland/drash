@@ -45,6 +45,16 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          # Controls Next's `basePath`. Leave the variable unset for a custom
+          # domain or an org page, where the site is served from the domain
+          # root. Set it to "/drash" for a project page at
+          # drashland.github.io/drash, so routes and assets under _next/
+          # resolve against the subpath instead of the root.
+          #
+          # Set in Settings > Secrets and variables > Actions > Variables. An
+          # unset variable expands to "", which is the root-served behaviour.
+          DOCS_BASE_PATH: ${{ vars.DOCS_BASE_PATH }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
