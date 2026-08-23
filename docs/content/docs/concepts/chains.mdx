@@ -32,9 +32,9 @@ flowchart LR
   class h1,h2,h3,h4 blue
 ```
 
-When you build HTTP applications with Drash, you start by creating the HTTP module's [`Application`](/reference/modules/http-native). Under the hood it assembles the only chain that processes HTTP requests. From there, you give it [resources](/docs/concepts/resources) — the classes you use to process requests and respond to them.
+When you build HTTP applications with Drash, you use the HTTP module's [`Application`](/reference/modules/http-native) class. Under the hood it assembles an HTTP request chain that processes HTTP requests (more on this below — [What the HTTP Module's Application Assembles](#what-the-http-modules-application-assembles)). From there, you give it [resources](/docs/concepts/resources) to process those requests and respond to them.
 
-## Where Is the Chain Placed?
+{/* ## Where Is the Chain Placed?
 
 **The chain is placed by you, behind your chosen runtime's HTTP server.**
 
@@ -83,7 +83,7 @@ flowchart LR
     class apiEndpoint ext
 ```
 
-Clients could make requests to the API Endpoint _through_ the runtime's HTTP server and Drash's chain.
+Clients could make requests to the API Endpoint _through_ the runtime's HTTP server and Drash's chain. */}
 
 ## What the HTTP Module's Application Assembles
 
@@ -106,9 +106,9 @@ const app = Application
   .build()              // Builds the chain in the above order
 ```
 
-## What Data Does It Process?
+## What Data Does a Chain Process?
 
-The HTTP module's `Application` processes the data you give it. **You are in charge of defining what goes into the chain and what comes out.** Handlers pass along the input you gave them, not a fixed request type. That is why Node can hand the chain a plain context object while Deno hands it a Web `Request`, and both work.
+Chains process the data you give them. You are in charge of defining what goes into it and what comes out. This is true for the HTTP module's `Application` class. Its handlers pass along the input you give them, not a fixed request type. That is why Node can hand it a plain context object while Deno hands it a Web `Request`, and both work.
 
 ### Requirements
 
