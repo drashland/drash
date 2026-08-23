@@ -40,16 +40,24 @@ Every builder in Drash shares one shape: a `build()` method that returns the fin
 Every method on a builder except `build()` returns the builder. **Those calls are order-independent** — the two lines below produce the same group:
 
 ```ts
-ResourceGroup.builder().middleware(Auth).prefix("/api/v1").resources(Users).build();
-//                     ^^^^^^^^^^^^^^^^^
-//                     middleware here
+ResourceGroup
+  .builder()
+  .middleware(Auth)
+  .prefix("/api/v1")
+  .resources(Users)
+  .build();
+  // => Built object is the same as below
 
-ResourceGroup.builder().resources(Users).prefix("/api/v1").middleware(Auth).build();
-//                                                        ^^^^^^^^^^^^^^^^^
-//                                                        middleware here
+ResourceGroup
+  .builder()
+  .prefix("/api/v1")
+  .resources(Users)
+  .middleware(Auth)
+  .build();
+  // => Built object is the same as above
 ```
 
-`build()` is the exception. Calling `build()` returns the object rather than the builder, so it ends the chain and no further build configurations follow it.
+`build()` is the exception. Calling `build()` returns the object rather than the builder, so it ends the builder method chain and no further build configurations follow it.
 
 `build()` is also where a builder checks that it has what it needs. This is a sanity check to ensure the finished object works properly during runtime instead of erroring out
 
