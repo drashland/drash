@@ -22,7 +22,7 @@
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 import {
-  Chain,
+  Application,
   HTTPError,
   Resource,
 } from "../../../../../../../../src/modules/http.native.ts";
@@ -61,7 +61,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -77,7 +77,7 @@ export const handleRequest = (
     method: request.method,
   };
 
-  return chain
+  return app
     .handle<WebAPIContext>(context)
     // Since we are passing in a context and resources are returning the
     // context, then we expect to retrieve a Response object from the context to

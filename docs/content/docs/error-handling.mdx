@@ -4,7 +4,7 @@ Throwing, catching, and responding to errors
 
 ## Overview
 
-Drash does not send error responses for you. It ships no server, so it has nothing to send a response with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `chain.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
+Drash does not send error responses for you. It ships no server, so it has nothing to send a response with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `app.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
 
 ### Recommended Reading
 
@@ -168,7 +168,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -195,7 +195,7 @@ class Home extends Resource {
 }
 
 // `Home` is never added, so its `/` path is never indexed
-const chain = Chain
+const app = Application
   .builder()
   .resources()
   .build();
@@ -223,7 +223,7 @@ public PATCH(_request: Request) {
 
 ### 422 Unprocessable Entity
 
-Thrown by the chain's `RequestValidator`, the first handler in the chain, when the input it was handed cannot be read. This is a wiring problem, not a client problem — it usually means the object passed to `chain.handle()` is not the shape the chain expects.
+Thrown by the chain's `RequestValidator`, the first handler in the chain, when the input it was handed cannot be read. This is a wiring problem, not a client problem — it usually means the object passed to `app.handle()` is not the shape the chain expects.
 
 | Message                                  | Cause                                      |
 | ---------------------------------------- | ------------------------------------------ |
@@ -245,7 +245,7 @@ The recommended approach is to check for `HTTPError` in your `.catch()` block an
 
 ```ts
 import {
-  Chain,
+  Application,
   HTTPError,
   Resource,
 } from "npm:@drashland/drash/modules/http.native.js";
@@ -263,7 +263,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -297,7 +297,7 @@ Deno.serve({ port: 1447 }, (request: Request) => {
 ```js
 import { createServer } from "node:http";
 import {
-  Chain,
+  Application,
   HTTPError,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
@@ -318,7 +318,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -357,7 +357,7 @@ server.listen(1447, "localhost");
 
 ```ts
 import {
-  Chain,
+  Application,
   HTTPError,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
@@ -375,7 +375,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -411,7 +411,7 @@ Bun.serve({
 
 ```js
 import {
-  Chain,
+  Application,
   HTTPError,
   Resource,
 } from "@drashland/drash/modules/http.native.js";
@@ -429,7 +429,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();

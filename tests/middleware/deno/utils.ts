@@ -23,7 +23,7 @@ import { HTTPError } from "../../../src/core/errors/HTTPError.ts";
 import { StatusCode } from "../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../src/core/http/response/StatusDescription.ts";
 import {
-  Chain,
+  Application,
   type HTTPRequest,
   Middleware,
   Resource,
@@ -117,7 +117,7 @@ export function chain(options: {
     resources = [],
   } = options;
 
-  return Chain
+  return Application
     .builder()
     .resources(
       ResourceGroup

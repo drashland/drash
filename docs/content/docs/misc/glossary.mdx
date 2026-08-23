@@ -12,6 +12,19 @@ __All of the terms and acronyms we use are used in the context of Drash unless o
 
 We know some of the words/phrases (aka terms) we use may be used widely outside of Drash, so we have provided the terms and definitions below to prevent ambiguity and confusion. For example, "runtime" is used in Java __Runtime__ Environment, Red Hat __Runtimes__, and Node (a JavaScript __runtime__). However, in the context of Drash, the word "runtime" refers to JavaScript runtime environments like Deno, Node, Cloudflare Workers, Bun, the browser, etc.
 
+### Application
+
+The object you build with `Application.builder()`. It receives requests, routes
+them to your [resources](#resource), and returns what they produce.
+
+Under the hood it is an HTTP request chain — see [Chain](#chain) — but "application" is
+what you are building, so that is the name the HTTP module exposes.
+
+<SeeAlso items={{
+  "chain": "Chain",
+  "resource": "Resource",
+}}/>
+
 ### Builder
 
 A builder is explained on the [Builders](/docs/concepts/builders) page.

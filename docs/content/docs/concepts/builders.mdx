@@ -23,12 +23,12 @@ car.doSomething();                // Do something with the car
 In Drash, they look like:
 
 ```ts
-const chain = Chain
-  .builder()                 // Get an HTTP request chain builder
-  .resources(Users, Coffees) // Set the resources in the chain
-  .build();                  // Build the chain
+const app = Application
+  .builder()                 // Get an HTTP app builder
+  .resources(Users, Coffees) // Set the resources in the app
+  .build();                  // Build the app
 
-chain.handle(request);       // Make the chain handle a request
+app.handle(request);       // Make the app handle a request
 ```
 
 Drash hands you a builder instead of a constructor so that each piece of configuration is named at the call site. A constructor would put the same information in a positional argument list or an options object, where `resources` is a property you have to look up rather than a method you call.
@@ -53,13 +53,13 @@ ResourceGroup.builder().resources(Users).prefix("/api/v1").middleware(Auth).buil
 
 `build()` is also where a builder checks that it has what it needs. This is a sanity check to ensure the finished object works properly during runtime instead of erroring out
 
-For example, the HTTP module's chain builder throws an error if it provided an incorrect `URLPattern`-like class. **You see this at startup, not on the first request that happens to reach the issue.** In practice you should not hit it because the HTTP module's `Chain.builder()` provides the `URLPattern` class for you under the hood (see [below](#builders-are-where-native-and-polyfill-differ)). It is reachable only if you call the lower-level `requestChain()` factory function directly.
+For example, the HTTP module's application builder throws an error if it provided an incorrect `URLPattern`-like class. **You see this at startup, not on the first request that happens to reach the issue.** In practice you should not hit it because the HTTP module's `Application.builder()` provides the `URLPattern` class for you under the hood (see [below](#builders-are-where-native-and-polyfill-differ)). It is reachable only if you call the lower-level `requestChain()` factory function directly.
 
 ## The Builders Drash Provides
 
 | Builder            | You get it from                     | `build()` returns                  |
 | ------------------ | ----------------------------------- | ---------------------------------- |
-| HTTP Request Chain Builder      | `Chain.builder()`                   | The chain head — call `handle()` on it |
+| HTTP Applicaiton Builder      | `Application.builder()`                   | An HTTP request handler — call `handle()` on it |
 | Resource Group Builder     | `ResourceGroup.builder()`                  | An array of resource classes       |
 | Response Builder   | `response()`                        | A Web `Response`                   |
 | Request Builder    | `request()`                         | A Web `Request`                    |

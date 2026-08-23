@@ -1,7 +1,7 @@
 import {
-  Chain,
+  Application,
   Resource,
-} from "@drashland/drash/modules/chains/RequestChain/mod.polyfill.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 
 // Create a resource
 class Home extends Resource {
@@ -15,8 +15,8 @@ class Home extends Resource {
   }
 }
 
-// Build the chain and add the resource
-const chain = Chain
+// Build the application and add the resource
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -31,7 +31,7 @@ Bun.serve({
   port,
   fetch: (request: Request): Promise<Response> => {
     // Pass the request to the chain
-    return chain
+    return app
       .handle<Response>(request)
       .catch((error) => {
         if (request.url.includes("favicon")) {

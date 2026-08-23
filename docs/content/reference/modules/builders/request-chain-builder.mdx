@@ -5,7 +5,7 @@ title: RequestChainBuilder
 # RequestChainBuilder
 
 The request chain's builder, reached through
-[`Chain.builder()`](/reference/modules/http-native#builder) rather than directly.
+[`Application.builder()`](/reference/modules/http-native#builder) rather than directly.
 
 ```ts
 import { requestChain } from "@drashland/drash/modules/builders/RequestChainBuilder.js";
@@ -16,7 +16,7 @@ Returns a builder to help you create a request chain.
 <Callout type="gray">
 __Good to know__
 
-The HTTP module's [`Chain.builder()`](/reference/modules/http-native#builder) calls this and supplies a `URLPattern` implementation under the hood, so building an app is normally done using [`Chain.builder()`](/reference/modules/http-native#builder), not `requestChain()`.
+The HTTP module's [`Application.builder()`](/reference/modules/http-native#builder) calls this and supplies a `URLPattern` implementation under the hood, so building an app is normally done using [`Application.builder()`](/reference/modules/http-native#builder), not `requestChain()`.
 </Callout>
 
 The returned object is typed as the `Builder` interface, which exposes exactly three methods:

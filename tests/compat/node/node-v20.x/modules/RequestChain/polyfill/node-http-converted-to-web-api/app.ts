@@ -25,7 +25,7 @@ import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
 import {
-  Chain,
+  Application,
   Resource,
 } from "../../../../../../../../dist/modules/http.polyfill";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
@@ -54,7 +54,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -68,7 +68,7 @@ export const handleRequest = (
     method: req.method,
   });
 
-  return chain
+  return app
     .handle<Response>(request)
     // All resources will return a Response object that we can use to build the
     // ServerResponse object

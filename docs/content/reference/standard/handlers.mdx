@@ -56,7 +56,7 @@ a.setNext(b).setNext(c); // a -> b -> c
 
 ## The Request Chain's Handlers
 
-[`Chain.builder()`](/reference/modules/http-native) links these five, in this order. The order is fixed and is not the consumer's to change.
+[`Application.builder()`](/reference/modules/http-native) links these five, in this order. The order is fixed and is not the consumer's to change.
 
 | # | Handler                   | What it does                                                          |
 | - | ------------------------- | --------------------------------------------------------------------- |
@@ -94,7 +94,7 @@ Exports the `WithParams` type, which the HTTP module re-exports as [`HTTPRequest
 
 ### `ResourceCaller`
 
-Uppercases `input.request.method` and calls `input.resource[method](input.request)`. Whatever that returns becomes the resolved value of `chain.handle()`.
+Uppercases `input.request.method` and calls `input.resource[method](input.request)`. Whatever that returns becomes the resolved value of `app.handle()`.
 
 ## `AbstractChainBuilder`
 
@@ -110,6 +110,6 @@ The `ResourcesIndex` class extends this — caching resource so routing a reques
 
 ### Writing Your Own Handler
 
-Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side — both land in `chain.handle().catch()`.
+Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side — both land in `app.handle().catch()`.
 
 A handler that needs to run after the resource cannot be expressed this way, because the chain has no return path. That is what [middleware](/reference/standard/http/middleware) is for — it wraps the resource rather than preceding it.

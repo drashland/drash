@@ -20,7 +20,7 @@ This quickstart guide assumes you have Deno 1.x+ installed.
       }
     }
 
-    const chain = Chain
+    const app = Application
       .builder()
       .resources(Home)
       .build();
@@ -55,4 +55,4 @@ Deno's native `Request` is passed straight through, so your resource methods rec
 
 Deno expects a native `Response`, so your resources should return a real `Response`.
 
-`chain.handle()` returns a promise that rejects on error — including [`HTTPError`](/reference/core/errors/http-error). Nothing is written to the socket for you, so the `.catch()` block is where you decide what the client sees. See [HTTPError](/reference/core/errors/http-error) to learn more about handling and returning error responses.
+`app.handle()` returns a promise that rejects on error — including [`HTTPError`](/reference/core/errors/http-error). Nothing is written to the socket for you, so the `.catch()` block is where you decide what the client sees. See [HTTPError](/reference/core/errors/http-error) to learn more about handling and returning error responses.

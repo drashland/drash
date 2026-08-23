@@ -29,7 +29,7 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/http.native.ts";
+import * as Application from "../../../../../../../src/modules/http.native.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import {
   type Options,
@@ -407,10 +407,10 @@ function getTestCases(): (() => TestCase)[] {
         chain: chain({
           middleware: [getRateLimiterMiddleware(options)],
           resources: [
-            class Throttled extends Chain.Resource {
+            class Throttled extends Application.Resource {
               public override paths = ["/throttled/:id?"];
 
-              public override GET(request: Chain.HTTPRequest) {
+              public override GET(request: Application.HTTPRequest) {
                 const id = request.params.pathParam("id");
 
                 if (id) {

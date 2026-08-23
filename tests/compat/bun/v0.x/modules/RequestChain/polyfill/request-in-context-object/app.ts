@@ -24,7 +24,7 @@ import { Status } from "../../../../../../../../dist/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
 import {
-  Chain,
+  Application,
   Resource,
 } from "../../../../../../../../dist/modules/http.polyfill";
 
@@ -61,7 +61,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -75,7 +75,7 @@ export const handleRequest = (
     method: request.method,
   };
 
-  return chain
+  return app
     .handle<WebAPIContext>(context)
     .then((returnedContext) => {
       if (returnedContext.response) {

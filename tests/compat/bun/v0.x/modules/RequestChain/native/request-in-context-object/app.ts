@@ -23,7 +23,7 @@ import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
 import {
-  Chain,
+  Application,
   Resource,
 } from "../../../../../../../../dist/modules/http.native";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
@@ -61,7 +61,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -77,7 +77,7 @@ export const handleRequest = (
     method: request.method,
   };
 
-  return chain
+  return app
     .handle<WebAPIContext>(context)
     // Since we are passing in a context and resources are returning the
     // context, then we expect to retrieve a Response object from the context to

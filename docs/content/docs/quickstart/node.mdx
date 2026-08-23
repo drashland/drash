@@ -36,7 +36,7 @@ This quickstart guide assumes you have Node v20.x+ installed.
       }
     }
 
-    const chain = Chain
+    const app = Application
       .builder()
       .resources(Home)
       .build();
@@ -107,7 +107,7 @@ This quickstart guide assumes you have Node v20.x+ installed.
       }
     }
 
-    const chain = Chain
+    const app = Application
       .builder()
       .resources(Home)
       .build();
@@ -167,7 +167,7 @@ Because the resource writes to `context.response` directly, `GET()` returns noth
 If you would rather work with Web `Request`/`Response` objects in Node:
 
 - convert Node's `request` to a native Web `Request`;
-- send the `Request` to `chain.handle()`; 
+- send the `Request` to `app.handle()`; 
 - return a `Response` from your resources; and
 - handle the response in the `createServer()` block.
 

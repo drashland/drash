@@ -34,7 +34,7 @@ import {
   defaultOptions,
   type Options,
 } from "../../../../../../../src/modules/middleware/AcceptHeader.ts";
-import * as Chain from "../../../../../../../src/modules/http.native.ts";
+import * as Application from "../../../../../../../src/modules/http.native.ts";
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
@@ -236,14 +236,14 @@ function getTestCases(): TestCase[] {
       chain: chain({
         middleware: [getAcceptHeaderMiddleware({ logs: false })],
         resources: [
-          class AcceptHeaderResource extends Chain.Resource {
+          class AcceptHeaderResource extends Application.Resource {
             override paths = ["/accept-header"];
 
-            override GET(_request: Chain.HTTPRequest) {
+            override GET(_request: Application.HTTPRequest) {
               return new Response("Hello from GET.");
             }
 
-            override POST(_request: Chain.HTTPRequest) {
+            override POST(_request: Application.HTTPRequest) {
               return new Response(
                 JSON.stringify({ message: "Hello from POST." }),
                 {
@@ -256,11 +256,11 @@ function getTestCases(): TestCase[] {
               );
             }
 
-            override DELETE(_request: Chain.HTTPRequest) {
+            override DELETE(_request: Application.HTTPRequest) {
               return new Response("Deleted!");
             }
 
-            override PATCH(_request: Chain.HTTPRequest) {
+            override PATCH(_request: Application.HTTPRequest) {
               throw new HTTPError(Status.MethodNotAllowed);
             }
           },

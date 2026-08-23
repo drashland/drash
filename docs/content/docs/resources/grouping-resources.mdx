@@ -6,7 +6,7 @@ Sharing path prefixes and middleware across resources
 
 Resources can be grouped so they share functionality. A group is the __only__ way to attach middleware or path prefixes to a resource — there is no per-resource setting for either. This is true whether the group holds one resource or many.
 
-A resource group is not a runtime object. It is built at build time and returns an array of resource classes, which is exactly what the HTTP module's `Chain.builder().resources()` method already accepts.
+A resource group is not a runtime object. It is built at build time and returns an array of resource classes, which is exactly what the HTTP module's `Application.builder().resources()` method already accepts.
 
 ### Recommended Reading
 
@@ -31,7 +31,7 @@ A group is built with the `ResourceGroup` class' static `builder()` method:
 
 ```ts
 import {
-  Chain,
+  Application,
   ResourceGroup,
 } from "npm:@drashland/drash/modules/http.native.js";
 
@@ -50,7 +50,7 @@ const group = ResourceGroup
   )
   .build();          // Returns an array of resource classes
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(group)  // Add the group to the chain the same way you add a single resource
   .build();
@@ -62,7 +62,7 @@ const chain = Chain
 
 ```ts
 import {
-  Chain,
+  Application,
   ResourceGroup,
 } from "@drashland/drash/modules/http.polyfill.js";
 
@@ -81,7 +81,7 @@ const group = ResourceGroup
   )
   .build();          // Returns an array of resource classes
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(group)  // Add the group to the chain the same way you add a single resource
   .build();
@@ -93,7 +93,7 @@ const chain = Chain
 
 ```ts
 import {
-  Chain,
+  Application,
   ResourceGroup,
 } from "@drashland/drash/modules/http.polyfill.js";
 
@@ -112,7 +112,7 @@ const group = ResourceGroup
   )
   .build();          // Returns an array of resource classes
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(group)  // Add the group to the chain the same way you add a single resource
   .build();
@@ -124,7 +124,7 @@ const chain = Chain
 
 ```ts
 import {
-  Chain,
+  Application,
   ResourceGroup,
 } from "@drashland/drash/modules/http.native.js";
 
@@ -143,7 +143,7 @@ const group = ResourceGroup
   )
   .build();          // Returns an array of resource classes
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(group)  // Add the group to the chain the same way you add a single resource
   .build();

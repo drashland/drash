@@ -25,7 +25,7 @@ bun install
 
 ```ts filename="app.ts"
 import {
-  Chain,
+  Application,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
 
@@ -35,14 +35,14 @@ class Home extends Resource {    // Create a resource.
   GET(request: Request) {        // Handle GET requests to those paths.
     console.log(`Received request: ${request.url}`);
 
-    return new Response(         // This is what `chain.handle()` resolves with.
+    return new Response(         // This is what `app.handle()` resolves with.
       `Oh so easy (written at ${new Date()})`,
     );
   }
 }
 
-const chain = Chain
-  .builder()                     // Get the chain's builder so we can build the chain easily.
+const app = Application
+  .builder()                     // Get the app's builder so we can build the app easily.
   .resources(Home)               // Add the `Home` resource to the chain.
   .build();                      // Build the chain.
 

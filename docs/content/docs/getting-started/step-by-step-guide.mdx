@@ -11,7 +11,7 @@ Building a tiny HTTP application
 
 ## Overview
 
-This guide helps you build a tiny HTTP application using the HTTP module's `Chain` class. If you want a finished app instead of a walkthrough, view the [examples](/examples).
+This guide helps you build a tiny HTTP application using the HTTP module's `Application` class. If you want a finished app instead of a walkthrough, view the [examples](/examples).
 
 ### Recommended Reading
 
@@ -22,7 +22,7 @@ This guide helps you build a tiny HTTP application using the HTTP module's `Chai
 
 To gain familiarity with:
 
-- the HTTP module's `Chain` class;
+- the HTTP module's `Application` class;
 - how a chain is used in different runtimes;
 - receiving and handling requests; and
 - responding to requests.
@@ -42,7 +42,7 @@ To gain familiarity with:
 - All of the code will be written in the same file for simplicity.
 - Each next step __adds__ code to the step before it. The code that is highlighted is the code that is being __added__.
 - The code comments explain the code in a line-by-line manner. Please read them to gain a better understanding of the code.
-- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Chain` requires. These fields are mentioned in [Concepts > Chains > What Data Does It Process?](/docs/concepts/chains#what-data-does-it-process).
+- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Application` requires. These fields are mentioned in [Concepts > Chains > What Data Does It Process?](/docs/concepts/chains#what-data-does-it-process).
 - Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
 ### Steps and Verification
@@ -74,7 +74,7 @@ To gain familiarity with:
     Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` — not a Web `Request` and `Response`. Because of that, this resource writes to `context.response` directly instead of returning a response. The `context` object is built in step 3.
     </Callout>
 
-1. Build a chain object using the `Chain` class.
+1. Build an application object using the `Application` class.
 
     ```js filename="app.js" showLineNumbers {2,13-17}
     import {
@@ -90,8 +90,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()       // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()       // Get the app builder so we can build an app easily.
       .resources(Home) // Add the `Home` resource to the chain.
       .build();        // Build the chain.
     ```
@@ -119,8 +119,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()                                         // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()                                         // Get the app builder so we can build an app easily.
       .resources(Home)                                   // Add the `Home` resource to the chain.
       .build();                                          // Build the chain.
 
@@ -190,7 +190,7 @@ To gain familiarity with:
     }
     ```
 
-1. Build a chain object using the `Chain` class.
+1. Build an application object using the `Application` class.
 
     ```ts filename="app.ts" showLineNumbers {2,13-17}
     import {
@@ -206,8 +206,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()       // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()       // Get the app builder so we can build an app easily.
       .resources(Home) // Add the `Home` resource to the chain.
       .build();        // Build the chain.
     ```
@@ -234,8 +234,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()                     // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()                     // Get the app builder so we can build an app easily.
       .resources(Home)               // Add the `Home` resource to the chain.
       .build();                      // Build the chain.
 
@@ -292,7 +292,7 @@ To gain familiarity with:
     }
     ```
 
-1. Build a chain object using the `Chain` class.
+1. Build an application object using the `Application` class.
 
     ```ts filename="app.ts" showLineNumbers {2,13-17}
     import {
@@ -308,8 +308,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()       // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()       // Get the app builder so we can build an app easily.
       .resources(Home) // Add the `Home` resource to the chain.
       .build();        // Build the chain.
     ```
@@ -336,8 +336,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()                     // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()                     // Get the app builder so we can build an app easily.
       .resources(Home)               // Add the `Home` resource to the chain.
       .build();                      // Build the chain.
 
@@ -398,7 +398,7 @@ To gain familiarity with:
     }
     ```
 
-1. Build a chain object using the `Chain` class.
+1. Build an application object using the `Application` class.
 
     ```js filename="app.js" showLineNumbers {2,13-17}
     import {
@@ -414,8 +414,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()       // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()       // Get the app builder so we can build an app easily.
       .resources(Home) // Add the `Home` resource to the chain.
       .build();        // Build the chain.
     ```
@@ -444,8 +444,8 @@ To gain familiarity with:
       }
     }
 
-    const chain = Chain
-      .builder()                     // Get the chain's builder so we can build the chain easily.
+    const app = Application
+      .builder()                     // Get the app builder so we can build an app easily.
       .resources(Home)               // Add the `Home` resource to the chain.
       .build();                      // Build the chain.
 

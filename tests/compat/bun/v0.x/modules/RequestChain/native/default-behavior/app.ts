@@ -24,7 +24,7 @@ import { Status } from "../../../../../../../../dist/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
 import {
-  Chain,
+  Application,
   Resource,
 } from "../../../../../../../../dist/modules/http.native";
 
@@ -52,7 +52,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -60,7 +60,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

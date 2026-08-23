@@ -6,7 +6,7 @@ title: Resources
 
 ## What Is a Resource?
 
-Like [MDN's pages on fetching resources over HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview), a resource in Drash is the target of an HTTP request. In Drash, resources are classes with [pathnames](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname) (aka **paths**) and [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
+Like the [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview) and [RFC](https://datatracker.ietf.org/doc/html/rfc7231/#section-2), a resource in Drash is the target of an HTTP request. In Drash, resources are represented as classes with [pathnames](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname) (aka **paths**) and [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
 
 ```ts
 class MyResource {
@@ -52,7 +52,7 @@ app.listen(1447);
 
 ```ts
 import {
-  Chain,
+  Application,
   Resource,
 } from "npm:@drashland/drash/modules/http.native.js";
 
@@ -64,18 +64,18 @@ class MyResource extends Resource {
   }
 }
 
-const chain = Chain.builder().resources(MyResource).build();
+const app = Application.builder().resources(MyResource).build();
 
 Deno.serve(
   { port: 1447 },
-  (request) => chain.handle<Response>(request)
+  (request) => app.handle<Response>(request)
 );
 ```
 
   </CompareItem>
 </Compare>
 
-Resources are not tied to Web `Request` and `Response`. You can pass in a `context` object to `chain.handle()` and it will be received by the resource that matches that context object's `url` field.
+Resources are not tied to Web `Request` and `Response`. You can pass in a `context` object to `app.handle()` and it will be received by the resource that matches that context object's `url` field.
 
 ## Very Strict Interface
 

@@ -28,9 +28,9 @@ Each has the same signature:
 public GET(request: unknown): unknown
 ```
 
-The argument is typed `unknown` because a resource receives whatever was passed to `chain.handle()` — a Web `Request` on Deno, Bun, and Cloudflare, or a context object on Node. Narrow it in your subclass. Use [`HTTPRequest`](/reference/modules/http-native) when you want `request.params` typed.
+The argument is typed `unknown` because a resource receives whatever was passed to `app.handle()` — a Web `Request` on Deno, Bun, and Cloudflare, or a context object on Node. Narrow it in your subclass. Use [`HTTPRequest`](/reference/modules/http-native) when you want `request.params` typed.
 
-The return value is `unknown` for the same reason. Whatever you return becomes the resolved value of `chain.handle()`.
+The return value is `unknown` for the same reason. Whatever you return becomes the resolved value of `app.handle()`.
 
 ### Default Behavior
 

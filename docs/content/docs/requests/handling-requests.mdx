@@ -4,7 +4,7 @@ What a resource receives, and how to read from it
 
 ## Overview
 
-Every chain built by the HTTP module's `Chain.builder()` runs a `RequestParamsParser` handler before it calls your resource. That handler attaches a non-enumerable `params` object to the request, and that object is how you read the two kinds of parameters a URL can carry:
+Every chain built by the HTTP module's `Application.builder()` runs a `RequestParamsParser` handler before it calls your resource. That handler attaches a non-enumerable `params` object to the request, and that object is how you read the two kinds of parameters a URL can carry:
 
 - __path params__ — the `:name` segments declared in a resource's `paths` property; and
 - __query params__ — the `?name=value` pairs a client appends to the URL.
@@ -26,7 +26,7 @@ To gain familiarity with:
 
 ## What a Resource Receives
 
-An HTTP method receives whatever was passed to `chain.handle()`. On runtimes with Web `Request`/`Response` that is the `Request` object itself. On Node it is the context object you built. In both cases the chain has already attached `params` to it by the time your method runs.
+An HTTP method receives whatever was passed to `app.handle()`. On runtimes with Web `Request`/`Response` that is the `Request` object itself. On Node it is the context object you built. In both cases the chain has already attached `params` to it by the time your method runs.
 
 ## Typing the Request
 

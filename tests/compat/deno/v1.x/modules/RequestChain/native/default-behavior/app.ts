@@ -21,7 +21,7 @@
 
 import { HTTPError } from "../../../../../../../../src/core/errors/HTTPError.ts";
 import {
-  Chain,
+  Application,
   Resource,
 } from "../../../../../../../../src/modules/http.native.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
@@ -52,7 +52,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -60,7 +60,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

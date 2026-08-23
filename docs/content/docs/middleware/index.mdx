@@ -58,7 +58,7 @@ const group = ResourceGroup
   .resources(Users)
   .build();
 
-const chain = Chain.builder().resources(...group).build();
+const app = Application.builder().resources(...group).build();
 ```
 
 ## Pre-Built Middleware

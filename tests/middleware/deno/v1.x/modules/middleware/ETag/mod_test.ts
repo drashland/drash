@@ -30,7 +30,7 @@ import {
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
-import * as Chain from "../../../../../../../src/modules/http.native.ts";
+import * as Application from "../../../../../../../src/modules/http.native.ts";
 import {
   defaultOptions,
   ETag,
@@ -336,11 +336,11 @@ function getTestCases(): TestCase[] {
       chain: chain({
         middleware: [getEtagMiddleware({ logs: false })],
         resources: [
-          class Users extends Chain.Resource {
+          class Users extends Application.Resource {
             public override paths = ["/users/:id?"];
             #number_of_requests_received = 0;
 
-            public override GET(request: Chain.HTTPRequest) {
+            public override GET(request: Application.HTTPRequest) {
               const id = request.params.pathParam("id");
 
               if (id) {

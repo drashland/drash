@@ -25,13 +25,13 @@ npm install
 
 ```ts filename="app.ts"
 import {
-  Chain,
+  Application,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
 import type { RequestMethod } from "@drashland/drash/core/Types.js";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 
-type NodeContext = {             // The shape you hand the chain.
+type NodeContext = {             // The shape you hand the application.
   url: string;
   method: RequestMethod;
   request: IncomingMessage;
@@ -49,8 +49,8 @@ class Home extends Resource {    // Create a resource.
   }
 }
 
-const chain = Chain
-  .builder()                     // Get the chain's builder so we can build the chain easily.
+const app = Application
+  .builder()                     // Get the app's builder so we can build the app easily.
   .resources(Home)               // Add the `Home` resource to the chain.
   .build();                      // Build the chain.
 
@@ -59,7 +59,7 @@ const port = 1447;
 
 const server = createServer((request, response) => {
   // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not
-  // a Web `Request`. Drash does not convert them for you — you hand the chain
+  // a Web `Request`. Drash does not convert them for you — you hand the application
   // a context object carrying whatever your resources need. The chain itself
   // only requires `url` and `method`.
   const context = {
@@ -69,7 +69,7 @@ const server = createServer((request, response) => {
     response,
   };
 
-  return chain                   // Let the chain
+  return app                   // Let the chain
     .handle(context)             // handle the context object, and
     .catch((error) => {          // catch anything it throws.
       if (context.url.includes("favicon")) {
@@ -91,7 +91,7 @@ server.listen(port, hostname, () => {
 });
 ```
 
-`NodeContext` is the shape you hand the chain. Declaring it is what makes `context.request` and `context.response` resolve inside the resource.
+`NodeContext` is the shape you hand the application. Declaring it is what makes `context.request` and `context.response` resolve inside the resource.
 
 ### Run the Drash App
 

@@ -25,7 +25,7 @@ import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
 import {
-  Chain,
+  Application,
   Resource,
 } from "../../../../../../../../dist/modules/http.polyfill";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
@@ -66,7 +66,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -84,7 +84,7 @@ export const handleRequest = (
     response,
   };
 
-  return chain
+  return app
     .handle<NodeContext>(context)
     // There is no `.then((response) => { ... })` block here because resources
     // use `context.response.end()` which tells Node the ServerResponse ended

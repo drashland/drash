@@ -50,22 +50,25 @@ export { ResourceGroup } from "../standard/http/ResourceGroup.ts";
 export type { HTTPRequest };
 
 /**
- * This class' purpose is to make importing this module not look and feel weird.
- * For example, we want the `import` and `require` statements to look like:
+ * The HTTP application you build and hand requests to.
+ *
+ * `Application.builder()` assembles an HTTP request chain — a
+ * {@link https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern Chain of
+ * Responsibility} of handlers ending at your resource. That is the mechanism;
+ * "application" is what you are building with it, and the name this module
+ * exposes so the concept a consumer works with matches the thing they are
+ * making.
+ *
+ * The class exists to hold `builder()` so imports read as:
  *
  * ```js
- * const { Chain, Resource } = require("...");
- * import { Chain, Resource } from "...";
+ * const { Application, Resource } = require("...");
+ * import { Application, Resource } from "...";
  * ```
  *
- * We do not want this (this is fugly):
- *
- * ```js
- * const { builder, Resource } = require("...");
- * import { builder, Resource } from "...";
- * ```
+ * rather than a bare `builder()`.
  */
-export class Chain {
+export class Application {
   static builder() {
     return requestChain()
       .urlPatternClass(URLPatternPolyfill);
@@ -75,7 +78,7 @@ export class Chain {
 /**
  * Intentionally empty.
  *
- * This module exports its own `Resource` so a chain can diverge from the
+ * This module exports its own `Resource` so it can diverge from the
  * core class later — handling a different input type, or changing the
  * request-resource-response lifecycle — without touching Core. Extend this one,
  * not the core class.

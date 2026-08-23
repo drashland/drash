@@ -1,12 +1,12 @@
 import {
-  Chain,
+  Application,
   Resource,
-} from "https://esm.sh/@drashland/drash/modules/chains/RequestChain/mod.native.js";
+} from "https://esm.sh/@drashland/drash/modules/http.native.js";
 
 // import {
-//   Chain,
+//   Application,
 //   Resource,
-// } from "npm:@drashland/drash/modules/chains/RequestChain/mod.native.js";
+// } from "npm:@drashland/drash/modules/http.native.js";
 
 // Create a resource
 class Home extends Resource {
@@ -20,8 +20,8 @@ class Home extends Resource {
   }
 }
 
-// Build the chain and add the resource
-const chain = Chain
+// Build the application and add the resource
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -39,7 +39,7 @@ Deno.serve({
   },
   handler: (request: Request): Promise<Response> => {
     // Pass the request to the chain
-    return chain
+    return app
       .handle<Response>(request)
       .catch((error) => {
         if (request.url.includes("favicon")) {

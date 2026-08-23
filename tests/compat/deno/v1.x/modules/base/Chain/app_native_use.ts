@@ -111,7 +111,7 @@ resourceIndex
   .setNext(resourceNotFoundHandler)
   .setNext(new ReturnSearchResult());
 
-const chain = (new UseInsteadOfHandleBuilder())
+const app = (new UseInsteadOfHandleBuilder())
   .use(function ReceiveRequest(ctx: Ctx) {
     if (!ctx.request) {
       throw new Error("No request found");
@@ -144,7 +144,7 @@ export const handleRequest = (
 ): Promise<Response> => {
   const ctx: Ctx = { request };
 
-  return chain
+  return app
     .handle<void>(ctx)
     .then(() => {
       if (!ctx.response) {

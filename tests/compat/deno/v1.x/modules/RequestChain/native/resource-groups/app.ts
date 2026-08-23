@@ -21,7 +21,7 @@
 
 import { HTTPError } from "../../../../../../../../src/core/errors/HTTPError.ts";
 import {
-  Chain,
+  Application,
   Middleware,
   Resource,
   ResourceGroup,
@@ -237,7 +237,7 @@ const groupWithAllGetGetAgain = ResourceGroup
   )
   .build();
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(
     groupWithBlockedMethods,
@@ -250,7 +250,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

@@ -5,7 +5,7 @@ The chain matches request URLs with a `URLPattern`-like class. Which one it uses
 ```ts
 import { URLPatternPolyfill } from "@drashland/drash/standard/polyfill/URLPatternPolyfill.js";
 
-const chain = Chain
+const app = Application
   .builder()
   .urlPatternClass(URLPatternPolyfill)
   .resources(Home)

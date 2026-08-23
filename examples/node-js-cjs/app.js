@@ -1,7 +1,7 @@
 const {
-  Chain,
+  Application,
   Resource,
-} = require("@drashland/drash/modules/chains/RequestChain/mod.polyfill");
+} = require("@drashland/drash/modules/http.polyfill");
 const { createServer } = require("node:http");
 
 // Create a resource
@@ -14,8 +14,8 @@ class Home extends Resource {
   }
 }
 
-// Build the chain and add the resource
-const chain = Chain
+// Build the application and add the resource
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -38,7 +38,7 @@ const server = createServer((request, response) => {
   };
 
   // Pass the context object to the chain
-  return chain
+  return app
     .handle(context)
     .catch((error) => {
       if (context.url.includes("favicon")) {

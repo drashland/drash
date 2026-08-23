@@ -32,7 +32,7 @@ flowchart LR
   class h1,h2,h3,h4 blue
 ```
 
-When you build HTTP applications with Drash, you start by creating the HTTP module's [`Chain`](/reference/modules/http-native) — the only chain that processes HTTP requests. From there, you give it [resources](/docs/concepts/resources) — the classes you use to process requests and respond to them.
+When you build HTTP applications with Drash, you start by creating the HTTP module's [`Application`](/reference/modules/http-native). Under the hood it assembles the only chain that processes HTTP requests. From there, you give it [resources](/docs/concepts/resources) — the classes you use to process requests and respond to them.
 
 ## Where Is the Chain Placed?
 
@@ -85,9 +85,9 @@ flowchart LR
 
 Clients could make requests to the API Endpoint _through_ the runtime's HTTP server and Drash's chain.
 
-## The HTTP Module's Chain
+## What the HTTP Module's Application Assembles
 
-The HTTP module's `Chain` assembles the following handlers in this order:
+The HTTP module's `Application` assembles the following handlers in this order:
 
 | # | Handler                   | What it does                                                           |
 | - | ------------------------- | ---------------------------------------------------------------------- |
@@ -100,7 +100,7 @@ The HTTP module's `Chain` assembles the following handlers in this order:
 The order is not configurable through the builder. What you control is the set of resources or resource groups you provide. For example:
 
 ```ts
-const chain = Chain
+const app = Application
   .builder()            // Assembles all handlers above
   .resources(/* ... */) // Your resources come after so they can be called by `ResourceCaller`
   .build()              // Builds the chain in the above order
@@ -108,7 +108,7 @@ const chain = Chain
 
 ## What Data Does It Process?
 
-The HTTP module's `Chain` processes the data you give it. **You are in charge of defining what goes into the chain and what comes out.** Handlers pass along the input you gave them, not a fixed request type. That is why Node can hand the chain a plain context object while Deno hands it a Web `Request`, and both work.
+The HTTP module's `Application` processes the data you give it. **You are in charge of defining what goes into the chain and what comes out.** Handlers pass along the input you gave them, not a fixed request type. That is why Node can hand the chain a plain context object while Deno hands it a Web `Request`, and both work.
 
 ### Requirements
 

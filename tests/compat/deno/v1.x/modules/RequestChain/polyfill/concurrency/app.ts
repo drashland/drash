@@ -23,7 +23,7 @@ import { Status } from "../../../../../../../../src/core/http/response/Status.ts
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 import {
-  Chain,
+  Application,
   HTTPError,
   Resource,
 } from "../../../../../../../../src/modules/http.polyfill.ts";
@@ -90,7 +90,7 @@ class Users extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Accounts, Users)
   .build();
@@ -98,7 +98,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

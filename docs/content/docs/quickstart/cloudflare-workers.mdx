@@ -15,7 +15,7 @@ A Worker's module entry point is a default export with a `fetch` method. Build t
 
 ```js
 import {
-  Chain,
+  Application,
   Resource,
 } from "@drashland/drash/modules/http.native.js";
 
@@ -27,7 +27,7 @@ class Home extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();

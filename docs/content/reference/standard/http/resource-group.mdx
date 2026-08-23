@@ -12,7 +12,7 @@ const group = ResourceGroup
   .resources(Users, Coffees)
   .build();
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(...group)
   .build();

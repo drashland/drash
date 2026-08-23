@@ -23,11 +23,11 @@ Drash is split into three codebases, and this reference follows that split. Impo
 
 ## Where to Start
 
-Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Chain`, `Resource`, `Middleware`, `ResourceGroup`, and `HTTPError` from one specifier.
+Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Application`, `Resource`, `Middleware`, `ResourceGroup`, and `HTTPError` from one specifier.
 
 | If you want to                          | Read                                                              |
 | --------------------------------------- | ----------------------------------------------------------------- |
-| Build and run an HTTP request chain      | [Chain](/reference/modules/http-native)                            |
+| Build and run an HTTP application        | [Application](/reference/modules/http-native)                            |
 | Write a resource                         | [Resource](/reference/core/http/resource)                              |
 | Throw and catch errors                   | [HTTPError](/reference/core/errors/http-error)                           |
 | Attach middleware or prefixes            | [Resource groups](/reference/standard/http/resource-group)             |

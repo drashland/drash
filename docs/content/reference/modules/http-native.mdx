@@ -8,7 +8,7 @@ The native entry point, `modules/http.native.js`. It hands the chain the runtime
 global `URLPattern`.
 
 ```ts
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native.js";
 ```
 
 Use it where the runtime implements `URLPattern` — Deno and Cloudflare Workers. Where it
@@ -19,26 +19,26 @@ surface and differs only in the `URLPattern` class it injects.
 
 | Export          | Kind  | Reference                                                     |
 | --------------- | ----- | ------------------------------------------------------------- |
-| `Chain`         | class | [Below](#chain)                                               |
+| `Application`   | class | [Below](#application)                                               |
 | `Resource`      | class | [Creating a Resource](/docs/resources/creating-a-resource)    |
 | `Middleware`    | class | [Middleware](/reference/standard/http/middleware)             |
 | `ResourceGroup` | class | [ResourceGroup](/reference/standard/http/resource-group)      |
 | `HTTPError`     | class | [HTTPError](/reference/core/errors/http-error)                |
 | `HTTPRequest`   | type  | The request shape a resource method receives                  |
 
-The `Chain` class below is declared in this file and in `http.polyfill.js`. Its API is
+The `Application` class below is declared in this file and in `http.polyfill.js`. Its API is
 identical in both.
 
-## `Chain`
+## `Application`
 
 ### `.builder()`
 
 Returns a builder preconfigured with handlers.
 
 ```ts
-import { Chain } from "@drashland/drash/modules/http.native.js";
+import { Application } from "@drashland/drash/modules/http.native.js";
 
-const chain = Chain
+const app = Application
   .builder()
 ```
 
@@ -55,9 +55,9 @@ The preconfigured handlers are added in this order:
 The order is not configurable through the builder. What you control is the set of resources or resource groups you provide. For example:
 
 ```ts
-import { Chain } from "@drashland/drash/modules/http.native.js";
+import { Application } from "@drashland/drash/modules/http.native.js";
 
-const chain = Chain
+const app = Application
   .builder()            // Assembles all handlers above
   .resources(/* ... */) // Your resources come after so they can be called by `ResourceCaller`
   .build()              // Builds the chain in the above order
@@ -74,7 +74,7 @@ import { Resource } from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource { /* ... */ }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -87,7 +87,7 @@ import { Resource } from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource { /* ... */ }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(new Home()) // <--- DO NOT DO THIS
   .build();
@@ -100,7 +100,7 @@ Calling `.resources()` more than once **replaces** the set rather than appending
 Overrides the `URLPattern` implementation. By default, the native and polyfill modules call this for you, but you can call it and pass in your own implementation. For example:
 
 ```ts
-import { Chain } from "@drashland/drash/modules/http.polyfill.js";
+import { Application } from "@drashland/drash/modules/http.polyfill.js";
 import { CustomUrlPattern, ExecResult } from "@drashland/drash/standard/polyfill/CustomURLPattern.js";
 
 class MyCustomURLPatternClass extends CustomUrlPattern {
@@ -112,7 +112,7 @@ class MyCustomURLPatternClass extends CustomUrlPattern {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .urlPatternClass(MyCustomURLPatternClass) // Overrides the default implementation
   .build();
@@ -126,12 +126,12 @@ Use the polyfill module if you want to override the `URLPattern` implementation.
 
 Wires the handlers together and returns the head of the chain.
 
-## `chain.handle(input)`
+## `app.handle(input)`
 
 Runs a request through the chain.
 
 ```ts
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native.js";
 
 class IndexResource extends Resource {
   public paths = ["/"];
@@ -141,18 +141,18 @@ class IndexResource extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(/* your resources */)
   .build();
 
-const response = await chain.handle<Response>(new Request("http://localhost:1447/"));
+const response = await app.handle<Response>(new Request("http://localhost:1447/"));
 // => Oh so easy
 ```
 
 The type parameter is the value you expect back — it is what the resource method returned, passed through unchanged. Drash does not construct it.
 
-The `chain.handle(input)` method's `input` argument requires a fully qualified `url` and HTTP `method`. It can be a Web `Request`, or a plain object carrying whatever your resources need:
+The `app.handle(input)` method's `input` argument requires a fully qualified `url` and HTTP `method`. It can be a Web `Request`, or a plain object carrying whatever your resources need:
 
 ```ts
 // Example of a context object being used in Node
@@ -164,7 +164,7 @@ const context = {
   response, // ServerResponse
 }
 
-chain.handle(context);
+app.handle(context);
 ```
 
 ```ts
@@ -173,7 +173,7 @@ chain.handle(context);
 
 const request = new Request("http://localhost:1447")
 
-chain.handle(request);
+app.handle(request);
 ```
 
 ### Errors
@@ -181,7 +181,7 @@ chain.handle(request);
 The returned promise rejects on any error raised in the chain. Always attach a `.catch()` block — see [HTTPError](/reference/core/errors/http-error).
 
 ```ts
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native.js";
 
 class IndexResource extends Resource {
   public paths = ["/"];
@@ -191,7 +191,7 @@ class IndexResource extends Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(/* your resources */)
   .build();

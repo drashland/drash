@@ -125,15 +125,15 @@ You can define any of the following methods in your resource.
 - `PUT`
 - `TRACE`
 
-Each receives the input that was passed to `chain.handle()` and you return whatever your runtime needs.
+Each receives the input that was passed to `app.handle()` and you return whatever your runtime needs.
 
 **Every method you do not define throws a `501 Not Implemented` error response.** That is the base class' default behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
 
-Methods may be synchronous or asynchronous; `chain.handle()` awaits whatever they return.
+Methods may be synchronous or asynchronous; `app.handle()` awaits whatever they return.
 
 ### Return Values
 
-Whatever an HTTP method returns becomes the resolved value of `chain.handle()`. For runtimes that support Web `Request`/`Response`, the HTTP method should return `Response`. Otherwise, the HTTP method should return whatever the runtime needs. In Node, you do not have to return anything since it expects you to write directly to the `ServerResponse` object it gives you.
+Whatever an HTTP method returns becomes the resolved value of `app.handle()`. For runtimes that support Web `Request`/`Response`, the HTTP method should return `Response`. Otherwise, the HTTP method should return whatever the runtime needs. In Node, you do not have to return anything since it expects you to write directly to the `ServerResponse` object it gives you.
 
 <Callout type="warning" emoji={null}>
 __HTTP methods in middleware__

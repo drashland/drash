@@ -27,7 +27,7 @@ npm install @drashland/drash
 
 ```js filename="app.js"
 import {
-  Chain,
+  Application,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
@@ -43,8 +43,8 @@ class Home extends Resource {    // Create a resource.
   }
 }
 
-const chain = Chain
-  .builder()                     // Get the chain's builder so we can build the chain easily.
+const app = Application
+  .builder()                     // Get the app's builder so we can build the app easily.
   .resources(Home)               // Add the `Home` resource to the chain.
   .build();                      // Build the chain.
 
@@ -53,7 +53,7 @@ const port = 1447;
 
 const server = createServer((request, response) => {
   // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not
-  // a Web `Request`. Drash does not convert them for you — you hand the chain
+  // a Web `Request`. Drash does not convert them for you — you hand the application
   // a context object carrying whatever your resources need. The chain itself
   // only requires `url` and `method`.
   const context = {
