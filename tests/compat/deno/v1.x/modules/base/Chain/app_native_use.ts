@@ -19,7 +19,10 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Chain as BaseChain } from "../../../../../../../src/modules/base/Chain.ts";
+import {
+  BaseChain,
+  BaseChainBuilder,
+} from "../../../../../../../src/standard/chains/BaseChain.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import { Resource } from "../../../../../../../src/modules/http.native.ts";
 import { ResourceNotFoundHandler } from "../../../../../../../src/standard/handlers/ResourceNotFoundHandler.ts";
@@ -64,7 +67,7 @@ class Home extends Resource {
 
 // Set up a wrapper to use `.use( (...) => {...} )` instead of `.handler(new Handler())`
 
-class UseInsteadOfHandleBuilder extends BaseChain.Builder {
+class UseInsteadOfHandleBuilder extends BaseChainBuilder {
   public use(handlerFn: (ctx: Ctx) => void): this {
     class UseHandler extends Handler {
       override handle<Output>(ctx: Ctx) {

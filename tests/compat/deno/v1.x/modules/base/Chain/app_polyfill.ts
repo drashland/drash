@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Chain as BaseChain } from "../../../../../../../src/modules/base/Chain.ts";
+import { BaseChain } from "../../../../../../../src/standard/chains/BaseChain.ts";
 import { RequestParamsParser } from "../../../../../../../src/standard/handlers/RequestParamsParser.ts";
 import { RequestValidator } from "../../../../../../../src/standard/handlers/RequestValidator.ts";
 import { Resource } from "../../../../../../../src/core/http/Resource.ts";

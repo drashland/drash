@@ -24,7 +24,7 @@ import { Resource } from "../../../../../../../dist/core/http/Resource.js";
 import { Status } from "../../../../../../../dist/core/http/response/Status.js";
 import { StatusCode } from "../../../../../../../dist/core/http/response/StatusCode.js";
 import { StatusDescription } from "../../../../../../../dist/core/http/response/StatusDescription.js";
-import { Chain as BaseChain } from "../../../../../../../dist/modules/base/Chain.js";
+import { BaseChain } from "../../../../../../../dist/standard/chains/BaseChain.js";
 import { RequestParamsParser } from "../../../../../../../dist/standard/handlers/RequestParamsParser.js";
 import { RequestValidator } from "../../../../../../../dist/standard/handlers/RequestValidator.js";
 import { ResourceCaller } from "../../../../../../../dist/standard/handlers/ResourceCaller.js";
