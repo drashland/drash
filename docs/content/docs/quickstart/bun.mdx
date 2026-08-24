@@ -33,7 +33,7 @@ Bun.serve({
   hostname: "localhost",
   port: 1447,
   fetch(request: Request): Promise<Response> {
-    return chain
+    return app
       .handle<Response>(request)
       .catch(() => {
         return new Response("Sorry, but we hit an error!", {

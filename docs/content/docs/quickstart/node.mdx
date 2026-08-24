@@ -23,7 +23,7 @@ This quickstart guide assumes you have Node v20.x+ installed.
     ```js
     // Node's `URLPattern` support varies by version, so use the polyfill entry point
     import {
-      Chain,
+      Application,
       Resource,
     } from "@drashland/drash/modules/http.polyfill.js";
     import { createServer } from "node:http";
@@ -57,7 +57,7 @@ This quickstart guide assumes you have Node v20.x+ installed.
         response,
       };
 
-      return chain
+      return app
         .handle(context)
         .catch((error) => {
           response.statusCode = 500;
@@ -94,7 +94,7 @@ This quickstart guide assumes you have Node v20.x+ installed.
     ```js
     // Node's `URLPattern` support varies by version, so use the polyfill entry point
     const {
-      Chain,
+      Application,
       Resource,
     } = require("@drashland/drash/modules/http.polyfill");
     const { createServer } = require("node:http");
@@ -128,7 +128,7 @@ This quickstart guide assumes you have Node v20.x+ installed.
         response,
       };
 
-      return chain
+      return app
         .handle(context)
         .catch((error) => {
           response.statusCode = 500;
@@ -184,7 +184,7 @@ const server = createServer((request, response) => {
     // ... other Request fields you want to include
   });
 
-  return chain
+  return app
     .handle(context)
     .then((nativeResponseFromResource) => {
       // Do something with the response

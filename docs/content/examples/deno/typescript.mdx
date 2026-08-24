@@ -40,8 +40,8 @@ class Home extends Resource {    // Create a resource.
 
 const app = Application
   .builder()                     // Get the app's builder so we can build the app easily.
-  .resources(Home)               // Add the `Home` resource to the chain.
-  .build();                      // Build the chain.
+  .resources(Home)               // Add the `Home` resource to the app.
+  .build();                      // Build the app.
 
 const hostname = "localhost";    // Define server variables for reuse below.
 const port = 1447;
@@ -53,7 +53,7 @@ Deno.serve({
     console.log(`\nDrash running at http://${hostname}:${port}`);
   },
   handler: (request: Request): Promise<Response> => {
-    return chain                 // Let the chain
+    return app                 // Let the app
       .handle<Response>(request) // handle the request, and
       .catch((error) => {        // catch anything it throws.
         if (request.url.includes("favicon")) {

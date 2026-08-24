@@ -33,7 +33,7 @@ const app = Application
   .build();
 
 const handleRequest = (request, _bindings) => {
-  return chain
+  return app
     .handle(request)
     .catch(() => {
       return new Response("Sorry, but we hit an error!", {

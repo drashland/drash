@@ -8,7 +8,7 @@ This quickstart guide assumes you have Deno 1.x+ installed.
 
     ```ts filename="app.ts"
     import {
-      Chain,
+      Application,
       Resource,
     } from "npm:@drashland/drash/modules/http.native.js";
 
@@ -29,7 +29,7 @@ This quickstart guide assumes you have Deno 1.x+ installed.
       hostname: "localhost",
       port: 1447,
       handler: (request: Request): Promise<Response> => {
-        return chain
+        return app
           .handle<Response>(request)
           .catch(() => {
             return new Response("Sorry, but we hit an error!", {

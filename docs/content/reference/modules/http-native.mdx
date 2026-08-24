@@ -196,7 +196,7 @@ const app = Application
   .resources(/* your resources */)
   .build();
 
-const response = chain
+const response = app
   .handle<Response>(new Request("http://localhost:1447/"))
   .catch((error) => {
     //

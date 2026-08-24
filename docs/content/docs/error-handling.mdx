@@ -176,7 +176,7 @@ const app = Application
 // `/test` is not in any resource's paths, so this rejects with a 404
 const request = new Request("http://localhost:1447/test");
 
-chain
+app
   .handle<Response>(request)
   .then((response) => response.text())
   .then((text) => console.log(text))
@@ -202,7 +202,7 @@ const app = Application
 
 const request = new Request("http://localhost:1447/");
 
-chain
+app
   .handle<Response>(request)
   .catch((error) => console.log(error.status_code)); // 404
 ```
@@ -269,7 +269,7 @@ const app = Application
   .build();
 
 Deno.serve({ port: 1447 }, (request: Request) => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((e) => {
       // Errors Drash threw are safe to surface: their messages are ones you
@@ -331,7 +331,7 @@ const server = createServer((request, response) => {
     response,
   };
 
-  return chain
+  return app
     .handle(context)
     .catch((e) => {
       // Errors Drash threw are safe to surface.
@@ -383,7 +383,7 @@ const app = Application
 Bun.serve({
   port: 1447,
   fetch(request) {
-    return chain
+    return app
       .handle(request)
     .catch((e) => {
         // Errors Drash threw are safe to surface: their messages are ones you
@@ -436,7 +436,7 @@ const app = Application
 
 export default {
   fetch(request, _bindings) {
-    return chain
+    return app
       .handle(request)
     .catch((e) => {
         // Errors Drash threw are safe to surface: their messages are ones you
@@ -469,7 +469,7 @@ The `e.name === "HTTPError"` check comes first on purpose. It works in the bundl
 You will see error handlers across this site written as briefly as this:
 
 ```ts
-return chain
+return app
   .handle<Response>(request)
   .catch((e) => {
     console.log({ e });

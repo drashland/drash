@@ -50,7 +50,7 @@ const server = createServer((request, response) => {
     response,
   };
 
-  return chain
+  return app
     .handle(context)
     .catch((error) => {
       response.statusCode = 500;

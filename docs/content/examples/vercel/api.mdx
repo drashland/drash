@@ -44,7 +44,7 @@ const app = Application
 
 export default {
   fetch(request: Request) {
-    return chain
+    return app
       .handle<Response>(request)
       .catch(() => {
         return new Response("Sorry, but we hit an error!", {

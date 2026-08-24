@@ -152,10 +152,10 @@ const context = {
 
 ## Errors Propagate to You
 
-`chain.handle()` returns a `Promise`. Errors thrown anywhere in the chain — including a resource method — reject that promise. Drash writes nothing to the socket, so **your `.catch()` is the only thing standing between an error and the client**.
+`app.handle()` returns a `Promise`. Errors thrown anywhere in the chain — including a resource method — reject that promise. Drash writes nothing to the socket, so **your `.catch()` is the only thing standing between an error and the client**.
 
 ```ts
-chain
+app
   .handle<Response>(request)
   .catch((error) => {
     // You decide what the client sees.
