@@ -13,25 +13,28 @@ export default function EndStateTree({
         After completing the steps in this section, your project&apos;s
         directory should look similar to the directory tree below.
       </p>
-      {/* <Tabs items={["TypeScript"]}>
-        <Tabs.Tab> */}
-          <FileTree>
-            <FileTree.Folder
-              name="path/to/your/project"
-              defaultOpen
-            >
-              {tree.map((file, index) => {
-                return (
-                  <FileTree.File
-                    key={`file-` + file + index}
-                    name={file}
-                  />
-                );
-              })}
-            </FileTree.Folder>
-          </FileTree>
-        {/* </Tabs.Tab> */}
-        {/* <Tabs.Tab>
+      {
+        /* <Tabs items={["TypeScript"]}>
+        <Tabs.Tab> */
+      }
+      <FileTree>
+        <FileTree.Folder
+          name="path/to/your/project"
+          defaultOpen
+        >
+          {tree.map((file, index) => {
+            return (
+              <FileTree.File
+                key={`file-` + file + index}
+                name={file}
+              />
+            );
+          })}
+        </FileTree.Folder>
+      </FileTree>
+      {/* </Tabs.Tab> */}
+      {
+        /* <Tabs.Tab>
           <FileTree>
             <FileTree.Folder
               name="path/to/your/project"
@@ -48,7 +51,8 @@ export default function EndStateTree({
               })}
             </FileTree.Folder>
           </FileTree>
-        </Tabs.Tab> */}
+        </Tabs.Tab> */
+      }
       {/* </Tabs> */}
     </div>
   );
