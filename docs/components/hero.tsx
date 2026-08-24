@@ -70,7 +70,7 @@ const shared: Token[] = [
   ['"Oh so easy"', str],
   [");\n  }\n}\n\n", null],
   ["const", kw],
-  [" chain = Chain\n  .", null],
+  [" app = Application\n  .", null],
   ["builder", fn],
   ["()\n  .", null],
   ["resources", fn],
@@ -86,7 +86,7 @@ type Tab = {
   label: string;
   /** Shown at the end of the title bar, where an editor shows the filename. */
   file: string;
-  /** Appended to `shared`: how this runtime hands the chain a request. */
+  /** Appended to `shared`: how this runtime hands the application a request. */
   tail?: Token[];
 };
 
@@ -105,7 +105,7 @@ const tabs: Tab[] = [
       ["createServer", fn],
       ["((request, response) => {\n  ", null],
       ["return", kw],
-      [" chain.", null],
+      [" app.", null],
       ["handle", fn],
       ["({\n    url: ", null],
       ["`http://localhost:1447${request.url}`", str],
@@ -132,7 +132,7 @@ const tabs: Tab[] = [
       ["Request", fn],
       [") => {\n    ", null],
       ["return", kw],
-      [" chain.", null],
+      [" app.", null],
       ["handle", fn],
       ["<", null],
       ["Response", fn],
@@ -153,7 +153,7 @@ const tabs: Tab[] = [
       ["(request", null],
       [") {\n    ", null],
       ["return", kw],
-      [" chain.", null],
+      [" app.", null],
       ["handle", fn],
       ["(request);\n  },\n});", null],
     ],
@@ -170,7 +170,7 @@ const tabs: Tab[] = [
       ["fetch", fn],
       ["(request) {\n    ", null],
       ["return", kw],
-      [" chain.", null],
+      [" app.", null],
       ["handle", fn],
       ["(request);\n  },\n};", null],
     ],

@@ -36,7 +36,7 @@ const columns: { heading: string; links: [string, string][] }[] = [
       ["Overview", "/reference"],
       ["HTTPError", "/reference/core/errors/http-error"],
       ["Resource groups", "/reference/standard/http/resource-group"],
-      ["Chain", "/reference/modules/http-native"],
+      ["Application", "/reference/modules/http-native"],
     ],
   },
 ];
