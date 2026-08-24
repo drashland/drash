@@ -1,7 +1,8 @@
 export default {
   framework: "Framework",
-  chains: "Chains",
+  "http-application": "HTTP Application",
   resources: "Resources",
-  builders: "Builders",
   "native-vs-polyfill": "Native vs. Polyfill",
+  chains: "Chains",
+  builders: "Builders",
 };

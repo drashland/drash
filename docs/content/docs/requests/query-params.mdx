@@ -142,8 +142,3 @@ curl "http://localhost:1447/users?x=1&page=2"     ->  page=2
 ```
 
 The first call returns `undefined` for the reason described above — `page` is the first parameter there, so its name is swallowed by the URL prefix. Adding any parameter ahead of it makes it read correctly.
-
-## Next Steps
-
-- Read the `:name` segments a path declares on [Path Params](/docs/requests/path-params)
-- Turn a missing param into a proper response with [error handling](/docs/error-handling)

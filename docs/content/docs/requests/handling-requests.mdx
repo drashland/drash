@@ -13,7 +13,7 @@ You do not add the parser yourself. It is one of the handlers the request chain 
 
 ### Recommended Reading
 
-- Read the concepts on [chains](/docs/concepts/chains)
+- Read the concepts on [HTTP applications](/docs/concepts/http-application)
 - Read [Creating a Resource](/docs/resources/creating-a-resource) to see how paths are declared
 
 ### Objectives
@@ -146,8 +146,3 @@ if (!id) {
 ```
 
 `params` is defined as non-enumerable, so it does not show up in `Object.keys(request)` or `JSON.stringify(request)`. It is there — it just stays out of the way of anything that walks the request's own properties.
-
-## Next Steps
-
-- Read the `:name` segments a path declares on [Path Params](/docs/requests/path-params)
-- Read the `?name=value` pairs a client sends on [Query Params](/docs/requests/query-params)

@@ -81,8 +81,3 @@ For the methods each one exposes, see [Builders](/reference/modules/builders) an
 __Builders do their work once: when your application starts.__ All calls to `build()` do not happen again. There is no router re-deriving routes on each request, and no middleware stack being reassembled — by the time a request arrives, the objects it travels through already exist.
 
 __This is the benefit around Drash's builders: startup does more work so that each request does less.__
-
-## Next Steps
-
-- Browse the [Modules > Builders](/reference/modules/builders) to learn more about Drash's builders.
-- [Group your resources](/docs/resources/grouping-resources) to share middleware and path prefixes.

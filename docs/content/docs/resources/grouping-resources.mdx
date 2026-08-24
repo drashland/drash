@@ -234,8 +234,3 @@ See the [Middleware](/docs/middleware) tutorial for how to write one, and [Pre-B
 2. __Prefixes second.__ The result is wrapped again in a `PrefixedResourceProxy`, which extends the class from step 1 and rewrites `this.paths` in its constructor.
 
 Your original resource class is never mutated. The group hands the chain a subclass of it, which is why the same resource class can appear in two groups with different prefixes.
-
-## Next Steps
-
-- Write your own [middleware](/docs/middleware)
-- Give the group's resources proper error responses with [error handling](/docs/error-handling)

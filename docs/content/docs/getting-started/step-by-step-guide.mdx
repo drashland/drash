@@ -16,7 +16,7 @@ This guide helps you build a tiny HTTP application using the HTTP module's `Appl
 ### Recommended Reading
 
 - Complete the [Prerequisites](/docs/getting-started/prerequisites)
-- Read the concepts on [chains](/docs/concepts/chains) and [resources](/docs/concepts/resources)
+- Read the concepts on [HTTP applications](/docs/concepts/http-application) and [resources](/docs/concepts/resources)
 
 ### Objectives
 
@@ -42,132 +42,140 @@ To gain familiarity with:
 - All of the code will be written in the same file for simplicity.
 - Each next step __adds__ code to the step before it. The code that is highlighted is the code that is being __added__.
 - The code comments explain the code in a line-by-line manner. Please read them to gain a better understanding of the code.
-- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Application` requires. These fields are mentioned in [Concepts > Chains > What Data Does a Chain Process?](/docs/concepts/chains#what-data-does-a-chain-process).
-- Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Application` requires. These fields are mentioned in [Concepts > HTTP Application > Requirements](/docs/concepts/http-application#requirements).
+- Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
 ### Steps and Verification
 
 <Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]}>
   <Tabs.Tab>
 
-#### Steps
+<Steps>
 
-1. Define a resource using the `Resource` class.
+#### Install Drash.
 
-    ```js filename="app.js" showLineNumbers
-    import {
-      Resource,
-    } from "@drashland/drash/modules/http.polyfill.js";
+Initialize your Node project and install Drash.
 
-    class Home extends Resource {
-      paths = ["/"];
+```bash filename="Terminal"
+npm init --yes
+npm install @drashland/drash
+```
 
-      GET(context) {
-        context.response.end("Oh so easy");
-      }
-    }
-    ```
+The `--yes` flags accepts all defaults for the `package.json` file the `init` command creates for you. Learn more about the `--yes` flag [here](https://docs.npmjs.com/cli/v8/commands/npm-init).
 
-    <Callout type="gray">
-    **Good to know**
+#### Define Your Resource
 
-    Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` — not a Web `Request` and `Response`. Because of that, this resource writes to `context.response` directly instead of returning a response. The `context` object is built in step 3.
-    </Callout>
+You define a resource using the `Resource` class.
 
-1. Build an application object using the `Application` class.
+```js filename="app.js" showLineNumbers
+import {
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
 
-    ```js filename="app.js" showLineNumbers {2,13-17}
-    import {
-      Chain,
-      Resource
-    } from "@drashland/drash/modules/http.polyfill.js";
+class Home extends Resource {
+  paths = ["/"];
 
-    class Home extends Resource {
-      paths = ["/"];
-    
-      GET(context) {
-        context.response.end("Oh so easy");
-      }
-    }
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
+```
 
-    const app = Application
-      .builder()       // Get the app builder so we can build an app easily.
-      .resources(Home) // Add the `Home` resource to the chain.
-      .build();        // Build the chain.
-    ```
+<Callout type="gray">
+**Good to know**
 
-    <Callout type="gray">
-    **Good to know**
+Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` — not a Web `Request` and `Response`. Because of that, this resource writes to `context.response` directly instead of returning a response. The `context` object is built in __Step 4 - Add You App To Your Server__.
+</Callout>
 
-    Drash uses the builder pattern to create objects. You will see `build()` calls many times throughout these documentation pages. See [Concepts > Builders](/docs/concepts/builders) for why.
-    </Callout>
+#### Build the Application
 
-1. Plug the chain into the server.
+You build an application using the `Application` class.
 
-    ```js filename="app.js" showLineNumbers {5,19-39}
-    import {
-      Chain,
-      Resource
-    } from "@drashland/drash/modules/http.polyfill.js";
-    import { createServer } from "node:http";
+```js filename="app.js" showLineNumbers {2,13-17}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.polyfill.js";
 
-    class Home extends Resource {
-      paths = ["/"];
-    
-      GET(context) {
-        context.response.end("Oh so easy");
-      }
-    }
+class Home extends Resource {
+  paths = ["/"];
 
-    const app = Application
-      .builder()                                         // Get the app builder so we can build an app easily.
-      .resources(Home)                                   // Add the `Home` resource to the chain.
-      .build();                                          // Build the chain.
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
 
-    const hostname = "localhost";
-    const port = 1447;
+const app = Application
+  .builder()       // Get the app builder so we can build an app easily.
+  .resources(Home) // Add the `Home` resource to the app.
+  .build();        // Build the app.
+```
 
-    const server = createServer((request, response) => {
-      const context = {                                  // Build the context object the chain will process.
-        url: `http://${hostname}:${port}${request.url}`, // `url` must be absolute. `request.url` is path-only here.
-        method: request.method,                          // `method` tells the chain which resource method to call.
-        request,                                         // Passed along so resources can read the raw request.
-        response,                                        // Passed along so resources can write the response.
-      };
+<Callout type="gray">
+**Good to know**
 
-      return chain                                       // Let the chain
-        .handle(context)                                 // handle the context object
-        .catch(() => {                                   // Catch errors and
-          response.statusCode = 500;                     // send a 500 response
-          response.end("Oops.");
-        });
+Drash uses the builder pattern to create objects. You will see `build()` calls many times throughout these documentation pages. See [Concepts > Builders](/docs/concepts/builders) for why.
+</Callout>
+
+#### Add Your App to Your Server
+
+```js filename="app.js" showLineNumbers {5,19-39}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.polyfill.js";
+import { createServer } from "node:http";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()                                         // Get the app builder so we can build an app easily.
+  .resources(Home)                                   // Add the `Home` resource to the app.
+  .build();                                          // Build the app.
+
+const hostname = "localhost";
+const port = 1447;
+
+const server = createServer((request, response) => {
+  const context = {                                  // Build the context object the app will process.
+    url: `http://${hostname}:${port}${request.url}`, // `url` must be absolute. `request.url` is path-only here.
+    method: request.method,                          // `method` tells the app which resource method to call.
+    request,                                         // Passed along so resources can read the raw request.
+    response,                                        // Passed along so resources can write the response.
+  };
+
+  return app                                         // Let the app
+    .handle(context)                                 // handle the context object
+    .catch(() => {                                   // Catch errors and
+      response.statusCode = 500;                     // send a 500 response
+      response.end("Oops.");
     });
+});
 
-    server.listen(port, hostname);
-    ```
+server.listen(port, hostname);
+```
 
-#### Verification
+#### Run Your App
 
-1. Install Drash.
+```bash filename="Terminal"
+node app.js
+```
 
-    ```bash filename="Terminal"
-    npm init -y
-    npm install @drashland/drash
-    ```
+The file above uses `import` statements, so Node needs to treat it as an ES module. Either add `"type": "module"` to your `package.json` or rename the file to `app.mjs`.
 
-1. Run the app.
+With the app running, go to http://localhost:1447 in your browser. You should see something like:
 
-    ```bash filename="Terminal"
-    node app.js
-    ```
+```text
+Oh so easy
+```
 
-    The file above uses `import` statements, so Node needs to treat it as an ES module. Either add `"type": "module"` to your `package.json` or rename the file to `app.mjs`.
-
-1. With the app running, go to http://localhost:1447 in your browser. You should see something like:
-
-    ```text
-    Oh so easy
-    ```
+</Steps>
 
   </Tabs.Tab>
   <Tabs.Tab>
@@ -501,9 +509,3 @@ To gain familiarity with:
 ## Known Behaviors
 
 <CalloutFaviconError />
-
-## Next Steps
-
-- Handle [path and query params](/docs/requests/handling-requests)
-- Learn to [handle errors](/reference/core/errors/http-error) more robustly
-- Add [middleware](/docs/middleware) with a [resource group](/reference/standard/http/resource-group)

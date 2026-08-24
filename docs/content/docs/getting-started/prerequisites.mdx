@@ -4,10 +4,6 @@ title: Prerequisites
 
 # Prerequisites
 
-<Callout type="gray" emoji={null}>
-You can skip to the [Next Steps](#next-steps) at the bottom of this page or you can skip this page entirely if you already have a JavaScript runtime installed and have an HTTP server set up in that runtime.
-</Callout>
-
 ## 1. Choose a Runtime
 
 You will need to choose a JavaScript runtime that:
@@ -15,20 +11,16 @@ You will need to choose a JavaScript runtime that:
 1. fits your use case(s); and
 1. provides APIs to create an HTTP server (e.g., `http.createServer(...)` in Node or `Deno.serve(...)` in Deno).
 
-<Callout type="gray" emoji={null}>
-You could run Drash in the browser, but these documentation pages are written assuming you are using Drash to build server-side HTTP applications.
-</Callout>
-
 ## 2. Install the Runtime
 
 After choosing a runtime, you will need to install it on your [machine](/docs/misc/glossary#machine) (or the machine you plan to use). You can do this by following your chosen runtime's documentation pages (typically under an "installation" page or similar).
 
 ## 3. Create an HTTP Server
 
-Once your chosen runtime is installed and ready to be used, follow its documentation pages on creating an HTTP server. When you have an HTTP server set up, head back to this page and check out the [Next Steps](#next-steps) below.
+Once your chosen runtime is installed and ready to be used, follow its documentation pages on creating an HTTP server. When you have an HTTP server set up, head back to this page and continue reading.
 
 <Callout type="gray" emoji={null}>
-Unlike previous versions of Drash where Drash is a Deno HTTP server wrapper under the hood, Drash v3 is an agnostic codebase that can be used to create different types of functionality. This means __Drash v3 does not provide APIs to create HTTP servers__ like what we did in v2. Sorry!
+Unlike previous versions of Drash where Drash is a Deno HTTP server wrapper under the hood, Drash v3 is an agnostic codebase that can be used to create different types of functionality. This means __Drash v3 does not provide APIs to create HTTP servers__ like what we did in v2. As a result, it can be used in any JavaScript runtime.
 </Callout>
 
 __What does creating an HTTP server mean?__
@@ -73,12 +65,4 @@ When the code is runs (meaning the HTTP server is active), you will see:
 Listening on http://[::1]:1447/
 ```
 
-This means it is listening for incoming HTTP requests. If you open http://localhost:1447 in your browser, the browser sends a request to that address. The server handles the request with `return new Response("Hello!")`, so you will see `"Hello, World!"` displayed on the page.
-
-## Next Steps
-
-Feel free to follow our recommendation or navigate the documentation pages at your leisure.
-
-### Our Recommendations
-
-- [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide) using the HTTP module's `Application` class.
+This means it is listening for incoming HTTP requests. If you open http://localhost:1447 in your browser, the browser sends a request to that address. The server handles the request with `return new Response("Hello, World!");`, so you will see `"Hello, World!"` displayed on the page.

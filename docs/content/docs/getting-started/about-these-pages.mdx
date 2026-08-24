@@ -34,7 +34,7 @@ It is not required that you read the pages in order, but we greatly recommend it
 | ------------------------------------------------ | ------------------------------------------------------------------------------------ |
 | [Getting Started](/docs/getting-started)         | What Drash is, what you need installed, and building your first app step by step     |
 | [Quickstart](/docs/quickstart)                   | A complete app per runtime                                                           |
-| [Concepts](/docs/concepts/framework)             | The framework's shape, the request chain, resources, builders, and the native/polyfill modules |
+| [Concepts](/docs/concepts/framework)             | The framework's shape, HTTP applications, resources, the native/polyfill modules, chains, and builders |
 | [Resources](/docs/resources/creating-a-resource) | Writing resources, and grouping them to share prefixes and middleware                |
 | [Requests](/docs/requests/handling-requests)     | What a resource receives, and reading path and query params                          |
 | [Tutorials](/docs/middleware)          | Using pre-built middleware, writing your own, and handling errors                    |
@@ -47,10 +47,11 @@ Looking for finished applications you can run? Those are under [Examples](/examp
 Some pages will recommend you read pages under the [Concepts](/docs/concepts/framework). Concepts go over:
 
 - a breakdown of the [framework](/docs/concepts/framework);
-- how [chains](/docs/concepts/chains) work under the hood;
+- what an [HTTP application](/docs/concepts/http-application) is and what it assembles;
 - how [resources](/docs/concepts/resources) play a role in the HTTP module's `Application`;
-- why [builders](/docs/concepts/builders) assemble your application; and
-- why [native and polyfill](/docs/concepts/native-vs-polyfill) modules exist.
+- why [native and polyfill](/docs/concepts/native-vs-polyfill) modules exist;
+- how [chains](/docs/concepts/chains) work under the hood; and
+- why [builders](/docs/concepts/builders) assemble your application.
 
 It is not required that you read the Concepts pages, but we greatly recommend it so you are aware of the design decisions made in Drash and how it works under the hood.
 
@@ -63,7 +64,6 @@ All tutorial pages have an **Instructions** section. They guide you in building 
 | **Overview**     | A high-level overview of what the tutorial teaches, recommended reading beforehand, and the knowledge we hope you gain by the end.                           |
 | **Instructions** | Steps that build a tiny HTTP application from scratch — the end state of the directory tree, example code for different runtimes, and comments explaining it. |
 | **Verification** | Steps to help you verify the code you wrote is working.                                                                                                     |
-| **Next Steps**   | Our recommendations on what to do next. Follow them or navigate the pages at your leisure.                                                                   |
 
 <Callout type="info" emoji={null}>
 **You must read your runtime's documentation**
@@ -91,15 +91,3 @@ All of the terms and acronyms we use are used in the context of Drash unless oth
 ## A Note from Us
 
 We strive to prevent ambiguity in our writing as much as possible. We want you to be able to understand the code you are using so you can develop with confidence. However, we don't always get it right (our apologies in advance!). If our writing isn't clear, has typos, is not accessible, or you have suggestions to help improve these pages, please let us know by [filing an issue](https://github.com/drashland/drash/issues). We appreciate everyone's help in making these pages better for everyone!
-
-## Next Steps
-
-Feel free to follow our recommendation, jump ahead, or navigate the documentation pages at your leisure.
-
-### Our Recommendations
-
-- Follow the [prerequisites](/docs/getting-started/prerequisites) to set up your local environment.
-
-### Want to Jump Ahead?
-
-- [Create a tiny HTTP application](/docs/getting-started/step-by-step-guide) using the HTTP module's `Application` class.
