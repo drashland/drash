@@ -129,9 +129,12 @@ decided by the runtime, not by preference:
 | Cloudflare Workers | Global            | `modules/http.native.js`   |
 
 ```ts
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native.js";
 // or
-import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
 ```
 
 One app uses one of them. Never both.
@@ -139,7 +142,9 @@ One app uses one of them. Never both.
 In CommonJS, drop the extension:
 
 ```js
-const { Chain, Resource } = require("@drashland/drash/modules/http.polyfill");
+const { Application, Resource } = require(
+  "@drashland/drash/modules/http.polyfill",
+);
 ```
 
 On Deno, that bare specifier is what `deno add` mapped in `deno.json`. **Do not
@@ -182,11 +187,11 @@ class Users extends Resource {
 
 `request.params.queryParam("sort")` reads the query string.
 
-**A chain** wires resources into a pipeline. Build it once, at module scope, and
-reuse it across requests:
+**An application** wires resources into a pipeline — an HTTP request chain,
+under the hood. Build it once, at module scope, and reuse it across requests:
 
 ```ts
-const chain = Chain.builder().resources(Home, Users).build();
+const app = Application.builder().resources(Home, Users).build();
 ```
 
 What a request method receives and returns depends on what you feed the chain,
@@ -196,7 +201,7 @@ return a `Response`, as above. §4 has a complete file for each.
 
 ## 4. The whole app, one file per runtime
 
-`chain.handle()` returns a promise and **rejects on error, including a 404**.
+`app.handle()` returns a promise and **rejects on error, including a 404**.
 Nothing downstream turns that into a response, so **always attach a `.catch()`**
 — it is the only thing standing between the user and a hung request.
 
@@ -212,7 +217,10 @@ not convert them for you.** You pass the chain a **context object** carrying
 whatever your resources need; the chain itself only requires `url` and `method`.
 
 ```js
-import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
 
 const hostname = "localhost";
@@ -234,7 +242,7 @@ class Users extends Resource {
   }
 }
 
-const chain = Chain.builder().resources(Home, Users).build();
+const app = Application.builder().resources(Home, Users).build();
 
 const server = createServer((request, response) => {
   const context = {
@@ -244,7 +252,7 @@ const server = createServer((request, response) => {
     response,
   };
 
-  return chain.handle(context).catch(() => {
+  return app.handle(context).catch(() => {
     response.statusCode = 500;
     response.end("Internal Server Error");
   });
@@ -270,7 +278,7 @@ Deno block below then applies almost unchanged.
 ### Deno — `app.ts`
 
 ```ts
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource {
   paths = ["/"];
@@ -288,13 +296,13 @@ class Users extends Resource {
   }
 }
 
-const chain = Chain.builder().resources(Home, Users).build();
+const app = Application.builder().resources(Home, Users).build();
 
 Deno.serve({
   hostname: "localhost",
   port: 1447,
   handler: (request: Request) =>
-    chain
+    app
       .handle<Response>(request)
       .catch(() => new Response("Internal Server Error", { status: 500 })),
 });
@@ -306,7 +314,10 @@ Identical to Deno apart from the entry point and the server call. Both pass a
 Web `Request` straight through and return a Web `Response`.
 
 ```ts
-import { Chain, Resource } from "@drashland/drash/modules/http.polyfill.js";
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
 
 class Home extends Resource {
   paths = ["/"];
@@ -324,13 +335,13 @@ class Users extends Resource {
   }
 }
 
-const chain = Chain.builder().resources(Home, Users).build();
+const app = Application.builder().resources(Home, Users).build();
 
 Bun.serve({
   hostname: "localhost",
   port: 1447,
   fetch: (request: Request) =>
-    chain
+    app
       .handle<Response>(request)
       .catch(() => new Response("Internal Server Error", { status: 500 })),
 });
@@ -342,7 +353,7 @@ A Worker's entry module is a default export with a `fetch` method. The chain is
 built at module scope and reused across requests in the same isolate.
 
 ```js
-import { Chain, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource {
   paths = ["/"];
@@ -360,11 +371,11 @@ class Users extends Resource {
   }
 }
 
-const chain = Chain.builder().resources(Home, Users).build();
+const app = Application.builder().resources(Home, Users).build();
 
 export default {
   fetch: (request, _bindings) =>
-    chain
+    app
       .handle(request)
       .catch(() => new Response("Internal Server Error", { status: 500 })),
 };
@@ -395,10 +406,10 @@ config, `--allow-read` for static files — rather than reaching for `-A`.
 
 Middleware is a class that wraps a resource, not a function in a stack. Four
 ship with the framework — `AcceptHeader`, `CORS`, `ETag`, `RateLimiter` — each
-under `modules/middleware/<Name>/mod.js`. None of them are runtime-specific:
+under `modules/middleware/<Name>.js`. None of them are runtime-specific:
 
 ```ts
-import { CORS } from "@drashland/drash/modules/middleware/CORS/mod.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
 ```
 
 How middleware is attached to resources has changed across v3 releases. Check
@@ -413,7 +424,7 @@ rather than guessing.
   request as an argument. v2 had those properties; v3 removed them deliberately.
 - **Do not mix entry points.** One app imports `http.native.js` or
   `http.polyfill.js`, never both.
-- **Do not assume `chain.handle()` writes a response.** It rejects on error,
+- **Do not assume `app.handle()` writes a response.** It rejects on error,
   including 404. Without a `.catch()` the request hangs.
 - **Do not restructure a project to adopt Drash.** It is a dependency and a few
   classes, not a project layout.
