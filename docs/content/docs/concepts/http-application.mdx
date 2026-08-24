@@ -59,7 +59,11 @@ Clients could make requests to the API Endpoint _through_ the runtime's HTTP ser
 
 ## What `Application` Assembles Under Its Hood
 
+### HTTP Request Chain
+
 Under the hood, `Application` assembles an HTTP request chain — a chain of handlers (see [Concepts > Chains](/docs/concepts/chains) to learn more). You do not have to think about the chain to use it, but the pages here explain what it is doing so you understand the underpinnings of the Drash code you are using.
+
+### Handlers
 
 Its handlers are assembled in this strict order:
 
@@ -80,15 +84,16 @@ const app = Application
   .build()              // Builds the chain in the above order
 ```
 
-## The Data It Processes
+### The Data It Processes
 
-Chains process the data you give them, so you are in charge of defining what goes into it and what comes out. Its handlers pass along the input you give them, not a fixed request type — which is why one chain can take a Web `Request` on one runtime and a plain context object on another, and both work.
+The `Application`'s chain processes the data you give it, so you are in charge of defining what goes into it and what comes out. Its handlers pass along the input you give them, not a fixed request type — which is why one chain can take a Web `Request` in Deno and another can take a context object in Node, and both work.
 
-### Requirements
+### Handler Requirements
 
-The only requirements are:
+The handlers expect the following:
 
-1. The data must be a single object.
+1. The data it receives must be a single object.
+
 1. The object must have a `url: string` property, and it must be a _fully qualified URL_:
 
    ```ts
@@ -121,7 +126,7 @@ const input = {
 }
 ```
 
-The `RequestValidator` handler the above shape and throws `HTTPError(422)` with one of the following error messages if that shape is not met:
+The `RequestValidator` handler validates the above shape and throws `HTTPError(422)` with one of the following error messages if that shape is not met:
 
 - Request could not be read
 - Request HTTP method could not be read
