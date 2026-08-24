@@ -12,6 +12,12 @@ They all do the same thing — answer `GET /` from a single `Home` resource — 
 Each runtime is a section in the sidebar, and each page under it is one flavor of that example.
 
 <Cards num={2}>
+  <Cards.Card title="Bun / TypeScript" href="/examples/bun/typescript" arrow />
+  <Cards.Card
+    title="Cloudflare Workers / JavaScript (ESM)"
+    href="/examples/cloudflare-workers/javascript-esm"
+    arrow
+  />
   <Cards.Card title="Deno / TypeScript" href="/examples/deno/typescript" arrow />
   <Cards.Card
     title="Node / JavaScript (ESM)"
@@ -24,24 +30,18 @@ Each runtime is a section in the sidebar, and each page under it is one flavor o
     arrow
   />
   <Cards.Card title="Node / TypeScript" href="/examples/node/typescript" arrow />
-  <Cards.Card title="Bun / TypeScript" href="/examples/bun/typescript" arrow />
   <Cards.Card title="Vercel / api/ (fetch)" href="/examples/vercel/api" arrow />
   <Cards.Card title="Vercel / server.ts" href="/examples/vercel/server" arrow />
-  <Cards.Card
-    title="Cloudflare Workers / JavaScript (ESM)"
-    href="/examples/cloudflare-workers/javascript-esm"
-    arrow
-  />
 </Cards>
 
 ## What Changes Between Them
 
 | | Entry point | What the resource receives |
 | --- | --- | --- |
-| Deno | `http.native.js` | Web `Request` |
-| Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
 | Bun | `http.polyfill.js` | Web `Request` |
 | Cloudflare Workers | `http.native.js` | Web `Request` |
+| Deno | `http.native.js` | Web `Request` |
+| Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
 
 The resource and the chain are identical in every one. What differs is the entry point — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill) — and how your runtime hands you a request.
 
