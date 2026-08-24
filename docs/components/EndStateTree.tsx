@@ -11,11 +11,10 @@ export default function EndStateTree({
     <div data-drash-end-state-tree className="mt-6">
       <p className="mt-6 leading-7 first:mt-0">
         After completing the steps in this section, your project&apos;s
-        directory should look like the directory tree below (based on the
-        language you are using).
+        directory should look similar to the directory tree below.
       </p>
-      <Tabs items={["TypeScript", "JavaScript"]}>
-        <Tabs.Tab>
+      {/* <Tabs items={["TypeScript"]}>
+        <Tabs.Tab> */}
           <FileTree>
             <FileTree.Folder
               name="path/to/your/project"
@@ -31,8 +30,8 @@ export default function EndStateTree({
               })}
             </FileTree.Folder>
           </FileTree>
-        </Tabs.Tab>
-        <Tabs.Tab>
+        {/* </Tabs.Tab> */}
+        {/* <Tabs.Tab>
           <FileTree>
             <FileTree.Folder
               name="path/to/your/project"
@@ -49,8 +48,8 @@ export default function EndStateTree({
               })}
             </FileTree.Folder>
           </FileTree>
-        </Tabs.Tab>
-      </Tabs>
+        </Tabs.Tab> */}
+      {/* </Tabs> */}
     </div>
   );
 }

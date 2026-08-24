@@ -24,7 +24,7 @@ Drash's HTTP module ships as two entry points that export the same surface. Unde
   <CompareItem label="http.native.js">
 
 ```ts
-export class Chain {
+export class Application {
   static builder() {
     return requestChain()
       .urlPatternClass(URLPattern);
@@ -38,7 +38,7 @@ export class Chain {
   <CompareItem label="http.polyfill.js">
 
 ```ts
-export class Chain {
+export class Application {
   static builder() {
     return requestChain()
       .urlPatternClass(URLPatternPolyfill);

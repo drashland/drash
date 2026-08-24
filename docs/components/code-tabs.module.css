@@ -1,0 +1,110 @@
+/*
+ * One header row holding the tab buttons and the filename, so a switchable code
+ * block reads as a single card — the shape the homepage hero uses.
+ *
+ * Nextra's own <Tabs> cannot do this: it renders the tablist as a sibling above
+ * the panels while the filename lives inside each panel's `.nextra-code`. Those
+ * are separate subtrees, so the two bars can only be joined by rendering them
+ * together, which is what this component does.
+ */
+.card {
+  margin-top: 1.25em;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  border: 1px solid;
+  border-bottom: 0;
+  border-start-start-radius: 0.375rem;
+  border-start-end-radius: 0.375rem;
+  /* Matches the header Nextra draws on a code block with `filename`. */
+  background-color: var(--color-gray-100, #f3f4f6);
+  border-color: var(--color-gray-300, #d1d5db);
+}
+
+:global(.dark) .bar {
+  background-color: var(--color-neutral-900, #171717);
+  border-color: var(--color-neutral-700, #404040);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.15rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.2rem 0.55rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--color-gray-600, #4b5563);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.tab:hover {
+  background-color: rgb(0 0 0 / 0.05);
+  color: var(--color-gray-900, #111827);
+}
+
+.tabActive,
+.tabActive:hover {
+  background-color: var(--x-color-primary-100, #e0f2fe);
+  color: var(--x-color-primary-800, #075985);
+}
+
+:global(.dark) .tab {
+  color: var(--color-neutral-400, #a3a3a3);
+}
+
+:global(.dark) .tab:hover {
+  background-color: rgb(255 255 255 / 0.06);
+  color: var(--color-gray-50, #f9fafb);
+}
+
+:global(.dark) .tabActive,
+:global(.dark) .tabActive:hover {
+  background-color: var(--x-color-primary-400, #38bdf8);
+  background-color: color-mix(in srgb, var(--x-color-primary-400, #38bdf8) 12%,
+    transparent);
+  color: var(--x-color-primary-600, #0284c7);
+}
+
+/* Pushed to the far end, where an editor shows the filename. */
+.file {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding-inline-end: 0.25rem;
+  color: var(--color-gray-600, #4b5563);
+}
+
+:global(.dark) .file {
+  color: var(--color-gray-200, #e5e7eb);
+}
+
+/*
+ * The code block underneath gives up its top corners so the seam with the bar
+ * above disappears and the two read as one card.
+ *
+ * The radius and the border both live on the `pre`, not on the `.nextra-code`
+ * wrapper: Nextra draws the frame with `rounded-md` plus an inset `ring-1`.
+ * That inset ring is what supplies the divider line under the bar, which is
+ * why `.bar` sets `border-bottom: 0` — otherwise the two would stack into a
+ * 2px rule.
+ */
+.panel > :global(.nextra-code):first-child {
+  margin-top: 0;
+}
+
+.panel > :global(.nextra-code):first-child > :global(pre) {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}

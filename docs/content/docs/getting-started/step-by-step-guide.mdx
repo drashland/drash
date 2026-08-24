@@ -23,7 +23,7 @@ This guide helps you build a tiny HTTP application using the HTTP module's `Appl
 To gain familiarity with:
 
 - the HTTP module's `Application` class;
-- how a chain is used in different runtimes;
+- how `Application` can be used in different runtimes;
 - receiving and handling requests; and
 - responding to requests.
 
@@ -33,7 +33,7 @@ To gain familiarity with:
 
 <EndStateTree
   tree={[
-    "app.ts"
+    "app.js"
   ]}
 />
 
@@ -47,38 +47,42 @@ To gain familiarity with:
 
 ### Steps and Verification
 
-Pick your runtime once. Every code block below follows your choice.
-
 <Steps>
 
-#### Install Drash
+#### Initialize Your Project
 
-<Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]} storageKey="drash-runtime">
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
 npm init --yes
 npm install @drashland/drash
 ```
 
 The `--yes` flag accepts all defaults for the `package.json` file the `init` command creates for you. Learn more about the `--yes` flag [here](https://docs.npmjs.com/cli/v8/commands/npm-init).
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-There is nothing to install. Deno resolves the package the first time you run your app, using the `npm:` specifier in the import you write in the next step.
+```bash
+deno init
+```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
+bun init --yes
 bun install @drashland/drash
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
 npm init --yes
 npm install @drashland/drash
 npm install --save-dev wrangler
@@ -86,17 +90,20 @@ npm install --save-dev wrangler
 
 `wrangler` is Cloudflare's CLI. You need it to run a Worker on your machine.
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 #### Define Your Resource
 
 A resource is a class that answers requests for one or more paths. You define one using the `Resource` class.
 
-<Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]} storageKey="drash-runtime">
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js", "app.ts", "app.ts", "app.js"]}
+>
+<CodeTab>
 
-```js filename="app.js" showLineNumbers
+```js showLineNumbers
 import {
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
@@ -116,10 +123,10 @@ class Home extends Resource {
 Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` — not a Web `Request` and `Response`. Because of that, this resource writes to `context.response` directly instead of returning a response. The `context` object is built in __Step 4 - Add Your App to Your Server__.
 </Callout>
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```ts filename="app.ts" showLineNumbers
+```ts showLineNumbers
 import {
   Resource,
 } from "npm:@drashland/drash/modules/http.native.js";
@@ -133,10 +140,10 @@ class Home extends Resource {
 }
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```ts filename="app.ts" showLineNumbers
+```ts showLineNumbers
 import {
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
@@ -150,10 +157,10 @@ class Home extends Resource {
 }
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```js filename="app.js" showLineNumbers
+```js showLineNumbers
 import {
   Resource,
 } from "@drashland/drash/modules/http.native.js";
@@ -167,17 +174,20 @@ class Home extends Resource {
 }
 ```
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 #### Build the Application
 
 An application routes requests to the resources you give it. You build one using the `Application` class.
 
-<Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]} storageKey="drash-runtime">
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js", "app.ts", "app.ts", "app.js"]}
+>
+<CodeTab>
 
-```js filename="app.js" showLineNumbers {2,13-17}
+```js showLineNumbers {2,13-17}
 import {
   Application,
   Resource
@@ -197,10 +207,10 @@ const app = Application
   .build();        // Build the app.
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```ts filename="app.ts" showLineNumbers {2,13-17}
+```ts showLineNumbers {2,13-17}
 import {
   Application,
   Resource
@@ -220,10 +230,10 @@ const app = Application
   .build();        // Build the app.
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```ts filename="app.ts" showLineNumbers {2,13-17}
+```ts showLineNumbers {2,13-17}
 import {
   Application,
   Resource
@@ -243,10 +253,10 @@ const app = Application
   .build();        // Build the app.
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```js filename="app.js" showLineNumbers {2,13-17}
+```js showLineNumbers {2,13-17}
 import {
   Application,
   Resource
@@ -266,8 +276,8 @@ const app = Application
   .build();        // Build the app.
 ```
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 <Callout type="gray">
 **Good to know**
@@ -277,12 +287,15 @@ Drash uses the builder pattern to create objects. You will see `build()` calls m
 
 #### Add Your App to Your Server
 
-Drash ships no server. Your runtime owns the socket, and you hand each request to the app you built.
+Drash is not a server. Your runtime provides the server and you plug Drash into it to handle the request-response lifecycle.
 
-<Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]} storageKey="drash-runtime">
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js", "app.ts", "app.ts", "app.js"]}
+>
+<CodeTab>
 
-```js filename="app.js" showLineNumbers {5,19-39}
+```js showLineNumbers {5,19-39}
 import {
   Application,
   Resource
@@ -324,10 +337,10 @@ const server = createServer((request, response) => {
 server.listen(port, hostname);
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```ts filename="app.ts" showLineNumbers {19-33}
+```ts showLineNumbers {19-33}
 import {
   Application,
   Resource
@@ -362,10 +375,10 @@ Deno.serve({
 });
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```ts filename="app.ts" showLineNumbers {19-33}
+```ts showLineNumbers {19-33}
 import {
   Application,
   Resource
@@ -400,10 +413,10 @@ Bun.serve({
 });
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```js filename="app.js" showLineNumbers {19-31}
+```js showLineNumbers {19-31}
 import {
   Application,
   Resource
@@ -442,15 +455,18 @@ export default {
 A Worker has no `listen()` call. Its entry point is a default export with a `fetch` method, and the runtime calls it for you. Keep any other module-level exports as functions — `workerd` rejects non-function named exports.
 </Callout>
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 #### Run Your App
 
-<Tabs items={["Node", "Deno", "Bun", "Cloudflare Workers"]} storageKey="drash-runtime">
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
 node app.js
 ```
 
@@ -462,10 +478,10 @@ With the app running, go to http://localhost:1447 in your browser. You should se
 Oh so easy
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
 deno run --allow-net app.ts
 ```
 
@@ -477,10 +493,10 @@ With the app running, go to http://localhost:1447 in your browser. You should se
 Oh so easy
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
 bun run app.ts
 ```
 
@@ -490,23 +506,23 @@ With the app running, go to http://localhost:1447 in your browser. You should se
 Oh so easy
 ```
 
-</Tabs.Tab>
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-```bash filename="Terminal"
+```bash
 npx wrangler dev app.js
 ```
 
 Unlike the other runtimes, the port is chosen by `wrangler` rather than by your code, so the `hostname` and `port` fields you would write for Deno or Bun have no equivalent here.
 
-With the app running, go to the address `wrangler` prints (`http://localhost:8787` by default) in your browser. You should see something like:
+With the app running, go to the address `wrangler` prints by default in your browser: http://localhost:8787. You should see something like:
 
 ```text
 Oh so easy
 ```
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 </Steps>
 

@@ -20,7 +20,38 @@ exported statically. Follow this when writing or editing any page under
   unqualified claim. Saying the only lock-in is your runtime's is stronger than
   claiming there is none.
 - **Second person for instructions, present tense for behaviour.** "You hand the
-  chain a request." "The chain rejects on error."
+  application a request." "The application rejects on error."
+
+## Assume the reader knows nothing
+
+Write for someone meeting the subject for the first time. They have not read the
+other pages, they do not know Drash's vocabulary, and they will not infer what
+you left out — they will leave.
+
+- **Define a term the first time a page uses it,** or link to where it is
+  defined. "Resource", "handler", "chain", "middleware", "entry point", and
+  "resource group" are Drash words, not English ones. A page may use them freely
+  _after_ it has said what they mean.
+- **Say what a thing does before naming it.** `ResourcesIndex` and
+  `AbstractChainBuilder` are labels for machinery the reader has never seen.
+  "The handler that matches a request URL to a resource (`ResourcesIndex`)"
+  teaches; "`ResourcesIndex` caches by fully-qualified URL" does not.
+- **Never write "as described above" across pages.** Each page is someone's
+  first. Link instead — the reader chooses whether to follow it.
+- **Show the whole thing, then take it apart.** A complete, runnable sample
+  first; the explanation of each piece after. A reader who cannot see the shape
+  of the finished thing cannot place the parts.
+- **Spell out the commands.** Do not assume the reader knows the package
+  manager, the runtime's flags, or that `--allow-net` is why the server can
+  listen. Show the command that works and say what it needs.
+- **State the prerequisite instead of implying it.** If a step only works with a
+  runtime installed or a file already created, say so at that step.
+- **"Simply", "just", "obviously", "of course" are banned** — the No filler rule
+  covers them, but the reason here is different. To a reader who is stuck, those
+  words say the difficulty is theirs.
+
+The test: could someone who has never used Drash read this page start to finish
+and end up with something that runs, without needing a tab you did not link?
 
 ## Verify before asserting
 
@@ -32,10 +63,12 @@ Docs that describe code must be checked against the code.
 - **Versions**: take them from CI (`.github/workflows/*.yml`) or `package.json`.
   If a number cannot be sourced, say what is tested rather than inventing a
   minimum.
-- **Import paths differ between source and npm.** The published package uses
-  `@drashland/drash/modules/chains/RequestChain/mod.*`; the source has been
-  renamed to `modules/http.*`. Check which one a page should show, and keep a
-  page internally consistent.
+- **The published package lags the source.** Docs show the source API:
+  `@drashland/drash/modules/http.{native,polyfill}.js`, exporting `Application`.
+  The last published build still uses the older `modules/chains/RequestChain/mod.*`
+  path and exports `Chain`, so anything resolving against npm or esm.sh — the apps
+  under `examples/` — will not match the docs until the next release. Write the
+  source API and keep a page internally consistent.
 - **Error messages**: quote them from source, not memory.
 
 ## One fact, one page
@@ -43,13 +76,13 @@ Docs that describe code must be checked against the code.
 The site splits by intent. Putting the same explanation in two places means both
 rot.
 
-| Section                    | Holds                                     |
-| -------------------------- | ----------------------------------------- |
-| `content/docs/concepts/`   | Why it works that way                     |
-| `content/docs/quickstart/` | A complete app per runtime                |
-| `content/docs/tutorials/`  | Building something step by step           |
-| `content/reference/`       | API surface, by Core / Standard / Modules |
-| `content/examples/`        | Finished apps you can run                 |
+| Section                    | Holds                                       |
+| -------------------------- | ------------------------------------------- |
+| `content/docs/concepts/`   | Why it works that way                       |
+| `content/docs/quickstart/` | A complete app per runtime                  |
+| `content/docs/*.mdx`       | A single top-level subject (Error Handling) |
+| `content/reference/`       | API surface, by Core / Standard / Modules   |
+| `content/examples/`        | Finished apps you can run                   |
 
 Cross-link instead of repeating. When merging pages, delete the duplicate rather
 than keeping both phrasings.
