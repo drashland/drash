@@ -138,4 +138,4 @@ jobs:
 
       - name: (dry-run) Publish
         run: |
-          npm publish --access restricted --dry-run
+          npm stage publish --access restricted --dry-run

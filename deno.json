@@ -43,7 +43,7 @@
     "docs:dev": "cd docs && pnpm install && pnpm dev",
     "lint:tests:bun": "deno lint tests/compat/bun",
     "lint:tests:node": "deno lint tests/compat/node*/*",
-    "publish:dry-run": "npm publish --access restricted --dry-run",
+    "publish:dry-run": "npm stage publish --access restricted --dry-run",
     "test:all": "deno task test:compat:bun && deno task test:compat:deno && deno task test:compat:deno:concurrency && deno task test:compat:cloudflare && deno task test:compat:node && deno task test:middleware:deno && deno task test:unit",
     "test:compat:bun": "bun test tests/compat/bun",
     "test:compat:cloudflare": "pnpm exec vitest run --config vitest.config.cloudflare.mts",
