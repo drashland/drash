@@ -12,6 +12,7 @@ on:
       - v3.x-beta
       - v3.x-staging
     paths-ignore:
+      - ".github/workflows/**"
       - "docs/**"
   push:
     branches:
@@ -19,6 +20,7 @@ on:
       - v3.x-beta
       - v3.x-staging
     paths-ignore:
+      - ".github/workflows/**"
       - "docs/**"
 
 jobs:

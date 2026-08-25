@@ -10,11 +10,13 @@ on:
     branches:
       - main
     paths-ignore:
+      - ".github/workflows/**"
       - "docs/**"
   push:
     branches:
       - main
     paths-ignore:
+      - ".github/workflows/**"
       - "docs/**"
 
 jobs:
