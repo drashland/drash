@@ -122,11 +122,13 @@ jobs:
       - name: Install Node (latest)
         uses: actions/setup-node@v7
         with:
+          node-version: 24.x
           registry-url: "https://registry.npmjs.org"
           scope: "@drashland"
 
       - name: Build Drash libs
         run: |
+          npm install -g npm@latest
           pnpm install --frozen-lockfile && deno task build:libs
 
       - name: (artifacts) Upload Drash libs
