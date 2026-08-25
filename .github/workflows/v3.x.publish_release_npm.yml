@@ -133,6 +133,6 @@ jobs:
       - name: Publish
         run: |
           cd dist
-          pnpm stage publish --access public --no-git-checks
+          npm stage publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
