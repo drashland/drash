@@ -4,7 +4,7 @@ Throwing, catching, and responding to errors
 
 ## Overview
 
-Drash does not send error responses for you. It ships no server, so it has nothing to send a response with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `app.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
+Drash does not send error responses for you. It is not an HTTP server wrapper, so it has no server of its own to respond with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `app.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
 
 ### Recommended Reading
 
