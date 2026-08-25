@@ -1,0 +1,42 @@
+/*
+ * The version badge sits inside the navbar's logo lockup, which Nextra wraps in
+ * an <a href="/">. It is a span, never a link — a nested anchor is invalid —
+ * and the anchor's aria-label="Home page" overrides its inner text, so this is
+ * visual-only and never announced.
+ *
+ * Neutral rather than accent-coloured: a light grey fill with a darker grey
+ * outline, so the badge sits beside the wordmark without competing with it.
+ * Light theme uses the gray-* ramp and dark uses neutral-*, which is the same
+ * split Nextra applies to its own chrome.
+ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  /* Never break across "v3" / ".0". */
+  white-space: nowrap;
+  background-color: var(--x-color-gray-100);
+  border: 1px solid var(--x-color-gray-300);
+  color: var(--x-color-gray-700);
+}
+
+:global(html.dark) .badge {
+  background-color: var(--x-color-neutral-800);
+  border-color: var(--x-color-neutral-600);
+  color: var(--x-color-neutral-300);
+}
+
+/*
+ * The logo image is already capped so it can shrink rather than crowd the nav
+ * on narrow viewports. Fixed width beside it works against that, so the badge
+ * drops instead.
+ */
+@media (max-width: 640px) {
+  .badge {
+    display: none;
+  }
+}

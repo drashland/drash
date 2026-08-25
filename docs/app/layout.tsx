@@ -4,6 +4,7 @@ import { getPageMap } from "nextra/page-map";
 import Image from "next/image";
 import { Roboto_Condensed } from "next/font/google";
 import { DrashFooter } from "../components/footer";
+import { VersionBadge } from "../components/version-badge";
 // Pulls in Tailwind, then nextra-theme-docs/style.css, then this site's own
 // overrides — in that order. See the comment at the top of the file.
 import "./globals.css";
@@ -104,6 +105,8 @@ const logo = (
       priority
     />
     <b>Drash</b>
+    {/* Inside the lockup, so the span above supplies the alignment and gap. */}
+    <VersionBadge />
   </span>
 );
 
