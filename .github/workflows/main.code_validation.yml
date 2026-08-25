@@ -1,12 +1,21 @@
 name: main - Code Validation
 
+# Docs-only changes skip this workflow -- nothing under docs/ can affect the
+# library. docs.yml is the mirror of this: it runs *only* on docs/**, so the two
+# never both sit idle on a change. A commit touching docs/ *and* anything else
+# still runs everything, because paths-ignore only skips when every changed file
+# matches.
 on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - "docs/**"
   push:
     branches:
       - main
+    paths-ignore:
+      - "docs/**"
 
 jobs:
 
