@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "The release version, e.g. v3.0.0-beta.3"
+        description: "Version to publish, e.g. v3.0.0-beta.3"
         type: string
         required: true
+      npm_dist_tag:
+        description: "Dist-tag override. Leave blank to derive it from the version."
+        type: string
+        required: false
 
 jobs:
 
@@ -143,23 +147,49 @@ jobs:
       # Mirrors the same step in v3.x.publish_release_npm.yml. Kept identical on
       # purpose: a dry run that resolves its dist-tag differently from the real
       # publish is not rehearsing the real publish.
+      # Copied verbatim from v3.x.publish_release_npm.yml. A dry run that
+      # resolves its dist-tag differently is not rehearsing the real publish.
       - name: Resolve npm dist-tag
         id: dist_tag
         env:
           RELEASE_TAG: ${{ github.event.inputs.version }}
+          NPM_DIST_TAG: ${{ github.event.inputs.npm_dist_tag }}
         run: |
           set -euo pipefail
+
+          # An override wins outright. This is the path for promoting a
+          # prerelease -- publishing v3.0.0-beta.3 under `latest` on purpose --
+          # which derivation cannot express by design.
+          if [[ -n "${NPM_DIST_TAG:-}" ]]; then
+            # npm rejects a dist-tag that parses as a version, and the error it
+            # gives is obscure. Catch the likely slip (pasting the version into
+            # this box) here instead.
+            if [[ "$NPM_DIST_TAG" =~ ^v?[0-9]+(\.[0-9]+)*([.-].*)?$ ]]; then
+              echo "'${NPM_DIST_TAG}' looks like a version, not a dist-tag." >&2
+              echo "npm rejects dist-tags that parse as versions." >&2
+              exit 1
+            fi
+
+            echo "Overriding the derived dist-tag with '${NPM_DIST_TAG}'."
+            echo "dist_tag=${NPM_DIST_TAG}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           version="${RELEASE_TAG#v}"
 
           if [[ "$version" == *-* ]]; then
+            # Everything after the first `-` is the prerelease, and its first
+            # dot-separated identifier is the channel: `beta.3` -> `beta`.
             prerelease="${version#*-}"
             dist_tag="${prerelease%%.*}"
+            # Drop any build metadata: `beta+2024` -> `beta`.
             dist_tag="${dist_tag%%+*}"
           else
             dist_tag="latest"
           fi
 
+          # A malformed tag such as `v3.0.0-` yields an empty string, and
+          # `npm publish --tag=` publishes to `latest`. Stop instead.
           if [[ -z "$dist_tag" ]]; then
             echo "Could not derive an npm dist-tag from '${RELEASE_TAG}'." >&2
             exit 1
