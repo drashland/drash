@@ -33,6 +33,9 @@ export default {
     title: "Reference",
     type: "page",
   },
+  // Reached from the footer rather than the nav. `display: "hidden"` keeps it
+  // out of the sidebars as well — without `type: "page"`, a top-level entry
+  // would otherwise appear in every one of them.
   releases: {
     title: "Releases",
     type: "page",

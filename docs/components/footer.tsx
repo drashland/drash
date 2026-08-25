@@ -76,6 +76,11 @@ export function DrashFooter() {
             <h2 className={styles.heading}>Project</h2>
             <ul className={styles.list}>
               <li>
+                <Link className={styles.link} href="/releases">
+                  Releases
+                </Link>
+              </li>
+              <li>
                 <a
                   className={styles.link}
                   href="https://github.com/drashland/drash"

@@ -428,3 +428,19 @@ body > div:has(> footer > [data-drash-footer]) > hr {
 .dark [data-drash-end-state-tree] .nextra-filetree {
   background-color: #171717;
 }
+
+/*
+ * Releases is reached from the footer, not the top bar.
+ *
+ * It has to stay `type: "page"` in content/_meta.js so the folder keeps its own
+ * sidebar — that sidebar is how you move between versions. `display: "hidden"`
+ * would take the entry out of the top bar but empties that sidebar with it, and
+ * dropping `type: "page"` puts "Releases" into every sidebar on the site. So
+ * the entry is rendered and hidden here instead.
+ *
+ * Scoped to the navbar. The mobile drawer keeps its entry — on a narrow screen
+ * that drawer *is* the sidebar, and the footer sits far below the fold.
+ */
+.nextra-navbar a[href^="/releases"] {
+  display: none;
+}
