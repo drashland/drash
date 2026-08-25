@@ -3,7 +3,9 @@ name: v3.x - Publish Release (npm - Dry Run)
 on:
   workflow_dispatch:
     inputs:
-      tag_name:
+      version:
+        type: string
+      npm_dist_tag:
         type: string
 
 jobs:

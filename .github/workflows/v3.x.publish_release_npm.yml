@@ -1,10 +1,12 @@
 name: v3.x - Publish Release (npm)
 
 on:
-  # This workflow does not need a workflow_dispatch trigger. If this workflow
-  # fails, then re-run it.
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+      npm_dist_tag:
+        type: string
 
 jobs:
 
@@ -33,7 +35,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version --version ${{ github.event.release.tag_name }}
+          deno task check:package-json-version --version ${{ github.event.release.version }}
 
   ##############################################################################
   # CODE QUALITY
@@ -135,6 +137,6 @@ jobs:
       - name: Publish
         run: |
           cd dist
-          npm stage publish --access public --tag=${{ github.event.inputs.tag_name }}
+          npm stage publish --access public --tag=${{ github.event.inputs.dist_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
