@@ -1,0 +1,142 @@
+---
+title: v3.0.0
+description: The first stable release of Drash v3 — a complete rewrite that is runtime-agnostic, ships no server, and is built on Web Standards.
+---
+
+# v3.0.0
+
+**25 August 2026**
+
+The first stable release of v3, and a complete rewrite. Drash v2 was a Deno web
+framework that shipped its own server. v3 is a runtime-agnostic library that
+ships none, and runs the same application code on Deno, Node, Bun, and
+Cloudflare Workers.
+
+<Callout type="warning">
+__v3 is not backwards compatible with v2.__ Nothing is deprecated and nothing is
+shimmed; the API is different because the shape of the framework is different.
+v2 remains on the `v2.x` branch. There is no automated migration.
+</Callout>
+
+## How Long This Took
+
+The first v3 preview was published in **October 2023**, and the last beta before
+this release in **January 2024**. Then it sat: the team was unavailable, and
+almost three years passed between that beta and this release.
+
+Calling that out rather than glossing it, because it is the fair thing to tell
+anyone deciding whether to depend on this. What the gap means in practice:
+
+- The published npm package lagged the source for most of that period. If you
+  read the docs during that time and the API did not match what you installed,
+  that is why.
+- The v3 API itself did not drift while nobody was working on it. Most of what
+  changed between the last beta and now is naming and documentation, not
+  behaviour.
+
+## What Drash v3 Is
+
+**A chain of handlers you build once and hand requests to.** Drash ships no
+server. You build an application and call it from whatever your runtime already
+gives you — `Deno.serve`, `node:http`, `Bun.serve`, a Worker's `fetch`.
+
+```ts
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Hello from Drash.");
+  }
+}
+
+const app = Application.builder().resources(Home).build();
+
+Deno.serve({ port: 1447 }, (request) =>
+  app
+    .handle<Response>(request)
+    .catch(() => new Response("Internal Server Error", { status: 500 })));
+```
+
+That last `.catch()` is not decoration. `app.handle()` returns a promise and
+**rejects on error, including a 404**. Nothing downstream turns that into a
+response, so without a `.catch()` the request hangs.
+
+## What Changed From v2
+
+| | v2 | v3 |
+| --- | --- | --- |
+| Runtimes | Deno only | Deno, Node, Bun, Cloudflare Workers |
+| Server | Bundled (`Drash.Server`) | None — you bring your own |
+| Request / response | Drash `Request` and `Response` wrappers | Web `Request` and `Response`, or a context object you define |
+| Resource input | `this.request`, `this.response` | Passed as an argument to the method |
+| Middleware | `Service` | `Middleware`, attached with `ResourceGroup` |
+| Errors | `ErrorHandler` | `HTTPError`, caught where you call `handle()` |
+
+The removals are deliberate. `this.request` and `this.response` made a resource
+stateful per request, which is what stopped one resource instance being reused
+across concurrent requests. Passing the request in makes resources reusable and
+the data flow visible.
+
+## What Ships
+
+**Two entry points.** `modules/http.native.js` and `modules/http.polyfill.js`
+export the same six members. They differ only in which `URLPattern` they hand
+the router — the runtime's global, or Drash's bundled polyfill. See
+[Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+
+| Export | Kind |
+| ------ | ---- |
+| `Application` | class |
+| `Resource` | class |
+| `Middleware` | class |
+| `ResourceGroup` | class |
+| `HTTPError` | class |
+| `HTTPRequest` | type |
+
+**Four middleware**, none runtime-specific:
+[`AcceptHeader`](/reference/modules/middleware/accept-header),
+[`CORS`](/reference/modules/middleware/cors),
+[`ETag`](/reference/modules/middleware/etag), and
+[`RateLimiter`](/reference/modules/middleware/rate-limiter).
+
+**Three builders** for constructing requests, responses, and the request chain
+itself — see [Modules > Builders](/reference/modules/builders).
+
+**Documentation**, which is new in this release: concepts, a quickstart per
+runtime, a full API reference, runnable examples, and
+[agents.md](https://drash.crookse.com/agents.md) for coding agents.
+
+## Supported Runtimes
+
+Every runtime below has its own compatibility suite in CI, run against the built
+package rather than the source.
+
+| Runtime | Entry point | What a resource method receives |
+| ------- | ----------- | ------------------------------- |
+| Deno | `http.native.js` | Web `Request` |
+| Node 20, 22, 24, 26 | `http.polyfill.js` | A context object you build |
+| Bun | `http.polyfill.js` | Web `Request` |
+| Cloudflare Workers | `http.native.js` | Web `Request` |
+
+Node uses the polyfill entry point because `URLPattern` support varies across
+those majors. Bun uses it because its `URLPattern` is not dependable.
+
+## Getting Started
+
+- [Quickstart](/docs/quickstart) — a complete app for your runtime
+- [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) — the same
+  thing, built one piece at a time
+- [HTTP Application](/docs/concepts/http-application) — what `Application`
+  assembles, and why
+
+## Coming From v2
+
+There is no migration tool. The concepts that carry over are resources and
+paths; everything around them is different. Read
+[Resources](/docs/concepts/resources) first — it is the piece of v2 that
+survived, and the rest of the API is built around it.

@@ -33,4 +33,8 @@ export default {
     title: "Reference",
     type: "page",
   },
+  releases: {
+    title: "Releases",
+    type: "page",
+  },
 };
