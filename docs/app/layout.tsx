@@ -25,13 +25,70 @@ const headingFont = Roboto_Condensed({
   variable: "--font-heading",
 });
 
+/*
+ * Open Graph and Twitter tags have to carry *absolute* URLs — a crawler
+ * unfurling a link has no page to resolve "/drash-round-250.png" against — so
+ * Next resolves the relative paths below against `metadataBase`.
+ *
+ * `metadataBase` is the origin only, with no path. `new URL()` treats a leading
+ * slash as "start again from the root", so folding the base path in here would
+ * silently drop it back off every image URL. The base path is applied to each
+ * path instead, which is why they are written as `${basePath}/...`.
+ *
+ * Mirrors next.config.mjs — same variable, read at build time, so a subpath
+ * deploy cannot leave these tags pointing somewhere the assets are not.
+ * DOCS_SITE_URL overrides the host for a fork or a preview deploy.
+ */
+const siteUrl = process.env.DOCS_SITE_URL ?? "https://drash.crookse.com";
+const basePath = process.env.DOCS_BASE_PATH ?? "";
+
+const description =
+  "A strongly typed, runtime-agnostic web framework for building structured HTTP services in JavaScript, built on Web Standards.";
+
+/*
+ * The logo is square (2000x2000). `summary_large_image` crops to roughly 1.91:1,
+ * which would slice the top and bottom off it, so the card stays `summary` —
+ * the variant built for a square thumbnail. Swapping to a purpose-made 1200x630
+ * image is the upgrade path; change the card type at the same time.
+ */
+const ogImage = {
+  url: `${basePath}/drash-round-250.png`,
+  width: 250,
+  height: 250,
+  alt: "The Drash logo",
+};
+
 export const metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Drash",
     template: "%s — Drash",
   },
-  description:
-    "A strongly typed, runtime-agnostic web framework for building structured HTTP services in JavaScript, built on Web Standards.",
+  description,
+  applicationName: "Drash",
+  // No `title` here on purpose. Nextra sets each page's `title`, and Next falls
+  // back to that resolved value for og:title — so a shared link unfurls as
+  // "HTTP Application — Drash". Declaring a title template here instead would
+  // pin every page's og:title to the default, because the template only fills
+  // when a child route supplies a value and Nextra supplies `title`, not
+  // `openGraph.title`.
+  openGraph: {
+    type: "website",
+    siteName: "Drash",
+    description,
+    url: `${basePath}/`,
+    locale: "en_US",
+    images: [ogImage],
+  },
+  twitter: {
+    card: "summary",
+    description,
+    images: [ogImage],
+  },
+  icons: {
+    icon: `${basePath}/drash-round-250.png`,
+    apple: `${basePath}/drash-round-250.png`,
+  },
 };
 
 const logo = (
