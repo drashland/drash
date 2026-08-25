@@ -24,7 +24,8 @@ const columns: { heading: string; links: [string, string][] }[] = [
     heading: "Learn",
     links: [
       ["Quickstart", "/docs/quickstart"],
-      ["Step-by-step guide", "/docs/getting-started/step-by-step-guide"],
+      ["HTTP Application", "/docs/concepts/http-application"],
+      ["Step-By-Step Guide", "/docs/getting-started/step-by-step-guide"],
       ["Creating a Resource", "/docs/resources/creating-a-resource"],
       ["Middleware", "/docs/middleware"],
       ["Examples", "/examples"],
@@ -34,9 +35,9 @@ const columns: { heading: string; links: [string, string][] }[] = [
     heading: "Reference",
     links: [
       ["Overview", "/reference"],
-      ["HTTPError", "/reference/core/errors/http-error"],
-      ["Resource groups", "/reference/standard/http/resource-group"],
-      ["Application", "/reference/modules/http-native"],
+      ["Core", "/reference/core"],
+      ["Standard", "/reference/standard"],
+      ["Modules", "/reference/modules"],
     ],
   },
 ];
