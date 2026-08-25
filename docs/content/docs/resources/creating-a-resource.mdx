@@ -380,7 +380,7 @@ You can define any of the following methods in your resource.
 
 Each receives the input that was passed to `app.handle()` and you return whatever your runtime needs.
 
-**Every method you do not define throws a `501 Not Implemented` error response.** That is the base class' default behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
+__Every method you do not define throws a `501 Not Implemented` error response.__ That is the base class' default behavior, following [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1).
 
 Methods may be synchronous or asynchronous; `app.handle()` awaits whatever they return.
 

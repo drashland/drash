@@ -26,7 +26,7 @@ The last two extend `ResponseBuilder`, so they inherit the contract rather than 
 
 ## Its Relationship to `IBuilder`
 
-Core declares [`IBuilder<Product>`](/reference/core/interfaces#ibuilderproduct) with the same single `build()` method. The two are **structurally identical and genuinely duplicated** — Standard is allowed to import from Core, so nothing forces the second declaration.
+Core declares [`IBuilder<Product>`](/reference/core/interfaces#ibuilderproduct) with the same single `build()` method. The two are __structurally identical and genuinely duplicated__ — Standard is allowed to import from Core, so nothing forces the second declaration.
 
 Which one a class implements is a matter of where it sits:
 
@@ -49,4 +49,4 @@ Worth knowing before you go looking for one:
 | `Builder<C>`            | `standard/builders/Builder.js`             | This page — Standard's contract                                 |
 | `Builder`               | `modules/builders/RequestChainBuilder.js`  | The chain builder's own public surface, unrelated to the others |
 
-The third is what [`Application.builder()`](/reference/modules/http-native) returns. Despite the name, it does **not** implement either contract above — it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.
+The third is what [`Application.builder()`](/reference/modules/http-native) returns. Despite the name, it does __not__ implement either contract above — it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.

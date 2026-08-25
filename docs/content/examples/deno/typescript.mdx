@@ -92,6 +92,6 @@ Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time)
 
 There is no install step for dependencies — Deno resolves the import over HTTP. The commented-out block shows the `npm:` specifier if you would rather resolve through npm.
 
-Deno provides a global `URLPattern`, so this uses the **native** entry point. Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns — so the request goes straight through with no context object in between.
+Deno provides a global `URLPattern`, so this uses the __native__ entry point. Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns — so the request goes straight through with no context object in between.
 
 This example is in the repository at [`examples/deno`](https://github.com/drashland/drash/tree/main/examples/deno).

@@ -61,7 +61,7 @@ ResourceGroup
 
 `build()` is also where a builder checks that it has what it needs. This is a sanity check to ensure the finished object works properly during runtime instead of erroring out
 
-For example, the HTTP module's application builder throws an error if it provided an incorrect `URLPattern`-like class. **You see this at startup, not on the first request that happens to reach the issue.** In practice you should not hit it because the HTTP module's `Application.builder()` provides the `URLPattern` class for you under the hood (see [below](#builders-are-where-native-and-polyfill-differ)). It is reachable only if you call the lower-level `requestChain()` factory function directly.
+For example, the HTTP module's application builder throws an error if it provided an incorrect `URLPattern`-like class. __You see this at startup, not on the first request that happens to reach the issue.__ In practice you should not hit it because the HTTP module's `Application.builder()` provides the `URLPattern` class for you under the hood (see [below](#builders-are-where-native-and-polyfill-differ)). It is reachable only if you call the lower-level `requestChain()` factory function directly.
 
 ## The Builders Drash Provides
 

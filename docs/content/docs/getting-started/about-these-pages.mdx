@@ -7,7 +7,7 @@ description: What these pages assume, how they are ordered, and how to read them
 
 ## Assumptions
 
-Most of these pages — especially those with an **Instructions** section — assume:
+Most of these pages — especially those with an __Instructions__ section — assume:
 
 1. you have a JavaScript runtime installed (as stated on the [Prerequisites](/docs/getting-started/prerequisites) page);
 2. you have some knowledge and understanding of the JavaScript runtime you have installed (e.g., you know how to use a `package.json` in Node or `deno.json` file in Deno); and
@@ -57,16 +57,16 @@ It is not required that you read the Concepts pages, but we greatly recommend it
 
 ## Tutorial Format
 
-All tutorial pages have an **Instructions** section. They guide you in building applications from the ground up. Their page format is explained below:
+All tutorial pages have an __Instructions__ section. They guide you in building applications from the ground up. Their page format is explained below:
 
 | Section          | What it contains                                                                                                                                          |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Overview**     | A high-level overview of what the tutorial teaches, recommended reading beforehand, and the knowledge we hope you gain by the end.                           |
-| **Instructions** | Steps that build a tiny HTTP application from scratch — the end state of the directory tree, example code for different runtimes, and comments explaining it. |
-| **Verification** | Steps to help you verify the code you wrote is working.                                                                                                     |
+| __Overview__     | A high-level overview of what the tutorial teaches, recommended reading beforehand, and the knowledge we hope you gain by the end.                           |
+| __Instructions__ | Steps that build a tiny HTTP application from scratch — the end state of the directory tree, example code for different runtimes, and comments explaining it. |
+| __Verification__ | Steps to help you verify the code you wrote is working.                                                                                                     |
 
 <Callout type="info" emoji={null}>
-**You must read your runtime's documentation**
+__You must read your runtime's documentation__
 
 These pages reference running your code (e.g., `deno run --allow-net app.ts`). Since instructions vary by runtime and operating system, it is best you read your runtime's documentation on running code.
 </Callout>
@@ -75,9 +75,9 @@ These pages reference running your code (e.g., `deno run --allow-net app.ts`). S
 
 You will notice the Core, Standard, and Modules sections under the [Reference](/reference) pages. These three sections reflect the codebases of the entire Drash framework, and are ordered lowest-level first:
 
-- **Core** — types, interfaces, and classes with minimal implementation. It contains the lowest level APIs and helps build the Standard and Modules codebases.
-- **Standard** — similar to Deno's and Go's standard libraries, but smaller. Intended as standalone code and as code to help build the Modules codebase.
-- **Modules** — implements the most functionality, such as processing HTTP requests. Imports from Standard and Core.
+- __Core__ — types, interfaces, and classes with minimal implementation. It contains the lowest level APIs and helps build the Standard and Modules codebases.
+- __Standard__ — similar to Deno's and Go's standard libraries, but smaller. Intended as standalone code and as code to help build the Modules codebase.
+- __Modules__ — implements the most functionality, such as processing HTTP requests. Imports from Standard and Core.
 
 The [Framework](/docs/concepts/framework) page covers these codebases in more detail.
 

@@ -5,7 +5,7 @@ description: The first stable release of Drash v3 — a complete rewrite that is
 
 # v3.0.0
 
-**25 August 2026**
+__25 August 2026__
 
 The first stable release of v3, and a complete rewrite. Drash v2 was a Deno web
 framework that shipped its own server. v3 is a runtime-agnostic library that
@@ -20,8 +20,8 @@ v2 remains on the `v2.x` branch. There is no automated migration.
 
 ## How Long This Took
 
-The first v3 preview was published in **October 2023**, and the last beta before
-this release in **January 2024**. Then it sat: the team was unavailable, and
+The first v3 preview was published in __October 2023__, and the last beta before
+this release in __January 2024__. Then it sat: the team was unavailable, and
 almost three years passed between that beta and this release.
 
 Calling that out rather than glossing it, because it is the fair thing to tell
@@ -36,7 +36,7 @@ anyone deciding whether to depend on this. What the gap means in practice:
 
 ## What Drash v3 Is
 
-**A chain of handlers you build once and hand requests to.** Drash ships no
+__A chain of handlers you build once and hand requests to.__ Drash ships no
 server. You build an application and call it from whatever your runtime already
 gives you — `Deno.serve`, `node:http`, `Bun.serve`, a Worker's `fetch`.
 
@@ -63,7 +63,7 @@ Deno.serve({ port: 1447 }, (request) =>
 ```
 
 That last `.catch()` is not decoration. `app.handle()` returns a promise and
-**rejects on error, including a 404**. Nothing downstream turns that into a
+__rejects on error, including a 404__. Nothing downstream turns that into a
 response, so without a `.catch()` the request hangs.
 
 ## What Changed From v2
@@ -84,7 +84,7 @@ the data flow visible.
 
 ## What Ships
 
-**Two entry points.** `modules/http.native.js` and `modules/http.polyfill.js`
+__Two entry points.__ `modules/http.native.js` and `modules/http.polyfill.js`
 export the same six members. They differ only in which `URLPattern` they hand
 the router — the runtime's global, or Drash's bundled polyfill. See
 [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
@@ -98,16 +98,16 @@ the router — the runtime's global, or Drash's bundled polyfill. See
 | `HTTPError` | class |
 | `HTTPRequest` | type |
 
-**Four middleware**, none runtime-specific:
+__Four middleware__, none runtime-specific:
 [`AcceptHeader`](/reference/modules/middleware/accept-header),
 [`CORS`](/reference/modules/middleware/cors),
 [`ETag`](/reference/modules/middleware/etag), and
 [`RateLimiter`](/reference/modules/middleware/rate-limiter).
 
-**Three builders** for constructing requests, responses, and the request chain
+__Three builders__ for constructing requests, responses, and the request chain
 itself — see [Modules > Builders](/reference/modules/builders).
 
-**Documentation**, which is new in this release: concepts, a quickstart per
+__Documentation__, which is new in this release: concepts, a quickstart per
 runtime, a full API reference, runnable examples, and
 [agents.md](https://drash.crookse.com/agents.md) for coding agents.
 
