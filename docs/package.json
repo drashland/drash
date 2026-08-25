@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && pagefind --site out --output-subdir _pagefind",
     "start": "next start"
   },
   "//zod-override": "nextra-theme-docs' Layout destructures `children` out of its props and then validates the rest against a schema that still requires `children`. That only passes while `z.custom()` tolerates a missing key, which zod changed in 4.4.0. Unpin once Nextra fixes the schema.",
@@ -29,6 +29,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.8",
+    "pagefind": "^1.5.2",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3"
   }
