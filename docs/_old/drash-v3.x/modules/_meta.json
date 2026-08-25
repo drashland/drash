@@ -1,0 +1,11 @@
+{
+  "base": {
+    "title": "Base",
+    "display": "hidden"
+  },
+  "builders": {
+    "title": "Base",
+    "display": "hidden"
+  },
+  "chains": "Chains"
+}

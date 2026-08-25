@@ -1,0 +1,112 @@
+.wrapper {
+  --table-border: rgb(15 23 42 / 0.12);
+  --table-head-bg: rgb(248 250 252);
+  --table-head-fg: rgb(71 85 105);
+  --table-stripe: rgb(15 23 42 / 0.022);
+  --table-hover: rgb(37 99 235 / 0.06);
+  --table-surface: #ffffff;
+
+  width: 100%;
+  margin-top: 1.25rem;
+  border: 1px solid var(--table-border);
+  border-radius: 0.6rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /*
+   * Pure-CSS scroll shadows: the two `local` layers sit on the content and
+   * scroll away at each edge, uncovering the fixed gradient beneath. This is
+   * how the table hints that it scrolls without needing a resize observer.
+   */
+  background:
+    linear-gradient(to right, var(--table-surface) 30%, transparent) left
+    center / 2.5rem 100% no-repeat local,
+    linear-gradient(to left, var(--table-surface) 30%, transparent) right center
+    /
+    2.5rem 100% no-repeat local,
+    linear-gradient(to right, rgb(15 23 42 / 0.11), transparent) left center /
+    1rem 100% no-repeat scroll,
+    linear-gradient(to left, rgb(15 23 42 / 0.11), transparent) right center /
+    1rem 100% no-repeat scroll,
+    var(--table-surface);
+}
+
+:global(html.dark) .wrapper {
+  --table-border: rgb(148 163 184 / 0.2);
+  --table-head-bg: rgb(30 41 59 / 0.6);
+  --table-head-fg: rgb(148 163 184);
+  --table-stripe: rgb(148 163 184 / 0.05);
+  --table-hover: rgb(96 165 250 / 0.1);
+  --table-surface: rgb(17 24 39);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  background: transparent;
+}
+
+.th {
+  position: sticky;
+  top: 0;
+  text-align: start;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--table-head-fg);
+  background: var(--table-head-bg);
+  padding: 0.65rem 0.95rem;
+  border-bottom: 1px solid var(--table-border);
+  white-space: nowrap;
+}
+
+.td {
+  padding: 0.6rem 0.95rem;
+  border-top: 1px solid var(--table-border);
+  vertical-align: top;
+  /* Long identifiers and URLs should wrap instead of forcing a scrollbar. */
+  overflow-wrap: anywhere;
+}
+
+/* First row sits directly under the sticky header, which already has a rule. */
+.tr:first-child .td {
+  border-top: none;
+}
+
+.tr:nth-child(even) {
+  background: var(--table-stripe);
+}
+
+.tr:hover {
+  background: var(--table-hover);
+}
+
+/* Keep single-character columns (like the step number) from wrapping. */
+.td:first-child:not(:last-child) {
+  white-space: nowrap;
+}
+
+.td code,
+.th code {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .table {
+    font-size: 0.83rem;
+  }
+
+  .th,
+  .td {
+    padding: 0.5rem 0.7rem;
+  }
+
+  /* On a narrow screen, wrapping beats a nowrap column forcing a scrollbar. */
+  .td:first-child:not(:last-child) {
+    white-space: normal;
+  }
+}

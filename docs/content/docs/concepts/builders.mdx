@@ -1,0 +1,83 @@
+---
+title: Builders
+---
+
+# Builders
+
+## What Is a Builder?
+
+A builder collects configuration through chained method calls and hands back a finished object when you call `build()`. You might have already used one in other frameworks or libraries. In general, they look like:
+
+```ts
+const car = Car
+  .builder()                      // Get a car builder
+  .engine("5.2L-FSI-v10")         // Set the engine
+  .wheels("19x9_OZ_LEGGERA_HLT")  // Set the wheels
+  .color("SUZUKA_GREY")           // Set the color
+  .otherMethods(/* other args */) // Set some other configurations
+  .build();                       // Build the car using the configurations
+
+car.doSomething();                // Do something with the car
+```
+
+In Drash, they look like:
+
+```ts
+const app = Application
+  .builder()                 // Get an HTTP app builder
+  .resources(Users, Coffees) // Set the resources in the app
+  .build();                  // Build the app
+
+app.handle(request);       // Make the app handle a request
+```
+
+Drash hands you a builder instead of a constructor so that each piece of configuration is named at the call site. A constructor would put the same information in a positional argument list or an options object, where `resources` is a property you have to look up rather than a method you call.
+
+Every builder in Drash shares one shape: a `build()` method that returns the finished object (aka product). That shape is the [`IBuilder`](/reference/core/interfaces#ibuilderproduct) interface.
+
+## `build()` Is the Last Call
+
+Every method on a builder except `build()` returns the builder. **Those calls are order-independent** — the two lines below produce the same group:
+
+```ts
+ResourceGroup
+  .builder()
+  .middleware(Auth)
+  .prefix("/api/v1")
+  .resources(Users)
+  .build();
+  // => Built object is the same as below
+
+ResourceGroup
+  .builder()
+  .prefix("/api/v1")
+  .resources(Users)
+  .middleware(Auth)
+  .build();
+  // => Built object is the same as above
+```
+
+`build()` is the exception. Calling `build()` returns the object rather than the builder, so it ends the builder method chain and no further build configurations follow it.
+
+`build()` is also where a builder checks that it has what it needs. This is a sanity check to ensure the finished object works properly during runtime instead of erroring out
+
+For example, the HTTP module's application builder throws an error if it provided an incorrect `URLPattern`-like class. **You see this at startup, not on the first request that happens to reach the issue.** In practice you should not hit it because the HTTP module's `Application.builder()` provides the `URLPattern` class for you under the hood (see [below](#builders-are-where-native-and-polyfill-differ)). It is reachable only if you call the lower-level `requestChain()` factory function directly.
+
+## The Builders Drash Provides
+
+| Builder            | You get it from                     | `build()` returns                  |
+| ------------------ | ----------------------------------- | ---------------------------------- |
+| HTTP Applicaiton Builder      | `Application.builder()`                   | An HTTP request handler — call `handle()` on it |
+| Resource Group Builder     | `ResourceGroup.builder()`                  | An array of resource classes       |
+| Response Builder   | `response()`                        | A Web `Response`                   |
+| Request Builder    | `request()`                         | A Web `Request`                    |
+
+Only the first two appear in a typical application. `response()` and `request()` are conveniences — a resource returning `new Response(...)` directly is equally valid.
+
+For the methods each one exposes, see [Builders](/reference/modules/builders) and [Resource Group](/reference/standard/http/resource-group) in the reference.
+
+## Build Time, Not Request Time
+
+__Builders do their work once: when your application starts.__ All calls to `build()` do not happen again. There is no router re-deriving routes on each request, and no middleware stack being reassembled — by the time a request arrives, the objects it travels through already exist.
+
+__This is the benefit around Drash's builders: startup does more work so that each request does less.__

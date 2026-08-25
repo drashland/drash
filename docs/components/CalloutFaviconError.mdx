@@ -1,0 +1,19 @@
+<details>
+<summary><small>Seeing `HTTPError: Not Found` messages? Click here</small></summary>
+<p className="mt-6 px-5 leading-7">If you see `HTTPError: Not Found` in the terminal where you are running your app, it is most likely from a `favicon.ico` request from your browser.</p>
+<p className="mt-6 px-5 leading-7">You can ignore this error or (if you want to exercise your resource creation skills) you can create a resource that handles `GET` requests to the `/favicon.ico` path. From there, you can use your chosen runtime's reading APIs (e.g., `readFile()`) to send a `favicon.ico` file in the body of the response. For example, the `favico.ico` response you build could look something like:</p>
+<div className="my-6 px-5">
+```ts
+return new Response(
+    await readFile("favicon.ico"), // Use your runtime's file reading API here
+    {
+        status: 200,
+        statusText: "OK",
+        headers: {
+            "content-type": "image/x-icon",
+        }
+    }
+);
+```
+</div>
+</details>

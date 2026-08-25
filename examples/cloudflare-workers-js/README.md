@@ -32,5 +32,5 @@
    You should see something like the following:
 
    ```text
-   Hello from Home.GET()! (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+   Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
    ```

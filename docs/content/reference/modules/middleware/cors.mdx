@@ -1,0 +1,299 @@
+---
+title: CORS
+description: Answers preflight requests and sets the Access-Control-* response headers.
+---
+
+# CORS
+
+<Callout type="info" emoji={null}>
+CORS is a browser mechanism, not a Drash one. This middleware sets the response
+headers browsers look for &mdash; it cannot stop a non-browser client (like
+`curl`) from calling your resources.
+</Callout>
+
+## Summary
+
+The CORS middleware answers preflight (`OPTIONS`) requests and adds the
+`Access-Control-*` headers to responses. It is added to resources using a
+[resource group](/reference/standard/http/resource-group).
+
+The highlighted sections below show how it is added:
+
+<Tabs items={["Deno"]}>
+
+<Tabs.Tab>
+
+```typescript showLineNumbers  {8-10}
+// Code is shortened for brevity
+
+import { Application, ResourceGroup } from "@drashland/drash/modules/http.native.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+
+const groupedResources = ResourceGroup
+  .builder()
+  .middleware(        // Add the middleware to each resource in this group
+    CORS(),           // Calling CORS() with no options uses the defaults
+  )
+  .resources(
+    ResourceA,
+    ResourceB,
+  )
+  .build();
+
+const app = Application
+  .builder()
+  .resources(groupedResources)
+  .build();
+```
+
+</Tabs.Tab>
+</Tabs>
+
+You might notice `CORS` is called (`CORS()`) instead of being passed in like a
+normal middleware class. This is because `CORS` is a __factory__. Calling it
+returns a middleware class with your options already bound to it, which is what
+lets you configure the same middleware differently in different groups.
+
+## Configuring Options
+
+### The Defaults
+
+Every option has a default, so `CORS()` on its own is valid. The defaults are:
+
+| Option                             | Type                   | Default                               |
+| ---------------------------------- | ---------------------- | ------------------------------------- |
+| `access_control_allow_origin`      | `(string \| RegExp)[]` | `["*"]`                               |
+| `access_control_allow_methods`     | `RequestMethod[]`      | `GET, HEAD, PUT, PATCH, POST, DELETE` |
+| `access_control_allow_headers`     | `string[]`             | `[]`                                  |
+| `access_control_allow_credentials` | `boolean`              | `false`                               |
+| `access_control_expose_headers`    | `string[]`             | `[]`                                  |
+| `access_control_max_age`           | `number`               | unset                                 |
+| `options_success_status`           | `ResponseStatus`       | `Status.NoContent` (204)              |
+
+Options you leave out keep their defaults, so you only pass in what you want to
+change.
+
+### Allowing Specific Origins
+
+The default is `["*"]`, which allows every origin. Most applications want a list
+instead. Entries can be strings or regular expressions:
+
+<Tabs items={["Deno"]}>
+
+<Tabs.Tab>
+
+```typescript showLineNumbers {6-11}
+import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(CORS({
+    access_control_allow_origin: [
+      "https://example.com",                  // An exact origin
+      /^https:\/\/[a-z0-9-]+\.example\.com$/, // Any subdomain of example.com
+    ],
+  }))
+  .resources(MyResource)
+  .build();
+```
+
+</Tabs.Tab>
+</Tabs>
+
+<Callout type="warning" emoji={null}>
+__Anchor your regular expressions.__ An unanchored pattern like
+`/example\.com/` also matches `https://example.com.attacker.test`, which is not
+your site. Note the `^` and `$` in the example above.
+</Callout>
+
+### Allowing Credentials
+
+Browsers refuse a credentialed response when `Access-Control-Allow-Origin` is
+`*`. This means `access_control_allow_credentials` is only useful when paired
+with a real origin list:
+
+```typescript showLineNumbers
+// This works. The origin is named, so the browser accepts the credentials.
+CORS({
+  access_control_allow_credentials: true,
+  access_control_allow_origin: ["https://app.example.com"],
+});
+
+// This does not. The origin is still the default "*", so the browser will
+// reject the response even though Drash sent the header you asked for.
+CORS({
+  access_control_allow_credentials: true,
+});
+```
+
+### Limiting Allowed Methods
+
+The default advertises all six methods. If a group only serves some of them,
+say so &mdash; there is no point telling a browser it may `DELETE` something
+that has no `DELETE`:
+
+```typescript showLineNumbers
+// This group is read-only.
+CORS({
+  access_control_allow_methods: ["GET", "HEAD"],
+});
+```
+
+### Allowing Request Headers
+
+Browsers ask permission before sending anything outside a small safelist. If a
+client sends a header that is __not__ on this list, the preflight fails and the
+real request is never made:
+
+```typescript showLineNumbers
+CORS({
+  access_control_allow_headers: [
+    "Content-Type",
+    "Authorization", // Without this, an authenticated fetch() never leaves the browser
+    "X-Api-Key",
+  ],
+});
+```
+
+### Exposing Response Headers
+
+This is the mirror of the above, for the way back out. Browsers hide every
+response header except a small safelist, which means your headers arrive but
+JavaScript cannot read them. List the ones you want readable:
+
+```typescript showLineNumbers
+// Let the client read the headers the RateLimiter middleware sets.
+CORS({
+  access_control_expose_headers: [
+    "X-RateLimit-Limit",
+    "X-RateLimit-Remaining",
+    "X-RateLimit-Reset",
+  ],
+});
+```
+
+### Caching Preflight Results
+
+This is unset by default, so browsers fall back to their own (short) value and
+preflight far more often than they need to. The value is in __seconds__:
+
+```typescript showLineNumbers
+// Ten minutes. The browser will not preflight this endpoint again until it
+// expires.
+CORS({
+  access_control_max_age: 600,
+});
+```
+
+### Changing the Preflight Status
+
+A successful preflight answers `204 No Content`. Some older clients treat a
+bodyless `204` as a failure and want a `200` instead:
+
+```typescript showLineNumbers
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+CORS({
+  options_success_status: Status.OK,
+});
+```
+
+## How It Works
+
+### TLDR
+
+The middleware answers `OPTIONS` requests itself and never passes them to your
+resource. Every other request goes to your resource as normal, and the CORS
+headers are added to the response on the way out.
+
+### Detailed Explanation
+
+`CORSMiddleware` defines an `OPTIONS` method, so when a preflight request comes
+in, the middleware handles it and returns a response &mdash; your resource is
+never called. This is why you do not need to write an `OPTIONS` method in your
+resources to support CORS.
+
+For all other request methods, the middleware:
+
+- passes the request to the resource;
+- takes the response the resource returns;
+- sets the `Access-Control-*` headers on it; and
+- returns it.
+
+### Data Flow
+
+Taking a `GET` request and a preflight `OPTIONS` request to the same resource,
+the flows are:
+
+<div className="tutorials:chains:introduction flowchart-drash-chain">
+```mermaid
+flowchart LR
+  req([GET Request])
+  h1([CORS])
+  h2([MyResource])
+
+  subgraph chain[GET Flow]
+    direction LR
+    req --> h1 --> h2
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+
+  class req,h1,h2 blue
+```
+</div>
+
+<div className="tutorials:chains:introduction flowchart-drash-chain">
+```mermaid
+flowchart LR
+  req([OPTIONS Request])
+  h1([CORS])
+
+  subgraph chain[Preflight Flow]
+    direction LR
+    req --> h1
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+
+  class req,h1 blue
+```
+</div>
+
+As you can see above, the preflight request stops at the middleware.
+
+## Extending This Middleware
+
+The module exports the class as well as the factory, so you can extend it:
+
+```typescript showLineNumbers
+import { CORSMiddleware } from "@drashland/drash/modules/middleware/CORS.js";
+
+class LoggedCORS extends CORSMiddleware {
+  constructor() {
+    // Your options go here. `super` is CORSMiddleware, so this is the same as
+    // the options you would have passed to CORS().
+    super({ access_control_allow_origin: ["https://example.com"] });
+  }
+
+  public override OPTIONS(request: Request) {
+    console.log(`Preflight: ${request.url}`);
+
+    // Let the original middleware build the response. Do your thing, then get
+    // out of the way.
+    return super.OPTIONS(request);
+  }
+}
+```
+
+| Export           | What It Is                                         |
+| ---------------- | -------------------------------------------------- |
+| `CORS`           | The factory. Returns a configured middleware class |
+| `CORSMiddleware` | The middleware class itself, for extending         |
+| `defaultOptions` | The defaults listed above                          |
+| `Options`        | The options type                                   |

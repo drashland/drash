@@ -21,14 +21,18 @@
 
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
-import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.polyfill.ts";
+import {
+  Application,
+  HTTPError,
+  Resource,
+} from "../../../../../../../../src/modules/http.polyfill.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public override paths = ["/"];
 
   public override GET(_request: Request) {
@@ -44,11 +48,11 @@ class Home extends Chain.Resource {
   }
 
   public override PATCH(_request: Request) {
-    throw new Chain.HTTPError(Status.MethodNotAllowed);
+    throw new HTTPError(Status.MethodNotAllowed);
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -56,11 +60,11 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
-    .catch((error: Error | Chain.HTTPError) => {
+    .catch((error: Error | HTTPError) => {
       if (
-        (error.name === "HTTPError" || error instanceof Chain.HTTPError) &&
+        (error.name === "HTTPError" || error instanceof HTTPError) &&
         "status_code" in error &&
         "status_code_description" in error
       ) {

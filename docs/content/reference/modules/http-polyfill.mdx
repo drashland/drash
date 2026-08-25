@@ -1,0 +1,60 @@
+---
+title: http.polyfill
+---
+
+# http.polyfill
+
+The polyfill entry point, `modules/http.polyfill.js`. It hands the chain Drash's bundled
+`URLPatternPolyfill` instead of the runtime's global.
+
+```ts
+import { Application, Resource } from "@drashland/drash/modules/http.polyfill.js";
+```
+
+Use it where the runtime has no global `URLPattern`, or when you are unsure — the polyfill
+is bundled, so it costs a little size but no network or peer dependency. The `Application` API is
+documented on [`http.native`](/reference/modules/http-native#application); it is identical here.
+
+## Exports
+
+Both entry points export the same six members. Nothing is available from one and missing from the other, so switching between them never changes an import list:
+
+| Export        | Kind  | Reference                                                  |
+| ------------- | ----- | ---------------------------------------------------------- |
+| `Application`   | class | [Application](/reference/modules/http-native#application) |
+| `ResourceGroup` | class | [ResourceGroup](/reference/standard/http/resource-group) |
+| `Resource`    | class | [Creating a Resource](/docs/resources/creating-a-resource) |
+| `Middleware`  | class | [Middleware](/docs/middleware)                   |
+| `HTTPError`   | class | [HTTPError](/reference/core/errors/http-error)                    |
+| `HTTPRequest` | type  | The request shape a resource method receives               |
+
+## What Each One Injects
+
+Each entry point calls [`.urlPatternClass()`](/reference/modules/http-native#urlpatternclass) on your behalf. For example:
+
+| Entry point        | `URLPattern` used                      | Source of the implementation |
+| ------------------ | -------------------------------------- | ---------------------------- |
+| `http.native.js`   | `.urlPatternClass(URLPattern)`         | The runtime                  |
+| `http.polyfill.js` | `.urlPatternClass(URLPatternPolyfill)` | Drash's implementation       |
+
+If you need a custom implementation, you can call `.urlPatternClass()` yourself. See [Modules > HTTP > Application > urlPatternClass()](/reference/modules/http-native#urlpatternclass) to learn more.
+
+## Choosing One
+
+Use `http.native.js` where the runtime provides a global `URLPattern`, and `http.polyfill.js` everywhere else. The [Quickstart overview](/docs/quickstart) lists which runtimes fall on which side.
+
+If you are unsure, the polyfill entry point works everywhere, including runtimes that do have a global `URLPattern`.
+
+## Choosing Wrong
+
+Picking `http.native.js` on a runtime with no global `URLPattern` fails while the chain is being built, not on the first request:
+
+```text
+`this.urlPatternClass(Resource)` not called. Cannot create RequestChain without a `URLPattern`-like class.
+```
+
+Because the HTTP module's `Application` is normally built once at startup, this surfaces as soon as the process boots rather than as an intermittent routing failure under traffic.
+
+## Supplying Your Own
+
+Neither entry point locks you in. `Application.builder()` accepts any `URLPattern`-compatible class through [`.urlPatternClass()`](/reference/modules/http-native#urlpatternclass), which overrides whatever the entry point injected.

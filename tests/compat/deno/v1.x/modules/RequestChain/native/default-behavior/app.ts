@@ -20,7 +20,10 @@
  */
 
 import { HTTPError } from "../../../../../../../../src/core/errors/HTTPError.ts";
-import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import {
+  Application,
+  Resource,
+} from "../../../../../../../../src/modules/http.native.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
@@ -29,7 +32,7 @@ export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public override paths = ["/"];
 
   public override GET(_request: Request) {
@@ -49,7 +52,7 @@ class Home extends Chain.Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -57,7 +60,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

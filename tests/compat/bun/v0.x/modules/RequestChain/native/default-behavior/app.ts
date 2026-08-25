@@ -23,13 +23,16 @@ import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.native";
+import {
+  Application,
+  Resource,
+} from "../../../../../../../../dist/modules/http.native";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(_request: Request) {
@@ -49,7 +52,7 @@ class Home extends Chain.Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -57,7 +60,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

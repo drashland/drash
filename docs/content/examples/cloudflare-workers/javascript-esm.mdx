@@ -1,0 +1,118 @@
+---
+title: JavaScript (ESM)
+description: Drash / Cloudflare Workers / JavaScript (ESM) — a complete, runnable example.
+---
+
+# Cloudflare Workers / JavaScript (ESM)
+
+## Steps
+
+<Steps>
+
+### Install Node
+
+Install [Node](https://nodejs.org) (v20+).
+
+### Install Dependencies
+
+Install the dependencies in `package.json`.
+
+```bash
+npm install
+```
+
+### Create the Following File
+
+```js filename="app.js"
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
+
+  GET(request) {                 // Handle GET requests to those paths.
+    console.log(`Received request: ${request.url}`);
+
+    return new Response(         // This is what `app.handle()` resolves with.
+      `Oh so easy (written at ${new Date()})`,
+    );
+  }
+}
+
+const app = Application
+  .builder()                     // Get the app's builder so we can build the app easily.
+  .resources(Home)               // Add the `Home` resource to the app.
+  .build();                      // Build the app.
+
+// Cloudflare requires a default export with a `fetch` function on it. Write
+// this as `async fetch(request)` if you need `await` inside it.
+export default {
+  fetch(request) {               // Handle every request Cloudflare routes here.
+    return app                 // Let the app
+      .handle(request)           // handle the request, and
+      .catch((error) => {        // catch anything it throws.
+        if (request.url.includes("favicon")) {
+          return new Response(); // Browsers ask for this; ignore it.
+        }
+
+        console.log(`Request URL hit an error: ${request.url}:\n`);
+        console.log({ error });
+
+        return new Response(     // Everything else gets a 500.
+          "Sorry, but we hit an error!",
+          {
+            status: 500,
+            statusText: "Internal Server Error",
+          },
+        );
+      });
+  },
+};
+```
+
+### Run the Drash App
+
+Run it using Cloudflare's [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/).
+
+```bash
+npm start
+```
+
+_Note: `npm start` is defined in the `package.json` file and runs `wrangler dev app.js`._
+
+You should see output similar to:
+
+```text
+⛅️ wrangler 4.121.0
+-------------------
+⎔ Starting local server...
+[wrangler:inf] Ready on http://localhost:8787
+```
+
+### Open It
+
+Go to the Wrangler local server at http://localhost:8787. You should see something like the following:
+
+```text
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+```
+
+</Steps>
+
+## Notes
+
+Workers provide a global `URLPattern`, so this uses the **native** entry point. The chain is built once at module scope and reused across requests in the same isolate.
+
+<Callout type="warning">
+  **Every named export of a Worker entry module must be a function, a class, or
+  an `ExportedHandler`.** `workerd` treats named exports as potential
+  entrypoints and validates them at startup, so a stray constant like
+  `export const hostname = "localhost"` aborts the Worker before it serves
+  anything.
+</Callout>
+
+That is why this example has no `hostname`/`port` constants, unlike the others — wrangler decides the address, and exporting them would break the Worker. Keep any configuration values as module-local `const`s.
+
+This example is in the repository at [`examples/cloudflare-workers-js`](https://github.com/drashland/drash/tree/main/examples/cloudflare-workers-js).

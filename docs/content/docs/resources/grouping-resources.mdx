@@ -1,0 +1,236 @@
+# Grouping Resources
+
+Sharing path prefixes and middleware across resources
+
+## Overview
+
+Resources can be grouped so they share functionality. A group is the __only__ way to attach middleware or path prefixes to a resource — there is no per-resource setting for either. This is true whether the group holds one resource or many.
+
+A resource group is not a runtime object. It is built at build time and returns an array of resource classes, which is exactly what the HTTP module's `Application.builder().resources()` method already accepts.
+
+### Recommended Reading
+
+- Read [Creating a Resource](/docs/resources/creating-a-resource)
+- Read the [Middleware](/docs/middleware) tutorial before attaching any
+
+### Objectives
+
+To gain familiarity with:
+
+- grouping resources using `ResourceGroup.builder()`;
+- prefixing every path in the group; and
+- attaching middleware to every resource in the group.
+
+## Syntax
+
+A group is built with the `ResourceGroup` class' static `builder()` method:
+
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Application,
+  ResourceGroup,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const app = Application
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Application,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const app = Application
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Application,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const app = Application
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Application,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.native.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const app = Application
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+<Callout type="info" emoji={null}>
+For the full builder API, see [Resource groups](/reference/standard/http/resource-group).
+</Callout>
+
+The builder methods can be called in any order. Only `build()` has to come last.
+
+## Path Prefixes
+
+`.prefix()` sets path prefixes — it rewrites the `paths` property of every resource in the group:
+
+```ts
+class Coffees extends Resource {
+  public paths = ["/coffees"];
+}
+
+const group = ResourceGroup
+  .builder()
+  .resources(Coffees)
+  .prefix("/api/v1")
+  .build();
+
+// Coffees.paths is now ["/api/v1/coffees"]
+```
+
+<Callout type="warning" emoji={null}>
+__Every prefix is applied, not just the first.__ Passing more than one prefix produces one path per prefix per path — a cross product, not a fallback list.
+
+```ts
+class Coffees extends Resource {
+  public paths = ["/coffees", "/teas"];
+}
+
+const group = ResourceGroup
+  .builder()
+  .resources(Coffees)
+  .prefix("/api/v1", "/api/latest")
+  .build();
+
+// Coffees.paths is now:
+//   ["/api/v1/coffees", "/api/v1/teas",
+//    "/api/latest/coffees", "/api/latest/teas"]
+```
+
+That is how you serve the same resource under a versioned path and an alias without writing it twice. It is also how you accidentally quadruple your routes, so pass the prefixes you mean.
+</Callout>
+
+Prefixes are concatenated, not joined. `"/api/v1"` plus `"/coffees"` gives `"/api/v1/coffees"`, and `"/api/v1/"` plus `"/coffees"` gives `"/api/v1//coffees"` — leave the trailing slash off.
+
+## Middleware
+
+`.middleware()` wraps every resource in the group, in the order you pass them:
+
+```ts
+const group = ResourceGroup
+  .builder()
+  .resources(Users, Orders)
+  .middleware(
+    Auth,   // Runs first
+    Logger, // Runs second, then the resource is called
+  )
+  .build();
+```
+
+Each resource gets its __own__ middleware instances. `Users` and `Orders` do not share an `Auth` object, so state stored on a middleware instance never leaks between resources.
+
+See the [Middleware](/docs/middleware) tutorial for how to write one, and [Pre-Built Middleware](/docs/middleware#pre-built-middleware) for the ones Drash ships.
+
+## How It Works
+
+### TLDR
+
+`build()` generates anonymous proxy classes around each resource — one layer for middleware, one for prefixes — and returns those proxies instead of your original classes.
+
+### Detailed Explanation
+
+`build()` applies the two features in a fixed order:
+
+1. __Middleware first.__ Each resource class is wrapped in a `MiddlewareEntryPoint` class whose HTTP methods delegate to the first middleware in the chain. The middleware are nested, so `.middleware(A, B)` produces `A{original: B{original: resource}}`.
+2. __Prefixes second.__ The result is wrapped again in a `PrefixedResourceProxy`, which extends the class from step 1 and rewrites `this.paths` in its constructor.
+
+Your original resource class is never mutated. The group hands the chain a subclass of it, which is why the same resource class can appear in two groups with different prefixes.

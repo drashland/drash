@@ -1,0 +1,167 @@
+# Path Params
+
+Reading the `:name` segments declared in a resource's paths
+
+## Overview
+
+A path param is declared in the resource's `paths` property and read back by the same name. One resource can then cover many endpoints instead of one.
+
+### Recommended Reading
+
+- Read [Handling Requests](/docs/requests/handling-requests) for how `params` gets onto the request
+- Read [Creating a Resource > Dynamic Paths](/docs/resources/creating-a-resource#dynamic-paths) for the full path syntax
+
+### Objectives
+
+To gain familiarity with:
+
+- declaring a path param;
+- reading it with `pathParam()`; and
+- handling params that were not matched.
+
+## Reading a Path Param
+
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class ResourceWithPathParam extends Resource {
+  // Declare the param in the path ...
+  public paths = ["/:my_param"];
+
+  public GET(request: HTTPRequest) {
+    // ... and read it back by the same name
+    const param = request.params.pathParam("my_param");
+
+    return new Response(`You passed in: ${param}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class ResourceWithPathParam extends Resource {
+  // Declare the param in the path ...
+  paths = ["/:my_param"];
+
+  // Node hands the chain a context object, so `params` is attached to that
+  // rather than to a Web `Request`, and you write the response instead of
+  // returning one.
+  GET(context) {
+    // ... and read it back by the same name
+    const param = context.params.pathParam("my_param");
+
+    context.response.end(`You passed in: ${param}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class ResourceWithPathParam extends Resource {
+  // Declare the param in the path ...
+  public paths = ["/:my_param"];
+
+  public GET(request: HTTPRequest) {
+    // ... and read it back by the same name
+    const param = request.params.pathParam("my_param");
+
+    return new Response(`You passed in: ${param}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class ResourceWithPathParam extends Resource {
+  // Declare the param in the path ...
+  paths = ["/:my_param"];
+
+  GET(request) {
+    // ... and read it back by the same name
+    const param = request.params.pathParam("my_param");
+
+    return new Response(`You passed in: ${param}`);
+  }
+}
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+Requests to this resource resolve as follows:
+
+| Request          | Response                   |
+| ---------------- | -------------------------- |
+| `GET /hello`     | `You passed in: hello`     |
+| `GET /world`     | `You passed in: world`     |
+| `GET /something` | `You passed in: something` |
+
+The name in `paths` and the name passed to `pathParam()` have to match. There is no positional access — `pathParam(0)` is not a thing.
+
+## Optional Params
+
+A param that was not matched comes back as `undefined` rather than throwing, which is what makes optional params usable:
+
+```ts
+class Users extends Resource {
+  // `id` is required; `name` is optional because of the trailing `?`
+  public paths = ["/users/:id/:name?"];
+
+  public GET(request: HTTPRequest) {
+    const id = request.params.pathParam("id");     // always a string here
+    const name = request.params.pathParam("name"); // string | undefined
+
+    return new Response([id, name].filter(Boolean).join(" | "));
+  }
+}
+```
+
+| Request             | Response    |
+| ------------------- | ----------- |
+| `GET /users/1`      | `1`         |
+| `GET /users/1/`     | `1`         |
+| `GET /users/1/John` | `1 \| John` |
+
+<Callout type="info">
+You can have as many optional params as you like, but __required params must come before optional ones__.
+</Callout>
+
+Trailing slashes match either way. The chain appends `{/}?` to every path when it builds the index, so `/users/1` and `/users/1/` reach the same resource.
+
+## Verification
+
+With a resource whose paths are `["/users/:id"]` running on `localhost:1447`:
+
+```text
+curl "http://localhost:1447/users/1"    ->  id=1
+curl "http://localhost:1447/users/abc"  ->  id=abc
+curl "http://localhost:1447/users"      ->  404 Not Found
+```
+
+The last one is a 404 because `:id` is required — no path in any resource matches `/users` on its own.

@@ -1,0 +1,70 @@
+---
+head_title: Getting Started - Introduction
+---
+
+import {
+  Callout,
+  Tab,
+  Tabs,
+} from "nextra-theme-docs";
+import { CodeLinkExternal } from "@/src/components/nextra/CodeLinkExternal"
+import { LinkExternalDiscord } from "@/src/components/nextra/LinkExternalDiscord"
+import { LinkExternal } from "@/src/components/nextra/LinkExternal"
+import { CalloutSilent } from "@/src/components/nextra/CalloutSilent"
+import QuickstartRequestChain from "@/src/components/nextra/QuickstartRequestChain.mdx"
+
+# Introduction
+
+Welcome! We're glad you're here!
+
+Want to skip ahead and build an HTTP application? Head straight to the [Request Chain tutorial](/drash-v3.x/modules/chains/request-chain/introduction).
+
+## What is Drash?
+
+Drash is a microframework for building JavaScript HTTP applications. It can be used in Deno, Node, Cloudflare Workers, Bun, and any other environment that can run JavaScript. It can also be used alongside your current JavaScript HTTP application &mdash; giving you the ability to reroute some requests to Drash or migrate smoothly and safely to a complete Drash solution.
+
+You can learn more about Drash and its concepts under the __Concepts__ section in the left sidebar.
+
+### Migration Guide
+
+_Apologies! For your awareness, we are still working on the migration guide from v2 to v3, so stay tuned!_
+
+{/* Coming from [v2](https://drash.land/drash/v2.x) and wanting to upgrade? Check out the [Migrate From v2 to v3](/drash-v3.x/getting-started/migrate-from-v2-to-v3) page. */}
+
+## Quickstart Guide
+
+### Fork on Deno Deploy
+
+You can fork the Drash playground on Deno Deploy <LinkExternal href="https://dash.deno.com/playground/drash-v3x-beta-1">here</LinkExternal>. The full URL is written below if you want to copy it:
+
+```text copy
+https://dash.deno.com/playground/drash-v3x-beta-1
+```
+
+### Copy and Paste Code
+
+Given this is the quickstart section, we are assuming you know how to run the code below after copying and pasting it somewhere. If you need some help, hit us up in <LinkExternalDiscord />.
+
+<QuickstartRequestChain />
+
+## Features
+
+- Ships with zero dependencies <sup>1</sup>
+- Runtime agnostic <sup>2</sup>
+- Extensively documented so you can develop with confidence <sup>3</sup>
+- Hella typed so you can use it with your TypeScript codebase
+- Built to work as an <LinkExternal href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ECMAScript Module</LinkExternal> and a <LinkExternal href="https://nodejs.org/modules.html">CommonJS Module</LinkExternal>
+- Dynamic paths (e.g., `/users/:id`) <sup>4</sup>
+{/* - [Extensions](../extensions) (previously referred to as [Services](/drash/v2.x/tutorials/services/basics) in v2.x) <sup>5</sup> */}
+
+---
+
+Notes
+
+<small>
+  1. We're all about this zero deps life. <LinkExternal href="https://github.com/porsager/postgres">porsager/postgres</LinkExternal> knows what's up.
+  2. Drash v3.x was developed using Deno 1.34.3. It was tested using Deno 1.34.3, Node v18.14.2, Cloudflare Workers (using Node v18.x) Bun v0.x. If your environments are using other versions, then your experience may vary since we have no control over runtime version incompatibilities. However, we're here to help, so please hit us up in <LinkExternalDiscord />!
+  3. You know we document! If you are new to Drash Land software, we want you to know we strive to make sure you can develop with confidence. This is why we document and explain everything we can. If something doesn't make sense, please let us know by <LinkExternal href="https://github.com/drashland/website-v2/issues/new/choose">filing an issue</LinkExternal>!
+  4. Drash has modules that use <CodeLinkExternal href="https://developer.mozilla.org/en-US/docs/Web/API/URLPattern">URLPattern</CodeLinkExternal> or a polyfill for it. This way you can choose a module that works in your chosen runtime environment.
+  {/* 5. Since Drash is JavaScript runtime agnostic, you could use <LinkExternal href="https://expressjs.com/en/guide/using-middleware.html">Express middleware</LinkExternal> in your Node + Drash application. However, your Node + Drash application must conform to the middleware you plan to use. For example, Express middleware expects `( req, res, next ) => { ... }` signatures, so your Drash application must polyfill for `( req, res, next ) => { ... }`. Learn more about this at [Extensions > Middleware Recipes](../extensions/middleware-recipes). */}
+</small>

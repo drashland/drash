@@ -1,0 +1,20 @@
+# StatusCode
+
+```ts
+import { StatusCode } from "@drashland/drash/core/http/response/StatusCode.js";
+
+StatusCode.NotFound; // 404
+```
+
+Name to number, without the description.
+
+```ts
+StatusCode: Record<ResponseStatusName, number>
+```
+
+62 entries, keyed by [`StatusName`](/reference/core/http/response/status-name). Its values
+are the `code` half of every [`Status`](/reference/core/http/response/status) entry — reach
+for this one when you want the number alone, such as setting `Response.status` directly.
+
+Not re-exported from the HTTP module; see
+[Status](/reference/core/http/response/status#not-re-exported).

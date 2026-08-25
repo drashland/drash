@@ -19,9 +19,11 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Chain as BaseChain } from "../../../../../../../src/modules/base/Chain.ts";
+import {
+  BaseChainBuilder,
+} from "../../../../../../../src/standard/chains/BaseChain.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
-import { Resource } from "../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import { Resource } from "../../../../../../../src/modules/http.native.ts";
 import { ResourceNotFoundHandler } from "../../../../../../../src/standard/handlers/ResourceNotFoundHandler.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
@@ -64,7 +66,7 @@ class Home extends Resource {
 
 // Set up a wrapper to use `.use( (...) => {...} )` instead of `.handler(new Handler())`
 
-class UseInsteadOfHandleBuilder extends BaseChain.Builder {
+class UseInsteadOfHandleBuilder extends BaseChainBuilder {
   public use(handlerFn: (ctx: Ctx) => void): this {
     class UseHandler extends Handler {
       override handle<Output>(ctx: Ctx) {
@@ -108,7 +110,7 @@ resourceIndex
   .setNext(resourceNotFoundHandler)
   .setNext(new ReturnSearchResult());
 
-const chain = (new UseInsteadOfHandleBuilder())
+const app = (new UseInsteadOfHandleBuilder())
   .use(function ReceiveRequest(ctx: Ctx) {
     if (!ctx.request) {
       throw new Error("No request found");
@@ -141,7 +143,7 @@ export const handleRequest = (
 ): Promise<Response> => {
   const ctx: Ctx = { request };
 
-  return chain
+  return app
     .handle<void>(ctx)
     .then(() => {
       if (!ctx.response) {

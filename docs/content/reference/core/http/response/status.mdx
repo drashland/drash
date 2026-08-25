@@ -1,0 +1,54 @@
+# Status
+
+```ts
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+throw new HTTPError(Status.Unauthorized);
+// -> status_code             = 401
+// -> status_code_description = "Unauthorized"
+// -> message                 = "Unauthorized"
+```
+
+Maps a status name to a `{ code, description }` pair:
+
+```ts
+Status: Record<ResponseStatusName, {
+  readonly code: ResponseStatusCode;
+  readonly description: ResponseStatusDescription;
+}>
+```
+
+That pair is the [`ResponseStatus`](/reference/core/types#responsestatus) type, and it is
+what [`HTTPError`](/reference/core/errors/http-error) takes as its first constructor
+argument.
+
+| Expression                     | Value                                     |
+| ------------------------------ | ----------------------------------------- |
+| `Status.OK`                    | `{ code: 200, description: "OK" }`        |
+| `Status.NotFound`              | `{ code: 404, description: "Not Found" }` |
+| `Status.NotFound.code`         | `404`                                     |
+| `Status.NotFound.description`  | `"Not Found"`                             |
+
+62 entries, covering the informational, successful, redirection, client error, and server
+error ranges.
+
+**This is the one you use.** Its values are composed from
+[`StatusCode`](/reference/core/http/response/status-code) and
+[`StatusDescription`](/reference/core/http/response/status-description), which exist so the
+two halves cannot drift apart. [`StatusName`](/reference/core/http/response/status-name)
+supplies the keys all three share.
+
+## Why a Pair and Not a Number
+
+`HTTPError` needs both halves — `status_code` for the response status and
+`status_code_description` for its `statusText` — and taking them as one object means they
+cannot disagree. Passing `401` alone would leave the class to look the description up, and
+passing both separately would let a caller pair `401` with `"Not Found"`.
+
+This is why `new HTTPError(401)` does not type check. Pass `Status.Unauthorized`.
+
+## Not Re-Exported
+
+Neither `Status` nor its three companions are among the exports of
+`modules/http.native.js` or `modules/http.polyfill.js`. Import each from its own subpath,
+as shown above, even in files that get `HTTPError` from the HTTP module.

@@ -1,0 +1,57 @@
+---
+title: Chains
+---
+
+# Chains
+
+## What Is a Chain?
+
+In the context of Drash, a chain is a set of handlers connected together to form a variant of the [Chain of Responsibility](https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern) pattern. Each handler receives an **input** and returns an **output**. Chains are responsible for:
+
+- connecting handlers together;
+- receiving inputs from clients;
+- sending inputs to handlers; and
+- returning outputs from handlers to clients.
+
+In simplest form, their flow looks like:
+
+```mermaid
+flowchart LR
+  h1([Handler1])
+  h2([Handler2])
+  h3([Another])
+  h4([Resource])
+
+  subgraph chain[Drash Chain]
+    direction LR
+    h1 <--> h2 <--> h3 <--> h4
+  end
+
+  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
+  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
+  class h1,h2,h3,h4 blue
+```
+
+When you build HTTP applications with Drash you do not assemble a chain yourself — you
+use the HTTP module's [`Application`](/docs/concepts/http-application) class, which
+assembles one for you. This page covers what a chain is; that page covers the one you
+actually build.
+
+## What Data Does a Chain Process?
+
+Chains process the data you give them. You are in charge of defining what goes into a
+chain and what comes out. Handlers pass along the input you give them, not a fixed
+request type — which is why one chain can take a Web `Request` on one runtime and a plain
+context object on another, and both work.
+
+What a *particular* chain requires of that data is up to the handlers it holds. For the
+HTTP module's `Application`, see
+[the data it requires](/docs/concepts/http-application#handler-requirements).
+
+## Building a Chain of Your Own
+
+The HTTP module's `Application` is the only chain Drash ships that serves a purpose out of
+the box. To compose a different one, extend
+[`AbstractChainBuilder`](/reference/standard/chains/abstract-chain-builder) or use
+[`BaseChain`](/reference/standard/chains/abstract-chain-builder), which takes whatever
+handlers you give it in the order you give them.

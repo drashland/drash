@@ -1,0 +1,91 @@
+---
+title: api/ (fetch)
+description: Drash / Vercel / api/ (fetch) — a complete, runnable example.
+---
+
+# Vercel / api/ (fetch)
+
+A file in `api/` becomes a Vercel Function with no extra configuration. It receives a
+Web `Request`, so it goes straight into the chain.
+
+## Steps
+
+<Steps>
+
+### Install Drash and the Vercel CLI
+
+```bash
+npm install @drashland/drash
+npm install --global vercel
+```
+
+### Create the Following File
+
+`api/index.ts` is served at `/api`, so that is the path the resource claims.
+
+```ts filename="api/index.ts"
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/api"];
+
+  GET(request: Request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Home)
+  .build();
+
+export default {
+  fetch(request: Request) {
+    return app
+      .handle<Response>(request)
+      .catch(() => {
+        return new Response("Sorry, but we hit an error!", {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      });
+  },
+};
+```
+
+### Run the Drash App
+
+```bash
+vercel dev
+```
+
+### Open It
+
+Go to http://localhost:3000/api. Pass `--listen` to use a different port.
+
+</Steps>
+
+## Notes
+
+**The resource's `paths` must match the function's route.** A function at `api/index.ts`
+is served at `/api`, so a resource with `paths = ["/"]` will never match and every request
+answers `404`. This is the easiest thing to get wrong here — it does not come up in the
+other runtimes, where you own the whole URL space.
+
+Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node
+version, so this uses the **polyfill** entry point.
+
+If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your
+`package.json` or name the file `.mjs`. The polyfill entry point is an ES module, and
+Vercel does not allow `require` in these functions.
+
+This example uses the Node runtime because
+[Vercel recommends it over the Edge runtime](https://vercel.com/docs/functions/runtimes/edge),
+and Next.js 16.3 dropped support for `runtime = 'edge'` on routes and pages. If you do
+target the Edge runtime, it provides a global `URLPattern`, so the **native** entry point
+applies there instead — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+
+For the other Vercel entrypoint, see [server.ts](/examples/vercel/server).

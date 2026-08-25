@@ -1,0 +1,62 @@
+# Native vs. Polyfill
+
+In some cases, Drash's modules have two consumer entry points:
+
+- `<module_name>.native.js`
+- `<module_name>.polyfill.js`
+
+This is to accommodate runtimes that do not fully support Web Standards. In other words, they do not fully implement [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API).
+
+Simply put:
+
+- If your runtime fully supports Web Standards, use native modules.
+- If your runtime does not fully support Web Standards, use polyfill modules.
+
+___Tutorials will call out if there is a need for you to choose.___
+
+If you are unsure, polyfill modules should work everywhere. Polyfill modules are bundled, so they cost little size but no network or peer dependency.
+
+## HTTP Module Example
+
+Drash's HTTP module ships as two entry points that export the same surface. Under the hood, their builders are where they diverge:
+
+<Compare>
+  <CompareItem label="http.native.js">
+
+```ts
+export class Application {
+  static builder() {
+    return requestChain()
+      .urlPatternClass(URLPattern);
+      //               ^^^^^^^^^^
+      //               Uses the global URLPattern (expects the runtime to provide it)
+  }
+}
+```
+
+  </CompareItem>
+  <CompareItem label="http.polyfill.js">
+
+```ts
+export class Application {
+  static builder() {
+    return requestChain()
+      .urlPatternClass(URLPatternPolyfill);
+      //               ^^^^^^^^^^^^^^^^^^
+      //               Uses Drash's polyfill (assumes the runtime does not provide URLPattern)
+  }
+}
+```
+
+  </CompareItem>
+</Compare>
+
+Same builder, same three methods, one different argument. Because the difference is applied for you — before you receive the builder — the rest of your application is identical on every runtime, and you do not have to call `.urlPatternClass()` yourself.
+
+<Callout type="info">
+__Providing your own custom `URLPattern`__
+
+See the `.urlPatternClass()` [example](/reference/modules/http-native#urlpatternclass) to provide your own custom `URLPattern`.
+</Callout>
+
+This is also why `Application` exists as a class with a single static method. It holds `builder()` so that your code reads as `Application.builder()` rather than a bare `builder()` function call.

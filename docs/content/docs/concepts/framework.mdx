@@ -1,0 +1,74 @@
+---
+title: Framework
+---
+
+# Framework
+
+## Overview
+
+Drash is a micro web framework for JavaScript. It is strongly typed, runtime-agnostic, and built on Web Standards. It has zero dependencies, is approachable through its digestible documentation (at least this is our hope), and &mdash; being [runtime agnostic](#runtime-agnostic) &mdash; puts you in charge of choosing your runtime environment.
+
+### What Is a Micro Web Framework?
+
+Unlike other HTTP frameworks that do a lot of configuring/boostrapping for you ("automagically" or "out-of-the-box"), Drash provides you with simple building blocks to create your HTTP applications. You can think of these building blocks as [LEGO](https://www.lego.com/en-us) pieces &mdash; you pick the pieces you want and use them how you want and where you want. This concept enables you to take your Drash applications and plug them into different JavaScript runtimes, use them with different databases, connect them to larger systems, and more (as you will learn when reading the [Runtime Agnostic](#runtime-agnostic) section below).
+
+### Codebases
+
+The entire Drash framework is made up of the following codebases:
+
+- Core
+- Standard
+- Modules
+
+These codebases are explained in further detail below (click Core, Standard, or Modules in the right sidebar to quickly navigate to each).
+
+### Runtime Agnostic
+
+Drash is runtime-agnostic: use it with Deno and Deno Deploy, Node and Docker containers, Cloudflare Workers, Bun, JavaScriptCore, and virtually any environment that runs JavaScript. It does not lock you into a specific runtime.
+
+Unlike earlier versions, Drash v3 is runtime-agnostic rather than a Deno HTTP-server wrapper. Its modular design supports broader use cases and cross-runtime interoperability. Drash itself now builds on its own Core and Standard APIs to construct the HTTP lifecycle.
+
+### What Does Drash Mean?
+
+Drash is named after the military DRASH tent system: quick to set up or tear down and built for modular expansion. While developing the framework, the [creator](https://github.com/crookse) drew on his experience assembling DRASH tents in the military and applied the same plug-and-play philosophy to software.
+
+## Core
+
+This part of the codebase provides types, interfaces, and classes (with minimal implementation). It contains the lowest level APIs and is intended to help build the Standard and Modules codebases.
+
+To separate concerns, Core does not import code from Standard or Modules.
+
+## Standard
+
+This part of the codebase is similar to Deno's Standard Library and Go's Standard Library, but smaller. Standard code is intended to be used as standalone code and code to help build modules in the Modules codebase (e.g., HTTP module).
+
+To separate concerns, Standard code only imports from Standard and Core. It does not import from Modules.
+
+## Modules
+
+This part of the codebase implements the most functionality for things like processing HTTP requests (e.g., HTTP module's `Application` class). Modules import other modules, Standard, and Core.
+
+You will find the following directories in this codebase:
+
+<FileTree>
+  <FileTree.Folder name="src/modules" defaultOpen>
+    <FileTree.Folder name="builders" />
+    <FileTree.Folder name="middleware" />
+  </FileTree.Folder>
+</FileTree>
+
+#### Builders
+
+Builders are classes that provide ways for you to build objects using a builder pattern. This is similar to [`@Builder`](https://projectlombok.org/features/Builder) in Project Lombok.
+
+The [Concepts > Builders](/docs/concepts/builders) page covers this topic in more detail.
+
+#### Middleware
+
+Middleware modules provide your applications with features like CORS, ETag headers, rate limiting, etc. In Drash v2.x, we called these "services," but we decided to change the name (again) to "middleware" because it is more widely used.
+
+### Module Interoperability
+
+Modules may ship in matched pairs — a `.native` file and a `.polyfill` file side by side for maximum interoperability.
+
+The [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) page covers this topic in more detail.

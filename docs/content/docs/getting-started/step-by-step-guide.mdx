@@ -1,0 +1,531 @@
+---
+title: Step-By-Step Guide
+---
+
+import CalloutFaviconError from "@/components/CalloutFaviconError.mdx";
+import EndStateTree from "@/components/EndStateTree.tsx";
+
+# Step-By-Step Guide
+
+Building a tiny HTTP application
+
+## Overview
+
+This guide helps you build a tiny HTTP application using the HTTP module's `Application` class. If you want a finished app instead of a walkthrough, view the [examples](/examples).
+
+### Recommended Reading
+
+- Complete the [Prerequisites](/docs/getting-started/prerequisites)
+- Read the concepts on [HTTP applications](/docs/concepts/http-application) and [resources](/docs/concepts/resources)
+
+### Objectives
+
+To gain familiarity with:
+
+- the HTTP module's `Application` class;
+- how `Application` can be used in different runtimes;
+- receiving and handling requests; and
+- responding to requests.
+
+## Instructions
+
+### End State
+
+<EndStateTree
+  tree={[
+    "app.js"
+  ]}
+/>
+
+### Before You Get Started
+
+- All of the code will be written in the same file for simplicity.
+- Each next step __adds__ code to the step before it. The code that is highlighted is the code that is being __added__.
+- The code comments explain the code in a line-by-line manner. Please read them to gain a better understanding of the code.
+- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Application` requires. These fields are mentioned in [Concepts > HTTP Application > Handler Requirements](/docs/concepts/http-application#handler-requirements).
+- Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+
+### Steps and Verification
+
+<Steps>
+
+#### Initialize Your Project
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
+
+```bash
+npm init --yes
+npm install @drashland/drash
+```
+
+The `--yes` flag accepts all defaults for the `package.json` file the `init` command creates for you. Learn more about the `--yes` flag [here](https://docs.npmjs.com/cli/v8/commands/npm-init).
+
+</CodeTab>
+<CodeTab>
+
+```bash
+deno init
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+bun init --yes
+bun install @drashland/drash
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+npm init --yes
+npm install @drashland/drash
+npm install --save-dev wrangler
+```
+
+`wrangler` is Cloudflare's CLI. You need it to run a Worker on your machine.
+
+</CodeTab>
+</CodeTabs>
+
+#### Define Your Resource
+
+A resource is a class that answers requests for one or more paths. You define one using the `Resource` class.
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js", "app.ts", "app.ts", "app.js"]}
+>
+<CodeTab>
+
+```js showLineNumbers
+import {
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
+```
+
+<Callout type="gray">
+**Good to know**
+
+Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` — not a Web `Request` and `Response`. Because of that, this resource writes to `context.response` directly instead of returning a response. The `context` object is built in __Step 4 - Add Your App to Your Server__.
+</Callout>
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers
+import {
+  Resource,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Oh so easy");
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers
+import {
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Oh so easy");
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers
+import {
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Oh so easy");
+  }
+}
+```
+
+</CodeTab>
+</CodeTabs>
+
+#### Build the Application
+
+An application routes requests to the resources you give it. You build one using the `Application` class.
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js", "app.ts", "app.ts", "app.js"]}
+>
+<CodeTab>
+
+```js showLineNumbers {2,13-17}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()       // Get the app builder so we can build an app easily.
+  .resources(Home) // Add the `Home` resource to the app.
+  .build();        // Build the app.
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers {2,13-17}
+import {
+  Application,
+  Resource
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()       // Get the app builder so we can build an app easily.
+  .resources(Home) // Add the `Home` resource to the app.
+  .build();        // Build the app.
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers {2,13-17}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()       // Get the app builder so we can build an app easily.
+  .resources(Home) // Add the `Home` resource to the app.
+  .build();        // Build the app.
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers {2,13-17}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()       // Get the app builder so we can build an app easily.
+  .resources(Home) // Add the `Home` resource to the app.
+  .build();        // Build the app.
+```
+
+</CodeTab>
+</CodeTabs>
+
+<Callout type="gray">
+**Good to know**
+
+Drash uses the builder pattern to create objects. You will see `build()` calls many times throughout these documentation pages. See [Concepts > Builders](/docs/concepts/builders) for why.
+</Callout>
+
+#### Add Your App to Your Server
+
+Drash is not a server. Your runtime provides the server and you plug Drash into it to handle the request-response lifecycle.
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js", "app.ts", "app.ts", "app.js"]}
+>
+<CodeTab>
+
+```js showLineNumbers {5,19-39}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.polyfill.js";
+import { createServer } from "node:http";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context) {
+    context.response.end("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()                                         // Get the app builder so we can build an app easily.
+  .resources(Home)                                   // Add the `Home` resource to the app.
+  .build();                                          // Build the app.
+
+const hostname = "localhost";
+const port = 1447;
+
+const server = createServer((request, response) => {
+  const context = {                                  // Build the context object the app will process.
+    url: `http://${hostname}:${port}${request.url}`, // `url` must be absolute. `request.url` is path-only here.
+    method: request.method,                          // `method` tells the app which resource method to call.
+    request,                                         // Passed along so resources can read the raw request.
+    response,                                        // Passed along so resources can write the response.
+  };
+
+  return app                                         // Let the app
+    .handle(context)                                 // handle the context object
+    .catch(() => {                                   // Catch errors and
+      response.statusCode = 500;                     // send a 500 response
+      response.end("Oops.");
+    });
+});
+
+server.listen(port, hostname);
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers {19-33}
+import {
+  Application,
+  Resource
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()                     // Get the app builder so we can build an app easily.
+  .resources(Home)               // Add the `Home` resource to the app.
+  .build();                      // Build the app.
+
+Deno.serve({
+  hostname: "localhost",
+  port: 1447,
+  handler: (request: Request) => {
+    return app                   // Let the app
+      .handle<Response>(request) // handle the request
+      .catch(() => {             // Catch errors and
+        return new Response(     // send a 500 response
+          "Oops.",
+          { status: 500 }
+        );
+      });
+  }
+});
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers {19-33}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()                 // Get the app builder so we can build an app easily.
+  .resources(Home)           // Add the `Home` resource to the app.
+  .build();                  // Build the app.
+
+Bun.serve({
+  hostname: "localhost",
+  port: 1447,
+  fetch(request) {
+    return app               // Let the app
+      .handle(request)       // handle the request
+      .catch(() => {         // Catch errors and
+        return new Response( // send a 500 response
+          "Oops.",
+          { status: 500 }
+        );
+      });
+  },
+});
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers {19-31}
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.native.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()                 // Get the app builder so we can build an app easily.
+  .resources(Home)           // Add the `Home` resource to the app.
+  .build();                  // Build the app.
+
+export default {
+  fetch(request, _bindings) {
+    return app               // Let the app
+      .handle(request)       // handle the request
+      .catch(() => {         // Catch errors and
+        return new Response( // send a 500 response
+          "Oops.",
+          { status: 500 }
+        );
+      });
+  },
+};
+```
+
+<Callout type="gray">
+**Good to know**
+
+A Worker has no `listen()` call. Its entry point is a default export with a `fetch` method, and the runtime calls it for you. Keep any other module-level exports as functions — `workerd` rejects non-function named exports.
+</Callout>
+
+</CodeTab>
+</CodeTabs>
+
+#### Run Your App
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
+
+```bash
+node app.js
+```
+
+The file above uses `import` statements, so Node needs to treat it as an ES module. Either add `"type": "module"` to your `package.json` or rename the file to `app.mjs`.
+
+With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+```text
+Oh so easy
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+deno run --allow-net app.ts
+```
+
+Deno denies network access unless you ask for it, which is what `--allow-net` grants. Without that flag the app exits with a permission error before it can listen.
+
+With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+```text
+Oh so easy
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+bun run app.ts
+```
+
+With the app running, go to http://localhost:1447 in your browser. You should see something like:
+
+```text
+Oh so easy
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+npx wrangler dev app.js
+```
+
+Unlike the other runtimes, the port is chosen by `wrangler` rather than by your code, so the `hostname` and `port` fields you would write for Deno or Bun have no equivalent here.
+
+With the app running, go to the address `wrangler` prints by default in your browser: http://localhost:8787. You should see something like:
+
+```text
+Oh so easy
+```
+
+</CodeTab>
+</CodeTabs>
+
+</Steps>
+
+## Known Behaviors
+
+<CalloutFaviconError />

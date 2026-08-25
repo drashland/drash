@@ -1,0 +1,209 @@
+---
+title: Resources
+---
+
+# Resources
+
+## What Is a Resource?
+
+Like the [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview) and [RFC](https://datatracker.ietf.org/doc/html/rfc7231/#section-2), a resource in Drash is the target of an HTTP request. In Drash, resources are represented as classes with [pathnames](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname) (aka **paths**) and [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods):
+
+```ts
+class MyResource {
+  paths = [          // These are the pathnames (we use `paths` for short)
+    "/teas",
+  ];
+
+  GET(...) {...}     // Handles GET /teas
+  POST(...) {...}    // Handles POST /teas
+  PUT(...) {...}     // Handles PUT /teas
+  DELETE(...) {...}  // Handles DELETE /teas
+
+  // ... and other HTTP request methods
+}
+```
+
+For the full API — what the methods receive, what happens to the ones you leave out, and how to read params — see [Creating a Resource](/docs/resources/creating-a-resource).
+
+## Why Use Classes?
+
+**We (the maintainers) prefer classes when processing resources internally.**
+
+Drash does not use an Express-like syntax (e.g., `app.get("/teas", someCallback)`) and does not use the term "controllers" like in the [MVC](https://developer.mozilla.org/en-US/docs/Glossary/MVC) pattern. Instead, Drash uses classes and the term "resources". The original reasoning is in our article [Why We Built Drash](https://dev.to/drash_land/why-was-drash-built-4bob). Since then, we have made changes — removing `this.request` and `this.response` among them — based on developer experience feedback and a goal of a maintainable framework that scales across runtimes.
+
+See the following compare against a framework that uses `app.get()`:
+
+<Compare>
+  <CompareItem label="Express">
+
+```js
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send(req.method + " received!");
+});
+
+app.listen(1447);
+```
+
+  </CompareItem>
+  <CompareItem label="Drash">
+
+```ts
+import {
+  Application,
+  Resource,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class MyResource extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response(request.method + " received!");
+  }
+}
+
+const app = Application.builder().resources(MyResource).build();
+
+Deno.serve(
+  { port: 1447 },
+  (request) => app.handle<Response>(request)
+);
+```
+
+  </CompareItem>
+</Compare>
+
+Resources are not tied to Web `Request` and `Response`. You can pass in a `context` object to `app.handle()` and it will be received by the resource that matches that context object's `url` field.
+
+## Very Strict Interface
+
+You might notice the syntax is very strict. **This is intentional.** Resource classes follow a strict interface in the hope that it promotes [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns).
+
+For example, for a resource handling users, we hope your thought process is:
+
+- your resource should be named `Users`;
+- its `paths` should contain `/users`;
+- the logic in its HTTP methods should be user-related; and
+- it should be the only resource in a file named `Users.ts` or `Users.js`.
+
+In other frameworks, being unopinionated can lead to files holding multiple endpoints that do not match the file's name. Adding structure here is deliberate.
+
+## The Core Resource
+
+All resources extend the `Resource` class in Drash's core code. Extending it gives every resource the same interface and the same default behavior — throwing `501 Not Implemented` for any HTTP request method you did not implement. That choice follows [RFC 7231 Section 4.1](https://datatracker.ietf.org/doc/html/rfc7231#section-4.1):
+
+> When a request method is received that is unrecognized or not implemented by an origin server, the origin server SHOULD respond with the 501 (Not Implemented) status code.
+
+Below is how the `501` code is implemented in Drash's core code:
+
+```ts filename="src/core/http/Resource.ts"
+class Resource {
+  public paths: string[] = [];
+
+  public GET(_request: unknown): unknown {
+    throw new HTTPError(Status.NotImplemented);
+  }
+
+  public POST(_request: unknown): unknown {
+    throw new HTTPError(Status.NotImplemented);
+  }
+
+  // ... and so on for the other HTTP request methods
+}
+```
+
+So given a resource that implements only `GET`, **any** request to it that is **not** a GET results in a `501 Not Implemented`.
+
+<Callout type="warning">
+  Throwing `501 Not Implemented` is the default behavior **for all resources**,
+  unless you create your own base resource class with different defaults. If you
+  want `405 Method Not Allowed` instead, override the method and throw it — see
+  [Creating a Resource](/docs/resources/creating-a-resource).
+</Callout>
+
+## Chain Resource Classes
+
+The HTTP module exports its own `Resource` class, which extends the core one. **Extend the HTTP module's `Resource`, not the core one directly**, or your application might not work as expected.
+
+Chains implement their own base `Resource` so the maintainers can:
+
+- create chains that handle varying data types;
+- isolate request-resource-response lifecycle behaviors to specific chains;
+- create new chains to support future runtimes and their HTTP servers; and
+- keep the default behavior intact.
+
+<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+
+<Tabs.Tab>
+
+```ts filename="MyResource.ts"
+import {
+  Resource,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class MyResource extends Resource {
+  paths = ["/teas"];
+
+  GET(request: Request) {
+    // ...
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js filename="MyResource.js"
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class MyResource extends Resource {
+  paths = ["/teas"];
+
+  // Node hands the chain a context object rather than a Web `Request`, and you
+  // write to `context.response` instead of returning a response.
+  GET(context) {
+    // ...
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```ts filename="MyResource.ts"
+import {
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class MyResource extends Resource {
+  paths = ["/teas"];
+
+  GET(request: Request) {
+    // ...
+  }
+}
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js filename="MyResource.js"
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class MyResource extends Resource {
+  paths = ["/teas"];
+
+  GET(request) {
+    // ...
+  }
+}
+```
+
+</Tabs.Tab>
+
+</Tabs>

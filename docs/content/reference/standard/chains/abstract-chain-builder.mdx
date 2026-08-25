@@ -1,0 +1,39 @@
+# AbstractChainBuilder
+
+The base every chain builder extends. It collects handlers and wires them into a chain.
+
+```ts
+import { AbstractChainBuilder } from "@drashland/drash/standard/chains/AbstractChainBuilder.js";
+```
+
+It implements [`IBuilder`](/reference/core/interfaces#ibuilderproduct), leaving `build()` abstract for the subclass to define.
+
+## Members
+
+| Member              | Kind      | Notes                                                              |
+| ------------------- | --------- | ------------------------------------------------------------------ |
+| `handlers`          | `Handler[]` | Readonly. The handlers collected so far, in the order added.      |
+| `handler(handler)`  | method    | Appends a handler. Returns `this`, so calls chain.                  |
+| `build()`           | abstract  | The subclass decides what to assemble and what to return.           |
+| `link()`            | protected | Wires `handlers` together and returns the head.                     |
+
+## `link()`
+
+Reduces the collected handlers with `setNext()`, so each points at the next, then returns `handlers[0]` — the head, and the object whose `handle()` you call.
+
+It validates first, and throws a plain `Error` (not an `HTTPError`) if the list is unusable:
+
+```text
+Chain.Builder: `this.handlers` should be an array
+Chain.Builder: `this.handlers` is empty
+```
+
+Both messages are prefixed `Chain.Builder:`, which names a class that no longer exists — useful to know if you are grepping for the source of one.
+
+## The One Subclass
+
+`RequestChainBuilder` (`modules/builders/RequestChainBuilder.js`) is the only subclass that ships. Its `build()` assembles the request chain's five handlers in a fixed order and returns the head.
+
+**`handler()` and `handlers` are deliberately absent from what [`Application.builder()`](/reference/modules/http-native) hands you.** The request chain's handlers, and the order they run in, are decided by `build()` and are not the consumer's to change — so the public type exposes three methods and nothing else. See [Handlers](/reference/standard/handlers) for the handlers themselves and the order they run in.
+
+Extending `AbstractChainBuilder` yourself is the supported way to assemble a chain that is not the request chain.

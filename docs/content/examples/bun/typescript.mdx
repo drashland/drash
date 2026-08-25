@@ -1,0 +1,99 @@
+---
+title: TypeScript
+description: Drash / Bun / TypeScript — a complete, runnable example.
+---
+
+# Bun / TypeScript
+
+## Steps
+
+<Steps>
+
+### Install Bun
+
+Install [Bun](https://bun.sh/).
+
+### Install Dependencies
+
+Install the dependencies in `package.json`.
+
+```bash
+bun install
+```
+
+### Create the Following File
+
+```ts filename="app.ts"
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
+
+  GET(request: Request) {        // Handle GET requests to those paths.
+    console.log(`Received request: ${request.url}`);
+
+    return new Response(         // This is what `app.handle()` resolves with.
+      `Oh so easy (written at ${new Date()})`,
+    );
+  }
+}
+
+const app = Application
+  .builder()                     // Get the app's builder so we can build the app easily.
+  .resources(Home)               // Add the `Home` resource to the app.
+  .build();                      // Build the app.
+
+const hostname = "localhost";    // Define server variables for reuse below.
+const port = 1447;
+
+Bun.serve({
+  hostname,
+  port,
+  fetch: (request: Request): Promise<Response> => {
+    return app                 // Let the app
+      .handle<Response>(request) // handle the request, and
+      .catch((error) => {        // catch anything it throws.
+        if (request.url.includes("favicon")) {
+          return new Response(); // Browsers ask for this; ignore it.
+        }
+
+        return new Response(     // Everything else gets a 500.
+          "Sorry, but we hit an error!",
+          {
+            status: 500,
+            statusText: "Internal Server Error",
+          },
+        );
+      });
+  },
+});
+```
+
+### Run the Drash App
+
+```bash
+bun start
+```
+
+_Note: `bun start` is defined in the `package.json` file._
+
+### Open It
+
+Go to http://localhost:1447. You should see something like the following:
+
+```text
+Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
+```
+
+</Steps>
+
+## Notes
+
+Bun gives you Web `Request`/`Response`, but uses the **polyfill** entry point — that pairing is the one thing worth remembering here.
+
+Apart from the entry point and the server call, this is identical to the [Deno example](/examples/deno/typescript).
+
+This example is in the repository at [`examples/bun-ts`](https://github.com/drashland/drash/tree/main/examples/bun-ts).

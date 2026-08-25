@@ -1,0 +1,52 @@
+# Builder
+
+The builder contract Standard declares for itself. Type-only — it does not exist at runtime.
+
+```ts
+import type { Builder } from "@drashland/drash/standard/builders/Builder.js";
+```
+
+```ts
+interface Builder<C> {
+  build(): C;
+}
+```
+
+`C` is what `build()` returns — the finished object (aka product), not the builder.
+
+## Who Implements It
+
+| Implementer                | Object (aka Product)    | Declared in                                            |
+| -------------------------- | ---------- | ------------------------------------------------------ |
+| `ResponseBuilder`          | `Response` | `modules/builders/ResponseBuilder.js`                  |
+| `ETagResponseBuilder`      | `Response` | `modules/middleware/e_tag/ETagResponse.js`              |
+| `RateLimitResponseBuilder` | `Response` | `modules/middleware/rate_limiter/RateLimitResponse.js` |
+
+The last two extend `ResponseBuilder`, so they inherit the contract rather than declaring it again. See [Builders](/reference/modules/builders) for what each one does.
+
+## Its Relationship to `IBuilder`
+
+Core declares [`IBuilder<Product>`](/reference/core/interfaces#ibuilderproduct) with the same single `build()` method. The two are **structurally identical and genuinely duplicated** — Standard is allowed to import from Core, so nothing forces the second declaration.
+
+Which one a class implements is a matter of where it sits:
+
+| Contract                                | Implemented by                                     |
+| --------------------------------------- | -------------------------------------------------- |
+| `IBuilder` (Core)                       | `AbstractChainBuilder`, the resource group builder |
+| `Builder<C>` (Standard)                 | `ResponseBuilder` and its two subclasses           |
+
+`RequestBuilder` implements neither — it just has a `build()` method.
+
+Because both are structural, a class satisfying one satisfies the other. The distinction matters for reading the source, not for writing against it.
+
+## Three Things Named `Builder`
+
+Worth knowing before you go looking for one:
+
+| Name                    | Declared in                                | What it is                                                     |
+| ----------------------- | ------------------------------------------ | -------------------------------------------------------------- |
+| `IBuilder<Product>`     | `core/interfaces/IBuilder.js`              | Core's contract                                                 |
+| `Builder<C>`            | `standard/builders/Builder.js`             | This page — Standard's contract                                 |
+| `Builder`               | `modules/builders/RequestChainBuilder.js`  | The chain builder's own public surface, unrelated to the others |
+
+The third is what [`Application.builder()`](/reference/modules/http-native) returns. Despite the name, it does **not** implement either contract above — it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.

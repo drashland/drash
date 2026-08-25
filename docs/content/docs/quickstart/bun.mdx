@@ -1,0 +1,60 @@
+# Bun
+
+Use the **polyfill** entry point. Bun exposes Web `Request`/`Response`, but not a `URLPattern` that Drash can rely on across versions.
+
+## Install
+
+```bash
+bun install @drashland/drash
+```
+
+## App
+
+```ts
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(request: Request) {
+    return new Response("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Home)
+  .build();
+
+Bun.serve({
+  hostname: "localhost",
+  port: 1447,
+  fetch(request: Request): Promise<Response> {
+    return app
+      .handle<Response>(request)
+      .catch(() => {
+        return new Response("Sorry, but we hit an error!", {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      });
+  },
+});
+```
+
+## Run
+
+```bash
+bun run app.ts
+```
+
+Then visit `http://localhost:1447`.
+
+## Notes
+
+Apart from the entry point and the server call, this is identical to the [Deno guide](/docs/quickstart/deno) — both pass a Web `Request` straight through and return a Web `Response`.
+
+A runnable version lives in [`examples/bun-ts`](https://github.com/drashland/drash/tree/main/examples/bun-ts).

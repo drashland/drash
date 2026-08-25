@@ -2,7 +2,8 @@
   "lock": false,
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/fs": "jsr:@std/fs@^1.0.19"
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@drashland/drash/": "./dist/"
   },
   "lint": {
     "rules": {
@@ -27,14 +28,19 @@
       "node_modules",
       "package-lock.json",
       "pnpm-lock.yaml",
-      "yarn.lock"
+      "yarn.lock",
+      "docs/.next",
+      "docs/out"
     ]
   },
   "tasks": {
     "build:libs": "deno run --allow-read --allow-write --allow-net ./scripts/doit.ts && pnpm exec tsup src --format cjs,esm --no-splitting --dts",
     "build:check": "deno task check:file-headers && deno task npm:clean && pnpm install && deno task build:libs && deno task test:all",
+    "check": "deno check src tests/unit tests/compat/deno tests/middleware",
     "check:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
     "check:package-json-version": "deno run --allow-read ./scripts/check_package_json_version_for_release.ts",
+    "docs:build": "cd docs && pnpm install && pnpm build",
+    "docs:dev": "cd docs && pnpm install && pnpm dev",
     "lint:tests:bun": "deno lint tests/compat/bun",
     "lint:tests:node": "deno lint tests/compat/node*/*",
     "publish:dry-run": "npm publish --access restricted --dry-run",

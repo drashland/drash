@@ -20,17 +20,21 @@
  */
 
 import { HTTPError } from "../../../../../../../../src/core/errors/HTTPError.ts";
-import * as Chain from "../../../../../../../../src/modules/chains/RequestChain/mod.native.ts";
+import {
+  Application,
+  Middleware,
+  Resource,
+  ResourceGroup,
+} from "../../../../../../../../src/modules/http.native.ts";
 import { StatusCode } from "../../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../../src/core/http/response/StatusDescription.ts";
-import { ResourceGroup } from "../../../../../../../../src/standard/http/ResourceGroup.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public override paths = ["/home"];
 
   public override GET(_request: Request) {
@@ -50,7 +54,7 @@ class Home extends Chain.Resource {
   }
 }
 
-class UsersAll extends Chain.Resource {
+class UsersAll extends Resource {
   public override paths = ["/users-all"];
 
   public override GET(_request: Request) {
@@ -70,7 +74,7 @@ class UsersAll extends Chain.Resource {
   }
 }
 
-class UsersAllGet extends Chain.Resource {
+class UsersAllGet extends Resource {
   public override paths = ["/users-all-get"];
 
   public override GET(_request: Request) {
@@ -90,7 +94,7 @@ class UsersAllGet extends Chain.Resource {
   }
 }
 
-class UsersAllGetGetAgain extends Chain.Resource {
+class UsersAllGetGetAgain extends Resource {
   public override paths = ["/users-all-get-get-again"];
 
   public override GET(_request: Request) {
@@ -110,7 +114,7 @@ class UsersAllGetGetAgain extends Chain.Resource {
   }
 }
 
-class MiddlewareBlockedMethods extends Chain.Middleware {
+class MiddlewareBlockedMethods extends Middleware {
   // Intentionally not using `public` keyword here to mix and match usages
   override GET(_request: Request) {
     return new Response("Blocked");
@@ -137,7 +141,7 @@ class MiddlewareBlockedMethods extends Chain.Middleware {
   }
 }
 
-class MiddlewareALL extends Chain.Middleware {
+class MiddlewareALL extends Middleware {
   public override async ALL(request: Request) {
     const ogResponse = await super.next<Response>(request);
     return new Response(`MiddlewareALL touched;` + await ogResponse.text());
@@ -160,7 +164,7 @@ class MiddlewareALL extends Chain.Middleware {
   }
 }
 
-class MiddlewareGET extends Chain.Middleware {
+class MiddlewareGET extends Middleware {
   public override async GET(request: Request) {
     const ogResponse = await super.next<Response>(request);
     const body = await ogResponse.text();
@@ -168,7 +172,7 @@ class MiddlewareGET extends Chain.Middleware {
   }
 }
 
-class MiddlewareGETAgain extends Chain.Middleware {
+class MiddlewareGETAgain extends Middleware {
   public override async GET(request: Request) {
     const ogResponse = await super.next<Response>(request);
     const body = await ogResponse.text();
@@ -176,7 +180,7 @@ class MiddlewareGETAgain extends Chain.Middleware {
   }
 }
 
-class MiddlewareGETAgain2 extends Chain.Middleware {
+class MiddlewareGETAgain2 extends Middleware {
   public override async GET(request: Request) {
     const ogResponse = await super.next<Response>(request);
     const body = await ogResponse.text();
@@ -184,7 +188,7 @@ class MiddlewareGETAgain2 extends Chain.Middleware {
   }
 }
 
-class MiddlewareGETAgain3 extends Chain.Middleware {
+class MiddlewareGETAgain3 extends Middleware {
   public override GET(_request: Request) {
     return new Response(
       `MiddlewareGETAgain3 touched, but blocking access to the resource`,
@@ -195,7 +199,7 @@ class MiddlewareGETAgain3 extends Chain.Middleware {
 const groupWithBlockedMethods = ResourceGroup
   .builder()
   .resources(Home)
-  .pathPrefixes("/api/v1")
+  .prefix("/api/v1")
   .middleware(
     MiddlewareBlockedMethods,
   )
@@ -204,7 +208,7 @@ const groupWithBlockedMethods = ResourceGroup
 const groupWithAll = ResourceGroup
   .builder()
   .resources(UsersAll)
-  .pathPrefixes("/api/v2")
+  .prefix("/api/v2")
   .middleware(
     MiddlewareALL,
   )
@@ -213,7 +217,7 @@ const groupWithAll = ResourceGroup
 const groupWithAllGet = ResourceGroup
   .builder()
   .resources(UsersAllGet)
-  .pathPrefixes("/api/v2")
+  .prefix("/api/v2")
   .middleware(
     MiddlewareALL,
     MiddlewareGET,
@@ -223,7 +227,7 @@ const groupWithAllGet = ResourceGroup
 const groupWithAllGetGetAgain = ResourceGroup
   .builder()
   .resources(UsersAllGetGetAgain)
-  .pathPrefixes("/api/v2")
+  .prefix("/api/v2")
   .middleware(
     MiddlewareALL,
     MiddlewareGET,
@@ -233,7 +237,7 @@ const groupWithAllGetGetAgain = ResourceGroup
   )
   .build();
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(
     groupWithBlockedMethods,
@@ -246,7 +250,7 @@ const chain = Chain
 export const handleRequest = (
   request: Request,
 ): Promise<Response> => {
-  return chain
+  return app
     .handle<Response>(request)
     .catch((error: Error | HTTPError) => {
       if (

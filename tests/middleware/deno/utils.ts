@@ -22,8 +22,13 @@
 import { HTTPError } from "../../../src/core/errors/HTTPError.ts";
 import { StatusCode } from "../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../src/core/http/response/StatusDescription.ts";
-import * as Chain from "../../../src/modules/chains/RequestChain/mod.native.ts";
-import { ResourceGroup } from "../../../src/standard/http/ResourceGroup.ts";
+import {
+  Application,
+  type HTTPRequest,
+  Middleware,
+  Resource,
+  ResourceGroup,
+} from "../../../src/modules/http.native.ts";
 
 export function assertionMessage(...message: string[]): string {
   return `\n\n
@@ -95,7 +100,7 @@ export function query(kvp?: Record<string, string>) {
  *     SomeMiddleware()
  *   ],
  *   resources: [
- *     class MyResource extends Chain.Resource { ... }
+ *     class MyResource extends Resource { ... }
  *   ],
  * })
  *
@@ -104,25 +109,25 @@ export function query(kvp?: Record<string, string>) {
  * ```
  */
 export function chain(options: {
-  middleware?: typeof Chain.Middleware[];
-  resources?: typeof Chain.Resource[];
+  middleware?: typeof Middleware[];
+  resources?: typeof Resource[];
 }) {
   const {
     middleware = [],
     resources = [],
   } = options;
 
-  return Chain
+  return Application
     .builder()
     .resources(
       ResourceGroup
         .builder()
         .resources(
-          class Home extends Chain.Resource {
+          class Home extends Resource {
             public override paths = ["/"];
 
-            public override GET(_request: Chain.HTTPRequest) {
-              return new Response("Hello from Home.GET()!");
+            public override GET(_request: HTTPRequest) {
+              return new Response("Oh so easy");
             }
           },
           ...resources,

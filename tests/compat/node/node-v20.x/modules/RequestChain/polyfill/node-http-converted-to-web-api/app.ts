@@ -24,14 +24,17 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { HTTPError } from "../../../../../../../../dist/core/errors/HTTPError";
 import { StatusCode } from "../../../../../../../../dist/core/http/response/StatusCode";
 import { StatusDescription } from "../../../../../../../../dist/core/http/response/StatusDescription";
-import * as Chain from "../../../../../../../../dist/modules/chains/RequestChain/mod.polyfill";
+import {
+  Application,
+  Resource,
+} from "../../../../../../../../dist/modules/http.polyfill";
 import { Status } from "../../../../../../../../dist/core/http/response/Status";
 
 export const protocol = "http";
 export const hostname = "localhost";
 export const port = 1447;
 
-class Home extends Chain.Resource {
+class Home extends Resource {
   public paths = ["/"];
 
   public GET(_request: Request) {
@@ -51,7 +54,7 @@ class Home extends Chain.Resource {
   }
 }
 
-const chain = Chain
+const app = Application
   .builder()
   .resources(Home)
   .build();
@@ -65,7 +68,7 @@ export const handleRequest = (
     method: req.method,
   });
 
-  return chain
+  return app
     .handle<Response>(request)
     // All resources will return a Response object that we can use to build the
     // ServerResponse object
