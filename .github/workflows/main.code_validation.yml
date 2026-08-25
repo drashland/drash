@@ -10,11 +10,13 @@ on:
     branches:
       - main
     paths-ignore:
+      - ".github/workflows/**"
       - "docs/**"
   push:
     branches:
       - main
     paths-ignore:
+      - ".github/workflows/**"
       - "docs/**"
 
 jobs:
@@ -27,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -43,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -58,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -84,7 +86,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno (for `deno` command)
         uses: denoland/setup-deno@v2
@@ -92,10 +94,10 @@ jobs:
           deno-version: v2.x
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Install Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -122,13 +124,13 @@ jobs:
   #   runs-on: ${{ matrix.os }}
 
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v6
 
   #     - name: Install Deno (for `deno` command)
   #       uses: denoland/setup-deno@v2
 
   #     - name: Install Node ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v4
+  #       uses: actions/setup-node@v7
   #       with:
   #         node-version: ${{ matrix.node-version }}
 
@@ -150,7 +152,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -180,7 +182,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno (for `deno` command)
         uses: denoland/setup-deno@v2
@@ -188,7 +190,7 @@ jobs:
           deno-version: v2.x
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Install Node ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -218,7 +220,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Deno (for `deno` command)
         uses: denoland/setup-deno@v2
