@@ -25,6 +25,10 @@ The pieces that do the work, composed from [Standard](/reference/standard) and [
 | `CORS`                     | function | `modules/middleware/CORS.js`          | [CORS](/reference/modules/middleware/cors)             |
 | `ETag`                     | function | `modules/middleware/ETag.js`          | [ETag](/reference/modules/middleware/etag)             |
 | `RateLimiter`              | function | `modules/middleware/RateLimiter.js`       | [RateLimiter](/reference/modules/middleware/rate-limiter) |
+| `OpenAPIv3`                | decorator | `modules/openapiv3.js`          | [OpenAPIv3](/reference/modules/decorators/openapiv3) |
+| `buildPathsObject`         | function | `modules/openapiv3.js`          | [OpenAPIv3](/reference/modules/decorators/openapiv3) |
+| `getOperation`             | function | `modules/openapiv3.js`          | [OpenAPIv3](/reference/modules/decorators/openapiv3) |
+| `getOperations`            | function | `modules/openapiv3.js`          | [OpenAPIv3](/reference/modules/decorators/openapiv3) |
 
 Each pre-built middleware also exports its `XMiddleware` class, its `Options` type, and its `defaultOptions` &mdash; see the individual pages.
 
@@ -48,5 +52,6 @@ __Any change to one entry point has to be mirrored in the other.__ They are sepa
 <Cards num={2}>
   <Cards.Card title="HTTP" href="/reference/modules/http-native" arrow />
   <Cards.Card title="Middleware" href="/reference/modules/middleware/cors" arrow />
+  <Cards.Card title="Decorators" href="/reference/modules/decorators/openapiv3" arrow />
   <Cards.Card title="Builders" href="/reference/modules/builders" arrow />
 </Cards>

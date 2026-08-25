@@ -1,0 +1,343 @@
+---
+title: OpenAPIv3
+description: Attaches an OpenAPI v3 Operation Object to a resource's HTTP method, and assembles those into a document's paths.
+---
+
+# OpenAPIv3
+
+## Summary
+
+`OpenAPIv3` is a [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) &mdash; a marker you attach to a resource's HTTP method with `@`
+syntax that records something about it without changing what it does. Here it
+records an [OpenAPI](https://www.openapis.org/) v3 **Operation Object**: the
+description of one HTTP method on one path, including what it accepts and what
+it can respond with.
+
+__Nothing happens at request time.__ The description is stored, and read back later
+to build the `paths` member of an OpenAPI document you can write out as YAML or
+JSON.
+
+A complete, runnable example:
+
+```ts filename="app.ts"
+import {
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+import {
+  buildPathsObject,
+  OpenAPIv3,
+} from "@drashland/drash/modules/openapiv3.js";
+
+class Users extends Resource {
+  paths = ["/users/:id?"];
+
+  @OpenAPIv3({
+    summary: "Get a user",
+    tags: ["users"],
+    responses: {
+      "200": {
+        description: "The user",
+        content: {
+          "application/json": {
+            schema: { type: "object" },
+          },
+        },
+      },
+    },
+  })
+  GET(request: Request) {
+    return new Response(`Getting ${request.params.pathParam("id")}`);
+  }
+}
+
+// The `paths` member of an OpenAPI v3 document, derived from the resource.
+const document = {
+  openapi: "3.0.3",
+  info: { title: "My API", version: "1.0.0" },
+  paths: buildPathsObject([Users]),
+};
+
+console.log(JSON.stringify(document, null, 2));
+```
+
+Run it with:
+
+```bash filename="Terminal"
+deno run app.ts
+```
+<details>
+<summary><small>The resulting Open API v3 Spec in JSON</small></summary>
+```json
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "My API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get a user",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "The user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get a user",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "The user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+</details>
+
+The rest of this page takes that apart.
+
+<Callout type="info" emoji={null}>
+A **resource** is the class that answers requests for one or more paths, and its
+`GET`, `POST`, and other methods handle those HTTP methods. See
+[Creating a Resource](/docs/resources/creating-a-resource) if you have not
+written one yet.
+</Callout>
+
+## The Decorator
+
+`@OpenAPIv3({ ... })` takes one argument: an Operation Object. Its fields are the
+ones the
+[OpenAPI v3 specification](https://spec.openapis.org/oas/v3.0.3#operation-object)
+defines, so anything valid there is valid here.
+
+| Field          | Type                     | What it is                                       |
+| -------------- | ------------------------ | ------------------------------------------------ |
+| `tags`         | `string[]`               | Groups the operation under a heading in viewers  |
+| `summary`      | `string`                 | One line describing the operation                |
+| `description`  | `string`                 | The long form; CommonMark is allowed             |
+| `operationId`  | `string`                 | A name for the operation, unique per document    |
+| `parameters`   | `ParameterObject[]`      | Path, query, header, and cookie parameters       |
+| `requestBody`  | `RequestBodyObject`      | The body the operation accepts, keyed by content type |
+| `responses`    | `ResponsesObject`        | What it can respond with, keyed by status code   |
+| `deprecated`   | `boolean`                | Marks the operation as no longer recommended     |
+| `security`     | `SecurityRequirementObject[]` | Which security schemes apply               |
+| `servers`      | `ServerObject[]`         | Servers for this operation, if not the default   |
+| `externalDocs` | `ExternalDocumentationObject` | A link to more documentation               |
+| `callbacks`    | `Record<string, CallbackObject>` | Requests this operation may make later  |
+
+Two details that catch people out, both from the specification rather than from
+Drash:
+
+- **Status codes are strings, not numbers.** `"200"`, not `200`. The wildcard
+  forms (`"2XX"`) and `"default"` are also allowed.
+- **`responses` is required by OpenAPI 3.0.** It is optional in this decorator
+  so you can annotate a resource a piece at a time, but a document assembled
+  from operations that have none will not validate.
+
+### Where It Can Go
+
+The decorator only makes sense on a resource's HTTP methods, and it says so
+rather than failing quietly. Each of these throws a `TypeError` when the class
+is defined:
+
+| Written on                       | Message                                                     |
+| -------------------------------- | ----------------------------------------------------------- |
+| A method that is not an HTTP method | ``OpenAPIv3: `search` is not an HTTP method. Decorate one of: CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE.`` |
+| A `static` method                | ``OpenAPIv3: can only decorate an instance method, but `GET` is static.`` |
+| A `#private` method              | ``OpenAPIv3: can only decorate a public method, but `GET` is private.`` |
+| Anything that is not a method    | ``OpenAPIv3: can only decorate a method, but was used on a field.`` |
+
+The private case is a real limitation rather than a style rule: a private method
+cannot be reached from the class's prototype, so nothing could read the
+description back off it.
+
+<Callout type="warning">
+These are
+[TC39 stage 3 decorators](https://github.com/tc39/proposal-decorators), the
+standard form, which TypeScript 5 and later compile by default. If your project
+sets `"experimentalDecorators": true` in its `tsconfig.json`, turn it off &mdash;
+that flag selects an older, incompatible decorator design.
+</Callout>
+
+## Reading a Description Back
+
+### `getOperation(method)`
+
+Returns the Operation Object a single method was decorated with, or `undefined`
+if it was never decorated.
+
+```ts
+import { getOperation } from "@drashland/drash/modules/openapiv3.js";
+
+getOperation(Users.prototype.GET);    // The object passed to @OpenAPIv3
+getOperation(Users.prototype.DELETE); // undefined -- not decorated
+```
+
+### `getOperations(ResourceClass)`
+
+Returns every description on a resource, keyed by HTTP method name. Methods that
+were not decorated are absent rather than `undefined`.
+
+```ts
+getOperations(Users); // { GET: { summary: "Get a user", ... } }
+```
+
+It walks the prototype chain, so a resource inherits a decorated method from a
+base class. An override that is not itself decorated counts as undocumented: a
+different implementation should not inherit the parent's description.
+
+## Building the Paths
+
+### `buildPathsObject(resources)`
+
+Takes resource classes and returns the `paths` member of an OpenAPI v3 document
+&mdash; every path each resource answers to, with an entry per decorated method.
+
+```ts
+const paths = buildPathsObject([Users, Home]);
+```
+
+Resources with no decorated methods contribute nothing, so adding this to an
+existing application describes only what you have annotated so far.
+
+It returns the `paths` member alone. A document also needs `openapi` and `info`
+at minimum, which is why the example at the top of this page wraps the result.
+
+### Path Parameters
+
+Drash and OpenAPI write path parameters differently, so `buildPathsObject`
+translates between them.
+
+Drash matches requests with
+[`URLPattern`](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern),
+where a parameter is `:id` and a trailing `?` makes it optional. OpenAPI uses
+`{id}`, and a path parameter there is **always required**.
+
+| Resource path    | Becomes                      |
+| ---------------- | ---------------------------- |
+| `/users`         | `/users`                     |
+| `/users/:id`     | `/users/{id}`                |
+| `/users/:id?`    | `/users` **and** `/users/{id}` |
+
+An optional parameter has no single OpenAPI equivalent, so it expands into two
+paths &mdash; which is how those two URLs are expressed in a document.
+
+Each derived parameter is added with `required: true` and a `string` schema. If
+you describe the same parameter yourself, yours wins, so you can give it a
+schema or a description:
+
+```ts {6-13}
+class Users extends Resource {
+  paths = ["/users/:id"];
+
+  @OpenAPIv3({
+    summary: "Get a user",
+    parameters: [
+      {
+        name: "id",           // Same name as the path parameter
+        in: "path",
+        required: true,
+        description: "The user's ID",
+        schema: { type: "integer", format: "int64" },
+      },
+    ],
+    responses: { "200": { description: "The user" } },
+  })
+  GET(request: Request) {
+    // ...
+  }
+}
+```
+
+## Writing the YAML
+
+`buildPathsObject` returns a plain object, and Drash does not serialize it. Pass
+it to whichever YAML library your runtime already has:
+
+<Tabs items={["Deno", "Node"]}>
+
+<Tabs.Tab>
+
+```ts filename="spec.ts"
+import { stringify } from "jsr:@std/yaml";
+
+await Deno.writeTextFile("openapi.yaml", stringify(document));
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+```js filename="spec.js"
+import { writeFileSync } from "node:fs";
+import { stringify } from "yaml";
+
+writeFileSync("openapi.yaml", stringify(document));
+```
+
+</Tabs.Tab>
+
+</Tabs>
+
+## Types
+
+Every OpenAPI object this module accepts is exported as a type, so you can build
+an operation in a variable and still be checked:
+
+```ts
+import type {
+  OperationObject,
+  ParameterObject,
+  PathsObject,
+  ResponsesObject,
+  SchemaObject,
+} from "@drashland/drash/modules/openapiv3.js";
+
+const getUser: OperationObject = {
+  summary: "Get a user",
+  responses: { "200": { description: "The user" } },
+};
+```
+
+The full set: `CallbackObject`, `EncodingObject`, `ExampleObject`,
+`ExternalDocumentationObject`, `HeaderObject`, `LinkObject`, `MediaTypeObject`,
+`OperationObject`, `ParameterObject`, `PathItemObject`, `PathsObject`,
+`ReferenceObject`, `RequestBodyObject`, `ResourceClass`, `ResourceLike`,
+`ResourceMethod`, `ResponseObject`, `ResponsesObject`, `SchemaObject`,
+`SecurityRequirementObject`, and `ServerObject`.
