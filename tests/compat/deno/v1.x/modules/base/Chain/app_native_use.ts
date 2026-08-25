@@ -20,7 +20,6 @@
  */
 
 import {
-  BaseChain,
   BaseChainBuilder,
 } from "../../../../../../../src/standard/chains/BaseChain.ts";
 import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
