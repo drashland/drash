@@ -3,6 +3,7 @@ export default {
   // entry in this file, so a folder route with no page here would 404.
   index: "Overview",
   builders: "Builders",
+  decorators: "Decorators",
   // src/modules holds http.native.ts and http.polyfill.ts as files, not an
   // http/ directory, so these are pages here rather than a folder.
   "http-native": "http.native",

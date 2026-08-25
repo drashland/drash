@@ -320,7 +320,39 @@ type ResourceClass = new (...args: never[]) => ResourceLike;
  * The key is the method itself, and {@link OpenAPI} returns that same function
  * unchanged, so `Users.prototype.GET` is the key that was registered.
  */
-const operations = new WeakMap<ResourceMethod, OperationObject>();
+const registryKey = Symbol.for("drash.openapi.operations");
+
+/**
+ * The one registry, shared by every copy of this module in the process.
+ *
+ * A plain module-level `WeakMap` is not enough. A bundler inlining this module
+ * into a resource file, a package installed at two versions, or a project
+ * loading both the CJS and the ESM build all produce more than one copy — and
+ * each copy would get its own map. The decorator would write to one and
+ * {@link getOperations} would read another, reporting every resource as
+ * undocumented with nothing to explain why.
+ *
+ * `Symbol.for` looks up the process-wide symbol registry, so every copy
+ * resolves the same key and the first one to load creates the map the rest
+ * reuse.
+ */
+function getRegistry(): WeakMap<ResourceMethod, OperationObject> {
+  const host = globalThis as unknown as Record<symbol, unknown>;
+  const existing = host[registryKey] as
+    | WeakMap<ResourceMethod, OperationObject>
+    | undefined;
+
+  if (existing) {
+    return existing;
+  }
+
+  const registry = new WeakMap<ResourceMethod, OperationObject>();
+  host[registryKey] = registry;
+
+  return registry;
+}
+
+const operations = getRegistry();
 
 /**
  * The HTTP method names a resource can define, lowercased to the casing the
@@ -344,7 +376,7 @@ const methodNames = new Set<string>(Object.keys(Method));
  * class Users extends Resource {
  *   public override paths = ["/users/:id"];
  *
- *   @OpenAPI({
+ *   @OpenAPIv3({
  *     summary: "Get a user",
  *     responses: {
  *       "200": {
@@ -363,20 +395,20 @@ const methodNames = new Set<string>(Object.keys(Method));
  * }
  * ```
  */
-function OpenAPI(operation: OperationObject) {
+function OpenAPIv3(operation: OperationObject) {
   return function <T extends ResourceMethod>(
     value: T,
     context: ClassMethodDecoratorContext,
   ): T {
     if (context.kind !== "method") {
       throw new TypeError(
-        `OpenAPI: can only decorate a method, but was used on a ${context.kind}.`,
+        `OpenAPIv3: can only decorate a method, but was used on a ${context.kind}.`,
       );
     }
 
     if (context.static) {
       throw new TypeError(
-        `OpenAPI: can only decorate an instance method, but \`${
+        `OpenAPIv3: can only decorate an instance method, but \`${
           String(context.name)
         }\` is static.`,
       );
@@ -387,7 +419,7 @@ function OpenAPI(operation: OperationObject) {
     // to leave it silently missing from the generated document.
     if (context.private) {
       throw new TypeError(
-        `OpenAPI: can only decorate a public method, but \`${
+        `OpenAPIv3: can only decorate a public method, but \`${
           String(context.name)
         }\` is private.`,
       );
@@ -397,7 +429,7 @@ function OpenAPI(operation: OperationObject) {
 
     if (!methodNames.has(name)) {
       throw new TypeError(
-        `OpenAPI: \`${name}\` is not an HTTP method. Decorate one of: ${
+        `OpenAPIv3: \`${name}\` is not an HTTP method. Decorate one of: ${
           [...methodNames].join(", ")
         }.`,
       );
@@ -612,7 +644,7 @@ export {
   type HeaderObject,
   type LinkObject,
   type MediaTypeObject,
-  OpenAPI,
+  OpenAPIv3,
   type OperationObject,
   type ParameterObject,
   type PathItemObject,
