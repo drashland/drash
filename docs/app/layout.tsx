@@ -52,10 +52,10 @@ const description =
  * image is the upgrade path; change the card type at the same time.
  */
 const ogImage = {
-  url: `${basePath}/drash-round-250.png`,
-  width: 250,
-  height: 250,
-  alt: "The Drash logo",
+  url: `${basePath}/drash-open-graph.png`,
+  width: 1200,
+  height: 630,
+  alt: "Drash Web Framework for Node, Deno, Bun, and Cloudflare Workers",
 };
 
 export const metadata = {
