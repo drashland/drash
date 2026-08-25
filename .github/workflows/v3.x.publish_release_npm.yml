@@ -135,6 +135,6 @@ jobs:
       - name: Publish
         run: |
           cd dist
-          npm stage publish --access public
+          npm stage publish --access public --tag=${{ github.event.inputs.tag_name }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
