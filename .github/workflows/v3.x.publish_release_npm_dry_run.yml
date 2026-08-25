@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
+        description: "The release version, e.g. v3.0.0-beta.3"
         type: string
-      npm_dist_tag:
-        type: string
+        required: true
 
 jobs:
 
@@ -35,7 +35,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version --version ${{ github.event.inputs.tag_name }}
+          deno task check:package-json-version --version ${{ github.event.inputs.version }}
 
   ##############################################################################
   # CODE QUALITY
@@ -136,10 +136,38 @@ jobs:
       - name: (artifacts) Upload Drash libs
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ github.event.inputs.tag_name }}
+          name: ${{ github.event.inputs.version }}
           path: dist
           retention-days: 1
 
+      # Mirrors the same step in v3.x.publish_release_npm.yml. Kept identical on
+      # purpose: a dry run that resolves its dist-tag differently from the real
+      # publish is not rehearsing the real publish.
+      - name: Resolve npm dist-tag
+        id: dist_tag
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+
+          version="${RELEASE_TAG#v}"
+
+          if [[ "$version" == *-* ]]; then
+            prerelease="${version#*-}"
+            dist_tag="${prerelease%%.*}"
+            dist_tag="${dist_tag%%+*}"
+          else
+            dist_tag="latest"
+          fi
+
+          if [[ -z "$dist_tag" ]]; then
+            echo "Could not derive an npm dist-tag from '${RELEASE_TAG}'." >&2
+            exit 1
+          fi
+
+          echo "Publishing ${RELEASE_TAG} under npm dist-tag '${dist_tag}'."
+          echo "dist_tag=${dist_tag}" >> "$GITHUB_OUTPUT"
+
       - name: (dry-run) Publish
         run: |
-          npm stage publish --access restricted --dry-run --tag=${{ github.event.inputs.tag_name }}
+          npm stage publish --access restricted --dry-run --tag="${{ steps.dist_tag.outputs.dist_tag }}"

@@ -1,12 +1,10 @@
 name: v3.x - Publish Release (npm)
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        type: string
-      npm_dist_tag:
-        type: string
+  # This workflow does not need a workflow_dispatch trigger. If this workflow
+  # fails, then re-run it.
+  release:
+    types: [published]
 
 jobs:
 
@@ -35,7 +33,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version --version ${{ github.event.release.version }}
+          deno task check:package-json-version --version ${{ github.event.release.tag_name }}
 
   ##############################################################################
   # CODE QUALITY
@@ -134,9 +132,52 @@ jobs:
           npm install -g npm@latest
           pnpm install --frozen-lockfile && deno task build:libs
 
+      # npm wants a dist-tag (`latest`, `beta`), not the release tag. The two
+      # are derived from the same string but are not the same thing:
+      #
+      #   v3.0.0         -> latest
+      #   v3.0.0-beta.3  -> beta
+      #   v3.0.0-rc.1    -> rc
+      #
+      # This matters more than it looks. `npm publish` defaults to `latest`, so
+      # without a dist-tag a prerelease becomes what `npm install @drashland/drash`
+      # resolves to for everyone.
+      #
+      # The release tag is passed through `env` rather than interpolated into
+      # the script body, so a tag name cannot inject shell.
+      - name: Resolve npm dist-tag
+        id: dist_tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          version="${RELEASE_TAG#v}"
+
+          if [[ "$version" == *-* ]]; then
+            # Everything after the first `-` is the prerelease, and its first
+            # dot-separated identifier is the channel: `beta.3` -> `beta`.
+            prerelease="${version#*-}"
+            dist_tag="${prerelease%%.*}"
+            # Drop any build metadata: `beta+2024` -> `beta`.
+            dist_tag="${dist_tag%%+*}"
+          else
+            dist_tag="latest"
+          fi
+
+          # A malformed tag such as `v3.0.0-` yields an empty string, and
+          # `npm publish --tag=` publishes to `latest`. Stop instead.
+          if [[ -z "$dist_tag" ]]; then
+            echo "Could not derive an npm dist-tag from '${RELEASE_TAG}'." >&2
+            exit 1
+          fi
+
+          echo "Publishing ${RELEASE_TAG} under npm dist-tag '${dist_tag}'."
+          echo "dist_tag=${dist_tag}" >> "$GITHUB_OUTPUT"
+
       - name: Publish
         run: |
           cd dist
-          npm stage publish --access public --tag=${{ github.event.inputs.dist_tag }}
+          npm stage publish --access public --tag="${{ steps.dist_tag.outputs.dist_tag }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
