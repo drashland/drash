@@ -140,4 +140,4 @@ jobs:
 
       - name: (dry-run) Publish
         run: |
-          npm stage publish --access restricted --dry-run
+          npm stage publish --access restricted --dry-run --tag=${{ github.event.inputs.tag_name }}
