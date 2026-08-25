@@ -1,20 +1,25 @@
 ---
-title: OpenAPIv3
-description: Attaches an OpenAPI v3 Operation Object to a resource's HTTP method, and assembles those into a document's paths.
+title: openapiv3
+description: The OpenAPI Specification v3 (OAS v3) entry point. Attaches an Operation Object to a resource's HTTP method, and assembles those into a document's paths.
 ---
 
-# OpenAPIv3
+# openapiv3
+
+The [OpenAPI Specification v3](https://spec.openapis.org/oas/v3.0.3) (OAS v3)
+entry point, `modules/openapiv3.js`. It gives you a decorator for describing
+what a resource's HTTP methods do, and the functions that turn those
+descriptions into an OAS v3 document.
 
 ## Summary
 
-`OpenAPIv3` is a [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) &mdash; a marker you attach to a resource's HTTP method with `@`
-syntax that records something about it without changing what it does. Here it
-records an [OpenAPI](https://www.openapis.org/) v3 **Operation Object**: the
+This module exports the `OpenAPIv3` [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) &mdash; a marker you attach to a resource's HTTP method with `@`
+syntax. It records something about the HTTP method without changing what it does. Here it
+records an OAS v3 **Operation Object**: the
 description of one HTTP method on one path, including what it accepts and what
 it can respond with.
 
 __Nothing happens at request time.__ The description is stored, and read back later
-to build the `paths` member of an OpenAPI document you can write out as YAML or
+to build the `paths` member of an OAS v3 document you can write out as YAML or
 JSON.
 
 A complete, runnable example:
@@ -27,6 +32,7 @@ import {
   buildPathsObject,
   OpenAPIv3,
 } from "@drashland/drash/modules/openapiv3.js";
+  import { stringify as yamlStringify } from "jsr:@std/yaml";
 
 class Users extends Resource {
   paths = ["/users/:id?"];
@@ -50,7 +56,7 @@ class Users extends Resource {
   }
 }
 
-// The `paths` member of an OpenAPI v3 document, derived from the resource.
+// The `paths` member of an OAS v3 document, derived from the resource.
 const document = {
   openapi: "3.0.3",
   info: { title: "My API", version: "1.0.0" },
@@ -58,15 +64,19 @@ const document = {
 };
 
 console.log(JSON.stringify(document, null, 2));
+
+console.log()
+
+console.log(yamlStringify(document));
 ```
 
-Run it with:
+Run it with the following to print the OAS v3 document in JSON:
 
 ```bash filename="Terminal"
 deno run app.ts
 ```
 <details>
-<summary><small>The resulting Open API v3 Spec in JSON</small></summary>
+<summary><small>Click here to see the printed OAS v3 document in JSON</small></summary>
 ```json
 {
   "openapi": "3.0.3",
@@ -129,6 +139,39 @@ deno run app.ts
 }
 ```
 </details>
+<details>
+<summary><small>Click here to see the printed OAS v3 document in YAML</small></summary>
+```yaml
+openapi: 3.0.3
+info:
+  title: My API
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      summary: Get a user
+      tags: &ref_0
+        - users
+      responses: &ref_1
+        '200':
+          description: The user
+          content:
+            application/json:
+              schema:
+                type: object
+  '/users/{id}':
+    get:
+      summary: Get a user
+      tags: *ref_0
+      responses: *ref_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+```
+</details>
 
 The rest of this page takes that apart.
 
@@ -143,7 +186,7 @@ written one yet.
 
 `@OpenAPIv3({ ... })` takes one argument: an Operation Object. Its fields are the
 ones the
-[OpenAPI v3 specification](https://spec.openapis.org/oas/v3.0.3#operation-object)
+[OAS v3](https://spec.openapis.org/oas/v3.0.3#operation-object)
 defines, so anything valid there is valid here.
 
 | Field          | Type                     | What it is                                       |
@@ -161,20 +204,17 @@ defines, so anything valid there is valid here.
 | `externalDocs` | `ExternalDocumentationObject` | A link to more documentation               |
 | `callbacks`    | `Record<string, CallbackObject>` | Requests this operation may make later  |
 
-Two details that catch people out, both from the specification rather than from
-Drash:
+Two nuances of the OAS that you should be aware of:
 
 - **Status codes are strings, not numbers.** `"200"`, not `200`. The wildcard
   forms (`"2XX"`) and `"default"` are also allowed.
-- **`responses` is required by OpenAPI 3.0.** It is optional in this decorator
-  so you can annotate a resource a piece at a time, but a document assembled
-  from operations that have none will not validate.
+- **`responses` is required by OAS v3.** Drash makes this optional in this decorator
+  so you can annotate a resource a piece at a time, but an OAS v3 document assembled
+  from operations that have no `responses` block will not validate.
 
 ### Where It Can Go
 
-The decorator only makes sense on a resource's HTTP methods, and it says so
-rather than failing quietly. Each of these throws a `TypeError` when the class
-is defined:
+The decorator only makes sense on a resource's HTTP methods. The decorator will error if placed incorrectly rather than failing quietly. Each of these throws a `TypeError` when the class is defined:
 
 | Written on                       | Message                                                     |
 | -------------------------------- | ----------------------------------------------------------- |
@@ -203,7 +243,30 @@ Returns the Operation Object a single method was decorated with, or `undefined`
 if it was never decorated.
 
 ```ts
+import { Resource } from "@drashland/drash/modules/http.native.js";
 import { getOperation } from "@drashland/drash/modules/openapiv3.js";
+
+class Users extends Resource {
+  paths = ["/users/:id?"];
+ 
+  @OpenAPIv3({
+    summary: "Get a user",
+    tags: ["users"],
+    responses: {
+      "200": {
+        description: "The user",
+        content: {
+          "application/json": {
+            schema: { type: "object" },
+          },
+        },
+      },
+    },
+  })
+  GET(request: Request) {
+    return new Response(`Getting ${request.params.pathParam("id")}`);
+  }
+}
 
 getOperation(Users.prototype.GET);    // The object passed to @OpenAPIv3
 getOperation(Users.prototype.DELETE); // undefined -- not decorated
@@ -212,9 +275,38 @@ getOperation(Users.prototype.DELETE); // undefined -- not decorated
 ### `getOperations(ResourceClass)`
 
 Returns every description on a resource, keyed by HTTP method name. Methods that
-were not decorated are absent rather than `undefined`.
+were not decorated are omitted rather than `undefined`.
 
 ```ts
+import { Resource } from "@drashland/drash/modules/http.native.js";
+import { getOperation } from "@drashland/drash/modules/openapiv3.js";
+
+class Users extends Resource {
+  paths = ["/users/:id?"];
+ 
+  @OpenAPIv3({
+    summary: "Get a user",
+    tags: ["users"],
+    responses: {
+      "200": {
+        description: "The user",
+        content: {
+          "application/json": {
+            schema: { type: "object" },
+          },
+        },
+      },
+    },
+  })
+  GET(request: Request) {
+    return new Response(`Getting ${request.params.pathParam("id")}`);
+  }
+
+  POST(request: Request) {
+    return new Response("Not decorated, so it is omitted in the OAS document")
+  }
+}
+
 getOperations(Users); // { GET: { summary: "Get a user", ... } }
 ```
 
@@ -226,10 +318,16 @@ different implementation should not inherit the parent's description.
 
 ### `buildPathsObject(resources)`
 
-Takes resource classes and returns the `paths` member of an OpenAPI v3 document
+Takes resource classes and returns the `paths` member of an OAS v3 document
 &mdash; every path each resource answers to, with an entry per decorated method.
 
 ```ts
+import { buildPathsObject } from "@drashland/drash/modules/openapiv3.js";
+
+//
+// code shortened for brevity
+//
+
 const paths = buildPathsObject([Users, Home]);
 ```
 
@@ -241,12 +339,12 @@ at minimum, which is why the example at the top of this page wraps the result.
 
 ### Path Parameters
 
-Drash and OpenAPI write path parameters differently, so `buildPathsObject`
+Drash and OAS v3 write path parameters differently, so `buildPathsObject`
 translates between them.
 
 Drash matches requests with
 [`URLPattern`](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern),
-where a parameter is `:id` and a trailing `?` makes it optional. OpenAPI uses
+where a parameter is `:id` and a trailing `?` makes it optional. OAS v3 uses
 `{id}`, and a path parameter there is **always required**.
 
 | Resource path    | Becomes                      |
@@ -255,11 +353,11 @@ where a parameter is `:id` and a trailing `?` makes it optional. OpenAPI uses
 | `/users/:id`     | `/users/{id}`                |
 | `/users/:id?`    | `/users` **and** `/users/{id}` |
 
-An optional parameter has no single OpenAPI equivalent, so it expands into two
+An optional parameter has no single OAS v3 equivalent, so it expands into two
 paths &mdash; which is how those two URLs are expressed in a document.
 
-Each derived parameter is added with `required: true` and a `string` schema. If
-you describe the same parameter yourself, yours wins, so you can give it a
+By default, each derived parameter is added with `required: true` and a `string` schema. If
+you describe the same parameter yourself, yours overwrites the default, so you can give it a
 schema or a description:
 
 ```ts {6-13}
@@ -270,7 +368,7 @@ class Users extends Resource {
     summary: "Get a user",
     parameters: [
       {
-        name: "id",           // Same name as the path parameter
+        name: "id", // Same name as the path parameter
         in: "path",
         required: true,
         description: "The user's ID",
@@ -284,6 +382,45 @@ class Users extends Resource {
   }
 }
 ```
+
+## Generating a Document From the Command Line
+
+Writing that wrapper by hand is optional. The package ships a `drash-openapi`
+command that imports your resource files and writes the document for you:
+
+```bash filename="Terminal"
+npx --package @drashland/drash drash-openapi ./build/resources -o openapi.json
+```
+
+Give it files, or directories to search. It walks directories recursively,
+skipping `node_modules` and dotted folders, and exits non-zero on failure so it
+can gate a build.
+
+| Option            | What it sets                                       |
+| ----------------- | -------------------------------------------------- |
+| `-o`, `--out`     | Where to write. Defaults to standard output.       |
+| `--title`         | `info.title`. Default: `API`.                      |
+| `--api-version`   | `info.version`. Default: `1.0.0`.                  |
+| `--description`   | `info.description`.                                |
+| `--server`        | Adds a server. Repeat for more than one.           |
+| `--openapi`       | The OAS version. Default: `3.0.3`.             |
+| `--indent`        | JSON indent. Default: `2`. Use `0` for one line.   |
+| `-h`, `--help`    | Prints usage.                                      |
+
+<Callout type="warning">
+__Point it at compiled JavaScript.__
+
+The command imports your resource files rather than reading them as text, so the
+decorators run and the document reflects what your code declares. Decorators are
+syntax rather than types, so a file still containing `@OpenAPIv3(...)` cannot be
+imported by Node &mdash; and Node's type stripping does not help, because
+stripping the types leaves the decorator behind. Build your resources first,
+then run the command on the output.
+</Callout>
+
+Because the files are imported, anything a module does when it loads happens
+here too. Keep starting a server behind a guard so generating a document does
+not bind a port.
 
 ## Writing the YAML
 
@@ -315,9 +452,20 @@ writeFileSync("openapi.yaml", stringify(document));
 
 </Tabs>
 
+## Exports
+
+| Export             | Kind      | What it is                                                            |
+| ------------------ | --------- | --------------------------------------------------------------------- |
+| `OpenAPIv3`        | decorator | Attaches an Operation Object to a resource's HTTP method              |
+| `buildPathsObject` | function  | Turns annotated resources into the `paths` member of a document       |
+| `getOperation`     | function  | Reads back the Operation Object one method was given                  |
+| `getOperations`    | function  | Reads back every description on a resource, keyed by HTTP method name |
+
+Twenty object types are exported alongside them, listed under [Types](#types).
+
 ## Types
 
-Every OpenAPI object this module accepts is exported as a type, so you can build
+Every OAS v3 object this module accepts is exported as a type, so you can build
 an operation in a variable and still be checked:
 
 ```ts

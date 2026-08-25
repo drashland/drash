@@ -25,7 +25,8 @@ import { buildPathsObject, getOperations } from "../src/modules/openapiv3.ts";
 import type { PathsObject, ResourceClass } from "../src/modules/openapiv3.ts";
 
 const USAGE = `
-drash-openapi - build an OpenAPI v3 document from your resource files
+drash-openapi - build an OpenAPI Specification v3 (OAS v3) document from your
+                resource files
 
 USAGE
   drash-openapi <path...> [options]
@@ -42,7 +43,7 @@ OPTIONS
       --api-version <s>   info.version. Default: "1.0.0".
       --description <s>   info.description.
       --server <url>      Add a server. Repeat for more than one.
-      --openapi <string>  OpenAPI version. Default: "3.0.3".
+      --openapi <string>  OAS version. Default: "3.0.3".
       --indent <number>   JSON indent. Default: 2. Use 0 for one line.
   -h, --help              Show this.
 
@@ -58,7 +59,7 @@ NOTES
 `;
 
 /**
- * The subset of the OpenAPI Info Object this builds.
+ * The subset of the OAS v3 Info Object this builds.
  *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#info-object}
  */
