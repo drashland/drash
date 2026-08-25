@@ -130,7 +130,7 @@ jobs:
           pnpm install --frozen-lockfile && deno task build:libs
 
       - name: (artifacts) Upload Drash libs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ github.event.inputs.tag_name }}
           path: dist
