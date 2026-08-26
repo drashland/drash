@@ -87,10 +87,6 @@
   font-size: 0.8125rem;
 }
 
-.bottomright {
-  text-align: right;
-}
-
 /* Stack the brand above the columns before they get too narrow to read. */
 @media (max-width: 60rem) {
   .inner {

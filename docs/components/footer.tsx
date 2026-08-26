@@ -112,9 +112,14 @@ export function DrashFooter() {
       <div className={styles.bottom}>
         <div>
           Copyright © 2019-2026 Drash
+          <br/>License: GPL-3.0
         </div>
-        <div className={styles.bottomright}>
-          Drash v3 is in beta. APIs may change.<br />License: GPL-3.0.
+        <div className="max-[365px]:text-left text-right">
+          <strong>Authors</strong>
+          <br/><a className="transition-colors hover:text-white hover:underline" href="https://github.com/crookse" target="_BLANK">Eric Crooks</a>
+          <br/><a className="transition-colors hover:text-white hover:underline" href="https://github.com/saragee3" target="_BLANK">Sara Gee</a>
+          <br/><a className="transition-colors hover:text-white hover:underline" href="https://github.com/ebbebington" target="_BLANK">Breno Salles</a>
+          <br/><a className="transition-colors hover:text-white hover:underline" href="https://github.com/Guergeiro" target="_BLANK">Edward Bebbington</a>
         </div>
       </div>
     </div>

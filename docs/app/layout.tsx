@@ -125,7 +125,7 @@ const footer = (
 
 const banner = (
   <Banner storageKey="drash-v3-unstable">
-    Drash v3 is in beta. APIs may change.
+    August 25, 2026: Drash v3.0.0 stable version released!
   </Banner>
 );
 
