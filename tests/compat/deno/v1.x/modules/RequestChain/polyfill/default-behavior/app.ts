@@ -24,6 +24,7 @@ import { StatusDescription } from "../../../../../../../../src/core/http/respons
 import {
   Application,
   HTTPError,
+  type HTTPRequest,
   Resource,
 } from "../../../../../../../../src/modules/http.polyfill.ts";
 import { Status } from "../../../../../../../../src/core/http/response/Status.ts";
@@ -52,9 +53,19 @@ class Home extends Resource {
   }
 }
 
+class Query extends Resource {
+  public override paths = ["/query"];
+
+  public override GET(request: HTTPRequest) {
+    // Reading the *first* query param is the case that regressed. See
+    // src/standard/handlers/RequestParamsParser.ts.
+    return new Response(request.params.queryParam("first") ?? "undefined");
+  }
+}
+
 const app = Application
   .builder()
-  .resources(Home)
+  .resources(Home, Query)
   .build();
 
 export const handleRequest = (

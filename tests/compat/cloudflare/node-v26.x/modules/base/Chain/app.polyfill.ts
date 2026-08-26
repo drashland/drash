@@ -26,6 +26,7 @@ import { StatusCode } from "../../../../../../../dist/core/http/response/StatusC
 import { StatusDescription } from "../../../../../../../dist/core/http/response/StatusDescription.js";
 import { BaseChain } from "../../../../../../../dist/standard/chains/BaseChain.js";
 import { RequestParamsParser } from "../../../../../../../dist/standard/handlers/RequestParamsParser.js";
+import type { WithParams } from "../../../../../../../dist/standard/handlers/RequestParamsParser.js";
 import { RequestValidator } from "../../../../../../../dist/standard/handlers/RequestValidator.js";
 import { ResourceCaller } from "../../../../../../../dist/standard/handlers/ResourceCaller.js";
 import { ResourceNotFoundHandler } from "../../../../../../../dist/standard/handlers/ResourceNotFoundHandler.js";
@@ -52,10 +53,20 @@ class Home extends Resource {
   }
 }
 
+class Query extends Resource {
+  public paths = ["/query"];
+
+  public GET(request: WithParams) {
+    // Reading the *first* query param is the case that regressed. See
+    // src/standard/handlers/RequestParamsParser.ts.
+    return new Response(request.params.queryParam("first") ?? "undefined");
+  }
+}
+
 const chain = BaseChain
   .builder()
   .handler(new RequestValidator())
-  .handler(new ResourcesIndex(URLPatternPolyfill, Home))
+  .handler(new ResourcesIndex(URLPatternPolyfill, Home, Query))
   .handler(new ResourceNotFoundHandler())
   .handler(new RequestParamsParser())
   .handler(new ResourceCaller())

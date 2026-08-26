@@ -59,6 +59,21 @@ describe("Polyfill - Using IncomingMessage/ServerResponse in context object", ()
       });
     },
   );
+  describe.each(testCasesQueryParams())(
+    "Query / paths = /query",
+    ({ path, expected }) => {
+      it(`GET ${path} returns "${expected}"`, async () => {
+        const req = new IncomingMessage(new Socket());
+        req.url = path;
+        req.method = "GET";
+        const res = new ServerResponse(req);
+
+        await handleRequest(req, res);
+
+        expect(getBody(res)).toBe(expected);
+      });
+    },
+  );
 });
 
 function getBody(response: ServerResponse<IncomingMessage>) {
@@ -149,6 +164,29 @@ function testCasesNotFound() {
         status: 404,
         body: "Not Found",
       },
+    },
+  ];
+}
+
+function testCasesQueryParams() {
+  return [
+    {
+      // The param in first position used to be unreadable: the whole URL was
+      // handed to `URLSearchParams`, which absorbed it into this param's name.
+      path: "/query?first=hello",
+      expected: "hello",
+    },
+    {
+      path: "/query?first=hello&second=world",
+      expected: "hello",
+    },
+    {
+      path: "/query?second=world&first=hello",
+      expected: "hello",
+    },
+    {
+      path: "/query",
+      expected: "undefined",
     },
   ];
 }

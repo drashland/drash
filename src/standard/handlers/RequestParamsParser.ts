@@ -98,6 +98,43 @@ class RequestParamsParser extends Handler {
   }
 }
 
+/**
+ * Read the query string out of the given URL.
+ *
+ * Neither of the shorter spellings works here:
+ *
+ * - `new URLSearchParams(url)` parses its argument as
+ *   `application/x-www-form-urlencoded`. That splits on `&`, not on `?`, so the
+ *   origin and path are absorbed into the *first* param's name:
+ *   `new URLSearchParams("http://x/users?a=1&b=2")` yields the key
+ *   `"http://x/users?a"`, leaving `a` unreadable. Every later param still
+ *   parses, which is what made this hard to spot.
+ * - `new URL(url).searchParams` throws on a relative URL. `URLPattern.exec()`
+ *   matches those, so `ResourcesIndex` lets them through and they reach this
+ *   handler. Throwing here would turn a request that works today into a hard
+ *   failure.
+ *
+ * @param url The request's URL. May be relative.
+ * @returns The query params, empty if the URL carries no query string.
+ */
+function toSearchParams(url: string): URLSearchParams {
+  // Cut the fragment first so a `?` inside it is not mistaken for the start of
+  // the query string. Fragments are never sent to a server, but `url` is
+  // caller-supplied in the runtimes that pass a context object.
+  const fragmentStart = url.indexOf("#");
+  const withoutFragment = fragmentStart === -1
+    ? url
+    : url.slice(0, fragmentStart);
+
+  const queryStart = withoutFragment.indexOf("?");
+
+  if (queryStart === -1) {
+    return new URLSearchParams();
+  }
+
+  return new URLSearchParams(withoutFragment.slice(queryStart + 1));
+}
+
 class Params {
   #query: URLSearchParams;
   #path_params: Record<string, string | undefined>;
@@ -106,7 +143,8 @@ class Params {
     request: Input["request"],
     params: Input["request_params"],
   ) {
-    this.#query = new URLSearchParams(request.url);
+    // this.#query = new URL(request.url).searchParams // Works, but needs more compat testing
+    this.#query = toSearchParams(request.url);
     this.#path_params = params.path_params;
   }
 

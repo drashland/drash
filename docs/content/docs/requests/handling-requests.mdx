@@ -133,7 +133,7 @@ It provides exactly two methods:
 | Method             | Returns               | Notes                                     |
 | ------------------ | --------------------- | ----------------------------------------- |
 | `pathParam(name)`  | `string \| undefined` | From the matched `URLPattern`             |
-| `queryParam(name)` | `string \| undefined` | From the query string — see the caveat on [Query Params](/docs/requests/query-params) |
+| `queryParam(name)` | `string \| undefined` | From the query string — see [Query Params](/docs/requests/query-params) |
 
 Both return `undefined` for a name that was not matched rather than throwing. That is what makes optional params usable: you check the value instead of catching an error.
 

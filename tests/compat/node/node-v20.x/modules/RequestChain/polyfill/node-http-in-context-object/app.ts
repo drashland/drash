@@ -41,6 +41,17 @@ type NodeContext = {
   response: ServerResponse<IncomingMessage>;
 };
 
+/**
+ * What a resource actually receives: `RequestParamsParser` defines `params` on
+ * the context object before the chain reaches the resource.
+ */
+type NodeContextWithParams = NodeContext & {
+  params: {
+    pathParam(param: string): string | undefined;
+    queryParam(param: string): string | undefined;
+  };
+};
+
 class Home extends Resource {
   public paths = ["/"];
 
@@ -66,9 +77,20 @@ class Home extends Resource {
   }
 }
 
+class Query extends Resource {
+  public paths = ["/query"];
+
+  public GET(context: NodeContextWithParams) {
+    // Reading the *first* query param is the case that regressed. See
+    // src/standard/handlers/RequestParamsParser.ts.
+    context.response.write(context.params.queryParam("first") ?? "undefined");
+    return context;
+  }
+}
+
 const app = Application
   .builder()
-  .resources(Home)
+  .resources(Home, Query)
   .build();
 
 export const handleRequest = (

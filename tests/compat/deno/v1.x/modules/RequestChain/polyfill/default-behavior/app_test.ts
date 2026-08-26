@@ -60,6 +60,19 @@ Deno.test("Polyfill - Using Request/Response", async (t) => {
       });
     }
   });
+  await t.step("Query / paths = /query", async (t) => {
+    for (const testCase of testCasesQueryParams()) {
+      const { path, expected } = testCase;
+
+      await t.step(`GET ${path} returns "${expected}"`, async () => {
+        const req = new Request(url + path, { method: "GET" });
+
+        const response = await handleRequest(req);
+
+        asserts.assertEquals(await response?.text(), expected);
+      });
+    }
+  });
 });
 
 function testCases() {
@@ -138,6 +151,29 @@ function testCasesNotFound() {
         status: 404,
         body: "Not Found",
       },
+    },
+  ];
+}
+
+function testCasesQueryParams() {
+  return [
+    {
+      // The param in first position used to be unreadable: the whole URL was
+      // handed to `URLSearchParams`, which absorbed it into this param's name.
+      path: "/query?first=hello",
+      expected: "hello",
+    },
+    {
+      path: "/query?first=hello&second=world",
+      expected: "hello",
+    },
+    {
+      path: "/query?second=world&first=hello",
+      expected: "hello",
+    },
+    {
+      path: "/query",
+      expected: "undefined",
     },
   ];
 }
