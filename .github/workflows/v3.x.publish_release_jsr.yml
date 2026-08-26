@@ -1,19 +1,18 @@
 name: v3.x - Publish Release (JSR)
 
 on:
-  # Publishing a GitHub release is the normal path: the version comes from the
-  # release tag, and `deno publish` reads it from deno.json -- which
-  # `check:package-json-version` has already compared against that tag.
-  release:
-    types: [published]
-
-  # The manual path exists for re-running a publish that failed after the
-  # release was already created. A release event carries no inputs, so the
-  # version has to be supplied here.
+  # Manual only, on purpose. JSR versions are immutable: a bad publish cannot be
+  # replaced, only superseded by another release. Requiring someone to trigger
+  # this deliberately -- and to type the version -- keeps a merge or a GitHub
+  # release from pushing to the registry on its own.
+  #
+  # The version given here is the git tag to publish. Every job checks that tag
+  # out, so what reaches JSR is the tagged source rather than whatever happens
+  # to be on the default branch.
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to publish, e.g. v3.0.0"
+        description: "Tag to publish, e.g. v3.0.0"
         type: string
         required: true
 
@@ -24,8 +23,9 @@ jobs:
   ##############################################################################
   #
   # JSR takes its version from the `version` field in deno.json, not from the
-  # release tag. This check fails the release when the two disagree, which is
-  # the same reason the npm workflow runs it -- both files are updated by hand.
+  # tag given to this workflow. This check fails the run when the two
+  # disagree, which is the same reason the npm workflow runs it -- both files
+  # are updated by hand.
   #
   check_release_version:
     name: Check version in deno.json and package.json
@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -44,7 +44,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version --version ${{ github.event.release.tag_name || github.event.inputs.version }}
+          deno task check:package-json-version --version ${{ github.event.inputs.version }}
 
   ##############################################################################
   # CODE QUALITY
@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -79,7 +79,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -102,7 +102,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -130,7 +130,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
@@ -159,7 +159,7 @@ jobs:
       code_formatting,
       jsr_exports_up_to_date,
     ]
-    if: startsWith(github.event.release.tag_name || github.event.inputs.version, 'v3.')
+    if: startsWith(github.event.inputs.version, 'v3.')
 
     runs-on: ubuntu-latest
 
@@ -175,7 +175,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name || github.event.inputs.version }}
+          ref: ${{ github.event.inputs.version }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v2
