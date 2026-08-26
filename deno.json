@@ -1,6 +1,6 @@
 {
   "name": "@drashland/drash",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "license": "GPL-3.0",
   "publish": {
     "include": [
@@ -55,6 +55,7 @@
   "tasks": {
     "build:check": "deno task check:file-headers && deno task npm:clean && pnpm install && deno task build:libs && deno task test:all",
     "build:libs": "deno run --allow-read --allow-write --allow-net ./scripts/doit.ts && pnpm exec tsup src --format cjs,esm --no-splitting --dts",
+    "bump-version": "deno run --allow-read --allow-write ./scripts/bump_version.ts",
     "check": "deno check src tests/unit tests/compat/deno tests/middleware",
     "check:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
     "check:package-json-version": "deno run --allow-read ./scripts/check_package_json_version_for_release.ts",

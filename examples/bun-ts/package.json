@@ -12,6 +12,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@drashland/drash": "3.0.0"
+    "@drashland/drash": "3.0.1"
   }
 }

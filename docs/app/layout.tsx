@@ -123,11 +123,11 @@ const footer = (
   </Footer>
 );
 
-const banner = (
-  <Banner storageKey="drash-v3-unstable">
-    August 25, 2026: Drash v3.0.0 stable version released!
-  </Banner>
-);
+// const banner = (
+//   <Banner storageKey="drash-v3-unstable">
+//     August 25, 2026: Drash v3.0.0 stable version released!
+//   </Banner>
+// );
 
 export default async function RootLayout({
   children,
@@ -144,7 +144,7 @@ export default async function RootLayout({
       <Head />
       <body>
         <Layout
-          banner={banner}
+          // banner={banner}
           navbar={navbar}
           footer={footer}
           pageMap={await getPageMap()}
