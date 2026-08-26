@@ -16,7 +16,7 @@ Query params are read the same way path params are, using `queryParam()` instead
 To gain familiarity with:
 
 - reading a query param with `queryParam()`; and
-- the caveat affecting the first parameter in a query string.
+- how a repeated param resolves.
 
 ## Reading a Query Param
 
@@ -107,38 +107,25 @@ class Users extends Resource {
 
 A param the client did not send comes back as `undefined` rather than throwing, so check the value instead of catching an error.
 
-## The First Parameter Caveat
+## Repeated Params
 
-<Callout type="warning">
-  __`queryParam()` does not return the first query parameter.__ It is built from
-  `new URLSearchParams(request.url)`, which parses the entire URL as a query
-  string rather than just the part after `?`. The first parameter's name is
-  absorbed into the URL prefix, so for
-  `http://localhost:1447/users/1?sort=asc&page=2`:
+A client can send the same name more than once. `queryParam()` returns the first
+value:
 
 ```ts
-request.params.queryParam("sort"); // undefined
-request.params.queryParam("page"); // "2"
+// GET /users?sort=asc&sort=desc
+request.params.queryParam("sort"); // "asc"
 ```
-
-  Every parameter after the first behaves correctly. Until this is fixed, read
-  the query string yourself when you need the first parameter:
-
-```ts
-const sort = new URL(request.url).searchParams.get("sort");
-```
-
-</Callout>
-
-The workaround is worth reaching for whenever a resource reads a query param that a client might send on its own. A param that is always second in your own links is still first when someone types the URL by hand.
 
 ## Verification
 
 With a resource whose paths are `["/users"]` running on `localhost:1447`:
 
 ```text
-curl "http://localhost:1447/users?page=2"         ->  page=undefined
+curl "http://localhost:1447/users?page=2"         ->  page=2
 curl "http://localhost:1447/users?x=1&page=2"     ->  page=2
+curl "http://localhost:1447/users"                ->  page=undefined
 ```
 
-The first call returns `undefined` for the reason described above — `page` is the first parameter there, so its name is swallowed by the URL prefix. Adding any parameter ahead of it makes it read correctly.
+Position does not matter — a param reads the same whether it is first in the
+query string or last.

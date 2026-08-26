@@ -54,4 +54,19 @@ describe("Wrangler", () => {
       await run();
     }
   });
+  it("Should read a query param in first position", async () => {
+    async function run() {
+      // This param used to be unreadable: the whole URL was handed to
+      // `URLSearchParams`, which absorbed it into the param's name.
+      const res = await worker.fetch("/query?first=hello");
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe("hello");
+    }
+
+    try {
+      await run();
+    } catch (_error) {
+      await run();
+    }
+  });
 });
