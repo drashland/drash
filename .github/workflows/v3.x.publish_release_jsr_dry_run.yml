@@ -1,0 +1,198 @@
+name: v3.x - Publish Release (JSR - Dry Run)
+
+on:
+  # A rehearsal of v3.x.publish_release_jsr.yml. Same gates, same checkout, same
+  # command -- with `--dry-run`, which runs every publish check and prints the
+  # file list but stops before the registry.
+  #
+  # Worth running before tagging a release, because JSR versions are immutable:
+  # a package published with a stale exports map or a missing file cannot be
+  # replaced, only superseded.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag to verify, e.g. v3.0.0"
+        type: string
+        required: true
+
+jobs:
+
+  ##############################################################################
+  # RELEASE VERSION CHECK
+  ##############################################################################
+  #
+  # JSR takes its version from the `version` field in deno.json, not from the
+  # tag given to this workflow. This check fails the run when the two
+  # disagree, which is the same reason the npm workflow runs it -- both files
+  # are updated by hand.
+  #
+  check_release_version:
+    name: Check version in deno.json and package.json
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Perform version check
+        run: |
+          deno task check:package-json-version --version ${{ github.event.inputs.version }}
+
+  ##############################################################################
+  # CODE QUALITY
+  ##############################################################################
+
+  check_file_headers:
+    name: Check file headers
+    needs: [check_release_version]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Check file headers
+        run: |
+          deno task check:file-headers
+
+  lint_code:
+    name: Check for lint
+    needs: [check_release_version]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # Declaring `name` and `exports` in deno.json makes this a JSR package,
+      # which turns on the JSR lint rules -- `no-slow-types` in particular.
+      # Those are the same diagnostics `deno publish` refuses on, so catching
+      # them here fails the release before anything is uploaded.
+      - name: Run Deno linter
+        run: deno lint
+
+  code_formatting:
+    name: Check code formatting
+    needs: [check_release_version]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Run Deno formatter check
+        run: deno fmt --check
+
+  ##############################################################################
+  # JSR EXPORTS CHECK
+  ##############################################################################
+  #
+  # deno.json's `exports` map is generated from `src` by ./scripts/doit.ts.
+  # A stale map publishes a package that silently cannot import whatever was
+  # added, and JSR versions are immutable -- so the only fix would be another
+  # release. Catch it here instead.
+  #
+  jsr_exports_up_to_date:
+    name: Check JSR exports are up to date
+    needs: [check_release_version]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Regenerate JSR exports
+        run: |
+          deno run --allow-read --allow-write --allow-net ./scripts/doit.ts
+
+      - name: Fail if deno.json is stale
+        run: |
+          git diff --exit-code deno.json \
+            || (echo "::error::deno.json exports are stale. Run 'deno task build:libs' and commit deno.json." && exit 1)
+
+  ##############################################################################
+  # (DRY-RUN) PUBLISH TO REGISTRY
+  ##############################################################################
+
+  publish:
+    name: (dry-run) Publish to registry (https://jsr.io)
+    needs: [
+      check_release_version,
+      check_file_headers,
+      lint_code,
+      code_formatting,
+      jsr_exports_up_to_date,
+    ]
+    runs-on: ubuntu-latest
+
+    # No `id-token: write` here, unlike the real workflow. `--dry-run` stops
+    # before the registry, so it never reaches OIDC -- which also means this
+    # workflow cannot tell you whether authentication is set up correctly. It
+    # verifies the package, not the credential.
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      # Pinned to match the npm publish workflow. The runner ships a Node that
+      # `npx` would use unannounced, and a release should not depend on which
+      # one ubuntu-latest happens to carry that week.
+      #
+      # No `registry-url` or `scope` here, unlike the npm workflow: those
+      # configure an .npmrc for publishing to npm. JSR authenticates over OIDC
+      # and npm is only the delivery mechanism for the `jsr` shim.
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+
+      # `npx jsr publish` is the form JSR documents for GitHub Actions. Deno is
+      # deliberately not installed in this job -- the other jobs need it for
+      # `deno task`, this one does not.
+      #
+      # JSR publishes the TypeScript in `src` directly, so there is no build
+      # step here -- unlike the npm workflow, which publishes tsup's output.
+      #
+      # No `--allow-slow-types`: the public API carries explicit types, which is
+      # what lets JSR generate .d.ts for Node consumers. If that flag ever looks
+      # necessary, the fix is to annotate the API rather than to pass it.
+      - name: (dry-run) Publish package
+        run: npx jsr publish --dry-run
