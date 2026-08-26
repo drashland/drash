@@ -177,10 +177,21 @@ jobs:
         with:
           ref: ${{ github.event.inputs.version }}
 
-      # `npx jsr publish` is the form JSR documents for GitHub Actions. It needs
-      # no toolchain setup: the runner ships Node, and `npx` fetches the shim.
-      # Deno is deliberately not installed in this job -- the other jobs need it
-      # for `deno task`, this one does not.
+      # Pinned to match the npm publish workflow. The runner ships a Node that
+      # `npx` would use unannounced, and a release should not depend on which
+      # one ubuntu-latest happens to carry that week.
+      #
+      # No `registry-url` or `scope` here, unlike the npm workflow: those
+      # configure an .npmrc for publishing to npm. JSR authenticates over OIDC
+      # and npm is only the delivery mechanism for the `jsr` shim.
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+
+      # `npx jsr publish` is the form JSR documents for GitHub Actions. Deno is
+      # deliberately not installed in this job -- the other jobs need it for
+      # `deno task`, this one does not.
       #
       # The version comes from deno.json. `jsr publish` is a no-op when that
       # version is already on the registry, so re-running after a failure part
