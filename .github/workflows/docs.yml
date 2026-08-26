@@ -1,21 +1,18 @@
 name: Docs
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "docs/**"
-      - ".github/workflows/docs.yml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "docs/**"
-      - ".github/workflows/docs.yml"
+  # Manual only, on purpose. A push to `main` can carry documentation for work
+  # that is merged but not yet announced, and publishing is a one-way door: the
+  # site is public the moment it deploys. Someone decides when the docs go out.
+  #
+  # This applies to the build as well as the deploy. The build uploads a Pages
+  # artifact, and artifacts on a public repository are downloadable -- so
+  # building on a pull request would put unreleased docs within reach even
+  # though nothing was deployed.
   workflow_dispatch:
 
-# Allow one concurrent deployment, and let a newer push cancel an in-flight one.
+# Allow one concurrent deployment. A second run started while one is in flight
+# cancels the first rather than racing it to the same Pages environment.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -61,12 +58,11 @@ jobs:
         with:
           path: docs/out
 
-  # Only deploys from `main`; pull requests stop after the build above so a
-  # broken docs change fails the PR without publishing anything.
+  # No event guard here: `workflow_dispatch` is the only trigger, so every run
+  # of this workflow is a deliberate request to publish.
   deploy:
     name: Deploy
     needs: build
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
 
     permissions:
