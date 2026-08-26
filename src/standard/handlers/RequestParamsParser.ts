@@ -143,6 +143,7 @@ class Params {
     request: Input["request"],
     params: Input["request_params"],
   ) {
+    // this.#query = new URL(request.url).searchParams // Works, but needs more compat testing
     this.#query = toSearchParams(request.url);
     this.#path_params = params.path_params;
   }
