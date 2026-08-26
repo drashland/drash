@@ -4,14 +4,44 @@ title: Creating Middleware
 
 # Creating Middleware
 
-A middleware is a class extending `Middleware`. Override the HTTP methods you care about,
-and call `this.next()` where the request should carry on to the resource. For what
+You create middleware by extending the `Middleware` class. Override the HTTP methods you care about,
+and call `this.next()` where the request should be forwarded to the resource. For what
 middleware *is* and how to attach one, see the
-[Overview](/docs/middleware).
+[Middleware > Overview](/docs/middleware).
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["app.js"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
+```js
+import {
+  HTTPError,
+  Middleware,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+class Auth extends Middleware {
+
+  // Override all HTTP methods
+  ALL(context) {
+    if (context.request.getHeader("x-api-key") !== "secret") {
+      throw new HTTPError(Status.Unauthorized)
+    }
+
+    return this.next(context);
+  }
+
+  // Override other HTTP methods
+  GET(context) { ... }
+  PUT(context) { ... }
+  // ... and so on
+}
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -21,6 +51,8 @@ import {
 import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
 
 class Auth extends Middleware {
+
+  // Override all HTTP methods
   public ALL(request: Request) {
     if (request.headers.get("x-api-key") !== "secret") {
       throw new HTTPError(Status.Unauthorized);
@@ -28,12 +60,16 @@ class Auth extends Middleware {
 
     return this.next<Response>(request);
   }
+
+  // Override other HTTP methods
+  public GET(request: Request) { ... }
+  public PUT(request: Request) { ... }
+  // ... and so on
 }
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -43,6 +79,8 @@ import {
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 
 class Auth extends Middleware {
+
+  // Override all HTTP methods
   public ALL(request: Request) {
     if (request.headers.get("x-api-key") !== "secret") {
       throw new HTTPError(Status.Unauthorized);
@@ -50,34 +88,16 @@ class Auth extends Middleware {
 
     return this.next<Response>(request);
   }
+
+  // Override other HTTP methods
+  public GET(request: Request) { ... }
+  public PUT(request: Request) { ... }
+  // ... and so on
 }
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
-
-```ts
-import {
-  HTTPError,
-  Middleware,
-} from "@drashland/drash/modules/http.polyfill.js";
-import { Status } from "@drashland/drash/core/http/response/Status.js";
-
-class Auth extends Middleware {
-  public ALL(request: Request) {
-    if (request.headers.get("x-api-key") !== "secret") {
-      throw new HTTPError(Status.Unauthorized);
-    }
-
-    return this.next<Response>(request);
-  }
-}
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -87,19 +107,25 @@ import {
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 
 class Auth extends Middleware {
-  public ALL(request: Request) {
+
+  // Override all HTTP methods
+  ALL(request) {
     if (request.headers.get("x-api-key") !== "secret") {
       throw new HTTPError(Status.Unauthorized);
     }
 
-    return this.next<Response>(request);
+    return this.next(request);
   }
+
+  // Override other HTTP methods
+  GET(request) { ... }
+  PUT(request) { ... }
+  // ... and so on
 }
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 ## `ALL(input)`
 

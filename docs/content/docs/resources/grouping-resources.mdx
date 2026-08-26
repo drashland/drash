@@ -25,9 +25,40 @@ To gain familiarity with:
 
 A group is built with the `ResourceGroup` class' static `builder()` method:
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import {
+  Application,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+const group = ResourceGroup
+  .builder()         // Get the resource group builder
+  .resources(        // Add these resources to the group
+    ResourceA,
+    ResourceB,
+  )
+  .prefix(           // Prefix every path in every resource above
+    "/api/v1",
+  )
+  .middleware(       // Wrap every resource above with this middleware
+    SomeMiddlewareA, // This middleware runs first
+    SomeMiddlewareB, // This middleware runs second
+  )
+  .build();          // Returns an array of resource classes
+
+const app = Application
+  .builder()
+  .resources(group)  // Add the group to the chain the same way you add a single resource
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -56,40 +87,8 @@ const app = Application
   .build();
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
-
-```ts
-import {
-  Application,
-  ResourceGroup,
-} from "@drashland/drash/modules/http.polyfill.js";
-
-const group = ResourceGroup
-  .builder()         // Get the resource group builder
-  .resources(        // Add these resources to the group
-    ResourceA,
-    ResourceB,
-  )
-  .prefix(           // Prefix every path in every resource above
-    "/api/v1",
-  )
-  .middleware(       // Wrap every resource above with this middleware
-    SomeMiddlewareA, // This middleware runs first
-    SomeMiddlewareB, // This middleware runs second
-  )
-  .build();          // Returns an array of resource classes
-
-const app = Application
-  .builder()
-  .resources(group)  // Add the group to the chain the same way you add a single resource
-  .build();
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -118,9 +117,8 @@ const app = Application
   .build();
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -149,9 +147,8 @@ const app = Application
   .build();
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 <Callout type="info" emoji={null}>
 For the full builder API, see [Resource groups](/reference/standard/http/resource-group).

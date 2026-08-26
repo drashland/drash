@@ -27,7 +27,7 @@ For the full API — what the methods receive, what happens to the ones you leav
 
 ## Why Use Classes?
 
-**We (the maintainers) prefer classes when processing resources internally.**
+**We (the authors) prefer classes when processing resources internally.**
 
 Drash does not use an Express-like syntax (e.g., `app.get("/teas", someCallback)`) and does not use the term "controllers" like in the [MVC](https://developer.mozilla.org/en-US/docs/Glossary/MVC) pattern. Instead, Drash uses classes and the term "resources". The original reasoning is in our article [Why We Built Drash](https://dev.to/drash_land/why-was-drash-built-4bob). Since then, we have made changes — removing `this.request` and `this.response` among them — based on developer experience feedback and a goal of a maintainable framework that scales across runtimes.
 
@@ -134,29 +134,13 @@ Chains implement their own base `Resource` so the maintainers can:
 - create new chains to support future runtimes and their HTTP servers; and
 - keep the default behavior intact.
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["MyResource.js", "MyResource.ts", "MyResource.ts", "MyResource.js"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
-
-```ts filename="MyResource.ts"
-import {
-  Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
-
-class MyResource extends Resource {
-  paths = ["/teas"];
-
-  GET(request: Request) {
-    // ...
-  }
-}
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
-
-```js filename="MyResource.js"
+```js
 import { Resource } from "@drashland/drash/modules/http.polyfill.js";
 
 class MyResource extends Resource {
@@ -170,14 +154,11 @@ class MyResource extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
-
-```ts filename="MyResource.ts"
-import {
-  Resource,
-} from "@drashland/drash/modules/http.polyfill.js";
+```ts
+import { Resource } from "npm:@drashland/drash/modules/http.native.js";
 
 class MyResource extends Resource {
   paths = ["/teas"];
@@ -188,11 +169,25 @@ class MyResource extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
 
-```js filename="MyResource.js"
+class MyResource extends Resource {
+  paths = ["/teas"];
+
+  GET(request: Request) {
+    // ...
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```js
 import { Resource } from "@drashland/drash/modules/http.native.js";
 
 class MyResource extends Resource {
@@ -204,6 +199,5 @@ class MyResource extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>

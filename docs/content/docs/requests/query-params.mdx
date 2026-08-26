@@ -20,30 +20,10 @@ To gain familiarity with:
 
 ## Reading a Query Param
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
-
-<Tabs.Tab>
-
-```ts
-import {
-  Resource,
-  type HTTPRequest,
-} from "npm:@drashland/drash/modules/http.native.js";
-
-class Users extends Resource {
-  public paths = ["/users"];
-
-  public GET(request: HTTPRequest) {
-    const page = request.params.queryParam("page");
-
-    return new Response(`page=${page}`);
-  }
-}
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
 ```js
 import { Resource } from "@drashland/drash/modules/http.polyfill.js";
@@ -62,9 +42,28 @@ class Users extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class Users extends Resource {
+  public paths = ["/users"];
+
+  public GET(request: HTTPRequest) {
+    const page = request.params.queryParam("page");
+
+    return new Response(`page=${page}`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -83,9 +82,8 @@ class Users extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```js
 import { Resource } from "@drashland/drash/modules/http.native.js";
@@ -101,9 +99,8 @@ class Users extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 A param the client did not send comes back as `undefined` rather than throwing, so check the value instead of catching an error.
 

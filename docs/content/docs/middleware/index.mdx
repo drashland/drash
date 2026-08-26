@@ -73,11 +73,34 @@ and exports:
 | [ETag](/reference/modules/middleware/etag)                          | Adds `ETag` headers and answers `304 Not Modified` on a match        |
 | [RateLimiter](/reference/modules/middleware/rate-limiter)           | Limits requests per client and sets the `X-RateLimit-*` headers      |
 
-Each pre-built middleware module is a class you pass to `.middleware()`. For example:
+Each pre-built middleware module is an instantiated class you pass to `.middleware()`. For example:
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
+import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js";
+ 
+const group = ResourceGroup
+  .builder()
+  .middleware(
+    AcceptHeader(), // Instantiated
+    CORS(),         // Instantiated
+    ETag(),         // Instantiated
+    RateLimiter(),  // Instantiated
+  )
+  .resources(/* shortened for brevity */)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import { ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
@@ -89,18 +112,17 @@ import { RateLimiter } from "npm:@drashland/drash/modules/middleware/RateLimiter
 const group = ResourceGroup
   .builder()
   .middleware(
-    AcceptHeader(),
-    CORS(),
-    ETag(),
-    RateLimiter(),
+    AcceptHeader(), // Instantiated
+    CORS(),         // Instantiated
+    ETag(),         // Instantiated
+    RateLimiter(),  // Instantiated
   )
   .resources(/* shortened for brevity */)
   .build();
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```ts
 import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
@@ -112,41 +134,17 @@ import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js"
 const group = ResourceGroup
   .builder()
   .middleware(
-    AcceptHeader(),
-    CORS(),
-    ETag(),
-    RateLimiter(),
+    AcceptHeader(), // Instantiated
+    CORS(),         // Instantiated
+    ETag(),         // Instantiated
+    RateLimiter(),  // Instantiated
   )
   .resources(/* shortened for brevity */)
   .build();
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
-
-```ts
-import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
-import { AcceptHeader } from "@drashland/drash/modules/middleware/AcceptHeader.js";
-import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
-import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
-import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js";
- 
-const group = ResourceGroup
-  .builder()
-  .middleware(
-    AcceptHeader(),
-    CORS(),
-    ETag(),
-    RateLimiter(),
-  )
-  .resources(/* shortened for brevity */)
-  .build();
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```ts
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
@@ -158,15 +156,14 @@ import { RateLimiter } from "@drashland/drash/modules/middleware/RateLimiter.js"
 const group = ResourceGroup
   .builder()
   .middleware(
-    AcceptHeader(),
-    CORS(),
-    ETag(),
-    RateLimiter(),
+    AcceptHeader(), // Instantiated
+    CORS(),         // Instantiated
+    ETag(),         // Instantiated
+    RateLimiter(),  // Instantiated
   )
   .resources(/* shortened for brevity */)
   .build();
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
