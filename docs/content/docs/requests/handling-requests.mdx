@@ -30,34 +30,12 @@ An HTTP method receives whatever was passed to `app.handle()`. On runtimes with 
 
 ## Typing the Request
 
-`params` is attached at runtime, so a plain `Request` type does not know about it. Use the `HTTPRequest` type the HTTP module exports and your editor will autocomplete both methods:
+A `params` field is attached to the request at runtime. In TypeScript projects, a plain `Request` type does not know about it. Use the `HTTPRequest` type (exported by the HTTP module) and your editor will recognize the `params` field&mdash;enabling autocompletion on it:
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
-
-<Tabs.Tab>
-
-```ts
-import {
-  Resource,
-  type HTTPRequest,
-} from "npm:@drashland/drash/modules/http.native.js";
-
-class Users extends Resource {
-  public paths = ["/users/:id?"];
-
-  public GET(request: HTTPRequest) {
-    // `request.params` is known to the type checker here
-    const id = request.params.pathParam("id");
-    const sort = request.params.queryParam("sort");
-
-    return new Response(`id=${id} sort=${sort}`);
-  }
-}
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
 ```js
 import { Resource } from "@drashland/drash/modules/http.polyfill.js";
@@ -76,11 +54,32 @@ class Users extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
+```ts {3,9-10}
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
 
-```ts
+class Users extends Resource {
+  public paths = ["/users/:id?"];
+
+  public GET(request: HTTPRequest) {
+    // `request.params` is known to the type checker here
+    const id = request.params.pathParam("id");
+    const sort = request.params.queryParam("sort");
+
+    return new Response(`id=${id} sort=${sort}`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts {3,9-10}
 import {
   Resource,
   type HTTPRequest,
@@ -99,16 +98,17 @@ class Users extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
-
-```js
+```js {6-8}
 import { Resource } from "@drashland/drash/modules/http.native.js";
 
 class Users extends Resource {
   paths = ["/users/:id?"];
 
+  // Cloudflare is in plain JavaScript, so no typing goes here.
+  // Just access the `request.params` field. It should already be attached.
   GET(request) {
     const id = request.params.pathParam("id");
     const sort = request.params.queryParam("sort");
@@ -118,13 +118,8 @@ class Users extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-</Tabs>
-
-<Callout type="info" emoji={null}>
-`HTTPRequest` is a __type__, not a class. Import it with `type` so it is erased at build time rather than becoming a runtime import.
-</Callout>
+</CodeTab>
+</CodeTabs>
 
 ## The `params` Object
 

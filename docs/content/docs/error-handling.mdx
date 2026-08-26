@@ -23,33 +23,10 @@ To gain familiarity with:
 
 Drash's internals use the core `HTTPError` class, and the HTTP module re-exports it for your convenience. Every error the framework throws is one of these, which is what makes a single `.catch()` block enough.
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
-
-<Tabs.Tab>
-
-```ts
-import {
-  HTTPError,
-  Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
-import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
-
-class Home extends Resource {
-  public paths = ["/"];
-
-  public GET(request: Request) {
-    if (!request.headers.has("x-some-header")) {
-      throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
-    }
-
-    return new Response("Hello!");
-  }
-}
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
 ```js
 import {
@@ -74,9 +51,31 @@ class Home extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import {
+  HTTPError,
+  Resource,
+} from "npm:@drashland/drash/modules/http.native.js";
+import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
+
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    if (!request.headers.has("x-some-header")) {
+      throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
+    }
+
+    return new Response("Hello!");
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -98,9 +97,8 @@ class Home extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```js
 import {
@@ -122,9 +120,8 @@ class Home extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 <Callout type="warning" emoji={null}>
 __The first argument is a status object, not a number.__ `HTTPError` takes a `ResponseStatus` — a `{ code, description }` pair — so `new HTTPError(401)` does not type check. Import `Status` and pass `Status.Unauthorized`.
@@ -239,60 +236,10 @@ Thrown by `Middleware.next()` when the resource method it wrapped returned nothi
 
 The recommended approach is to check for `HTTPError` in your `.catch()` block and use it to build the response. Anything that is __not__ an `HTTPError` came from your own code and should not be shown to the client:
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
-
-<Tabs.Tab>
-
-```ts
-import {
-  Application,
-  HTTPError,
-  Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
-import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
-
-class Home extends Resource {
-  public paths = ["/"];
-
-  public GET(request: Request) {
-    if (!request.headers.has("x-some-header")) {
-      throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
-    }
-
-    return new Response("Hello!");
-  }
-}
-
-const app = Application
-  .builder()
-  .resources(Home)
-  .build();
-
-Deno.serve({ port: 1447 }, (request: Request) => {
-  return app
-    .handle<Response>(request)
-    .catch((e) => {
-      // Errors Drash threw are safe to surface: their messages are ones you
-      // or the framework wrote deliberately.
-      if (e.name === "HTTPError" || e instanceof HTTPError) {
-        return new Response(e.message, {
-          status: e.status_code,
-          statusText: e.status_code_description,
-        });
-      }
-
-      // Everything else came from your own code, so return something generic
-      // and keep your internals private.
-      return new Response("The server could not generate a response", {
-        status: 500,
-      });
-    });
-});
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
 ```js
 import { createServer } from "node:http";
@@ -351,9 +298,58 @@ const server = createServer((request, response) => {
 server.listen(1447, "localhost");
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import {
+  Application,
+  HTTPError,
+  Resource,
+} from "npm:@drashland/drash/modules/http.native.js";
+import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
+
+class Home extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    if (!request.headers.has("x-some-header")) {
+      throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
+    }
+
+    return new Response("Hello!");
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Home)
+  .build();
+
+Deno.serve({ port: 1447 }, (request: Request) => {
+  return app
+    .handle<Response>(request)
+    .catch((e) => {
+      // Errors Drash threw are safe to surface: their messages are ones you
+      // or the framework wrote deliberately.
+      if (e.name === "HTTPError" || e instanceof HTTPError) {
+        return new Response(e.message, {
+          status: e.status_code,
+          statusText: e.status_code_description,
+        });
+      }
+
+      // Everything else came from your own code, so return something generic
+      // and keep your internals private.
+      return new Response("The server could not generate a response", {
+        status: 500,
+      });
+    });
+});
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -405,9 +401,8 @@ Bun.serve({
 });
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```js
 import {
@@ -418,9 +413,9 @@ import {
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 
 class Home extends Resource {
-  public paths = ["/"];
+  paths = ["/"];
 
-  public GET(request: Request) {
+  GET(request) {
     if (!request.headers.has("x-some-header")) {
       throw new HTTPError(Status.Unauthorized, "x-some-header is missing");
     }
@@ -458,9 +453,8 @@ export default {
 };
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 The `e.name === "HTTPError"` check comes first on purpose. It works in the bundle-boundary case described above, where `instanceof` would return `false` on a perfectly valid `HTTPError`.
 

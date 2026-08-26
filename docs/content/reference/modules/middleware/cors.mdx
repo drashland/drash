@@ -19,11 +19,90 @@ The CORS middleware answers preflight (`OPTIONS`) requests and adds the
 
 The highlighted sections below show how it is added:
 
-<Tabs items={["Deno"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
+```js showLineNumbers  {8-10}
+// Code is shortened for brevity
 
-```typescript showLineNumbers  {8-10}
+import { Application, ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+
+const groupedResources = ResourceGroup
+  .builder()
+  .middleware(        // Add the middleware to each resource in this group
+    CORS(),           // Calling CORS() with no options uses the defaults
+  )
+  .resources(
+    ResourceA,
+    ResourceB,
+  )
+  .build();
+
+const app = Application
+  .builder()
+  .resources(groupedResources)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers  {8-10}
+// Code is shortened for brevity
+
+import { Application, ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
+import { CORS } from "npm:@drashland/drash/modules/middleware/CORS.js";
+
+const groupedResources = ResourceGroup
+  .builder()
+  .middleware(        // Add the middleware to each resource in this group
+    CORS(),           // Calling CORS() with no options uses the defaults
+  )
+  .resources(
+    ResourceA,
+    ResourceB,
+  )
+  .build();
+
+const app = Application
+  .builder()
+  .resources(groupedResources)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers  {8-10}
+// Code is shortened for brevity
+
+import { Application, ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+
+const groupedResources = ResourceGroup
+  .builder()
+  .middleware(        // Add the middleware to each resource in this group
+    CORS(),           // Calling CORS() with no options uses the defaults
+  )
+  .resources(
+    ResourceA,
+    ResourceB,
+  )
+  .build();
+
+const app = Application
+  .builder()
+  .resources(groupedResources)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers  {8-10}
 // Code is shortened for brevity
 
 import { Application, ResourceGroup } from "@drashland/drash/modules/http.native.js";
@@ -46,8 +125,8 @@ const app = Application
   .build();
 ```
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 You might notice `CORS` is called (`CORS()`) instead of being passed in like a
 normal middleware class. This is because `CORS` is a __factory__. Calling it
@@ -78,11 +157,69 @@ change.
 The default is `["*"]`, which allows every origin. Most applications want a list
 instead. Entries can be strings or regular expressions:
 
-<Tabs items={["Deno"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
+```js showLineNumbers {6-11}
+import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
 
-```typescript showLineNumbers {6-11}
+const group = ResourceGroup
+  .builder()
+  .middleware(CORS({
+    access_control_allow_origin: [
+      "https://example.com",                  // An exact origin
+      /^https:\/\/[a-z0-9-]+\.example\.com$/, // Any subdomain of example.com
+    ],
+  }))
+  .resources(MyResource)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers {6-11}
+import { ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
+import { CORS } from "npm:@drashland/drash/modules/middleware/CORS.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(CORS({
+    access_control_allow_origin: [
+      "https://example.com",                  // An exact origin
+      /^https:\/\/[a-z0-9-]+\.example\.com$/, // Any subdomain of example.com
+    ],
+  }))
+  .resources(MyResource)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers {6-11}
+import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(CORS({
+    access_control_allow_origin: [
+      "https://example.com",                  // An exact origin
+      /^https:\/\/[a-z0-9-]+\.example\.com$/, // Any subdomain of example.com
+    ],
+  }))
+  .resources(MyResource)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers {6-11}
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
 import { CORS } from "@drashland/drash/modules/middleware/CORS.js";
 
@@ -98,8 +235,8 @@ const group = ResourceGroup
   .build();
 ```
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 <Callout type="warning" emoji={null}>
 __Anchor your regular expressions.__ An unanchored pattern like

@@ -19,11 +19,60 @@ to resources using a [resource group](/reference/standard/http/resource-group).
 
 The highlighted section below shows how it is added:
 
-<Tabs items={["Deno"]}>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
-<Tabs.Tab>
+```js showLineNumbers  {8}
+// Code is shortened for brevity
 
-```typescript showLineNumbers  {8}
+import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(ETag())         // Calling it with no options uses the defaults
+  .resources(Users)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers  {8}
+// Code is shortened for brevity
+
+import { ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
+import { ETag } from "npm:@drashland/drash/modules/middleware/ETag.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(ETag())         // Calling it with no options uses the defaults
+  .resources(Users)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers  {8}
+// Code is shortened for brevity
+
+import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { ETag } from "@drashland/drash/modules/middleware/ETag.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(ETag())         // Calling it with no options uses the defaults
+  .resources(Users)
+  .build();
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers  {8}
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
@@ -36,8 +85,8 @@ const group = ResourceGroup
   .build();
 ```
 
-</Tabs.Tab>
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 Like the other pre-built middleware, `ETag` is a __factory__. Calling it returns a
 middleware class with your options already bound to it.

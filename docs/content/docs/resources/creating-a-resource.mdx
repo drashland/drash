@@ -7,21 +7,88 @@ A resource is a class that maps a set of paths to its HTTP method handlers. Dras
 
 Unlike other frameworks, Drash does not use `app.get()` and does not use controllers. Instead, Drash uses resources. You create a resource by defining a resource class, its routes as its `paths` property, and its HTTP method handlers as public methods that match the HTTP method name. For example:
 
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
+
 ```js
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class IndexResource extends Resource {
+  paths = ["/"];
+
+  // Node hands the chain a context object rather than a Web `Request`, and you
+  // write to `context.response` instead of returning a response.
+  GET(context) {
+    context.response.end(`Received GET request`);
+  }
+
+  POST(context) {
+    context.response.end(`Received POST request`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import { Resource } from "npm:@drashland/drash/modules/http.native.js";
 
 class IndexResource extends Resource {
   public paths = ["/"];
 
-  public GET(request) {
+  public GET(request: Request) {
     return new Response(`Received GET request`);
   }
 
-  public POST(request) {
+  public POST(request: Request) {
     return new Response(`Received POST request`);
   }
 }
 ```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class IndexResource extends Resource {
+  public paths = ["/"];
+
+  public GET(request: Request) {
+    return new Response(`Received GET request`);
+  }
+
+  public POST(request: Request) {
+    return new Response(`Received POST request`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class IndexResource extends Resource {
+  paths = ["/"];
+
+  GET(request) {
+    return new Response(`Received GET request`);
+  }
+
+  POST(request) {
+    return new Response(`Received POST request`);
+  }
+}
+```
+
+</CodeTab>
+</CodeTabs>
 
 - If a resource specifies `/` in its `paths` property, then clients can go to `{your-site.com}/`.
 - If a resource specifies `/my-resource` in its `paths` property, then clients can go to `{your-site.com}/my-resource`.
@@ -39,17 +106,76 @@ Paths can carry parameters and regular expressions, so one resource can cover ma
 
 Required path params follow the `:name_of_your_path_param` syntax.
 
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
+
 ```js
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class ResourceWithPathParam extends Resource {
+  paths = ["/:my_cool_param"];
+
+  GET(context) {
+    context.response.end(`You passed in: ${context.params.pathParam("my_cool_param")}`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
 
 class ResourceWithPathParam extends Resource {
   public paths = ["/:my_cool_param"];
 
-  public GET(request) {
+  public GET(request: HTTPRequest) {
     return new Response(`You passed in: ${request.params.pathParam("my_cool_param")}`);
   }
 }
 ```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class ResourceWithPathParam extends Resource {
+  public paths = ["/:my_cool_param"];
+
+  public GET(request: HTTPRequest) {
+    return new Response(`You passed in: ${request.params.pathParam("my_cool_param")}`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class ResourceWithPathParam extends Resource {
+  paths = ["/:my_cool_param"];
+
+  GET(request) {
+    return new Response(`You passed in: ${request.params.pathParam("my_cool_param")}`);
+  }
+}
+```
+
+</CodeTab>
+</CodeTabs>
 
 Making the following requests will result in the following responses:
 
@@ -66,20 +192,88 @@ A trailing `?` makes a param optional, so the resource matches with or without i
 You can have as many optional params as you like, but **required params must come before optional ones**.
 </Callout>
 
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
+
 ```js
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class UsersResource extends Resource {
+  // id is required; the rest are optional
+  paths = ["/users/:id/:name?/:age?/:city?"];
+
+  GET(context) {
+    const id = context.params.pathParam("id");
+    const name = context.params.pathParam("name");
+    context.response.end([id, name].filter(Boolean).join(" | "));
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
 
 class UsersResource extends Resource {
   // id is required; the rest are optional
   public paths = ["/users/:id/:name?/:age?/:city?"];
 
-  public GET(request) {
+  public GET(request: HTTPRequest) {
     const id = request.params.pathParam("id");
     const name = request.params.pathParam("name");
     return new Response([id, name].filter(Boolean).join(" | "));
   }
 }
 ```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class UsersResource extends Resource {
+  // id is required; the rest are optional
+  public paths = ["/users/:id/:name?/:age?/:city?"];
+
+  public GET(request: HTTPRequest) {
+    const id = request.params.pathParam("id");
+    const name = request.params.pathParam("name");
+    return new Response([id, name].filter(Boolean).join(" | "));
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class UsersResource extends Resource {
+  // id is required; the rest are optional
+  paths = ["/users/:id/:name?/:age?/:city?"];
+
+  GET(request) {
+    const id = request.params.pathParam("id");
+    const name = request.params.pathParam("name");
+    return new Response([id, name].filter(Boolean).join(" | "));
+  }
+}
+```
+
+</CodeTab>
+</CodeTabs>
 
 Making the following requests will result in the following responses:
 
@@ -92,17 +286,76 @@ Making the following requests will result in the following responses:
 
 ### Regular Expression Paths
 
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
+
 ```js
-import { Resource } from "@drashland/drash/modules/http.native.js";
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+class RegexPathResource extends Resource {
+  paths = ["/([0-9]$)"];
+
+  GET(context) {
+    context.response.end("GOT!");
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
 
 class RegexPathResource extends Resource {
   public paths = ["/([0-9]$)"];
 
-  public GET(request) {
+  public GET(request: HTTPRequest) {
     return new Response("GOT!");
   }
 }
 ```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "@drashland/drash/modules/http.polyfill.js";
+
+class RegexPathResource extends Resource {
+  public paths = ["/([0-9]$)"];
+
+  public GET(request: HTTPRequest) {
+    return new Response("GOT!");
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```js
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+class RegexPathResource extends Resource {
+  paths = ["/([0-9]$)"];
+
+  GET(request) {
+    return new Response("GOT!");
+  }
+}
+```
+
+</CodeTab>
+</CodeTabs>
 
 | Request | Response | 
 | - | - |

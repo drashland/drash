@@ -21,32 +21,10 @@ To gain familiarity with:
 
 ## Reading a Path Param
 
-<Tabs items={["Deno", "Node", "Bun", "Cloudflare Workers"]}>
-
-<Tabs.Tab>
-
-```ts
-import {
-  Resource,
-  type HTTPRequest,
-} from "npm:@drashland/drash/modules/http.native.js";
-
-class ResourceWithPathParam extends Resource {
-  // Declare the param in the path ...
-  public paths = ["/:my_param"];
-
-  public GET(request: HTTPRequest) {
-    // ... and read it back by the same name
-    const param = request.params.pathParam("my_param");
-
-    return new Response(`You passed in: ${param}`);
-  }
-}
-```
-
-</Tabs.Tab>
-
-<Tabs.Tab>
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
 
 ```js
 import { Resource } from "@drashland/drash/modules/http.polyfill.js";
@@ -67,9 +45,30 @@ class ResourceWithPathParam extends Resource {
 }
 ```
 
-</Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
-<Tabs.Tab>
+```ts
+import {
+  Resource,
+  type HTTPRequest,
+} from "npm:@drashland/drash/modules/http.native.js";
+
+class ResourceWithPathParam extends Resource {
+  // Declare the param in the path ...
+  public paths = ["/:my_param"];
+
+  public GET(request: HTTPRequest) {
+    // ... and read it back by the same name
+    const param = request.params.pathParam("my_param");
+
+    return new Response(`You passed in: ${param}`);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
 
 ```ts
 import {
@@ -90,9 +89,8 @@ class ResourceWithPathParam extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-<Tabs.Tab>
+</CodeTab>
+<CodeTab>
 
 ```js
 import { Resource } from "@drashland/drash/modules/http.native.js";
@@ -110,9 +108,8 @@ class ResourceWithPathParam extends Resource {
 }
 ```
 
-</Tabs.Tab>
-
-</Tabs>
+</CodeTab>
+</CodeTabs>
 
 Requests to this resource resolve as follows:
 
