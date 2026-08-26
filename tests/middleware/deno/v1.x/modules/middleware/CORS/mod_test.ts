@@ -25,9 +25,9 @@ import {
   CORS,
   CORSMiddleware,
   defaultOptions,
-  Options,
+  type Options,
 } from "../../../../../../../src/modules/middleware/CORS.ts";
-import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
+import type { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import * as asserts from "@std/assert";
 import { catchError, query } from "../../../../utils.ts";
 import { assertionMessage, chain, testCaseName } from "../../../../utils.ts";

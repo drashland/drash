@@ -25,7 +25,7 @@ import { StatusDescription } from "../../../src/core/http/response/StatusDescrip
 import {
   Application,
   type HTTPRequest,
-  Middleware,
+  type Middleware,
   Resource,
   ResourceGroup,
 } from "../../../src/modules/http.native.ts";

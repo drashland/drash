@@ -30,7 +30,7 @@ import { StatusCode } from "../../../../../../../src/core/http/response/StatusCo
 import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import {
   ResourcesIndex,
-  SearchResult,
+  type SearchResult,
 } from "../../../../../../../src/standard/handlers/ResourcesIndex.ts";
 import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 
