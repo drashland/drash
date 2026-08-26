@@ -177,19 +177,20 @@ jobs:
         with:
           ref: ${{ github.event.inputs.version }}
 
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
+      # `npx jsr publish` is the form JSR documents for GitHub Actions. It needs
+      # no toolchain setup: the runner ships Node, and `npx` fetches the shim.
+      # Deno is deliberately not installed in this job -- the other jobs need it
+      # for `deno task`, this one does not.
+      #
+      # The version comes from deno.json. `jsr publish` is a no-op when that
+      # version is already on the registry, so re-running after a failure part
+      # way through is safe.
+      #
       # JSR publishes the TypeScript in `src` directly, so there is no build
       # step here -- unlike the npm workflow, which publishes tsup's output.
       #
       # No `--allow-slow-types`: the public API carries explicit types, which is
       # what lets JSR generate .d.ts for Node consumers. If that flag ever looks
       # necessary, the fix is to annotate the API rather than to pass it.
-      #
-      # No `--allow-dirty` either. `deno publish` refuses a dirty tree, and that
-      # check is worth keeping: it means the published source matches the tag.
       - name: Publish package
-        run: deno publish
+        run: npx jsr publish
