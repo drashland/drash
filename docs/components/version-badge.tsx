@@ -9,5 +9,5 @@ import styles from "./version-badge.module.css";
  * string for a value that changes once a major.
  */
 export function VersionBadge() {
-  return <span className={styles.badge}>v3.0.0-beta.3</span>;
+  return <span className={styles.badge}>v3.0.0</span>;
 }
