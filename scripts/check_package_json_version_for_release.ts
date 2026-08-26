@@ -2,6 +2,10 @@ const packageJsonContents = new TextDecoder().decode(
   Deno.readFileSync("./package.json"),
 );
 
+const denoJsrJsonContents = new TextDecoder().decode(
+  Deno.readFileSync("./deno.jsr.json"),
+);
+
 const isManualRelease = Deno.args.includes("--manual-release");
 
 const versionOptionIndex = Deno.args.indexOf("--version");
@@ -27,18 +31,20 @@ Running with script options:
 `);
 
 console.log(
-  `Checking package.json version with GitHub release tag version ...`,
+  `Checking package.json and deno.jsr.json version with GitHub release tag version ...`,
 );
 
 const packageJson = JSON.parse(packageJsonContents);
+const denoJsrJson = JSON.parse(denoJsrJsonContents)
 const packageJsonVersion = `v${packageJson.version}`;
 
 console.log(`
   - package.json version:   ${packageJsonVersion}
+  - deno.jsr.json version:  ${denoJsrJson}
   - GitHub release version: ${versionToPublish}
 `);
 
-if (packageJsonVersion !== versionToPublish) {
+if (packageJsonVersion !== versionToPublish || denoJsrJson !== versionToPublish) {
   console.log(`
 !! Version mismatch !!
 !! Version mismatch !!

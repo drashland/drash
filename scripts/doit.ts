@@ -33,6 +33,8 @@ copy([
   "README.md",
 ]);
 
+Deno.copyFileSync(`deno.jsr.json`, `dist/deno.json`);
+
 // Slim down the package.json file before putting it into the distributable
 
 const packageJsonContents = new TextDecoder().decode(
