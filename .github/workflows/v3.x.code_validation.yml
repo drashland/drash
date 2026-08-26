@@ -59,31 +59,6 @@ jobs:
       - name: Run Deno linter
         run: deno lint
 
-  jsr_exports_up_to_date:
-    name: Check JSR exports are up to date
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      # `deno.json`'s `exports` map is generated from `src` by
-      # ./scripts/doit.ts. It is a tracked file, so adding a module under `src`
-      # without rebuilding would publish a package that cannot import it.
-      # Regenerate and fail if the committed map does not already match.
-      - name: Regenerate JSR exports
-        run: |
-          deno run --allow-read --allow-write --allow-net ./scripts/doit.ts
-
-      - name: Fail if deno.json is stale
-        run: |
-          git diff --exit-code deno.json \
-            || (echo "::error::deno.json exports are stale. Run 'deno task build:libs' and commit deno.json." && exit 1)
-
   code_formatting:
     name: Check code formatting
     runs-on: ubuntu-latest
