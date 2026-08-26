@@ -64,50 +64,50 @@ class RateLimitedClient {
     this.#rate_limit_window_end_time = this.#getRateLimitEndTimeFromNow();
   }
 
-  get num_requests_made() {
+  get num_requests_made(): number {
     return this.#num_requests_made;
   }
 
-  get current_request_time() {
+  get current_request_time(): number {
     return this.#current_request_time;
   }
 
-  get hit_request_limit() {
+  get hit_request_limit(): boolean {
     return this.#num_requests_made >
       this.#options.max_requests_allowed_in_time_window;
   }
 
-  get rate_limit_window_end_time() {
+  get rate_limit_window_end_time(): number {
     return this.#rate_limit_window_end_time;
   }
 
-  get rate_limit_window_time_elapsed() {
+  get rate_limit_window_time_elapsed(): boolean {
     return this.#current_request_time >= this.#rate_limit_window_end_time;
   }
 
-  get requests_remaining() {
+  get requests_remaining(): number {
     const remaining = this.#options.max_requests_allowed_in_time_window -
       this.#num_requests_made;
     return remaining <= 0 ? 0 : remaining;
   }
 
-  get max_requests_allowed_in_time_window() {
+  get max_requests_allowed_in_time_window(): number {
     return this.#options.max_requests_allowed_in_time_window;
   }
 
-  incrementRequestCount() {
+  incrementRequestCount(): this {
     this.#num_requests_made += 1;
 
     return this;
   }
 
-  setCurrentRequestTimeToNow() {
+  setCurrentRequestTimeToNow(): this {
     this.#current_request_time = Date.now();
 
     return this;
   }
 
-  resetTimeWindow() {
+  resetTimeWindow(): this {
     this.#rate_limit_window_end_time = this.#getRateLimitEndTimeFromNow();
 
     return this;

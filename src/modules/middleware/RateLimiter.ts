@@ -132,7 +132,7 @@ class RateLimiterMiddleware extends Middleware {
    * @throws An {@link HTTPError} with a 500 status code if no response is set
    * in the context object.
    */
-  protected sendResponse(context: Context) {
+  protected sendResponse(context: Context): Response {
     const client = context.client;
 
     // No client, just send the response that was set in the context object
@@ -162,7 +162,7 @@ class RateLimiterMiddleware extends Middleware {
    * @returns The context object (with the `response` field set) to be handled
    * by any further handlers.
    */
-  protected sendToNext(context: PreNextContext) {
+  protected sendToNext(context: PreNextContext): Promise<Context> {
     return Promise
       .resolve()
       .then(() => this.next<Response>(context.request))
@@ -186,7 +186,7 @@ class RateLimiterMiddleware extends Middleware {
    * @throws An {@link HTTPError} if the `option.client_id_header_name` value
    * is falsy and `option.throw_if_connection_header_name_missing` is `true`.
    */
-  protected setClientInContext(request: Request) {
+  protected setClientInContext(request: Request): PreNextContext {
     const clientId = request.headers.get(this.#options.client_id_header_name);
 
     if (!clientId) {
@@ -244,7 +244,7 @@ class RateLimiterMiddleware extends Middleware {
    *
    * @throws An {@link RateLimiterErrorResponse} if the client is rate limited.
    */
-  protected throwIfRateLimited(context: PreNextContext) {
+  protected throwIfRateLimited(context: PreNextContext): PreNextContext {
     // No rate limit? Move along... clients are allowed to make as many requests
     // as they want.
     if (!this.#options.max_requests) {

@@ -21,7 +21,7 @@
 
 // Imports > Standard
 import { AbstractChainBuilder } from "./AbstractChainBuilder.ts";
-import { Handler } from "../handlers/Handler.ts";
+import type { Handler } from "../handlers/Handler.ts";
 
 /**
  * The concrete builder behind {@link BaseChain}.

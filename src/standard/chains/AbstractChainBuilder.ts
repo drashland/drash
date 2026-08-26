@@ -20,10 +20,10 @@
  */
 
 // Imports > Core
-import { IBuilder } from "../../core/interfaces/IBuilder.ts";
+import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 
 // Imports > Standard
-import { Handler } from "../handlers/Handler.ts";
+import type { Handler } from "../handlers/Handler.ts";
 
 abstract class AbstractChainBuilder implements IBuilder {
   readonly handlers: Handler[] = [];
@@ -40,7 +40,7 @@ abstract class AbstractChainBuilder implements IBuilder {
    * @param handlers The handlers that will be chained together.
    * @returns This instance so you can chain more methods.
    */
-  protected link() {
+  protected link(): Handler {
     if (!this.handlers) {
       throw new Error("Chain.Builder: `this.handlers` should be an array");
     }

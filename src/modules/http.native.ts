@@ -23,10 +23,10 @@
 import { Resource as CoreResource } from "../core/http/Resource.ts";
 
 // Imports > Standard
-import { WithParams } from "../standard/handlers/RequestParamsParser.ts";
+import type { WithParams } from "../standard/handlers/RequestParamsParser.ts";
 
 // Imports > Modules
-import { requestChain } from "./builders/RequestChainBuilder.ts";
+import { type Builder, requestChain } from "./builders/RequestChainBuilder.ts";
 
 type HTTPRequest = WithParams;
 
@@ -68,7 +68,7 @@ export type { HTTPRequest };
  * rather than a bare `builder()`.
  */
 export class Application {
-  static builder() {
+  static builder(): Builder {
     return requestChain()
       // @ts-ignore URLPattern is available when using the Deno extension, but we
       // should not force using the Deno extension just to accommodate the build

@@ -20,8 +20,8 @@
  */
 
 // Imports > Core
-import { MethodOf } from "../../core/Types.ts";
-import { Resource } from "../../core/http/Resource.ts";
+import type { MethodOf } from "../../core/Types.ts";
+import type { Resource } from "../../core/http/Resource.ts";
 
 // Imports > Standard
 import { Handler } from "./Handler.ts";

@@ -20,11 +20,11 @@
  */
 
 // Imports > Core
-import { Resource } from "../../core/http/Resource.ts";
+import type { Resource } from "../../core/http/Resource.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 
 // Imports > Standard
-import { Middleware } from "./Middleware.ts";
+import type { Middleware } from "./Middleware.ts";
 
 type ResourceClasses = (typeof Resource | typeof Resource[])[];
 

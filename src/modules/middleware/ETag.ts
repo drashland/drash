@@ -22,7 +22,7 @@
 import { Header } from "../../core/http/Header.ts";
 import { Middleware } from "../../standard/http/Middleware.ts";
 import { response } from "./e_tag/ETagResponse.ts";
-import { ResponseStatus, ResponseStatusName } from "../../core/Types.ts";
+import type { ResponseStatus, ResponseStatusName } from "../../core/Types.ts";
 import { Status } from "../../core/http/response/Status.ts";
 import { StatusCode } from "../../core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../core/http/response/StatusDescription.ts";
@@ -93,7 +93,7 @@ class ETagMiddleware extends Middleware {
    * @param context The context containing all data this middleware requires.
    * @returns The context
    */
-  protected createEtagHeader(context: Context) {
+  protected createEtagHeader(context: Context): Context | Promise<Context> {
     if (context.done) {
       return context;
     }
@@ -106,16 +106,18 @@ class ETagMiddleware extends Middleware {
       });
   }
 
-  protected createLastModifiedHeader() {
+  protected createLastModifiedHeader(): string {
     return new Date().toUTCString();
   }
 
-  protected getCacheKey(request: Request) {
+  protected getCacheKey(request: Request): string {
     const { method, url } = request;
     return method + ";" + url;
   }
 
-  protected handleEtagMatchesRequestIfNoneMatchHeader(context: Context) {
+  protected handleEtagMatchesRequestIfNoneMatchHeader(
+    context: Context,
+  ): Context {
     if (context.done) {
       return context;
     }
@@ -169,7 +171,7 @@ class ETagMiddleware extends Middleware {
     }
   }
 
-  protected handleIfResponseEmpty(context: Context) {
+  protected handleIfResponseEmpty(context: Context): Context {
     if (context.done) {
       return context;
     }
@@ -212,7 +214,7 @@ class ETagMiddleware extends Middleware {
     return context;
   }
 
-  protected requestIsCached(request: Request) {
+  protected requestIsCached(request: Request): boolean {
     if (this.getCacheKey(request) in this.#cache) {
       return true;
     }
@@ -220,7 +222,7 @@ class ETagMiddleware extends Middleware {
     return false;
   }
 
-  protected sendResponse(context: Context) {
+  protected sendResponse(context: Context): Response {
     if (context.done) {
       return context.response;
     }

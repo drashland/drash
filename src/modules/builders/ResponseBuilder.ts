@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Builder } from "../../standard/builders/Builder.ts";
+import type { Builder } from "../../standard/builders/Builder.ts";
 
 /**
  * A builder to help build a `Response` object. This is useful if the response's
@@ -54,7 +54,7 @@ import { Builder } from "../../standard/builders/Builder.ts";
  */
 class ResponseBuilder implements Builder<Response> {
   protected response_body: BodyInit | null = null;
-  protected response_headers = new Headers();
+  protected response_headers: Headers = new Headers();
   protected response_init: ResponseInit = {
     status: 200,
     statusText: "OK",
@@ -69,7 +69,7 @@ class ResponseBuilder implements Builder<Response> {
    *
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/body}
    */
-  body(body: BodyInit | null) {
+  body(body: BodyInit | null): this {
     this.response_body = body;
     return this;
   }
@@ -85,7 +85,7 @@ class ResponseBuilder implements Builder<Response> {
    *
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/headers}
    */
-  headers(headers: Record<string, string>) {
+  headers(headers: Record<string, string>): this {
     for (const [k, v] of Object.entries(headers)) {
       this.response_headers.set(k, v);
     }
@@ -103,7 +103,7 @@ class ResponseBuilder implements Builder<Response> {
    *
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/status}
    */
-  status(status: number) {
+  status(status: number): this {
     this.response_init.status = status;
     return this;
   }
@@ -117,7 +117,7 @@ class ResponseBuilder implements Builder<Response> {
    *
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Response/statusText}
    */
-  statusText(statusText: string) {
+  statusText(statusText: string): this {
     this.response_init.statusText = statusText;
     return this;
   }
@@ -125,7 +125,7 @@ class ResponseBuilder implements Builder<Response> {
   /**
    * @returns A `Response` object using the values set in this builder.
    */
-  build() {
+  build(): Response {
     return new Response(this.response_body, {
       ...this.response_init,
       headers: this.response_headers,
@@ -140,7 +140,7 @@ class ResponseBuilder implements Builder<Response> {
  *
  * @see {@link ResponseBuilder} for implementation details.
  */
-function response() {
+function response(): ResponseBuilder {
   return new ResponseBuilder();
 }
 

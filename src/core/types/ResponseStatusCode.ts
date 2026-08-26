@@ -19,6 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { StatusCode } from "../http/response/StatusCode.ts";
+import type { StatusCode } from "../http/response/StatusCode.ts";
 
 export type ResponseStatusCode = (typeof StatusCode)[keyof typeof StatusCode];

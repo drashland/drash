@@ -21,7 +21,7 @@
 
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
-import { Resource } from "../../core/http/Resource.ts";
+import type { Resource } from "../../core/http/Resource.ts";
 import { Status } from "../../core/http/response/Status.ts";
 
 // Imports > Standard

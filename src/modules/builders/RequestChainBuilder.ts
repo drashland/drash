@@ -20,11 +20,11 @@
  */
 
 // Imports > Core
-import { Resource } from "../../core/http/Resource.ts";
+import type { Resource } from "../../core/http/Resource.ts";
 
 // Imports > Standard
 import { AbstractChainBuilder } from "../../standard/chains/AbstractChainBuilder.ts";
-import { Handler } from "../../standard/handlers/Handler.ts";
+import type { Handler } from "../../standard/handlers/Handler.ts";
 import { RequestParamsParser } from "../../standard/handlers/RequestParamsParser.ts";
 import { RequestValidator } from "../../standard/handlers/RequestValidator.ts";
 import { ResourceCaller } from "../../standard/handlers/ResourceCaller.ts";

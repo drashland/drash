@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ResponseStatusName } from "../../types/ResponseStatusName.ts";
+import type { ResponseStatusName } from "../../types/ResponseStatusName.ts";
 
 /**
  * All HTTP response status codes from {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Status}.

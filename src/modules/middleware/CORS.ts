@@ -20,7 +20,7 @@
  */
 
 // Imports > Core
-import {
+import type {
   RequestMethod,
   ResponseStatus,
   ResponseStatusName,
