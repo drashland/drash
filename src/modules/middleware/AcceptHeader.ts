@@ -61,7 +61,7 @@ class AcceptHeaderMiddleware extends Middleware {
     };
   }
 
-  public override ALL(request: Request) {
+  public override ALL(request: Request): Promise<Response> {
     return Promise
       .resolve()
       .then(() => this.handleIfAcceptHeaderMissing(request))
@@ -71,7 +71,7 @@ class AcceptHeaderMiddleware extends Middleware {
       .then((context) => this.sendResponse(context));
   }
 
-  protected handleHeaders(context: Context) {
+  protected handleHeaders(context: Context): Context {
     if (context.done) {
       return context;
     }
@@ -126,7 +126,7 @@ class AcceptHeaderMiddleware extends Middleware {
     }
   }
 
-  protected sendResponse(context: Context) {
+  protected sendResponse(context: Context): Response {
     return context.response;
   }
 }

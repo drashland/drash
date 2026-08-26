@@ -40,7 +40,7 @@ class RequestValidator extends Handler {
    *
    * @returns The request if validated.
    */
-  override handle<Output>(req: Input) {
+  override handle<Output>(req: Input): Promise<Output> {
     return Promise
       .resolve()
       .then(() => this.#validate(req))

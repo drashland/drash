@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Level } from "./Level.ts";
+import type { Level } from "./Level.ts";
 
 /**
  * Log levels in ascending order.

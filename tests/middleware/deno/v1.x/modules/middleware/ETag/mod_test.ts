@@ -37,7 +37,7 @@ import {
   ETagMiddleware,
   type Options,
 } from "../../../../../../../src/modules/middleware/ETag.ts";
-import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
+import type { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 
 type TestCase = {
   chain: Handler;

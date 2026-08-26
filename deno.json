@@ -1,9 +1,20 @@
 {
+  "name": "@drashland/drash",
+  "version": "3.0.0",
+  "license": "GPL-3.0",
+  "publish": {
+    "include": [
+      "src",
+      "README.md",
+      "COPYING",
+      "AUTHORS",
+      "deno.json"
+    ]
+  },
   "lock": false,
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/fs": "jsr:@std/fs@^1.0.19",
-    "@drashland/drash/": "./dist/"
+    "@std/fs": "jsr:@std/fs@^1.0.19"
   },
   "lint": {
     "rules": {
@@ -11,8 +22,16 @@
         "no-explicit-any"
       ]
     },
-    "include": ["./src", "./tests"],
-    "exclude": [".deno", "dist", "node_modules", "**/_unstable"]
+    "include": [
+      "./src",
+      "./tests"
+    ],
+    "exclude": [
+      ".deno",
+      "dist",
+      "node_modules",
+      "**/_unstable"
+    ]
   },
   "fmt": {
     "useTabs": false,
@@ -34,8 +53,8 @@
     ]
   },
   "tasks": {
-    "build:libs": "deno run --allow-read --allow-write --allow-net ./scripts/doit.ts && pnpm exec tsup src --format cjs,esm --no-splitting --dts",
     "build:check": "deno task check:file-headers && deno task npm:clean && pnpm install && deno task build:libs && deno task test:all",
+    "build:libs": "deno run --allow-read --allow-write --allow-net ./scripts/doit.ts && pnpm exec tsup src --format cjs,esm --no-splitting --dts",
     "check": "deno check src tests/unit tests/compat/deno tests/middleware",
     "check:file-headers": "deno run --allow-read ./scripts/check_file_headers.ts",
     "check:package-json-version": "deno run --allow-read ./scripts/check_package_json_version_for_release.ts",
@@ -43,15 +62,72 @@
     "docs:dev": "cd docs && pnpm install && pnpm dev",
     "lint:tests:bun": "deno lint tests/compat/bun",
     "lint:tests:node": "deno lint tests/compat/node*/*",
+    "npm:clean": "rm -rf node_modules && rm pnpm-lock.yaml || true",
     "publish:dry-run": "npm stage publish --access restricted --dry-run",
+    "publish:jsr": "deno publish",
+    "publish:jsr:dry-run": "deno publish --dry-run",
     "test:all": "deno task test:compat:bun && deno task test:compat:deno && deno task test:compat:deno:concurrency && deno task test:compat:cloudflare && deno task test:compat:node && deno task test:middleware:deno && deno task test:unit",
     "test:compat:bun": "bun test tests/compat/bun",
     "test:compat:cloudflare": "pnpm exec vitest run --config vitest.config.cloudflare.mts",
-    "test:compat:deno:concurrency": "deno test tests/compat/deno/**/concurrency",
     "test:compat:deno": "deno test tests/compat/deno --ignore='**/concurrency/*.ts'",
+    "test:compat:deno:concurrency": "deno test tests/compat/deno/**/concurrency",
     "test:compat:node": "pnpm exec vitest run --config vitest.config.node.mts",
     "test:middleware:deno": "deno test tests/middleware/deno --allow-net",
-    "test:unit": "deno test tests/unit",
-    "npm:clean": "rm -rf node_modules && rm pnpm-lock.yaml || true"
+    "test:unit": "deno test tests/unit"
+  },
+  "exports": {
+    "./core/errors/HTTPError": "./src/core/errors/HTTPError.ts",
+    "./core/http/Header": "./src/core/http/Header.ts",
+    "./core/http/request/Method": "./src/core/http/request/Method.ts",
+    "./core/http/Resource": "./src/core/http/Resource.ts",
+    "./core/http/response/Status": "./src/core/http/response/Status.ts",
+    "./core/http/response/StatusCode": "./src/core/http/response/StatusCode.ts",
+    "./core/http/response/StatusDescription": "./src/core/http/response/StatusDescription.ts",
+    "./core/http/response/StatusName": "./src/core/http/response/StatusName.ts",
+    "./core/Interfaces": "./src/core/Interfaces.ts",
+    "./core/interfaces/IBuilder": "./src/core/interfaces/IBuilder.ts",
+    "./core/interfaces/IHandler": "./src/core/interfaces/IHandler.ts",
+    "./core/Types": "./src/core/Types.ts",
+    "./core/types/Header": "./src/core/types/Header.ts",
+    "./core/types/MethodOf": "./src/core/types/MethodOf.ts",
+    "./core/types/RequestMethod": "./src/core/types/RequestMethod.ts",
+    "./core/types/ResponseStatus": "./src/core/types/ResponseStatus.ts",
+    "./core/types/ResponseStatusCode": "./src/core/types/ResponseStatusCode.ts",
+    "./core/types/ResponseStatusDescription": "./src/core/types/ResponseStatusDescription.ts",
+    "./core/types/ResponseStatusName": "./src/core/types/ResponseStatusName.ts",
+    "./modules/builders/RequestBuilder": "./src/modules/builders/RequestBuilder.ts",
+    "./modules/builders/RequestChainBuilder": "./src/modules/builders/RequestChainBuilder.ts",
+    "./modules/builders/ResponseBuilder": "./src/modules/builders/ResponseBuilder.ts",
+    "./modules/http.native": "./src/modules/http.native.ts",
+    "./modules/http.polyfill": "./src/modules/http.polyfill.ts",
+    "./modules/middleware/AcceptHeader": "./src/modules/middleware/AcceptHeader.ts",
+    "./modules/middleware/CORS": "./src/modules/middleware/CORS.ts",
+    "./modules/middleware/e_tag/ETagResponse": "./src/modules/middleware/e_tag/ETagResponse.ts",
+    "./modules/middleware/ETag": "./src/modules/middleware/ETag.ts",
+    "./modules/middleware/rate_limiter/RateLimitedClient": "./src/modules/middleware/rate_limiter/RateLimitedClient.ts",
+    "./modules/middleware/rate_limiter/RateLimiterErrorResponse": "./src/modules/middleware/rate_limiter/RateLimiterErrorResponse.ts",
+    "./modules/middleware/rate_limiter/RateLimitResponse": "./src/modules/middleware/rate_limiter/RateLimitResponse.ts",
+    "./modules/middleware/RateLimiter": "./src/modules/middleware/RateLimiter.ts",
+    "./standard/builders/Builder": "./src/standard/builders/Builder.ts",
+    "./standard/chains/AbstractChainBuilder": "./src/standard/chains/AbstractChainBuilder.ts",
+    "./standard/chains/BaseChain": "./src/standard/chains/BaseChain.ts",
+    "./standard/handlers/AbstractSearchIndex": "./src/standard/handlers/AbstractSearchIndex.ts",
+    "./standard/handlers/Handler": "./src/standard/handlers/Handler.ts",
+    "./standard/handlers/RequestParamsParser": "./src/standard/handlers/RequestParamsParser.ts",
+    "./standard/handlers/RequestValidator": "./src/standard/handlers/RequestValidator.ts",
+    "./standard/handlers/ResourceCaller": "./src/standard/handlers/ResourceCaller.ts",
+    "./standard/handlers/ResourceNotFoundHandler": "./src/standard/handlers/ResourceNotFoundHandler.ts",
+    "./standard/handlers/ResourcesIndex": "./src/standard/handlers/ResourcesIndex.ts",
+    "./standard/http/Middleware": "./src/standard/http/Middleware.ts",
+    "./standard/http/ResourceGroup": "./src/standard/http/ResourceGroup.ts",
+    "./standard/http/ResourceProxy": "./src/standard/http/ResourceProxy.ts",
+    "./standard/log/AbstractLogger": "./src/standard/log/AbstractLogger.ts",
+    "./standard/log/ConsoleLogger": "./src/standard/log/ConsoleLogger.ts",
+    "./standard/log/GroupConsoleLogger": "./src/standard/log/GroupConsoleLogger.ts",
+    "./standard/log/Level": "./src/standard/log/Level.ts",
+    "./standard/log/Logger": "./src/standard/log/Logger.ts",
+    "./standard/log/LogLevel": "./src/standard/log/LogLevel.ts",
+    "./standard/polyfill/CustomURLPattern": "./src/standard/polyfill/CustomURLPattern.ts",
+    "./standard/polyfill/URLPatternPolyfill": "./src/standard/polyfill/URLPatternPolyfill.ts"
   }
 }

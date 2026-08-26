@@ -24,10 +24,10 @@ import { Resource as CoreResource } from "../core/http/Resource.ts";
 
 // Imports > Standard
 import { URLPatternPolyfill } from "../standard/polyfill/URLPatternPolyfill.ts";
-import { WithParams } from "../standard/handlers/RequestParamsParser.ts";
+import type { WithParams } from "../standard/handlers/RequestParamsParser.ts";
 
 // Imports > Modules
-import { requestChain } from "./builders/RequestChainBuilder.ts";
+import { type Builder, requestChain } from "./builders/RequestChainBuilder.ts";
 
 type HTTPRequest = WithParams;
 
@@ -69,7 +69,7 @@ export type { HTTPRequest };
  * rather than a bare `builder()`.
  */
 export class Application {
-  static builder() {
+  static builder(): Builder {
     return requestChain()
       .urlPatternClass(URLPatternPolyfill);
   }

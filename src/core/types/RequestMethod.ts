@@ -19,6 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Method } from "../http/request/Method.ts";
+import type { Method } from "../http/request/Method.ts";
 
 export type RequestMethod = (typeof Method)[keyof typeof Method];

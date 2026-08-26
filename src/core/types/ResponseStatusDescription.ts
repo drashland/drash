@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { StatusDescription } from "../http/response/StatusDescription.ts";
+import type { StatusDescription } from "../http/response/StatusDescription.ts";
 
 export type ResponseStatusDescription =
   (typeof StatusDescription)[keyof typeof StatusDescription];

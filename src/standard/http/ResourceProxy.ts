@@ -23,48 +23,48 @@
 import { Resource } from "../../core/http/Resource.ts";
 
 class ResourceProxy extends Resource {
-  public paths: string[] = [];
+  public override paths: string[] = [];
   protected original_instance?: Resource;
 
-  public setOriginal(originalInstance: Resource) {
+  public setOriginal(originalInstance: Resource): Resource {
     this.paths = originalInstance.paths;
     this.original_instance = originalInstance;
     return this.original_instance;
   }
 
-  public CONNECT(request: unknown): unknown {
+  public override CONNECT(request: unknown): unknown {
     return this.original_instance?.CONNECT(request);
   }
 
-  public DELETE(request: unknown): unknown {
+  public override DELETE(request: unknown): unknown {
     return this.original_instance?.DELETE(request);
   }
 
-  public GET(request: unknown): unknown {
+  public override GET(request: unknown): unknown {
     return this.original_instance?.GET(request);
   }
 
-  public HEAD(request: unknown): unknown {
+  public override HEAD(request: unknown): unknown {
     return this.original_instance?.HEAD(request);
   }
 
-  public OPTIONS(request: unknown): unknown {
+  public override OPTIONS(request: unknown): unknown {
     return this.original_instance?.OPTIONS(request);
   }
 
-  public PATCH(request: unknown): unknown {
+  public override PATCH(request: unknown): unknown {
     return this.original_instance?.PATCH(request);
   }
 
-  public POST(request: unknown): unknown {
+  public override POST(request: unknown): unknown {
     return this.original_instance?.POST(request);
   }
 
-  public PUT(request: unknown): unknown {
+  public override PUT(request: unknown): unknown {
     return this.original_instance?.PUT(request);
   }
 
-  public TRACE(request: unknown): unknown {
+  public override TRACE(request: unknown): unknown {
     return this.original_instance?.TRACE(request);
   }
 }

@@ -62,7 +62,9 @@ class ETagResponseBuilder extends ResponseBuilder {
    *
    * @returns A `Promise` with `this` instance as the resulting value.
    */
-  public addETagHeader(options: Options = this.#default_options) {
+  public addETagHeader(
+    options: Options = this.#default_options,
+  ): Promise<this> {
     return this
       .etagHeader(options)
       .then((etag) => {
@@ -81,7 +83,7 @@ class ETagResponseBuilder extends ResponseBuilder {
    *
    * @returns A `Promise` with the ETag header as the resulting value.
    */
-  public etagHeader(options: Options = this.#default_options) {
+  public etagHeader(options: Options = this.#default_options): Promise<string> {
     return this
       .hash(options.max_hash_length)
       .then((hash) => {
@@ -108,7 +110,7 @@ class ETagResponseBuilder extends ResponseBuilder {
    *
    * @returns A `Promise` with the hash as he resulting value.
    */
-  public hash(maxLength = 27) {
+  public hash(maxLength: number = 27): Promise<string> {
     return this.decoratee
       .clone()
       .text()
@@ -123,7 +125,7 @@ class ETagResponseBuilder extends ResponseBuilder {
  *
  * @returns The decorated response.
  */
-function response(response: Response) {
+function response(response: Response): ETagResponseBuilder {
   return new ETagResponseBuilder(response);
 }
 

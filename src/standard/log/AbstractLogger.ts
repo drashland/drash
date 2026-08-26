@@ -21,7 +21,7 @@
 
 // Imports > Standard
 import { Level } from "./Level.ts";
-import { Logger } from "./Logger.ts";
+import type { Logger } from "./Logger.ts";
 import type { LogLevel } from "./LogLevel.ts";
 
 /**

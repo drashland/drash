@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ResponseStatus } from "../../../core/Types.ts";
+import type { ResponseStatus } from "../../../core/Types.ts";
 import { HTTPError } from "../../../core/errors/HTTPError.ts";
 
 class RateLimiterErrorResponse extends HTTPError {

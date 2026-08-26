@@ -63,7 +63,7 @@ class RateLimitResponseBuilder extends ResponseBuilder {
     remaining: number;
     reset: number;
     retry_after: Date;
-  }) {
+  }): this {
     const headers = {
       [CoreHeader.RetryAfter]: values.retry_after.toUTCString(),
       [Header.XRateLimitLimit]: values.limit.toString(),
@@ -130,7 +130,7 @@ class RateLimitResponseBuilder extends ResponseBuilder {
  *
  * @returns The decorated response.
  */
-function response(response: Response) {
+function response(response: Response): RateLimitResponseBuilder {
   return new RateLimitResponseBuilder(response);
 }
 

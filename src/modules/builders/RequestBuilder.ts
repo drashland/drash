@@ -23,37 +23,37 @@ class RequestBuilder {
   #request: RequestInit = {};
   #path = "<path not provided>";
 
-  path(path: string) {
+  path(path: string): this {
     this.#path = path;
     return this;
   }
 
-  get() {
+  get(): this {
     this.#request.method = "get";
     return this;
   }
 
-  post() {
+  post(): this {
     this.#request.method = "post";
     return this;
   }
 
-  put() {
+  put(): this {
     this.#request.method = "put";
     return this;
   }
 
-  patch() {
+  patch(): this {
     this.#request.method = "patch";
     return this;
   }
 
-  delete() {
+  delete(): this {
     this.#request.method = "delete";
     return this;
   }
 
-  build() {
+  build(): Request {
     return new Request(this.#path, this.#request);
   }
 }
@@ -65,6 +65,6 @@ class RequestBuilder {
  *
  * @see {@link RequestBuilder} for implementation details.
  */
-export function request() {
+export function request(): RequestBuilder {
   return new RequestBuilder();
 }

@@ -20,7 +20,7 @@
  */
 
 // Imports > Core
-import { Resource } from "../../core/http/Resource.ts";
+import type { Resource } from "../../core/http/Resource.ts";
 
 // Imports > Standard
 import { Handler } from "../handlers/Handler.ts";

@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { MethodOf } from "../../core/Types.ts";
+import type { MethodOf } from "../../core/Types.ts";
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { Resource } from "../../core/http/Resource.ts";
 import { Status } from "../../core/http/response/Status.ts";
@@ -97,7 +97,7 @@ class Middleware extends Resource {
    * }
    * ```
    */
-  public ALL(input: unknown) {
+  public ALL(input: unknown): unknown {
     return this.next<unknown>(input);
   }
 

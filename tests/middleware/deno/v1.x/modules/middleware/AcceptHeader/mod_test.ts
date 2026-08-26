@@ -39,7 +39,7 @@ import { HTTPError } from "../../../../../../../src/core/errors/HTTPError.ts";
 import { Status } from "../../../../../../../src/core/http/response/Status.ts";
 import { StatusCode } from "../../../../../../../src/core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
-import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
+import type { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 
 type TestCase = {
   chain: Handler;

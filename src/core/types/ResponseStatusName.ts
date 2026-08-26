@@ -19,6 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { StatusName } from "../http/response/StatusName.ts";
+import type { StatusName } from "../http/response/StatusName.ts";
 
 export type ResponseStatusName = (typeof StatusName)[keyof typeof StatusName];

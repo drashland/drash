@@ -19,6 +19,6 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Header as HeaderNames } from "../http/Header.ts";
+import type { Header as HeaderNames } from "../http/Header.ts";
 
 export type Header = (typeof HeaderNames)[keyof typeof HeaderNames];

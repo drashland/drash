@@ -30,13 +30,13 @@ import { StatusCode } from "../../../../../../../src/core/http/response/StatusCo
 import { StatusDescription } from "../../../../../../../src/core/http/response/StatusDescription.ts";
 import { Method } from "../../../../../../../src/core/http/request/Method.ts";
 import * as Application from "../../../../../../../src/modules/http.native.ts";
-import { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
+import type { Handler } from "../../../../../../../src/standard/handlers/Handler.ts";
 import {
   type Options,
   RateLimiter,
   RateLimiterMiddleware,
 } from "../../../../../../../src/modules/middleware/RateLimiter.ts";
-import { RateLimiterErrorResponse } from "../../../../../../../src/modules/middleware/rate_limiter/RateLimiterErrorResponse.ts";
+import type { RateLimiterErrorResponse } from "../../../../../../../src/modules/middleware/rate_limiter/RateLimiterErrorResponse.ts";
 import { Header } from "../../../../../../../src/core/http/Header.ts";
 
 type TestCase = {

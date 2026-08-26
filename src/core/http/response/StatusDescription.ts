@@ -19,7 +19,7 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ResponseStatusName } from "../../types/ResponseStatusName.ts";
+import type { ResponseStatusName } from "../../types/ResponseStatusName.ts";
 
 export const StatusDescription: Record<ResponseStatusName, string> = {
   Continue: "Continue",
