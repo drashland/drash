@@ -34,7 +34,7 @@ class IndexResource extends Resource {
 <CodeTab>
 
 ```ts
-import { Resource } from "npm:@drashland/drash/modules/http.native.js";
+import { Resource } from "jsr:@drashland/drash/modules/http.native";
 
 class IndexResource extends Resource {
   public paths = ["/"];
@@ -130,7 +130,7 @@ class ResourceWithPathParam extends Resource {
 import {
   Resource,
   type HTTPRequest,
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class ResourceWithPathParam extends Resource {
   public paths = ["/:my_cool_param"];
@@ -219,7 +219,7 @@ class UsersResource extends Resource {
 import {
   Resource,
   type HTTPRequest,
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class UsersResource extends Resource {
   // id is required; the rest are optional
@@ -310,7 +310,7 @@ class RegexPathResource extends Resource {
 import {
   Resource,
   type HTTPRequest,
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class RegexPathResource extends Resource {
   public paths = ["/([0-9]$)"];

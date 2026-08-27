@@ -71,7 +71,7 @@ tags, so pin a version rather than tracking a range.
 | Runtime            | Install                                              |
 | ------------------ | ---------------------------------------------------- |
 | Node               | `npm install @drashland/drash`                       |
-| Deno               | `deno add npm:@drashland/drash`                      |
+| Deno               | `deno add jsr:@drashland/drash`                      |
 | Bun                | `bun install @drashland/drash`                       |
 | Cloudflare Workers | `npm install @drashland/drash` + `npm i -D wrangler` |
 
@@ -82,7 +82,7 @@ one:
 
 ```sh
 ls node_modules/@drashland/drash/modules/   # Node, Bun, Workers
-deno info npm:@drashland/drash              # Deno
+deno info jsr:@drashland/drash              # Deno
 ```
 
 If what you find disagrees with §2, the installed package wins.
@@ -151,8 +151,9 @@ const { Application, Resource } = require(
 On Deno, that bare specifier is what `deno add` mapped in `deno.json`. **Do not
 also prefix it with `npm:`** — that bypasses the mapping and pins nothing. For a
 single-file Deno script with no `deno.json`, skip `deno add` and import the full
-specifier directly — `npm:@drashland/drash/modules/http.native.js` or
-`https://esm.sh/@drashland/drash/modules/http.native.js`.
+specifier directly — `jsr:@drashland/drash/modules/http.native`. Note it carries
+no file extension: JSR resolves through the package's export map, unlike the npm
+specifier the other runtimes use, which needs `.js`.
 
 ## 3. The shape of an app
 

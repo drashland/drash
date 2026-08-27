@@ -53,8 +53,8 @@ const app = Application
 ```ts showLineNumbers  {8-10}
 // Code is shortened for brevity
 
-import { Application, ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
-import { CORS } from "npm:@drashland/drash/modules/middleware/CORS.js";
+import { Application, ResourceGroup } from "jsr:@drashland/drash/modules/http.native";
+import { CORS } from "jsr:@drashland/drash/modules/middleware/CORS";
 
 const groupedResources = ResourceGroup
   .builder()
@@ -182,8 +182,8 @@ const group = ResourceGroup
 <CodeTab>
 
 ```ts showLineNumbers {6-11}
-import { ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
-import { CORS } from "npm:@drashland/drash/modules/middleware/CORS.js";
+import { ResourceGroup } from "jsr:@drashland/drash/modules/http.native";
+import { CORS } from "jsr:@drashland/drash/modules/middleware/CORS";
 
 const group = ResourceGroup
   .builder()

@@ -19,7 +19,7 @@ Install [Deno](https://deno.com).
 import {
   Application,
   Resource,
-} from "https://esm.sh/@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 // import {
 //   Application,
@@ -90,7 +90,7 @@ Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time)
 
 ## Notes
 
-There is no install step for dependencies &mdash; Deno resolves the import over HTTP. The commented-out block shows the `npm:` specifier if you would rather resolve through npm.
+There is no install step for dependencies &mdash; Deno resolves the import on first run. The commented-out block shows the `npm:` specifier if you would rather resolve through npm, which needs the `.js` extension that JSR does not.
 
 Deno provides a global `URLPattern`, so this uses the __native__ entry point. Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns &mdash; so the request goes straight through with no context object in between.
 
