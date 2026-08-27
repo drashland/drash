@@ -1,0 +1,66 @@
+---
+title: v3.0.2
+description: Documents the entire public API, switches the Deno examples to `jsr:` specifiers, and rebuilds the README
+---
+
+# v3.0.2
+
+__Released:__ 2026-08-27
+
+__GitHub Release Notes:__ https://github.com/drashland/drash/releases/tag/v3.0.2
+
+---
+
+Documents the entire public API, switches the Deno examples to `jsr:` specifiers, and rebuilds the README.
+
+## Summary
+
+Documents the entire public API, switches the Deno examples to `jsr:` specifiers, rebuilds the README, and bumps to 3.0.2.
+
+The documentation work is the substance of this PR. It fixes a real defect: the GPL notice at the top of every `src/` file was showing up as API documentation on [jsr.io](https://jsr.io).
+
+## The GPL header was leaking into the docs
+
+The licence notice is written as `/** … */`, which makes it a JSDoc block as far as `deno_doc` — and therefore jsr.io — is concerned. A leading JSDoc block is attached to whatever declaration follows it, so with nothing else to show, the licence text was what reached readers. Traced in the doc JSON: it landed at `nodes.….imports[0].jsDoc.doc`.
+
+JSR's own scoring API for the published 3.0.1 confirmed the scale of it:
+
+| Metric | Value |
+| --- | --- |
+| `percentageDocumentedSymbols` | 0.4396 |
+| `entrypointsWithoutDocs` | 53 (every entrypoint) |
+| `allEntrypointsDocs` | `false` |
+| `score` | 12 |
+
+`deno doc --lint` found **181 problems. All 181 are fixed, none suppressed.**
+
+| Rule | Count | Fix |
+| --- | --- | --- |
+| `missing-jsdoc` | 166 | Doc blocks across 42 files |
+| `private-type-ref` | 14 | Exported the types public signatures already name |
+| `missing-explicit-type` | 1 | `BaseChain.Builder` |
+
+Every one of the 53 entrypoints also gained an `@module` block. **This is what actually fixes the reported symptom** — the licence is no longer the nearest JSDoc to anything rendered. The GPL notice itself is untouched, and `check_file_headers.ts` still passes.
+
+Three things about this that were not obvious going in, and are worth knowing before writing more docs here:
+
+- A block containing only `@param`/`@returns` tags does **not** satisfy `missing-jsdoc`. Several existing tag-only blocks needed a prose description prepended rather than a new block inserted.
+- `*/` inside a doc comment terminates it. One description containing a media-type wildcard broke the parse until it was reworded.
+- Documenting a type makes it public, which pulls its members into the analysed API and surfaces *more* errors. The count rose again before it settled — the total is a moving target until it reaches zero.
+
+The 14 `private-type-ref` fixes export types like `Context`, `ResourceClasses`, `Params`, and `ExecResult`. These are named by public signatures but were not exported, so a consumer could not name what they were being handed. This documents a surface that was already reachable rather than widening it.
+
+## Deno examples now use `jsr:`
+
+Drash publishes to JSR as of 3.0.1, so Deno examples import from `jsr:` rather than `npm:`.
+
+The specifier shape differs between the two registries, and it is easy to get wrong. JSR resolves through the package's `exports` map, whose keys carry no file extension. npm has no `exports` map here and resolves against the file tree, so it needs `.js`:
+
+```
+npm:@drashland/drash/modules/http.native.js
+jsr:@drashland/drash/modules/http.native
+```
+
+37 specifiers across 16 content files. Every one was already in a Deno context — `npm:` was never used in a Node, Bun, or Workers panel — so the conversion maps exactly onto the Deno blocks.
+
+`examples/deno/typescript.mdx` had been importing through `https://esm.sh/`, a workaround from before JSR existed. The commented-out `npm:` alternative stays, since it is still a valid route for Deno and showing both is the point of that block.
