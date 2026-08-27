@@ -14,5 +14,6 @@
 // the breadcrumb resolves to /about/releases.
 export default {
   index: "All Releases",
+  "2026-08-26-v3-0-1": "2026-08-26 / v3.0.1",
   "2026-08-25-v3-0-0": "2026-08-25 / v3.0.0",
 };

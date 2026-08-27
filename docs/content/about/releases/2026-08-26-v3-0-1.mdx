@@ -1,0 +1,136 @@
+---
+title: v3.0.1
+description: A patch release fixing queryParam() for the first parameter in a query string, and the first version published to JSR.
+---
+
+# v3.0.1
+
+__Release date:__ 2026-08-26
+
+__GitHub Release Notes:__ https://github.com/drashland/drash/releases/tag/v3.0.1
+
+---
+
+A patch release. One bug fix, one new place to install from, and no API changes &mdash; upgrading from v3.0.0 is a version bump.
+
+## Fixed
+
+### `queryParam()` Could Not Read the First Query Parameter
+
+`request.params.queryParam()` returned `undefined` for whichever parameter came first in the query string. Every parameter after the first worked, which is what kept this hidden: the API looks correct until someone reads the first one.
+
+The worst case was a URL carrying a single parameter. That parameter is always first, so it could never be read at all:
+
+```ts
+// GET /users?id=1337
+request.params.queryParam("id"); // v3.0.0: undefined
+                                 // v3.0.1: "1337"
+```
+
+The cause was that the whole URL was handed to `URLSearchParams`, which parses its input as `application/x-www-form-urlencoded` &mdash; splitting on `&`, never on `?`. The origin and path were absorbed into the first parameter's __name__:
+
+```ts
+new URLSearchParams("http://localhost:1447/users?id=1337&name=eric");
+// keys: [ "http://localhost:1447/users?id", "name" ]
+```
+
+v3.0.1 parses the query substring instead. Position no longer matters, and repeated keys, percent-encoded values, empty values, and relative URLs all behave the way the Web APIs do.
+
+See [Query Params](/docs/requests/query-params) for the current behavior.
+
+## Added
+
+### Published to JSR
+
+Drash is now published to [JSR](https://jsr.io/@drashland/drash) in addition to npm. v3.0.1 is the first version available there.
+
+JSR serves the TypeScript sources directly, so there is no build output in between and no separate type declarations to resolve:
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
+
+```bash
+npx jsr add @drashland/drash
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+deno add jsr:@drashland/drash
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+bunx jsr add @drashland/drash
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+npx jsr add @drashland/drash
+```
+
+</CodeTab>
+</CodeTabs>
+
+Import specifiers on JSR drop the file extension that the npm package uses:
+
+| Registry | Specifier |
+| -------- | --------- |
+| JSR      | `@drashland/drash/modules/http.native`    |
+| npm      | `@drashland/drash/modules/http.native.js` |
+
+The npm package is unchanged and remains the default. Nothing about installing from npm is different in this release.
+
+## Changed
+
+### Explicit Types Across the Public API
+
+Every public function, method, and member now carries an explicit type annotation. This is not an API change &mdash; the types are the ones already being inferred &mdash; but it is what lets JSR generate declaration files for Node consumers, and it makes return types visible in an editor without following the implementation.
+
+## Upgrading
+
+No code changes are required.
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
+
+```bash
+npm install @drashland/drash@3.0.1
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+deno add jsr:@drashland/drash@3.0.1
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+bun add @drashland/drash@3.0.1
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+npm install @drashland/drash@3.0.1
+```
+
+</CodeTab>
+</CodeTabs>
+
+The one thing worth checking is any workaround you wrote for the query parameter bug above. It will keep working either way.
