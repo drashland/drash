@@ -19,10 +19,21 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * A `URLPattern` implementation for runtimes that do not provide a dependable
+ * one. Supports the path syntax Drash's resources use, not the whole spec.
+ *
+ * @module
+ */
+
 const REGEX_URI_MATCHES = new RegExp(/(:[^(/]+|{[^0-9][^}]*})/, "g");
 const REGEX_URI_REPLACEMENT = "([^/]+)";
 
-type ExecResult = {
+/**
+ * What a successful match returns: the path params, keyed by the names declared
+ * in the path.
+ */
+export type ExecResult = {
   pathname?: {
     groups: Record<string, string | undefined>;
   };
@@ -34,11 +45,31 @@ type ResourcePathPatterns = {
   params: string[];
 };
 
+/**
+ * A `URLPattern` for runtimes that do not provide a dependable one.
+ *
+ * This implements the path syntax Drash resources use — named params, optional
+ * params, wildcards, and regular expressions — not the whole `URLPattern`
+ * specification. It matches on the path only.
+ */
 class URLPatternPolyfill {
   #resource_path_patterns: ResourcePathPatterns[] = [];
 
+  /**
+   * The path this pattern was compiled from, with the trailing-slash suffix the
+   * resource index appends removed.
+   */
   public readonly pathname: string;
 
+  /**
+   * Compile a path into the set of patterns needed to match it.
+   *
+   * Three are built up front — exact, with optional params omitted, and with a
+   * wildcard — so matching is a loop over ready patterns rather than work per
+   * request.
+   *
+   * @param options The pattern source. Only `pathname` is used.
+   */
   constructor(options: { pathname: string }) {
     options.pathname = options.pathname.replace("{/}?", "");
     this.#resource_path_patterns.push(this.#getResourcePaths(options.pathname));
@@ -51,6 +82,12 @@ class URLPatternPolyfill {
     this.pathname = options.pathname;
   }
 
+  /**
+   * Match a URL against this pattern.
+   *
+   * @param url The URL to match. Only its path is considered.
+   * @returns The matched path params, or `null` if the path does not match.
+   */
   exec(url: string): ExecResult | null {
     const { pathname } = new URL(url);
 

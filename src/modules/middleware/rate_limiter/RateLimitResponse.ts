@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Wraps a response so the `X-RateLimit-*` headers can be attached. Used by the
+ * rate limiter middleware.
+ *
+ * @module
+ */
+
 import { Status } from "../../../core/http/response/Status.ts";
 import { ResponseBuilder } from "../../builders/ResponseBuilder.ts";
 import { Header as CoreHeader } from "../../../core/http/Header.ts";
@@ -77,6 +84,8 @@ class RateLimitResponseBuilder extends ResponseBuilder {
   }
 
   /**
+   * Produce the response with the rate limit headers merged in.
+   *
    * @returns A `Response` object using the values set in this class. Notes:
    * - The values set in this class take precedence
    * - Any value not set in this class will be replaced with the wrapped

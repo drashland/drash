@@ -19,40 +19,83 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
-class RequestBuilder {
+/**
+ * Builds a Web `Request` by chaining, for tests and for calling a chain without
+ * a server in front of it.
+ *
+ * @module
+ */
+
+export class RequestBuilder {
   #request: RequestInit = {};
   #path = "<path not provided>";
 
+  /**
+   * Set the URL the built request will be sent to.
+   *
+   * @param path The request URL.
+   * @returns This builder, for chaining.
+   */
   path(path: string): this {
     this.#path = path;
     return this;
   }
 
+  /**
+   * Set the request method to `GET`.
+   *
+   * @returns This builder, for chaining.
+   */
   get(): this {
     this.#request.method = "get";
     return this;
   }
 
+  /**
+   * Set the request method to `POST`.
+   *
+   * @returns This builder, for chaining.
+   */
   post(): this {
     this.#request.method = "post";
     return this;
   }
 
+  /**
+   * Set the request method to `PUT`.
+   *
+   * @returns This builder, for chaining.
+   */
   put(): this {
     this.#request.method = "put";
     return this;
   }
 
+  /**
+   * Set the request method to `PATCH`.
+   *
+   * @returns This builder, for chaining.
+   */
   patch(): this {
     this.#request.method = "patch";
     return this;
   }
 
+  /**
+   * Set the request method to `DELETE`.
+   *
+   * @returns This builder, for chaining.
+   */
   delete(): this {
     this.#request.method = "delete";
     return this;
   }
 
+  /**
+   * Produce the request from everything set on this builder.
+   *
+   * @returns The built `Request`.
+   */
   build(): Request {
     return new Request(this.#path, this.#request);
   }

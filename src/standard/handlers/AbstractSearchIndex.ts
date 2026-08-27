@@ -19,9 +19,22 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The base for a handler that searches an index it builds up front, rather than
+ * scanning on every request.
+ *
+ * @module
+ */
+
 // Imports > Standard
 import { Handler } from "./Handler.ts";
 
+/**
+ * The base for a handler that searches an index built up front.
+ *
+ * Building once and searching per request is what keeps path matching off the
+ * request's critical path.
+ */
 abstract class AbstractSearchIndex<SearchResult> extends Handler {
   /**
    * Build the index that can be searched via `this.search(...)`.

@@ -19,8 +19,19 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The reason phrase for each HTTP status, keyed by status name — the text that
+ * follows the code on a response's status line.
+ *
+ * @module
+ */
+
 import type { ResponseStatusName } from "../../types/ResponseStatusName.ts";
 
+/**
+ * The reason phrase for each HTTP status — the text that follows the code on a
+ * response's status line.
+ */
 export const StatusDescription: Record<ResponseStatusName, string> = {
   Continue: "Continue",
   SwitchingProtocols: "Switching Protocols",

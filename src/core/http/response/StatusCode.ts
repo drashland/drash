@@ -19,6 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The numeric code for each HTTP status, keyed by status name.
+ *
+ * @module
+ */
+
 import type { ResponseStatusName } from "../../types/ResponseStatusName.ts";
 
 /**

@@ -19,6 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The union of the levels in `Level`, for typing a value that must be one.
+ *
+ * @module
+ */
+
 import type { Level } from "./Level.ts";
 
 /**

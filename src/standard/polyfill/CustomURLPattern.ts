@@ -19,13 +19,32 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The interface the resource index needs from a `URLPattern`, so an alternative
+ * implementation can be supplied.
+ *
+ * @module
+ */
+
 type ExecResult = {
   pathname?: {
     groups: Record<string, string | undefined>;
   };
 };
 
+/**
+ * The shape an alternative `URLPattern` has to provide.
+ *
+ * Extend this to supply your own matcher to `ResourcesIndex` instead of the
+ * runtime's global or Drash's polyfill.
+ */
 class CustomUrlPattern {
+  /**
+   * Match a URL against this pattern.
+   *
+   * @param _url The URL to match.
+   * @returns The matched path params, or `null` if it does not match.
+   */
   exec(_url: string): ExecResult | null {
     return null;
   }

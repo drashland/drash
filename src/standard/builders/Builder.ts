@@ -20,6 +20,14 @@
  */
 
 /**
+ * The minimal builder contract: chain to configure, `build()` to produce.
+ *
+ * @module
+ */
+
+/**
+ * The minimal builder contract: chain to configure, then `build()` once.
+ *
  * @template C The class that will be instantiated and returned when calling the
  * `build()` method.
  */

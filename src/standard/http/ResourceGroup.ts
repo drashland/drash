@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Applies middleware and path prefixes to a set of resources at build time, by
+ * generating a proxy class per resource.
+ *
+ * @module
+ */
+
 // Imports > Core
 import type { Resource } from "../../core/http/Resource.ts";
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
@@ -26,7 +33,11 @@ import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 // Imports > Standard
 import type { Middleware } from "./Middleware.ts";
 
-type ResourceClasses = (typeof Resource | typeof Resource[])[];
+/**
+ * The resource classes a group holds. Nested arrays are allowed, so one group
+ * can be composed from others.
+ */
+export type ResourceClasses = (typeof Resource | typeof Resource[])[];
 
 /**
  * Builder for building a resource group. Resources in a resource group can
@@ -348,7 +359,19 @@ function createGroupWithMiddleware(
   return wrapped;
 }
 
+/**
+ * Applies middleware and path prefixes to a set of resources.
+ *
+ * The wiring happens at build time: a proxy class is generated per resource, so
+ * each resource gets its own middleware instances and nothing is shared between
+ * them.
+ */
 class ResourceGroup {
+  /**
+   * Get a builder for assembling a group.
+   *
+   * @returns A builder to add resources, middleware, and path prefixes to.
+   */
   static builder(): Builder {
     return new Builder();
   }

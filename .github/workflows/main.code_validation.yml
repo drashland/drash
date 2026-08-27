@@ -56,6 +56,25 @@ jobs:
       - name: Run Deno linter
         run: deno lint
 
+  check_docs:
+    name: Check documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # The GPL notice at the top of every file is a `/** */` block, so it is
+      # JSDoc as far as `deno doc` is concerned. Without a doc block of its own,
+      # a symbol inherits that notice on jsr.io. This keeps every exported
+      # symbol documented so that cannot happen again.
+      - name: Check documentation
+        run: deno task check:docs
+
   code_formatting:
     name: Check code formatting
     runs-on: ubuntu-latest

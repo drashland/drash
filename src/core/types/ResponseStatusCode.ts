@@ -19,6 +19,15 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The union of the numeric codes in `StatusCode`.
+ *
+ * @module
+ */
+
 import type { StatusCode } from "../http/response/StatusCode.ts";
 
+/**
+ * The union of the numeric status codes in `StatusCode`.
+ */
 export type ResponseStatusCode = (typeof StatusCode)[keyof typeof StatusCode];

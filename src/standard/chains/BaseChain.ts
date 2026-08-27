@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * A chain with no handlers of its own, for assembling one by hand. The HTTP
+ * module's `Application` is this with the standard handlers already added.
+ *
+ * @module
+ */
+
 // Imports > Standard
 import { AbstractChainBuilder } from "./AbstractChainBuilder.ts";
 import type { Handler } from "../handlers/Handler.ts";
@@ -65,9 +72,11 @@ class BaseChainBuilder extends AbstractChainBuilder {
  */
 class BaseChain {
   /**
+   * The builder class, exposed so it can be extended or referenced by type.
+   *
    * @see {@link BaseChainBuilder} for the implementation.
    */
-  static Builder = BaseChainBuilder;
+  static Builder: typeof BaseChainBuilder = BaseChainBuilder;
 
   /**
    * Get a builder for assembling a chain by hand.

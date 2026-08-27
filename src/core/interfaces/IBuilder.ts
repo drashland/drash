@@ -20,6 +20,13 @@
  */
 
 /**
+ * The interface every builder implements: configure by chaining, then `build()`
+ * once to get the product.
+ *
+ * @module
+ */
+
+/**
  * A base interface for builder classes.
  */
 export interface IBuilder<Product = unknown> {

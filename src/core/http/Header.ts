@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The HTTP header names Drash reads or writes, as a frozen lookup. Using these
+ * over string literals keeps a typo a compile error.
+ *
+ * @module
+ */
+
 export const Header = {
   AccessControlAllowCredentials: "Access-Control-Allow-Credentials",
   AccessControlAllowHeaders: "Access-Control-Allow-Headers",

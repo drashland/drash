@@ -19,6 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The union of the HTTP method names in `Method`, for typing a value that must
+ * be one of them.
+ *
+ * @module
+ */
+
 import type { Method } from "../http/request/Method.ts";
 
+/**
+ * The union of the HTTP method names in `Method`, for typing a value that must
+ * be one of them.
+ */
 export type RequestMethod = (typeof Method)[keyof typeof Method];

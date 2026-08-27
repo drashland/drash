@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Middleware that adds `ETag` and `Last-Modified` headers and answers `304 Not
+ * Modified` when a client's cached copy is still current.
+ *
+ * @module
+ */
+
 import { Header } from "../../core/http/Header.ts";
 import { Middleware } from "../../standard/http/Middleware.ts";
 import { response } from "./e_tag/ETagResponse.ts";
@@ -28,6 +35,9 @@ import { StatusCode } from "../../core/http/response/StatusCode.ts";
 import { StatusDescription } from "../../core/http/response/StatusDescription.ts";
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 
+/**
+ * How ETags are generated: their maximum length, and whether they are weak.
+ */
 type Options = {
   /** The maximum length of the ETag header. */
   etag_max_length?: number;
@@ -35,7 +45,11 @@ type Options = {
   weak?: boolean;
 };
 
-type Context = {
+/**
+ * The request, its response, and the ETag computed for it, threaded through
+ * this middleware's steps.
+ */
+export type Context = {
   request: Request;
   response: Response;
   /** The Etag header for this context's response. */
@@ -49,11 +63,23 @@ type CachedResource = {
   [Header.LastModified]: string;
 };
 
+/**
+ * Strong ETags, truncated to 27 characters — long enough that a collision is
+ * not a practical concern, short enough to keep the header small.
+ */
 const defaultOptions: Options = {
   etag_max_length: 27,
   weak: false,
 };
 
+/**
+ * Adds `ETag` and `Last-Modified` headers, and answers `304 Not Modified` when
+ * a client's cached copy is still current.
+ *
+ * The ETag is computed from the response body, so the wrapped resource runs on
+ * every request; what this saves is the response body on the wire, not the work
+ * of producing it.
+ */
 class ETagMiddleware extends Middleware {
   #cache: Record<string, CachedResource> = {};
   #default_etag = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
@@ -74,6 +100,13 @@ class ETagMiddleware extends Middleware {
     };
   }
 
+  /**
+   * Handle any request by producing the response, then attaching cache headers or
+   * replacing it with a `304`.
+   *
+   * @param request The request being handled.
+   * @returns The resource's response with cache headers, or an empty `304`.
+   */
   public override ALL(request: Request): Promise<Response> {
     return Promise
       .resolve()
@@ -106,15 +139,34 @@ class ETagMiddleware extends Middleware {
       });
   }
 
+  /**
+   * Produce a `Last-Modified` value for right now.
+   *
+   * @returns The current time as an HTTP date.
+   */
   protected createLastModifiedHeader(): string {
     return new Date().toUTCString();
   }
 
+  /**
+   * Build the cache key for a request. Method and URL together, so the same URL
+   * under different methods is cached separately.
+   *
+   * @param request The request to key.
+   * @returns The cache key.
+   */
   protected getCacheKey(request: Request): string {
     const { method, url } = request;
     return method + ";" + url;
   }
 
+  /**
+   * Answer with `304` when the request's `If-None-Match` matches the ETag just
+   * computed, meaning the client's copy is current.
+   *
+   * @param context The request, response, and computed ETag.
+   * @returns The context, with `done` set if a `304` was substituted.
+   */
   protected handleEtagMatchesRequestIfNoneMatchHeader(
     context: Context,
   ): Context {
@@ -152,6 +204,14 @@ class ETagMiddleware extends Middleware {
     return context;
   }
 
+  /**
+   * Enforce `If-Match`, which a client sends to avoid overwriting a resource that
+   * changed since it last read it.
+   *
+   * @param request The request to check.
+   * @throws {HTTPError} `412 Precondition Failed` if the cached ETag does not
+   * match what the client sent.
+   */
   protected handleEtagMatchesRequestIfMatchHeader(request: Request) {
     if (!this.requestIsCached(request)) {
       return;
@@ -171,6 +231,13 @@ class ETagMiddleware extends Middleware {
     }
   }
 
+  /**
+   * Handle a response with no body, which cannot be hashed. A shared default ETag
+   * stands in so empty responses still cache.
+   *
+   * @param context The request and response.
+   * @returns The context, with `done` set if the empty-response path was taken.
+   */
   protected handleIfResponseEmpty(context: Context): Context {
     if (context.done) {
       return context;
@@ -214,6 +281,12 @@ class ETagMiddleware extends Middleware {
     return context;
   }
 
+  /**
+   * Whether this request's URL and method have been seen before.
+   *
+   * @param request The request to look up.
+   * @returns `true` if an entry exists.
+   */
   protected requestIsCached(request: Request): boolean {
     if (this.getCacheKey(request) in this.#cache) {
       return true;
@@ -222,6 +295,14 @@ class ETagMiddleware extends Middleware {
     return false;
   }
 
+  /**
+   * Produce the final response, attaching the ETag unless an earlier step already
+   * settled it.
+   *
+   * @param context The request, response, and computed ETag.
+   * @returns The response to send.
+   * @throws {Error} If no ETag was computed and none was expected.
+   */
   protected sendResponse(context: Context): Response {
     if (context.done) {
       return context.response;

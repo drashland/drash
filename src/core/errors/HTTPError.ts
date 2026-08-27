@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The error type for HTTP failures. Throw it from a resource or middleware and
+ * catch it where errors become responses — Drash never writes a response itself.
+ *
+ * @module
+ */
+
 import type { ResponseStatus } from "../types/ResponseStatus.ts";
 import type { ResponseStatusCode } from "../types/ResponseStatusCode.ts";
 
@@ -47,6 +54,10 @@ class HTTPError extends Error {
    * The HTTP status code associated with this error.
    */
   public readonly status_code: ResponseStatusCode;
+  /**
+   * The reason phrase for this error's status — the text that follows the code on
+   * a response's status line.
+   */
   public readonly status_code_description: string;
 
   /**
@@ -65,6 +76,8 @@ class HTTPError extends Error {
   public override readonly name = "HTTPError";
 
   /**
+   * Create an error for the given HTTP status.
+   *
    * @param status A valid response status tuple.
    * @param message (optional) The error message. Defaults to the description
    * associated with the provided `statusCode`.

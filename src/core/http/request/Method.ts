@@ -20,6 +20,13 @@
  */
 
 /**
+ * The HTTP methods a resource can implement, as a frozen lookup. These are the
+ * nine names `ResourceCaller` will look for on a resource.
+ *
+ * @module
+ */
+
+/**
  * All HTTP methods.
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods} for more information on HTTP methods.

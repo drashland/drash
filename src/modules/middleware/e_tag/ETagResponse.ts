@@ -19,8 +19,18 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Wraps a response so an `ETag` can be computed from its body and attached.
+ * Used by the ETag middleware.
+ *
+ * @module
+ */
+
 import { ResponseBuilder } from "../../builders/ResponseBuilder.ts";
 
+/**
+ * How the ETag is generated: its maximum length, and whether it is weak.
+ */
 type Options = {
   /** Should the ETag contain the weak "W/" directive? See "W/" under {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag#directives}. */
   weak?: boolean;

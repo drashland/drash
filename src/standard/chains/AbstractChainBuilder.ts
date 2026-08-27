@@ -19,17 +19,41 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The base for chain builders. Collects handlers, then links them into a chain
+ * and returns its head.
+ *
+ * @module
+ */
+
 // Imports > Core
 import type { IBuilder } from "../../core/interfaces/IBuilder.ts";
 
 // Imports > Standard
 import type { Handler } from "../handlers/Handler.ts";
 
+/**
+ * The base for chain builders. Collects handlers, then links them into a chain.
+ */
 abstract class AbstractChainBuilder implements IBuilder {
+  /**
+   * The handlers collected so far, in the order they will run.
+   */
   readonly handlers: Handler[] = [];
 
+  /**
+   * Link the collected handlers and return the head of the chain.
+   *
+   * @returns The first handler, which is what a request is handed to.
+   */
   abstract build(): unknown;
 
+  /**
+   * Add a handler to the end of the chain.
+   *
+   * @param handler The handler to add.
+   * @returns This builder, for chaining.
+   */
   public handler(handler: Handler): this {
     this.handlers.push(handler);
 
@@ -37,6 +61,8 @@ abstract class AbstractChainBuilder implements IBuilder {
   }
 
   /**
+   * Link every collected handler to the one after it.
+   *
    * @param handlers The handlers that will be chained together.
    * @returns This instance so you can chain more methods.
    */

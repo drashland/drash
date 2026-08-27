@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The base class every handler extends. Handlers link into a chain with
+ * `setNext()` and pass work along with `sendToNextHandler()`.
+ *
+ * @module
+ */
+
 // Imports > Core
 import type { IHandler } from "../../core/interfaces/IHandler.ts";
 
@@ -42,10 +49,26 @@ class Handler implements IHandler {
    */
   protected next: Handler | null = null;
 
+  /**
+   * Do this handler's work, then pass the result along.
+   *
+   * The base implementation only forwards. Override it to do something first.
+   *
+   * @param input Whatever the previous handler passed on.
+   * @returns Whatever the rest of the chain returns.
+   */
   public handle<Output>(input: any): Promise<Output> {
     return this.sendToNextHandler(input);
   }
 
+  /**
+   * Pass the input to the next handler in the chain.
+   *
+   * @param input The input to hand on, usually enriched by this handler.
+   * @returns Whatever the rest of the chain returns.
+   * @throws {Error} If nothing is linked after this handler. A chain has to end
+   * in a handler that returns rather than forwards.
+   */
   public sendToNextHandler<Output>(input: any): Promise<Output> {
     if (this.next !== null) {
       return this.next.handle<Output>(input);
@@ -54,6 +77,13 @@ class Handler implements IHandler {
     throw new Error(`Handler ${this.constructor.name} has no next handler`);
   }
 
+  /**
+   * Link a handler after this one.
+   *
+   * @param handler The handler to run next.
+   * @returns The handler just linked, so calls can be chained to build the whole
+   * chain in one expression.
+   */
   public setNext(handler: Handler): Handler {
     this.next = handler;
     return handler;

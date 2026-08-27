@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The canonical name of every HTTP status, used as the key into the code,
+ * description, and status lookups.
+ *
+ * @module
+ */
+
 export const StatusName = {
   Continue: "Continue",
   SwitchingProtocols: "SwitchingProtocols",

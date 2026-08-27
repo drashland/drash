@@ -20,6 +20,13 @@
  */
 
 /**
+ * The interface every handler in a chain implements. A handler takes an input,
+ * does its work, and passes the result to the handler it was linked to.
+ *
+ * @module
+ */
+
+/**
  * A base interface for handler classes.
  */
 export interface IHandler<Input = unknown> {

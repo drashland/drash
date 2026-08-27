@@ -19,11 +19,23 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * A logger that writes to the console inside a collapsible group, so related
+ * messages stay together.
+ *
+ * @module
+ */
+
 // Imports > Standard
 import { AbstractLogger } from "./AbstractLogger.ts";
 import { Level } from "./Level.ts";
 import type { LogLevel } from "./LogLevel.ts";
 
+/**
+ * Writes to the console inside a collapsible group, so related messages stay
+ * together. Child loggers created with {@link logger} nest under their parent's
+ * name.
+ */
 class GroupConsoleLogger extends AbstractLogger {
   #loggers: Record<string, GroupConsoleLogger> = {};
 
@@ -37,6 +49,15 @@ class GroupConsoleLogger extends AbstractLogger {
     return new GroupConsoleLogger(name, level);
   }
 
+  /**
+   * Get a child logger nested under this one, creating it on first use.
+   *
+   * The child inherits this logger's level and prefixes its name with this
+   * logger's own.
+   *
+   * @param name The child's name.
+   * @returns The child logger, the same instance on every call.
+   */
   public logger(name: string): GroupConsoleLogger {
     if (!this.#loggers[name]) {
       this.#loggers[name] = new GroupConsoleLogger(
@@ -48,6 +69,11 @@ class GroupConsoleLogger extends AbstractLogger {
     return this.#loggers[name];
   }
 
+  /**
+   * Write the formatted message to the console inside this logger's group.
+   *
+   * @param messages The level, message, and replacements.
+   */
   protected write(
     level: string,
     message: string,
