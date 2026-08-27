@@ -72,7 +72,7 @@ Go to http://localhost:3000/api. Pass `--listen` to use a different port.
 
 __The resource's `paths` must match the function's route.__ A function at `api/index.ts`
 is served at `/api`, so a resource with `paths = ["/"]` will never match and every request
-answers `404`. This is the easiest thing to get wrong here — it does not come up in the
+answers `404`. This is the easiest thing to get wrong here &mdash; it does not come up in the
 other runtimes, where you own the whole URL space.
 
 Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node
@@ -86,6 +86,6 @@ This example uses the Node runtime because
 [Vercel recommends it over the Edge runtime](https://vercel.com/docs/functions/runtimes/edge),
 and Next.js 16.3 dropped support for `runtime = 'edge'` on routes and pages. If you do
 target the Edge runtime, it provides a global `URLPattern`, so the __native__ entry point
-applies there instead — see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+applies there instead &mdash; see [Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
 For the other Vercel entrypoint, see [server.ts](/examples/vercel/server).

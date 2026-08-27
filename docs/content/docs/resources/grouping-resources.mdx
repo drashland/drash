@@ -4,7 +4,7 @@ Sharing path prefixes and middleware across resources
 
 ## Overview
 
-Resources can be grouped so they share functionality. A group is the __only__ way to attach middleware or path prefixes to a resource — there is no per-resource setting for either. This is true whether the group holds one resource or many.
+Resources can be grouped so they share functionality. A group is the __only__ way to attach middleware or path prefixes to a resource &mdash; there is no per-resource setting for either. This is true whether the group holds one resource or many.
 
 A resource group is not a runtime object. It is built at build time and returns an array of resource classes, which is exactly what the HTTP module's `Application.builder().resources()` method already accepts.
 
@@ -221,7 +221,7 @@ See the [Middleware](/docs/middleware) tutorial for how to write one, and [Pre-B
 
 ### TLDR
 
-`build()` generates anonymous proxy classes around each resource — one layer for middleware, one for prefixes — and returns those proxies instead of your original classes.
+`build()` generates anonymous proxy classes around each resource &mdash; one layer for middleware, one for prefixes &mdash; and returns those proxies instead of your original classes.
 
 ### Detailed Explanation
 

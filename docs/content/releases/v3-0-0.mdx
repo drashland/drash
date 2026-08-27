@@ -24,7 +24,7 @@ What the gap here means in practice:
 
 ## What Drash v3 Is
 
-**A chain of handlers you build once and hand requests to.** Drash is not an HTTP server wrapper. You build an application and plug it into your runtime's server—`Deno.serve`, `node:http`, `Bun.serve`, a Worker's `fetch`—to handle its request-response lifecycle.
+**A chain of handlers you build once and hand requests to.** Drash is not an HTTP server wrapper. You build an application and plug it into your runtime's server&mdash;`Deno.serve`, `node:http`, `Bun.serve`, a Worker's `fetch`&mdash;to handle its request-response lifecycle.
 
 ```ts
 import {
@@ -57,7 +57,7 @@ response, so without a `.catch()` the request hangs.
 | | v2 | v3 |
 | --- | --- | --- |
 | Runtimes | Deno only | Deno, Node, Bun, Cloudflare Workers |
-| Server | Bundled (`Drash.Server`) | None — you bring your own |
+| Server | Bundled (`Drash.Server`) | None &mdash; you bring your own |
 | Request / response | Drash `Request` and `Response` wrappers | Web `Request` and `Response`, or a context object you define |
 | Resource input | `this.request`, `this.response` | Passed as an argument to the method |
 | Middleware | `Service` | `Middleware`, attached with `ResourceGroup` |
@@ -72,9 +72,8 @@ The removals are deliberate: `this.request` and `this.response` made resources s
 - `modules/http.native.js`
 - `modules/http.polyfill.js`
 
-They export the same six members. They differ only in which `URLPattern` they hand
-the router — the runtime's global, or Drash's bundled polyfill. See
-[Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+They export the same six members. They only differ in which `URLPattern` implementation is used under the hood &mdash; the runtime's global, or Drash's bundled polyfill. See
+[Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
 
 | Export | Kind |
 | ------ | ---- |
@@ -92,7 +91,7 @@ the router — the runtime's global, or Drash's bundled polyfill. See
 [`RateLimiter`](/reference/modules/middleware/rate-limiter).
 
 **Three builders** for constructing requests, responses, and the request chain
-itself — see [Modules > Builders](/reference/modules/builders).
+itself &mdash; see [Modules > Builders](/reference/modules/builders).
 
 **Documentation**, which is new in this release: concepts, a quickstart per
 runtime, a full API reference, runnable examples, and
@@ -115,15 +114,15 @@ those majors. Bun uses it because its `URLPattern` is not dependable.
 
 ## Getting Started
 
-- [Quickstart](/docs/quickstart) — a complete app for your runtime
-- [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) — the same
+- [Quickstart](/docs/quickstart) &mdash; a complete app for your runtime
+- [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) &mdash; the same
   thing, built one piece at a time
-- [HTTP Application](/docs/concepts/http-application) — what `Application`
+- [HTTP Application](/docs/concepts/http-application) &mdash; what `Application`
   assembles, and why
 
 ## Coming From v2
 
 There is no migration tool. The concepts that carry over are resources and
 paths; everything around them is different. Read
-[Resources](/docs/concepts/resources) first — it is the piece of v2 that
+[Resources](/docs/concepts/resources) first &mdash; it is the piece of v2 that
 survived, and the rest of the API is built around it.

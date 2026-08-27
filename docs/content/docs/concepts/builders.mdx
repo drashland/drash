@@ -67,17 +67,17 @@ For example, the HTTP module's application builder throws an error if it provide
 
 | Builder            | You get it from                     | `build()` returns                  |
 | ------------------ | ----------------------------------- | ---------------------------------- |
-| HTTP Applicaiton Builder      | `Application.builder()`                   | An HTTP request handler — call `handle()` on it |
+| HTTP Applicaiton Builder      | `Application.builder()`                   | An HTTP request handler &mdash; call `handle()` on it |
 | Resource Group Builder     | `ResourceGroup.builder()`                  | An array of resource classes       |
 | Response Builder   | `response()`                        | A Web `Response`                   |
 | Request Builder    | `request()`                         | A Web `Request`                    |
 
-Only the first two appear in a typical application. `response()` and `request()` are conveniences — a resource returning `new Response(...)` directly is equally valid.
+Only the first two appear in a typical application. `response()` and `request()` are conveniences &mdash; a resource returning `new Response(...)` directly is equally valid.
 
 For the methods each one exposes, see [Builders](/reference/modules/builders) and [Resource Group](/reference/standard/http/resource-group) in the reference.
 
 ## Build Time, Not Request Time
 
-__Builders do their work once: when your application starts.__ All calls to `build()` do not happen again. There is no router re-deriving routes on each request, and no middleware stack being reassembled — by the time a request arrives, the objects it travels through already exist.
+__Builders do their work once: when your application starts.__ All calls to `build()` do not happen again. There is no router re-deriving routes on each request, and no middleware stack being reassembled &mdash; by the time a request arrives, the objects it travels through already exist.
 
 __This is the benefit around Drash's builders: startup does more work so that each request does less.__

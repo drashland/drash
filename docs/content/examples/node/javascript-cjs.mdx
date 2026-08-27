@@ -111,6 +111,6 @@ Resources only recognize absolute URLs. Node's `request.url` returns only a path
 
 `/users/1` --> `http://localhost:1447/users/1`
 
-Node uses the __polyfill__ entry point, and its `node:http` server does not give you a Web `Request` — so the resource receives a __context object__ that you build. The app's request chain only requires a readable `url` and `method`; everything else on it is yours.
+Node uses the __polyfill__ entry point, and its `node:http` server does not give you a Web `Request` &mdash; so the resource receives a __context object__ that you build. The app's request chain only requires a readable `url` and `method`; everything else on it is yours.
 
 This example is in the repository at [`examples/node-js-cjs`](https://github.com/drashland/drash/tree/main/examples/node-js-cjs).

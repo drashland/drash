@@ -1,6 +1,6 @@
 # Builder
 
-The builder contract Standard declares for itself. Type-only — it does not exist at runtime.
+The builder contract Standard declares for itself. Type-only &mdash; it does not exist at runtime.
 
 ```ts
 import type { Builder } from "@drashland/drash/standard/builders/Builder.js";
@@ -12,7 +12,7 @@ interface Builder<C> {
 }
 ```
 
-`C` is what `build()` returns — the finished object (aka product), not the builder.
+`C` is what `build()` returns &mdash; the finished object (aka product), not the builder.
 
 ## Who Implements It
 
@@ -26,7 +26,7 @@ The last two extend `ResponseBuilder`, so they inherit the contract rather than 
 
 ## Its Relationship to `IBuilder`
 
-Core declares [`IBuilder<Product>`](/reference/core/interfaces#ibuilderproduct) with the same single `build()` method. The two are __structurally identical and genuinely duplicated__ — Standard is allowed to import from Core, so nothing forces the second declaration.
+Core declares [`IBuilder<Product>`](/reference/core/interfaces#ibuilderproduct) with the same single `build()` method. The two are __structurally identical and genuinely duplicated__ &mdash; Standard is allowed to import from Core, so nothing forces the second declaration.
 
 Which one a class implements is a matter of where it sits:
 
@@ -35,7 +35,7 @@ Which one a class implements is a matter of where it sits:
 | `IBuilder` (Core)                       | `AbstractChainBuilder`, the resource group builder |
 | `Builder<C>` (Standard)                 | `ResponseBuilder` and its two subclasses           |
 
-`RequestBuilder` implements neither — it just has a `build()` method.
+`RequestBuilder` implements neither &mdash; it just has a `build()` method.
 
 Because both are structural, a class satisfying one satisfies the other. The distinction matters for reading the source, not for writing against it.
 
@@ -46,7 +46,7 @@ Worth knowing before you go looking for one:
 | Name                    | Declared in                                | What it is                                                     |
 | ----------------------- | ------------------------------------------ | -------------------------------------------------------------- |
 | `IBuilder<Product>`     | `core/interfaces/IBuilder.js`              | Core's contract                                                 |
-| `Builder<C>`            | `standard/builders/Builder.js`             | This page — Standard's contract                                 |
+| `Builder<C>`            | `standard/builders/Builder.js`             | This page &mdash; Standard's contract                                 |
 | `Builder`               | `modules/builders/RequestChainBuilder.js`  | The chain builder's own public surface, unrelated to the others |
 
-The third is what [`Application.builder()`](/reference/modules/http-native) returns. Despite the name, it does __not__ implement either contract above — it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.
+The third is what [`Application.builder()`](/reference/modules/http-native) returns. Despite the name, it does __not__ implement either contract above &mdash; it is a separate interface declaring `resources()`, `urlPatternClass()`, and `build()`.

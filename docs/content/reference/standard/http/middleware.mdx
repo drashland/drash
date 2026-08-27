@@ -1,6 +1,6 @@
 # Middleware
 
-`Middleware` extends [`Resource`](/reference/core/http/resource). It is a [decorator](https://refactoring.guru/design-patterns/decorator), not a separate concept — which is why it has the same nine HTTP methods and can stand in for the resource it wraps.
+`Middleware` extends [`Resource`](/reference/core/http/resource). It is a [decorator](https://refactoring.guru/design-patterns/decorator), not a separate concept &mdash; which is why it has the same nine HTTP methods and can stand in for the resource it wraps.
 
 ```ts
 import { Middleware } from "@drashland/drash/modules/http.native.js";
@@ -78,7 +78,7 @@ Also in Standard, and the other half of how groups are wired. It extends `Resour
 | `paths`                        | Copied from the original when `setOriginal()` is called  |
 | `setOriginal(originalInstance)` | Sets the wrapped instance and adopts its `paths`         |
 
-Where `Middleware` exists to intercept, `ResourceProxy` exists to stand in — it is the shape [`ResourceGroup`](/reference/standard/http/resource-group) generates when it needs a class that behaves like your resource but is a different class.
+Where `Middleware` exists to intercept, `ResourceProxy` exists to stand in &mdash; it is the shape [`ResourceGroup`](/reference/standard/http/resource-group) generates when it needs a class that behaves like your resource but is a different class.
 
 ## Notes
 

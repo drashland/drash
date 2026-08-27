@@ -1,6 +1,6 @@
 # Interfaces
 
-The interfaces in `core/interfaces/`. Type-only — none of these exist at runtime.
+The interfaces in `core/interfaces/`. Type-only &mdash; none of these exist at runtime.
 
 ```ts
 import type { IBuilder, IHandler } from "@drashland/drash/core/Interfaces.js";
@@ -37,6 +37,6 @@ a.setNext(b).setNext(c); // a -> b -> c
 
 ## Notes
 
-Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports — harmless under a bundler, and a resolution error without one.
+Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports &mdash; harmless under a bundler, and a resolution error without one.
 
 See also [Types](/reference/core/types).

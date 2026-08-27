@@ -265,4 +265,4 @@ import { ETagResponseBuilder } from "@drashland/drash/modules/middleware/e_tag/E
 | `etagHeader(options)`    | `Promise<string>` | `"<hexLength>-<hash>"`, prefixed `W/` when `options.weak`.  |
 | `hash(maxLength)`        | `Promise<string>` | `btoa()` of the body, truncated. Defaults to 27 characters. |
 
-It does not override `build()` — the inherited one applies.
+It does not override `build()` &mdash; the inherited one applies.

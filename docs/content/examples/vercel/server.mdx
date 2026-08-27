@@ -77,7 +77,7 @@ Go to http://localhost:3000. Pass `--listen` to use a different port.
 ## Notes
 
 `url` must be absolute. `request.url` from `node:http` is path-only (`/users/1`), which is
-why the example builds it from the `host` header — a bare path will not match.
+why the example builds it from the `host` header &mdash; a bare path will not match.
 
 The port passed to `server.listen()` is only used when you run the file locally. On Vercel
 it is ignored; requests are routed through an internal port.

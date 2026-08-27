@@ -32,7 +32,7 @@ flowchart LR
   class h1,h2,h3,h4 blue
 ```
 
-When you build HTTP applications with Drash you do not assemble a chain yourself — you
+When you build HTTP applications with Drash you do not assemble a chain yourself &mdash; you
 use the HTTP module's [`Application`](/docs/concepts/http-application) class, which
 assembles one for you. This page covers what a chain is; that page covers the one you
 actually build.
@@ -41,7 +41,7 @@ actually build.
 
 Chains process the data you give them. You are in charge of defining what goes into a
 chain and what comes out. Handlers pass along the input you give them, not a fixed
-request type — which is why one chain can take a Web `Request` on one runtime and a plain
+request type &mdash; which is why one chain can take a Web `Request` on one runtime and a plain
 context object on another, and both work.
 
 What a *particular* chain requires of that data is up to the handlers it holds. For the

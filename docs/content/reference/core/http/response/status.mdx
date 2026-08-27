@@ -40,8 +40,8 @@ supplies the keys all three share.
 
 ## Why a Pair and Not a Number
 
-`HTTPError` needs both halves — `status_code` for the response status and
-`status_code_description` for its `statusText` — and taking them as one object means they
+`HTTPError` needs both halves &mdash; `status_code` for the response status and
+`status_code_description` for its `statusText` &mdash; and taking them as one object means they
 cannot disagree. Passing `401` alone would leave the class to look the description up, and
 passing both separately would let a caller pair `401` with `"Not Found"`.
 

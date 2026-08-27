@@ -2,7 +2,7 @@
 
 A resource group applies middleware and path prefixes to a set of resources at __build time__, by generating proxy classes. There is no runtime router doing this work per request.
 
-__A group is the only way to attach middleware or path prefixes to a resource__ — that holds whether you are grouping one resource or many.
+__A group is the only way to attach middleware or path prefixes to a resource__ &mdash; that holds whether you are grouping one resource or many.
 
 ```ts
 const group = ResourceGroup
@@ -53,7 +53,7 @@ Returns an **array of resource classes**, so spread it into `.resources()`:
 .resources(...group)
 ```
 
-Passing the array directly also works, since both builders flatten arrays — but spreading reads better and behaves the same.
+Passing the array directly also works, since both builders flatten arrays &mdash; but spreading reads better and behaves the same.
 
 ## What It Generates
 

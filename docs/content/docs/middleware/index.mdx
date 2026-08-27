@@ -1,6 +1,6 @@
 # Middleware
 
-`Middleware` __extends `Resource`__. It is a [decorator](https://refactoring.guru/design-patterns/decorator), not a separate concept — which is why it has the same HTTP method surface and why it can stand in for the resource it wraps.
+`Middleware` __extends `Resource`__. It is a [decorator](https://refactoring.guru/design-patterns/decorator), not a separate concept &mdash; which is why it has the same HTTP method surface and why it can stand in for the resource it wraps.
 
 <Callout type="info">
   In [v2.x](https://drash.land/drash/v2.x/tutorials/services/basics) these were
@@ -10,7 +10,7 @@
 
 ## Ordering
 
-`.middleware(A, B, C)` nests outermost-first — each middleware wraps the next, and the
+`.middleware(A, B, C)` nests outermost-first &mdash; each middleware wraps the next, and the
 innermost one wraps your resource:
 
 ```mermaid

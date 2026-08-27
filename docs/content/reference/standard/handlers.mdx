@@ -68,7 +68,7 @@ a.setNext(b).setNext(c); // a -> b -> c
 
 ### `RequestValidator`
 
-Throws `HTTPError(Status.UnprocessableEntity)` — a `422` — with one of three messages:
+Throws `HTTPError(Status.UnprocessableEntity)` &mdash; a `422` &mdash; with one of three messages:
 
 | Message                                 | Cause                                       |
 | --------------------------------------- | ------------------------------------------- |
@@ -80,7 +80,7 @@ Throws `HTTPError(Status.UnprocessableEntity)` — a `422` — with one of three
 
 Builds a `URLPattern` per resource path and matches the request URL against them. It appends `{/}?` to each path, which is why a trailing slash matches either way, and it caches results by fully-qualified URL.
 
-Its constructor takes the `URLPattern`-like class to use — see [URLPattern](/reference/standard/polyfill).
+Its constructor takes the `URLPattern`-like class to use &mdash; see [URLPattern](/reference/standard/polyfill).
 
 ### `ResourceNotFoundHandler`
 
@@ -98,18 +98,18 @@ Uppercases `input.request.method` and calls `input.resource[method](input.reques
 
 ## `AbstractChainBuilder`
 
-The base for chain builders — it is what wires these handlers together. See [AbstractChainBuilder](/reference/standard/chains/abstract-chain-builder).
+The base for chain builders &mdash; it is what wires these handlers together. See [AbstractChainBuilder](/reference/standard/chains/abstract-chain-builder).
 
 ## `AbstractSearchIndex`
 
 A base class for defining objects that have a cache and lookup state.
 
-The `ResourcesIndex` class extends this — caching resource so routing a request to a resource becomes a simple lookup.
+The `ResourcesIndex` class extends this &mdash; caching resource so routing a request to a resource becomes a simple lookup.
 
 ## Notes
 
 ### Writing Your Own Handler
 
-Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side — both land in `app.handle().catch()`.
+Two rules cover it: call `sendToNextHandler()` unless you are last, and return a promise. `handle()` is called inside a promise chain, so throwing synchronously and rejecting are equivalent from the caller's side &mdash; both land in `app.handle().catch()`.
 
-A handler that needs to run after the resource cannot be expressed this way, because the chain has no return path. That is what [middleware](/reference/standard/http/middleware) is for — it wraps the resource rather than preceding it.
+A handler that needs to run after the resource cannot be expressed this way, because the chain has no return path. That is what [middleware](/reference/standard/http/middleware) is for &mdash; it wraps the resource rather than preceding it.
