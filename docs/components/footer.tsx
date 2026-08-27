@@ -16,7 +16,7 @@ const columns: { heading: string; links: [string, string][] }[] = [
       ["Introduction", "/docs/getting-started"],
       ["About These Pages", "/docs/getting-started/about-these-pages"],
       ["Prerequisites", "/docs/getting-started/prerequisites"],
-      ["Concepts", "/docs/concepts/framework"],
+      ["Concepts", "/about/concepts/framework"],
       ["Glossary", "/docs/misc/glossary"],
     ],
   },
@@ -24,7 +24,7 @@ const columns: { heading: string; links: [string, string][] }[] = [
     heading: "Learn",
     links: [
       ["Quickstart", "/docs/quickstart"],
-      ["HTTP Application", "/docs/concepts/http-application"],
+      ["HTTP Application", "/about/concepts/http-application"],
       ["Step-By-Step Guide", "/docs/getting-started/step-by-step-guide"],
       ["Creating a Resource", "/docs/resources/creating-a-resource"],
       ["Middleware", "/docs/middleware"],
@@ -76,7 +76,7 @@ export function DrashFooter() {
             <h2 className={styles.heading}>Project</h2>
             <ul className={styles.list}>
               <li>
-                <Link className={styles.link} href="/releases">
+                <Link className={styles.link} href="/about/releases">
                   Releases
                 </Link>
               </li>

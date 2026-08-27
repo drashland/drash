@@ -83,7 +83,7 @@ The removals are deliberate: `this.request` and `this.response` made resources s
 - `modules/http.native.js`
 - `modules/http.polyfill.js`
 
-They export the same six members. They only differ in which `URLPattern` implementation is used under the hood &mdash; the runtime's global, or Drash's bundled polyfill. See [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more.
+They export the same six members. They only differ in which `URLPattern` implementation is used under the hood &mdash; the runtime's global, or Drash's bundled polyfill. See [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill) to learn more.
 
 **Core, Standard, Modules**
 
@@ -121,8 +121,8 @@ Node uses the polyfill entry point because `URLPattern` support varies across th
 
 - [Quickstart](/docs/quickstart) &mdash; a complete app for your runtime
 - [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) &mdash; the same thing, built one piece at a time
-- [HTTP Application](/docs/concepts/http-application) &mdash; what `Application` assembles, and why
+- [HTTP Application](/about/concepts/http-application) &mdash; what `Application` assembles, and why
 
 ## Coming From v2
 
-There is no migration tool. The concepts that carry over are resources and paths; everything around them is different. Read [Resources](/docs/concepts/resources) first &mdash; it is the piece of v2 that survived, and the rest of the API is built around it.
+There is no migration tool. The concepts that carry over are resources and paths; everything around them is different. Read [Resources](/about/concepts/resources) first &mdash; it is the piece of v2 that survived, and the rest of the API is built around it.
