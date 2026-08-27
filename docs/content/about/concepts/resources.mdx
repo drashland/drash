@@ -54,7 +54,7 @@ app.listen(1447);
 import {
   Application,
   Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class MyResource extends Resource {
   paths = ["/"];
@@ -158,7 +158,7 @@ class MyResource extends Resource {
 <CodeTab>
 
 ```ts
-import { Resource } from "npm:@drashland/drash/modules/http.native.js";
+import { Resource } from "jsr:@drashland/drash/modules/http.native";
 
 class MyResource extends Resource {
   paths = ["/teas"];

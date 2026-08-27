@@ -20,6 +20,13 @@
  */
 
 /**
+ * Extracts the names of an object's function-valued properties. Used to type a
+ * method name as a string that is known to exist on the object.
+ *
+ * @module
+ */
+
+/**
  * A utility type that lets the compiler and reader know: the member
  * assigned this type is a method of the given generic `Object`.
  *
@@ -48,6 +55,10 @@ export type MethodOf<Object> = {
     : never;
 }[keyof Object];
 
-type Func =
+/**
+ * Any function. Used by {@link MethodOf} to pick out an object's callable
+ * properties.
+ */
+export type Func =
   | ((...args: unknown[]) => unknown)
   | (() => unknown);

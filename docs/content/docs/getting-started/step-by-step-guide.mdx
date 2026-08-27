@@ -129,7 +129,7 @@ Node's `node:http` server hands you an `IncomingMessage` and a `ServerResponse` 
 ```ts showLineNumbers
 import {
   Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class Home extends Resource {
   paths = ["/"];
@@ -214,7 +214,7 @@ const app = Application
 import {
   Application,
   Resource
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class Home extends Resource {
   paths = ["/"];
@@ -344,7 +344,7 @@ server.listen(port, hostname);
 import {
   Application,
   Resource
-} from "npm:@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 class Home extends Resource {
   paths = ["/"];

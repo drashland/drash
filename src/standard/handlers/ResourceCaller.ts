@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Calls the method on the matched resource that corresponds to the request's
+ * HTTP method. Last handler in the standard chain.
+ *
+ * @module
+ */
+
 // Imports > Core
 import type { MethodOf } from "../../core/Types.ts";
 import type { Resource } from "../../core/http/Resource.ts";
@@ -26,9 +33,25 @@ import type { Resource } from "../../core/http/Resource.ts";
 // Imports > Standard
 import { Handler } from "./Handler.ts";
 
+/**
+ * What this handler requires: the request and the resource that matched it.
+ */
 type Input = { request: { method: string }; resource: Resource };
 
+/**
+ * Calls the method on the matched resource that corresponds to the request's
+ * HTTP method. Last handler in the standard chain — it returns rather than
+ * forwards.
+ */
 class ResourceCaller extends Handler {
+  /**
+   * Call the resource method matching the request's HTTP method.
+   *
+   * @param input The request and the resource that matched it.
+   * @returns Whatever the resource method returns.
+   * @throws {HTTPError} `501 Not Implemented` if the resource does not implement
+   * that method.
+   */
   override handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()

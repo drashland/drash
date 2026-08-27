@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The base for loggers: holds the level and decides whether a message at a
+ * given level should be written.
+ *
+ * @module
+ */
+
 // Imports > Standard
 import { Level } from "./Level.ts";
 import type { Logger } from "./Logger.ts";
@@ -38,11 +45,28 @@ abstract class AbstractLogger implements Logger {
    */
   protected level: LogLevel;
 
+  /**
+   * Create a logger that writes under the given name, up to the given level.
+   *
+   * @param name The name written as a prefix on every message.
+   * @param level The highest level this logger writes. Anything above it is
+   * dropped.
+   */
   constructor(name: string, level: LogLevel) {
     this.name = name;
     this.level = level;
   }
 
+  /**
+   * Write a message at the `Debug` level.
+   *
+   * Does nothing if this logger's level is below `Debug`.
+   *
+   * @param message The message. `{}` placeholders are filled from
+   * `replacements`.
+   * @param replacements Values for the `{}` placeholders, in order.
+   * @returns Whatever the concrete logger's `write()` returns.
+   */
   public debug(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Debug)) {
       return;
@@ -50,6 +74,16 @@ abstract class AbstractLogger implements Logger {
     return this.write("DEBUG", message, replacements);
   }
 
+  /**
+   * Write a message at the `Error` level.
+   *
+   * Does nothing if this logger's level is below `Error`.
+   *
+   * @param message The message. `{}` placeholders are filled from
+   * `replacements`.
+   * @param replacements Values for the `{}` placeholders, in order.
+   * @returns Whatever the concrete logger's `write()` returns.
+   */
   public error(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Error)) {
       return;
@@ -57,6 +91,16 @@ abstract class AbstractLogger implements Logger {
     return this.write("ERROR", message, replacements);
   }
 
+  /**
+   * Write a message at the `Fatal` level.
+   *
+   * Does nothing if this logger's level is below `Fatal`.
+   *
+   * @param message The message. `{}` placeholders are filled from
+   * `replacements`.
+   * @param replacements Values for the `{}` placeholders, in order.
+   * @returns Whatever the concrete logger's `write()` returns.
+   */
   public fatal(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Fatal)) {
       return;
@@ -64,6 +108,16 @@ abstract class AbstractLogger implements Logger {
     return this.write("FATAL", message, replacements);
   }
 
+  /**
+   * Write a message at the `Info` level.
+   *
+   * Does nothing if this logger's level is below `Info`.
+   *
+   * @param message The message. `{}` placeholders are filled from
+   * `replacements`.
+   * @param replacements Values for the `{}` placeholders, in order.
+   * @returns Whatever the concrete logger's `write()` returns.
+   */
   public info(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Info)) {
       return;
@@ -71,6 +125,16 @@ abstract class AbstractLogger implements Logger {
     return this.write("INFO", message, replacements);
   }
 
+  /**
+   * Write a message at the `Trace` level.
+   *
+   * Does nothing if this logger's level is below `Trace`.
+   *
+   * @param message The message. `{}` placeholders are filled from
+   * `replacements`.
+   * @param replacements Values for the `{}` placeholders, in order.
+   * @returns Whatever the concrete logger's `write()` returns.
+   */
   public trace(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Trace)) {
       return;
@@ -78,6 +142,16 @@ abstract class AbstractLogger implements Logger {
     return this.write("TRACE", message, replacements);
   }
 
+  /**
+   * Write a message at the `Warn` level.
+   *
+   * Does nothing if this logger's level is below `Warn`.
+   *
+   * @param message The message. `{}` placeholders are filled from
+   * `replacements`.
+   * @param replacements Values for the `{}` placeholders, in order.
+   * @returns Whatever the concrete logger's `write()` returns.
+   */
   public warn(message: unknown, ...replacements: unknown[]): unknown {
     if (!this.canLog(Level.Warn)) {
       return;
@@ -109,6 +183,9 @@ abstract class AbstractLogger implements Logger {
   }
 
   /**
+   * Build the line that gets written: the prefix, then the message with its
+   * placeholders filled.
+   *
    * @param level The message's log level.
    * @param message The message.
    * @param replacements An array of values to replace `{}` placeholders in the
@@ -153,6 +230,12 @@ abstract class AbstractLogger implements Logger {
     return messagePrefix + replacedMessage;
   }
 
+  /**
+   * Write the formatted message wherever this logger sends output.
+   *
+   * @param messages The level, the message, and its replacements.
+   * @returns Whatever the destination returns.
+   */
   protected abstract write(...messages: unknown[]): unknown;
 }
 

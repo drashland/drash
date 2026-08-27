@@ -19,5 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Re-exports every interface in Core as one import. Interfaces only; the
+ * implementations live in Standard.
+ *
+ * @module
+ */
+
 export type * from "./interfaces/IBuilder.ts";
 export type * from "./interfaces/IHandler.ts";

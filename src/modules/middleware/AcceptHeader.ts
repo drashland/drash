@@ -19,10 +19,21 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Middleware that checks a response's content type against the request's
+ * `Accept` header, and can reject a request that did not send one.
+ *
+ * @module
+ */
+
 import { Status } from "../../core/http/response/Status.ts";
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { Middleware } from "../../standard/http/Middleware.ts";
 
+/**
+ * Whether to reject a request whose `Accept` header is missing, and whether to
+ * reject one the response cannot satisfy.
+ */
 type Options = {
   /** Throw if the response's Content-Type header does not match the request's Accept header? */
   throw_if_accept_header_mismatched?: boolean;
@@ -30,18 +41,31 @@ type Options = {
   throw_if_accept_header_missing?: boolean;
 };
 
-type Context = {
+/**
+ * The request and its response, threaded through this middleware's steps.
+ */
+export type Context = {
   request: Request;
   response: Response;
   /** A flag each handler function can use to see if it should or should not process the context further. */
   done?: boolean;
 };
 
+/**
+ * Strict by default: both a missing and a mismatched `Accept` header are
+ * rejected. Relax either one if clients are not expected to send the header.
+ */
 const defaultOptions: Options = {
   throw_if_accept_header_mismatched: true,
   throw_if_accept_header_missing: true,
 };
 
+/**
+ * Checks a response's `Content-Type` against the request's `Accept` header.
+ *
+ * This enforces the header the client sent; it does not perform content
+ * negotiation — the resource still decides what to produce.
+ */
 class AcceptHeaderMiddleware extends Middleware {
   #options: Options;
 
@@ -61,6 +85,13 @@ class AcceptHeaderMiddleware extends Middleware {
     };
   }
 
+  /**
+   * Handle any request by checking the `Accept` header before and after the
+   * wrapped resource runs.
+   *
+   * @param request The request being handled.
+   * @returns The resource's response, once it has been checked.
+   */
   public override ALL(request: Request): Promise<Response> {
     return Promise
       .resolve()
@@ -71,6 +102,15 @@ class AcceptHeaderMiddleware extends Middleware {
       .then((context) => this.sendResponse(context));
   }
 
+  /**
+   * Compare the response's `Content-Type` to the request's `Accept`. A request
+   * that accepts any media type matches anything.
+   *
+   * @param context The request and the response it produced.
+   * @returns The context.
+   * @throws {HTTPError} `500` if the response carries no `Content-Type`, or `422`
+   * if the two do not match and the option is enabled.
+   */
   protected handleHeaders(context: Context): Context {
     if (context.done) {
       return context;
@@ -114,6 +154,13 @@ class AcceptHeaderMiddleware extends Middleware {
     return context;
   }
 
+  /**
+   * Reject a request that sent no `Accept` header, when configured to.
+   *
+   * @param request The request to check.
+   * @throws {HTTPError} `400 Bad Request` if the header is absent and the option
+   * is enabled.
+   */
   protected handleIfAcceptHeaderMissing(request: Request) {
     if (
       this.#options.throw_if_accept_header_missing &&
@@ -126,6 +173,12 @@ class AcceptHeaderMiddleware extends Middleware {
     }
   }
 
+  /**
+   * Produce the response once the headers have been checked.
+   *
+   * @param context The request and its response.
+   * @returns The response to send.
+   */
   protected sendResponse(context: Context): Response {
     return context.response;
   }

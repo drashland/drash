@@ -19,9 +19,19 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The `{ code, description }` shape of an entry in `Status`.
+ *
+ * @module
+ */
+
 import type { ResponseStatusCode } from "./ResponseStatusCode.ts";
 import type { ResponseStatusDescription } from "./ResponseStatusDescription.ts";
 
+/**
+ * An HTTP status: its numeric code and its reason phrase. The shape of every
+ * entry in `Status`.
+ */
 export type ResponseStatus = {
   readonly code: ResponseStatusCode;
   readonly description: ResponseStatusDescription;

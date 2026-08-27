@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The HTTP module for runtimes without a dependable global `URLPattern` — Node
+ * and Bun. Identical to `http.native` apart from that.
+ *
+ * @module
+ */
+
 // Imports > Core
 import { Resource as CoreResource } from "../core/http/Resource.ts";
 
@@ -29,6 +36,12 @@ import type { WithParams } from "../standard/handlers/RequestParamsParser.ts";
 // Imports > Modules
 import { type Builder, requestChain } from "./builders/RequestChainBuilder.ts";
 
+/**
+ * A Web `Request` with Drash's `params` attached.
+ *
+ * This is what a resource method receives on runtimes that hand Drash a
+ * `Request`. Import it with `import type` — it is a type, not a class.
+ */
 type HTTPRequest = WithParams;
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
@@ -69,6 +82,14 @@ export type { HTTPRequest };
  * rather than a bare `builder()`.
  */
 export class Application {
+  /**
+   * Get a builder for assembling an application.
+   *
+   * The builder comes pre-configured with the standard HTTP request chain and
+   * the polyfill `URLPattern`.
+   *
+   * @returns A builder to add resources and middleware to.
+   */
   static builder(): Builder {
     return requestChain()
       .urlPatternClass(URLPatternPolyfill);

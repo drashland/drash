@@ -19,12 +19,34 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The `429` response the rate limiter throws, carrying the `X-RateLimit-*`
+ * headers that say when the client may retry.
+ *
+ * @module
+ */
+
 import type { ResponseStatus } from "../../../core/Types.ts";
 import { HTTPError } from "../../../core/errors/HTTPError.ts";
 
+/**
+ * The `429` thrown when a client is over its limit.
+ *
+ * Carries a full response rather than just a message, because the rate limit
+ * headers have to reach the client for it to know when to retry.
+ */
 class RateLimiterErrorResponse extends HTTPError {
+  /**
+   * The response to send, carrying the `X-RateLimit-*` headers.
+   */
   readonly response: Response;
 
+  /**
+   * Create the error with the response that should be sent.
+   *
+   * @param status The status, normally `Status.TooManyRequests`.
+   * @param response The response to send, with the rate limit headers set.
+   */
   constructor(status: ResponseStatus, response: Response) {
     super(status);
     this.response = response;

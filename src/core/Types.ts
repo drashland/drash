@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Re-exports every type in Core as one import. Types only; nothing here emits
+ * any runtime code.
+ *
+ * @module
+ */
+
 export type * from "./types/MethodOf.ts";
 export type * from "./types/RequestMethod.ts";
 export type * from "./types/ResponseStatus.ts";

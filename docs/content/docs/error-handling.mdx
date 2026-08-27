@@ -58,8 +58,8 @@ class Home extends Resource {
 import {
   HTTPError,
   Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
-import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
+} from "jsr:@drashland/drash/modules/http.native";
+import { Status } from "jsr:@drashland/drash/core/http/response/Status";
 
 class Home extends Resource {
   public paths = ["/"];
@@ -129,7 +129,7 @@ __The first argument is a status object, not a number.__ `HTTPError` takes a `Re
 `Status` is not re-exported by the HTTP module. It has its own import:
 
 ```ts
-import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
+import { Status } from "jsr:@drashland/drash/core/http/response/Status";
 ```
 </Callout>
 
@@ -306,8 +306,8 @@ import {
   Application,
   HTTPError,
   Resource,
-} from "npm:@drashland/drash/modules/http.native.js";
-import { Status } from "npm:@drashland/drash/core/http/response/Status.js";
+} from "jsr:@drashland/drash/modules/http.native";
+import { Status } from "jsr:@drashland/drash/core/http/response/Status";
 
 class Home extends Resource {
   public paths = ["/"];

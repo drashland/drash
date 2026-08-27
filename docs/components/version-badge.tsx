@@ -13,5 +13,5 @@ import styles from "./version-badge.module.css";
  * inside it and keep the leading `v`.
  */
 export function VersionBadge() {
-  return <span className={styles.badge}>v3.0.1</span>;
+  return <span className={styles.badge}>v3.0.2</span>;
 }

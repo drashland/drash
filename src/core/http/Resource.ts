@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The base class every resource extends. A resource maps a set of paths to the
+ * HTTP methods that answer them.
+ *
+ * @module
+ */
+
 import { HTTPError } from "../errors/HTTPError.ts";
 import { Status } from "./response/Status.ts";
 
@@ -26,40 +33,135 @@ import { Status } from "./response/Status.ts";
  * The base resource class for all resources.
  */
 class Resource {
+  /**
+   * The paths this resource answers. Matched with `URLPattern` syntax, so they
+   * may carry params (`/users/:id`), optional params (`/users/:id?`), and regular
+   * expressions.
+   */
   public paths: string[] = [];
 
+  /**
+   * Handle a `CONNECT` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public CONNECT(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `DELETE` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public DELETE(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `GET` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public GET(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `HEAD` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public HEAD(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `OPTIONS` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public OPTIONS(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `PATCH` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public PATCH(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `POST` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public POST(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `PUT` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public PUT(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }
 
+  /**
+   * Handle a `TRACE` request.
+   *
+   * Override this to answer the method; leaving it alone means a request using
+   * it gets `501 Not Implemented`.
+   *
+   * @param _request The request, in whatever shape the runtime provides.
+   * @returns Whatever your runtime needs as a response.
+   * @throws {HTTPError} `501 Not Implemented` unless overridden.
+   */
   public TRACE(_request: unknown): unknown {
     throw new HTTPError(Status.NotImplemented);
   }

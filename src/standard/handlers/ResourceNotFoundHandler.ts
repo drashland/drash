@@ -19,6 +19,12 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Throws `404` when the resource index matched nothing.
+ *
+ * @module
+ */
+
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 import type { Resource } from "../../core/http/Resource.ts";
@@ -27,6 +33,10 @@ import { Status } from "../../core/http/response/Status.ts";
 // Imports > Standard
 import { Handler } from "./Handler.ts";
 
+/**
+ * What this handler requires: the request and the index's search result, which
+ * is `null` when nothing matched.
+ */
 type Input = {
   request: {
     url: string;
@@ -38,7 +48,20 @@ type Input = {
   };
 };
 
+/**
+ * Turns a failed resource lookup into a `404`.
+ *
+ * The index reports a miss as `null` rather than throwing, so this handler is
+ * where a miss becomes an error.
+ */
 class ResourceNotFoundHandler extends Handler {
+  /**
+   * Pass the request on if a resource matched, or throw if none did.
+   *
+   * @param input The request and the index's search result.
+   * @returns Whatever the rest of the chain returns.
+   * @throws {HTTPError} `404 Not Found` if nothing matched the URL.
+   */
   override handle<Output>(input: Input): Promise<Output> {
     return Promise
       .resolve()

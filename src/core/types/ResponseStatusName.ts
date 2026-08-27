@@ -19,6 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The union of the status names in `StatusName`, which is the key shared by the
+ * code, description, and status lookups.
+ *
+ * @module
+ */
+
 import type { StatusName } from "../http/response/StatusName.ts";
 
+/**
+ * The union of the status names in `StatusName`. This is the key shared by the
+ * code, description, and status lookups.
+ */
 export type ResponseStatusName = (typeof StatusName)[keyof typeof StatusName];

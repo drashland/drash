@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Every HTTP status as a `{ code, description }` pair. This is what `HTTPError`
+ * takes — `new HTTPError(Status.NotFound)`, not a bare number.
+ *
+ * @module
+ */
+
 // Imports > Core
 import { StatusCode } from "./StatusCode.ts";
 import { StatusDescription } from "./StatusDescription.ts";
@@ -26,6 +33,12 @@ import type { ResponseStatusCode } from "../../types/ResponseStatusCode.ts";
 import type { ResponseStatusDescription } from "../../types/ResponseStatusDescription.ts";
 import type { ResponseStatusName } from "../../types/ResponseStatusName.ts";
 
+/**
+ * Every HTTP status as a `{ code, description }` pair, keyed by status name.
+ *
+ * This is what `HTTPError` takes: `new HTTPError(Status.NotFound)` rather than
+ * `new HTTPError(404)`, so the code and its reason phrase cannot disagree.
+ */
 export const Status: Record<
   ResponseStatusName,
   {

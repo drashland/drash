@@ -20,6 +20,13 @@
  */
 
 /**
+ * The log levels, ordered from `Off` through `Trace`. A logger writes a message
+ * only if its level is at least as high as the message's.
+ *
+ * @module
+ */
+
+/**
  * Log levels in ascending order.
  */
 export const Level = {

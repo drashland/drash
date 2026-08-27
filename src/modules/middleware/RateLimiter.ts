@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Middleware that counts requests per client in a time window, sets the
+ * `X-RateLimit-*` headers, and throws `429` once a client is over its limit.
+ *
+ * @module
+ */
+
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { Header } from "../../core/http/Header.ts";
@@ -36,7 +43,11 @@ import { RateLimitedClient } from "./rate_limiter/RateLimitedClient.ts";
 // Imports > Local
 import { RateLimiterErrorResponse } from "./rate_limiter/RateLimiterErrorResponse.ts";
 
-type PreNextContext = {
+/**
+ * The request and the client it was attributed to, before the wrapped resource
+ * has run.
+ */
+export type PreNextContext = {
   /**
    * The current client being processed.
    *
@@ -49,10 +60,17 @@ type PreNextContext = {
   request: Request;
 };
 
-type Context = PreNextContext & {
+/**
+ * The request, its client, and the response the wrapped resource produced.
+ */
+export type Context = PreNextContext & {
   response: Response;
 };
 
+/**
+ * How many requests a client may make per window, which header identifies the
+ * client, and whether a missing identifier is an error.
+ */
 type Options = {
   /**
    * How much time (in milliseconds) a client is allocated the `max_requests`.
@@ -91,6 +109,13 @@ const defaultOptions: Required<Options> = {
   throw_if_connection_header_name_missing: true,
 };
 
+/**
+ * Counts requests per client and rejects a client that goes over its limit.
+ *
+ * Clients are counted in memory, per instance. That means the count is not
+ * shared across processes and does not survive a restart — this protects a
+ * single server, not a cluster.
+ */
 class RateLimiterMiddleware extends Middleware {
   /**
    * Held as `Required<Options>` because it is the result of merging over
@@ -113,6 +138,14 @@ class RateLimiterMiddleware extends Middleware {
     };
   }
 
+  /**
+   * Handle any request by identifying the client, counting the request, and
+   * either passing it on or rejecting it.
+   *
+   * @param request The request being handled.
+   * @returns The resource's response with the `X-RateLimit-*` headers added.
+   * @throws {RateLimiterErrorResponse} `429` once the client is over its limit.
+   */
   public override ALL(request: Request): Promise<Response> {
     return Promise
       .resolve()

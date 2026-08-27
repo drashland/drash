@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Rejects an input that does not carry a readable URL and HTTP method. First
+ * handler in the standard chain, so nothing downstream has to re-check.
+ *
+ * @module
+ */
+
 // Imports > Core
 import { HTTPError } from "../../core/errors/HTTPError.ts";
 import { Status } from "../../core/http/response/Status.ts";
@@ -26,11 +33,22 @@ import { Status } from "../../core/http/response/Status.ts";
 // Imports > Standard
 import { Handler } from "./Handler.ts";
 
+/**
+ * What this handler requires: an object carrying a readable URL and HTTP
+ * method.
+ */
 type Input = {
   method?: string;
   url?: string;
 };
 
+/**
+ * Rejects an input that does not carry a readable URL and HTTP method.
+ *
+ * First handler in the standard chain, so nothing after it has to re-check.
+ * This is what makes a plain context object work as well as a `Request` — only
+ * these two fields are required.
+ */
 class RequestValidator extends Handler {
   /**
    * Validate the given `request`. If valid, the request is sent further down

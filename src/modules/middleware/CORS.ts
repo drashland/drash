@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Middleware that answers preflight requests and sets the `Access-Control-*`
+ * headers. CORS is enforced by the browser, not by this middleware.
+ *
+ * @module
+ */
+
 // Imports > Core
 import type {
   RequestMethod,
@@ -41,6 +48,10 @@ import { Status } from "../../core/http/response/Status.ts";
 // - [ ] Handle responses that affect the Vary header
 // - [ ] Compare to https://fetch.spec.whatwg.org/#concept-cors-check
 
+/**
+ * The `Access-Control-*` values this middleware sends. Every field is optional;
+ * anything left unset falls back to {@link defaultOptions}.
+ */
 type Options = {
   access_control_allow_headers?: string[];
   access_control_allow_methods?: RequestMethod[];
@@ -51,6 +62,11 @@ type Options = {
   options_success_status?: ResponseStatus;
 };
 
+/**
+ * A permissive default: any origin, the common methods, no credentials.
+ * Suitable for a public API; tighten `access_control_allow_origin` for anything
+ * that relies on cookies or authorization headers.
+ */
 const defaultOptions: Options = {
   access_control_allow_headers: [],
   access_control_allow_methods: [
@@ -68,6 +84,13 @@ const defaultOptions: Options = {
   options_success_status: Status.NoContent,
 };
 
+/**
+ * Answers preflight requests and adds the `Access-Control-*` headers.
+ *
+ * CORS is enforced by the browser, not here. These headers tell a browser what
+ * it may allow; they do not stop a non-browser client such as `curl` from
+ * calling a resource.
+ */
 class CORSMiddleware extends Middleware {
   #options: Options;
 
@@ -84,6 +107,13 @@ class CORSMiddleware extends Middleware {
     };
   }
 
+  /**
+   * Handle any non-preflight request by adding the CORS headers to whatever the
+   * wrapped resource returns.
+   *
+   * @param request The request being handled.
+   * @returns The resource's response, with the CORS headers added.
+   */
   public override ALL(request: Request): Promise<Response> {
     const method = request.method.toUpperCase();
 
@@ -118,6 +148,13 @@ class CORSMiddleware extends Middleware {
       });
   }
 
+  /**
+   * Answer a preflight request directly, without calling the wrapped resource.
+   *
+   * @param request The preflight request.
+   * @returns An empty response carrying the preflight headers, with the status
+   * from `options_success_status`.
+   */
   public override OPTIONS(request: Request): Response {
     const headers = this.getCorsResponseHeaders(request);
     this.setPreflightHeaders(request, headers);
@@ -140,6 +177,8 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set every header a preflight response needs.
+   *
    * @param request
    * @param headers The headers that will receive the preflight headers.
    */
@@ -160,6 +199,9 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Append a value to a header, creating it if absent and leaving it alone if the
+   * value is already there.
+   *
    * @param header The header (in key-value pair format) to add to the current
    * headers.
    * @param headers The current headers.
@@ -187,6 +229,11 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Work out what `Access-Control-Allow-Origin` should be for this request.
+   *
+   * Configured entries may be exact strings or regular expressions, and `*`
+   * matches anything.
+   *
    * @param request
    * @returns The value that should be set in the
    * `Access-Control-Allow-Origin` header.
@@ -241,6 +288,9 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set `Access-Control-Allow-Credentials`, but only when the option is enabled.
+   * The header has no `false` form, so it is omitted rather than sent as `false`.
+   *
    * @param headers
    * @returns
    *
@@ -255,6 +305,9 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set `Access-Control-Allow-Headers`, echoing what the request asked for when no
+   * list was configured.
+   *
    * @param headers
    * @returns
    *
@@ -292,6 +345,8 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set `Access-Control-Allow-Methods` from the configured method list.
+   *
    * @param headers
    * @returns
    *
@@ -312,6 +367,10 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set `Access-Control-Allow-Origin`, adding `Vary: Origin` when the value
+   * depends on the request — without it a cache could serve one origin's response
+   * to another.
+   *
    * @param req
    * @param headers
    * @returns
@@ -343,6 +402,9 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set `Access-Control-Expose-Headers`, which is what makes a non-standard
+   * response header readable from browser JavaScript.
+   *
    * @param headers
    * @returns
    *
@@ -363,6 +425,9 @@ class CORSMiddleware extends Middleware {
   }
 
   /**
+   * Set `Access-Control-Max-Age`, telling the browser how long it may cache this
+   * preflight result.
+   *
    * @param headers
    * @returns
    *

@@ -19,11 +19,20 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * A logger that writes to the console.
+ *
+ * @module
+ */
+
 // Imports > Standard
 import { AbstractLogger } from "./AbstractLogger.ts";
 import { Level } from "./Level.ts";
 import type { LogLevel } from "./LogLevel.ts";
 
+/**
+ * Writes log messages to the console.
+ */
 class ConsoleLogger extends AbstractLogger {
   /**
    * Create this logger.
@@ -35,6 +44,11 @@ class ConsoleLogger extends AbstractLogger {
     return new ConsoleLogger(name, level);
   }
 
+  /**
+   * Write the formatted message to the console.
+   *
+   * @param messages The level, message, and replacements.
+   */
   protected write(
     level: string,
     message: string,

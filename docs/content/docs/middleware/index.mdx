@@ -103,11 +103,11 @@ const group = ResourceGroup
 <CodeTab>
 
 ```ts
-import { ResourceGroup } from "npm:@drashland/drash/modules/http.native.js";
-import { AcceptHeader } from "npm:@drashland/drash/modules/middleware/AcceptHeader.js";
-import { CORS } from "npm:@drashland/drash/modules/middleware/CORS.js";
-import { ETag } from "npm:@drashland/drash/modules/middleware/ETag.js";
-import { RateLimiter } from "npm:@drashland/drash/modules/middleware/RateLimiter.js";
+import { ResourceGroup } from "jsr:@drashland/drash/modules/http.native";
+import { AcceptHeader } from "jsr:@drashland/drash/modules/middleware/AcceptHeader";
+import { CORS } from "jsr:@drashland/drash/modules/middleware/CORS";
+import { ETag } from "jsr:@drashland/drash/modules/middleware/ETag";
+import { RateLimiter } from "jsr:@drashland/drash/modules/middleware/RateLimiter";
  
 const group = ResourceGroup
   .builder()

@@ -19,6 +19,14 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Assembles the standard HTTP request chain: validate, match a resource, reject
+ * what did not match, parse params, call the resource. This is what
+ * `Application.builder()` returns.
+ *
+ * @module
+ */
+
 // Imports > Core
 import type { Resource } from "../../core/http/Resource.ts";
 
@@ -34,7 +42,11 @@ import {
   type URLPatternClass,
 } from "../../standard/handlers/ResourcesIndex.ts";
 
-type ResourceClasses = typeof Resource | typeof Resource[];
+/**
+ * A resource class, or an array of them. A resource group builds arrays, so
+ * both shapes can be handed to the builder.
+ */
+export type ResourceClasses = typeof Resource | typeof Resource[];
 
 /**
  * The public surface of the request chain builder.

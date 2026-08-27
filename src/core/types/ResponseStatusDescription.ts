@@ -19,7 +19,16 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The union of the reason phrases in `StatusDescription`.
+ *
+ * @module
+ */
+
 import type { StatusDescription } from "../http/response/StatusDescription.ts";
 
+/**
+ * The union of the reason phrases in `StatusDescription`.
+ */
 export type ResponseStatusDescription =
   (typeof StatusDescription)[keyof typeof StatusDescription];

@@ -19,6 +19,17 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The union of the HTTP header names in `Header`, for typing a parameter that
+ * must be one of them.
+ *
+ * @module
+ */
+
 import type { Header as HeaderNames } from "../http/Header.ts";
 
+/**
+ * The union of the HTTP header names in `Header`, for typing a parameter that
+ * must be one of them.
+ */
 export type Header = (typeof HeaderNames)[keyof typeof HeaderNames];

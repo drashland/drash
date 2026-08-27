@@ -19,6 +19,13 @@
  * Drash. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * Builds a Web `Response` by chaining, so status, headers, and body can be set
+ * across several statements instead of one constructor call.
+ *
+ * @module
+ */
+
 import type { Builder } from "../../standard/builders/Builder.ts";
 
 /**
@@ -53,8 +60,18 @@ import type { Builder } from "../../standard/builders/Builder.ts";
  * ```
  */
 class ResponseBuilder implements Builder<Response> {
+  /**
+   * The body the built response will carry.
+   */
   protected response_body: BodyInit | null = null;
+  /**
+   * The headers the built response will carry.
+   */
   protected response_headers: Headers = new Headers();
+  /**
+   * The status and reason phrase the built response will carry. Defaults to
+   * `200 OK`.
+   */
   protected response_init: ResponseInit = {
     status: 200,
     statusText: "OK",
@@ -123,6 +140,8 @@ class ResponseBuilder implements Builder<Response> {
   }
 
   /**
+   * Produce the response from everything set on this builder.
+   *
    * @returns A `Response` object using the values set in this builder.
    */
   build(): Response {

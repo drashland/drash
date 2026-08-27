@@ -20,6 +20,12 @@
  */
 
 /**
+ * The interface a logger implements — one method per level.
+ *
+ * @module
+ */
+
+/**
  * Base interface for logger classes.
  */
 export interface Logger {

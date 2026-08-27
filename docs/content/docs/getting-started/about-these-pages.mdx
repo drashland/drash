@@ -19,7 +19,7 @@ Although Drash has zero dependencies &mdash; meaning you could run it in the bro
 
 ### Deno Import Statements
 
-All Deno `import` statements will prefix packages with the `npm:` specifier for simplicity. We assume you are familiar with Deno's specifiers, but here is a link to learn more just in case: https://deno.com/blog/not-using-npm-specifiers-doing-it-wrong.
+All Deno `import` statements prefix packages with the `jsr:` specifier, since Drash is published to [JSR](https://jsr.io/@drashland/drash). JSR resolves through the package's export map, so these specifiers carry no file extension &mdash; unlike the npm ones the other runtimes use, which need `.js`. Deno can also resolve through npm with `npm:` if you prefer; here is a link on Deno's specifiers just in case: https://deno.com/blog/not-using-npm-specifiers-doing-it-wrong.
 
 ## Page Order
 
