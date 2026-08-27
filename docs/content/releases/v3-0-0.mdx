@@ -24,33 +24,44 @@ What the gap here means in practice:
 
 ## What Drash v3 Is
 
-**A chain of handlers you build once and hand requests to.** Drash is not an HTTP server wrapper. You build an application and plug it into your runtime's server&mdash;`Deno.serve`, `node:http`, `Bun.serve`, a Worker's `fetch`&mdash;to handle its request-response lifecycle.
+Drash is not an HTTP server wrapper anymore. You build an application (using the `Application` class) and plug it into your runtime's server&mdash;`Deno.serve`, `node:http`, `Bun.serve`, a Worker's `fetch`&mdash;to handle its request-response lifecycle. For example:
 
-```ts
+```ts filename="bun_app.ts"
 import {
   Application,
   Resource,
-} from "@drashland/drash/modules/http.native.js";
+} from "@drashland/drash/modules/http.polyfill.js";
 
 class Home extends Resource {
   paths = ["/"];
 
   GET(request: Request) {
-    return new Response("Hello from Drash.");
+    return new Response("Oh so easy");
   }
 }
 
-const app = Application.builder().resources(Home).build();
+const app = Application
+  .builder()
+  .resources(Home)
+  .build();
 
-Deno.serve({ port: 1447 }, (request) =>
-  app
-    .handle<Response>(request)
-    .catch(() => new Response("Internal Server Error", { status: 500 })));
+Bun.serve({
+  hostname: "localhost",
+  port: 1447,
+  fetch(request: Request): Promise<Response> {
+    return app
+      .handle<Response>(request)
+      .catch(() => {
+        return new Response("Sorry, but we hit an error!", {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      });
+  },
+});
 ```
 
-That last `.catch()` is not decoration. `app.handle()` returns a promise and
-**rejects on error, including a 404**. Nothing downstream turns that into a
-response, so without a `.catch()` the request hangs.
+`app.handle()` returns a `Promise` and **rejects on error, including a 404**, so you `catch` it to handle your error responses.
 
 ## What Changed From v2
 
@@ -59,9 +70,9 @@ response, so without a `.catch()` the request hangs.
 | Runtimes | Deno only | Deno, Node, Bun, Cloudflare Workers |
 | Server | Bundled (`Drash.Server`) | None &mdash; you bring your own |
 | Request / response | Drash `Request` and `Response` wrappers | Web `Request` and `Response`, or a context object you define |
-| Resource input | `this.request`, `this.response` | Passed as an argument to the method |
-| Middleware | `Service` | `Middleware`, attached with `ResourceGroup` |
-| Errors | `ErrorHandler` | `HTTPError`, caught where you call `handle()` |
+| Resource input | `this.request`, `this.response` | A request (or context object for Node) |
+| Middleware | `Service` | `Middleware` |
+| Errors | `ErrorHandler` | `HTTPError`, handled via `.catch()` block where you call `app.handle()` |
 
 The removals are deliberate: `this.request` and `this.response` made resources stateful for a single request. However, it prevented safe reuse across concurrent requests. Resources now initialize at build time and are reused for the app's lifetime&mdash;eliminating per-request object creation. It's a tradeoff among performance, semantics, and maintainability.
 
@@ -72,57 +83,46 @@ The removals are deliberate: `this.request` and `this.response` made resources s
 - `modules/http.native.js`
 - `modules/http.polyfill.js`
 
-They export the same six members. They only differ in which `URLPattern` implementation is used under the hood &mdash; the runtime's global, or Drash's bundled polyfill. See
-[Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+They export the same six members. They only differ in which `URLPattern` implementation is used under the hood &mdash; the runtime's global, or Drash's bundled polyfill. See [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill) to learn more.
 
-| Export | Kind |
-| ------ | ---- |
-| `Application` | class |
-| `Resource` | class |
-| `Middleware` | class |
-| `ResourceGroup` | class |
-| `HTTPError` | class |
-| `HTTPRequest` | type |
+**Core, Standard, Modules**
 
-**Four middleware**, none runtime-specific:
-[`AcceptHeader`](/reference/modules/middleware/accept-header),
-[`CORS`](/reference/modules/middleware/cors),
-[`ETag`](/reference/modules/middleware/etag), and
-[`RateLimiter`](/reference/modules/middleware/rate-limiter).
+The entire Drash framework is made up of the following codebases:
 
-**Three builders** for constructing requests, responses, and the request chain
-itself &mdash; see [Modules > Builders](/reference/modules/builders).
+- Core: Interfaces, types, classes
+- Standard: Similar to Deno's Standard Library and Go's Standard Library, but smaller
+- Modules: Most functionality and implementation using Standard and Core codebases
 
-**Documentation**, which is new in this release: concepts, a quickstart per
-runtime, a full API reference, runnable examples, and
-[agents.md](https://drash.crookse.com/agents.md) for coding agents.
+**Four middleware**
+
+Four middleware, none are runtime-specific:
+
+- [`AcceptHeader`](/reference/modules/middleware/accept-header)
+- [`CORS`](/reference/modules/middleware/cors)
+- [`ETag`](/reference/modules/middleware/etag)
+- [`RateLimiter`](/reference/modules/middleware/rate-limiter)
+
+**Documentation**
+
+Concepts, a quickstart per runtime, a full API reference, runnable examples, and [agents.md](https://drash.crookse.com/agents.md) for coding agents.
 
 ## Supported Runtimes
 
-Every runtime below has its own compatibility suite in CI, run against the built
-package rather than the source.
-
 | Runtime | Entry point | What a resource method receives |
 | ------- | ----------- | ------------------------------- |
-| Deno | `http.native.js` | Web `Request` |
-| Node 20, 22, 24, 26 | `http.polyfill.js` | A context object you build |
-| Bun | `http.polyfill.js` | Web `Request` |
+| Deno 1+ | `http.native.js` | Web `Request` |
+| Node 20+ | `http.polyfill.js` | A context object you build |
+| Bun 1+ | `http.polyfill.js` | Web `Request` |
 | Cloudflare Workers | `http.native.js` | Web `Request` |
 
-Node uses the polyfill entry point because `URLPattern` support varies across
-those majors. Bun uses it because its `URLPattern` is not dependable.
+Node uses the polyfill entry point because `URLPattern` support varies across those majors. Bun uses it because its `URLPattern` is not dependable.
 
 ## Getting Started
 
 - [Quickstart](/docs/quickstart) &mdash; a complete app for your runtime
-- [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) &mdash; the same
-  thing, built one piece at a time
-- [HTTP Application](/docs/concepts/http-application) &mdash; what `Application`
-  assembles, and why
+- [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) &mdash; the same thing, built one piece at a time
+- [HTTP Application](/docs/concepts/http-application) &mdash; what `Application` assembles, and why
 
 ## Coming From v2
 
-There is no migration tool. The concepts that carry over are resources and
-paths; everything around them is different. Read
-[Resources](/docs/concepts/resources) first &mdash; it is the piece of v2 that
-survived, and the rest of the API is built around it.
+There is no migration tool. The concepts that carry over are resources and paths; everything around them is different. Read [Resources](/docs/concepts/resources) first &mdash; it is the piece of v2 that survived, and the rest of the API is built around it.
