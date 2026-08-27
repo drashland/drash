@@ -43,7 +43,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version --version ${{ github.event.inputs.version }}
+          deno task check:release-version-fields --version ${{ github.event.inputs.version }}
 
   ##############################################################################
   # CODE QUALITY
@@ -85,10 +85,6 @@ jobs:
         with:
           deno-version: v2.x
 
-      # Declaring `name` and `exports` in deno.json makes this a JSR package,
-      # which turns on the JSR lint rules -- `no-slow-types` in particular.
-      # Those are the same diagnostics `deno publish` refuses on, so catching
-      # them here fails the release before anything is uploaded.
       - name: Run Deno linter
         run: deno lint
 

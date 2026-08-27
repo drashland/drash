@@ -7,7 +7,7 @@
  * Three kinds of file carry it, and they mean different things:
  *
  *   - ./package.json and ./deno.json hold the package's *own* version. npm
- *     reads the first, JSR the second, and `check:package-json-version` fails a
+ *     reads the first, JSR the second, and `check:release-version-fields` fails a
  *     release when the two disagree -- so they always move together.
  *   - ./examples/*\/package.json depend *on* that version. They pin an exact
  *     version rather than a range so an example demonstrates a known-good

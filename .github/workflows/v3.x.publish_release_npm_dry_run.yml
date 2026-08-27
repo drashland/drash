@@ -39,7 +39,7 @@ jobs:
 
       - name: Perform version check
         run: |
-          deno task check:package-json-version --version ${{ github.event.inputs.version }}
+          deno task check:release-version-fields --version ${{ github.event.inputs.version }}
 
   ##############################################################################
   # CODE QUALITY
