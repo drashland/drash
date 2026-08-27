@@ -1,9 +1,10 @@
 # Drash for coding agents
 
-Drash is a microframework for HTTP services, with zero dependencies. **It ships
-no server.** You build a chain of handlers and hand it requests from whatever
-server the runtime already gives you. Know that before writing any of it; almost
-every wrong guess about Drash comes from assuming it starts a server for you.
+Drash is a microframework for HTTP services, with zero dependencies. **It is not
+an HTTP server wrapper.** You build a chain of handlers and hand it requests
+from whatever server the runtime already gives you. Know that before writing any
+of it; almost every wrong guess about Drash comes from assuming it starts a
+server for you.
 
 It runs on Deno, Node, Bun, and Cloudflare Workers. Exactly four things differ
 between them — the install command, the entry point, the server glue, and the

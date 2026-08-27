@@ -1,0 +1,30 @@
+---
+title: About
+description: The ideas behind Drash's design, and the record of how it has changed.
+---
+
+# About
+
+These pages explain Drash&mdash;why it was designed the way it was, how its parts fit together, and what changes from one version to the next.
+
+<Cards num={2}>
+  <Cards.Card title="Concepts" href="/about/concepts/framework" arrow />
+  <Cards.Card title="Releases" href="/about/releases" arrow />
+</Cards>
+
+## Concepts
+
+What Drash is, why it is shaped the way it is, and how it works beneath the surface. Read on if you want to understand the underpinnings of Drash.
+
+| Page                                                        | Covers                                                                        |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Framework](/about/concepts/framework)                       | The three-layer split, and why imports only flow one direction                 |
+| [HTTP Application](/about/concepts/http-application)         | What `Application` assembles, and what it expects from you                     |
+| [Resources](/about/concepts/resources)                       | Why Drash routes with classes instead of `app.get()`                           |
+| [Native vs. Polyfill](/about/concepts/native-vs-polyfill)    | The two entry points, and which one your runtime needs                         |
+| [Chains](/about/concepts/chains)                             | The chain of responsibility every request travels                              |
+| [Builders](/about/concepts/builders)                         | The builder pattern used to assemble applications and resource groups          |
+
+## Releases
+
+Notes for every published version, newest first &mdash; what changed, what broke, and what to do about it. See [All Releases](/about/releases).

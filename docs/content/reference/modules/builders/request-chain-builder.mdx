@@ -24,12 +24,12 @@ The returned object is typed as the `Builder` interface, which exposes exactly t
 | Method                       | Returns   | Notes                                              |
 | ---------------------------- | --------- | -------------------------------------------------- |
 | `resources(...resources)`    | `Builder` | The resource classes this chain routes to          |
-| `urlPatternClass(cls)`       | `Builder` | Required — `build()` throws without it             |
+| `urlPatternClass(cls)`       | `Builder` | Required &mdash; `build()` throws without it             |
 | `build()`                    | `Handler` | The chain head, whose `handle()` you call          |
 
-The `handler()` and `handlers` members inherited from `AbstractChainBuilder` are deliberately not on this interface. The request chain's handlers, and the order they run in, are decided by `build()` and are not the consumer's to change — see [Handlers](/reference/standard/handlers).
+The `handler()` and `handlers` members inherited from `AbstractChainBuilder` are deliberately not on this interface. The request chain's handlers, and the order they run in, are decided by `build()` and are not the consumer's to change &mdash; see [Handlers](/reference/standard/handlers).
 
 Implements [`IBuilder`](/reference/core/interfaces#ibuilderproduct) by way of
 [`AbstractChainBuilder`](/reference/standard/chains/abstract-chain-builder), which it
-extends. The `Builder` interface it exposes is its own — see
+extends. The `Builder` interface it exposes is its own &mdash; see
 [the three things named `Builder`](/reference/standard/builders/builder#three-things-named-builder).

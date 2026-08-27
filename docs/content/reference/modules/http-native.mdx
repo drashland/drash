@@ -211,4 +211,4 @@ const response = app
 
 One chain instance handles concurrent requests. Build it once at module scope and reuse it; do not build per request.
 
-Resources are constructed by the chain, so **do not store per-request state on `this`** in a resource or middleware. State kept on the instance is shared across every in-flight request.
+Resources are constructed by the chain, so __do not store per-request state on `this`__ in a resource or middleware. State kept on the instance is shared across every in-flight request.

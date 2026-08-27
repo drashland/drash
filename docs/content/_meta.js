@@ -33,4 +33,12 @@ export default {
     title: "Reference",
     type: "page",
   },
+  // Holds the material that describes the project rather than instructing the
+  // reader: the concepts behind the design, and the release notes. Both were
+  // top-level before — Concepts under Docs, Releases in the footer — and both
+  // read better as background than as part of a task.
+  about: {
+    title: "About",
+    type: "page",
+  },
 };

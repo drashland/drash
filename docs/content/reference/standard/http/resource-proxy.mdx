@@ -46,7 +46,7 @@ uses to wrap a resource. The two look similar but behave differently:
 | | `ResourceProxy` | `Middleware` |
 | --- | --- | --- |
 | Forwards by | A fixed method per verb | Reading `input.method` at call time |
-| Missing original | Optional chaining — returns `undefined` | Throws |
+| Missing original | Optional chaining &mdash; returns `undefined` | Throws |
 | Copies `paths` | Yes, in `setOriginal()` | No |
 | `ALL()` hook | None | Intercepts every method |
 

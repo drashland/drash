@@ -7,7 +7,7 @@ description: What these pages assume, how they are ordered, and how to read them
 
 ## Assumptions
 
-Most of these pages — especially those with an **Instructions** section — assume:
+Most of these pages &mdash; especially those with an __Instructions__ section &mdash; assume:
 
 1. you have a JavaScript runtime installed (as stated on the [Prerequisites](/docs/getting-started/prerequisites) page);
 2. you have some knowledge and understanding of the JavaScript runtime you have installed (e.g., you know how to use a `package.json` in Node or `deno.json` file in Deno); and
@@ -15,7 +15,7 @@ Most of these pages — especially those with an **Instructions** section — as
 
 ### Zero Dependencies
 
-Although Drash has zero dependencies — meaning you could run it in the browser, these pages are written assuming you are using Drash to build server-side HTTP applications.
+Although Drash has zero dependencies &mdash; meaning you could run it in the browser, these pages are written assuming you are using Drash to build server-side HTTP applications.
 
 ### Deno Import Statements
 
@@ -34,7 +34,7 @@ It is not required that you read the pages in order, but we greatly recommend it
 | ------------------------------------------------ | ------------------------------------------------------------------------------------ |
 | [Getting Started](/docs/getting-started)         | What Drash is, what you need installed, and building your first app step by step     |
 | [Quickstart](/docs/quickstart)                   | A complete app per runtime                                                           |
-| [Concepts](/docs/concepts/framework)             | The framework's shape, HTTP applications, resources, the native/polyfill modules, chains, and builders |
+| [Concepts](/about/concepts/framework)             | The framework's shape, HTTP applications, resources, the native/polyfill modules, chains, and builders |
 | [Resources](/docs/resources/creating-a-resource) | Writing resources, and grouping them to share prefixes and middleware                |
 | [Requests](/docs/requests/handling-requests)     | What a resource receives, and reading path and query params                          |
 | [Tutorials](/docs/middleware)          | Using pre-built middleware, writing your own, and handling errors                    |
@@ -44,29 +44,29 @@ Looking for finished applications you can run? Those are under [Examples](/examp
 
 ## Concepts Pages
 
-Some pages will recommend you read pages under the [Concepts](/docs/concepts/framework). Concepts go over:
+Some pages will recommend you read pages under the [Concepts](/about/concepts/framework). Concepts go over:
 
-- a breakdown of the [framework](/docs/concepts/framework);
-- what an [HTTP application](/docs/concepts/http-application) is and what it assembles;
-- how [resources](/docs/concepts/resources) play a role in the HTTP module's `Application`;
-- why [native and polyfill](/docs/concepts/native-vs-polyfill) modules exist;
-- how [chains](/docs/concepts/chains) work under the hood; and
-- why [builders](/docs/concepts/builders) assemble your application.
+- a breakdown of the [framework](/about/concepts/framework);
+- what an [HTTP application](/about/concepts/http-application) is and what it assembles;
+- how [resources](/about/concepts/resources) play a role in the HTTP module's `Application`;
+- why [native and polyfill](/about/concepts/native-vs-polyfill) modules exist;
+- how [chains](/about/concepts/chains) work under the hood; and
+- why [builders](/about/concepts/builders) assemble your application.
 
 It is not required that you read the Concepts pages, but we greatly recommend it so you are aware of the design decisions made in Drash and how it works under the hood.
 
 ## Tutorial Format
 
-All tutorial pages have an **Instructions** section. They guide you in building applications from the ground up. Their page format is explained below:
+All tutorial pages have an __Instructions__ section. They guide you in building applications from the ground up. Their page format is explained below:
 
 | Section          | What it contains                                                                                                                                          |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Overview**     | A high-level overview of what the tutorial teaches, recommended reading beforehand, and the knowledge we hope you gain by the end.                           |
-| **Instructions** | Steps that build a tiny HTTP application from scratch — the end state of the directory tree, example code for different runtimes, and comments explaining it. |
-| **Verification** | Steps to help you verify the code you wrote is working.                                                                                                     |
+| __Overview__     | A high-level overview of what the tutorial teaches, recommended reading beforehand, and the knowledge we hope you gain by the end.                           |
+| __Instructions__ | Steps that build a tiny HTTP application from scratch &mdash; the end state of the directory tree, example code for different runtimes, and comments explaining it. |
+| __Verification__ | Steps to help you verify the code you wrote is working.                                                                                                     |
 
 <Callout type="info" emoji={null}>
-**You must read your runtime's documentation**
+__You must read your runtime's documentation__
 
 These pages reference running your code (e.g., `deno run --allow-net app.ts`). Since instructions vary by runtime and operating system, it is best you read your runtime's documentation on running code.
 </Callout>
@@ -75,11 +75,11 @@ These pages reference running your code (e.g., `deno run --allow-net app.ts`). S
 
 You will notice the Core, Standard, and Modules sections under the [Reference](/reference) pages. These three sections reflect the codebases of the entire Drash framework, and are ordered lowest-level first:
 
-- **Core** — types, interfaces, and classes with minimal implementation. It contains the lowest level APIs and helps build the Standard and Modules codebases.
-- **Standard** — similar to Deno's and Go's standard libraries, but smaller. Intended as standalone code and as code to help build the Modules codebase.
-- **Modules** — implements the most functionality, such as processing HTTP requests. Imports from Standard and Core.
+- __Core__ &mdash; types, interfaces, and classes with minimal implementation. It contains the lowest level APIs and helps build the Standard and Modules codebases.
+- __Standard__ &mdash; similar to Deno's and Go's standard libraries, but smaller. Intended as standalone code and as code to help build the Modules codebase.
+- __Modules__ &mdash; implements the most functionality, such as processing HTTP requests. Imports from Standard and Core.
 
-The [Framework](/docs/concepts/framework) page covers these codebases in more detail.
+The [Framework](/about/concepts/framework) page covers these codebases in more detail.
 
 ## Glossary
 

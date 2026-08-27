@@ -4,13 +4,13 @@ title: HTTP Application
 
 # HTTP Application
 
-An HTTP application is what you build to handle requests and send responses to those requests. In Drash, you build HTTP applications using the HTTP module's [`Application`](/reference/modules/http-native) class. Specifically, you use the `Application.builder()` method. You give it [resources](/docs/concepts/resources) and [middleware](/docs/middleware) to handle requests. You respond to those requests through your resources and middleware.
+An HTTP application is what you build to handle requests and send responses to those requests. In Drash, you build HTTP applications using the HTTP module's [`Application`](/reference/modules/http-native/#application) class. Specifically, you use the `Application.builder()` method. You give it [resources](/about/concepts/resources) and [middleware](/docs/middleware) to handle requests. You respond to those requests through your resources and middleware.
 
 {/* ## Where Is the Chain Placed?
 
-**The chain is placed by you, behind your chosen runtime's HTTP server.**
+__The chain is placed by you, behind your chosen runtime's HTTP server.__
 
-A chain on its own does nothing. It needs a runtime to receive HTTP requests, and it needs to be connected to that runtime's HTTP server. Once the server is running and clients are making requests — and once your resources talk to whatever services hold your data — the full picture looks like:
+A chain on its own does nothing. It needs a runtime to receive HTTP requests, and it needs to be connected to that runtime's HTTP server. Once the server is running and clients are making requests &mdash; and once your resources talk to whatever services hold your data &mdash; the full picture looks like:
 
 ```mermaid
 flowchart LR
@@ -61,7 +61,7 @@ Clients could make requests to the API Endpoint _through_ the runtime's HTTP ser
 
 ### HTTP Request Chain
 
-Under the hood, `Application` assembles an HTTP request chain — a chain of handlers (see [Concepts > Chains](/docs/concepts/chains) to learn more). You do not have to think about the chain to use it, but the pages here explain what it is doing so you understand the underpinnings of the Drash code you are using.
+Under the hood, `Application` assembles an HTTP request chain — a chain of handlers (see [About > Concepts > Chains](/about/concepts/chains) to learn more). You do not have to think about the chain to use it, but the pages here explain what it is doing so you understand the underpinnings of the Drash code you are using.
 
 ### Handlers
 

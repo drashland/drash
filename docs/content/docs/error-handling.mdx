@@ -4,11 +4,11 @@ Throwing, catching, and responding to errors
 
 ## Overview
 
-Drash does not send error responses for you. It ships no server, so it has nothing to send a response with. What it does instead is throw a uniform error object — `HTTPError` — and reject the promise that `app.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
+Drash does not send error responses for you. It is not an HTTP server wrapper, so it has no server of its own to respond with. What it does instead is throw a uniform error object &mdash; `HTTPError` &mdash; and reject the promise that `app.handle()` returned. Turning that rejection into a response is your job, and it happens in one place: the `.catch()` block your server handler already has.
 
 ### Recommended Reading
 
-- Read the concepts on [HTTP applications](/docs/concepts/http-application)
+- Read the concepts on [HTTP applications](/about/concepts/http-application)
 - Complete the [Step-By-Step Guide](/docs/getting-started/step-by-step-guide) so you have a `.catch()` block to work in
 
 ### Objectives
@@ -474,7 +474,7 @@ return app
 That is deliberate. Those blocks exist to support whatever the page is actually teaching, and __they are not suitable for production__:
 
 - __It always returns a `500`.__ Not every error is a 500. A missing resource is a 404 and a missing header is a 401, and both would be reported wrong here.
-- __The body is `e.message`, unchecked.__ That message could have come from deep in your own code — `"Unable to read from users table. User ID 108 does not exist."` — and sending it hands a client a description of your database.
+- __The body is `e.message`, unchecked.__ That message could have come from deep in your own code &mdash; `"Unable to read from users table. User ID 108 does not exist."` &mdash; and sending it hands a client a description of your database.
 - __`console.log()` is not logging.__ In a real app that would be a logging library call, with the message and the error object going to different levels.
 
 The [Catching Errors](#catching-errors) block above is the one to copy.

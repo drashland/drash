@@ -1,6 +1,6 @@
 # Types
 
-The types in `core/types/`. Type-only — none of these exist at runtime.
+The types in `core/types/`. Type-only &mdash; none of these exist at runtime.
 
 ```ts
 import type { ResponseStatus } from "@drashland/drash/core/types/ResponseStatus.js";
@@ -73,6 +73,6 @@ The union of keys on `Object` whose values are functions. Used internally as `Me
 
 ## Notes
 
-Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports — harmless under a bundler, and a resolution error without one.
+Every entry here is `export type`, so `import type` is the correct form. Importing them without the `type` keyword leaves a runtime import of a module with no runtime exports &mdash; harmless under a bundler, and a resolution error without one.
 
 See also [Interfaces](/reference/core/interfaces).

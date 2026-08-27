@@ -16,7 +16,7 @@ This guide helps you build a tiny HTTP application using the HTTP module's `Appl
 ### Recommended Reading
 
 - Complete the [Prerequisites](/docs/getting-started/prerequisites)
-- Read the concepts on [HTTP applications](/docs/concepts/http-application) and [resources](/docs/concepts/resources)
+- Read the concepts on [HTTP applications](/about/concepts/http-application) and [resources](/about/concepts/resources)
 
 ### Objectives
 
@@ -42,8 +42,8 @@ To gain familiarity with:
 - All of the code will be written in the same file for simplicity.
 - Each next step __adds__ code to the step before it. The code that is highlighted is the code that is being __added__.
 - The code comments explain the code in a line-by-line manner. Please read them to gain a better understanding of the code.
-- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Application` requires. These fields are mentioned in [Concepts > HTTP Application > Handler Requirements](/docs/concepts/http-application#handler-requirements).
-- Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [Concepts > Native vs. Polyfill](/docs/concepts/native-vs-polyfill).
+- The Node.js code blocks will show code that creates a `context` object. This `context` object contains the `url` and `method` fields the HTTP module's `Application` requires. These fields are mentioned in [About > Concepts > HTTP Application > Handler Requirements](/about/concepts/http-application#handler-requirements).
+- Deno and Cloudflare Workers provide a global `URLPattern`, so they use the __native__ module. Node and Bun do not, so they use the __polyfill__ module. The two modules are otherwise identical. See [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill).
 
 ### Steps and Verification
 
@@ -282,7 +282,7 @@ const app = Application
 <Callout type="gray">
 **Good to know**
 
-Drash uses the builder pattern to create objects. You will see `build()` calls many times throughout these documentation pages. See [Concepts > Builders](/docs/concepts/builders) for why.
+Drash uses the builder pattern to create objects. You will see `build()` calls many times throughout these documentation pages. See [About > Concepts > Builders](/about/concepts/builders) for why.
 </Callout>
 
 #### Add Your App to Your Server

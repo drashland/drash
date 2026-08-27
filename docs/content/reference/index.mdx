@@ -5,7 +5,7 @@ description: API reference for Drash, organised by the Core, Standard, and Modul
 
 # Reference
 
-Drash is split into three codebases, and this reference follows that split. Imports flow one direction — Modules → Standard → Core — which is what keeps each layer independently useful. [Framework](/docs/concepts/framework) covers the reasoning; these pages cover the API.
+Drash is split into three codebases, and this reference follows that split. Imports flow one direction &mdash; Modules → Standard → Core &mdash; which is what keeps each layer independently useful. [Framework](/about/concepts/framework) covers the reasoning; these pages cover the API.
 
 <Cards num={3}>
   <Cards.Card title="Core" href="/reference/core" arrow />
@@ -18,12 +18,12 @@ Drash is split into three codebases, and this reference follows that split. Impo
 | Layer                              | What it holds                                                                                             | Imports        |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------- |
 | [Core](/reference/core)            | Types, interfaces, enums, `HTTPError`, and the base `Resource`. The lowest-level APIs.                     | Nothing        |
-| [Standard](/reference/standard)    | Standalone library code, in the spirit of Deno's or Go's standard library — handlers, middleware, loggers. | Core           |
+| [Standard](/reference/standard)    | Standalone library code, in the spirit of Deno's or Go's standard library &mdash; handlers, middleware, loggers. | Core           |
 | [Modules](/reference/modules)      | The pieces that do the work: the HTTP module, the pre-built middleware, the builders.                        | Standard, Core |
 
 ## Where to Start
 
-Most applications only touch Modules. The two entry points — `modules/http.native.js` and `modules/http.polyfill.js` — re-export what you need from the layers below, so a normal app imports `Application`, `Resource`, `Middleware`, `ResourceGroup`, and `HTTPError` from one specifier.
+Most applications only touch Modules. The two entry points &mdash; `modules/http.native.js` and `modules/http.polyfill.js` &mdash; re-export what you need from the layers below, so a normal app imports `Application`, `Resource`, `Middleware`, `ResourceGroup`, and `HTTPError` from one specifier.
 
 | If you want to                          | Read                                                              |
 | --------------------------------------- | ----------------------------------------------------------------- |
@@ -37,6 +37,6 @@ Most applications only touch Modules. The two entry points — `modules/http.nat
 
 ## Looking for Something Else?
 
-- [Middleware](/docs/middleware) — writing your own, and the four bundled ones.
-- [Creating a Resource](/docs/resources/creating-a-resource) — paths, HTTP methods, and dynamic paths.
-- [Examples](/examples) — complete applications you can run.
+- [Middleware](/docs/middleware) &mdash; writing your own, and the four bundled ones.
+- [Creating a Resource](/docs/resources/creating-a-resource) &mdash; paths, HTTP methods, and dynamic paths.
+- [Examples](/examples) &mdash; complete applications you can run.

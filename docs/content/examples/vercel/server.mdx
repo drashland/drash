@@ -7,7 +7,7 @@ description: Drash / Vercel / server.ts — a complete, runnable example.
 
 Vercel detects a `server` entrypoint at the project root that calls `server.listen()`, and
 routes requests to it. It receives Node's `IncomingMessage`/`ServerResponse`, so it takes a
-**context object** like the [Node example](/examples/node/typescript).
+__context object__ like the [Node example](/examples/node/typescript).
 
 ## Steps
 
@@ -77,13 +77,13 @@ Go to http://localhost:3000. Pass `--listen` to use a different port.
 ## Notes
 
 `url` must be absolute. `request.url` from `node:http` is path-only (`/users/1`), which is
-why the example builds it from the `host` header — a bare path will not match.
+why the example builds it from the `host` header &mdash; a bare path will not match.
 
 The port passed to `server.listen()` is only used when you run the file locally. On Vercel
 it is ignored; requests are routed through an internal port.
 
 Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node
-version, so this uses the **polyfill** entry point.
+version, so this uses the __polyfill__ entry point.
 
 If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your
 `package.json` or name the file `.mjs`. The polyfill entry point is an ES module, and

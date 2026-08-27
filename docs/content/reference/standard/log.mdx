@@ -72,7 +72,7 @@ static create(name: string, level: LogLevel = Level.Off): ConsoleLogger
 | Parameter | Type       | Notes                                                   |
 | --------- | ---------- | ------------------------------------------------------- |
 | `name`    | `string`   | Appears in the message prefix                           |
-| `level`   | `LogLevel` | Optional. __Defaults to `Level.Off`__ — nothing is written |
+| `level`   | `LogLevel` | Optional. __Defaults to `Level.Off`__ &mdash; nothing is written |
 
 The default is the thing to watch. `ConsoleLogger.create("app")` produces a logger that silently discards every message.
 
@@ -82,4 +82,4 @@ The same surface, for grouping related messages under one heading. Also exposes 
 
 ## Notes
 
-These loggers are deliberately minimal, and Drash does not require you to use them. For production logging, the [Error Handling](/docs/error-handling) page shows the shape to aim for — a real logging library in your `.catch()` block, with the message and the error object going to different levels.
+These loggers are deliberately minimal, and Drash does not require you to use them. For production logging, the [Error Handling](/docs/error-handling) page shows the shape to aim for &mdash; a real logging library in your `.catch()` block, with the message and the error object going to different levels.

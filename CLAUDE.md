@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Drash v3 — a runtime-agnostic microframework for building JavaScript/TypeScript HTTP systems. It ships no server. Consumers build a chain of handlers and pass a request (or a context object) into `chain.handle()` from whatever server their runtime provides (`Deno.serve`, `node:http`, `Bun.serve`, a Cloudflare Worker `fetch`). Supported targets: Deno, Node, Bun, Cloudflare Workers.
+Drash v3 — a runtime-agnostic microframework for building JavaScript/TypeScript HTTP systems. It is not an HTTP server wrapper. Consumers build a chain of handlers and pass a request (or a context object) into `chain.handle()` from whatever server their runtime provides (`Deno.serve`, `node:http`, `Bun.serve`, a Cloudflare Worker `fetch`). Supported targets: Deno, Node, Bun, Cloudflare Workers.
 
 The source is written in Deno style (`.ts` extensions in import specifiers, JSR/`@std` deps) and built with tsup into `dist/` as CJS + ESM + `.d.ts` for npm.
 

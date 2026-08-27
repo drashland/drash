@@ -1,23 +1,24 @@
 name: main - Code Validation
 
-# Docs-only changes skip this workflow -- nothing under docs/ can affect the
-# library. docs.yml is the mirror of this: it runs *only* on docs/**, so the two
-# never both sit idle on a change. A commit touching docs/ *and* anything else
-# still runs everything, because paths-ignore only skips when every changed file
-# matches.
+# Validation runs only when the library itself changes.
+#
+# `paths` is an allow-list: anything not matched below skips this workflow
+# entirely. That is the point -- a docs or CI change cannot affect whether the
+# library builds or passes -- but it cuts wider than it may look. A pull request
+# touching only `tests/`, `deno.json`, `package.json`, or `scripts/doit.ts`
+# (which `build:libs` runs) also skips validation, so those want a local
+# `deno task test:all` before merging.
 on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - ".github/workflows/**"
-      - "docs/**"
+    paths:
+      - "src/**"
   push:
     branches:
       - main
-    paths-ignore:
-      - ".github/workflows/**"
-      - "docs/**"
+    paths:
+      - "src/**"
 
 jobs:
 

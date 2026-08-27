@@ -103,16 +103,16 @@ Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time)
 
 ## Notes
 
-Workers provide a global `URLPattern`, so this uses the **native** entry point. The chain is built once at module scope and reused across requests in the same isolate.
+Workers provide a global `URLPattern`, so this uses the __native__ entry point. The chain is built once at module scope and reused across requests in the same isolate.
 
 <Callout type="warning">
-  **Every named export of a Worker entry module must be a function, a class, or
-  an `ExportedHandler`.** `workerd` treats named exports as potential
+  __Every named export of a Worker entry module must be a function, a class, or
+  an `ExportedHandler`.__ `workerd` treats named exports as potential
   entrypoints and validates them at startup, so a stray constant like
   `export const hostname = "localhost"` aborts the Worker before it serves
   anything.
 </Callout>
 
-That is why this example has no `hostname`/`port` constants, unlike the others — wrangler decides the address, and exporting them would break the Worker. Keep any configuration values as module-local `const`s.
+That is why this example has no `hostname`/`port` constants, unlike the others &mdash; wrangler decides the address, and exporting them would break the Worker. Keep any configuration values as module-local `const`s.
 
 This example is in the repository at [`examples/cloudflare-workers-js`](https://github.com/drashland/drash/tree/main/examples/cloudflare-workers-js).

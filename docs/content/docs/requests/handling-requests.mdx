@@ -6,14 +6,14 @@ What a resource receives, and how to read from it
 
 Every chain built by the HTTP module's `Application.builder()` runs a `RequestParamsParser` handler before it calls your resource. That handler attaches a non-enumerable `params` object to the request, and that object is how you read the two kinds of parameters a URL can carry:
 
-- __path params__ — the `:name` segments declared in a resource's `paths` property; and
-- __query params__ — the `?name=value` pairs a client appends to the URL.
+- __path params__ &mdash; the `:name` segments declared in a resource's `paths` property; and
+- __query params__ &mdash; the `?name=value` pairs a client appends to the URL.
 
 You do not add the parser yourself. It is one of the handlers the request chain wires up for you, so `params` is present on every request that reaches a resource.
 
 ### Recommended Reading
 
-- Read the concepts on [HTTP applications](/docs/concepts/http-application)
+- Read the concepts on [HTTP applications](/about/concepts/http-application)
 - Read [Creating a Resource](/docs/resources/creating-a-resource) to see how paths are declared
 
 ### Objectives
@@ -140,4 +140,4 @@ if (!id) {
 }
 ```
 
-`params` is defined as non-enumerable, so it does not show up in `Object.keys(request)` or `JSON.stringify(request)`. It is there — it just stays out of the way of anything that walks the request's own properties.
+`params` is defined as non-enumerable, so it does not show up in `Object.keys(request)` or `JSON.stringify(request)`. It is there &mdash; it just stays out of the way of anything that walks the request's own properties.
