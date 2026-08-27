@@ -8,7 +8,7 @@
     "start": "ts-node-esm app.ts"
   },
   "dependencies": {
-    "@drashland/drash": "3.0.1"
+    "@drashland/drash": "3.0.2"
   },
   "devDependencies": {
     "ts-node": "^10.9.1"

@@ -1,7 +1,7 @@
 import {
   Application,
   Resource,
-} from "https://esm.sh/@drashland/drash/modules/http.native.js";
+} from "jsr:@drashland/drash/modules/http.native";
 
 // import {
 //   Application,

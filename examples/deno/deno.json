@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-net app.ts"
+  },
+  "imports": {
+    "@drashland/drash": "npm:@drashland/drash@^3.0.2",
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
