@@ -1,5 +1,8 @@
 name: v3.x - Publish Release (npm)
 
+permissions:
+  contents: read
+
 on:
   # Publishing a GitHub release is the normal path: the version comes from the
   # release tag and the dist-tag is derived from it.
