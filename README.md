@@ -293,7 +293,10 @@ Bun.serve({
 <summary><strong>Cloudflare Workers (JS)</strong></summary>
 
 ```js
-import { Application, Resource } from "@drashland/drash/modules/http.native.js";
+import {
+  Application,
+  Resource
+} from "@drashland/drash/modules/http.native.js";
 
 class Home extends Resource {
   paths = ["/"];
