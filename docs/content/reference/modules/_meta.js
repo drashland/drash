@@ -9,7 +9,10 @@ export default {
   // files, not directories, so these are pages here rather than folders.
   "http-native": "http.native",
   "http-polyfill": "http.polyfill",
-  openapiv3: "openapiv3",
+  // Labelled for the spec rather than the filename. The other two entries name
+  // their file because "http.native" is already how a reader refers to it; the
+  // module here is universally called OpenAPI v3, not openapiv3.
+  openapiv3: "OpenAPI v3",
 
   builders: "Builders",
   middleware: "Middleware",

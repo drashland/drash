@@ -1,0 +1,199 @@
+---
+title: CLI
+description: drash-openapi builds an OpenAPI Specification v3 document from your resource files by importing them and reading the decorators back.
+---
+
+# CLI
+
+`drash-openapi` builds an [OpenAPI Specification v3](https://spec.openapis.org/oas/v3.0.3) (OAS v3) document from your resource files. It does what the assembly example on [Decorators](/reference/modules/openapiv3/decorators) does &mdash; import the resources, read the operations back, wrap them in a document &mdash; without you writing that wrapper.
+
+The command ships with the npm package as a `bin` entry, so it needs no separate install:
+
+```bash filename="Terminal"
+npx --package @drashland/drash drash-openapi ./build/resources
+```
+
+With no `-o`, the document goes to standard output.
+
+## Quick Example
+
+Given a decorated resource:
+
+```ts filename="src/resources/users.ts"
+import { Resource } from "@drashland/drash/modules/http.native.js";
+import { OpenAPIv3 } from "@drashland/drash/modules/openapiv3.js";
+
+export class Users extends Resource {
+  public override paths = ["/users/:id"];
+
+  @OpenAPIv3({
+    summary: "Get a user",
+    responses: { "200": { description: "The user" } },
+  })
+  public override GET(_request: Request) {
+    return new Response("ok");
+  }
+}
+```
+
+Build it, then run the command against the output:
+
+```bash filename="Terminal"
+npx --package @drashland/drash drash-openapi ./build --title "Users API" --api-version 2.1.0
+```
+
+```json filename="stdout"
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Users API",
+    "version": "2.1.0"
+  },
+  "paths": {
+    "/users/{id}": {
+      "get": {
+        "summary": "Get a user",
+        "responses": {
+          "200": {
+            "description": "The user"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+Two things were derived rather than declared. The resource's `/users/:id` became OAS v3's `/users/{id}`, and the `id` path parameter was added to `parameters` as a required string. See [Path Parameters](/reference/modules/openapiv3/decorators#path-parameters) for the rules.
+
+## Arguments
+
+```
+drash-openapi <path...> [options]
+```
+
+Each `<path>` is a resource file, or a directory to search for one.
+
+- **A file named directly is imported whatever it is called.** Only directory contents get filtered, since nothing in a directory was chosen by you.
+- **Directories are walked recursively**, skipping `node_modules` and any folder whose name starts with a dot. Inside them, only `.js`, `.mjs`, `.cjs`, `.ts`, `.mts`, and `.cts` files are considered, and `.d.ts` files are skipped.
+- **Shell globs work**, because the shell expands them before the command runs: `drash-openapi build/resources/*.js`.
+
+Duplicate paths are collapsed, and files are processed in sorted order so the same input always produces the same document.
+
+## Options
+
+| Option            | What it sets                                     | Default |
+| ----------------- | ------------------------------------------------ | ------- |
+| `-o`, `--out`     | Where to write. Omit to print to standard output. | stdout  |
+| `--title`         | `info.title`                                      | `API`   |
+| `--api-version`   | `info.version`                                    | `1.0.0` |
+| `--description`   | `info.description`                                | unset   |
+| `--server`        | Adds a `servers` entry. Repeat for more than one. | unset   |
+| `--openapi`       | The OAS version in `openapi`                      | `3.0.3` |
+| `--indent`        | JSON indent. `0` writes one line.                 | `2`     |
+| `-h`, `--help`    | Prints usage and exits.                           | —       |
+
+`--api-version` sets your API's version, not the OAS version. The OAS version is `--openapi`. They are separate on purpose, and mixing them up is the easy mistake here.
+
+```bash filename="Terminal"
+npx --package @drashland/drash drash-openapi ./build \
+  --title "Users API" \
+  --api-version 2.1.0 \
+  --description "Everything about users." \
+  --server https://api.example.com \
+  --server https://staging.example.com \
+  --indent 0 \
+  -o openapi.json
+```
+
+```
+drash-openapi: wrote 1 path(s) to /path/to/openapi.json
+```
+
+The confirmation goes to standard error, so `-o` is not needed to keep stdout clean &mdash; redirecting stdout to a file works just as well.
+
+## Point It at Compiled JavaScript
+
+<Callout type="warning">
+__The command imports your resource files. It does not read them as text.__
+
+That is deliberate: the decorators run, so the document reflects what your code actually declares rather than what a parser guesses from the source.
+
+It also means __a file still containing `@OpenAPIv3(...)` cannot be imported by Node.__ Decorators are syntax, not types, so Node's type stripping does not help &mdash; stripping the types leaves the decorator behind. Build your resources first with `tsc`, `tsup`, or `esbuild`, and run the command on the output.
+</Callout>
+
+Because the files are imported, anything a module does at import time happens here too. Keep starting a server behind a guard, or generating a document will bind a port:
+
+```js
+// Not this — importing the file starts the server.
+Deno.serve({ port: 1447 }, handler);
+
+// This — only when run directly.
+if (import.meta.main) {
+  Deno.serve({ port: 1447 }, handler);
+}
+```
+
+## Exit Codes and Errors
+
+The command exits non-zero on failure, so it can gate a build.
+
+| Situation                                    | Exit | Where it goes |
+| -------------------------------------------- | ---- | ------------- |
+| Document written                             | 0    | stdout, or the `-o` file |
+| `--help`                                     | 0    | stdout        |
+| No paths given                               | 1    | stderr        |
+| Unknown option, or an option missing a value | 1    | stderr        |
+| A file could not be imported                 | 1    | stderr        |
+| No decorated resources found                 | 1    | stderr        |
+
+Every message is prefixed `drash-openapi:` and written to standard error, so a failure never contaminates the document on standard output.
+
+An import failure names the file and the underlying error, which is usually an undecorated build:
+
+```
+drash-openapi: Could not import /path/to/build/users.js
+  Unexpected token '@'
+```
+
+Finding files but no decorated resources is also an error rather than an empty document, on the grounds that an empty `paths` is nearly always a mistake:
+
+```
+drash-openapi: No resources with @OpenAPIv3 decorators found in 12 file(s).
+```
+
+## In a Build
+
+Because a non-zero exit fails the step, the command can regenerate the document and a diff can prove it is current:
+
+```yaml filename=".github/workflows/openapi.yml"
+- name: Build resources
+  run: npm run build
+
+- name: Generate the OAS v3 document
+  run: npx --package @drashland/drash drash-openapi ./build -o openapi.json
+
+- name: Fail if the committed document is stale
+  run: git diff --exit-code openapi.json
+```
+
+## Writing YAML Instead
+
+The command only writes JSON. For YAML, print to standard output and convert with whatever your runtime already has &mdash; every YAML parser reads JSON, since JSON is a subset of YAML:
+
+```bash filename="Terminal"
+npx --package @drashland/drash drash-openapi ./build \
+  | npx js-yaml > openapi.yaml
+```
+
+Or call [`buildPathsObject`](/reference/modules/openapiv3/decorators#buildpathsobjectresources) yourself and serialize the result. See [Writing the YAML](/reference/modules/openapiv3/decorators#writing-the-yaml).

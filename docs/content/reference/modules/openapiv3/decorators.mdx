@@ -1,14 +1,13 @@
 ---
-title: openapiv3
-description: The OpenAPI Specification v3 (OAS v3) entry point. Attaches an Operation Object to a resource's HTTP method, and assembles those into a document's paths.
+title: Decorators
+description: The OpenAPI Specification v3 (OAS v3) decorator and the functions that read it back. Attaches an Operation Object to a resource's HTTP method, and assembles those into a document's paths.
 ---
 
-# openapiv3
+# Decorators
 
-The [OpenAPI Specification v3](https://spec.openapis.org/oas/v3.0.3) (OAS v3)
-entry point, `modules/openapiv3.js`. It gives you a decorator for describing
-what a resource's HTTP methods do, and the functions that turn those
-descriptions into an OAS v3 document.
+The decorator half of `modules/openapiv3.js`. It describes what a resource's HTTP methods do, and turns those descriptions into the `paths` member of an [OpenAPI Specification v3](https://spec.openapis.org/oas/v3.0.3) (OAS v3) document.
+
+To generate a whole document without writing the assembly yourself, see [the CLI](/reference/modules/openapiv3/cli).
 
 ## Summary
 
@@ -382,45 +381,6 @@ class Users extends Resource {
   }
 }
 ```
-
-## Generating a Document From the Command Line
-
-Writing that wrapper by hand is optional. The package ships a `drash-openapi`
-command that imports your resource files and writes the document for you:
-
-```bash filename="Terminal"
-npx --package @drashland/drash drash-openapi ./build/resources -o openapi.json
-```
-
-Give it files, or directories to search. It walks directories recursively,
-skipping `node_modules` and dotted folders, and exits non-zero on failure so it
-can gate a build.
-
-| Option            | What it sets                                       |
-| ----------------- | -------------------------------------------------- |
-| `-o`, `--out`     | Where to write. Defaults to standard output.       |
-| `--title`         | `info.title`. Default: `API`.                      |
-| `--api-version`   | `info.version`. Default: `1.0.0`.                  |
-| `--description`   | `info.description`.                                |
-| `--server`        | Adds a server. Repeat for more than one.           |
-| `--openapi`       | The OAS version. Default: `3.0.3`.             |
-| `--indent`        | JSON indent. Default: `2`. Use `0` for one line.   |
-| `-h`, `--help`    | Prints usage.                                      |
-
-<Callout type="warning">
-__Point it at compiled JavaScript.__
-
-The command imports your resource files rather than reading them as text, so the
-decorators run and the document reflects what your code declares. Decorators are
-syntax rather than types, so a file still containing `@OpenAPIv3(...)` cannot be
-imported by Node &mdash; and Node's type stripping does not help, because
-stripping the types leaves the decorator behind. Build your resources first,
-then run the command on the output.
-</Callout>
-
-Because the files are imported, anything a module does when it loads happens
-here too. Keep starting a server behind a guard so generating a document does
-not bind a port.
 
 ## Writing the YAML
 
