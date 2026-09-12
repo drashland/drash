@@ -7,11 +7,72 @@ description: Whole tasks built with Drash, start to finish.
 
 A recipe is one finished job. It states what you are building, shows the complete file for your runtime, then takes that file apart.
 
-That is a different shape from the rest of the site. [Docs](/docs/getting-started) explains one feature at a time &mdash; what a resource is, how params are read, where errors go. [Examples](/examples) runs the same minimal application on each runtime so you can see what changes between them. Neither answers "I want to build X, show me the whole thing," which is what these pages do.
+That is a different shape from [Docs](/docs/getting-started), which explains one feature at a time &mdash; what a resource is, how params are read, where errors go. Those pages answer "how does this work." These answer "I want to build X, show me the whole thing."
 
-<Cards num={1}>
+## Start Here
+
+The first eight are the same application on different runtimes: one resource answering `GET /`. Read whichever matches your runtime, and the differences between them stop being mysterious.
+
+<Cards num={2}>
+  <Cards.Card title="Run a Basic Deno App" href="/recipes/run-a-basic-deno-app" arrow />
+  <Cards.Card
+    title="Run a Basic Node App (TypeScript)"
+    href="/recipes/run-a-basic-node-app-typescript"
+    arrow
+  />
+  <Cards.Card
+    title="Run a Basic Node App (ESM)"
+    href="/recipes/run-a-basic-node-app-esm"
+    arrow
+  />
+  <Cards.Card
+    title="Run a Basic Node App (CommonJS)"
+    href="/recipes/run-a-basic-node-app-cjs"
+    arrow
+  />
+  <Cards.Card title="Run a Basic Bun App" href="/recipes/run-a-basic-bun-app" arrow />
+  <Cards.Card
+    title="Run a Basic Cloudflare Workers App"
+    href="/recipes/run-a-basic-cloudflare-workers-app"
+    arrow
+  />
+  <Cards.Card
+    title="Deploy a Basic App to Vercel (api/)"
+    href="/recipes/deploy-a-basic-app-to-vercel-api"
+    arrow
+  />
+  <Cards.Card
+    title="Deploy a Basic App to Vercel (server.ts)"
+    href="/recipes/deploy-a-basic-app-to-vercel-server"
+    arrow
+  />
+</Cards>
+
+## Going Further
+
+<Cards num={2}>
   <Cards.Card title="Calling Claude" href="/recipes/calling-claude" arrow />
 </Cards>
+
+## What Changes Between Runtimes
+
+The resource and the application are identical in every one of the basic recipes. What differs is the entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill) &mdash; and how your runtime hands you a request.
+
+| | Entry point | What the resource receives |
+| --- | --- | --- |
+| Bun | `http.polyfill.js` | Web `Request` |
+| Cloudflare Workers | `http.native.js` | Web `Request` |
+| Deno | `http.native.js` | Web `Request` |
+| Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
+| Vercel (`api/`) | `http.polyfill.js` | Web `Request` |
+| Vercel (`server.ts`) | `http.polyfill.js` | Context object you build |
+
+<Callout type="gray">
+  Every basic recipe catches `favicon` requests in its `.catch()`. Browsers
+  request `/favicon.ico` automatically, and no resource owns that path, so the
+  chain throws a `404` for it. That check keeps the noise out of the console; it
+  is not something your own app needs.
+</Callout>
 
 ## What Every Recipe Assumes
 
@@ -19,3 +80,7 @@ That is a different shape from the rest of the site. [Docs](/docs/getting-starte
 - You have read, or are willing to click through to, [Creating a Resource](/docs/resources/creating-a-resource).
 
 Nothing else. Each recipe names its own dependencies at the top and links out rather than repeating what another page already says.
+
+## Looking for a Walkthrough Instead?
+
+These pages show finished work. If you want the reasoning built up step by step, read the [step-by-step guide](/docs/getting-started/step-by-step-guide).

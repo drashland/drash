@@ -25,13 +25,9 @@ export default {
     title: "Docs",
     type: "page",
   },
-  examples: {
-    title: "Examples",
-    type: "page",
-  },
-  // Whole tasks, start to finish. Docs explains one feature at a time and
-  // Examples runs the same minimal app on each runtime; neither shape fits
-  // "here is the thing you were trying to build."
+  // Whole tasks, start to finish. Docs explains one feature at a time, which
+  // does not answer "here is the thing you were trying to build." Absorbed the
+  // old Examples section — each of those finished apps is now a recipe.
   recipes: {
     title: "Recipes",
     type: "page",

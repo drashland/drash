@@ -1,9 +1,11 @@
 ---
-title: JavaScript (ESM)
-description: Drash / Node / JavaScript (ESM) — a complete, runnable example.
+title: Run a Basic Node App (TypeScript)
+description: A complete, runnable Drash application on Node, in TypeScript.
 ---
 
-# Node / JavaScript (ESM)
+# Run a Basic Node App (TypeScript)
+
+A single resource answering `GET /`, served by `node:http`
 
 ## Steps
 
@@ -18,24 +20,30 @@ Install [Node](https://nodejs.org) (v20+).
 Install the dependencies in `package.json`.
 
 ```bash
-mkdir my-project
-npm init -y
-npm install @drashland/drash
+npm install
 ```
 
 ### Create the Following File
 
-```js filename="app.js"
+```ts filename="app.ts"
 import {
   Application,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
-import { createServer } from "node:http";
+import type { RequestMethod } from "@drashland/drash/core/Types.js";
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
+
+type NodeContext = {             // The shape you hand the application.
+  url: string;
+  method: RequestMethod;
+  request: IncomingMessage;
+  response: ServerResponse;
+};
 
 class Home extends Resource {    // Create a resource.
-  paths = ["/"];                 // Tell it which path(s) it answers to.
+  public paths = ["/"];          // Tell it which path(s) it answers to.
 
-  GET(context) {                 // Node hands you the context object, not a Request.
+  GET(context: NodeContext) {    // Node hands you the context object.
     console.log(`Received request: ${context.request.url}`);
     context.response.end(        // Write straight to Node's ServerResponse.
       `Oh so easy (written at ${new Date()})`,
@@ -85,6 +93,8 @@ server.listen(port, hostname, () => {
 });
 ```
 
+`NodeContext` is the shape you hand the application. Declaring it is what makes `context.request` and `context.response` resolve inside the resource.
+
 ### Run the Drash App
 
 ```bash
@@ -111,4 +121,4 @@ Resources only recognize absolute URLs. Node's `request.url` returns only a path
 
 Node uses the __polyfill__ entry point, and its `node:http` server does not give you a Web `Request` &mdash; so the resource receives a __context object__ that you build. The chain only requires a readable `url` and `method`; everything else on it is yours.
 
-This example is in the repository at [`examples/node-js-esm`](https://github.com/drashland/drash/tree/main/examples/node-js-esm).
+The finished app is in the repository at [`examples/node-ts`](https://github.com/drashland/drash/tree/main/examples/node-ts).
