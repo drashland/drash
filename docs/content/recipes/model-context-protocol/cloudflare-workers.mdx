@@ -1,0 +1,225 @@
+---
+title: Create an MCP Server on Cloudflare Workers
+description: A complete, runnable MCP server on Cloudflare Workers, deployed with Wrangler.
+---
+
+# Create an MCP Server on Cloudflare Workers
+
+A Drash resource speaking Model Context Protocol, running on the edge
+
+<Callout type="info">
+This is the Cloudflare Workers build of [Create an MCP Server](/recipes/model-context-protocol). That page explains how the application works &mdash; the resource, what it publishes, the origin guard, the error mapping &mdash; and does not repeat itself here.
+</Callout>
+
+## Steps
+
+<Steps>
+
+### Install the Dependencies
+
+```bash
+npm install @drashland/drash @modelcontextprotocol/server zod
+```
+
+
+### Create the Following File
+
+```ts filename="worker.ts"
+import {
+  Application,
+  HTTPError,
+  Middleware,
+  Resource,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+import {
+  createMcpHandler,
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/server";
+import * as z from "zod/v4";
+
+const ALLOWED_ORIGINS = ["https://app.example.com"];
+
+// Per-isolate and not durable. See the note on state further down — on Workers
+// this one really does need replacing.
+const NOTES = new Map<string, string>([
+  ["welcome", "Drash is a microframework for building HTTP systems."],
+]);
+
+// The SDK builds a fresh server per request, which is why this is a factory.
+const handler = createMcpHandler(() => {
+  const server = new McpServer({ name: "drash-notes", version: "1.0.0" });
+
+  server.registerTool(
+    "save_note",
+    {
+      description: "Save a note under a title",
+      inputSchema: z.object({
+        title: z.string().describe("The title to file the note under"),
+        body: z.string().describe("The note itself"),
+      }),
+    },
+    ({ title, body }) => {
+      if (!title.trim()) {
+        return {                   // A tool failure is a *result*, not an error
+          content: [{ type: "text", text: "Title cannot be empty." }],
+          isError: true,           // so the model can read it and try again.
+        };
+      }
+
+      NOTES.set(title, body);
+
+      return { content: [{ type: "text", text: `Saved "${title}".` }] };
+    },
+  );
+
+  server.registerResource(
+    "note",
+    new ResourceTemplate("notes://{title}", { list: undefined }),
+    { title: "Note", description: "One saved note", mimeType: "text/plain" },
+    (uri, { title }) => ({
+      contents: [{ uri: uri.href, text: NOTES.get(String(title)) ?? "" }],
+    }),
+  );
+
+  server.registerPrompt(
+    "summarize_note",
+    {
+      description: "Ask a model to summarize a saved note",
+      argsSchema: z.object({ title: z.string() }),
+    },
+    ({ title }) => ({
+      messages: [{
+        role: "user" as const,
+        content: {
+          type: "text" as const,
+          text: `Summarize this note:\n\n${NOTES.get(title) ?? ""}`,
+        },
+      }],
+    }),
+  );
+
+  return server;
+});
+
+// The spec requires a 403 when `Origin` is present and not allowed. Without
+// this, a page on any origin could drive your deployed server.
+class OriginGuard extends Middleware {
+  public ALL(request: Request) {
+    const origin = request.headers.get("origin");
+
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      throw new HTTPError(Status.Forbidden, "Origin not allowed");
+    }
+
+    return this.next<Response>(request);
+  }
+}
+
+class MCPEndpoint extends Resource {
+  public paths = ["/mcp"];
+
+  // Every MCP message arrives here.
+  public POST(request: Request) {
+    return handler.fetch(request);
+  }
+
+  // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
+  // `501` for a method you did not define, and the spec asks for `405`.
+  public GET(request: Request) {
+    return handler.fetch(request);
+  }
+
+  public DELETE(request: Request) {
+    return handler.fetch(request);
+  }
+}
+
+const group = ResourceGroup
+  .builder()
+  .resources(MCPEndpoint)
+  .middleware(OriginGuard)
+  .build();
+
+const app = Application.builder().resources(group).build();
+
+export default {
+  fetch(request: Request): Promise<Response> {
+    return app
+      .handle<Response>(request)
+      .catch(mcpErrorResponse);
+  },
+};
+
+// The chain threw before the SDK could answer, so there is no JSON-RPC
+// response yet. Write one, because that is what the client can parse.
+function mcpErrorResponse(error: unknown): Response {
+  const status = error instanceof HTTPError
+    ? error.status_code
+    : Status.InternalServerError.code;
+  const message = error instanceof HTTPError
+    ? error.message
+    : "Internal Server Error";
+
+  return new Response(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message },
+      id: null,
+    }),
+    { status, headers: { "content-type": "application/json" } },
+  );
+}
+```
+
+### Create the Wrangler Config
+
+The SDK reaches for a few Node built-ins, so the Worker needs `nodejs_compat` turned on. Without that flag the bundle fails to start.
+
+```toml filename="wrangler.toml"
+name = "drash-mcp"
+main = "worker.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+```
+
+### Run the Application
+
+```bash
+npx wrangler dev
+```
+
+Wrangler serves on `http://localhost:8787` unless you pass `--port`.
+
+### Confirm It Answers
+
+```bash
+curl -X POST http://localhost:8787/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: tools/list" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}'
+```
+
+The server answers with the one tool it publishes:
+
+```json
+{"result":{"tools":[{"name":"save_note","description":"Save a note under a title","inputSchema":{"type":"object","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"title":{"type":"string","description":"The title to file the note under"},"body":{"type":"string","description":"The note itself"}},"required":["title","body"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"drash-notes","version":"1.0.0"}}},"jsonrpc":"2.0","id":1}
+```
+
+That is the smoke test. The [Overview](/recipes/model-context-protocol#verification) has the full table &mdash; tool calls, resource reads, prompt fetches, and every error the server can return.
+
+</Steps>
+
+## Notes
+
+Workers provide a global `URLPattern`, so this uses the __native__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). A Worker's `fetch` export takes a Web `Request` and returns a `Response`, which is exactly what the chain takes and returns, so the request goes straight through.
+
+__`NOTES` is the one thing you must replace before deploying this.__ A module-level `Map` lives in a single isolate. Cloudflare starts isolates, stops them, and runs many at once, so a note saved by one request may be invisible to the next &mdash; and the protocol gives you no session to pin a caller to one isolate. Move it to [Workers KV](https://developers.cloudflare.com/kv/), D1, or a Durable Object; see [A Note on State](/recipes/model-context-protocol#a-note-on-state).
+
+`ALLOWED_ORIGINS` is a constant here for readability. A deployed Worker has no startup-time access to secrets, so anything sensitive &mdash; an auth token for the guard, an upstream API key &mdash; arrives through the `env` argument of `fetch` instead, and has to be threaded to wherever it is needed.
+
+Deploy with `npx wrangler deploy` when the local run looks right.

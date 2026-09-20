@@ -1,6 +1,6 @@
 ---
 title: Recipes
-description: Whole tasks built with Drash, start to finish.
+description: Whole tasks built with Drash, start to finish, for Deno, Node, Bun, Cloudflare Workers, and Vercel.
 ---
 
 # Recipes
@@ -9,49 +9,65 @@ A recipe is one finished job. It states what you are building, shows the complet
 
 That is a different shape from [Docs](/docs/getting-started), which explains one feature at a time &mdash; what a resource is, how params are read, where errors go. Those pages answer "how does this work." These answer "I want to build X, show me the whole thing."
 
-## Start Here
+## Pick Your Runtime
 
-The first eight are the same application on different runtimes: one resource answering `GET /`. Read whichever matches your runtime, and the differences between them stop being mysterious.
+Each runtime is a section in the sidebar, and each page under it is one complete, runnable application for that runtime. Nothing is shared between them at runtime, so read only the one you need.
+
+Start with the basic app. It is the same application on every runtime &mdash; one resource answering `GET /` &mdash; so reading the one that matches your setup makes the differences between the others stop being mysterious.
 
 <Cards num={2}>
-  <Cards.Card title="Run a Basic Deno App" href="/recipes/run-a-basic-deno-app" arrow />
+  <Cards.Card title="Bun / Basic App" href="/recipes/bun/basic-app" arrow />
   <Cards.Card
-    title="Run a Basic Node App (TypeScript)"
-    href="/recipes/run-a-basic-node-app-typescript"
+    title="Cloudflare Workers / Basic App"
+    href="/recipes/cloudflare-workers/basic-app"
+    arrow
+  />
+  <Cards.Card title="Deno / Basic App" href="/recipes/deno/basic-app" arrow />
+  <Cards.Card
+    title="Node / Basic App (TypeScript)"
+    href="/recipes/node/basic-app-typescript"
     arrow
   />
   <Cards.Card
-    title="Run a Basic Node App (ESM)"
-    href="/recipes/run-a-basic-node-app-esm"
+    title="Node / Basic App (ESM)"
+    href="/recipes/node/basic-app-esm"
     arrow
   />
   <Cards.Card
-    title="Run a Basic Node App (CommonJS)"
-    href="/recipes/run-a-basic-node-app-cjs"
+    title="Node / Basic App (CommonJS)"
+    href="/recipes/node/basic-app-cjs"
     arrow
   />
-  <Cards.Card title="Run a Basic Bun App" href="/recipes/run-a-basic-bun-app" arrow />
-  <Cards.Card
-    title="Run a Basic Cloudflare Workers App"
-    href="/recipes/run-a-basic-cloudflare-workers-app"
-    arrow
-  />
-  <Cards.Card
-    title="Deploy a Basic App to Vercel (api/)"
-    href="/recipes/deploy-a-basic-app-to-vercel-api"
-    arrow
-  />
-  <Cards.Card
-    title="Deploy a Basic App to Vercel (server.ts)"
-    href="/recipes/deploy-a-basic-app-to-vercel-server"
-    arrow
-  />
+  <Cards.Card title="Vercel / api/ (fetch)" href="/recipes/vercel/api" arrow />
+  <Cards.Card title="Vercel / server.ts" href="/recipes/vercel/server" arrow />
 </Cards>
 
-## Going Further
+## Model Context Protocol (MCP)
+
+One resource that speaks [Model Context Protocol](https://modelcontextprotocol.io), publishing a tool, a resource, and a prompt to any MCP client. The overview explains how the application works; each runtime page is the whole file for that runtime.
+
+The runtime sections above also list an __MCP Server__ entry, and it points at these same pages.
 
 <Cards num={2}>
-  <Cards.Card title="Calling Claude" href="/recipes/calling-claude" arrow />
+  <Cards.Card title="Overview" href="/recipes/model-context-protocol" arrow />
+  <Cards.Card title="Bun" href="/recipes/model-context-protocol/bun" arrow />
+  <Cards.Card
+    title="Cloudflare Workers"
+    href="/recipes/model-context-protocol/cloudflare-workers"
+    arrow
+  />
+  <Cards.Card title="Deno" href="/recipes/model-context-protocol/deno" arrow />
+  <Cards.Card title="Node" href="/recipes/model-context-protocol/node" arrow />
+</Cards>
+
+## AI
+
+The other side of that relationship: your application calling a model, rather than a model calling your application. Each page builds the same two endpoints &mdash; one that answers all at once, one that streams &mdash; against a different provider, on all four runtimes.
+
+<Cards num={2}>
+  <Cards.Card title="Claude" href="/recipes/ai/claude" arrow />
+  <Cards.Card title="OpenAI" href="/recipes/ai/openai" arrow />
+  <Cards.Card title="Perplexity" href="/recipes/ai/perplexity" arrow />
 </Cards>
 
 ## What Changes Between Runtimes

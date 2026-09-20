@@ -1,11 +1,11 @@
 ---
-title: Run a Basic Node App (CommonJS)
-description: A complete, runnable Drash application on Node, in JavaScript with CommonJS.
+title: Create a Basic Node App (ESM)
+description: A complete, runnable Drash application on Node, in JavaScript with ES modules.
 ---
 
-# Run a Basic Node App (CommonJS)
+# Create a Basic Node App (ESM)
 
-A single resource answering `GET /`, written with `require()`
+A single resource answering `GET /`, written with `import`
 
 ## Steps
 
@@ -28,11 +28,11 @@ npm install @drashland/drash
 ### Create the Following File
 
 ```js filename="app.js"
-const {
+import {
   Application,
   Resource,
-} = require("@drashland/drash/modules/http.polyfill");
-const { createServer } = require("node:http");
+} from "@drashland/drash/modules/http.polyfill.js";
+import { createServer } from "node:http";
 
 class Home extends Resource {    // Create a resource.
   paths = ["/"];                 // Tell it which path(s) it answers to.
@@ -56,8 +56,8 @@ const port = 1447;
 const server = createServer((request, response) => {
   // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not
   // a Web `Request`. Drash does not convert them for you — you hand the application
-  // a context object carrying whatever your resources need. The app's request
-  // chain only requires `url` and `method`.
+  // a context object carrying whatever your resources need. The chain itself
+  // only requires `url` and `method`.
   const context = {
     url: `http://${hostname}:${port}${request.url}`,
     method: request.method,
@@ -87,8 +87,6 @@ server.listen(port, hostname, () => {
 });
 ```
 
-The only differences from the [ESM recipe](/recipes/run-a-basic-node-app-esm) are the `require()` calls, and that the polyfill specifier drops its `.js` extension.
-
 ### Run the Drash App
 
 ```bash
@@ -113,6 +111,6 @@ Resources only recognize absolute URLs. Node's `request.url` returns only a path
 
 `/users/1` --> `http://localhost:1447/users/1`
 
-Node uses the __polyfill__ entry point, and its `node:http` server does not give you a Web `Request` &mdash; so the resource receives a __context object__ that you build. The app's request chain only requires a readable `url` and `method`; everything else on it is yours.
+Node uses the __polyfill__ entry point, and its `node:http` server does not give you a Web `Request` &mdash; so the resource receives a __context object__ that you build. The chain only requires a readable `url` and `method`; everything else on it is yours.
 
-The finished app is in the repository at [`examples/node-js-cjs`](https://github.com/drashland/drash/tree/main/examples/node-js-cjs).
+The finished app is in the repository at [`examples/node-js-esm`](https://github.com/drashland/drash/tree/main/examples/node-js-esm).

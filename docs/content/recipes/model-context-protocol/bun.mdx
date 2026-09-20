@@ -1,0 +1,213 @@
+---
+title: Create an MCP Server on Bun
+description: A complete, runnable MCP server on Bun, served by Bun.serve.
+---
+
+# Create an MCP Server on Bun
+
+A Drash resource speaking Model Context Protocol, served by `Bun.serve`
+
+<Callout type="info">
+This is the Bun build of [Create an MCP Server](/recipes/model-context-protocol). That page explains how the application works &mdash; the resource, what it publishes, the origin guard, the error mapping &mdash; and does not repeat itself here.
+</Callout>
+
+## Steps
+
+<Steps>
+
+### Install the Dependencies
+
+```bash
+bun add @drashland/drash @modelcontextprotocol/server zod
+```
+
+
+### Create the Following File
+
+```ts filename="app.ts"
+import {
+  Application,
+  HTTPError,
+  Middleware,
+  Resource,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+import {
+  createMcpHandler,
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/server";
+import * as z from "zod/v4";
+
+const ALLOWED_ORIGINS = ["https://app.example.com"];
+
+// Stands in for a database. See the note on state further down.
+const NOTES = new Map<string, string>([
+  ["welcome", "Drash is a microframework for building HTTP systems."],
+]);
+
+// The SDK builds a fresh server per request, which is why this is a factory.
+const handler = createMcpHandler(() => {
+  const server = new McpServer({ name: "drash-notes", version: "1.0.0" });
+
+  server.registerTool(
+    "save_note",
+    {
+      description: "Save a note under a title",
+      inputSchema: z.object({
+        title: z.string().describe("The title to file the note under"),
+        body: z.string().describe("The note itself"),
+      }),
+    },
+    ({ title, body }) => {
+      if (!title.trim()) {
+        return {                   // A tool failure is a *result*, not an error
+          content: [{ type: "text", text: "Title cannot be empty." }],
+          isError: true,           // so the model can read it and try again.
+        };
+      }
+
+      NOTES.set(title, body);
+
+      return { content: [{ type: "text", text: `Saved "${title}".` }] };
+    },
+  );
+
+  server.registerResource(
+    "note",
+    new ResourceTemplate("notes://{title}", { list: undefined }),
+    { title: "Note", description: "One saved note", mimeType: "text/plain" },
+    (uri, { title }) => ({
+      contents: [{ uri: uri.href, text: NOTES.get(String(title)) ?? "" }],
+    }),
+  );
+
+  server.registerPrompt(
+    "summarize_note",
+    {
+      description: "Ask a model to summarize a saved note",
+      argsSchema: z.object({ title: z.string() }),
+    },
+    ({ title }) => ({
+      messages: [{
+        role: "user" as const,
+        content: {
+          type: "text" as const,
+          text: `Summarize this note:\n\n${NOTES.get(title) ?? ""}`,
+        },
+      }],
+    }),
+  );
+
+  return server;
+});
+
+// The spec requires a 403 when `Origin` is present and not allowed. Without
+// this, a page on any origin could drive a server running on localhost.
+class OriginGuard extends Middleware {
+  public ALL(request: Request) {
+    const origin = request.headers.get("origin");
+
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      throw new HTTPError(Status.Forbidden, "Origin not allowed");
+    }
+
+    return this.next<Response>(request);
+  }
+}
+
+class MCPEndpoint extends Resource {
+  public paths = ["/mcp"];
+
+  // Every MCP message arrives here.
+  public POST(request: Request) {
+    return handler.fetch(request);
+  }
+
+  // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
+  // `501` for a method you did not define, and the spec asks for `405`.
+  public GET(request: Request) {
+    return handler.fetch(request);
+  }
+
+  public DELETE(request: Request) {
+    return handler.fetch(request);
+  }
+}
+
+const group = ResourceGroup
+  .builder()
+  .resources(MCPEndpoint)
+  .middleware(OriginGuard)
+  .build();
+
+const app = Application.builder().resources(group).build();
+
+Bun.serve({
+  hostname: "127.0.0.1",
+  port: 1447,
+  fetch: (request: Request): Promise<Response> => {
+    return app
+      .handle<Response>(request)
+      .catch(mcpErrorResponse);
+  },
+});
+
+// The chain threw before the SDK could answer, so there is no JSON-RPC
+// response yet. Write one, because that is what the client can parse.
+function mcpErrorResponse(error: unknown): Response {
+  const status = error instanceof HTTPError
+    ? error.status_code
+    : Status.InternalServerError.code;
+  const message = error instanceof HTTPError
+    ? error.message
+    : "Internal Server Error";
+
+  return new Response(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message },
+      id: null,
+    }),
+    { status, headers: { "content-type": "application/json" } },
+  );
+}
+
+console.log("\nDrash MCP server at http://127.0.0.1:1447/mcp");
+```
+
+### Run the Application
+
+```bash
+bun run app.ts
+```
+
+### Confirm It Answers
+
+```bash
+curl -X POST http://localhost:1447/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: tools/list" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}'
+```
+
+The server answers with the one tool it publishes:
+
+```json
+{"result":{"tools":[{"name":"save_note","description":"Save a note under a title","inputSchema":{"type":"object","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"title":{"type":"string","description":"The title to file the note under"},"body":{"type":"string","description":"The note itself"}},"required":["title","body"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"drash-notes","version":"1.0.0"}}},"jsonrpc":"2.0","id":1}
+```
+
+That is the smoke test. The [Overview](/recipes/model-context-protocol#verification) has the full table &mdash; tool calls, resource reads, prompt fetches, and every error the server can return.
+
+</Steps>
+
+## Notes
+
+Bun has no global `URLPattern`, so this imports the __polyfill__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). That is the only Drash-level difference from the [Deno build](/recipes/model-context-protocol/deno); everything else on this page is identical to it, line for line.
+
+What Bun does hand you is a Web `Request`, which is what the SDK handler takes. So `handler.fetch(request)` is the entire bridge, and the resource never touches the body.
+
+`Bun.serve` wants a `fetch` function rather than a `handler` one, and it starts listening as the call returns &mdash; there is no `onListen` callback, which is why the log line sits after it.

@@ -1,15 +1,15 @@
 ---
-title: Calling Claude
-description: Two HTTP endpoints backed by the Claude API — one that answers all at once, one that streams.
+title: Calling OpenAI
+description: Two HTTP endpoints backed by the OpenAI API — one that answers all at once, one that streams.
 ---
 
-# Calling Claude
+# Calling OpenAI
 
-Two endpoints backed by the Claude API &mdash; one that answers all at once, one that streams
+Two endpoints backed by the OpenAI API &mdash; one that answers all at once, one that streams
 
 ## Overview
 
-A __resource__ is a class with HTTP methods on it. It declares the paths it answers to, and Drash calls the method matching the request. Nothing about that changes when the method has to talk to an API: the call to Claude is an ordinary `await` inside `POST`.
+A __resource__ is a class with HTTP methods on it. It declares the paths it answers to, and Drash calls the method matching the request. Nothing about that changes when the method has to talk to an API: the call to OpenAI is an ordinary `await` inside `POST`.
 
 What does need thought is the shape of the answer. A model generates its reply a piece at a time, and a request that waits for the whole thing can sit for a minute before anything reaches the browser. So this recipe builds both:
 
@@ -19,6 +19,10 @@ What does need thought is the shape of the answer. A model generates its reply a
 | `POST /chat/stream` | A [server-sent event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) per piece, as the model produces it |
 
 Drash never writes a response for you. Your resource returns whatever your runtime wants back &mdash; a Web `Response` on Deno, Bun, and Cloudflare Workers; a written-to `ServerResponse` on Node &mdash; and Drash hands that value back to you untouched. That is what makes a streamed body a non-event for the framework and the reason the Node tab below looks different from the other three.
+
+<Callout type="info">
+__This recipe uses Chat Completions, not the Responses API.__ OpenAI offers both. Chat Completions is the one a dozen other providers implement, so the code here is also the code that talks to anything OpenAI-compatible &mdash; the [Perplexity recipe](/recipes/ai/perplexity) is this file with a `baseURL` added. If you are only ever calling OpenAI and want its newer surface, `client.responses.create()` takes `input` instead of `messages` and returns `output_text`; everything this page says about resources, streaming, and errors applies unchanged.
+</Callout>
 
 ### Recommended Reading
 
@@ -38,7 +42,7 @@ To gain familiarity with:
 
 ## Prerequisites
 
-You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [Anthropic API key](https://console.anthropic.com/settings/keys).
+You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [OpenAI API key](https://platform.openai.com/api-keys).
 
 <CodeTabs
   items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
@@ -46,8 +50,8 @@ You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one 
 <CodeTab>
 
 ```bash
-npm install @drashland/drash @anthropic-ai/sdk
-export ANTHROPIC_API_KEY="sk-ant-..."
+npm install @drashland/drash openai
+export OPENAI_API_KEY="sk-..."
 ```
 
 </CodeTab>
@@ -55,31 +59,27 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 
 ```bash
 # No install step. Deno resolves both imports on first run.
-export ANTHROPIC_API_KEY="sk-ant-..."
+export OPENAI_API_KEY="sk-..."
 ```
 
 </CodeTab>
 <CodeTab>
 
 ```bash
-bun add @drashland/drash @anthropic-ai/sdk
-export ANTHROPIC_API_KEY="sk-ant-..."
+bun add @drashland/drash openai
+export OPENAI_API_KEY="sk-..."
 ```
 
 </CodeTab>
 <CodeTab>
 
 ```bash
-npm install @drashland/drash @anthropic-ai/sdk
-npx wrangler secret put ANTHROPIC_API_KEY   # Prompts for the value.
+npm install @drashland/drash openai
+npx wrangler secret put OPENAI_API_KEY
 ```
 
 </CodeTab>
 </CodeTabs>
-
-<Callout type="warning">
-__Keep the key on the server.__ Every line below runs in your application, never in a browser. An Anthropic key in client-side code is readable by anyone who opens devtools, and it bills to you.
-</Callout>
 
 ## The Whole Application
 
@@ -92,7 +92,7 @@ One file. Pick your runtime, save it, and the rest of this page takes it apart.
 <CodeTab>
 
 ```ts
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import {
   Application,
   HTTPError,
@@ -100,7 +100,8 @@ import {
 } from "@drashland/drash/modules/http.polyfill.js";
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 import type { RequestMethod } from "@drashland/drash/core/Types.js";
-import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { createServer } from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
 // Node has no `URLPattern` and no `Request`, so the chain gets a context object
 // you build. It requires `url` and `method`; everything else on it is yours.
@@ -111,10 +112,10 @@ type Context = {
   response: ServerResponse;
 };
 
-const MODEL = "claude-opus-5";
-
-const client = new Anthropic({                         // Reads the key once, at
-  apiKey: process.env.ANTHROPIC_API_KEY,               // startup.
+const MODEL = "gpt-5";                                 // Any chat model. See
+                                                       // platform.openai.com/docs/models.
+const client = new OpenAI({                            // Reads the key once, at
+  apiKey: process.env.OPENAI_API_KEY,                  // startup.
 });
 
 // `IncomingMessage` is a stream, so the body has to be collected before it can
@@ -141,23 +142,23 @@ async function readPrompt(context: Context): Promise<string> {
   return body.prompt;
 }
 
-// Anthropic's failures are not your caller's failures. Restate each one as the
+// OpenAI's failures are not your caller's failures. Restate each one as the
 // status your caller should actually see. Order matters — the specific classes
 // come before `APIError`, which is their shared parent.
-function anthropicErrorToHTTPError(error: unknown): unknown {
-  if (error instanceof Anthropic.AuthenticationError) {
+function openAIErrorToHTTPError(error: unknown): unknown {
+  if (error instanceof OpenAI.AuthenticationError) {
     return new HTTPError(Status.InternalServerError);  // Your key is wrong.
   }
 
-  if (error instanceof Anthropic.RateLimitError) {
+  if (error instanceof OpenAI.RateLimitError) {
     return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
   }
 
-  if (error instanceof Anthropic.BadRequestError) {
+  if (error instanceof OpenAI.BadRequestError) {
     return new HTTPError(Status.BadRequest);           // Usually the prompt.
   }
 
-  if (error instanceof Anthropic.APIError) {
+  if (error instanceof OpenAI.APIError) {
     return new HTTPError(Status.BadGateway);           // Upstream is down.
   }
 
@@ -170,22 +171,18 @@ class Chat extends Resource {                          // Answers with the whole
   public async POST(context: Context) {
     const prompt = await readPrompt(context);
 
-    let message;
+    let completion;
 
     try {
-      message = await client.messages.create({
+      completion = await client.chat.completions.create({
         model: MODEL,
-        max_tokens: 16000,
         messages: [{ role: "user", content: prompt }],
       });
     } catch (error) {
-      throw anthropicErrorToHTTPError(error);
+      throw openAIErrorToHTTPError(error);
     }
 
-    const text = message.content                       // `content` holds blocks of
-      .filter((block) => block.type === "text")        // several types. Keep the text
-      .map((block) => block.text)                      // ones before reading `.text`.
-      .join("");
+    const text = completion.choices[0]?.message.content ?? "";
 
     context.response.setHeader("content-type", "application/json");
     context.response.end(JSON.stringify({ text }));
@@ -200,6 +197,18 @@ class ChatStream extends Resource {                    // Answers a piece at a t
   public async POST(context: Context) {
     const prompt = await readPrompt(context);          // Throws before anything is
                                                        // written — that matters.
+    let stream;
+
+    try {
+      stream = await client.chat.completions.create({  // Awaited, so a rejected key
+        model: MODEL,                                  // still throws while there is
+        messages: [{ role: "user", content: prompt }], // a status code left to send.
+        stream: true,
+      });
+    } catch (error) {
+      throw openAIErrorToHTTPError(error);
+    }
+
     context.response.writeHead(200, {                  // Status and headers go out
       "content-type": "text/event-stream",             // now. Nothing after this line
       "cache-control": "no-store",                     // can change them.
@@ -207,20 +216,11 @@ class ChatStream extends Resource {                    // Answers a piece at a t
     });
 
     try {
-      const stream = client.messages.stream({
-        model: MODEL,
-        max_tokens: 64000,
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      for await (const event of stream) {
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
-          context.response.write(
-            `data: ${JSON.stringify({ text: event.delta.text })}\n\n`,
-          );
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta.content;  // Empty on the first and last
+                                                       // chunks. Skip those.
+        if (text) {
+          context.response.write(`data: ${JSON.stringify({ text })}\n\n`);
         }
       }
 
@@ -280,7 +280,7 @@ server.listen(port, hostname, () => {
 <CodeTab>
 
 ```ts
-import Anthropic from "npm:@anthropic-ai/sdk";
+import OpenAI from "npm:openai";
 import {
   Application,
   HTTPError,
@@ -288,10 +288,10 @@ import {
 } from "jsr:@drashland/drash/modules/http.native";
 import { Status } from "jsr:@drashland/drash/core/http/response/Status";
 
-const MODEL = "claude-opus-5";
-
-const client = new Anthropic({                         // `--allow-env` is what lets
-  apiKey: Deno.env.get("ANTHROPIC_API_KEY"),           // this read the key.
+const MODEL = "gpt-5";                                 // Any chat model. See
+                                                       // platform.openai.com/docs/models.
+const client = new OpenAI({                            // `--allow-env` is what lets
+  apiKey: Deno.env.get("OPENAI_API_KEY"),              // this read the key.
 });
 
 // Both resources start here. A `Request` parses its own body, so this is
@@ -313,23 +313,23 @@ async function readPrompt(request: Request): Promise<string> {
   return body.prompt;
 }
 
-// Anthropic's failures are not your caller's failures. Restate each one as the
+// OpenAI's failures are not your caller's failures. Restate each one as the
 // status your caller should actually see. Order matters — the specific classes
 // come before `APIError`, which is their shared parent.
-function anthropicErrorToHTTPError(error: unknown): unknown {
-  if (error instanceof Anthropic.AuthenticationError) {
+function openAIErrorToHTTPError(error: unknown): unknown {
+  if (error instanceof OpenAI.AuthenticationError) {
     return new HTTPError(Status.InternalServerError);  // Your key is wrong.
   }
 
-  if (error instanceof Anthropic.RateLimitError) {
+  if (error instanceof OpenAI.RateLimitError) {
     return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
   }
 
-  if (error instanceof Anthropic.BadRequestError) {
+  if (error instanceof OpenAI.BadRequestError) {
     return new HTTPError(Status.BadRequest);           // Usually the prompt.
   }
 
-  if (error instanceof Anthropic.APIError) {
+  if (error instanceof OpenAI.APIError) {
     return new HTTPError(Status.BadGateway);           // Upstream is down.
   }
 
@@ -342,22 +342,18 @@ class Chat extends Resource {                          // Answers with the whole
   public async POST(request: Request) {
     const prompt = await readPrompt(request);
 
-    let message;
+    let completion;
 
     try {
-      message = await client.messages.create({
+      completion = await client.chat.completions.create({
         model: MODEL,
-        max_tokens: 16000,
         messages: [{ role: "user", content: prompt }],
       });
     } catch (error) {
-      throw anthropicErrorToHTTPError(error);
+      throw openAIErrorToHTTPError(error);
     }
 
-    const text = message.content                       // `content` holds blocks of
-      .filter((block) => block.type === "text")        // several types. Keep the text
-      .map((block) => block.text)                      // ones before reading `.text`.
-      .join("");
+    const text = completion.choices[0]?.message.content ?? "";
 
     return Response.json({ text });                    // Whatever you return is what
   }                                                    // `app.handle()` resolves with.
@@ -369,11 +365,17 @@ class ChatStream extends Resource {                    // Answers a piece at a t
   public async POST(request: Request) {
     const prompt = await readPrompt(request);          // Throws before the `Response`
                                                        // exists — that matters.
-    const stream = client.messages.stream({
-      model: MODEL,
-      max_tokens: 64000,
-      messages: [{ role: "user", content: prompt }],
-    });
+    let stream;
+
+    try {
+      stream = await client.chat.completions.create({  // Awaited, so a rejected key
+        model: MODEL,                                  // still throws while there is
+        messages: [{ role: "user", content: prompt }], // a status code left to send.
+        stream: true,
+      });
+    } catch (error) {
+      throw openAIErrorToHTTPError(error);
+    }
 
     const encoder = new TextEncoder();
 
@@ -383,12 +385,11 @@ class ChatStream extends Resource {                    // Answers a piece at a t
           controller.enqueue(encoder.encode(frame));
 
         try {
-          for await (const event of stream) {
-            if (
-              event.type === "content_block_delta" &&
-              event.delta.type === "text_delta"
-            ) {
-              send(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta.content;
+
+            if (text) {
+              send(`data: ${JSON.stringify({ text })}\n\n`);
             }
           }
 
@@ -456,7 +457,7 @@ Deno.serve({
 <CodeTab>
 
 ```ts
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import {
   Application,
   HTTPError,
@@ -464,14 +465,15 @@ import {
 } from "@drashland/drash/modules/http.polyfill.js";
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 
-const MODEL = "claude-opus-5";
-
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const MODEL = "gpt-5";                                 // Any chat model. See
+                                                       // platform.openai.com/docs/models.
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Both resources start here. `Bun.serve` hands over a Web `Request`, which
-// parses its own body — so this is the same function the Deno tab uses.
+// Both resources start here. A `Request` parses its own body, so this is
+// shorter than the Node version — and it throws rather than returning an error,
+// which is how a resource reports anything the caller got wrong.
 async function readPrompt(request: Request): Promise<string> {
   let body: { prompt?: unknown };
 
@@ -488,23 +490,23 @@ async function readPrompt(request: Request): Promise<string> {
   return body.prompt;
 }
 
-// Anthropic's failures are not your caller's failures. Restate each one as the
+// OpenAI's failures are not your caller's failures. Restate each one as the
 // status your caller should actually see. Order matters — the specific classes
 // come before `APIError`, which is their shared parent.
-function anthropicErrorToHTTPError(error: unknown): unknown {
-  if (error instanceof Anthropic.AuthenticationError) {
+function openAIErrorToHTTPError(error: unknown): unknown {
+  if (error instanceof OpenAI.AuthenticationError) {
     return new HTTPError(Status.InternalServerError);  // Your key is wrong.
   }
 
-  if (error instanceof Anthropic.RateLimitError) {
+  if (error instanceof OpenAI.RateLimitError) {
     return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
   }
 
-  if (error instanceof Anthropic.BadRequestError) {
+  if (error instanceof OpenAI.BadRequestError) {
     return new HTTPError(Status.BadRequest);           // Usually the prompt.
   }
 
-  if (error instanceof Anthropic.APIError) {
+  if (error instanceof OpenAI.APIError) {
     return new HTTPError(Status.BadGateway);           // Upstream is down.
   }
 
@@ -517,22 +519,18 @@ class Chat extends Resource {                          // Answers with the whole
   public async POST(request: Request) {
     const prompt = await readPrompt(request);
 
-    let message;
+    let completion;
 
     try {
-      message = await client.messages.create({
+      completion = await client.chat.completions.create({
         model: MODEL,
-        max_tokens: 16000,
         messages: [{ role: "user", content: prompt }],
       });
     } catch (error) {
-      throw anthropicErrorToHTTPError(error);
+      throw openAIErrorToHTTPError(error);
     }
 
-    const text = message.content                       // `content` holds blocks of
-      .filter((block) => block.type === "text")        // several types. Keep the text
-      .map((block) => block.text)                      // ones before reading `.text`.
-      .join("");
+    const text = completion.choices[0]?.message.content ?? "";
 
     return Response.json({ text });
   }
@@ -544,11 +542,17 @@ class ChatStream extends Resource {                    // Answers a piece at a t
   public async POST(request: Request) {
     const prompt = await readPrompt(request);          // Throws before the `Response`
                                                        // exists — that matters.
-    const stream = client.messages.stream({
-      model: MODEL,
-      max_tokens: 64000,
-      messages: [{ role: "user", content: prompt }],
-    });
+    let stream;
+
+    try {
+      stream = await client.chat.completions.create({  // Awaited, so a rejected key
+        model: MODEL,                                  // still throws while there is
+        messages: [{ role: "user", content: prompt }], // a status code left to send.
+        stream: true,
+      });
+    } catch (error) {
+      throw openAIErrorToHTTPError(error);
+    }
 
     const encoder = new TextEncoder();
 
@@ -558,12 +562,11 @@ class ChatStream extends Resource {                    // Answers a piece at a t
           controller.enqueue(encoder.encode(frame));
 
         try {
-          for await (const event of stream) {
-            if (
-              event.type === "content_block_delta" &&
-              event.delta.type === "text_delta"
-            ) {
-              send(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta.content;
+
+            if (text) {
+              send(`data: ${JSON.stringify({ text })}\n\n`);
             }
           }
 
@@ -630,7 +633,7 @@ console.log(`\nDrash running at http://${hostname}:${port}`);
 <CodeTab>
 
 ```js
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import {
   Application,
   HTTPError,
@@ -638,7 +641,7 @@ import {
 } from "@drashland/drash/modules/http.native.js";
 import { Status } from "@drashland/drash/core/http/response/Status.js";
 
-const MODEL = "claude-opus-5";
+const MODEL = "gpt-5";
 
 // No module-scoped client here. A Worker's secrets arrive as an argument to
 // `fetch`, so there is nothing to read at startup — see "Getting the API Key to
@@ -662,23 +665,23 @@ async function readPrompt(request) {
   return body.prompt;
 }
 
-// Anthropic's failures are not your caller's failures. Restate each one as the
+// OpenAI's failures are not your caller's failures. Restate each one as the
 // status your caller should actually see. Order matters — the specific classes
 // come before `APIError`, which is their shared parent.
-function anthropicErrorToHTTPError(error) {
-  if (error instanceof Anthropic.AuthenticationError) {
+function openAIErrorToHTTPError(error) {
+  if (error instanceof OpenAI.AuthenticationError) {
     return new HTTPError(Status.InternalServerError);  // Your key is wrong.
   }
 
-  if (error instanceof Anthropic.RateLimitError) {
+  if (error instanceof OpenAI.RateLimitError) {
     return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
   }
 
-  if (error instanceof Anthropic.BadRequestError) {
+  if (error instanceof OpenAI.BadRequestError) {
     return new HTTPError(Status.BadRequest);           // Usually the prompt.
   }
 
-  if (error instanceof Anthropic.APIError) {
+  if (error instanceof OpenAI.APIError) {
     return new HTTPError(Status.BadGateway);           // Upstream is down.
   }
 
@@ -691,24 +694,20 @@ class Chat extends Resource {                          // Answers with the whole
   async POST(context) {                                // A context object, not a bare
     const prompt = await readPrompt(context.request);  // `Request` — it has to
                                                        // carry `env` too.
-    const client = new Anthropic({ apiKey: context.env.ANTHROPIC_API_KEY });
+    const client = new OpenAI({ apiKey: context.env.OPENAI_API_KEY });
 
-    let message;
+    let completion;
 
     try {
-      message = await client.messages.create({
+      completion = await client.chat.completions.create({
         model: MODEL,
-        max_tokens: 16000,
         messages: [{ role: "user", content: prompt }],
       });
     } catch (error) {
-      throw anthropicErrorToHTTPError(error);
+      throw openAIErrorToHTTPError(error);
     }
 
-    const text = message.content                       // `content` holds blocks of
-      .filter((block) => block.type === "text")        // several types. Keep the text
-      .map((block) => block.text)                      // ones before reading `.text`.
-      .join("");
+    const text = completion.choices[0]?.message.content ?? "";
 
     return Response.json({ text });
   }
@@ -720,13 +719,19 @@ class ChatStream extends Resource {                    // Answers a piece at a t
   async POST(context) {
     const prompt = await readPrompt(context.request);  // Throws before the
                                                        // `Response` exists.
-    const client = new Anthropic({ apiKey: context.env.ANTHROPIC_API_KEY });
+    const client = new OpenAI({ apiKey: context.env.OPENAI_API_KEY });
 
-    const stream = client.messages.stream({
-      model: MODEL,
-      max_tokens: 64000,
-      messages: [{ role: "user", content: prompt }],
-    });
+    let stream;
+
+    try {
+      stream = await client.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        stream: true,
+      });
+    } catch (error) {
+      throw openAIErrorToHTTPError(error);
+    }
 
     const encoder = new TextEncoder();
 
@@ -735,12 +740,11 @@ class ChatStream extends Resource {                    // Answers a piece at a t
         const send = (frame) => controller.enqueue(encoder.encode(frame));
 
         try {
-          for await (const event of stream) {
-            if (
-              event.type === "content_block_delta" &&
-              event.delta.type === "text_delta"
-            ) {
-              send(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta.content;
+
+            if (text) {
+              send(`data: ${JSON.stringify({ text })}\n\n`);
             }
           }
 
@@ -844,7 +848,7 @@ npx wrangler dev app.js
 </CodeTabs>
 
 <Callout type="gray">
-Deno asks for permission per capability. `--allow-net` is what lets the process reach `api.anthropic.com` and listen on a port; `--allow-env` is what lets it read `ANTHROPIC_API_KEY`. If the npm compatibility layer wants anything else, Deno stops and names the flag.
+Deno asks for permission per capability. `--allow-net` is what lets the process reach `api.openai.com` and listen on a port; `--allow-env` is what lets it read `OPENAI_API_KEY`. If the npm compatibility layer wants anything else, Deno stops and names the flag.
 </Callout>
 
 ## The Non-Streaming Endpoint
@@ -858,9 +862,8 @@ class Chat extends Resource {
   public async POST(request: Request) {
     const prompt = await readPrompt(request);
 
-    const message = await client.messages.create({
-      model: "claude-opus-5",
-      max_tokens: 16000,
+    const completion = await client.chat.completions.create({
+      model: MODEL,
       messages: [{ role: "user", content: prompt }],
     });
 
@@ -873,39 +876,35 @@ Three things are worth naming.
 
 __`paths` is the whole routing story.__ Drash matches `/chat` to this class and calls `POST` because the request's method is `POST`. There is no router to register with and no decorator; the array is the registration.
 
-__`content` is a list of blocks, not a string.__ A reply can contain reasoning blocks, tool calls, and text, so `message.content` is a mixed array. Filter to the text blocks before reading `.text`:
+__The reply is buried two levels down, and both are optional.__ A completion holds a list of `choices`, each with a `message`:
 
 ```ts
-const text = message.content
-  .filter((block) => block.type === "text")
-  .map((block) => block.text)
-  .join("");
+const text = completion.choices[0]?.message.content ?? "";
 ```
 
-In TypeScript that filter is also what narrows the type &mdash; `block.text` does not compile on the unfiltered union.
+The optional chaining is not defensive noise. `choices` is empty when the request was filtered, and `content` is `null` whenever the model answered with something other than text &mdash; a tool call, most often. Reading `.content` straight off `choices[0].message` compiles and then throws in production on the first refusal.
 
-__`max_tokens` is a ceiling, not a target.__ 16,000 is a reasonable default for a request that waits for the full reply: large enough that answers are not cut off mid-sentence, small enough that the request finishes inside the SDK's ten-minute timeout. A reply that hits the ceiling comes back with `stop_reason` set to `"max_tokens"` and no indication in the text itself, so check it if truncation would matter to you.
+__There is no required token ceiling.__ The model stops when it is finished. If you want a cap, the parameter is `max_completion_tokens`; the older `max_tokens` is rejected by newer models rather than ignored, which is the one migration detail worth knowing if you are porting existing code.
 
 ## The Streaming Endpoint
 
-`ChatStream` returns before the model has finished. The body is a `ReadableStream` that fills in as events arrive:
+`ChatStream` returns before the model has finished. The body is a `ReadableStream` that fills in as chunks arrive:
 
 ```ts
-const stream = client.messages.stream({
-  model: "claude-opus-5",
-  max_tokens: 64000,
+const stream = await client.chat.completions.create({
+  model: MODEL,
   messages: [{ role: "user", content: prompt }],
+  stream: true,
 });
 
 const body = new ReadableStream({
   async start(controller) {
-    for await (const event of stream) {
-      if (
-        event.type === "content_block_delta" &&
-        event.delta.type === "text_delta"
-      ) {
+    for await (const chunk of stream) {
+      const text = chunk.choices[0]?.delta.content;
+
+      if (text) {
         controller.enqueue(encoder.encode(
-          `data: ${JSON.stringify({ text: event.delta.text })}\n\n`,
+          `data: ${JSON.stringify({ text })}\n\n`,
         ));
       }
     }
@@ -919,9 +918,9 @@ return new Response(body, {
 });
 ```
 
-`max_tokens` goes up to 64,000 here because the constraint it was working around is gone. A streaming connection does not time out waiting for a complete response, so the model gets room.
+`stream: true` changes the return type from a completion to an async iterable of chunks. Each chunk carries a `delta` rather than a `message`, and the `if (text)` matters: the first chunk announces the role with no content, the last carries a `finish_reason` with no content, and a run of `null`s in the middle is normal. Without the guard you emit frames containing `null`.
 
-The stream carries several event types; `content_block_delta` with a `text_delta` is the one that holds generated text. Everything else &mdash; block starts and stops, message-level usage totals &mdash; is skipped by the `if`.
+Note the `await`. `client.chat.completions.create()` returns a promise even in streaming mode, and it does not resolve until the response headers are back &mdash; which means a bad key, a rate limit, or an unknown model throws __before__ your `Response` exists. That is a genuine difference from clients that hand you a stream object synchronously, and it is why the streaming endpoint here can still answer with a real status code for the most common failures.
 
 ### The Frame Format
 
@@ -939,18 +938,18 @@ data: {}
 The named `done` event exists because a closed connection and a finished reply look identical to the client otherwise.
 
 <Callout type="info">
-__Expect a pause before the first token.__ Claude Opus 5 thinks before it answers, and the thinking is not sent by default &mdash; the stream carries `thinking` blocks with empty text, then starts producing `text_delta` events. If you want to show the reader something during that gap, ask for a summary of the reasoning and forward it on its own event:
+__Expect a pause before the first token on a reasoning model.__ The GPT-5 family thinks before it answers, and the thinking is not streamed &mdash; the connection opens, nothing arrives for a while, then text comes quickly. To shorten the gap, pass a lower effort:
 
 ```ts
-client.messages.stream({
-  model: "claude-opus-5",
-  max_tokens: 64000,
-  thinking: { type: "adaptive", display: "summarized" },
+client.chat.completions.create({
+  model: MODEL,
+  reasoning_effort: "low",
   messages: [{ role: "user", content: prompt }],
+  stream: true,
 });
 ```
 
-The deltas then arrive as `thinking_delta` on the same `content_block_delta` event, alongside the `text_delta` ones.
+The trade is the obvious one: less thinking, faster first token, worse answers on anything hard.
 </Callout>
 
 ### Why the Node Tab Looks Different
@@ -964,7 +963,7 @@ context.response.writeHead(200, {
   "connection": "keep-alive",
 });
 
-for await (const event of stream) {
+for await (const chunk of stream) {
   // ...
   context.response.write(`data: ${JSON.stringify({ text })}\n\n`);
 }
@@ -992,21 +991,21 @@ import { Status } from "@drashland/drash/core/http/response/Status.js";
 throw new HTTPError(Status.TooManyRequests);
 ```
 
-A failure talking to Anthropic is a failure of your server, so the status you return is rarely the status you received:
+A failure talking to OpenAI is a failure of your server, so the status you return is rarely the status you received:
 
 | The SDK throws | You throw | Why |
 | --- | --- | --- |
-| `Anthropic.AuthenticationError` | `Status.InternalServerError` | Your key is wrong or missing. The caller did nothing to cause it and can do nothing about it. |
-| `Anthropic.RateLimitError` | `Status.TooManyRequests` | The one case where passing the status through is right &mdash; your caller should back off too. |
-| `Anthropic.BadRequestError` | `Status.BadRequest` | Almost always the prompt, which came from the caller. |
-| `Anthropic.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
+| `OpenAI.AuthenticationError` | `Status.InternalServerError` | Your key is wrong or missing. The caller did nothing to cause it and can do nothing about it. |
+| `OpenAI.RateLimitError` | `Status.TooManyRequests` | The one case where passing the status through is right &mdash; your caller should back off too. It also covers an exhausted quota, which is worth alerting on separately. |
+| `OpenAI.BadRequestError` | `Status.BadRequest` | Almost always the prompt, which came from the caller. |
+| `OpenAI.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
 
-`anthropicErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+`openAIErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
 
 <Callout type="warning">
 __None of this applies once the stream is open.__ The status line and headers go out with the first byte. After that a failure cannot become a `500`, because a `200` has already been sent &mdash; the client has a successful response containing half an answer.
 
-Two habits follow. Validate the request body and construct the client __before__ you return the `Response` or call `writeHead`, so anything the caller got wrong still produces a real status code. And inside the stream, report failures in-band:
+Awaiting `create()` before you write the head buys you most of the protection: connection failures, bad keys, and rejected parameters all happen while a status code is still available. What it cannot cover is a failure __mid-generation__ &mdash; the upstream connection dropping after ten tokens. For that, report in-band:
 
 ```ts
 send(`event: error\ndata: ${JSON.stringify({ message: "upstream failed" })}\n\n`);
@@ -1019,10 +1018,10 @@ Clients have to handle that event for it to mean anything, so document it alongs
 
 | Runtime | Where the key comes from | Needs |
 | --- | --- | --- |
-| Node | `process.env.ANTHROPIC_API_KEY` | &mdash; |
-| Deno | `Deno.env.get("ANTHROPIC_API_KEY")` | `--allow-env` |
-| Bun | `process.env.ANTHROPIC_API_KEY` | &mdash; |
-| Cloudflare Workers | `env.ANTHROPIC_API_KEY` | Readable only inside `fetch` |
+| Node | `process.env.OPENAI_API_KEY` | &mdash; |
+| Deno | `Deno.env.get("OPENAI_API_KEY")` | `--allow-env` |
+| Bun | `process.env.OPENAI_API_KEY` | &mdash; |
+| Cloudflare Workers | `env.OPENAI_API_KEY` | Readable only inside `fetch` |
 
 The first three read the key once, at startup, and build one client the resources close over.
 
@@ -1050,7 +1049,7 @@ The resource then reads `context.request` for the body and `context.env` for the
 ```js
 async POST(context) {
   const prompt = await readPrompt(context.request);
-  const client = new Anthropic({ apiKey: context.env.ANTHROPIC_API_KEY });
+  const client = new OpenAI({ apiKey: context.env.OPENAI_API_KEY });
   // ...
 }
 ```
@@ -1076,22 +1075,22 @@ The last two come from the chain rather than from your code. `501` is the base `
 
 ### Proving the Streaming Caveat
 
-Point the application at a key you know is wrong and send the same prompt to both endpoints. The difference is the whole reason the warning above exists:
+Point the application at a key you know is wrong and send the same prompt to both endpoints:
 
 ```text
 curl -X POST localhost:1447/chat -d '{"prompt":"hi"}'
 ->  500 Internal Server Error
 
 curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"hi"}'
-->  200 OK, content-type: text/event-stream
-    event: error
-    data: {"message":"upstream failed"}
+->  500 Internal Server Error
 ```
 
-Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body &mdash; and a client that ignores the `error` event sees a successful, empty answer.
+Both fail the same way, and that is the point of awaiting `create()` before writing the head: the rejection arrives while the status line is still unspent. Move the `await` below `writeHead` and the second command starts answering `200 OK` with an `error` event in the body instead &mdash; a client that ignores that event then sees a successful, empty answer. The ordering is the whole protection.
 
 ## Where to Next
 
+- [Calling Claude](/recipes/ai/claude) &mdash; the same two endpoints against the Anthropic API, where the streaming client behaves differently enough to be worth comparing
+- [Calling Perplexity](/recipes/ai/perplexity) &mdash; this application with a `baseURL`, answering with sources attached
 - [Creating Middleware](/docs/middleware/creating-middleware) &mdash; put an API key check or a request log in front of both endpoints
 - [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can reach an endpoint this expensive
 - [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them

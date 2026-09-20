@@ -7,7 +7,7 @@ description: A complete, runnable Drash application deployed via a Vercel server
 
 Vercel detects a `server` entrypoint at the project root that calls `server.listen()`, and
 routes requests to it. It receives Node's `IncomingMessage`/`ServerResponse`, so it takes a
-__context object__ like the [Node recipe](/recipes/run-a-basic-node-app-typescript).
+__context object__ like the [Node recipe](/recipes/node/basic-app-typescript).
 
 ## Steps
 
@@ -89,4 +89,4 @@ If you are writing plain JavaScript rather than TypeScript, set `"type": "module
 `package.json` or name the file `.mjs`. The polyfill entry point is an ES module, and
 Vercel does not allow `require` in these functions.
 
-For the other Vercel entrypoint, see [api/ (fetch)](/recipes/deploy-a-basic-app-to-vercel-api).
+For the other Vercel entrypoint, see [api/ (fetch)](/recipes/vercel/api).

@@ -1,0 +1,233 @@
+---
+title: Create an MCP Server on Node
+description: A complete, runnable MCP server on Node, served by node:http.
+---
+
+# Create an MCP Server on Node
+
+A Drash resource speaking Model Context Protocol, served by `node:http`
+
+<Callout type="info">
+This is the Node build of [Create an MCP Server](/recipes/model-context-protocol). That page explains how the application works &mdash; the resource, what it publishes, the origin guard, the error mapping &mdash; and does not repeat itself here.
+</Callout>
+
+## Steps
+
+<Steps>
+
+### Install the Dependencies
+
+```bash
+npm install @drashland/drash @modelcontextprotocol/server @modelcontextprotocol/node zod
+npm install --save-dev tsx
+```
+
+Node is the only runtime that needs `@modelcontextprotocol/node`. It supplies `toNodeHandler()`, which adapts the SDK's Web-standard handler to the `IncomingMessage` / `ServerResponse` pair Node gives you. The SDK requires Node 20 or later.
+
+### Create the Following File
+
+```ts filename="app.ts"
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import {
+  Application,
+  HTTPError,
+  Middleware,
+  Resource,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+import type { RequestMethod } from "@drashland/drash/core/Types.js";
+import {
+  createMcpHandler,
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/server";
+import { toNodeHandler } from "@modelcontextprotocol/node";
+import * as z from "zod/v4";
+
+// Node has no `URLPattern` and no `Request`, so the chain gets a context object
+// you build. It requires `url` and `method`; everything else on it is yours.
+type Context = {
+  url: string;
+  method: RequestMethod;
+  request: IncomingMessage;
+  response: ServerResponse;
+};
+
+const ALLOWED_ORIGINS = ["https://app.example.com"];
+
+// Stands in for a database. See the note on state further down.
+const NOTES = new Map<string, string>([
+  ["welcome", "Drash is a microframework for building HTTP systems."],
+]);
+
+// The SDK builds a fresh server per request, which is why this is a factory.
+const handler = createMcpHandler(() => {
+  const server = new McpServer({ name: "drash-notes", version: "1.0.0" });
+
+  server.registerTool(
+    "save_note",
+    {
+      description: "Save a note under a title",
+      inputSchema: z.object({
+        title: z.string().describe("The title to file the note under"),
+        body: z.string().describe("The note itself"),
+      }),
+    },
+    ({ title, body }) => {
+      if (!title.trim()) {
+        return {                   // A tool failure is a *result*, not an error
+          content: [{ type: "text", text: "Title cannot be empty." }],
+          isError: true,           // so the model can read it and try again.
+        };
+      }
+
+      NOTES.set(title, body);
+
+      return { content: [{ type: "text", text: `Saved "${title}".` }] };
+    },
+  );
+
+  server.registerResource(
+    "note",
+    new ResourceTemplate("notes://{title}", { list: undefined }),
+    { title: "Note", description: "One saved note", mimeType: "text/plain" },
+    (uri, { title }) => ({
+      contents: [{ uri: uri.href, text: NOTES.get(String(title)) ?? "" }],
+    }),
+  );
+
+  server.registerPrompt(
+    "summarize_note",
+    {
+      description: "Ask a model to summarize a saved note",
+      argsSchema: z.object({ title: z.string() }),
+    },
+    ({ title }) => ({
+      messages: [{
+        role: "user" as const,
+        content: {
+          type: "text" as const,
+          text: `Summarize this note:\n\n${NOTES.get(title) ?? ""}`,
+        },
+      }],
+    }),
+  );
+
+  return server;
+});
+
+const mcp = toNodeHandler(handler);  // Node-shaped (req, res) => void.
+
+// The spec requires a 403 when `Origin` is present and not allowed. Without
+// this, a page on any origin could drive a server running on localhost.
+class OriginGuard extends Middleware {
+  public ALL(context: Context) {
+    const origin = context.request.headers.origin;
+
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      throw new HTTPError(Status.Forbidden, "Origin not allowed");
+    }
+
+    return this.next<void>(context);
+  }
+}
+
+class MCPEndpoint extends Resource {
+  public paths = ["/mcp"];
+
+  // Every MCP message arrives here.
+  public POST(context: Context) {
+    return mcp(context.request, context.response);
+  }
+
+  // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
+  // `501` for a method you did not define, and the spec asks for `405`.
+  public GET(context: Context) {
+    return mcp(context.request, context.response);
+  }
+
+  public DELETE(context: Context) {
+    return mcp(context.request, context.response);
+  }
+}
+
+const group = ResourceGroup
+  .builder()
+  .resources(MCPEndpoint)
+  .middleware(OriginGuard)
+  .build();
+
+const app = Application.builder().resources(group).build();
+
+const hostname = "127.0.0.1";
+const port = 1447;
+
+createServer((request: IncomingMessage, response: ServerResponse) => {
+  app
+    .handle<void>({
+      url: `http://${hostname}:${port}${request.url}`,
+      method: request.method as RequestMethod,
+      request,
+      response,
+    })
+    .catch((error: unknown) => {
+      // The chain threw before the SDK could answer, so there is no JSON-RPC
+      // response yet. Write one, because that is what the client can parse.
+      const status = error instanceof HTTPError
+        ? error.status_code
+        : Status.InternalServerError.code;
+      const message = error instanceof HTTPError
+        ? error.message
+        : "Internal Server Error";
+
+      response.writeHead(status, { "content-type": "application/json" });
+      response.end(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          error: { code: -32000, message },
+          id: null,
+        }),
+      );
+    });
+}).listen(port, hostname, () => {
+  console.log(`\nDrash MCP server at http://${hostname}:${port}/mcp`);
+});
+```
+
+### Run the Application
+
+```bash
+npx tsx app.ts
+```
+
+### Confirm It Answers
+
+```bash
+curl -X POST http://localhost:1447/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: tools/list" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}'
+```
+
+The server answers with the one tool it publishes:
+
+```json
+{"result":{"tools":[{"name":"save_note","description":"Save a note under a title","inputSchema":{"type":"object","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"title":{"type":"string","description":"The title to file the note under"},"body":{"type":"string","description":"The note itself"}},"required":["title","body"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"drash-notes","version":"1.0.0"}}},"jsonrpc":"2.0","id":1}
+```
+
+That is the smoke test. The [Overview](/recipes/model-context-protocol#verification) has the full table &mdash; tool calls, resource reads, prompt fetches, and every error the server can return.
+
+</Steps>
+
+## Notes
+
+Node has no global `URLPattern`, so this imports the __polyfill__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). It also has no `Request`, which is the larger difference: the chain gets a __context object__ you build, and `Context` is the type that makes `context.request` and `context.response` resolve inside the resource.
+
+__The `url` on that context must be fully qualified.__ `request.url` on Node is just the path (`/mcp`), and the chain matches resources by parsing a whole URL &mdash; hand it the bare path and every request dies with `Invalid URL` before reaching your resource. Building `` `http://${hostname}:${port}${request.url}` `` is what the other runtimes get for free.
+
+`toNodeHandler()` returns a promise, which matters more than it looks. A middleware's `this.next()` throws a `500` if the wrapped call returns something falsy, so a resource method that writes to `response` and returns nothing breaks the moment you wrap it &mdash; see the warning in [Creating Middleware](/docs/middleware/creating-middleware). Returning the handler's promise from `POST`, `GET`, and `DELETE` is what keeps `OriginGuard` working.
+
+The error branch writes the JSON-RPC body onto `response` rather than returning one, since that is how Node responses are made. `app.handle<void>()` is typed accordingly.

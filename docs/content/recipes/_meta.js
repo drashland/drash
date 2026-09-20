@@ -2,15 +2,20 @@ export default {
   // Must stay first and present. The "Recipes" crumb resolves to the first
   // entry here, so a folder route with no page would 404.
   index: "Overview",
-  // Runtime order matches Quickstart, so a reader moving between the two
-  // sections finds the same sequence.
-  "create-a-basic-bun-app": "Basic Bun App",
-  "create-a-basic-cloudflare-workers-app": "Basic Cloudflare Workers App",
-  "create-a-basic-deno-app": "Basic Deno App",
-  "create-a-basic-node-app-cjs": "Basic Node App (CommonJS)",
-  "create-a-basic-node-app-esm": "Basic Node App (ESM)",
-  "create-a-basic-node-app-typescript": "Basic Node App (TypeScript)",
-  "deploy-a-basic-app-to-vercel-api": "Deploy a Basic App to Vercel (api/)",
-  "deploy-a-basic-app-to-vercel-server": "Deploy a Basic App to Vercel (server.ts)",
-  "calling-claude": "Calling Claude",
+  // Everything below is sorted alphabetically by label — the text in the
+  // sidebar, not the key. New recipes get inserted in order, never appended.
+  //
+  // Every entry is a folder. A folder with no `index` page is a collapsible
+  // group rather than a route of its own, which is what keeps "Bun" from
+  // being a page that only says "pick one of these."
+  ai: "AI",
+  bun: "Bun",
+  "cloudflare-workers": "Cloudflare Workers",
+  deno: "Deno",
+  // Its own section rather than a page under each runtime: the protocol is
+  // the subject, and the four builds differ only in server glue. The runtime
+  // sections still list an "MCP Server" entry, pointing here.
+  "model-context-protocol": "Model Context Protocol (MCP)",
+  node: "Node",
+  vercel: "Vercel",
 };
