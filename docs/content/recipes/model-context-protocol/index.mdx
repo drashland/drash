@@ -9,19 +9,35 @@ One resource that speaks Model Context Protocol &mdash; a tool, a resource, and 
 
 ## Overview
 
-The [Model Context Protocol](https://modelcontextprotocol.io) is how a model gets at things it cannot do on its own: running a query, reading a file, calling your API. An __MCP server__ publishes those capabilities; an __MCP client__ &mdash; Claude Desktop, an editor, an agent you wrote &mdash; discovers and invokes them.
+The [Model Context Protocol](https://modelcontextprotocol.io) is how a model gets at things it cannot do on its own: running a query, reading a file, calling your API.
+
+### Server, Client, Model
+
+Three parties, and telling them apart is most of the battle:
+
+| | What it is | Who writes it |
+| --- | --- | --- |
+| __MCP server__ | An HTTP endpoint publishing capabilities: tools to call, resources to read, prompts to offer | __You.__ It is what this recipe builds. |
+| __MCP client__ | The application that connects to servers and puts what they publish in front of a model &mdash; Claude Desktop, an editor, an agent you wrote | Usually someone else. No client code appears on these pages. |
+| The model | Sits behind the client. It never reaches your server directly; it asks its client to. | Nobody. It is the party being served. |
+
+Traffic runs one way. A client opens an HTTP request to your server, your server answers, and the exchange is over. Your server never calls out to a client, never pushes, and never starts a conversation &mdash; so nothing on these pages is a callback, a socket, or a subscription. It is a `POST` handler.
+
+So "who invokes this" is worth asking of every capability below. The answer is never your server.
 
 Over HTTP, an MCP server is one URL that accepts `POST`. That is the whole transport. Since spec revision `2026-07-28`, the Streamable HTTP binding has no handshake, no session, and no server-initiated requests &mdash; every message carries its own protocol version and capabilities, and the server treats each one independently.
 
 Which is to say it is a single path, one HTTP method, and no state between calls. That is a [resource](/docs/resources/creating-a-resource).
 
-This recipe builds a small notes server exposing one of each thing a server can publish:
+This recipe builds a small notes server publishing one of each thing a server can publish. The last column is the part that is easy to skim past:
 
-| Published | Name | What it does |
-| --- | --- | --- |
-| Tool | `save_note` | Files a note under a title &mdash; a model can call it |
-| Resource | `notes://{title}` | Hands back one saved note &mdash; a client can read it |
-| Prompt | `summarize_note` | A canned message a user can pick from a menu |
+| Published | Name | What it does | Who decides to invoke it |
+| --- | --- | --- | --- |
+| Tool | `save_note` | Files a note under a title | The __model__, mid-conversation |
+| Resource | `notes://{title}` | Hands back one saved note | The __client__, choosing what context to load |
+| Prompt | `summarize_note` | A canned message, ready to send | The __user__, from a menu or slash command |
+
+Three capabilities, three different parties holding the trigger. That is deliberate in the protocol rather than an accident of naming: a tool is model-controlled, so it is described in language a model reads and decides on; a resource is application-controlled, so the client fetches it without asking anyone; a prompt is user-controlled, so it surfaces in the interface as something a person picks. Build the wrong one and the capability works but nothing ever fires it.
 
 The protocol work is done by the official [MCP TypeScript SDK](https://ts.sdk.modelcontextprotocol.io). `createMcpHandler()` returns an object with a `fetch(request)` method &mdash; a Web `Request` in, a Web `Response` out. Drash's job is to decide that a request belongs to that handler and to hand it over, which is what a resource is for.
 
@@ -97,7 +113,11 @@ Leave them off and the same requests return `501`. The lesson generalizes past M
 
 ## What the Server Publishes
 
-The three registrations are the SDK's API, not Drash's, and they are identical on every runtime. The shapes are worth reading once.
+<Callout type="warning">
+__Three things here answer to the word "server."__ `McpServer` is the SDK object you register capabilities on; it speaks the protocol and knows nothing about HTTP. The __MCP server__ is the endpoint a client actually connects to &mdash; that object, plus the Drash resource holding it, plus the guard in front. The __HTTP server__ is your runtime's `Deno.serve`, `Bun.serve`, or `node:http`, which is the one listening on a port. The variable named `server` in every snippet below is the first of the three.
+</Callout>
+
+The three registrations are the SDK's API, not Drash's, and they are identical on every runtime. Each one hands the client a different kind of thing, so the shapes are worth reading once.
 
 ### The Tool
 
@@ -213,7 +233,7 @@ const app = Application.builder().resources(group).build();
 
 ## Turning a Thrown Error Into JSON-RPC
 
-`OriginGuard` throws an `HTTPError`, and Drash does what it always does: rejects the promise `app.handle()` returned and leaves the response to you. What is different here is that a generic error page is useless &mdash; the caller is a protocol client that parses JSON-RPC:
+`OriginGuard` throws an `HTTPError`, and Drash does what it always does: rejects the promise `app.handle()` returned and leaves the response to you. What is different here is who is on the other end. It is not a browser and not a person: it is an MCP client parsing JSON-RPC, which will do nothing useful with an HTML error page or a bare status line. So the failure has to come back in the shape the client already knows how to read:
 
 ```ts
 function mcpErrorResponse(error: unknown): Response {
@@ -250,6 +270,8 @@ Replace it with whatever your runtime gives you: a database, a KV store, [Worker
 ## Verification
 
 The protocol behaves identically on every runtime, so this section is written once. Start the application from your runtime's page, then substitute its host and port &mdash; `localhost:1447` for Bun, Deno, and Node, `localhost:8787` for `wrangler dev`.
+
+`curl` stands in for an MCP client throughout. Nothing below needs Claude Desktop or an editor: a client's whole job on the wire is to post JSON-RPC to your one URL, which is a thing you can do by hand. Pointing a real client at the server once it answers these is then a configuration step, not another build.
 
 Every call needs the three headers the transport requires &mdash; `MCP-Protocol-Version`, `Mcp-Method`, and for `tools/call` a `Mcp-Name` &mdash; plus the same values inside the body's `_meta`:
 
@@ -340,7 +362,7 @@ Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls bac
 ## Where to Next
 
 - [Creating Middleware](/docs/middleware/creating-middleware) &mdash; add bearer-token auth in front of the endpoint, the way `OriginGuard` sits there now
-- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can invoke a tool
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often one client can invoke a tool
 - [Grouping Resources](/docs/resources/grouping-resources) &mdash; publish a second MCP server on another path, sharing the guard
 - [Calling Claude](/recipes/ai/claude) &mdash; the other side of the relationship: your application calling a model, rather than a model calling your application
 

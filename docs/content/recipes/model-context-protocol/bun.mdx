@@ -22,33 +22,120 @@ bun add @drashland/drash @modelcontextprotocol/server zod
 ```
 
 
-### Create the Following File
+### Create the Following Files
 
-```ts filename="app.ts"
+The application splits along the same seams the [overview](/recipes/model-context-protocol) explains it in &mdash; one idea per file.
+
+<FileTree>
+  <FileTree.Folder name="drash-mcp" defaultOpen>
+    <FileTree.File name="app.ts" />
+    <FileTree.File name="resource.ts" />
+    <FileTree.File name="mcp.ts" />
+    <FileTree.File name="middleware.ts" />
+    <FileTree.File name="notes.ts" />
+  </FileTree.Folder>
+</FileTree>
+
+Imports run one way and never loop back: `app.ts` wires up `resource.ts` and `middleware.ts`, `resource.ts` hands every request to `mcp.ts`, and `mcp.ts` is the only file that touches `notes.ts`. Nothing imports `app.ts`, which is what makes it the entry point.
+
+<CodeTabs
+  items={["app.ts", "resource.ts", "mcp.ts", "middleware.ts", "notes.ts"]}
+  storageKey="mcp-file"
+>
+<CodeTab>
+
+```ts
 import {
   Application,
   HTTPError,
-  Middleware,
-  Resource,
   ResourceGroup,
 } from "@drashland/drash/modules/http.polyfill.js";
 import { Status } from "@drashland/drash/core/http/response/Status.js";
+import { OriginGuard } from "./middleware.ts";
+import { MCPEndpoint } from "./resource.ts";
+
+const group = ResourceGroup
+  .builder()
+  .resources(MCPEndpoint)
+  .middleware(OriginGuard)
+  .build();
+
+const app = Application.builder().resources(group).build();
+
+Bun.serve({
+  hostname: "127.0.0.1",
+  port: 1447,
+  fetch: (request: Request): Promise<Response> => {
+    return app
+      .handle<Response>(request)
+      .catch(mcpErrorResponse);
+  },
+});
+
+// The chain threw before the SDK could answer, so there is no JSON-RPC
+// response yet. Write one, because that is what the client can parse.
+function mcpErrorResponse(error: unknown): Response {
+  const status = error instanceof HTTPError
+    ? error.status_code
+    : Status.InternalServerError.code;
+  const message = error instanceof HTTPError
+    ? error.message
+    : "Internal Server Error";
+
+  return new Response(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message },
+      id: null,
+    }),
+    { status, headers: { "content-type": "application/json" } },
+  );
+}
+
+console.log("\nDrash MCP server at http://127.0.0.1:1447/mcp");
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+import { handler } from "./mcp.ts";
+
+export class MCPEndpoint extends Resource {
+  public paths = ["/mcp"];
+
+  // Every MCP message arrives here.
+  public POST(request: Request) {
+    return handler.fetch(request);
+  }
+
+  // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
+  // `501` for a method you did not define, and the spec asks for `405`.
+  public GET(request: Request) {
+    return handler.fetch(request);
+  }
+
+  public DELETE(request: Request) {
+    return handler.fetch(request);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
 import {
   createMcpHandler,
   McpServer,
   ResourceTemplate,
 } from "@modelcontextprotocol/server";
 import * as z from "zod/v4";
-
-const ALLOWED_ORIGINS = ["https://app.example.com"];
-
-// Stands in for a database. See the note on state further down.
-const NOTES = new Map<string, string>([
-  ["welcome", "Drash is a microframework for building HTTP systems."],
-]);
+import { NOTES } from "./notes.ts";
 
 // The SDK builds a fresh server per request, which is why this is a factory.
-const handler = createMcpHandler(() => {
+export const handler = createMcpHandler(() => {
   const server = new McpServer({ name: "drash-notes", version: "1.0.0" });
 
   server.registerTool(
@@ -102,10 +189,20 @@ const handler = createMcpHandler(() => {
 
   return server;
 });
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import { HTTPError, Middleware } from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+const ALLOWED_ORIGINS = ["https://app.example.com"];
 
 // The spec requires a 403 when `Origin` is present and not allowed. Without
 // this, a page on any origin could drive a server running on localhost.
-class OriginGuard extends Middleware {
+export class OriginGuard extends Middleware {
   public ALL(request: Request) {
     const origin = request.headers.get("origin");
 
@@ -116,66 +213,21 @@ class OriginGuard extends Middleware {
     return this.next<Response>(request);
   }
 }
-
-class MCPEndpoint extends Resource {
-  public paths = ["/mcp"];
-
-  // Every MCP message arrives here.
-  public POST(request: Request) {
-    return handler.fetch(request);
-  }
-
-  // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
-  // `501` for a method you did not define, and the spec asks for `405`.
-  public GET(request: Request) {
-    return handler.fetch(request);
-  }
-
-  public DELETE(request: Request) {
-    return handler.fetch(request);
-  }
-}
-
-const group = ResourceGroup
-  .builder()
-  .resources(MCPEndpoint)
-  .middleware(OriginGuard)
-  .build();
-
-const app = Application.builder().resources(group).build();
-
-Bun.serve({
-  hostname: "127.0.0.1",
-  port: 1447,
-  fetch: (request: Request): Promise<Response> => {
-    return app
-      .handle<Response>(request)
-      .catch(mcpErrorResponse);
-  },
-});
-
-// The chain threw before the SDK could answer, so there is no JSON-RPC
-// response yet. Write one, because that is what the client can parse.
-function mcpErrorResponse(error: unknown): Response {
-  const status = error instanceof HTTPError
-    ? error.status_code
-    : Status.InternalServerError.code;
-  const message = error instanceof HTTPError
-    ? error.message
-    : "Internal Server Error";
-
-  return new Response(
-    JSON.stringify({
-      jsonrpc: "2.0",
-      error: { code: -32000, message },
-      id: null,
-    }),
-    { status, headers: { "content-type": "application/json" } },
-  );
-}
-
-console.log("\nDrash MCP server at http://127.0.0.1:1447/mcp");
 ```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+// Stands in for a database. Swapping this one file for a real store is the
+// whole migration — see the overview's note on state. Nothing else changes.
+export const NOTES = new Map<string, string>([
+  ["welcome", "Drash is a microframework for building HTTP systems."],
+]);
+```
+
+</CodeTab>
+</CodeTabs>
 
 ### Run the Application
 
@@ -184,6 +236,8 @@ bun run app.ts
 ```
 
 ### Confirm It Answers
+
+`curl` is standing in for an MCP client here. You are building the server; the client is the thing that connects to it, and you are not writing one on this page.
 
 ```bash
 curl -X POST http://localhost:1447/mcp \
