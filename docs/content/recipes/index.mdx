@@ -1,78 +1,79 @@
 ---
 title: Recipes
-description: Whole tasks built with Drash, start to finish, for Deno, Node, Bun, Cloudflare Workers, and Vercel.
+description: Whole applications built with Drash, one page per target, start to finish.
 ---
 
 # Recipes
 
-A recipe is one finished job. It states what you are building, shows the complete file for your runtime, then takes that file apart.
+A recipe is one finished job, for one target &mdash; a runtime, a framework, or a platform. It states what you are building, shows the complete files, then takes them apart.
 
 That is a different shape from [Docs](/docs/getting-started), which explains one feature at a time &mdash; what a resource is, how params are read, where errors go. Those pages answer "how does this work." These answer "I want to build X, show me the whole thing."
 
 ## Pick Your Runtime
 
-Each runtime is a section in the sidebar, and each page under it is one complete, runnable application for that runtime. Nothing is shared between them at runtime, so read only the one you need.
-
-Start with the basic app. It is the same application on every runtime &mdash; one resource answering `GET /` &mdash; so reading the one that matches your setup makes the differences between the others stop being mysterious.
+Everything is filed under the runtime it runs on, because that is the choice you make once and keep. Open your runtime and every recipe under it is written for that runtime alone &mdash; no tabs to switch, no other runtime's code on the page, nothing to click through to.
 
 <Cards num={2}>
-  <Cards.Card title="Bun / Basic App" href="/recipes/bun/basic-app" arrow />
-  <Cards.Card
-    title="Cloudflare Workers / Basic App"
-    href="/recipes/cloudflare-workers/basic-app"
-    arrow
-  />
-  <Cards.Card title="Deno / Basic App" href="/recipes/deno/basic-app" arrow />
-  <Cards.Card
-    title="Node / Basic App (TypeScript)"
-    href="/recipes/node/basic-app-typescript"
-    arrow
-  />
-  <Cards.Card
-    title="Node / Basic App (ESM)"
-    href="/recipes/node/basic-app-esm"
-    arrow
-  />
-  <Cards.Card
-    title="Node / Basic App (CommonJS)"
-    href="/recipes/node/basic-app-cjs"
-    arrow
-  />
-  <Cards.Card title="Vercel / api/ (fetch)" href="/recipes/vercel/api" arrow />
-  <Cards.Card title="Vercel / server.ts" href="/recipes/vercel/server" arrow />
-</Cards>
-
-## Model Context Protocol (MCP)
-
-One resource that speaks [Model Context Protocol](https://modelcontextprotocol.io), publishing a tool, a resource, and a prompt to any MCP client. The overview explains how the application works; each runtime page is the whole file for that runtime.
-
-The runtime sections above also list an __MCP Server__ entry, and it points at these same pages.
-
-<Cards num={2}>
-  <Cards.Card title="Overview" href="/recipes/model-context-protocol" arrow />
-  <Cards.Card title="Bun" href="/recipes/model-context-protocol/bun" arrow />
+  <Cards.Card title="Bun" href="/recipes/runtimes/bun/basic-app" arrow />
   <Cards.Card
     title="Cloudflare Workers"
-    href="/recipes/model-context-protocol/cloudflare-workers"
+    href="/recipes/runtimes/cloudflare-workers/basic-app"
     arrow
   />
-  <Cards.Card title="Deno" href="/recipes/model-context-protocol/deno" arrow />
-  <Cards.Card title="Node" href="/recipes/model-context-protocol/node" arrow />
+  <Cards.Card title="Deno" href="/recipes/runtimes/deno/basic-app" arrow />
+  <Cards.Card
+    title="Node"
+    href="/recipes/runtimes/node/basic-app-typescript"
+    arrow
+  />
 </Cards>
 
-## AI
+Each one carries the same set:
 
-The other side of that relationship: your application calling a model, rather than a model calling your application. Each page builds the same two endpoints &mdash; one that answers all at once, one that streams &mdash; against a different provider, on all four runtimes.
+| Recipe | What you end up with |
+| --- | --- |
+| __Basic App__ | One resource answering `GET /`. Start here; it is the smallest complete application. |
+| __Calling Claude__ | Two endpoints backed by the Claude API &mdash; one that answers at once, one that streams. |
+| __Calling OpenAI__ | The same two endpoints against Chat Completions. |
+| __Calling Perplexity__ | The same again, answering with the sources the reply was built from. |
+| __MCP Server__ | One resource speaking Model Context Protocol, publishing a tool, a resource, and a prompt. |
+
+Node has three basic apps rather than one, because the module system is the only thing that changes the file: [CommonJS](/recipes/runtimes/node/basic-app-cjs), [ESM](/recipes/runtimes/node/basic-app-esm), and [TypeScript](/recipes/runtimes/node/basic-app-typescript).
+
+## Frameworks
+
+A framework owns the entry point. It decides what file your code lives in and what it is handed, and it is not tied to one runtime &mdash; a Next.js application runs on Node, Deno, Bun, and Cloudflare Workers.
 
 <Cards num={2}>
-  <Cards.Card title="Claude" href="/recipes/ai/claude" arrow />
-  <Cards.Card title="OpenAI" href="/recipes/ai/openai" arrow />
-  <Cards.Card title="Perplexity" href="/recipes/ai/perplexity" arrow />
+  <Cards.Card
+    title="Next.js / Calling Claude"
+    href="/recipes/frameworks/next-js/calling-claude"
+    arrow
+  />
 </Cards>
 
-## What Changes Between Runtimes
+That one is the only recipe here that also builds the browser half &mdash; a React component that renders the reply as it streams in.
 
-The resource and the application are identical in every one of the basic recipes. What differs is the entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill) &mdash; and how your runtime hands you a request.
+## Platforms
+
+A platform is something you deploy onto rather than a runtime you build against. Both Vercel recipes run on Node; what differs is the entry point Vercel expects.
+
+<Cards num={2}>
+  <Cards.Card
+    title="Vercel / api/ (fetch)"
+    href="/recipes/platforms/vercel/api"
+    arrow
+  />
+  <Cards.Card
+    title="Vercel / server.ts"
+    href="/recipes/platforms/vercel/server"
+    arrow
+  />
+</Cards>
+
+## What Changes Between Targets
+
+The resource and the application are identical in every basic recipe. What differs is the entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill) &mdash; and how your target hands you a request. Worth a look before you pick, and not worth re-reading after.
 
 | | Entry point | What the resource receives |
 | --- | --- | --- |
@@ -80,6 +81,7 @@ The resource and the application are identical in every one of the basic recipes
 | Cloudflare Workers | `http.native.js` | Web `Request` |
 | Deno | `http.native.js` | Web `Request` |
 | Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
+| Next.js (App Router) | `http.polyfill.js` | Web `Request` |
 | Vercel (`api/`) | `http.polyfill.js` | Web `Request` |
 | Vercel (`server.ts`) | `http.polyfill.js` | Context object you build |
 
