@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-1. Install [Node](https://nodejs.org) (v16+).
+1. Install [Node](https://nodejs.org) (v20+).
 
 1. Install dependencies in `package.json`.
 
@@ -16,7 +16,7 @@
    npm start
    ```
 
-   _Note: `npm start` is defined in the `package.json` file.
+   _Note: `npm start` is defined in the `package.json` file._
 
 1. Go to `http://localhost:1447`.
 

@@ -34,10 +34,10 @@ const port = 1447;
 
 // Create the server
 const server = createServer((request, response) => {
-  // Create a context object that the resource can use to access to access the
+  // Create a context object that the resource can use to access the
   // request and response objects.
   //
-  // The chain requires the `url` and `method` fields, they are are included.
+  // The chain requires the `url` and `method` fields, so they are included.
   const context = {
     url: `http://${hostname}:${port}${request.url}`,
     method: request.method,

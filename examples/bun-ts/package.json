@@ -1,6 +1,6 @@
 {
   "name": "drash-example-bun-ts",
-  "module": "index.ts",
+  "module": "app.ts",
   "type": "module",
   "scripts": {
     "start": "bun run app.ts"

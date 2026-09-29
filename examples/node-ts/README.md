@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-1. Install [Node](https://nodejs.org) (v16+).
+1. Install [Node](https://nodejs.org) (v20+).
 
 1. Install dependencies in `package.json`.
 

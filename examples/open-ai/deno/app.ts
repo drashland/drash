@@ -55,9 +55,9 @@ function openAIErrorToHTTPError(error: unknown): unknown {
 }
  
 class Chat extends Resource {                          // Answers with the whole reply.
-  public paths = ["/chat"];
+  public override paths = ["/chat"];
  
-  public async POST(request: Request) {
+  public override async POST(request: Request) {
     const prompt = await readPrompt(request);
  
     let completion;
@@ -78,23 +78,20 @@ class Chat extends Resource {                          // Answers with the whole
 }
  
 class ChatStream extends Resource {                    // Answers a piece at a time.
-  public paths = ["/chat/stream"];
+  public override paths = ["/chat/stream"];
  
-  public async POST(request: Request) {
-    console.log(" test ")
-    // exists — that matters.
+  public override async POST(request: Request) {
+    const prompt = await readPrompt(request);          // Throws before the `Response`
+                                                       // exists — that matters.
     let stream;
-    
+
     try {
-      console.log(request)
-      const prompt = await readPrompt(request);          // Throws before the `Response`
       stream = await client.chat.completions.create({  // Awaited, so a rejected key
         model: MODEL,                                  // still throws while there is
         messages: [{ role: "user", content: prompt }], // a status code left to send.
         stream: true,
       });
     } catch (error) {
-      console.log({ error })
       throw openAIErrorToHTTPError(error);
     }
  
@@ -155,7 +152,6 @@ Deno.serve({
     return app
       .handle<Response>(request)
       .catch((error) => {
-        console.log({ error })
         // `name` is checked before `instanceof` because `instanceof` fails when
         // two copies of Drash end up in one bundle.
         if (error.name === "HTTPError") {

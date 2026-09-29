@@ -10,9 +10,9 @@ import {
 
 // Create a resource
 class Home extends Resource {
-  paths = ["/"];
+  override paths = ["/"];
 
-  GET(request: Request) {
+  override GET(request: Request) {
     console.log(`Received request: ${request.url}`);
     return new Response(
       `Oh so easy (written at ${new Date()})`,

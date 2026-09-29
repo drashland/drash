@@ -55,9 +55,9 @@ function anthropicErrorToHTTPError(error: unknown): unknown {
 }
  
 class Chat extends Resource {                          // Answers with the whole reply.
-  public paths = ["/chat"];
+  public override paths = ["/chat"];
  
-  public async POST(request: Request) {
+  public override async POST(request: Request) {
     const prompt = await readPrompt(request);
  
     let message;
@@ -82,9 +82,9 @@ class Chat extends Resource {                          // Answers with the whole
 }
  
 class ChatStream extends Resource {                    // Answers a piece at a time.
-  public paths = ["/chat/stream"];
+  public override paths = ["/chat/stream"];
  
-  public async POST(request: Request) {
+  public override async POST(request: Request) {
     const prompt = await readPrompt(request);          // Throws before the `Response`
                                                        // exists — that matters.
     const stream = client.messages.stream({
