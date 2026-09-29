@@ -69,7 +69,7 @@ class MCPEndpoint extends Resource {
 That is the whole integration. Anything shaped like `(request) => Response` mounts in a resource this way; MCP is not a special case, it just happens to be a protocol whose HTTP binding is one path and one method.
 
 <Callout type="info">
-That snippet is the shape on Bun, Cloudflare Workers, and Deno, which hand Drash a Web `Request`. Node has no `Request`, so the resource on this page takes a [context object](/docs/requests/handling-requests) you build and forwards `context.request` and `context.response` instead. Same resource, same `paths`, different argument.
+The snippet above is the shape on Bun, Cloudflare Workers, and Deno, which hand Drash a Web `Request`. Node has no `Request`, so its resource takes a [context object](/docs/requests/handling-requests) you build and forwards `context.request` and `context.response` instead. Same resource, same `paths`, different argument.
 </Callout>
 
 ### Why `GET` and `DELETE` Are Defined
@@ -630,7 +630,7 @@ Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls bac
 ## Where to Next
 
 - [Creating Middleware](/docs/middleware/creating-middleware) &mdash; add bearer-token auth in front of the endpoint, the way `OriginGuard` sits there now
-- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often one client can invoke a tool
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can invoke a tool
 - [Grouping Resources](/docs/resources/grouping-resources) &mdash; publish a second MCP server on another path, sharing the guard
 - [Calling Claude](/examples/runtimes/node/calling-claude) &mdash; the other side of the relationship: your application calling a model, rather than a model calling your application
 

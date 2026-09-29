@@ -18,7 +18,7 @@ What does need thought is the shape of the answer. A model generates its reply a
 | `POST /chat` | One JSON body, once the model has finished |
 | `POST /chat/stream` | A [server-sent event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) per piece, as the model produces it |
 
-Your resource returns [whatever your runtime hands back](/docs/requests/handling-requests), and Drash passes that value through untouched. That is what makes a streamed body a non-event for the framework &mdash; and why the resource below writes to `context.response` instead of returning something.
+Your resource returns [whatever your runtime wants back](/docs/requests/handling-requests), and Drash passes that value through untouched. That is what makes a streamed body a non-event for the framework &mdash; and why the resource below writes to `context.response` instead of returning something.
 
 ### Objectives
 

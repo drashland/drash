@@ -371,10 +371,10 @@ Bun uses the same [polyfill entry point](/about/concepts/native-vs-polyfill) as 
 | `OpenAI.BadRequestError` | `Status.BadRequest` | The prompt, or a model name that is not in the `sonar` family. |
 | `OpenAI.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
 
-These classes are chosen by HTTP status code, not by provider, which is why the same four work against an endpoint the SDK was not written for. `apiErrorToHTTPError` does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+These classes are chosen by HTTP status code, not by provider, which is why the same four work against an endpoint the SDK was not written for. `apiErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
 
 <Callout type="warning">
-__None of this applies once the stream is open.__ The status line and headers go out with the first byte. Awaiting `create()` before writing the head covers the common failures &mdash; a bad key, a wrong model, a refused connection &mdash; because they all land while a status code is still available. A failure mid-generation cannot be covered, so report it in-band:
+__None of this applies once the stream is open.__ The status line and headers go out with the first byte. Awaiting `create()` before you write the head buys you most of the protection: connection failures, bad keys, and rejected parameters all happen while a status code is still available. What it cannot cover is a failure __mid-generation__ &mdash; the upstream connection dropping after ten tokens. For that, report in-band:
 
 ```ts
 send(`event: error\ndata: ${JSON.stringify({ message: "upstream failed" })}\n\n`);

@@ -105,7 +105,7 @@ Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time)
 
 ## Notes
 
-Workers provide a global `URLPattern`, so this uses the __native__ entry point. The chain is built once at module scope and reused across requests in the same isolate.
+Workers provide a global `URLPattern`, so this uses the __native__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). The chain is built once at module scope and reused across requests in the same isolate.
 
 <Callout type="warning">
   __Every named export of a Worker entry module must be a function, a class, or

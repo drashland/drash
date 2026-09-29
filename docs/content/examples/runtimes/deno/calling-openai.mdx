@@ -331,7 +331,7 @@ The trade is the obvious one: less thinking, faster first token, worse answers o
 
 ### What Your Runtime Expects Back
 
-`Deno.serve` hands your resource a Web `Request` and takes a `Response` back, which is exactly what the chain accepts and returns. A streamed body is just a `Response` whose body is a `ReadableStream`, so there is nothing to adapt: what the resource returns is what the server sends.
+`Deno.serve` hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns. A streamed body is just a `Response` whose body is a `ReadableStream`, so there is nothing to adapt: what the resource returns is what the server sends.
 
 ## Handling Errors From the API
 

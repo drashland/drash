@@ -94,6 +94,6 @@ Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time)
 
 There is no install step for dependencies &mdash; Deno resolves the import on first run. The commented-out block shows the `npm:` specifier if you would rather resolve through npm, which needs the `.js` extension that JSR does not.
 
-Deno provides a global `URLPattern`, so this uses the __native__ entry point. Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns &mdash; so the request goes straight through with no context object in between.
+Deno provides a global `URLPattern`, so this uses the __native__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns, so the request goes straight through with no context object in between.
 
 The finished app is in the repository at [`examples/deno`](https://github.com/drashland/drash/tree/main/examples/deno).

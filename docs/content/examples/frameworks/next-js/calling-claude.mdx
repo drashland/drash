@@ -9,7 +9,7 @@ Two endpoints backed by the Claude API that remember the conversation on the ser
 
 ## Overview
 
-A [resource](/docs/resources/creating-a-resource) calls Claude the way it does anything else: an ordinary `await` inside `POST`. What needs thought is the shape of the answer. A model generates its reply a piece at a time, and a request that waits for the whole thing can sit for a minute before anything reaches the browser. So this example builds both, and then a component with a tab for each, so you can send the same conversation to either one and watch the difference:
+A [resource](/docs/resources/creating-a-resource) calls Claude the way it does anything else: an ordinary `await` inside `POST`. What does need thought is the shape of the answer. A model generates its reply a piece at a time, and a request that waits for the whole thing can sit for a minute before anything reaches the browser. So this example builds both, and then a component with a tab for each, so you can send the same conversation to either one and watch the difference:
 
 | Endpoint | Answers with |
 | --- | --- |
@@ -798,7 +798,7 @@ Then open [http://localhost:3000](http://localhost:3000). The chat is the applic
 
 `app/api/[...drash]/route.ts` is a __catch-all__ route: the brackets and the `...` mean it answers everything beneath `/api`, whatever the path. That is deliberate. Give Drash one segment and Next.js has already done the routing; give it the whole `/api` space and the chain decides what matches, which is the part you came here for. (Doubling the brackets &mdash; `[[...drash]]` &mdash; makes the segment optional too, so bare `/api` also reaches the chain instead of Next.js answering it. Nothing here needs that.)
 
-Two consequences follow, and both are easy to get wrong.
+Two things follow that are easy to get wrong.
 
 __`paths` holds the URL the browser asks for.__ Not a path relative to the handler. The file sits at `app/api/[...drash]/`, so the resources claim `/api/chat`, `/api/chat/stream`, and `/api/conversation`. A resource with `paths = ["/chat"]` never matches, and every request answers `404`.
 
@@ -982,7 +982,7 @@ The `x-accel-buffering: no` header in the full sample is for deployment rather t
 
 ### The Frame Format
 
-Each `data:` line is one server-sent event, and the blank line is what ends it:
+Each `data:` line is one server-sent event, and the blank line is what ends it. A browser reads these with `EventSource`, or with `fetch` if you need to `POST`:
 
 ```text
 data: {"text":"Hello"}
@@ -1190,7 +1190,7 @@ It disables the Send button, the tabs, the model selector, "Try again", and "Sta
 
 ## Handling Errors From the API
 
-[Error handling](/docs/error-handling) covers how a throw reaches your `.catch()`. What is specific here is the translation step in front of it: a failure talking to Anthropic is a failure of *your* server, so the status you return is rarely the status you received.
+[Error handling](/docs/error-handling) covers how a throw reaches your `.catch()`. What is specific here is the translation step in front of it: a failure talking to Anthropic is a failure of *your* server, so the status you return is rarely the status you received:
 
 | The SDK throws | You throw | Why |
 | --- | --- | --- |
@@ -1200,11 +1200,11 @@ It disables the Send button, the tabs, the model selector, "Try again", and "Sta
 | `Anthropic.BadRequestError` | `Status.BadRequest` | Almost always the prompt, which came from the caller. |
 | `Anthropic.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
 
+`anthropicErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+
 Each `HTTPError` also carries a message, such as "The server's Anthropic API key was rejected." `handle()` sends that message as the response body, and the page shows it in its error modal. Without one, the body would be empty and the page would have nothing to tell you but a number.
 
 A refusal is the one failure that is not an exception. When Claude declines a prompt the API answers `200` with `stop_reason: "refusal"`, so both resources check for it and throw an `HTTPError` of their own: `Chat` after the reply, `ChatStream` when a `message_delta` event carries that stop reason.
-
-`anthropicErrorToHTTPError` in the sample does that translation and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
 
 <Callout type="warning">
 __None of this applies once the stream is open.__ The status line and headers go out with the first byte. After that a failure cannot become a `500`, because a `200` has already been sent &mdash; the client has a successful response containing half an answer.
@@ -1258,7 +1258,7 @@ curl -X POST localhost:3000/api/nope                                ->  404  Not
 
 The second request is the memory working: it sends one question and no history, and the answer depends on the first request. Drop `-b jar` from it and the server starts a new conversation, with no idea who you are.
 
-`-N` on the stream request turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
 
 The last two are the reason the catch-all route is worth having: both come from the chain, on URLs Next.js was happy to hand over. The `501` appears because `GET` is exported for `/api/conversation` &mdash; with no `GET` export at all, Next.js would answer `405` first.
 
@@ -1279,7 +1279,7 @@ curl -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"hi"}'
     data: {"message":"The server's Anthropic API key was rejected."}
 ```
 
-Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body.
+Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body &mdash; and a client that ignores the `error` event sees a successful, empty answer.
 
 Load the page with the same wrong key and your prompt is marked "Not delivered", and the error modal says the key was rejected, on either tab. Put the right key back, press "Try again", and the same prompt goes through. The streaming tab gets there because the component acts on the `error` event. Delete that branch and the page sits there showing an empty reply bubble and no error, having received a perfectly successful response.
 
@@ -1289,6 +1289,6 @@ Load the page with the same wrong key and your prompt is marked "Not delivered",
 - [Deploy a Basic App to Vercel (api/)](/examples/platforms/vercel/api) &mdash; the same polyfill entry point in a Vercel Function, without Next.js in front of it
 - [Creating Middleware](/docs/middleware/creating-middleware) &mdash; put an API key check or a request log in front of both endpoints
 - [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can reach an endpoint this expensive
-- [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under a shared prefix and share middleware between them
+- [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
 
 The conversation here lives in the server's memory, which is enough to survive a reload and not enough to survive a restart. Moving it into a database means replacing the `Map` and nothing else, and which database is your decision, not Drash's.
