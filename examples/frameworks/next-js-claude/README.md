@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, copy the example environment file and put your [Anthropic API key](https://console.anthropic.com/settings/keys) in it. Next.js loads `.env.local` on its own, and git ignores it:
+
+```bash
+cp .env.example .env.local
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
