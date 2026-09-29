@@ -185,6 +185,10 @@ main li:has(> .nextra-code pre) {
   margin-bottom: 1.5em;
 }
 
+.nextra-code {
+  font-size: .9rem;
+}
+
 /*
  * Normal weight throughout the right sidebar — the whole panel, no exceptions.
  *

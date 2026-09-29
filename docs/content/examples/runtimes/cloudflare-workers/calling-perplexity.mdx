@@ -1,0 +1,444 @@
+---
+title: Calling Perplexity on Cloudflare Workers
+description: Two HTTP endpoints backed by the Perplexity API — answers with their sources attached, all at once or streamed, on Cloudflare Workers.
+---
+
+# Calling Perplexity on Cloudflare Workers
+
+Two endpoints backed by the Perplexity API &mdash; answers with their sources attached
+
+## Overview
+
+Perplexity answers from a live search rather than from training data alone, so every reply arrives with a list of the pages it was built from. That is the whole reason to reach for it, and it is what this example carries through to the caller: both endpoints return the text __and__ the sources.
+
+| Endpoint | Answers with |
+| --- | --- |
+| `POST /chat` | One JSON body &mdash; `{ text, sources }` &mdash; once the model has finished |
+| `POST /chat/stream` | A [server-sent event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) per piece, then one `sources` event before `done` |
+
+The client is the OpenAI SDK. Perplexity implements the Chat Completions API, so pointing `baseURL` at it is the entire integration:
+
+```ts
+const client = new OpenAI({
+  apiKey: process.env.PERPLEXITY_API_KEY,
+  baseURL: "https://api.perplexity.ai",
+});
+```
+
+Everything after that line is the same code as the [OpenAI example](/examples/runtimes/cloudflare-workers/calling-openai) &mdash; same method, same streaming chunks, same error classes. What this page is actually about is the part the OpenAI SDK does not know: the sources, which arrive on a field its types do not declare.
+
+### Objectives
+
+To gain familiarity with:
+
+- pointing an OpenAI-compatible client at a third-party endpoint;
+- reading provider fields that sit outside a typed SDK's surface;
+- carrying structured extras alongside a streamed answer; and
+- getting a secret to a resource on a runtime that has no `process.env`.
+
+## Prerequisites
+
+You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and a [Perplexity API key](https://www.perplexity.ai/settings/api). The SDK you install is OpenAI's; there is no Perplexity-specific package to add.
+
+```bash
+npm install @drashland/drash openai
+npx wrangler secret put PERPLEXITY_API_KEY
+```
+
+## The Whole Application
+
+One file. Save it, and the rest of this page takes it apart.
+
+```js filename="app.js"
+import OpenAI from "openai";
+import {
+  Application,
+  HTTPError,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+const MODEL = "sonar";
+const BASE_URL = "https://api.perplexity.ai";
+
+// No module-scoped client here. A Worker's secrets arrive as an argument to
+// `fetch`, so there is nothing to read at startup — see "Getting the API Key to
+// the Resource" below.
+
+// Perplexity attaches the pages it answered from. The field is not in the
+// OpenAI SDK's types — it is a provider extension — so read it off the raw
+// object, and accept either of the two shapes the API has used.
+function readSources(payload) {
+  if (Array.isArray(payload?.search_results)) {
+    return payload.search_results
+      .filter((result) => typeof result.url === "string")
+      .map((result) => ({ title: result.title, url: result.url }));
+  }
+
+  if (Array.isArray(payload?.citations)) {
+    return payload.citations.map((url) => ({ url }));
+  }
+
+  return [];                                           // Some models answer without
+}                                                      // searching. Not an error.
+
+// Both resources start here. A `Request` parses its own body, so this is the
+// same function the Deno and Bun builds use.
+async function readPrompt(request) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    throw new HTTPError(Status.BadRequest, "Body must be JSON");
+  }
+
+  if (typeof body.prompt !== "string" || body.prompt === "") {
+    throw new HTTPError(Status.BadRequest, "Body must have a `prompt` string");
+  }
+
+  return body.prompt;
+}
+
+// These are the SDK's classes, not Perplexity's. They are chosen by HTTP
+// status, so they sort an OpenAI-compatible provider's failures just as well.
+// Order matters — the specific classes come before `APIError`, their parent.
+function apiErrorToHTTPError(error) {
+  if (error instanceof OpenAI.AuthenticationError) {
+    return new HTTPError(Status.InternalServerError);  // Your key is wrong.
+  }
+
+  if (error instanceof OpenAI.RateLimitError) {
+    return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
+  }
+
+  if (error instanceof OpenAI.BadRequestError) {
+    return new HTTPError(Status.BadRequest);           // Usually the prompt.
+  }
+
+  if (error instanceof OpenAI.APIError) {
+    return new HTTPError(Status.BadGateway);           // Upstream is down.
+  }
+
+  return error;                                        // Not ours. Leave it.
+}
+
+class Chat extends Resource {                          // Answers with the whole reply.
+  paths = ["/chat"];
+
+  async POST(context) {                                // A context object, not a bare
+    const prompt = await readPrompt(context.request);  // `Request` — it has to
+                                                       // carry `env` too.
+    const client = new OpenAI({
+      apiKey: context.env.PERPLEXITY_API_KEY,
+      baseURL: BASE_URL,
+    });
+
+    let completion;
+
+    try {
+      completion = await client.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+      });
+    } catch (error) {
+      throw apiErrorToHTTPError(error);
+    }
+
+    const text = completion.choices[0]?.message.content ?? "";
+    const sources = readSources(completion);
+
+    return Response.json({ text, sources });
+  }
+}
+
+class ChatStream extends Resource {                    // Answers a piece at a time.
+  paths = ["/chat/stream"];
+
+  async POST(context) {
+    const prompt = await readPrompt(context.request);  // Throws before the
+                                                       // `Response` exists.
+    const client = new OpenAI({
+      apiKey: context.env.PERPLEXITY_API_KEY,
+      baseURL: BASE_URL,
+    });
+
+    let stream;
+
+    try {
+      stream = await client.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        stream: true,
+      });
+    } catch (error) {
+      throw apiErrorToHTTPError(error);
+    }
+
+    const encoder = new TextEncoder();
+
+    const body = new ReadableStream({
+      async start(controller) {
+        const send = (frame) => controller.enqueue(encoder.encode(frame));
+
+        let sources = [];
+
+        try {
+          for await (const chunk of stream) {
+            const found = readSources(chunk);
+
+            if (found.length > 0) {
+              sources = found;
+            }
+
+            const text = chunk.choices[0]?.delta.content;
+
+            if (text) {
+              send(`data: ${JSON.stringify({ text })}\n\n`);
+            }
+          }
+
+          send(`event: sources\ndata: ${JSON.stringify({ sources })}\n\n`);
+          send("event: done\ndata: {}\n\n");
+        } catch (error) {                              // Too late for a status code.
+          send(                                        // Say so in the stream instead.
+            `event: error\ndata: ${
+              JSON.stringify({ message: "upstream failed" })
+            }\n\n`,
+          );
+          console.error(error);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(body, {
+      headers: {
+        "content-type": "text/event-stream",
+        "cache-control": "no-store",
+      },
+    });
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Chat, ChatStream)
+  .build();
+
+export default {
+  fetch(request, env) {
+    // The chain requires `url` and `method`. The rest of this object is
+    // yours to define, which is how `env` reaches the resource.
+    const context = {
+      url: request.url,
+      method: request.method,
+      request,
+      env,
+    };
+
+    return app
+      .handle(context)
+      .catch((error) => {
+        // `name` is checked before `instanceof` because `instanceof` fails when
+        // two copies of Drash end up in one bundle.
+        if (error.name === "HTTPError") {
+          return new Response(error.message, {
+            status: error.status_code,
+            statusText: error.status_code_description,
+          });
+        }
+
+        console.error(error);
+
+        return new Response("The server could not generate a response", {
+          status: 500,
+        });
+      });
+  },
+};
+```
+
+Run it:
+
+```bash
+npx wrangler dev app.js
+```
+
+## Pointing the Client Somewhere Else
+
+`baseURL` is the only line that makes this a Perplexity application:
+
+```ts
+const client = new OpenAI({
+  apiKey: process.env.PERPLEXITY_API_KEY,
+  baseURL: "https://api.perplexity.ai",
+});
+```
+
+The SDK builds its request paths relative to that, so `client.chat.completions.create()` posts to `https://api.perplexity.ai/chat/completions`. The request body, the streaming format, and the error classes are all the ones the SDK already implements, because that is the API Perplexity chose to speak.
+
+Two things follow that are easy to get wrong.
+
+__The model names are not OpenAI's.__ `gpt-5` is a `400` here. Perplexity's search models are the `sonar` family &mdash; `sonar` for ordinary questions, `sonar-pro` for ones worth more searching, `sonar-reasoning` when the answer needs working through. A wrong name comes back as `OpenAI.BadRequestError`, which the table below maps to a `400` for your caller. That is the correct status only if the caller chose the model; if the model name is yours, it is a `500` waiting to be mislabelled, so keep it in a constant rather than reading it off the request body.
+
+__Nothing outside Chat Completions is portable.__ The client will happily let you call `client.responses.create()` or `client.embeddings.create()`, and both fail at the endpoint. Treat the OpenAI SDK here as a Chat Completions client that happens to ship with extras.
+
+## Reading the Sources
+
+This is the part no SDK types for you. The completion carries the pages the answer was built from, on a field the OpenAI schema does not declare:
+
+```ts
+function readSources(payload: unknown): Source[] {
+  const raw = payload as {
+    search_results?: { title?: string; url?: string }[];
+    citations?: string[];
+  };
+
+  if (Array.isArray(raw?.search_results)) {
+    return raw.search_results
+      .filter((result): result is Source => typeof result.url === "string")
+      .map((result) => ({ title: result.title, url: result.url }));
+  }
+
+  if (Array.isArray(raw?.citations)) {
+    return raw.citations.map((url) => ({ url }));
+  }
+
+  return [];
+}
+```
+
+The cast is doing real work. The SDK's response type has no `search_results` and no `citations`, so `completion.search_results` does not compile &mdash; and if you silence that with `any`, you also silence the shape check. Casting to a narrow type that describes exactly what you expect, then verifying with `Array.isArray` before you touch it, keeps the compiler useful.
+
+Both fields are checked because the API has used both: `citations` was a flat list of URLs, `search_results` carries a title alongside each one. Reading both means the endpoint keeps working across that change instead of quietly returning `[]`.
+
+And `[]` is a legitimate answer. A question that needs no search &mdash; arithmetic, a rewrite of text you supplied &mdash; produces a reply with no sources attached. An empty list is not a failure and should not be treated as one.
+
+## Carrying Sources Through a Stream
+
+The non-streaming endpoint has it easy: the completion is a single object, so the text and the sources are read from the same value. A stream has to hold onto them:
+
+```ts
+let sources: Source[] = [];
+
+for await (const chunk of stream) {
+  const found = readSources(chunk);
+
+  if (found.length > 0) {
+    sources = found;
+  }
+
+  const text = chunk.choices[0]?.delta.content;
+
+  if (text) {
+    send(`data: ${JSON.stringify({ text })}\n\n`);
+  }
+}
+
+send(`event: sources\ndata: ${JSON.stringify({ sources })}\n\n`);
+send("event: done\ndata: {}\n\n");
+```
+
+The list rides along on chunks and grows as the model cites more, so keeping the last non-empty one and emitting it after the text is finished gives the client a single, complete list. The alternative &mdash; forwarding each chunk's sources as they arrive &mdash; makes the client responsible for deduplicating, which is work you can just do once here.
+
+Sending it as a named `sources` event rather than mixing it into the `data:` frames is what keeps the client simple:
+
+```text
+data: {"text":"The release "}
+
+data: {"text":"shipped in March."}
+
+event: sources
+data: {"sources":[{"title":"Release notes","url":"https://..."}]}
+
+event: done
+data: {}
+```
+
+A client appending `data:` frames to a text box needs no special case, and one that wants to render citations listens for one more event.
+
+### What Your Runtime Expects Back
+
+A Worker's `fetch` hands your resource a Web `Request` and expects a `Response`, so a streamed body needs no adaptation: the `ReadableStream` goes back exactly as built. What does differ on Workers is where the API key comes from, which is its own section [below](#getting-the-api-key-to-the-resource).
+
+## Handling Errors From the API
+
+[Error handling](/docs/error-handling) covers how a throw reaches your `.catch()`. What is specific here is the translation step in front of it: a failure talking to Perplexity is a failure of *your* server, so the status you return is rarely the status you received:
+
+| The SDK throws | You throw | Why |
+| --- | --- | --- |
+| `OpenAI.AuthenticationError` | `Status.InternalServerError` | Your key is wrong or missing. The caller did nothing to cause it and can do nothing about it. |
+| `OpenAI.RateLimitError` | `Status.TooManyRequests` | The one case where passing the status through is right &mdash; your caller should back off too. |
+| `OpenAI.BadRequestError` | `Status.BadRequest` | The prompt, or a model name that is not in the `sonar` family. |
+| `OpenAI.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
+
+These classes are chosen by HTTP status code, not by provider, which is why the same four work against an endpoint the SDK was not written for. `apiErrorToHTTPError` does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+
+<Callout type="warning">
+__None of this applies once the stream is open.__ The status line and headers go out with the first byte. Awaiting `create()` before writing the head covers the common failures &mdash; a bad key, a wrong model, a refused connection &mdash; because they all land while a status code is still available. A failure mid-generation cannot be covered, so report it in-band:
+
+```ts
+send(`event: error\ndata: ${JSON.stringify({ message: "upstream failed" })}\n\n`);
+```
+
+Clients have to handle that event for it to mean anything, so document it alongside the endpoint.
+</Callout>
+
+## Getting the API Key to the Resource
+
+Other runtimes read a key once, at startup, and build one client the resources close over. A Worker cannot. There is no `process.env`, and the binding is an argument to the `fetch` handler &mdash; code at module scope runs before any request exists, so there is nothing to read yet. The chain requires two fields on its input, a readable `url` and a readable `method`; everything else on that object is yours. So hand it a context object and put `env` on it:
+
+```js
+export default {
+  fetch(request, env) {
+    const context = {
+      url: request.url,
+      method: request.method,
+      request,
+      env,
+    };
+
+    return app.handle(context).catch(/* ... */);
+  },
+};
+```
+
+The resource then reads `context.request` for the body and `context.env` for the key, and builds its client per request. That is the same context-object shape [Node uses](/docs/requests/handling-requests), reached for a different reason: Node needs one because it has no `Request`, Workers needs one because it has no startup-time access to secrets. It is one pattern, not two.
+
+## Verification
+
+With the application running on `localhost:1447`:
+
+```text
+curl -X POST localhost:1447/chat -d '{"prompt":"What shipped in Drash v3?"}'
+->  {"text":"...","sources":[{"title":"...","url":"https://..."}]}
+
+curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Who won?"}'
+->  data: {"text":"..."} ... event: sources ... event: done
+
+curl -X POST localhost:1447/chat -d '{"prompt":"What is 2 + 2?"}'
+->  {"text":"4","sources":[]}            # No search needed. Not an error.
+
+curl -X POST localhost:1447/chat -d 'not json'   ->  400  Body must be JSON
+curl -X POST localhost:1447/chat -d '{}'         ->  400  Body must have a `prompt` string
+curl -X GET localhost:1447/chat                  ->  501  Not Implemented
+curl -X POST localhost:1447/nope                 ->  404  Not Found
+```
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
+
+The third one is worth running deliberately. It is the case that proves `sources: []` is an ordinary answer, and it is the one a client written against the first example will crash on.
+
+## Where to Next
+
+- [Calling OpenAI](/examples/runtimes/cloudflare-workers/calling-openai) &mdash; the same two endpoints without the `baseURL`, and the page that explains the streaming chunks in full
+- [Calling Claude](/examples/runtimes/cloudflare-workers/calling-claude) &mdash; a client that is not OpenAI-shaped, for comparison
+- [Creating Middleware](/docs/middleware/creating-middleware) &mdash; put an API key check or a request log in front of both endpoints
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can reach an endpoint this expensive
+- [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
+
+This example sends one prompt and gets one answer. Holding a conversation means sending the whole history on every request, since the API keeps no state between calls &mdash; the `messages` array grows, and where you store it is your decision, not Drash's.

@@ -26,10 +26,9 @@ export default {
     type: "page",
   },
   // Whole tasks, start to finish. Docs explains one feature at a time, which
-  // does not answer "here is the thing you were trying to build." Absorbed the
-  // old Examples section — each of those finished apps is now a recipe.
-  recipes: {
-    title: "Recipes",
+  // does not answer "here is the thing you were trying to build."
+  examples: {
+    title: "Examples",
     type: "page",
   },
   reference: {

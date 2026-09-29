@@ -1,0 +1,611 @@
+---
+title: Create an MCP Server on Cloudflare Workers
+description: A complete, runnable MCP server on Cloudflare Workers, deployed with Wrangler.
+---
+
+# Create an MCP Server on Cloudflare Workers
+
+A Drash resource speaking Model Context Protocol, running on the edge
+
+## Overview
+
+The [Model Context Protocol](https://modelcontextprotocol.io) is how a model gets at things it cannot do on its own: running a query, reading a file, calling your API.
+
+### Server, Client, Model
+
+Three parties, and telling them apart is most of the battle:
+
+| | What it is | Who writes it |
+| --- | --- | --- |
+| __MCP server__ | An HTTP endpoint publishing capabilities: tools to call, resources to read, prompts to offer | __You.__ It is what this example builds. |
+| __MCP client__ | The application that connects to servers and puts what they publish in front of a model &mdash; Claude Desktop, an editor, an agent you wrote | Usually someone else. No client code appears on these pages. |
+| The model | Sits behind the client. It never reaches your server directly; it asks its client to. | Nobody. It is the party being served. |
+
+Traffic runs one way. A client opens an HTTP request to your server, your server answers, and the exchange is over. Your server never calls out to a client, never pushes, and never starts a conversation &mdash; so nothing on these pages is a callback, a socket, or a subscription. It is a `POST` handler.
+
+So "who invokes this" is worth asking of every capability below. The answer is never your server.
+
+Over HTTP, an MCP server is one URL that accepts `POST`. That is the whole transport. Since spec revision `2026-07-28`, the Streamable HTTP binding has no handshake, no session, and no server-initiated requests &mdash; every message carries its own protocol version and capabilities, and the server treats each one independently.
+
+Which is to say it is a single path, one HTTP method, and no state between calls. That is a [resource](/docs/resources/creating-a-resource).
+
+This example builds a small notes server publishing one of each thing a server can publish. The last column is the part that is easy to skim past:
+
+| Published | Name | What it does | Who decides to invoke it |
+| --- | --- | --- | --- |
+| Tool | `save_note` | Files a note under a title | The __model__, mid-conversation |
+| Resource | `notes://{title}` | Hands back one saved note | The __client__, choosing what context to load |
+| Prompt | `summarize_note` | A canned message, ready to send | The __user__, from a menu or slash command |
+
+Three capabilities, three different parties holding the trigger. That is deliberate in the protocol rather than an accident of naming: a tool is model-controlled, so it is described in language a model reads and decides on; a resource is application-controlled, so the client fetches it without asking anyone; a prompt is user-controlled, so it surfaces in the interface as something a person picks. Build the wrong one and the capability works but nothing ever fires it.
+
+The protocol work is done by the official [MCP TypeScript SDK](https://ts.sdk.modelcontextprotocol.io). `createMcpHandler()` returns an object with a `fetch(request)` method &mdash; a Web `Request` in, a Web `Response` out. Drash's job is to decide that a request belongs to that handler and to hand it over, which is what a resource is for.
+
+### Objectives
+
+To gain familiarity with:
+
+- mounting a non-Drash request handler inside a Drash resource;
+- defining HTTP methods purely to control which status a caller gets;
+- using middleware to enforce a transport-level security rule; and
+- shaping caught errors into a protocol's error format rather than your own.
+
+## The Resource Is the Endpoint
+
+Strip the registrations away and the Drash part of this application is nine lines:
+
+```ts
+class MCPEndpoint extends Resource {
+  public paths = ["/mcp"];
+
+  public POST(request: Request) {
+    return handler.fetch(request);
+  }
+}
+```
+
+`paths` claims one URL. `POST` takes the request the chain matched and returns whatever `handler.fetch()` resolves with. Drash does not read the body, does not look at the JSON-RPC envelope, and does not touch the response &mdash; it returns the `Response` to your `.catch()`-wrapped call untouched, exactly as it does for a resource that builds its own.
+
+That is the whole integration. Anything shaped like `(request) => Response` mounts in a resource this way; MCP is not a special case, it just happens to be a protocol whose HTTP binding is one path and one method.
+
+<Callout type="info">
+The snippet above is the shape on Bun, Cloudflare Workers, and Deno, which hand Drash a Web `Request`. Node has no `Request`, so its resource takes a [context object](/docs/requests/handling-requests) you build and forwards `context.request` and `context.response` instead. Same resource, same `paths`, different argument &mdash; see the [Node page](/examples/runtimes/node/mcp-server).
+</Callout>
+
+### Why `GET` and `DELETE` Are Defined
+
+Every runtime page defines `GET` and `DELETE` on the resource. Neither is an MCP method. They are there to fix a status code.
+
+Revisions `2025-03-26` through `2025-11-25` used `GET` to open a standalone event stream and `DELETE` to end a session. Revision `2026-07-28` removed both, and requires a server that receives them to answer `405 Method Not Allowed` &mdash; which is how an older client discovers it is talking to a newer server.
+
+Drash's base `Resource` answers `501 Not Implemented` for any method you did not define. That is the correct default for a resource, and the wrong answer here: a client reading `501` learns nothing about which era the server speaks. Defining `GET` and `DELETE` and forwarding them lets the SDK answer:
+
+```text
+GET /mcp     ->  405  {"error":{"code":-32000,"message":"Method not allowed."}}
+DELETE /mcp  ->  405  {"error":{"code":-32000,"message":"Method not allowed."}}
+```
+
+Leave them off and the same requests return `501`. The lesson generalizes past MCP: in Drash, which HTTP methods a resource defines *is* the decision about which statuses a caller can get.
+
+## What the Server Publishes
+
+<Callout type="warning">
+__Three things here answer to the word "server."__ `McpServer` is the SDK object you register capabilities on; it speaks the protocol and knows nothing about HTTP. The __MCP server__ is the endpoint a client actually connects to &mdash; that object, plus the Drash resource holding it, plus the guard in front. The __HTTP server__ is your runtime's `Deno.serve`, `Bun.serve`, or `node:http`, which is the one listening on a port. The variable named `server` in every snippet below is the first of the three.
+</Callout>
+
+The three registrations are the SDK's API, not Drash's, and they are identical on every runtime. Each one hands the client a different kind of thing, so the shapes are worth reading once.
+
+### The Tool
+
+```ts
+server.registerTool(
+  "save_note",
+  {
+    description: "Save a note under a title",
+    inputSchema: z.object({
+      title: z.string().describe("The title to file the note under"),
+      body: z.string().describe("The note itself"),
+    }),
+  },
+  ({ title, body }) => {
+    if (!title.trim()) {
+      return {
+        content: [{ type: "text", text: "Title cannot be empty." }],
+        isError: true,
+      };
+    }
+
+    NOTES.set(title, body);
+
+    return { content: [{ type: "text", text: `Saved "${title}".` }] };
+  },
+);
+```
+
+`inputSchema` is published to clients as JSON Schema, so `description` and `.describe()` are not comments &mdash; they are what a model reads when deciding whether and how to call this.
+
+The `isError` branch is the part people get wrong. A tool that fails because the *input* was bad has not suffered a protocol error; it has produced a result the model should read and correct. So it returns `200` with `isError: true`, and the text is addressed to the model. Throwing here instead would produce a JSON-RPC error, which clients are told to treat as unrecoverable.
+
+### The Resource
+
+```ts
+server.registerResource(
+  "note",
+  new ResourceTemplate("notes://{title}", { list: undefined }),
+  { title: "Note", description: "One saved note", mimeType: "text/plain" },
+  (uri, { title }) => ({
+    contents: [{ uri: uri.href, text: NOTES.get(String(title)) ?? "" }],
+  }),
+);
+```
+
+<Callout type="warning">
+__Two different things are called a resource here.__ An MCP resource is a readable URI a client can fetch. A Drash `Resource` is a class that answers an HTTP path. Each runtime page contains one Drash resource, `MCPEndpoint`, which publishes one MCP resource, `notes://{title}`. They are unrelated concepts that collided on a word.
+</Callout>
+
+`ResourceTemplate` makes the URI parameterized, and the second callback argument carries the matched parts &mdash; the same idea as Drash's own [path params](/docs/requests/path-params), applied to a `notes://` URI instead of a URL path.
+
+### The Prompt
+
+```ts
+server.registerPrompt(
+  "summarize_note",
+  {
+    description: "Ask a model to summarize a saved note",
+    argsSchema: z.object({ title: z.string() }),
+  },
+  ({ title }) => ({
+    messages: [{
+      role: "user" as const,
+      content: {
+        type: "text" as const,
+        text: `Summarize this note:\n\n${NOTES.get(title) ?? ""}`,
+      },
+    }],
+  }),
+);
+```
+
+A prompt is a message the *user* picks, not one the model calls &mdash; it typically surfaces as a slash command or a menu item in the client. `argsSchema` drives validation and typing, and arguments that fail it are rejected with `-32602` before your callback runs.
+
+## Guarding the Endpoint
+
+The SDK handler deliberately validates no headers of its own. Mount it bare and this succeeds:
+
+```text
+curl -X POST -H "Origin: https://evil.example" ... http://localhost:1447/mcp
+->  200 OK
+```
+
+Which means any page in any browser can drive an MCP server running on the user's machine &mdash; the DNS-rebinding hole the spec's `Origin` rule exists to close. Closing it is a per-request check that has nothing to do with notes, so it belongs in [middleware](/docs/middleware/creating-middleware):
+
+```ts
+class OriginGuard extends Middleware {
+  public ALL(request: Request) {
+    const origin = request.headers.get("origin");
+
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      throw new HTTPError(Status.Forbidden, "Origin not allowed");
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+`ALL` intercepts every method, so the guard covers `POST`, `GET`, and `DELETE` without being written three times. The `origin &&` matters: the rule is that a *present and invalid* `Origin` gets `403`. A direct client &mdash; curl, an agent, a desktop app &mdash; sends no `Origin` at all, and rejecting those would lock out the callers you are building for.
+
+[`ResourceGroup`](/docs/resources/grouping-resources) wraps the resource in the guard:
+
+```ts
+const group = ResourceGroup
+  .builder()
+  .resources(MCPEndpoint)
+  .middleware(OriginGuard)
+  .build();
+
+const app = Application.builder().resources(group).build();
+```
+
+## Turning a Thrown Error Into JSON-RPC
+
+`OriginGuard` throws an `HTTPError`, which [reaches your `.catch()`](/docs/error-handling) like any other. What is different here is who is on the other end. It is not a browser and not a person: it is an MCP client parsing JSON-RPC, which will do nothing useful with an HTML error page or a bare status line. So the failure has to come back in the shape the client already knows how to read:
+
+```ts
+function mcpErrorResponse(error: unknown): Response {
+  const status = error instanceof HTTPError
+    ? error.status_code
+    : Status.InternalServerError.code;
+  const message = error instanceof HTTPError
+    ? error.message
+    : "Internal Server Error";
+
+  return new Response(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message },
+      id: null,
+    }),
+    { status, headers: { "content-type": "application/json" } },
+  );
+}
+```
+
+`id: null` is correct and deliberate: the request never reached the SDK, so there is no request `id` to echo. The unknown-error branch collapses everything else to `500` with a fixed string rather than leaking `error.message`, which on an unexpected throw may contain a stack or a path.
+
+This function only ever runs for failures *before* the SDK. Once `handler.fetch()` is reached, it writes its own JSON-RPC errors and this `.catch()` never sees them &mdash; which is why the `-32020` and `-32022` responses below look nothing like the one above.
+
+## A Note on State
+
+Every runtime page keeps its notes in a module-level `Map` called `NOTES`, which is the right amount of machinery for reading these pages and the wrong amount for anything else.
+
+MCP has no protocol-level session: the spec is explicit that a server must not infer state from earlier requests, and that anything spanning calls must be named by an identifier the client passes each time. A `Map` in module scope is not that. It is per-process on Bun, Deno, and Node, and per-isolate on Cloudflare Workers &mdash; where isolates start, stop, and multiply, so two calls from one conversation may not see the same map at all.
+
+Replace it with whatever your runtime gives you: a database, a KV store, [Workers KV](https://developers.cloudflare.com/kv/) or a Durable Object. The resource does not change when you do.
+
+## Build It
+
+<Steps>
+
+### Install the Dependencies
+
+```bash
+npm install @drashland/drash @modelcontextprotocol/server zod
+```
+
+### Create the Following Files
+
+The application splits along the same seams the [overview](#overview) explains it in &mdash; one idea per file.
+
+<FileTree>
+  <FileTree.Folder name="drash-mcp" defaultOpen>
+    <FileTree.File name="worker.ts" />
+    <FileTree.File name="resource.ts" />
+    <FileTree.File name="mcp.ts" />
+    <FileTree.File name="middleware.ts" />
+    <FileTree.File name="notes.ts" />
+  </FileTree.Folder>
+</FileTree>
+
+Imports run one way and never loop back: `worker.ts` wires up `resource.ts` and `middleware.ts`, `resource.ts` hands every request to `mcp.ts`, and `mcp.ts` is the only file that touches `notes.ts`. Nothing imports `worker.ts`, which is what makes it the entry point Wrangler is pointed at.
+
+<CodeTabs
+  items={["worker.ts", "resource.ts", "mcp.ts", "middleware.ts", "notes.ts"]}
+  storageKey="mcp-file"
+>
+<CodeTab>
+
+```ts
+import {
+  Application,
+  HTTPError,
+  ResourceGroup,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+import { OriginGuard } from "./middleware.ts";
+import { MCPEndpoint } from "./resource.ts";
+
+const group = ResourceGroup
+  .builder()
+  .resources(MCPEndpoint)
+  .middleware(OriginGuard)
+  .build();
+
+const app = Application.builder().resources(group).build();
+
+export default {
+  fetch(request: Request): Promise<Response> {
+    return app
+      .handle<Response>(request)
+      .catch(mcpErrorResponse);
+  },
+};
+
+// The chain threw before the SDK could answer, so there is no JSON-RPC
+// response yet. Write one, because that is what the client can parse.
+function mcpErrorResponse(error: unknown): Response {
+  const status = error instanceof HTTPError
+    ? error.status_code
+    : Status.InternalServerError.code;
+  const message = error instanceof HTTPError
+    ? error.message
+    : "Internal Server Error";
+
+  return new Response(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: { code: -32000, message },
+      id: null,
+    }),
+    { status, headers: { "content-type": "application/json" } },
+  );
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import { Resource } from "@drashland/drash/modules/http.native.js";
+import { handler } from "./mcp.ts";
+
+export class MCPEndpoint extends Resource {
+  public paths = ["/mcp"];
+
+  // Every MCP message arrives here.
+  public POST(request: Request) {
+    return handler.fetch(request);
+  }
+
+  // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
+  // `501` for a method you did not define, and the spec asks for `405`.
+  public GET(request: Request) {
+    return handler.fetch(request);
+  }
+
+  public DELETE(request: Request) {
+    return handler.fetch(request);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import {
+  createMcpHandler,
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/server";
+import * as z from "zod/v4";
+import { NOTES } from "./notes.ts";
+
+// The SDK builds a fresh server per request, which is why this is a factory.
+export const handler = createMcpHandler(() => {
+  const server = new McpServer({ name: "drash-notes", version: "1.0.0" });
+
+  server.registerTool(
+    "save_note",
+    {
+      description: "Save a note under a title",
+      inputSchema: z.object({
+        title: z.string().describe("The title to file the note under"),
+        body: z.string().describe("The note itself"),
+      }),
+    },
+    ({ title, body }) => {
+      if (!title.trim()) {
+        return {                   // A tool failure is a *result*, not an error
+          content: [{ type: "text", text: "Title cannot be empty." }],
+          isError: true,           // so the model can read it and try again.
+        };
+      }
+
+      NOTES.set(title, body);
+
+      return { content: [{ type: "text", text: `Saved "${title}".` }] };
+    },
+  );
+
+  server.registerResource(
+    "note",
+    new ResourceTemplate("notes://{title}", { list: undefined }),
+    { title: "Note", description: "One saved note", mimeType: "text/plain" },
+    (uri, { title }) => ({
+      contents: [{ uri: uri.href, text: NOTES.get(String(title)) ?? "" }],
+    }),
+  );
+
+  server.registerPrompt(
+    "summarize_note",
+    {
+      description: "Ask a model to summarize a saved note",
+      argsSchema: z.object({ title: z.string() }),
+    },
+    ({ title }) => ({
+      messages: [{
+        role: "user" as const,
+        content: {
+          type: "text" as const,
+          text: `Summarize this note:\n\n${NOTES.get(title) ?? ""}`,
+        },
+      }],
+    }),
+  );
+
+  return server;
+});
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+import { HTTPError, Middleware } from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+const ALLOWED_ORIGINS = ["https://app.example.com"];
+
+// The spec requires a 403 when `Origin` is present and not allowed. Without
+// this, a page on any origin could drive a server running on localhost.
+export class OriginGuard extends Middleware {
+  public ALL(request: Request) {
+    const origin = request.headers.get("origin");
+
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      throw new HTTPError(Status.Forbidden, "Origin not allowed");
+    }
+
+    return this.next<Response>(request);
+  }
+}
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts
+// Per-isolate and not durable, which on Workers is a real problem rather than
+// a simplification — see the overview's note on state. This file is the only
+// thing that changes when you move to Workers KV, D1, or a Durable Object.
+export const NOTES = new Map<string, string>([
+  ["welcome", "Drash is a microframework for building HTTP systems."],
+]);
+```
+
+</CodeTab>
+</CodeTabs>
+
+### Create the Wrangler Config
+
+The SDK reaches for a few Node built-ins, so the Worker needs `nodejs_compat` turned on. Without that flag the bundle fails to start.
+
+```toml filename="wrangler.toml"
+name = "drash-mcp"
+main = "worker.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+```
+
+### Run the Application
+
+```bash
+npx wrangler dev
+```
+
+Wrangler serves on `http://localhost:8787` unless you pass `--port`.
+
+### Confirm It Answers
+
+`curl` is standing in for an MCP client here. You are building the server; the client is the thing that connects to it, and you are not writing one on this page.
+
+```bash
+curl -X POST http://localhost:8787/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: tools/list" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}'
+```
+
+The server answers with the one tool it publishes:
+
+```json
+{"result":{"tools":[{"name":"save_note","description":"Save a note under a title","inputSchema":{"type":"object","$schema":"https://json-schema.org/draft/2020-12/schema","properties":{"title":{"type":"string","description":"The title to file the note under"},"body":{"type":"string","description":"The note itself"}},"required":["title","body"]}}],"resultType":"complete","ttlMs":0,"cacheScope":"private","_meta":{"io.modelcontextprotocol/serverInfo":{"name":"drash-notes","version":"1.0.0"}}},"jsonrpc":"2.0","id":1}
+```
+
+That is the smoke test. The [Overview](#verification) has the full table &mdash; tool calls, resource reads, prompt fetches, and every error the server can return.
+
+</Steps>
+
+## Notes
+
+Workers provide a global `URLPattern`, so this uses the __native__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). A Worker's `fetch` export takes a Web `Request` and returns a `Response`, which is exactly what the chain takes and returns, so the request goes straight through.
+
+__`NOTES` is the one thing you must replace before deploying this.__ A module-level `Map` lives in a single isolate. Cloudflare starts isolates, stops them, and runs many at once, so a note saved by one request may be invisible to the next &mdash; and the protocol gives you no session to pin a caller to one isolate. Move it to [Workers KV](https://developers.cloudflare.com/kv/), D1, or a Durable Object; see [A Note on State](#a-note-on-state).
+
+`ALLOWED_ORIGINS` is a constant here for readability. A deployed Worker has no startup-time access to secrets, so anything sensitive &mdash; an auth token for the guard, an upstream API key &mdash; arrives through the `env` argument of `fetch` instead, and has to be threaded to wherever it is needed.
+
+Deploy with `npx wrangler deploy` when the local run looks right.
+
+## Verification
+
+The protocol behaves identically on every runtime, so this is the same table everywhere. With the application running on `localhost:8787`:
+
+`curl` stands in for an MCP client throughout. Nothing below needs Claude Desktop or an editor: a client's whole job on the wire is to post JSON-RPC to your one URL, which is a thing you can do by hand. Pointing a real client at the server once it answers these is then a configuration step, not another build.
+
+Every call needs the three headers the transport requires &mdash; `MCP-Protocol-Version`, `Mcp-Method`, and for `tools/call` a `Mcp-Name` &mdash; plus the same values inside the body's `_meta`:
+
+```bash
+curl -X POST http://localhost:8787/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "MCP-Protocol-Version: 2026-07-28" \
+  -H "Mcp-Method: tools/list" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list",
+    "params": {
+      "_meta": {
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+        "io.modelcontextprotocol/clientCapabilities": {}
+      }
+    }
+  }'
+```
+
+That returns the published tool, its schema, and the server's own name:
+
+```json
+{
+  "result": {
+    "tools": [
+      {
+        "name": "save_note",
+        "description": "Save a note under a title",
+        "inputSchema": {
+          "type": "object",
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title to file the note under"
+            },
+            "body": {
+              "type": "string",
+              "description": "The note itself"
+            }
+          },
+          "required": [
+            "title",
+            "body"
+          ]
+        }
+      }
+    ],
+    "resultType": "complete",
+    "ttlMs": 0,
+    "cacheScope": "private",
+    "_meta": {
+      "io.modelcontextprotocol/serverInfo": {
+        "name": "drash-notes",
+        "version": "1.0.0"
+      }
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 1
+}
+```
+
+Swap the method and body to exercise the rest:
+
+| Send | Get back |
+| --- | --- |
+| `tools/call` `save_note` with a title and body | `200` &mdash; `Saved "hello".` |
+| `tools/call` `save_note` with a blank title | `200` &mdash; `isError: true`, `Title cannot be empty.` |
+| `tools/call` a name you never registered | `200` &mdash; JSON-RPC error `-32602`, `Tool nope not found` |
+| `resources/read` `notes://hello` | `200` &mdash; `contents` holding the body you saved |
+| `prompts/get` `summarize_note` | `200` &mdash; a `messages` array |
+| `sorcery/cast` | `404` &mdash; JSON-RPC error `-32601`, `Method not found` |
+| `GET /mcp` or `DELETE /mcp` | `405` &mdash; `Method not allowed.` |
+| Any call with `Origin: https://evil.example` | `403` &mdash; `Origin not allowed` |
+| `Mcp-Method: tools/call` on a body whose method is `tools/list` | `400` &mdash; `-32020`, the headers and body disagree |
+| `MCP-Protocol-Version: 1999-01-01` | `400` &mdash; `-32022`, with the versions the server does support |
+
+The last two are worth pausing on. The transport mirrors `method` and `name` into headers so proxies can route without parsing bodies, and the server must reject any request where the two disagree &mdash; otherwise a load balancer and your code could act on different values from the same request. The SDK enforces that for you; the `403` two rows above it is the one you had to write yourself.
+
+<Callout type="info">
+Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls back rather than rejecting, since a missing header is how pre-`2025-06-18` clients look. Do not read that as the header being optional; it is required for every request this revision defines.
+</Callout>
+
+## Where to Next
+
+- [Creating Middleware](/docs/middleware/creating-middleware) &mdash; add bearer-token auth in front of the endpoint, the way `OriginGuard` sits there now
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often one client can invoke a tool
+- [Grouping Resources](/docs/resources/grouping-resources) &mdash; publish a second MCP server on another path, sharing the guard
+- [Calling Claude](/examples/runtimes/cloudflare-workers/calling-claude) &mdash; the other side of the relationship: your application calling a model, rather than a model calling your application
+
+For prompts with completion, resource subscriptions, progress notifications, and the multi-round-trip flow a server uses to ask the client for input, see the [MCP TypeScript SDK docs](https://ts.sdk.modelcontextprotocol.io). All of them register on the same `McpServer`, and none of them change the resource this example built.

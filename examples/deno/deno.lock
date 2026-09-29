@@ -4,7 +4,8 @@
     "jsr:@drashland/drash@*": "3.0.2",
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.14",
-    "npm:@anthropic-ai/sdk@*": "0.125.0"
+    "npm:@anthropic-ai/sdk@*": "0.125.0",
+    "npm:@drashland/drash@^3.0.2": "3.0.2"
   },
   "jsr": {
     "@drashland/drash@3.0.2": {
@@ -31,6 +32,9 @@
     },
     "@babel/runtime@7.29.7": {
       "integrity": "sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw=="
+    },
+    "@drashland/drash@3.0.2": {
+      "integrity": "sha512-iSvMjtzQaVduZiNKqgmZQYwX+mFxwrqczAoHUXpj2OJCFsrJcCr8jHJfeiyoTXT0qnBhkIX6cVHXi1seLO3/uw=="
     },
     "@stablelib/base64@1.0.1": {
       "integrity": "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="

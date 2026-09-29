@@ -1,0 +1,432 @@
+---
+title: Calling OpenAI on Cloudflare Workers
+description: Two HTTP endpoints backed by the OpenAI API — one that answers all at once, one that streams, on Cloudflare Workers.
+---
+
+# Calling OpenAI on Cloudflare Workers
+
+Two endpoints backed by the OpenAI API &mdash; one that answers all at once, one that streams
+
+## Overview
+
+A [resource](/docs/resources/creating-a-resource) calls OpenAI the way it does anything else: an ordinary `await` inside `POST`.
+
+What does need thought is the shape of the answer. A model generates its reply a piece at a time, and a request that waits for the whole thing can sit for a minute before anything reaches the browser. So this example builds both:
+
+| Endpoint | Answers with |
+| --- | --- |
+| `POST /chat` | One JSON body, once the model has finished |
+| `POST /chat/stream` | A [server-sent event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) per piece, as the model produces it |
+
+Your resource returns [whatever your runtime wants back](/docs/requests/handling-requests), and Drash passes that value through untouched. That is what makes a streamed body a non-event for the framework: the resource below returns a `Response`, and a streamed one is a `Response` whose body is a `ReadableStream`.
+
+<Callout type="info">
+__This example uses Chat Completions, not the Responses API.__ OpenAI offers both. Chat Completions is the one a dozen other providers implement, so the code here is also the code that talks to anything OpenAI-compatible &mdash; the [Perplexity example](/examples/runtimes/cloudflare-workers/calling-perplexity) is this file with a `baseURL` added. If you are only ever calling OpenAI and want its newer surface, `client.responses.create()` takes `input` instead of `messages` and returns `output_text`; everything this page says about resources, streaming, and errors applies unchanged.
+</Callout>
+
+### Objectives
+
+To gain familiarity with:
+
+- reading and validating a JSON request body inside a resource;
+- returning a `Response` whose body is a `ReadableStream`;
+- turning an API client's errors into ones the chain can render; and
+- getting a secret to a resource on a runtime that has no `process.env`.
+
+## Prerequisites
+
+You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [OpenAI API key](https://platform.openai.com/api-keys).
+
+```bash
+npm install @drashland/drash openai
+npx wrangler secret put OPENAI_API_KEY
+```
+
+## The Whole Application
+
+One file. Save it, and the rest of this page takes it apart.
+
+```js filename="app.js"
+import OpenAI from "openai";
+import {
+  Application,
+  HTTPError,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+const MODEL = "gpt-5";
+
+// No module-scoped client here. A Worker's secrets arrive as an argument to
+// `fetch`, so there is nothing to read at startup — see "Getting the API Key to
+// the Resource" below.
+
+// Both resources start here. A `Request` parses its own body, so this is the
+// same function the Deno and Bun builds use.
+async function readPrompt(request) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    throw new HTTPError(Status.BadRequest, "Body must be JSON");
+  }
+
+  if (typeof body.prompt !== "string" || body.prompt === "") {
+    throw new HTTPError(Status.BadRequest, "Body must have a `prompt` string");
+  }
+
+  return body.prompt;
+}
+
+// OpenAI's failures are not your caller's failures. Restate each one as the
+// status your caller should actually see. Order matters — the specific classes
+// come before `APIError`, which is their shared parent.
+function openAIErrorToHTTPError(error) {
+  if (error instanceof OpenAI.AuthenticationError) {
+    return new HTTPError(Status.InternalServerError);  // Your key is wrong.
+  }
+
+  if (error instanceof OpenAI.RateLimitError) {
+    return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
+  }
+
+  if (error instanceof OpenAI.BadRequestError) {
+    return new HTTPError(Status.BadRequest);           // Usually the prompt.
+  }
+
+  if (error instanceof OpenAI.APIError) {
+    return new HTTPError(Status.BadGateway);           // Upstream is down.
+  }
+
+  return error;                                        // Not ours. Leave it.
+}
+
+class Chat extends Resource {                          // Answers with the whole reply.
+  paths = ["/chat"];
+
+  async POST(context) {                                // A context object, not a bare
+    const prompt = await readPrompt(context.request);  // `Request` — it has to
+                                                       // carry `env` too.
+    const client = new OpenAI({ apiKey: context.env.OPENAI_API_KEY });
+
+    let completion;
+
+    try {
+      completion = await client.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+      });
+    } catch (error) {
+      throw openAIErrorToHTTPError(error);
+    }
+
+    const text = completion.choices[0]?.message.content ?? "";
+
+    return Response.json({ text });
+  }
+}
+
+class ChatStream extends Resource {                    // Answers a piece at a time.
+  paths = ["/chat/stream"];
+
+  async POST(context) {
+    const prompt = await readPrompt(context.request);  // Throws before the
+                                                       // `Response` exists.
+    const client = new OpenAI({ apiKey: context.env.OPENAI_API_KEY });
+
+    let stream;
+
+    try {
+      stream = await client.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        stream: true,
+      });
+    } catch (error) {
+      throw openAIErrorToHTTPError(error);
+    }
+
+    const encoder = new TextEncoder();
+
+    const body = new ReadableStream({
+      async start(controller) {
+        const send = (frame) => controller.enqueue(encoder.encode(frame));
+
+        try {
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta.content;
+
+            if (text) {
+              send(`data: ${JSON.stringify({ text })}\n\n`);
+            }
+          }
+
+          send("event: done\ndata: {}\n\n");
+        } catch (error) {                              // Too late for a status code.
+          send(                                        // Say so in the stream instead.
+            `event: error\ndata: ${
+              JSON.stringify({ message: "upstream failed" })
+            }\n\n`,
+          );
+          console.error(error);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(body, {
+      headers: {
+        "content-type": "text/event-stream",
+        "cache-control": "no-store",
+      },
+    });
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Chat, ChatStream)
+  .build();
+
+export default {
+  fetch(request, env) {
+    // The chain requires `url` and `method`. The rest of this object is
+    // yours to define, which is how `env` reaches the resource.
+    const context = {
+      url: request.url,
+      method: request.method,
+      request,
+      env,
+    };
+
+    return app
+      .handle(context)
+      .catch((error) => {
+        // `name` is checked before `instanceof` because `instanceof` fails when
+        // two copies of Drash end up in one bundle.
+        if (error.name === "HTTPError") {
+          return new Response(error.message, {
+            status: error.status_code,
+            statusText: error.status_code_description,
+          });
+        }
+
+        console.error(error);
+
+        return new Response("The server could not generate a response", {
+          status: 500,
+        });
+      });
+  },
+};
+```
+
+Run it:
+
+```bash
+npx wrangler dev app.js
+```
+
+## The Non-Streaming Endpoint
+
+`Chat` is the shorter of the two, and everything in it is an ordinary resource method.
+
+```ts
+class Chat extends Resource {
+  public paths = ["/chat"];
+
+  public async POST(request: Request) {
+    const prompt = await readPrompt(request);
+
+    const completion = await client.chat.completions.create({
+      model: MODEL,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    // ...
+  }
+}
+```
+
+Two things are worth naming.
+
+__The reply is buried two levels down, and both are optional.__ A completion holds a list of `choices`, each with a `message`:
+
+```ts
+const text = completion.choices[0]?.message.content ?? "";
+```
+
+The optional chaining is not defensive noise. `choices` is empty when the request was filtered, and `content` is `null` whenever the model answered with something other than text &mdash; a tool call, most often. Reading `.content` straight off `choices[0].message` compiles and then throws in production on the first refusal.
+
+__There is no required token ceiling.__ The model stops when it is finished. If you want a cap, the parameter is `max_completion_tokens`; the older `max_tokens` is rejected by newer models rather than ignored, which is the one migration detail worth knowing if you are porting existing code.
+
+## The Streaming Endpoint
+
+`ChatStream` returns before the model has finished. The body is a `ReadableStream` that fills in as chunks arrive:
+
+```ts
+const stream = await client.chat.completions.create({
+  model: MODEL,
+  messages: [{ role: "user", content: prompt }],
+  stream: true,
+});
+
+const body = new ReadableStream({
+  async start(controller) {
+    for await (const chunk of stream) {
+      const text = chunk.choices[0]?.delta.content;
+
+      if (text) {
+        controller.enqueue(encoder.encode(
+          `data: ${JSON.stringify({ text })}\n\n`,
+        ));
+      }
+    }
+
+    controller.close();
+  },
+});
+
+return new Response(body, {
+  headers: { "content-type": "text/event-stream" },
+});
+```
+
+`stream: true` changes the return type from a completion to an async iterable of chunks. Each chunk carries a `delta` rather than a `message`, and the `if (text)` matters: the first chunk announces the role with no content, the last carries a `finish_reason` with no content, and a run of `null`s in the middle is normal. Without the guard you emit frames containing `null`.
+
+Note the `await`. `client.chat.completions.create()` returns a promise even in streaming mode, and it does not resolve until the response headers are back &mdash; which means a bad key, a rate limit, or an unknown model throws __before__ your `Response` exists. That is a genuine difference from clients that hand you a stream object synchronously, and it is why the streaming endpoint here can still answer with a real status code for the most common failures.
+
+### The Frame Format
+
+Each `data:` line is one server-sent event, and the blank line is what ends it. A browser reads these with `EventSource`, or with `fetch` if you need to `POST`:
+
+```text
+data: {"text":"Hello"}
+
+data: {"text":" there"}
+
+event: done
+data: {}
+```
+
+The named `done` event exists because a closed connection and a finished reply look identical to the client otherwise.
+
+<Callout type="info">
+__Expect a pause before the first token on a reasoning model.__ The GPT-5 family thinks before it answers, and the thinking is not streamed &mdash; the connection opens, nothing arrives for a while, then text comes quickly. To shorten the gap, pass a lower effort:
+
+```ts
+client.chat.completions.create({
+  model: MODEL,
+  reasoning_effort: "low",
+  messages: [{ role: "user", content: prompt }],
+  stream: true,
+});
+```
+
+The trade is the obvious one: less thinking, faster first token, worse answers on anything hard.
+</Callout>
+
+### What Your Runtime Expects Back
+
+A Worker's `fetch` hands your resource a Web `Request` and expects a `Response`, so a streamed body needs no adaptation: the `ReadableStream` goes back exactly as built. What does differ on Workers is where the API key comes from, which is its own section [below](#getting-the-api-key-to-the-resource).
+
+## Handling Errors From the API
+
+[Error handling](/docs/error-handling) covers how a throw reaches your `.catch()`. What is specific here is the translation step in front of it: a failure talking to OpenAI is a failure of *your* server, so the status you return is rarely the status you received:
+
+| The SDK throws | You throw | Why |
+| --- | --- | --- |
+| `OpenAI.AuthenticationError` | `Status.InternalServerError` | Your key is wrong or missing. The caller did nothing to cause it and can do nothing about it. |
+| `OpenAI.RateLimitError` | `Status.TooManyRequests` | The one case where passing the status through is right &mdash; your caller should back off too. It also covers an exhausted quota, which is worth alerting on separately. |
+| `OpenAI.BadRequestError` | `Status.BadRequest` | Almost always the prompt, which came from the caller. |
+| `OpenAI.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
+
+`openAIErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+
+<Callout type="warning">
+__None of this applies once the stream is open.__ The status line and headers go out with the first byte. After that a failure cannot become a `500`, because a `200` has already been sent &mdash; the client has a successful response containing half an answer.
+
+Awaiting `create()` before you write the head buys you most of the protection: connection failures, bad keys, and rejected parameters all happen while a status code is still available. What it cannot cover is a failure __mid-generation__ &mdash; the upstream connection dropping after ten tokens. For that, report in-band:
+
+```ts
+send(`event: error\ndata: ${JSON.stringify({ message: "upstream failed" })}\n\n`);
+```
+
+Clients have to handle that event for it to mean anything, so document it alongside the endpoint.
+</Callout>
+
+## Getting the API Key to the Resource
+
+Other runtimes read a key once, at startup, and build one client the resources close over. A Worker cannot. There is no `process.env`, and the binding is an argument to the `fetch` handler &mdash; code at module scope runs before any request exists, so there is nothing to read yet. The documented Workers application passes the `Request` straight into the chain, which leaves a resource with no way to reach `env` at all.
+
+The chain requires two fields on its input: a readable `url` and a readable `method`. Everything else on that object is yours. So hand it a context object and put `env` on it:
+
+```js
+export default {
+  fetch(request, env) {
+    const context = {
+      url: request.url,
+      method: request.method,
+      request,
+      env,
+    };
+
+    return app.handle(context).catch(/* ... */);
+  },
+};
+```
+
+The resource then reads `context.request` for the body and `context.env` for the key, and builds its client per request:
+
+```js
+async POST(context) {
+  const prompt = await readPrompt(context.request);
+  const client = new OpenAI({ apiKey: context.env.OPENAI_API_KEY });
+  // ...
+}
+```
+
+That is the same context-object shape [Node uses](/docs/requests/handling-requests), reached for a different reason: Node needs one because it has no `Request`, Workers needs one because it has no startup-time access to secrets. It is one pattern, not two.
+
+## Verification
+
+With the application running on `localhost:1447`:
+
+```text
+curl -X POST localhost:1447/chat -d '{"prompt":"Say hi"}'        ->  {"text":"..."}
+curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Hi"}'  ->  data: {"text":"..."} ... event: done
+curl -X POST localhost:1447/chat -d 'not json'                   ->  400  Body must be JSON
+curl -X POST localhost:1447/chat -d '{}'                         ->  400  Body must have a `prompt` string
+curl -X GET localhost:1447/chat                                  ->  501  Not Implemented
+curl -X POST localhost:1447/nope                                 ->  404  Not Found
+```
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
+
+### Proving the Streaming Caveat
+
+Point the application at a key you know is wrong and send the same prompt to both endpoints:
+
+```text
+curl -X POST localhost:1447/chat -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+
+curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+```
+
+Both fail the same way, and that is the point of awaiting `create()` before building the `Response`: the rejection arrives while the status line is still unspent. Move the `await` inside the stream's `start()` and the second command starts answering `200 OK` with an `error` event in the body instead &mdash; a client that ignores that event then sees a successful, empty answer. The ordering is the whole protection.
+
+## Where to Next
+
+- [Calling Claude](/examples/runtimes/cloudflare-workers/calling-claude) &mdash; the same two endpoints against the Anthropic API, where the streaming client behaves differently enough to be worth comparing
+- [Calling Perplexity](/examples/runtimes/cloudflare-workers/calling-perplexity) &mdash; this application with a `baseURL`, answering with sources attached
+- [Creating Middleware](/docs/middleware/creating-middleware) &mdash; put an API key check or a request log in front of both endpoints
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can reach an endpoint this expensive
+- [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
+
+This example sends one prompt and gets one answer. Holding a conversation means sending the whole history on every request, since the API keeps no state between calls &mdash; the `messages` array grows, and where you store it is your decision, not Drash's.
