@@ -1,0 +1,1294 @@
+---
+title: Calling Claude on Next.js
+description: Two HTTP endpoints backed by the Claude API that remember the conversation on the server, and a React component that renders each reply as it arrives, on Next.js.
+---
+
+# Calling Claude on Next.js
+
+Two endpoints backed by the Claude API that remember the conversation on the server, and a React component that renders each reply as it arrives
+
+## Overview
+
+A [resource](/docs/resources/creating-a-resource) calls Claude the way it does anything else: an ordinary `await` inside `POST`. What does need thought is the shape of the answer. A model generates its reply a piece at a time, and a request that waits for the whole thing can sit for a minute before anything reaches the browser. So this example builds both, and then a component with a tab for each, so you can send the same conversation to either one and watch the difference:
+
+| Endpoint | Answers with |
+| --- | --- |
+| `POST /api/chat` | One JSON body, once the model has finished |
+| `POST /api/chat/stream` | A [server-sent event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) per piece, as the model produces it |
+
+Both remember the conversation. The browser sends only the new prompt, and the server adds it to the history it kept from the earlier turns. A third resource at `/api/conversation` hands that history back (`GET`), so a reload picks up where it left off, and forgets it (`DELETE`) when you start over.
+
+A Next.js __route handler__ &mdash; a file exporting one function per HTTP method &mdash; is given a Web `Request` and returns a `Response`. That is exactly what the chain [accepts and returns](/docs/requests/handling-requests), so a streamed body needs nothing from Drash: the resource returns a `Response` whose body happens to be a `ReadableStream`, and Drash hands it back untouched.
+
+### Objectives
+
+To gain familiarity with:
+
+- mounting a Drash application inside a Next.js route handler;
+- returning a `Response` whose body is a `ReadableStream`;
+- turning an API client's errors into ones the chain can render;
+- reassembling server-sent events in the browser, where a network read can end in the middle of one; and
+- remembering a conversation on the server, since the API keeps no state between calls.
+
+## Prerequisites
+
+You need a Next.js application &mdash; `create-next-app` makes one &mdash; and an [Anthropic API key](https://console.anthropic.com/settings/keys).
+
+```bash
+npx create-next-app@latest my-app --ts --app --tailwind
+cd my-app
+npm install @drashland/drash @anthropic-ai/sdk
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
+
+This page was written against Next.js 16.3.6, React 19, and Tailwind CSS 4, which is what `create-next-app@latest` produces today (September 23, 2026). `--tailwind` is what installs and wires up Tailwind; the styling below is the only thing that depends on it, so drop the flag and the classes if you have your own.
+
+<Callout type="warning">
+__Keep the key on the server.__ The route handler and the page shell run on the server. The component marked `"use client"` runs in the browser and never sees the key &mdash; it talks to your own endpoint, which talks to Anthropic. An Anthropic key in client-side code is readable by anyone who opens devtools, and every request they make with it is charged to your account.
+</Callout>
+
+## The Whole Application
+
+Four files. Save them, and the rest of this page takes them apart.
+
+```ts filename="app/api/[...drash]/route.ts"
+import Anthropic from "@anthropic-ai/sdk";
+import {
+  Application,
+  HTTPError,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+import { DEFAULT_MODEL, isModel, type Model } from "@/app/models";
+
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+type Turn = { role: "user" | "assistant"; content: string };
+
+// The API keeps no state between calls, so something has to hold the
+// conversation and send all of it every time. Here that is the server: one
+// list of turns per conversation, in memory. A restart forgets them all, and
+// serverless instances do not share memory, so a real deployment keeps these
+// in a database or a key-value store instead.
+const conversations = new Map<string, Turn[]>();
+
+const COOKIE = "conversation";
+
+// The browser holds only an ID, in a cookie, and sends it back on its own.
+// `HttpOnly` keeps page scripts from reading it.
+function openConversation(request: Request) {
+  const cookies = request.headers.get("cookie") ?? "";
+  const found = cookies.match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`))?.[1];
+  const id = found ?? crypto.randomUUID();
+
+  const headers: Record<string, string> = found        // Only a new conversation
+    ? {}                                               // needs the cookie set.
+    : { "set-cookie": `${COOKIE}=${id}; Path=/; HttpOnly; SameSite=Lax` };
+
+  return { id, turns: conversations.get(id) ?? [], headers };
+}
+
+// Stores the prompt and the reply together, and only once the reply is done.
+// A failed request leaves no trace, so the next one never sends Claude a
+// question that was never answered.
+function remember(id: string, turns: Turn[], prompt: string, reply: string) {
+  if (reply === "") {                                  // The API rejects an empty
+    return;                                            // turn, so storing one would
+  }                                                    // break every later request.
+
+  conversations.set(id, [
+    ...turns,
+    { role: "user", content: prompt },
+    { role: "assistant", content: reply },
+  ]);
+}
+
+// Both chat resources start here. A route handler is handed a Web `Request`,
+// which parses its own body.
+async function readRequest(
+  request: Request,
+): Promise<{ prompt: string; model: Model }> {
+  let body: { prompt?: unknown; model?: unknown };
+
+  try {
+    body = await request.json();
+  } catch {
+    throw new HTTPError(Status.BadRequest, "Body must be JSON");
+  }
+
+  if (typeof body.prompt !== "string" || body.prompt === "") {
+    throw new HTTPError(Status.BadRequest, "Body must have a `prompt` string");
+  }
+
+  const model = body.model ?? DEFAULT_MODEL;           // The browser picks from a
+                                                       // list, but nothing stops a
+  if (!isModel(model)) {                               // caller sending any string.
+    throw new HTTPError(Status.BadRequest, "Unknown model");
+  }
+
+  return { prompt: body.prompt, model };
+}
+
+// Anthropic's failures are not your caller's failures. Restate each one as the
+// status your caller should actually see, with a reason a person can act on.
+// Order matters — the specific classes come before `APIError`, which is their
+// shared parent.
+function anthropicErrorToHTTPError(error: unknown): unknown {
+  if (error instanceof Anthropic.AuthenticationError) {
+    return new HTTPError(                              // Your key is wrong. The
+      Status.InternalServerError,                      // caller cannot fix that.
+      "The server's Anthropic API key was rejected.",
+    );
+  }
+
+  if (error instanceof Anthropic.RateLimitError) {
+    return new HTTPError(                              // Pass the limit on.
+      Status.TooManyRequests,
+      "Too many requests right now. Wait a moment, then try again.",
+    );
+  }
+
+  if (error instanceof Anthropic.NotFoundError) {
+    return new HTTPError(                              // A model this key has no
+      Status.BadRequest,                               // access to.
+      "That model is not available to this server's API key.",
+    );
+  }
+
+  if (error instanceof Anthropic.BadRequestError) {
+    return new HTTPError(                              // Usually the prompt.
+      Status.BadRequest,
+      "Claude could not accept that request. The conversation may be too long.",
+    );
+  }
+
+  if (error instanceof Anthropic.APIError) {
+    return new HTTPError(                              // Upstream is down.
+      Status.BadGateway,
+      "Claude could not be reached. Try again in a moment.",
+    );
+  }
+
+  return error;                                        // Not ours. Leave it.
+}
+
+// A refusal is not an exception. The API answers `200` and says so in
+// `stop_reason`, so it is checked for and turned into one.
+const refused = () =>
+  new HTTPError(
+    Status.UnprocessableEntity,
+    "Claude declined to answer that prompt.",
+  );
+
+class Conversation extends Resource {                  // The page reads the thread
+  public paths = ["/api/conversation"];                // back from here on load.
+
+  public GET(request: Request) {
+    const { turns } = openConversation(request);
+
+    return Response.json({ messages: turns });
+  }
+
+  public DELETE(request: Request) {                    // Starts over. The cookie
+    const { id } = openConversation(request);          // stays; its history goes.
+
+    conversations.delete(id);
+
+    return new Response(null, { status: 204 });
+  }
+}
+
+class Chat extends Resource {                          // Answers with the whole reply.
+  public paths = ["/api/chat"];                        // The URL the browser asks
+                                                       // for, not a path relative
+  public async POST(request: Request) {                // to the handler.
+    const { prompt, model } = await readRequest(request);
+    const { id, turns, headers } = openConversation(request);
+
+    let message;
+
+    try {
+      message = await client.messages.create({
+        model,
+        max_tokens: 16000,
+        messages: [...turns, { role: "user", content: prompt }],
+      });
+    } catch (error) {
+      throw anthropicErrorToHTTPError(error);
+    }
+
+    if (message.stop_reason === "refusal") {
+      throw refused();
+    }
+
+    const text = message.content                       // `content` holds blocks of
+      .filter((block) => block.type === "text")        // several types. Keep the text
+      .map((block) => block.text)                      // ones before reading `.text`.
+      .join("");
+
+    remember(id, turns, prompt, text);
+
+    return Response.json({ text }, { headers });
+  }
+}
+
+class ChatStream extends Resource {                    // Answers a piece at a time.
+  public paths = ["/api/chat/stream"];
+
+  public async POST(request: Request) {
+    // Read and checked before the `Response` exists — that matters.
+    const { prompt, model } = await readRequest(request);
+    const { id, turns, headers } = openConversation(request);
+
+    const stream = client.messages.stream({
+      model,
+      max_tokens: 64000,
+      messages: [...turns, { role: "user", content: prompt }],
+    });
+
+    const encoder = new TextEncoder();
+
+    const body = new ReadableStream({
+      async start(controller) {
+        const send = (frame: string) =>
+          controller.enqueue(encoder.encode(frame));
+
+        let reply = "";                                // Collected as it goes out,
+                                                       // so it can be stored once
+        try {                                          // the stream is done.
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              reply += event.delta.text;
+              send(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+            }
+
+            if (
+              event.type === "message_delta" &&
+              event.delta.stop_reason === "refusal"
+            ) {
+              throw refused();                         // Any text already sent is
+            }                                          // dropped by the page.
+          }
+
+          remember(id, turns, prompt, reply);
+          send("event: done\ndata: {}\n\n");
+        } catch (error) {                              // Too late for a status code.
+          const failure = anthropicErrorToHTTPError(error);
+          const message = failure instanceof HTTPError // Say so in the stream
+            ? failure.message                          // instead, with the same
+            : "The reply stopped partway through.";    // reason /api/chat gives.
+
+          send(`event: error\ndata: ${JSON.stringify({ message })}\n\n`);
+          console.error(error);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(body, {
+      headers: {
+        ...headers,
+        "content-type": "text/event-stream",
+        "cache-control": "no-store",
+        "x-accel-buffering": "no",                     // Stops a reverse proxy from
+      },                                               // holding frames back.
+    });
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Conversation, Chat, ChatStream)
+  .build();
+
+function handle(request: Request): Promise<Response> {
+  return app
+    .handle<Response>(request)
+    .catch((error) => {
+      // `name` is checked before `instanceof` because `instanceof` fails when
+      // two copies of Drash end up in one bundle.
+      if (error.name === "HTTPError") {
+        return new Response(error.message, {
+          status: error.status_code,
+          statusText: error.status_code_description,
+        });
+      }
+
+      console.error(error);
+
+      return new Response("The server could not generate a response", {
+        status: 500,
+      });
+    });
+}
+
+// Next.js dispatches on the export name, so every method the chain should see
+// needs one. All of them hand the request straight to the same application.
+export async function GET(request: Request) {
+  return handle(request);
+}
+
+export async function POST(request: Request) {
+  return handle(request);
+}
+
+export async function DELETE(request: Request) {
+  return handle(request);
+}
+```
+
+```ts filename="app/models.ts"
+// The models the page offers and the only ones the server will call. Both
+// sides import this list, so they cannot disagree. It is plain data with no
+// secrets in it, which is what makes it safe to ship to the browser.
+export const MODELS = {
+  "claude-opus-5": "Claude Opus 5",
+  "claude-sonnet-5": "Claude Sonnet 5",
+  "claude-haiku-4-5": "Claude Haiku 4.5",
+  "claude-fable-5-1": "Claude Fable 5.1",
+} as const;
+
+export type Model = keyof typeof MODELS;
+
+export const DEFAULT_MODEL: Model = "claude-opus-5";
+
+export function isModel(value: unknown): value is Model {
+  return typeof value === "string" && Object.hasOwn(MODELS, value);
+}
+```
+
+```tsx filename="app/page.tsx"
+import { ChatClient } from "./chat-client";
+
+// A server component. It renders on the server and ships no JavaScript of its
+// own, so nothing here is reachable from the browser.
+export default function ChatPage() {
+  return (
+    <div className="flex flex-1 items-center justify-center bg-zinc-50 p-6 font-sans dark:bg-zinc-950">
+      <main className="flex flex-col items-center gap-3">
+        <h1 className="text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          Chat with Claude
+        </h1>
+        <ChatClient />
+      </main>
+    </div>
+  );
+}
+```
+
+```tsx filename="app/chat-client.tsx"
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { DEFAULT_MODEL, MODELS, type Model } from "./models";
+
+type Turn = {
+  role: "user" | "assistant";
+  content: string;
+  error?: string;                                      // "Not delivered", and why.
+};                                                     // The server never stored it.
+
+// One tab per resource. Both add to the same conversation on the server, so
+// switching tabs partway through carries it over.
+const ENDPOINTS = {
+  "/api/chat": {
+    summary: "Receive all text once the model has finished",
+    explanation: (
+      <>
+        <p>
+          The server asks Claude for the whole reply and waits. Only when the
+          model has written its last word does the server answer, with one
+          JSON body: <code>{`{"text": "..."}`}</code>.
+        </p>
+        <p>
+          That makes the client simple: one <code>fetch</code>, one{" "}
+          <code>response.json()</code>. The cost is the wait. Nothing appears
+          until the reply is finished, and a long reply can take a minute.
+        </p>
+        <p>
+          Failures are simple too. Nothing has been sent when something goes
+          wrong, so the status code (400, 429, 500, 502) says exactly what
+          happened.
+        </p>
+      </>
+    ),
+  },
+  "/api/chat/stream": {
+    summary: "Receive text as the model writes it",
+    explanation: (
+      <>
+        <p>
+          The server starts its response straight away and forwards each piece
+          of text the moment Claude writes it, as a{" "}
+          <em>server-sent event</em>: a <code>data:</code> line, then a blank
+          line.
+        </p>
+        <pre className="overflow-x-auto rounded-lg bg-black/[.05] p-3 text-xs dark:bg-white/[.08]">
+          {`data: {"text":"Hel"}\n\ndata: {"text":"lo"}\n\nevent: done`}
+        </pre>
+        <p>
+          The first words show up within a second or two and the reply grows as
+          you watch. The page reads the body piece by piece and stitches the
+          events back together, because a network read can stop in the middle
+          of one.
+        </p>
+        <p>
+          The trade-off: the <code>200</code> status goes out before Claude has
+          written anything, so a failure partway through cannot change it. The
+          server reports it inside the stream instead, as an{" "}
+          <code>event: error</code>.
+        </p>
+      </>
+    ),
+  },
+} as const;
+
+type Endpoint = keyof typeof ENDPOINTS;
+
+export function ChatClient() {
+  const [endpoint, setEndpoint] = useState<Endpoint>("/api/chat");
+  const [model, setModel] = useState<Model>(DEFAULT_MODEL);
+  const [messages, setMessages] = useState<Turn[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [problem, setProblem] = useState("");
+  const thread = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const learnMore = useRef<HTMLDialogElement>(null);
+  const errorModal = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {                                    // The server holds the
+    fetch("/api/conversation")                         // conversation, so a reload
+      .then((response) => response.json())             // picks up where it left off.
+      .then((body: { messages: Turn[] }) => setMessages(body.messages))
+      .catch(() => {})                                 // Nothing to restore; start
+      .finally(() => setLoaded(true));                 // empty.
+  }, []);
+
+  useEffect(() => {                                    // Follow the newest bubble,
+    const box = thread.current;                        // the way a messaging app
+    box?.scrollTo({ top: box.scrollHeight });          // does. Only the thread
+  }, [messages]);                                      // scrolls, not the page.
+
+  const locked = busy || !loaded;                      // No sending until the saved
+                                                       // thread arrives, or it would
+                                                       // overwrite the new prompt.
+  function send(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const prompt = String(new FormData(form).get("prompt")).trim();
+
+    if (!prompt || locked) {
+      return;
+    }
+
+    form.reset();
+    submit(prompt);
+  }
+
+  function retry(index: number) {                      // The server never stored the
+    const prompt = messages[index].content;            // failed prompt, so sending it
+                                                       // again is just sending it.
+    setMessages((turns) => turns.filter((_, i) => i !== index));
+    input.current?.focus();                            // The button is about to
+    submit(prompt);                                    // disappear from under focus.
+  }
+
+  async function submit(prompt: string) {
+    setMessages((turns) => [
+      ...turns,
+      { role: "user", content: prompt },
+      { role: "assistant", content: "" },              // Where the reply lands.
+    ]);
+    setBusy(true);
+
+    const fail = (reason: string) => {
+      setMessages((turns) => [                         // Drop the half-written
+        ...turns.slice(0, -2),                         // reply and mark the prompt,
+        { ...turns[turns.length - 2], error: reason }, // like iMessage does.
+      ]);
+      setBusy(false);
+      setProblem(reason);
+      errorModal.current?.showModal();
+    };
+
+    const append = (text: string) => {
+      setMessages((turns) => {                         // Add to the last bubble.
+        const last = turns[turns.length - 1];          // The function form sees every
+                                                       // earlier append, even ones
+        return [                                       // that landed between renders.
+          ...turns.slice(0, -1),
+          { ...last, content: last.content + text },
+        ];
+      });
+    };
+
+    // Only the new prompt goes up. The server already has the rest, found by
+    // the cookie the browser sends along with the request on its own.
+    const response = await fetch(endpoint, {
+      method: "POST",                                  // `EventSource` only sends
+      headers: { "content-type": "application/json" }, // GET, so the stream is read
+      body: JSON.stringify({ prompt, model }),         // by hand below instead.
+    }).catch(() => null);
+
+    if (!response) {
+      fail("Could not reach the server. Check your connection and try again.");
+      return;
+    }
+
+    if (!response.ok || !response.body) {              // A failure before the reply
+      const reason = await response.text();            // started still has a status
+      fail(reason || `Error ${response.status}`);      // code worth believing.
+      return;
+    }
+
+    if (endpoint === "/api/chat") {                    // The whole reply, in one go.
+      const { text } = await response.json();
+      append(text);
+      setBusy(false);
+      return;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      buffer += decoder.decode(value, { stream: true });
+
+      const frames = buffer.split("\n\n");             // A read can end mid-frame,
+      buffer = frames.pop() ?? "";                     // so hold the tail back until
+                                                       // its blank line arrives.
+      for (const frame of frames) {
+        const name = frame.match(/^event: (.*)$/m)?.[1] ?? "message";
+        const data = frame.match(/^data: (.*)$/m)?.[1];
+
+        if (!data) {
+          continue;
+        }
+
+        if (name === "error") {                        // The stream already sent 200
+          fail(JSON.parse(data).message);              // and then failed. Without
+          return;                                      // this, a failure looks like
+        }                                              // a short, successful answer.
+
+        if (name === "done") {
+          setBusy(false);
+          return;
+        }
+
+        append(JSON.parse(data).text);
+      }
+    }
+
+    // The body ended without a `done` event, so the reply is not finished.
+    fail("The connection closed before the reply finished.");
+  }
+
+  // Forgotten on the server first, then on screen.
+  async function startOver() {
+    await fetch("/api/conversation", { method: "DELETE" });
+    setMessages([]);
+    input.current?.focus();
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div
+        role="tablist"
+        className="flex gap-1 rounded-lg bg-black/[.05] p-1 dark:bg-white/[.08]"
+      >
+        {/* Locked while a reply is arriving, which is still being read from
+            the endpoint it was sent to. */}
+        {(Object.keys(ENDPOINTS) as Endpoint[]).map((path) => (
+          <button
+            key={path}
+            role="tab"
+            aria-selected={endpoint === path}
+            disabled={busy}
+            onClick={() => setEndpoint(path)}
+            className={`rounded-md px-3 py-1.5 font-mono text-sm disabled:opacity-50 ${
+              endpoint === path
+                ? "bg-white text-black shadow-sm dark:bg-zinc-800 dark:text-zinc-50"
+                : "text-zinc-600 dark:text-zinc-400"
+            }`}
+          >
+            {path}
+          </button>
+        ))}
+      </div>
+      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        {ENDPOINTS[endpoint].summary}.{" "}
+        <button
+          onClick={() => learnMore.current?.showModal()}
+          className="font-medium text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
+        >
+          Learn more
+        </button>
+      </p>
+
+      {/* A fixed box: the thread scrolls inside it, so a long conversation
+          never pushes the input off the screen. */}
+      <div className="flex h-[36rem] w-[28rem] max-w-full flex-col overflow-hidden rounded-2xl border border-black/[.08] bg-white dark:border-white/[.12] dark:bg-black">
+        <div className="flex items-center justify-between gap-2 border-b border-black/[.08] px-3 py-2 dark:border-white/[.12]">
+          <select
+            aria-label="Model"
+            value={model}
+            disabled={busy}
+            onChange={(event) => setModel(event.target.value as Model)}
+            className="rounded-md bg-transparent py-1 text-sm text-black disabled:opacity-50 dark:text-zinc-50"
+          >
+            {(Object.keys(MODELS) as Model[]).map((id) => (
+              <option key={id} value={id}>
+                {MODELS[id]}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={startOver}
+            disabled={locked || messages.length === 0}
+            className="rounded-md px-2 py-1 text-sm text-blue-600 disabled:opacity-40 dark:text-blue-400"
+          >
+            Start new chat
+          </button>
+        </div>
+
+        <div ref={thread} className="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
+          {messages.map((turn, index) => {
+            const mine = turn.role === "user";
+            const typing = busy && index === messages.length - 1;
+
+            return (
+              <div
+                key={index}
+                className={`flex max-w-[80%] flex-col gap-1 ${mine ? "items-end self-end" : "items-start self-start"}`}
+              >
+                {/* `whitespace-pre-wrap` is the one class here that is not
+                    decoration: the model's newlines are real characters, and
+                    HTML collapses them. */}
+                <p
+                  className={`whitespace-pre-wrap rounded-2xl px-4 py-2 leading-6 ${
+                    mine
+                      ? "rounded-br-md bg-blue-500 text-white"
+                      : "rounded-bl-md bg-zinc-100 text-black dark:bg-zinc-800 dark:text-zinc-50"
+                  }`}
+                >
+                  {turn.content}
+                  {typing && (
+                    <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-current align-middle" />
+                  )}
+                </p>
+                {turn.error && (
+                  <span className="flex gap-2 text-xs">
+                    <span role="alert" className="text-red-600 dark:text-red-400">
+                      Not delivered
+                    </span>
+                    <button
+                      onClick={() => retry(index)}
+                      disabled={locked}
+                      className="font-medium text-blue-600 disabled:opacity-40 dark:text-blue-400"
+                    >
+                      Try again
+                    </button>
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* The input is never disabled. A disabled input drops focus, so the
+            cursor would leave it on every send; only the button locks. */}
+        <form
+          onSubmit={send}
+          className="flex gap-2 border-t border-black/[.08] p-3 dark:border-white/[.12]"
+        >
+          <input
+            ref={input}
+            name="prompt"
+            placeholder="Ask Claude something"
+            autoComplete="off"
+            autoFocus
+            className="min-w-0 flex-1 rounded-full border border-black/[.08] px-4 py-2 text-black placeholder:text-zinc-400 dark:border-white/[.12] dark:text-zinc-50"
+          />
+          <button
+            disabled={locked}
+            className="rounded-full bg-black px-4 py-2 font-medium text-white disabled:opacity-50 dark:bg-zinc-50 dark:text-black"
+          >
+            {busy ? "…" : "Send"}
+          </button>
+        </form>
+      </div>
+
+      <Modal ref={learnMore} title={endpoint} onClose={() => input.current?.focus()}>
+        {ENDPOINTS[endpoint].explanation}
+      </Modal>
+
+      <Modal ref={errorModal} title="Not delivered" onClose={() => input.current?.focus()}>
+        <p>{problem}</p>
+        <p>Your message is still in the thread. Use Try again to send it again.</p>
+      </Modal>
+    </div>
+  );
+}
+
+// `<dialog>` with `showModal()` does the hard parts of a modal on its own: it
+// sits above the page, blocks clicks behind it, keeps focus inside, and closes
+// on Escape. A `<form method="dialog">` button closes it with no handler.
+function Modal({
+  ref,
+  title,
+  onClose,
+  children,
+}: {
+  ref: React.Ref<HTMLDialogElement>;
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(event) => {                            // A click on the backdrop
+        if (event.target === event.currentTarget) {    // lands on the dialog itself,
+          event.currentTarget.close();                 // not on anything inside it.
+        }
+      }}
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl bg-white p-0 text-black backdrop:bg-black/40 dark:bg-zinc-900 dark:text-zinc-50"
+    >
+      <div className="p-6">
+        <h2 className="font-mono text-lg font-semibold">{title}</h2>
+        <div className="mt-3 flex flex-col gap-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+          {children}
+        </div>
+        <form method="dialog" className="mt-5 flex justify-end">
+          <button className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-black">
+            Close
+          </button>
+        </form>
+      </div>
+    </dialog>
+  );
+}
+```
+
+Run it:
+
+```bash
+npm run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000). The chat is the application's home page; `app/page.tsx` replaces the placeholder `create-next-app` generates.
+
+## The Route Handler
+
+`app/api/[...drash]/route.ts` is a __catch-all__ route: the brackets and the `...` mean it answers everything beneath `/api`, whatever the path. That is deliberate. Give Drash one segment and Next.js has already done the routing; give it the whole `/api` space and the chain decides what matches, which is the part you came here for. (Doubling the brackets &mdash; `[[...drash]]` &mdash; makes the segment optional too, so bare `/api` also reaches the chain instead of Next.js answering it. Nothing here needs that.)
+
+Two things follow that are easy to get wrong.
+
+__`paths` holds the URL the browser asks for.__ Not a path relative to the handler. The file sits at `app/api/[...drash]/`, so the resources claim `/api/chat`, `/api/chat/stream`, and `/api/conversation`. A resource with `paths = ["/chat"]` never matches, and every request answers `404`.
+
+__Next.js dispatches on the export name.__ A route handler is a module exporting one function per HTTP method, and a method with no export is answered by Next.js with a `405` before your code runs. So every method any resource implements needs an export: `GET` and `DELETE` for `/api/conversation`, `POST` for the two chat endpoints. The exports are per file, not per resource, and that has a useful side effect: because `GET` is exported, `GET /api/chat` reaches the chain and gets the `501 Not Implemented` that the base `Resource` returns for a method you did not define, rather than a `405` from Next.js. The chain decides.
+
+All three exports call the same `handle()`, so there is one application and one `.catch()` regardless of which verb arrived.
+
+<Callout type="gray">
+Route handlers are not cached. GET handlers were cached by default in Next.js 14; [that changed in Next.js 15](https://nextjs.org/blog/next-15), and they now run on every request. Nothing needs `export const dynamic = "force-dynamic"` to stream correctly.
+</Callout>
+
+## Why the Polyfill Entry Point
+
+Every other example picks its [entry point](/about/concepts/native-vs-polyfill) from one runtime's `URLPattern` support. This one cannot, because Next.js travels: the same `route.ts` runs on Node 20 and 22 (no global `URLPattern`), on Node 24 and later (one), and under Deno, Bun, or Cloudflare Workers through an adapter. The polyfill is the single import correct on all of them.
+
+There is no Edge variant to weigh against it. [Next.js 16.3 dropped `runtime = 'edge'`](https://nextjs.org/docs/messages/edge-runtime-deprecated); a route that still declares it runs on Node anyway.
+
+## Choosing the Model
+
+The page offers a choice of models, and the server has to decide which of those choices it will honor. `app/models.ts` holds the list, and both sides import it:
+
+```ts
+export const MODELS = {
+  "claude-opus-5": "Claude Opus 5",
+  "claude-sonnet-5": "Claude Sonnet 5",
+  "claude-haiku-4-5": "Claude Haiku 4.5",
+  "claude-fable-5-1": "Claude Fable 5.1",
+} as const;
+```
+
+The component renders it as a `<select>` and sends the chosen ID with each prompt. The route handler checks it with `isModel` before anything else happens:
+
+```ts
+const model = body.model ?? DEFAULT_MODEL;
+
+if (!isModel(model)) {
+  throw new HTTPError(Status.BadRequest, "Unknown model");
+}
+```
+
+The check is not optional just because the page only offers valid IDs. The endpoint is a public URL, and a caller can send any string &mdash; including the ID of a model that costs more than the ones you chose to offer. One list shared by both sides means the menu and the check can never disagree, and it is safe to import into a client component because it is plain data with no secrets in it.
+
+The model is picked per request, not per conversation. Switch models partway through and the next reply comes from the new one, reading the same stored history.
+
+## Remembering the Conversation
+
+The Claude API keeps no state between calls. Every request has to carry the whole conversation, or the model answers a follow-up with no idea what came before it. Something has to hold that history, and here it is the server:
+
+```ts
+const conversations = new Map<string, Turn[]>();
+```
+
+One list of turns per conversation, keyed by an ID. The browser holds only the ID, in a cookie, and sends it back with every request without being asked. `openConversation` reads it, or makes a new one when there is none:
+
+```ts
+function openConversation(request: Request) {
+  const cookies = request.headers.get("cookie") ?? "";
+  const found = cookies.match(new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`))?.[1];
+  const id = found ?? crypto.randomUUID();
+
+  const headers: Record<string, string> = found
+    ? {}
+    : { "set-cookie": `${COOKIE}=${id}; Path=/; HttpOnly; SameSite=Lax` };
+
+  return { id, turns: conversations.get(id) ?? [], headers };
+}
+```
+
+A resource is handed a Web `Request`, so the cookie is just a header, and setting one is just a header on the `Response`. The resources spread `headers` into their response, and only the first response of a conversation carries `set-cookie`. `HttpOnly` keeps the ID out of reach of page scripts; add `Secure` once the application is served over HTTPS.
+
+Each chat resource sends Claude the stored turns plus the new prompt, then calls `remember` once the reply is complete:
+
+```ts
+function remember(id: string, turns: Turn[], prompt: string, reply: string) {
+  if (reply === "") {
+    return;
+  }
+
+  conversations.set(id, [
+    ...turns,
+    { role: "user", content: prompt },
+    { role: "assistant", content: reply },
+  ]);
+}
+```
+
+The prompt and the reply are stored together or not at all. A request that fails leaves the history as it was, so the next request never sends Claude a question that was never answered. The empty-reply guard exists for the same reason: the API rejects a turn with no text, and storing one would make every later request in that conversation fail.
+
+`Conversation` is the third resource, and it is what makes the memory visible. `GET /api/conversation` returns the stored turns, which the page loads when it opens; `DELETE` forgets them, which is what the page's "Start new chat" button calls.
+
+<Callout type="warning">
+__A `Map` is memory, not storage.__ Restarting the server forgets every conversation, and so does editing `route.ts` under `npm run dev`, which reloads the module. A serverless deployment is worse: each instance has its own memory, so consecutive requests can land on instances that have never heard of the conversation. Anything real keeps these lists in a database or a key-value store. The `Map` is the part to replace; the cookie, `openConversation`, and `remember` stay as they are. The history also grows with every turn, and so does each request's cost, because the model reads all of it every time. A long-lived conversation eventually wants a cap, whether that means dropping the oldest turns or summarizing them.
+</Callout>
+
+## The Non-Streaming Endpoint
+
+`Chat` is the shorter of the two, and everything in it is an ordinary resource method.
+
+```ts
+class Chat extends Resource {
+  public paths = ["/api/chat"];
+
+  public async POST(request: Request) {
+    const { prompt, model } = await readRequest(request);
+    const { id, turns, headers } = openConversation(request);
+
+    const message = await client.messages.create({
+      model,
+      max_tokens: 16000,
+      messages: [...turns, { role: "user", content: prompt }],
+    });
+
+    // ...
+
+    remember(id, turns, prompt, text);
+
+    return Response.json({ text }, { headers });
+  }
+}
+```
+
+Two things are worth naming.
+
+__`content` is a list of blocks, not a string.__ A reply can contain reasoning blocks, tool calls, and text, so `message.content` is a mixed array. Filter to the text blocks before reading `.text`:
+
+```ts
+const text = message.content
+  .filter((block) => block.type === "text")
+  .map((block) => block.text)
+  .join("");
+```
+
+In TypeScript that filter is also what narrows the type &mdash; `block.text` does not compile on the unfiltered union.
+
+__`max_tokens` is a ceiling, not a target.__ 16,000 is a reasonable default for a request that waits for the full reply: large enough that answers are not cut off mid-sentence, small enough that the request finishes inside the SDK's ten-minute timeout. A reply that hits the ceiling comes back with `stop_reason` set to `"max_tokens"` and no indication in the text itself, so check it if truncation would matter to you.
+
+## The Streaming Endpoint
+
+`ChatStream` returns before the model has finished. The body is a `ReadableStream` that fills in as events arrive:
+
+```ts
+const stream = client.messages.stream({
+  model,
+  max_tokens: 64000,
+  messages: [...turns, { role: "user", content: prompt }],
+});
+
+const body = new ReadableStream({
+  async start(controller) {
+    let reply = "";
+
+    for await (const event of stream) {
+      if (
+        event.type === "content_block_delta" &&
+        event.delta.type === "text_delta"
+      ) {
+        reply += event.delta.text;
+        controller.enqueue(encoder.encode(
+          `data: ${JSON.stringify({ text: event.delta.text })}\n\n`,
+        ));
+      }
+    }
+
+    remember(id, turns, prompt, reply);
+    controller.close();
+  },
+});
+
+return new Response(body, {
+  headers: { ...headers, "content-type": "text/event-stream" },
+});
+```
+
+The text is collected into `reply` as it goes out, because the server has to remember the answer it just streamed and nothing else will hand it back. `remember` runs after the loop, so a stream that fails partway never stores its half an answer. The `set-cookie` header rides along with the others: headers go out before the first frame, which is exactly when a new conversation's cookie needs to reach the browser.
+
+`max_tokens` goes up to 64,000 here because the constraint it was working around is gone. A streaming connection does not time out waiting for a complete response, so the model gets room.
+
+The stream carries several event types; `content_block_delta` with a `text_delta` is the one that holds generated text. Everything else &mdash; block starts and stops, message-level usage totals &mdash; is skipped by the `if`.
+
+The `x-accel-buffering: no` header in the full sample is for deployment rather than for Next.js. A reverse proxy in front of your application may hold a response until it looks complete, which turns a working stream into one long pause; that header tells nginx and the proxies that copied its convention not to.
+
+### The Frame Format
+
+Each `data:` line is one server-sent event, and the blank line is what ends it. A browser reads these with `EventSource`, or with `fetch` if you need to `POST`:
+
+```text
+data: {"text":"Hello"}
+
+data: {"text":" there"}
+
+event: done
+data: {}
+```
+
+The named `done` event exists because a closed connection and a finished reply look identical to the client otherwise.
+
+<Callout type="info">
+__Expect a pause before the first token.__ Claude Opus 5 thinks before it answers, and the thinking is not sent by default &mdash; the stream carries `thinking` blocks with empty text, then starts producing `text_delta` events. If you want to show the reader something during that gap, ask for a summary of the reasoning and forward it on its own event:
+
+```ts
+client.messages.stream({
+  model: "claude-opus-5",
+  max_tokens: 64000,
+  thinking: { type: "adaptive", display: "summarized" },
+  messages: [...turns, { role: "user", content: prompt }],
+});
+```
+
+The deltas then arrive as `thinking_delta` on the same `content_block_delta` event, alongside the `text_delta` ones.
+</Callout>
+
+## The React Client
+
+The browser half is one component marked `"use client"`, which is what makes it run in the browser rather than on the server. It is the only file here that ships JavaScript to the reader, and it never touches the API key &mdash; it calls your endpoint, and your endpoint calls Anthropic.
+
+### One Component, Two Endpoints
+
+The two tabs at the top of the page pick which resource the next prompt goes to. The tab only changes the URL: both resources take the same `{ prompt }` body and add to the same stored conversation, so one conversation can move between them, and the reply lands in the same bubble either way. The tabs are disabled while a reply is arriving, because that reply is still being read from the endpoint it was sent to.
+
+Each tab's caption has a "Learn more" button that opens a modal explaining that endpoint: what the server sends, what the client does with it, and what happens when something fails. The explanations live next to the endpoint paths, in the same `ENDPOINTS` object the tabs are built from, so adding a tab means writing its explanation in the same place.
+
+`/api/chat` needs almost nothing from the client. It answers once, with JSON, so the reply is one `response.json()` and one append:
+
+```ts
+if (endpoint === "/api/chat") {
+  const { text } = await response.json();
+  append(text);
+  setBusy(false);
+  return;
+}
+```
+
+Try it on a prompt that takes a while to answer. The pulsing block sits alone in an empty bubble for the whole generation, then the entire reply appears at once. That wait is the reason `/api/chat/stream` exists, and the rest of this section is what it costs the client to avoid it.
+
+### Reading the Stream
+
+The obvious tool for server-sent events is [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource), and it is the wrong one here: `EventSource` issues a `GET` and cannot send a body, while the prompt has to be `POST`ed. So the response body is read directly:
+
+```ts
+const response = await fetch(endpoint, {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ prompt }),
+});
+
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+```
+
+### Reassembling the Frames
+
+`reader.read()` resolves with whatever bytes have arrived, which has nothing to do with where frames begin and end. One read can deliver three frames, or half of one. Treating each read as a frame produces a parser that works until the first time the network splits a message &mdash; which is to say, it works in development and fails in production.
+
+The fix is three lines:
+
+```ts
+buffer += decoder.decode(value, { stream: true });
+
+const frames = buffer.split("\n\n");
+buffer = frames.pop() ?? "";
+```
+
+Everything before a blank line is a complete frame. Whatever follows the last blank line is an unfinished one, so `pop()` takes it back out and leaves it in the buffer for the next read to complete. `{ stream: true }` does the same job one level down, holding back a multi-byte character that got split across reads instead of decoding it into a replacement character.
+
+Each complete frame is then read for its event name and its payload:
+
+```ts
+const name = frame.match(/^event: (.*)$/m)?.[1] ?? "message";
+const data = frame.match(/^data: (.*)$/m)?.[1];
+```
+
+A frame with no `event:` line is a plain message, which is where the text arrives. The other two names are the ones the endpoint sends deliberately: `done` means the reply finished, and `error` means it did not. Handling `error` is not optional &mdash; see below for what ignoring it looks like.
+
+### Showing the Conversation
+
+The server holds the conversation; the component holds a copy of it to draw. That copy is one piece of state, a list of turns in the shape the server stores them, rendered like a messaging app: your prompts on the right, Claude's replies on the left, oldest at the top.
+
+```ts
+type Turn = {
+  role: "user" | "assistant";
+  content: string;
+  error?: string;
+};
+```
+
+When the page opens, the copy is filled from the server, so a reload shows the conversation where you left it:
+
+```ts
+useEffect(() => {
+  fetch("/api/conversation")
+    .then((response) => response.json())
+    .then((body: { messages: Turn[] }) => setMessages(body.messages))
+    .catch(() => {})
+    .finally(() => setLoaded(true));
+}, []);
+```
+
+Sending stays locked until `loaded` is set. Otherwise a prompt sent in the first moment could be drawn and then overwritten when the stored thread arrived.
+
+The cookie never appears in this code. The browser attaches it to every same-origin `fetch` on its own, and `HttpOnly` means the component could not read it if it tried. As far as the component knows, it sends a prompt and the server somehow remembers.
+
+Sending a prompt clears the input, as a messaging app does, and appends two turns to the screen: the prompt, and an empty assistant turn for the reply to land in. The request itself carries only the prompt.
+
+```ts
+setMessages((turns) => [
+  ...turns,
+  { role: "user", content: prompt },
+  { role: "assistant", content: "" },
+]);
+```
+
+Both endpoints write the reply into that last turn through one helper, `append`. The whole-reply tab calls it once; the streaming tab calls it once per frame. It uses the function form of `setMessages`:
+
+```ts
+const append = (text: string) => {
+  setMessages((turns) => {
+    const last = turns[turns.length - 1];
+
+    return [
+      ...turns.slice(0, -1),
+      { ...last, content: last.content + text },
+    ];
+  });
+};
+```
+
+Reading the previous list from the callback rather than from `messages` keeps the append correct when several frames land between renders, which they will. `messages` in that closure is the list as it was when the prompt was sent, and every frame after the first would overwrite the one before it.
+
+### When a Message Is Not Delivered
+
+A failed request removes the half-written reply and stores the reason on the prompt's `error`, which renders as "Not delivered" under its bubble. That matches the server exactly: `remember` never ran, so the prompt exists only on screen, and the next request carries on from the last turn that succeeded. Reload the page and the failed prompt is gone, because the server never had it.
+
+The same failure also opens a modal with the reason. Each way a request can fail has one, and they come from three places:
+
+| Where it failed | Where the reason comes from |
+| --- | --- |
+| The request never reached the server | The component: `fetch` rejected, so it writes its own |
+| The server answered with an error status | The response body, which is the `HTTPError` message |
+| The stream reported an error after `200` | The `message` in the `event: error` frame |
+
+The server writes the last two, which is why `anthropicErrorToHTTPError` now gives every `HTTPError` a message a person can act on (see [Handling Errors From the API](#handling-errors-from-the-api)). A stream that ends without a `done` event counts as a failure too, so a dropped connection is not mistaken for a short reply.
+
+"Try again" sends the same prompt again. Because the server never stored it, retrying is only this:
+
+```ts
+setMessages((turns) => turns.filter((_, i) => i !== index));
+submit(prompt);
+```
+
+The failed turn comes out of the list, and `submit` appends it again, at the end, the way any new prompt goes. Both updates use the function form, so they apply in order even though they are queued in the same tick.
+
+"Start new chat" calls `DELETE /api/conversation` and then clears the screen. The cookie stays, so the next prompt starts a fresh history under the same ID.
+
+### Keeping the Cursor in the Input
+
+The input is never disabled, only the Send button. A disabled input loses focus, so disabling it while a reply arrives would drop the cursor out of it on every send, and you would click back into it every time. Leaving it enabled means you can type your next message while the reply is still arriving; pressing Enter does nothing until the reply finishes, because a form will not submit implicitly while its submit button is disabled, and `send` checks `locked` as well.
+
+Focus returns to the input from everywhere else too. `autoFocus` puts it there on load; "Try again" and "Start new chat" move it back before their buttons disappear; and both modals move it back when they close.
+
+The modals are `<dialog>` elements opened with `showModal()`, which does the hard parts of a modal on its own: it covers the page, blocks clicks behind it, keeps focus inside, and closes on Escape. A button inside `<form method="dialog">` closes it with no JavaScript. The one thing the browser does not do is close on a backdrop click, which is the `onClick` in `Modal`: a click on the backdrop lands on the `<dialog>` itself rather than on anything inside it.
+
+### What the Styling Is Doing
+
+The classes are Tailwind's, and `create-next-app --tailwind` is what put them there &mdash; it installs Tailwind CSS 4, adds `@import "tailwindcss"` to `app/globals.css`, and generates a theme block. There is no `tailwind.config.js` to edit; version 4 configures itself from CSS. The palette deliberately matches the home page `create-next-app` generates, so the two pages look like one application.
+
+One class is load-bearing rather than decorative:
+
+```tsx
+<p className={`whitespace-pre-wrap rounded-2xl px-4 py-2 leading-6 ${...}`}>
+```
+
+A model's reply contains real newlines, and HTML collapses runs of whitespace into a single space. Ask for a numbered list and you get one long paragraph instead, which looks like a bug in your streaming code and is not. `whitespace-pre-wrap` keeps the newlines and still wraps long lines.
+
+Two smaller things are worth knowing, because both are properties of the generated project rather than choices this page made.
+
+__`font-sans` is not redundant.__ The generated `layout.tsx` loads Geist and exposes it as `--font-geist-sans`, but the generated `globals.css` then sets `body { font-family: Arial, Helvetica, sans-serif }`, which wins. `font-sans` is what reaches past that to the font the layout actually loaded. The generated home page does the same thing, for the same reason.
+
+__Centering works because the layout sets it up.__ The generated `layout.tsx` puts `min-h-full` and `flex flex-col` on `<body>`, so the page's outer `flex-1` element stretches to the viewport, and `items-center justify-center` then puts the chat in the middle of it, both ways. Leave that markup alone and the chat sits in the center of the screen; replace the layout with a bare `<body>` and the outer element collapses to the height of its content, so you want `min-h-screen` on it instead.
+
+The chat itself is a fixed box, `h-[36rem] w-[28rem]`, and its layout is what keeps the input in reach. The box is a flex column: the thread takes the leftover height with `flex-1` and scrolls with `overflow-y-auto`, and the form sits under it at its natural height. A long conversation scrolls inside the box rather than pushing the input off the screen. For the same reason, new bubbles are followed by setting the thread's own `scrollTop` rather than calling `scrollIntoView`, which would scroll the page too. `max-w-full` lets the box narrow on a phone instead of overflowing it.
+
+Everything else follows one boolean:
+
+```tsx
+const [busy, setBusy] = useState(false);
+```
+
+It disables the Send button, the tabs, the model selector, "Try again", and "Start new chat" so nothing else can be sent while a reply is open, changes the button's label, and renders a pulsing block after the last character of the newest bubble. Before the first token arrives that bubble is empty, so the block stands in for a typing indicator. It is the only sign that more text is coming, which matters most during the pause before the first token &mdash; see the callout above for why that pause exists &mdash; and on the `/api/chat` tab, where the pause lasts the whole reply.
+
+## Handling Errors From the API
+
+[Error handling](/docs/error-handling) covers how a throw reaches your `.catch()`. What is specific here is the translation step in front of it: a failure talking to Anthropic is a failure of *your* server, so the status you return is rarely the status you received:
+
+| The SDK throws | You throw | Why |
+| --- | --- | --- |
+| `Anthropic.AuthenticationError` | `Status.InternalServerError` | Your key is wrong or missing. The caller did nothing to cause it and can do nothing about it. |
+| `Anthropic.RateLimitError` | `Status.TooManyRequests` | The one case where passing the status through is right &mdash; your caller should back off too. |
+| `Anthropic.NotFoundError` | `Status.BadRequest` | The chosen model is not available to your key. The caller chose it, so it is theirs to change. |
+| `Anthropic.BadRequestError` | `Status.BadRequest` | Almost always the prompt, which came from the caller. |
+| `Anthropic.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
+
+`anthropicErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+
+Each `HTTPError` also carries a message, such as "The server's Anthropic API key was rejected." `handle()` sends that message as the response body, and the page shows it in its error modal. Without one, the body would be empty and the page would have nothing to tell you but a number.
+
+A refusal is the one failure that is not an exception. When Claude declines a prompt the API answers `200` with `stop_reason: "refusal"`, so both resources check for it and throw an `HTTPError` of their own: `Chat` after the reply, `ChatStream` when a `message_delta` event carries that stop reason.
+
+<Callout type="warning">
+__None of this applies once the stream is open.__ The status line and headers go out with the first byte. After that a failure cannot become a `500`, because a `200` has already been sent &mdash; the client has a successful response containing half an answer.
+
+Two habits follow. Validate the request body and construct the client __before__ you return the `Response`, so anything the caller got wrong still produces a real status code. And inside the stream, report failures in-band:
+
+```ts
+const failure = anthropicErrorToHTTPError(error);
+const message = failure instanceof HTTPError
+  ? failure.message
+  : "The reply stopped partway through.";
+
+send(`event: error\ndata: ${JSON.stringify({ message })}\n\n`);
+```
+
+The same translation runs here, so a bad key reads the same on both tabs; only the delivery differs. Clients have to handle that event for it to mean anything, which is why the component above returns early on it rather than waiting for a `done` that is never coming.
+</Callout>
+
+## Getting the API Key to the Resource
+
+The key is read once, when the module first loads, from `process.env.ANTHROPIC_API_KEY`, and one client is built that both resources close over. Next.js loads `.env.local` from the project root on its own, so a key kept there needs no flag and no loader.
+
+The name matters. Next.js exposes an environment variable to the browser only if its name begins with `NEXT_PUBLIC_`, and inlines it into the client bundle when it does. `ANTHROPIC_API_KEY` has no such prefix, so it stays on the server &mdash; and renaming it to `NEXT_PUBLIC_ANTHROPIC_API_KEY` would publish your key to every visitor.
+
+## Verification
+
+With `npm run dev` running on `localhost:3000`. `-c jar -b jar` makes curl save the cookie and send it back, the way a browser does:
+
+```text
+curl -c jar -b jar -X POST localhost:3000/api/chat -d '{"prompt":"My name is Eric"}'
+->  {"text":"..."}   (and set-cookie: conversation=...)
+
+curl -c jar -b jar -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"What is my name?"}'
+->  data: {"text":"Eric"} ... event: done
+
+curl -b jar localhost:3000/api/conversation
+->  {"messages":[{"role":"user","content":"My name is Eric"}, ... ]}
+
+curl -b jar -X DELETE localhost:3000/api/conversation               ->  204
+curl -b jar localhost:3000/api/conversation                         ->  {"messages":[]}
+
+curl -X POST localhost:3000/api/chat -d 'not json'                  ->  400  Body must be JSON
+curl -X POST localhost:3000/api/chat -d '{}'                        ->  400  Body must have a `prompt` string
+curl -X POST localhost:3000/api/chat -d '{"prompt":"hi","model":"gpt-9"}'
+->  400  Unknown model
+curl -X POST localhost:3000/api/chat -d '{"prompt":"hi","model":"claude-haiku-4-5"}'
+->  {"text":"..."}
+curl -X GET localhost:3000/api/chat                                 ->  501  Not Implemented
+curl -X POST localhost:3000/api/nope                                ->  404  Not Found
+```
+
+The second request is the memory working: it sends one question and no history, and the answer depends on the first request. Drop `-b jar` from it and the server starts a new conversation, with no idea who you are.
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two are the reason the catch-all route is worth having: both come from the chain, on URLs Next.js was happy to hand over. The `501` appears because `GET` is exported for `/api/conversation` &mdash; with no `GET` export at all, Next.js would answer `405` first.
+
+Then open [http://localhost:3000](http://localhost:3000), choose the `/api/chat/stream` tab, and send a prompt. The answer should grow a few words at a time in a bubble on the left, under your prompt on the right. If it appears all at once, the frames are being buffered somewhere between the resource and the component rather than streamed. Then switch to the `/api/chat` tab and send a follow-up that only makes sense given the first answer, such as "shorter". The reply should arrive all at once and take the earlier turn into account, which shows that both endpoints share one stored conversation. Then reload the page: the whole conversation should come back. "Start new chat" clears it, and a reload after that stays empty. Through all of it the cursor should stay in the input: after each send, after "Start new chat", and after closing either modal.
+
+### Proving the Streaming Caveat
+
+Point the application at a key you know is wrong and send the same prompt to both endpoints. The difference is the whole reason the warning above exists:
+
+```text
+curl -X POST localhost:3000/api/chat -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+    The server's Anthropic API key was rejected.
+
+curl -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"hi"}'
+->  200 OK, content-type: text/event-stream
+    event: error
+    data: {"message":"The server's Anthropic API key was rejected."}
+```
+
+Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body &mdash; and a client that ignores the `error` event sees a successful, empty answer.
+
+Load the page with the same wrong key and your prompt is marked "Not delivered", and the error modal says the key was rejected, on either tab. Put the right key back, press "Try again", and the same prompt goes through. The streaming tab gets there because the component acts on the `error` event. Delete that branch and the page sits there showing an empty reply bubble and no error, having received a perfectly successful response.
+
+## Where to Next
+
+- [Calling Claude on Node](/examples/runtimes/node/calling-claude) &mdash; the two endpoints without a framework, where the resource is handed a context object you build instead of a `Request`
+- [Deploy a Basic App to Vercel (api/)](/examples/platforms/vercel/api) &mdash; the same polyfill entry point in a Vercel Function, without Next.js in front of it
+- [Creating Middleware](/docs/middleware/creating-middleware) &mdash; put an API key check or a request log in front of both endpoints
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can reach an endpoint this expensive
+- [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
+
+The conversation here lives in the server's memory, which is enough to survive a reload and not enough to survive a restart. Moving it into a database means replacing the `Map` and nothing else, and which database is your decision, not Drash's.

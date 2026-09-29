@@ -1,0 +1,17 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@drashland/drash@*": "3.0.2",
+    "npm:openai@*": "7.22.0"
+  },
+  "jsr": {
+    "@drashland/drash@3.0.2": {
+      "integrity": "4cd1ef510b448705881dd87c2a93dfd002e99559d0e894e943c4c939132a0d64"
+    }
+  },
+  "npm": {
+    "openai@7.22.0": {
+      "integrity": "sha512-C4bv09YtQQb1qcFrEAENJXkuCZA72kGRwws6QIXgf0oJW6pDOmDC2WaZpQVII3Rl+RNE3Z+TQI92uNfetGwY3w=="
+    }
+  }
+}

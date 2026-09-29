@@ -1,11 +1,16 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@drashland/drash@*": "3.0.2",
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.14",
-    "npm:@drashland/drash@3": "3.0.0"
+    "npm:@anthropic-ai/sdk@*": "0.125.0",
+    "npm:@drashland/drash@^3.0.2": "3.0.2"
   },
   "jsr": {
+    "@drashland/drash@3.0.2": {
+      "integrity": "4cd1ef510b448705881dd87c2a93dfd002e99559d0e894e943c4c939132a0d64"
+    },
     "@std/assert@1.0.19": {
       "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
       "dependencies": [
@@ -17,14 +22,48 @@
     }
   },
   "npm": {
-    "@drashland/drash@3.0.0": {
-      "integrity": "sha512-yK0w3pVWqWnKMXoR8/ijxrf7nb29i54CZS9dCcCB8XXALrmOhoLFLcuZmmLWqrVGGq5ncTfF0oYHoj74FLuEEw=="
+    "@anthropic-ai/sdk@0.125.0": {
+      "integrity": "sha512-Hq5wYlXupzJ9M1Fzqjqa3hObcuigEXVZJqSYDgeZGM3wF4qrNERM5Z1OOAeoT9rlod8awJ3uYyJjbQXp1ckIGg==",
+      "dependencies": [
+        "json-schema-to-ts",
+        "standardwebhooks"
+      ],
+      "bin": true
+    },
+    "@babel/runtime@7.29.7": {
+      "integrity": "sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw=="
+    },
+    "@drashland/drash@3.0.2": {
+      "integrity": "sha512-iSvMjtzQaVduZiNKqgmZQYwX+mFxwrqczAoHUXpj2OJCFsrJcCr8jHJfeiyoTXT0qnBhkIX6cVHXi1seLO3/uw=="
+    },
+    "@stablelib/base64@1.0.1": {
+      "integrity": "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="
+    },
+    "fast-sha256@1.3.0": {
+      "integrity": "sha512-n11RGP/lrWEFI/bWdygLxhI+pVeo1ZYIVwvvPkW7azl/rOy+F3HYRZ2K5zeE9mmkhQppyv9sQFx0JM9UabnpPQ=="
+    },
+    "json-schema-to-ts@3.1.1": {
+      "integrity": "sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==",
+      "dependencies": [
+        "@babel/runtime",
+        "ts-algebra"
+      ]
+    },
+    "standardwebhooks@1.1.1": {
+      "integrity": "sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==",
+      "dependencies": [
+        "@stablelib/base64",
+        "fast-sha256"
+      ]
+    },
+    "ts-algebra@2.0.0": {
+      "integrity": "sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw=="
     }
   },
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
-      "npm:@drashland/drash@3"
+      "npm:@drashland/drash@^3.0.2"
     ]
   }
 }

@@ -1,6 +1,8 @@
 {
+  "nodeModulesDir": "auto",
   "tasks": {
-    "dev": "deno run --watch --allow-net app.ts"
+    "dev": "deno run --watch --allow-net app.ts",
+    "dev:claude": "deno run --watch --allow-net --allow-env --env-file=claude/.env claude/app.ts"
   },
   "imports": {
     "@drashland/drash": "npm:@drashland/drash@^3.0.2",

@@ -5,13 +5,25 @@ import nextra from "nextra";
 // DOCS_BASE_PATH to that prefix so assets and routes resolve.
 const basePath = process.env.DOCS_BASE_PATH ?? "";
 
+// Next sets NODE_ENV before it loads this file: "development" under `next
+// dev`, "production" under `next build`.
+const isDev = process.env.NODE_ENV === "development";
+
 const withNextra = nextra({
   defaultShowCopyCode: true,
 });
 
 export default withNextra({
   // GitHub Pages serves static files; there is no Node server to render on.
-  output: "export",
+  //
+  // Build only. `next dev` has a real server, so the export constraint buys
+  // nothing there and costs the 404 page: under `output: "export"` the dev
+  // server validates every requested path against `generateStaticParams()`,
+  // and any path that is not in it — a typo, a stale tab, a page that was
+  // moved — throws "missing param" as a 500 overlay instead of rendering the
+  // not-found page. The trade is that an export-incompatible mistake surfaces
+  // at `next build` rather than the moment you make it.
+  output: isDev ? undefined : "export",
   basePath,
   // next/image's default loader needs a running server.
   images: {

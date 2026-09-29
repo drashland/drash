@@ -1,40 +1,79 @@
 ---
 title: Examples
-description: Complete, runnable Drash applications for Deno, Node, Bun, Cloudflare Workers, and Vercel.
+description: Whole applications built with Drash, one page per target, start to finish.
 ---
 
 # Examples
 
-Each of these is a complete, runnable application. They live in the [`examples`](https://github.com/drashland/drash/tree/main/examples) directory of the repository, so you can clone the repo and run any of them directly.
+An example is one finished job, for one target &mdash; a runtime, a framework, or a platform. It states what you are building, shows the complete files, then takes them apart.
 
-They all do the same thing &mdash; answer `GET /` from a single `Home` resource &mdash; so you can compare what changes between runtimes and what does not.
+That is a different shape from [Docs](/docs/getting-started), which explains one feature at a time &mdash; what a resource is, how params are read, where errors go. Those pages answer "how does this work." These answer "I want to build X, show me the whole thing."
 
-Each runtime is a section in the sidebar, and each page under it is one flavor of that example.
+## Pick Your Runtime
+
+Everything is filed under the runtime it runs on, because that is the choice you make once and keep. Open your runtime and every example under it is written for that runtime alone &mdash; no tabs to switch, no other runtime's code on the page, nothing to click through to.
 
 <Cards num={2}>
-  <Cards.Card title="Bun / TypeScript" href="/examples/bun/typescript" arrow />
+  <Cards.Card title="Bun" href="/examples/runtimes/bun/basic-app" arrow />
   <Cards.Card
-    title="Cloudflare Workers / JavaScript (ESM)"
-    href="/examples/cloudflare-workers/javascript-esm"
+    title="Cloudflare Workers"
+    href="/examples/runtimes/cloudflare-workers/basic-app"
     arrow
   />
-  <Cards.Card title="Deno / TypeScript" href="/examples/deno/typescript" arrow />
+  <Cards.Card title="Deno" href="/examples/runtimes/deno/basic-app" arrow />
   <Cards.Card
-    title="Node / JavaScript (ESM)"
-    href="/examples/node/javascript-esm"
+    title="Node"
+    href="/examples/runtimes/node/basic-app-typescript"
     arrow
   />
-  <Cards.Card
-    title="Node / JavaScript (CJS)"
-    href="/examples/node/javascript-cjs"
-    arrow
-  />
-  <Cards.Card title="Node / TypeScript" href="/examples/node/typescript" arrow />
-  <Cards.Card title="Vercel / api/ (fetch)" href="/examples/vercel/api" arrow />
-  <Cards.Card title="Vercel / server.ts" href="/examples/vercel/server" arrow />
 </Cards>
 
-## What Changes Between Them
+Each one carries the same set:
+
+| Example | What you end up with |
+| --- | --- |
+| __Basic App__ | One resource answering `GET /`. Start here; it is the smallest complete application. |
+| __Calling Claude__ | Two endpoints backed by the Claude API &mdash; one that answers at once, one that streams. |
+| __Calling OpenAI__ | The same two endpoints against Chat Completions. |
+| __Calling Perplexity__ | The same again, answering with the sources the reply was built from. |
+| __MCP Server__ | One resource speaking Model Context Protocol, publishing a tool, a resource, and a prompt. |
+
+Node has three basic apps rather than one, because the module system is the only thing that changes the file: [CommonJS](/examples/runtimes/node/basic-app-cjs), [ESM](/examples/runtimes/node/basic-app-esm), and [TypeScript](/examples/runtimes/node/basic-app-typescript).
+
+## Frameworks
+
+A framework owns the entry point. It decides what file your code lives in and what it is handed, and it is not tied to one runtime &mdash; a Next.js application runs on Node, Deno, Bun, and Cloudflare Workers.
+
+<Cards num={2}>
+  <Cards.Card
+    title="Next.js / Calling Claude"
+    href="/examples/frameworks/next-js/calling-claude"
+    arrow
+  />
+</Cards>
+
+That one is the only example here that also builds the browser half &mdash; a React component that renders the reply as it streams in.
+
+## Platforms
+
+A platform is something you deploy onto rather than a runtime you build against. Both Vercel examples run on Node; what differs is the entry point Vercel expects.
+
+<Cards num={2}>
+  <Cards.Card
+    title="Vercel / api/ (fetch)"
+    href="/examples/platforms/vercel/api"
+    arrow
+  />
+  <Cards.Card
+    title="Vercel / server.ts"
+    href="/examples/platforms/vercel/server"
+    arrow
+  />
+</Cards>
+
+## What Changes Between Targets
+
+The resource and the application are identical in every basic example. What differs is the entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill) &mdash; and how your target hands you a request. Worth a look before you pick, and not worth re-reading after.
 
 | | Entry point | What the resource receives |
 | --- | --- | --- |
@@ -42,16 +81,26 @@ Each runtime is a section in the sidebar, and each page under it is one flavor o
 | Cloudflare Workers | `http.native.js` | Web `Request` |
 | Deno | `http.native.js` | Web `Request` |
 | Node (ESM / CJS / TS) | `http.polyfill.js` | Context object you build |
-
-The resource and the chain are identical in every one. What differs is the entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill) &mdash; and how your runtime hands you a request.
+| Next.js (App Router) | `http.polyfill.js` | Web `Request` |
+| Vercel (`api/`) | `http.polyfill.js` | Web `Request` |
+| Vercel (`server.ts`) | `http.polyfill.js` | Context object you build |
 
 <Callout type="gray">
-  Every example catches `favicon` requests in its `.catch()`. Browsers request
-  `/favicon.ico` automatically, and no resource owns that path, so the chain
-  throws a `404` for it. That check keeps the noise out of the console; it is
-  not something your own app needs.
+  Every basic example catches `favicon` requests in its `.catch()`. Browsers
+  request `/favicon.ico` automatically, and no resource owns that path, so the
+  chain throws a `404` for it. That check keeps the noise out of the console; it
+  is not something your own app needs.
 </Callout>
+
+## What Every Example Assumes
+
+- Your runtime is installed. If you do not have one yet, the [quickstart](/docs/quickstart) sets one up.
+- You have read the [Docs](/docs/getting-started) &mdash; at least [Creating a Resource](/docs/resources/creating-a-resource), [Handling Requests](/docs/requests/handling-requests), and [Error Handling](/docs/error-handling).
+
+That second one is a real assumption, not a courtesy. An example builds on the Docs rather than restating them: it links a concept the first time it comes up and then gets on with the job. Reading an example cold will work, but you will be following links to fill in what it does not stop to explain.
+
+Each example names its own dependencies at the top and links out rather than repeating what another page already says.
 
 ## Looking for a Walkthrough Instead?
 
-These pages show finished apps. If you want the reasoning built up step by step, read the [step-by-step guide](/docs/getting-started/step-by-step-guide).
+These pages show finished work. If you want the reasoning built up step by step, read the [step-by-step guide](/docs/getting-started/step-by-step-guide).
