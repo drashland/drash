@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chat",
+  title: "Chat with Claude",
   description: "Two endpoints backed by the Claude API, served by Drash.",
 };
 

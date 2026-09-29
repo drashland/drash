@@ -44,7 +44,7 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 This page was written against Next.js 16.3.6, React 19, and Tailwind CSS 4, which is what `create-next-app@latest` produces today (September 23, 2026). `--tailwind` is what installs and wires up Tailwind; the styling below is the only thing that depends on it, so drop the flag and the classes if you have your own.
 
 <Callout type="warning">
-__Keep the key on the server.__ The route handler and the page shell run on the server. The component marked `"use client"` runs in the browser and never sees the key &mdash; it talks to your own endpoint, which talks to Anthropic. An Anthropic key in client-side code is readable by anyone who opens devtools, and it bills to you.
+__Keep the key on the server.__ The route handler and the page shell run on the server. The component marked `"use client"` runs in the browser and never sees the key &mdash; it talks to your own endpoint, which talks to Anthropic. An Anthropic key in client-side code is readable by anyone who opens devtools, and every request they make with it is charged to your account.
 </Callout>
 
 ## The Whole Application
@@ -373,7 +373,7 @@ export default function ChatPage() {
     <div className="flex flex-1 items-center justify-center bg-zinc-50 p-6 font-sans dark:bg-zinc-950">
       <main className="flex flex-col items-center gap-3">
         <h1 className="text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-          Chat
+          Chat with Claude
         </h1>
         <ChatClient />
       </main>
@@ -398,7 +398,7 @@ type Turn = {
 // switching tabs partway through carries it over.
 const ENDPOINTS = {
   "/api/chat": {
-    summary: "One JSON body, once the model has finished",
+    summary: "Receive all text once the model has finished",
     explanation: (
       <>
         <p>
@@ -420,7 +420,7 @@ const ENDPOINTS = {
     ),
   },
   "/api/chat/stream": {
-    summary: "One event per piece, as the model writes it",
+    summary: "Receive text as the model writes it",
     explanation: (
       <>
         <p>
@@ -631,7 +631,7 @@ export function ChatClient() {
         ))}
       </div>
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        {ENDPOINTS[endpoint].summary}{" "}
+        {ENDPOINTS[endpoint].summary}.{" "}
         <button
           onClick={() => learnMore.current?.showModal()}
           className="font-medium text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
