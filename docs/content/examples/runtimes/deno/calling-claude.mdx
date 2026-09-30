@@ -104,9 +104,9 @@ function anthropicErrorToHTTPError(error: unknown): unknown {
 }
 
 class Chat extends Resource {                          // Answers with the whole reply.
-  public paths = ["/chat"];
+  public override paths = ["/chat"];
 
-  public async POST(request: Request) {
+  public override async POST(request: Request) {
     const prompt = await readPrompt(request);
 
     let message;
@@ -131,9 +131,9 @@ class Chat extends Resource {                          // Answers with the whole
 }
 
 class ChatStream extends Resource {                    // Answers a piece at a time.
-  public paths = ["/chat/stream"];
+  public override paths = ["/chat/stream"];
 
-  public async POST(request: Request) {
+  public override async POST(request: Request) {
     const prompt = await readPrompt(request);          // Throws before the `Response`
                                                        // exists — that matters.
     const stream = client.messages.stream({
@@ -239,9 +239,9 @@ __Or keep the key in a file.__ Deno never reads a `.env` on its own, so a key si
 
 ```ts
 class Chat extends Resource {
-  public paths = ["/chat"];
+  public override paths = ["/chat"];
 
-  public async POST(request: Request) {
+  public override async POST(request: Request) {
     const prompt = await readPrompt(request);
 
     const message = await client.messages.create({
@@ -412,3 +412,5 @@ Same failure, two shapes. The non-streaming endpoint still had its status line t
 - [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
 
 This example sends one prompt and gets one answer. Holding a conversation means sending the whole history on every request, since the API keeps no state between calls &mdash; the `messages` array grows, and where you store it is your decision, not Drash's.
+
+The finished app is in the repository at [`examples/deno/claude`](https://github.com/drashland/drash/tree/main/examples/deno/claude).

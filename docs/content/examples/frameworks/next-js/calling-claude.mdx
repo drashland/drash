@@ -370,8 +370,8 @@ import { ChatClient } from "./chat-client";
 // own, so nothing here is reachable from the browser.
 export default function ChatPage() {
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 p-6 font-sans dark:bg-zinc-950">
-      <main className="flex flex-col items-center gap-3">
+    <div className="flex h-dvh flex-col items-center bg-zinc-50 p-6 font-sans dark:bg-zinc-950">
+      <main className="flex min-h-0 w-full flex-1 flex-col items-center gap-3">
         <h1 className="text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
           Chat with Claude
         </h1>
@@ -462,6 +462,7 @@ export function ChatClient() {
   const input = useRef<HTMLInputElement>(null);
   const learnMore = useRef<HTMLDialogElement>(null);
   const errorModal = useRef<HTMLDialogElement>(null);
+  const startOverModal = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {                                    // The server holds the
     fetch("/api/conversation")                         // conversation, so a reload
@@ -598,6 +599,17 @@ export function ChatClient() {
     fail("The connection closed before the reply finished.");
   }
 
+  function confirmStartOver() {
+    const dialog = startOverModal.current;
+
+    if (!dialog) {
+      return;
+    }
+
+    dialog.returnValue = "";                           // It keeps the last answer,
+    dialog.showModal();                                // so a "yes" from before would
+  }                                                    // count again on Escape.
+
   // Forgotten on the server first, then on screen.
   async function startOver() {
     await fetch("/api/conversation", { method: "DELETE" });
@@ -606,7 +618,7 @@ export function ChatClient() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3">
       <div
         role="tablist"
         className="flex gap-1 rounded-lg bg-black/[.05] p-1 dark:bg-white/[.08]"
@@ -640,9 +652,10 @@ export function ChatClient() {
         </button>
       </p>
 
-      {/* A fixed box: the thread scrolls inside it, so a long conversation
-          never pushes the input off the screen. */}
-      <div className="flex h-[36rem] w-[28rem] max-w-full flex-col overflow-hidden rounded-2xl border border-black/[.08] bg-white dark:border-white/[.12] dark:bg-black">
+      {/* The box fills whatever space the window leaves, and the thread
+          scrolls inside it, so a long conversation never pushes the input
+          off the screen. */}
+      <div className="flex min-h-0 w-full max-w-[650px] flex-1 flex-col overflow-hidden rounded-2xl border border-black/[.08] bg-white dark:border-white/[.12] dark:bg-black">
         <div className="flex items-center justify-between gap-2 border-b border-black/[.08] px-3 py-2 dark:border-white/[.12]">
           <select
             aria-label="Model"
@@ -658,7 +671,7 @@ export function ChatClient() {
             ))}
           </select>
           <button
-            onClick={startOver}
+            onClick={confirmStartOver}
             disabled={locked || messages.length === 0}
             className="rounded-md px-2 py-1 text-sm text-blue-600 disabled:opacity-40 dark:text-blue-400"
           >
@@ -741,6 +754,24 @@ export function ChatClient() {
         <p>{problem}</p>
         <p>Your message is still in the thread. Use Try again to send it again.</p>
       </Modal>
+
+      {/* The button that closed the dialog leaves its `value` in
+          `returnValue`. Cancel, Escape, and a backdrop click leave it empty. */}
+      <Modal
+        ref={startOverModal}
+        title="Start new chat?"
+        confirm="Start new chat"
+        onClose={(event) =>
+          event.currentTarget.returnValue === "confirm"
+            ? startOver()
+            : input.current?.focus()
+        }
+      >
+        <p>
+          This conversation will be deleted from the server. You cannot get it
+          back.
+        </p>
+      </Modal>
     </div>
   );
 }
@@ -748,15 +779,18 @@ export function ChatClient() {
 // `<dialog>` with `showModal()` does the hard parts of a modal on its own: it
 // sits above the page, blocks clicks behind it, keeps focus inside, and closes
 // on Escape. A `<form method="dialog">` button closes it with no handler.
+// Pass `confirm` to turn Close into Cancel plus a button that says yes.
 function Modal({
   ref,
   title,
+  confirm,
   onClose,
   children,
 }: {
   ref: React.Ref<HTMLDialogElement>;
   title: string;
-  onClose: () => void;
+  confirm?: string;
+  onClose: (event: React.SyntheticEvent<HTMLDialogElement>) => void;
   children: React.ReactNode;
 }) {
   return (
@@ -775,10 +809,24 @@ function Modal({
         <div className="mt-3 flex flex-col gap-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
           {children}
         </div>
-        <form method="dialog" className="mt-5 flex justify-end">
-          <button className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-black">
-            Close
-          </button>
+        <form method="dialog" className="mt-5 flex justify-end gap-2">
+          {confirm ? (
+            <>
+              <button className="rounded-full px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Cancel
+              </button>
+              <button
+                value="confirm"
+                className="rounded-full bg-red-600 px-4 py-2 text-sm font-medium text-white"
+              >
+                {confirm}
+              </button>
+            </>
+          ) : (
+            <button className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-black">
+              Close
+            </button>
+          )}
         </form>
       </div>
     </dialog>
@@ -1150,15 +1198,17 @@ submit(prompt);
 
 The failed turn comes out of the list, and `submit` appends it again, at the end, the way any new prompt goes. Both updates use the function form, so they apply in order even though they are queued in the same tick.
 
-"Start new chat" calls `DELETE /api/conversation` and then clears the screen. The cookie stays, so the next prompt starts a fresh history under the same ID.
+"Start new chat" asks first, because the server forgets the conversation for good. Only after you confirm does the page call `DELETE /api/conversation` and then clear the screen. The cookie stays, so the next prompt starts a fresh history under the same ID.
 
 ### Keeping the Cursor in the Input
 
 The input is never disabled, only the Send button. A disabled input loses focus, so disabling it while a reply arrives would drop the cursor out of it on every send, and you would click back into it every time. Leaving it enabled means you can type your next message while the reply is still arriving; pressing Enter does nothing until the reply finishes, because a form will not submit implicitly while its submit button is disabled, and `send` checks `locked` as well.
 
-Focus returns to the input from everywhere else too. `autoFocus` puts it there on load; "Try again" and "Start new chat" move it back before their buttons disappear; and both modals move it back when they close.
+Focus returns to the input from everywhere else too. `autoFocus` puts it there on load; "Try again" and "Start new chat" move it back before their buttons disappear; and every modal moves it back when it closes.
 
 The modals are `<dialog>` elements opened with `showModal()`, which does the hard parts of a modal on its own: it covers the page, blocks clicks behind it, keeps focus inside, and closes on Escape. A button inside `<form method="dialog">` closes it with no JavaScript. The one thing the browser does not do is close on a backdrop click, which is the `onClick` in `Modal`: a click on the backdrop lands on the `<dialog>` itself rather than on anything inside it.
+
+The confirmation needs to know which way it closed, and the dialog already records that. A button in `<form method="dialog">` copies its `value` into the dialog's `returnValue` as it closes it, so the confirm button carries `value="confirm"` and `onClose` checks for it. Cancel has no value, and Escape and a backdrop click close the dialog without touching `returnValue`. That last part is why `confirmStartOver` empties `returnValue` before it opens the dialog: the dialog keeps the value from its last close, so a "yes" from an earlier chat would otherwise count again when you press Escape on the next one.
 
 ### What the Styling Is Doing
 
@@ -1172,13 +1222,13 @@ One class is load-bearing rather than decorative:
 
 A model's reply contains real newlines, and HTML collapses runs of whitespace into a single space. Ask for a numbered list and you get one long paragraph instead, which looks like a bug in your streaming code and is not. `whitespace-pre-wrap` keeps the newlines and still wraps long lines.
 
-Two smaller things are worth knowing, because both are properties of the generated project rather than choices this page made.
+One smaller thing is worth knowing, because it is a property of the generated project rather than a choice this page made.
 
 __`font-sans` is not redundant.__ The generated `layout.tsx` loads Geist and exposes it as `--font-geist-sans`, but the generated `globals.css` then sets `body { font-family: Arial, Helvetica, sans-serif }`, which wins. `font-sans` is what reaches past that to the font the layout actually loaded. The generated home page does the same thing, for the same reason.
 
-__Centering works because the layout sets it up.__ The generated `layout.tsx` puts `min-h-full` and `flex flex-col` on `<body>`, so the page's outer `flex-1` element stretches to the viewport, and `items-center justify-center` then puts the chat in the middle of it, both ways. Leave that markup alone and the chat sits in the center of the screen; replace the layout with a bare `<body>` and the outer element collapses to the height of its content, so you want `min-h-screen` on it instead.
+The chat box grows and shrinks with the window. The page's outer element is `h-dvh`, exactly as tall as the visible window, and every element between it and the box is a flex column with `flex-1`, so each one takes the height its parent has left after the heading, tabs, and summary line. `min-h-0` on each of them is what makes that work: a flex item will not shrink below the height of its content by default, so without it a long conversation would stretch the box past the window instead of scrolling inside it. `dvh` rather than `vh` matters on phones, where the browser's address bar slides in and out and changes how much of the page is visible. The width follows the window the same way: each of those elements is `w-full`, because `items-center` on a parent otherwise shrinks a child to the width of its content. The box stops growing at `max-w-[650px]`, because lines much longer than that get hard to read, and the parent's `items-center` keeps it centered once it does.
 
-The chat itself is a fixed box, `h-[36rem] w-[28rem]`, and its layout is what keeps the input in reach. The box is a flex column: the thread takes the leftover height with `flex-1` and scrolls with `overflow-y-auto`, and the form sits under it at its natural height. A long conversation scrolls inside the box rather than pushing the input off the screen. For the same reason, new bubbles are followed by setting the thread's own `scrollTop` rather than calling `scrollIntoView`, which would scroll the page too. `max-w-full` lets the box narrow on a phone instead of overflowing it.
+The box's own layout is what keeps the input in reach. The box is a flex column: the thread takes the leftover height with `flex-1` and scrolls with `overflow-y-auto`, and the form sits under it at its natural height. A long conversation scrolls inside the box rather than pushing the input off the screen. For the same reason, new bubbles are followed by setting the thread's own `scrollTop` rather than calling `scrollIntoView`, which would scroll the page too.
 
 Everything else follows one boolean:
 
@@ -1292,3 +1342,5 @@ Load the page with the same wrong key and your prompt is marked "Not delivered",
 - [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
 
 The conversation here lives in the server's memory, which is enough to survive a reload and not enough to survive a restart. Moving it into a database means replacing the `Map` and nothing else, and which database is your decision, not Drash's.
+
+The finished app is in the repository at [`examples/frameworks/next-js-claude`](https://github.com/drashland/drash/tree/main/examples/frameworks/next-js-claude).

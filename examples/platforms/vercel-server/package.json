@@ -1,0 +1,11 @@
+{
+  "name": "drash-example-vercel-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@drashland/drash": "^3.0.2"
+  }
+}

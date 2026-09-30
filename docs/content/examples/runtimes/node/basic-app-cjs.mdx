@@ -15,13 +15,30 @@ A single resource answering `GET /`, written with `require()`
 
 Install [Node](https://nodejs.org) (v20+).
 
-### Install Dependencies
+### Set Up the Project
 
-Install the dependencies in `package.json`.
+Create a folder for the project and move into it.
 
 ```bash
 mkdir my-project
+cd my-project
+```
+
+Create a `package.json` file. The `-y` flag skips the questions `npm init` would otherwise ask and accepts the default answer for each one.
+
+```bash
 npm init -y
+```
+
+`npm init -y` does not add a `start` script, so add one that runs the app. The command in the "Run the Drash App" step runs this script.
+
+```bash
+npm pkg set scripts.start="node app.js"
+```
+
+Install the dependencies.
+
+```bash
 npm install @drashland/drash
 ```
 

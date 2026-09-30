@@ -28,24 +28,24 @@ import {
 //   Resource,
 // } from "npm:@drashland/drash/modules/http.native.js";
 
-class Home extends Resource {    // Create a resource.
-  paths = ["/"];                 // Tell it which path(s) it answers to.
+class Home extends Resource {       // Create a resource.
+  override paths = ["/"];           // Tell it which path(s) it answers to.
 
-  GET(request: Request) {        // Handle GET requests to those paths.
+  override GET(request: Request) {  // Handle GET requests to those paths.
     console.log(`Received request: ${request.url}`);
 
-    return new Response(         // This is what `app.handle()` resolves with.
+    return new Response(            // This is what `app.handle()` resolves with.
       `Oh so easy (written at ${new Date()})`,
     );
   }
 }
 
 const app = Application
-  .builder()                     // Get the app's builder so we can build the app easily.
-  .resources(Home)               // Add the `Home` resource to the app.
-  .build();                      // Build the app.
+  .builder()                        // Get the app's builder so we can build the app easily.
+  .resources(Home)                  // Add the `Home` resource to the app.
+  .build();                         // Build the app.
 
-const hostname = "localhost";    // Define server variables for reuse below.
+const hostname = "localhost";       // Define server variables for reuse below.
 const port = 1447;
 
 Deno.serve({

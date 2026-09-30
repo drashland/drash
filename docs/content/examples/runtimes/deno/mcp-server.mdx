@@ -56,9 +56,9 @@ Strip the registrations away and the Drash part of this application is nine line
 
 ```ts
 class MCPEndpoint extends Resource {
-  public paths = ["/mcp"];
+  public override paths = ["/mcp"];
 
-  public POST(request: Request) {
+  public override POST(request: Request) {
     return handler.fetch(request);
   }
 }
@@ -181,7 +181,7 @@ Which means any page in any browser can drive an MCP server running on the user'
 
 ```ts
 class OriginGuard extends Middleware {
-  public ALL(request: Request) {
+  public override ALL(request: Request) {
     const origin = request.headers.get("origin");
 
     if (origin && !ALLOWED_ORIGINS.includes(origin)) {
@@ -337,20 +337,20 @@ import { Resource } from "jsr:@drashland/drash/modules/http.native";
 import { handler } from "./mcp.ts";
 
 export class MCPEndpoint extends Resource {
-  public paths = ["/mcp"];
+  public override paths = ["/mcp"];
 
   // Every MCP message arrives here.
-  public POST(request: Request) {
+  public override POST(request: Request) {
     return handler.fetch(request);
   }
 
   // Not MCP methods — these exist so the SDK can answer `405`. Drash answers
   // `501` for a method you did not define, and the spec asks for `405`.
-  public GET(request: Request) {
+  public override GET(request: Request) {
     return handler.fetch(request);
   }
 
-  public DELETE(request: Request) {
+  public override DELETE(request: Request) {
     return handler.fetch(request);
   }
 }
@@ -437,7 +437,7 @@ const ALLOWED_ORIGINS = ["https://app.example.com"];
 // The spec requires a 403 when `Origin` is present and not allowed. Without
 // this, a page on any origin could drive a server running on localhost.
 export class OriginGuard extends Middleware {
-  public ALL(request: Request) {
+  public override ALL(request: Request) {
     const origin = request.headers.get("origin");
 
     if (origin && !ALLOWED_ORIGINS.includes(origin)) {
@@ -508,7 +508,7 @@ The protocol behaves identically on every runtime, so this is the same table eve
 
 `curl` stands in for an MCP client throughout. Nothing below needs Claude Desktop or an editor: a client's whole job on the wire is to post JSON-RPC to your one URL, which is a thing you can do by hand. Pointing a real client at the server once it answers these is then a configuration step, not another build.
 
-Every call needs the three headers the transport requires &mdash; `MCP-Protocol-Version`, `Mcp-Method`, and for `tools/call` a `Mcp-Name` &mdash; plus the same values inside the body's `_meta`:
+Every call needs the three headers the transport requires &mdash; `MCP-Protocol-Version`, `Mcp-Method`, and for `tools/call`, `resources/read`, and `prompts/get` a `Mcp-Name` holding the tool name, resource URI, or prompt name &mdash; plus the same values inside the body's `_meta`:
 
 ```bash
 curl -X POST http://localhost:1447/mcp \
@@ -586,7 +586,7 @@ Swap the method and body to exercise the rest:
 | `GET /mcp` or `DELETE /mcp` | `405` &mdash; `Method not allowed.` |
 | Any call with `Origin: https://evil.example` | `403` &mdash; `Origin not allowed` |
 | `Mcp-Method: tools/call` on a body whose method is `tools/list` | `400` &mdash; `-32020`, the headers and body disagree |
-| `MCP-Protocol-Version: 1999-01-01` | `400` &mdash; `-32022`, with the versions the server does support |
+| `MCP-Protocol-Version: 1999-01-01`, with the body's `_meta` saying the same | `400` &mdash; `-32022`, with the versions the server does support |
 
 The last two are worth pausing on. The transport mirrors `method` and `name` into headers so proxies can route without parsing bodies, and the server must reject any request where the two disagree &mdash; otherwise a load balancer and your code could act on different values from the same request. The SDK enforces that for you; the `403` two rows above it is the one you had to write yourself.
 
@@ -602,3 +602,5 @@ Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls bac
 - [Calling Claude](/examples/runtimes/deno/calling-claude) &mdash; the other side of the relationship: your application calling a model, rather than a model calling your application
 
 For prompts with completion, resource subscriptions, progress notifications, and the multi-round-trip flow a server uses to ask the client for input, see the [MCP TypeScript SDK docs](https://ts.sdk.modelcontextprotocol.io). All of them register on the same `McpServer`, and none of them change the resource this example built.
+
+The finished app is in the repository at [`examples/deno/mcp-server`](https://github.com/drashland/drash/tree/main/examples/deno/mcp-server).

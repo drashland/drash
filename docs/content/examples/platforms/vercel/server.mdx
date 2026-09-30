@@ -27,12 +27,20 @@ import {
   Application,
   Resource,
 } from "@drashland/drash/modules/http.polyfill.js";
-import { createServer } from "node:http";
+import type { RequestMethod } from "@drashland/drash/core/Types.js";
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
+
+type NodeContext = {
+  url: string;
+  method: RequestMethod;
+  request: IncomingMessage;
+  response: ServerResponse;
+};
 
 class Home extends Resource {
   paths = ["/"];
 
-  GET(context) {
+  GET(context: NodeContext) {
     context.response.end("Oh so easy");
   }
 }
@@ -85,8 +93,8 @@ it is ignored; requests are routed through an internal port.
 Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node
 version, so this uses the __polyfill__ entry point.
 
-If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your
-`package.json` or name the file `.mjs`. The polyfill entry point is an ES module, and
-Vercel does not allow `require` in these functions.
+If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your `package.json` or name the file `.mjs`, because the code above uses `import`. The polyfill entry point also works with `require()` &mdash; see the [CommonJS example](/examples/runtimes/node/basic-app-cjs).
 
 For the other Vercel entrypoint, see [api/ (fetch)](/examples/platforms/vercel/api).
+
+The finished app is in the repository at [`examples/platforms/vercel-server`](https://github.com/drashland/drash/tree/main/examples/platforms/vercel-server).

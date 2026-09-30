@@ -1,8 +1,10 @@
 # Files
 
 .DS_Store
+.dev.vars
 .env
 *.log
+bun.lock
 bun.lockb
 package-lock.json
 yarn.lock
@@ -10,6 +12,7 @@ yarn.lock
 # Directories
 
 .idea/
+.vercel/
 .vim/
 .vscode/
 .wrangler/

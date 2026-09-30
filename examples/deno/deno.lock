@@ -4,8 +4,11 @@
     "jsr:@drashland/drash@*": "3.0.2",
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.14",
-    "npm:@anthropic-ai/sdk@*": "0.125.0",
-    "npm:@drashland/drash@^3.0.2": "3.0.2"
+    "npm:@anthropic-ai/sdk@*": "0.125.0_zod@4.6.2",
+    "npm:@drashland/drash@^3.0.2": "3.0.2",
+    "npm:@modelcontextprotocol/server@2": "2.0.0",
+    "npm:openai@*": "7.23.0_zod@4.6.2",
+    "npm:zod@4": "4.6.2"
   },
   "jsr": {
     "@drashland/drash@3.0.2": {
@@ -22,11 +25,15 @@
     }
   },
   "npm": {
-    "@anthropic-ai/sdk@0.125.0": {
+    "@anthropic-ai/sdk@0.125.0_zod@4.6.2": {
       "integrity": "sha512-Hq5wYlXupzJ9M1Fzqjqa3hObcuigEXVZJqSYDgeZGM3wF4qrNERM5Z1OOAeoT9rlod8awJ3uYyJjbQXp1ckIGg==",
       "dependencies": [
         "json-schema-to-ts",
-        "standardwebhooks"
+        "standardwebhooks",
+        "zod"
+      ],
+      "optionalPeers": [
+        "zod"
       ],
       "bin": true
     },
@@ -35,6 +42,19 @@
     },
     "@drashland/drash@3.0.2": {
       "integrity": "sha512-iSvMjtzQaVduZiNKqgmZQYwX+mFxwrqczAoHUXpj2OJCFsrJcCr8jHJfeiyoTXT0qnBhkIX6cVHXi1seLO3/uw=="
+    },
+    "@modelcontextprotocol/core@2.0.0": {
+      "integrity": "sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA==",
+      "dependencies": [
+        "zod"
+      ]
+    },
+    "@modelcontextprotocol/server@2.0.0": {
+      "integrity": "sha512-YhHWdHfpFMQfd0prsEnxKeS3Qz3ytIGmsS0sth4KDjnacIT7hxk6hXHkJ9KysxlkvTM+WZAtQbbcUhdoP4Hvtw==",
+      "dependencies": [
+        "@modelcontextprotocol/core",
+        "zod"
+      ]
     },
     "@stablelib/base64@1.0.1": {
       "integrity": "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="
@@ -49,6 +69,15 @@
         "ts-algebra"
       ]
     },
+    "openai@7.23.0_zod@4.6.2": {
+      "integrity": "sha512-0ecOXnFSMNWZq6cUBcTV6Lf93y+fm8BH/+QzFvpoP1UGNOE5pnytRa6HAPGCw+3IS9SIAW7rc1M8yyzN1PiBAQ==",
+      "dependencies": [
+        "zod"
+      ],
+      "optionalPeers": [
+        "zod"
+      ]
+    },
     "standardwebhooks@1.1.1": {
       "integrity": "sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==",
       "dependencies": [
@@ -58,6 +87,9 @@
     },
     "ts-algebra@2.0.0": {
       "integrity": "sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw=="
+    },
+    "zod@4.6.2": {
+      "integrity": "sha512-lh5RCAGFa1Cm2hjtNwLQhSs/AsqdWnTQaBER9fEwN/88pSh7KOtJavtBx/0VlkN/uFd61SwYmljLMDAsHlvzBQ=="
     }
   },
   "workspace": {

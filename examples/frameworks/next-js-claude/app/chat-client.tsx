@@ -77,6 +77,7 @@ export function ChatClient() {
   const input = useRef<HTMLInputElement>(null);
   const learnMore = useRef<HTMLDialogElement>(null);
   const errorModal = useRef<HTMLDialogElement>(null);
+  const startOverModal = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {                                    // The server holds the
     fetch("/api/conversation")                         // conversation, so a reload
@@ -213,6 +214,17 @@ export function ChatClient() {
     fail("The connection closed before the reply finished.");
   }
 
+  function confirmStartOver() {
+    const dialog = startOverModal.current;
+
+    if (!dialog) {
+      return;
+    }
+
+    dialog.returnValue = "";                           // It keeps the last answer,
+    dialog.showModal();                                // so a "yes" from before would
+  }                                                    // count again on Escape.
+
   // Forgotten on the server first, then on screen.
   async function startOver() {
     await fetch("/api/conversation", { method: "DELETE" });
@@ -221,7 +233,7 @@ export function ChatClient() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3">
       <div
         role="tablist"
         className="flex gap-1 rounded-lg bg-black/[.05] p-1 dark:bg-white/[.08]"
@@ -255,9 +267,10 @@ export function ChatClient() {
         </button>
       </p>
 
-      {/* A fixed box: the thread scrolls inside it, so a long conversation
-          never pushes the input off the screen. */}
-      <div className="flex h-[36rem] w-[28rem] max-w-full flex-col overflow-hidden rounded-2xl border border-black/[.08] bg-white dark:border-white/[.12] dark:bg-black">
+      {/* The box fills whatever space the window leaves, and the thread
+          scrolls inside it, so a long conversation never pushes the input
+          off the screen. */}
+      <div className="flex min-h-0 w-full max-w-[650px] flex-1 flex-col overflow-hidden rounded-2xl border border-black/[.08] bg-white dark:border-white/[.12] dark:bg-black">
         <div className="flex items-center justify-between gap-2 border-b border-black/[.08] px-3 py-2 dark:border-white/[.12]">
           <select
             aria-label="Model"
@@ -273,7 +286,7 @@ export function ChatClient() {
             ))}
           </select>
           <button
-            onClick={startOver}
+            onClick={confirmStartOver}
             disabled={locked || messages.length === 0}
             className="rounded-md px-2 py-1 text-sm text-blue-600 disabled:opacity-40 dark:text-blue-400"
           >
@@ -356,6 +369,24 @@ export function ChatClient() {
         <p>{problem}</p>
         <p>Your message is still in the thread. Use Try again to send it again.</p>
       </Modal>
+
+      {/* The button that closed the dialog leaves its `value` in
+          `returnValue`. Cancel, Escape, and a backdrop click leave it empty. */}
+      <Modal
+        ref={startOverModal}
+        title="Start new chat?"
+        confirm="Start new chat"
+        onClose={(event) =>
+          event.currentTarget.returnValue === "confirm"
+            ? startOver()
+            : input.current?.focus()
+        }
+      >
+        <p>
+          This conversation will be deleted from the server. You cannot get it
+          back.
+        </p>
+      </Modal>
     </div>
   );
 }
@@ -363,15 +394,18 @@ export function ChatClient() {
 // `<dialog>` with `showModal()` does the hard parts of a modal on its own: it
 // sits above the page, blocks clicks behind it, keeps focus inside, and closes
 // on Escape. A `<form method="dialog">` button closes it with no handler.
+// Pass `confirm` to turn Close into Cancel plus a button that says yes.
 function Modal({
   ref,
   title,
+  confirm,
   onClose,
   children,
 }: {
   ref: React.Ref<HTMLDialogElement>;
   title: string;
-  onClose: () => void;
+  confirm?: string;
+  onClose: (event: React.SyntheticEvent<HTMLDialogElement>) => void;
   children: React.ReactNode;
 }) {
   return (
@@ -390,10 +424,24 @@ function Modal({
         <div className="mt-3 flex flex-col gap-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
           {children}
         </div>
-        <form method="dialog" className="mt-5 flex justify-end">
-          <button className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-black">
-            Close
-          </button>
+        <form method="dialog" className="mt-5 flex justify-end gap-2">
+          {confirm ? (
+            <>
+              <button className="rounded-full px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Cancel
+              </button>
+              <button
+                value="confirm"
+                className="rounded-full bg-red-600 px-4 py-2 text-sm font-medium text-white"
+              >
+                {confirm}
+              </button>
+            </>
+          ) : (
+            <button className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white dark:bg-zinc-50 dark:text-black">
+              Close
+            </button>
+          )}
         </form>
       </div>
     </dialog>

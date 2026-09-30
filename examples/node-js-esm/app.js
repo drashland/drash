@@ -4,32 +4,30 @@ import {
 } from "@drashland/drash/modules/http.polyfill.js";
 import { createServer } from "node:http";
 
-// Create a resource
-class Home extends Resource {
-  paths = ["/"];
+class Home extends Resource {    // Create a resource.
+  paths = ["/"];                 // Tell it which path(s) it answers to.
 
-  GET(context) {
+  GET(context) {                 // Node hands you the context object, not a Request.
     console.log(`Received request: ${context.request.url}`);
-    context.response.end(`Oh so easy (written at ${new Date()})`);
+    context.response.end(        // Write straight to Node's ServerResponse.
+      `Oh so easy (written at ${new Date()})`,
+    );
   }
 }
 
-// Build the application and add the resource
 const app = Application
-  .builder()
-  .resources(Home)
-  .build();
+  .builder()                     // Get the app's builder so we can build the app easily.
+  .resources(Home)               // Add the `Home` resource to the app.
+  .build();                      // Build the app.
 
-// Define server variables for reuse below
-const hostname = "localhost";
+const hostname = "localhost";    // Define server variables for reuse below.
 const port = 1447;
 
-// Create the server
 const server = createServer((request, response) => {
-  // Create a context object that the resource can use to access the
-  // request and response objects.
-  //
-  // The chain requires the `url` and `method` fields, so they are included.
+  // Node's `node:http` gives you `IncomingMessage` and `ServerResponse`, not
+  // a Web `Request`. Drash does not convert them for you — you hand the application
+  // a context object carrying whatever your resources need. The chain itself
+  // only requires `url` and `method`.
   const context = {
     url: `http://${hostname}:${port}${request.url}`,
     method: request.method,
@@ -37,23 +35,23 @@ const server = createServer((request, response) => {
     response,
   };
 
-  // Pass the context object to the chain
-  return app
-    .handle(context)
-    .catch((error) => {
+  return app                   // Let the app
+    .handle(context)             // handle the context object, and
+    .catch((error) => {          // catch anything it throws.
       if (context.url.includes("favicon")) {
-        return response.end();
+        return response.end();   // Browsers ask for this; ignore it.
       }
 
       console.log(`Request URL hit an error: ${context.url}:\n`);
       console.log({ error });
-      response.statusCode = 500;
+
+      response.statusCode = 500; // Everything else gets a 500.
       response.statusMessage = "Internal Server Error";
       response.end("Sorry, but we hit an error!");
     });
 });
 
-// Start the server
+// Start the server.
 server.listen(port, hostname, () => {
   console.log(`\nDrash running at http://${hostname}:${port}`);
 });

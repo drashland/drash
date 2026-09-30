@@ -1,0 +1,13 @@
+{
+  "name": "drash-example-bun-ts-mcp-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun run app.ts"
+  },
+  "dependencies": {
+    "@drashland/drash": "^3.0.2",
+    "@modelcontextprotocol/server": "^2.2.0",
+    "zod": "^4.6.5"
+  }
+}

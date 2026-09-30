@@ -15,12 +15,32 @@ A single resource answering `GET /`, served by `node:http`
 
 Install [Node](https://nodejs.org) (v20+).
 
-### Install Dependencies
+### Set Up the Project
 
-Install the dependencies in `package.json`.
+Create a folder for the project and move into it.
 
 ```bash
-npm install
+mkdir my-project
+cd my-project
+```
+
+Create a `package.json` file. The `-y` flag skips the questions `npm init` would otherwise ask and accepts the default answer for each one.
+
+```bash
+npm init -y
+```
+
+`npm init -y` does not add a `start` script, so add one that runs the app. The command in the "Run the Drash App" step runs this script.
+
+```bash
+npm pkg set scripts.start="tsx app.ts"
+```
+
+Install the dependencies.
+
+```bash
+npm install @drashland/drash
+npm install --save-dev tsx
 ```
 
 ### Create the Following File

@@ -42,8 +42,10 @@ You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one 
 
 ```bash
 npm install @drashland/drash openai
-npx wrangler secret put PERPLEXITY_API_KEY
+echo 'PERPLEXITY_API_KEY="pplx-..."' > .dev.vars
 ```
+
+`wrangler dev` reads the key from `.dev.vars`; keep that file out of version control. A deployed Worker does not see it, so before you deploy, run `npx wrangler secret put PERPLEXITY_API_KEY` to give the Worker its own copy. A secret set that way is not visible to `wrangler dev`.
 
 ## The Whole Application
 
@@ -409,22 +411,22 @@ The resource then reads `context.request` for the body and `context.env` for the
 
 ## Verification
 
-With the application running on `localhost:1447`:
+With the application running on `localhost:8787`:
 
 ```text
-curl -X POST localhost:1447/chat -d '{"prompt":"What shipped in Drash v3?"}'
+curl -X POST localhost:8787/chat -d '{"prompt":"What shipped in Drash v3?"}'
 ->  {"text":"...","sources":[{"title":"...","url":"https://..."}]}
 
-curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Who won?"}'
+curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"Who won?"}'
 ->  data: {"text":"..."} ... event: sources ... event: done
 
-curl -X POST localhost:1447/chat -d '{"prompt":"What is 2 + 2?"}'
+curl -X POST localhost:8787/chat -d '{"prompt":"What is 2 + 2?"}'
 ->  {"text":"4","sources":[]}            # No search needed. Not an error.
 
-curl -X POST localhost:1447/chat -d 'not json'   ->  400  Body must be JSON
-curl -X POST localhost:1447/chat -d '{}'         ->  400  Body must have a `prompt` string
-curl -X GET localhost:1447/chat                  ->  501  Not Implemented
-curl -X POST localhost:1447/nope                 ->  404  Not Found
+curl -X POST localhost:8787/chat -d 'not json'   ->  400  Body must be JSON
+curl -X POST localhost:8787/chat -d '{}'         ->  400  Body must have a `prompt` string
+curl -X GET localhost:8787/chat                  ->  501  Not Implemented
+curl -X POST localhost:8787/nope                 ->  404  Not Found
 ```
 
 `-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
@@ -442,3 +444,5 @@ The third one is worth running deliberately. It is the case that proves `sources
 - [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
 
 This example sends one prompt and gets one answer. Holding a conversation means sending the whole history on every request, since the API keeps no state between calls &mdash; the `messages` array grows, and where you store it is your decision, not Drash's.
+
+The finished app is in the repository at [`examples/cloudflare-workers-js/perplexity`](https://github.com/drashland/drash/tree/main/examples/cloudflare-workers-js/perplexity).

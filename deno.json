@@ -50,9 +50,7 @@
       "yarn.lock",
       "docs/.next",
       "docs/out",
-      "examples/deno/claude/app.ts",
-      "examples/frameworks/next-js-claude",
-      "examples/open-ai/deno/app.ts"
+      "examples"
     ]
   },
   "tasks": {
