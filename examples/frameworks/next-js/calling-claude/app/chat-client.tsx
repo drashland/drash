@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { DEFAULT_MODEL, MODELS, type Model } from "./models";
 
 type Turn = {
@@ -304,21 +306,28 @@ export function ChatClient() {
                 key={index}
                 className={`flex max-w-[80%] flex-col gap-1 ${mine ? "items-end self-end" : "items-start self-start"}`}
               >
-                {/* `whitespace-pre-wrap` is the one class here that is not
-                    decoration: the model's newlines are real characters, and
-                    HTML collapses them. */}
-                <p
-                  className={`whitespace-pre-wrap rounded-2xl px-4 py-2 leading-6 ${
+                {/* Claude answers in Markdown, so its bubbles render it:
+                    `prose` styles the lists, headings, and code blocks it
+                    produces. A prompt is shown as typed, and
+                    `whitespace-pre-wrap` keeps its newlines, which HTML would
+                    otherwise collapse. A `<div>`, not a `<p>`, because a list
+                    or a code block cannot sit inside a paragraph. */}
+                <div
+                  className={`min-w-0 rounded-2xl px-4 py-2 leading-6 ${
                     mine
-                      ? "rounded-br-md bg-blue-500 text-white"
-                      : "rounded-bl-md bg-zinc-100 text-black dark:bg-zinc-800 dark:text-zinc-50"
+                      ? "whitespace-pre-wrap rounded-br-md bg-blue-500 text-white"
+                      : "prose prose-zinc max-w-none rounded-bl-md bg-zinc-100 text-black dark:prose-invert dark:bg-zinc-800 dark:text-zinc-50"
                   }`}
                 >
-                  {turn.content}
+                  {mine ? (
+                    turn.content
+                  ) : (
+                    <Markdown remarkPlugins={[remarkGfm]}>{turn.content}</Markdown>
+                  )}
                   {typing && (
                     <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-current align-middle" />
                   )}
-                </p>
+                </div>
                 {turn.error && (
                   <span className="flex gap-2 text-xs">
                     <span role="alert" className="text-red-600 dark:text-red-400">

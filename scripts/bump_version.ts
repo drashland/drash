@@ -22,7 +22,7 @@
  *     Rewriting one by hand produces a lockfile that installs the wrong bytes
  *     or fails outright. Run `npm install` in the example instead. This script
  *     reports the ones that have drifted.
- *   - ./examples/deno. It imports from esm.sh without a version, so there is
+ *   - ./examples/runtimes/deno/basic-app. It imports from esm.sh without a version, so there is
  *     nothing to pin.
  */
 

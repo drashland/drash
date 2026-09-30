@@ -37,11 +37,19 @@ You need a Next.js application &mdash; `create-next-app` makes one &mdash; and a
 ```bash
 npx create-next-app@latest my-app --ts --app --tailwind
 cd my-app
-npm install @drashland/drash @anthropic-ai/sdk
+npm install @drashland/drash @anthropic-ai/sdk react-markdown remark-gfm
+npm install --save-dev @tailwindcss/typography
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
-This page was written against Next.js 16.3.6, React 19, and Tailwind CSS 4, which is what `create-next-app@latest` produces today (September 23, 2026). `--tailwind` is what installs and wires up Tailwind; the styling below is the only thing that depends on it, so drop the flag and the classes if you have your own.
+`react-markdown` and `remark-gfm` render Claude's replies, which are Markdown. `@tailwindcss/typography` styles what they produce; turn it on by adding one line to `app/globals.css`, under the import `create-next-app` put there:
+
+```css
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+```
+
+This page was written against Next.js 16.3.6, React 19, and Tailwind CSS 4, which is what `create-next-app@latest` produces today (September 23, 2026). `--tailwind` is what installs and wires up Tailwind; the styling below is the only thing that depends on it, so drop the flag, the typography plugin, and the classes if you have your own.
 
 <Callout type="warning">
 __Keep the key on the server.__ The route handler and the page shell run on the server. The component marked `"use client"` runs in the browser and never sees the key &mdash; it talks to your own endpoint, which talks to Anthropic. An Anthropic key in client-side code is readable by anyone who opens devtools, and every request they make with it is charged to your account.
@@ -386,6 +394,8 @@ export default function ChatPage() {
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { DEFAULT_MODEL, MODELS, type Model } from "./models";
 
 type Turn = {
@@ -689,21 +699,28 @@ export function ChatClient() {
                 key={index}
                 className={`flex max-w-[80%] flex-col gap-1 ${mine ? "items-end self-end" : "items-start self-start"}`}
               >
-                {/* `whitespace-pre-wrap` is the one class here that is not
-                    decoration: the model's newlines are real characters, and
-                    HTML collapses them. */}
-                <p
-                  className={`whitespace-pre-wrap rounded-2xl px-4 py-2 leading-6 ${
+                {/* Claude answers in Markdown, so its bubbles render it:
+                    `prose` styles the lists, headings, and code blocks it
+                    produces. A prompt is shown as typed, and
+                    `whitespace-pre-wrap` keeps its newlines, which HTML would
+                    otherwise collapse. A `<div>`, not a `<p>`, because a list
+                    or a code block cannot sit inside a paragraph. */}
+                <div
+                  className={`min-w-0 rounded-2xl px-4 py-2 leading-6 ${
                     mine
-                      ? "rounded-br-md bg-blue-500 text-white"
-                      : "rounded-bl-md bg-zinc-100 text-black dark:bg-zinc-800 dark:text-zinc-50"
+                      ? "whitespace-pre-wrap rounded-br-md bg-blue-500 text-white"
+                      : "prose prose-zinc max-w-none rounded-bl-md bg-zinc-100 text-black dark:prose-invert dark:bg-zinc-800 dark:text-zinc-50"
                   }`}
                 >
-                  {turn.content}
+                  {mine ? (
+                    turn.content
+                  ) : (
+                    <Markdown remarkPlugins={[remarkGfm]}>{turn.content}</Markdown>
+                  )}
                   {typing && (
                     <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-current align-middle" />
                   )}
-                </p>
+                </div>
                 {turn.error && (
                   <span className="flex gap-2 text-xs">
                     <span role="alert" className="text-red-600 dark:text-red-400">
@@ -1214,13 +1231,21 @@ The confirmation needs to know which way it closed, and the dialog already recor
 
 The classes are Tailwind's, and `create-next-app --tailwind` is what put them there &mdash; it installs Tailwind CSS 4, adds `@import "tailwindcss"` to `app/globals.css`, and generates a theme block. There is no `tailwind.config.js` to edit; version 4 configures itself from CSS. The palette deliberately matches the home page `create-next-app` generates, so the two pages look like one application.
 
-One class is load-bearing rather than decorative:
+The bubbles are where the styling stops being decoration, because the two sides hold different kinds of text:
 
 ```tsx
-<p className={`whitespace-pre-wrap rounded-2xl px-4 py-2 leading-6 ${...}`}>
+{mine ? (
+  turn.content
+) : (
+  <Markdown remarkPlugins={[remarkGfm]}>{turn.content}</Markdown>
+)}
 ```
 
-A model's reply contains real newlines, and HTML collapses runs of whitespace into a single space. Ask for a numbered list and you get one long paragraph instead, which looks like a bug in your streaming code and is not. `whitespace-pre-wrap` keeps the newlines and still wraps long lines.
+Claude answers in Markdown. Printed as-is, a reply is full of `**`, `#`, and backticks, and a numbered list collapses into one long paragraph, because HTML folds runs of whitespace into a single space. That looks like a bug in your streaming code and is not. `<Markdown>` turns the text into React elements (paragraphs, lists, headings, code blocks), and `remark-gfm` adds the GitHub extensions models use constantly: tables, strikethrough, and task lists. `prose` from the typography plugin gives those elements spacing and type, `prose-zinc` matches the rest of the palette, and `dark:prose-invert` flips it in dark mode. `max-w-none` lifts the reading-width cap `prose` sets, so the bubble's own `max-w-[80%]` is the only limit.
+
+`react-markdown` builds elements rather than an HTML string, so there is no `dangerouslySetInnerHTML` and no sanitizer to configure: raw HTML in a reply is ignored rather than rendered, and a model that echoes a `<script>` tag back cannot run it. During streaming, `<Markdown>` re-renders on every `append`, so an unfinished code fence shows as a code block that fills in as the rest arrives.
+
+Your own prompts are not rendered. They are shown as typed, with `whitespace-pre-wrap` keeping the newlines you entered and still wrapping long lines. Because a list or a code block cannot sit inside a paragraph, the bubble is a `<div>` rather than a `<p>`; React would otherwise warn about invalid nesting.
 
 One smaller thing is worth knowing, because it is a property of the generated project rather than a choice this page made.
 
@@ -1236,7 +1261,7 @@ Everything else follows one boolean:
 const [busy, setBusy] = useState(false);
 ```
 
-It disables the Send button, the tabs, the model selector, "Try again", and "Start new chat" so nothing else can be sent while a reply is open, changes the button's label, and renders a pulsing block after the last character of the newest bubble. Before the first token arrives that bubble is empty, so the block stands in for a typing indicator. It is the only sign that more text is coming, which matters most during the pause before the first token &mdash; see the callout above for why that pause exists &mdash; and on the `/api/chat` tab, where the pause lasts the whole reply.
+It disables the Send button, the tabs, the model selector, "Try again", and "Start new chat" so nothing else can be sent while a reply is open, changes the button's label, and renders a pulsing block at the end of the newest bubble. Before the first token arrives that bubble is empty, so the block stands in for a typing indicator. It is the only sign that more text is coming, which matters most during the pause before the first token &mdash; see the callout above for why that pause exists &mdash; and on the `/api/chat` tab, where the pause lasts the whole reply.
 
 ## Handling Errors From the API
 
@@ -1343,4 +1368,4 @@ Load the page with the same wrong key and your prompt is marked "Not delivered",
 
 The conversation here lives in the server's memory, which is enough to survive a reload and not enough to survive a restart. Moving it into a database means replacing the `Map` and nothing else, and which database is your decision, not Drash's.
 
-The finished app is in the repository at [`examples/frameworks/next-js-claude`](https://github.com/drashland/drash/tree/main/examples/frameworks/next-js-claude).
+The finished app is in the repository at [`examples/frameworks/next-js/calling-claude`](https://github.com/drashland/drash/tree/main/examples/frameworks/next-js/calling-claude).
