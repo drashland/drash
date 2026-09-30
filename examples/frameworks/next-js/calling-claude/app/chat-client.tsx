@@ -14,28 +14,6 @@ type Turn = {
 // One tab per resource. Both add to the same conversation on the server, so
 // switching tabs partway through carries it over.
 const ENDPOINTS = {
-  "/api/chat": {
-    summary: "Receive all text once the model has finished",
-    explanation: (
-      <>
-        <p>
-          The server asks Claude for the whole reply and waits. Only when the
-          model has written its last word does the server answer, with one
-          JSON body: <code>{`{"text": "..."}`}</code>.
-        </p>
-        <p>
-          That makes the client simple: one <code>fetch</code>, one{" "}
-          <code>response.json()</code>. The cost is the wait. Nothing appears
-          until the reply is finished, and a long reply can take a minute.
-        </p>
-        <p>
-          Failures are simple too. Nothing has been sent when something goes
-          wrong, so the status code (400, 429, 500, 502) says exactly what
-          happened.
-        </p>
-      </>
-    ),
-  },
   "/api/chat/stream": {
     summary: "Receive text as the model writes it",
     explanation: (
@@ -64,17 +42,40 @@ const ENDPOINTS = {
       </>
     ),
   },
+  "/api/chat": {
+    summary: "Receive all text once the model has finished",
+    explanation: (
+      <>
+        <p>
+          The server asks Claude for the whole reply and waits. Only when the
+          model has written its last word does the server answer, with one
+          JSON body: <code>{`{"text": "..."}`}</code>.
+        </p>
+        <p>
+          That makes the client simple: one <code>fetch</code>, one{" "}
+          <code>response.json()</code>. The cost is the wait. Nothing appears
+          until the reply is finished, and a long reply can take a minute.
+        </p>
+        <p>
+          Failures are simple too. Nothing has been sent when something goes
+          wrong, so the status code (400, 429, 500, 502) says exactly what
+          happened.
+        </p>
+      </>
+    ),
+  },
 } as const;
 
 type Endpoint = keyof typeof ENDPOINTS;
 
 export function ChatClient() {
-  const [endpoint, setEndpoint] = useState<Endpoint>("/api/chat");
+  const [endpoint, setEndpoint] = useState<Endpoint>("/api/chat/stream");
   const [model, setModel] = useState<Model>(DEFAULT_MODEL);
   const [messages, setMessages] = useState<Turn[]>([]);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [problem, setProblem] = useState("");
+  const [activity, setActivity] = useState("");
   const thread = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const learnMore = useRef<HTMLDialogElement>(null);
@@ -133,6 +134,7 @@ export function ChatClient() {
         { ...turns[turns.length - 2], error: reason }, // like iMessage does.
       ]);
       setBusy(false);
+      setActivity("");
       setProblem(reason);
       errorModal.current?.showModal();
     };
@@ -203,11 +205,18 @@ export function ChatClient() {
           return;                                      // this, a failure looks like
         }                                              // a short, successful answer.
 
+        if (name === "activity") {                     // Claude is searching or
+          setActivity(JSON.parse(data).text);          // reading, not writing. Say
+          continue;                                    // so under the bubble.
+        }
+
         if (name === "done") {
           setBusy(false);
+          setActivity("");
           return;
         }
 
+        setActivity("");                               // Writing again.
         append(JSON.parse(data).text);
       }
     }
@@ -322,12 +331,22 @@ export function ChatClient() {
                   {mine ? (
                     turn.content
                   ) : (
-                    <Markdown remarkPlugins={[remarkGfm]}>{turn.content}</Markdown>
+                    <Markdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{ a: NewTabLink }}
+                    >
+                      {turn.content}
+                    </Markdown>
                   )}
                   {typing && (
                     <span className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-current align-middle" />
                   )}
                 </div>
+                {typing && activity && (
+                  <span className="animate-pulse text-xs text-zinc-500 dark:text-zinc-400">
+                    {activity}…
+                  </span>
+                )}
                 {turn.error && (
                   <span className="flex gap-2 text-xs">
                     <span role="alert" className="text-red-600 dark:text-red-400">
@@ -397,6 +416,17 @@ export function ChatClient() {
         </p>
       </Modal>
     </div>
+  );
+}
+
+// Links in a reply, like the sources under a web search, open in a new tab so
+// the chat stays where it is. `noreferrer` keeps the opened page from reaching
+// back into this one through `window.opener`.
+function NewTabLink({ href, children }: React.ComponentProps<"a">) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer">
+      {children}
+    </a>
   );
 }
 

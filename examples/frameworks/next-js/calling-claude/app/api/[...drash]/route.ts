@@ -120,6 +120,61 @@ function anthropicErrorToHTTPError(error: unknown): unknown {
   return error;                                        // Not ours. Leave it.
 }
 
+// Claude can search the web and read pages, but only with tools it is given.
+// Both run on Anthropic's servers: the reply comes back with the browsing
+// already done, so nothing on this server fetches anything. Haiku 4.5 takes the
+// older versions. The newer ones let Claude filter results with code before
+// reading them, which spends fewer tokens. `max_uses` caps the cost per reply.
+function webTools(model: Model): Anthropic.Messages.ToolUnion[] {
+  if (model === "claude-haiku-4-5") {
+    return [
+      { type: "web_search_20250305", name: "web_search", max_uses: 5 },
+      { type: "web_fetch_20250910", name: "web_fetch", max_uses: 5 },
+    ];
+  }
+
+  return [
+    { type: "web_search_20260209", name: "web_search", max_uses: 5 },
+    { type: "web_fetch_20260209", name: "web_fetch", max_uses: 5 },
+  ];
+}
+
+// Browsing runs as a loop on Anthropic's side, and a long one stops partway
+// with `stop_reason: "pause_turn"`. Sending the reply so far back picks it up
+// where it stopped. This caps how many times that happens for one prompt.
+const MAX_CONTINUATIONS = 3;
+
+// Search results come back as citations on the text that used them. Anything
+// that shows web search results has to show where they came from, so they are
+// listed under the reply. Brackets would end the link text early.
+type Sources = Map<string, string>;                    // URL → page title.
+
+function collect(sources: Sources, citation: Anthropic.TextCitation) {
+  if (citation.type === "web_search_result_location") {
+    sources.set(citation.url, citation.title ?? citation.url);
+  }
+}
+
+function listSources(sources: Sources): string {
+  if (sources.size === 0) {
+    return "";
+  }
+
+  const links = [...sources].map(
+    ([url, title]) => `- [${title.replace(/[[\]]/g, "\\$&")}](${url})`,
+  );
+
+  return `\n\n**Sources**\n\n${links.join("\n")}`;
+}
+
+// A reply is several text blocks when Claude writes, searches, then writes
+// again. Joined as-is, "Let me check." runs straight into the answer, so a
+// paragraph break goes wherever text resumes after something that was not
+// text. Adjacent text blocks are one sentence split by citations; they join
+// with nothing.
+const resumes = (previous: string, reply: string) =>
+  previous !== "text" && reply !== "" ? "\n\n" : "";
+
 // A refusal is not an exception. The API answers `200` and says so in
 // `stop_reason`, so it is checked for and turned into one.
 const refused = () =>
@@ -153,26 +208,49 @@ class Chat extends Resource {                          // Answers with the whole
     const { prompt, model } = await readRequest(request);
     const { id, turns, headers } = openConversation(request);
 
-    let message;
+    const messages: Anthropic.MessageParam[] = [
+      ...turns,
+      { role: "user", content: prompt },
+    ];
+    const sources: Sources = new Map();
+    let text = "";
+    let previous = "";
 
-    try {
-      message = await client.messages.create({
-        model,
-        max_tokens: 16000,
-        messages: [...turns, { role: "user", content: prompt }],
-      });
-    } catch (error) {
-      throw anthropicErrorToHTTPError(error);
+    for (let round = 0; ; round++) {
+      let message;
+
+      try {
+        message = await client.messages.create({
+          model,
+          max_tokens: 16000,
+          tools: webTools(model),
+          messages,
+        });
+      } catch (error) {
+        throw anthropicErrorToHTTPError(error);
+      }
+
+      if (message.stop_reason === "refusal") {
+        throw refused();
+      }
+
+      for (const block of message.content) {           // `content` holds blocks of
+        if (block.type === "text") {                   // several types: searches,
+          text += resumes(previous, text) + block.text;// their results, and text.
+          block.citations?.forEach((citation) => collect(sources, citation));
+        }
+
+        previous = block.type;
+      }
+
+      if (message.stop_reason !== "pause_turn" || round === MAX_CONTINUATIONS) {
+        break;
+      }
+
+      messages.push({ role: "assistant", content: message.content });
     }
 
-    if (message.stop_reason === "refusal") {
-      throw refused();
-    }
-
-    const text = message.content                       // `content` holds blocks of
-      .filter((block) => block.type === "text")        // several types. Keep the text
-      .map((block) => block.text)                      // ones before reading `.text`.
-      .join("");
+    text += listSources(sources);
 
     remember(id, turns, prompt, text);
 
@@ -188,11 +266,10 @@ class ChatStream extends Resource {                    // Answers a piece at a t
     const { prompt, model } = await readRequest(request);
     const { id, turns, headers } = openConversation(request);
 
-    const stream = client.messages.stream({
-      model,
-      max_tokens: 64000,
-      messages: [...turns, { role: "user", content: prompt }],
-    });
+    const messages: Anthropic.MessageParam[] = [
+      ...turns,
+      { role: "user", content: prompt },
+    ];
 
     const encoder = new TextEncoder();
 
@@ -203,24 +280,77 @@ class ChatStream extends Resource {                    // Answers a piece at a t
 
         let reply = "";                                // Collected as it goes out,
                                                        // so it can be stored once
-        try {                                          // the stream is done.
-          for await (const event of stream) {
-            if (
-              event.type === "content_block_delta" &&
-              event.delta.type === "text_delta"
-            ) {
-              reply += event.delta.text;
-              send(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
-            }
-
-            if (
-              event.type === "message_delta" &&
-              event.delta.stop_reason === "refusal"
-            ) {
-              throw refused();                         // Any text already sent is
-            }                                          // dropped by the page.
+        const write = (text: string) => {              // the stream is done.
+          if (text === "") {
+            return;
           }
 
+          reply += text;
+          send(`data: ${JSON.stringify({ text })}\n\n`);
+        };
+
+        const sources: Sources = new Map();
+        let previous = "";
+
+        try {
+          for (let round = 0; ; round++) {
+            const stream = client.messages.stream({
+              model,
+              max_tokens: 64000,
+              tools: webTools(model),
+              messages,
+            });
+
+            for await (const event of stream) {
+              if (event.type === "content_block_start") {
+                const block = event.content_block;
+
+                if (block.type === "text") {
+                  write(resumes(previous, reply));
+                }
+
+                if (block.type === "server_tool_use") {// A search can take several
+                  const text = block.name === "web_fetch" // seconds with no text, so
+                    ? "Reading a page"                 // say what is happening.
+                    : "Searching the web";
+
+                  send(`event: activity\ndata: ${JSON.stringify({ text })}\n\n`);
+                }
+
+                previous = block.type;
+              }
+
+              if (event.type === "content_block_delta") {
+                if (event.delta.type === "text_delta") {
+                  write(event.delta.text);
+                }
+
+                if (event.delta.type === "citations_delta") {
+                  collect(sources, event.delta.citation);
+                }
+              }
+
+              if (
+                event.type === "message_delta" &&
+                event.delta.stop_reason === "refusal"
+              ) {
+                throw refused();                       // Any text already sent is
+              }                                        // dropped by the page.
+            }
+
+            const message = await stream.finalMessage();
+
+            if (
+              message.stop_reason !== "pause_turn" ||
+              round === MAX_CONTINUATIONS
+            ) {
+              break;
+            }
+
+            messages.push({ role: "assistant", content: message.content });
+          }
+
+          write(listSources(sources));
           remember(id, turns, prompt, reply);
           send("event: done\ndata: {}\n\n");
         } catch (error) {                              // Too late for a status code.
