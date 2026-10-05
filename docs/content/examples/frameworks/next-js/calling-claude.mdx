@@ -1159,7 +1159,7 @@ The model is picked per request, not per conversation. Switch models partway thr
 
 ## Remembering the Conversation
 
-The Claude API keeps no state between calls. Every request has to carry the whole conversation, or the model answers a follow-up with no idea what came before it. Something has to hold that history, and here it is the server:
+The Claude API keeps no state between calls. Every request has to carry the whole conversation, or the model answers a follow-up with no idea what came before it. In this example, the server holds that history:
 
 ```ts
 const conversations = new Map<string, Turn[]>();
@@ -1291,7 +1291,7 @@ return new Response(body, {
 });
 ```
 
-The text is collected into `reply` as it goes out, because the server has to remember the answer it just streamed and nothing else will hand it back. `remember` runs after the loop, so a stream that fails partway never stores its half an answer. The `set-cookie` header rides along with the others: headers go out before the first frame, which is exactly when a new conversation's cookie needs to reach the browser.
+The text is collected into `reply` as it goes out, because the server has to remember the answer it just streamed and nothing else will hand it back. `remember` runs after the loop, so a stream that fails partway never stores half an answer. The `set-cookie` header rides along with the others: headers go out before the first frame, which is exactly when a new conversation's cookie needs to reach the browser.
 
 `max_tokens` goes up to 64,000 here because the constraint it was working around is gone. A streaming connection does not time out waiting for a complete response, so the model gets room.
 
@@ -1438,7 +1438,7 @@ const name = frame.match(/^event: (.*)$/m)?.[1] ?? "message";
 const data = frame.match(/^data: (.*)$/m)?.[1];
 ```
 
-A frame with no `event:` line is a plain message, which is where the text arrives. The other two names are the ones the endpoint sends deliberately: `done` means the reply finished, and `error` means it did not. Handling `error` is not optional &mdash; see below for what ignoring it looks like.
+A frame with no `event:` line is a plain message, which is where the text arrives. The other names are the ones the endpoint sends deliberately: `activity` says what Claude is doing while it is not writing, `done` means the reply finished, and `error` means it did not. Handling `error` is not optional &mdash; see below for what ignoring it looks like.
 
 ### Showing the Conversation
 
