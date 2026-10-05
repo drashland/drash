@@ -9,6 +9,14 @@ A single resource answering `GET /`, served by `node:http`
 
 ## Steps
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.File name="app.ts" />
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install Node
@@ -30,7 +38,7 @@ Create a `package.json` file. The `-y` flag skips the questions `npm init` would
 npm init -y
 ```
 
-`npm init -y` does not add a `start` script, so add one that runs the app. The command in the "Run the Drash App" step runs this script.
+`npm init -y` does not add a `start` script, so add one that runs the app. The command in "Run the Drash App", under [Verification](#verification), runs this script.
 
 ```bash
 npm pkg set scripts.start="tsx app.ts"
@@ -44,14 +52,6 @@ npm install --save-dev tsx
 ```
 
 ### Create the Following File
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="my-project" defaultOpen>
-    <FileTree.File name="app.ts" />
-  </FileTree.Folder>
-</FileTree>
 
 ```ts filename="app.ts"
 import {
@@ -123,6 +123,10 @@ server.listen(port, hostname, () => {
 
 `NodeContext` is the shape you hand the application. Declaring it is what makes `context.request` and `context.response` resolve inside the resource.
 
+</Steps>
+
+## Verification
+
 ### Run the Drash App
 
 ```bash
@@ -139,7 +143,6 @@ Go to http://localhost:1447. You should see something like the following:
 Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
 ```
 
-</Steps>
 
 ## Notes
 

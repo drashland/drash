@@ -11,6 +11,14 @@ __context object__ like the [Node example](/examples/runtimes/node/basic-app-typ
 
 ## Steps
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.File name="server.ts" />
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install Drash and the Vercel CLI
@@ -21,14 +29,6 @@ npm install --global vercel
 ```
 
 ### Create the Following File
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="my-project" defaultOpen>
-    <FileTree.File name="server.ts" />
-  </FileTree.Folder>
-</FileTree>
 
 ```ts filename="server.ts"
 import {
@@ -78,6 +78,10 @@ const server = createServer((request, response) => {
 server.listen(Number(process.env.PORT ?? 3000));
 ```
 
+</Steps>
+
+## Verification
+
 ### Run the Drash App
 
 ```bash
@@ -88,7 +92,6 @@ vercel dev
 
 Go to http://localhost:3000. Pass `--listen` to use a different port.
 
-</Steps>
 
 ## Notes
 

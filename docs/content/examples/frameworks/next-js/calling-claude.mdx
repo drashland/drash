@@ -31,7 +31,28 @@ To gain familiarity with:
 - remembering a conversation on the server, since the API keeps no state between calls; and
 - letting Claude browse the web with server tools, and showing the sources it cites.
 
-## Prerequisites
+## Steps
+
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-app" defaultOpen>
+    <FileTree.Folder name="app" defaultOpen>
+      <FileTree.Folder name="api" defaultOpen>
+        <FileTree.Folder name="[...drash]" defaultOpen>
+          <FileTree.File name="route.ts" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.File name="chat-client.tsx" />
+      <FileTree.File name="models.ts" />
+      <FileTree.File name="page.tsx" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+<Steps>
+
+### Set Up the Project
 
 You need a Next.js application &mdash; `create-next-app` makes one &mdash; and an [Anthropic API key](https://console.anthropic.com/settings/keys).
 
@@ -56,24 +77,7 @@ This page was written against Next.js 16.3.6, React 19, and Tailwind CSS 4, whic
 __Keep the key on the server.__ The route handler and the page shell run on the server. The component marked `"use client"` runs in the browser and never sees the key &mdash; it talks to your own endpoint, which talks to Anthropic. An Anthropic key in client-side code is readable by anyone who opens devtools, and every request they make with it is charged to your account.
 </Callout>
 
-## The Whole Application
-
-### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="my-app" defaultOpen>
-    <FileTree.Folder name="app" defaultOpen>
-      <FileTree.Folder name="api" defaultOpen>
-        <FileTree.Folder name="[...drash]" defaultOpen>
-          <FileTree.File name="route.ts" />
-        </FileTree.Folder>
-      </FileTree.Folder>
-      <FileTree.File name="chat-client.tsx" />
-      <FileTree.File name="models.ts" />
-      <FileTree.File name="page.tsx" />
-    </FileTree.Folder>
-  </FileTree.Folder>
-</FileTree>
+### Create the Following Files
 
 ```ts filename="app/api/[...drash]/route.ts"
 import Anthropic from "@anthropic-ai/sdk";
@@ -1027,13 +1031,82 @@ function Modal({
 }
 ```
 
-Run it:
+### Run the Drash App
 
 ```bash
 npm run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000). The chat is the application's home page; `app/page.tsx` replaces the placeholder `create-next-app` generates.
+
+</Steps>
+
+## Verification
+
+With `npm run dev` running on `localhost:3000`:
+
+### Using the Browser
+
+Open [http://localhost:3000](http://localhost:3000), then:
+
+1. You should be on the `/api/chat/stream` tab. Send a prompt. The reply should grow a few words at a time.
+2. Switch to the `/api/chat` tab and send "shorter". The reply should arrive all at once and build on the first one, because both endpoints share the conversation.
+3. Reload the page. The conversation should come back.
+4. Click "Start new chat" and confirm. The thread should clear and stay empty after a reload.
+5. Switch back to `/api/chat/stream` and ask "What is the latest version of Deno?" "Searching the web…" should show while Claude searches, and the reply should end with a __Sources__ list whose links open in a new tab.
+6. Paste a URL and ask for a summary. "Reading a page…" should show instead.
+
+### Using cURL
+
+`-c jar -b jar` makes curl save the cookie and send it back, the way a browser does:
+
+```text
+curl -c jar -b jar -X POST localhost:3000/api/chat -d '{"prompt":"My name is Eric"}'
+->  {"text":"..."}   (and set-cookie: conversation=...)
+
+curl -c jar -b jar -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"What is my name?"}'
+->  data: {"text":"Eric"} ... event: done
+
+curl -b jar localhost:3000/api/conversation
+->  {"messages":[{"role":"user","content":"My name is Eric"}, ... ]}
+
+curl -b jar -X DELETE localhost:3000/api/conversation               ->  204
+curl -b jar localhost:3000/api/conversation                         ->  {"messages":[]}
+
+curl -X POST localhost:3000/api/chat -d 'not json'                  ->  400  Body must be JSON
+curl -X POST localhost:3000/api/chat -d '{}'                        ->  400  Body must have a `prompt` string
+curl -X POST localhost:3000/api/chat -d '{"prompt":"hi","model":"gpt-9"}'
+->  400  Unknown model
+curl -X POST localhost:3000/api/chat -d '{"prompt":"hi","model":"claude-haiku-4-5"}'
+->  {"text":"..."}
+curl -X GET localhost:3000/api/chat                                 ->  501  Not Implemented
+curl -X POST localhost:3000/api/nope                                ->  404  Not Found
+```
+
+The second request is the memory working: it sends one question and no history, and the answer depends on the first request. Drop `-b jar` from it and the server starts a new conversation, with no idea who you are.
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two are the reason the catch-all route is worth having: both come from the chain, on URLs Next.js was happy to hand over. The `501` appears because `GET` is exported for `/api/conversation` &mdash; with no `GET` export at all, Next.js would answer `405` first.
+
+### Proving the Streaming Caveat
+
+Point the application at a key you know is wrong and send the same prompt to both endpoints. The difference is the whole reason the warning in [Handling Errors From the API](#handling-errors-from-the-api) exists:
+
+```text
+curl -X POST localhost:3000/api/chat -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+    The server's Anthropic API key was rejected.
+
+curl -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"hi"}'
+->  200 OK, content-type: text/event-stream
+    event: error
+    data: {"message":"The server's Anthropic API key was rejected."}
+```
+
+Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body &mdash; and a client that ignores the `error` event sees a successful, empty answer.
+
+Load the page with the same wrong key and your prompt is marked "Not delivered", and the error modal says the key was rejected, on either tab. Put the right key back, press "Try again", and the same prompt goes through. The streaming tab gets there because the component acts on the `error` event. Delete that branch and the page sits there showing an empty reply bubble and no error, having received a perfectly successful response.
 
 ## The Route Handler
 
@@ -1447,16 +1520,6 @@ The failed turn comes out of the list, and `submit` appends it again, at the end
 
 "Start new chat" asks first, because the server forgets the conversation for good. Only after you confirm does the page call `DELETE /api/conversation` and then clear the screen. The cookie stays, so the next prompt starts a fresh history under the same ID.
 
-### Keeping the Cursor in the Input
-
-The input is never disabled, only the Send button. A disabled input loses focus, so disabling it while a reply arrives would drop the cursor out of it on every send, and you would click back into it every time. Leaving it enabled means you can type your next message while the reply is still arriving; pressing Enter does nothing until the reply finishes, because a form will not submit implicitly while its submit button is disabled, and `send` checks `locked` as well.
-
-Focus returns to the input from everywhere else too. `autoFocus` puts it there on load; "Try again" and "Start new chat" move it back before their buttons disappear; and every modal moves it back when it closes.
-
-The modals are `<dialog>` elements opened with `showModal()`, which does the hard parts of a modal on its own: it covers the page, blocks clicks behind it, keeps focus inside, and closes on Escape. A button inside `<form method="dialog">` closes it with no JavaScript. The one thing the browser does not do is close on a backdrop click, which is the `onClick` in `Modal`: a click on the backdrop lands on the `<dialog>` itself rather than on anything inside it.
-
-The confirmation needs to know which way it closed, and the dialog already records that. A button in `<form method="dialog">` copies its `value` into the dialog's `returnValue` as it closes it, so the confirm button carries `value="confirm"` and `onClose` checks for it. Cancel has no value, and Escape and a backdrop click close the dialog without touching `returnValue`. That last part is why `confirmStartOver` empties `returnValue` before it opens the dialog: the dialog keeps the value from its last close, so a "yes" from an earlier chat would otherwise count again when you press Escape on the next one.
-
 ### What the Styling Is Doing
 
 The classes are Tailwind's, and `create-next-app --tailwind` is what put them there &mdash; it installs Tailwind CSS 4, adds `@import "tailwindcss"` to `app/globals.css`, and generates a theme block. There is no `tailwind.config.js` to edit; version 4 configures itself from CSS. The palette deliberately matches the home page `create-next-app` generates, so the two pages look like one application.
@@ -1533,62 +1596,6 @@ The same translation runs here, so a bad key reads the same on both tabs; only t
 The key is read once, when the module first loads, from `process.env.ANTHROPIC_API_KEY`, and one client is built that both resources close over. Next.js loads `.env.local` from the project root on its own, so a key kept there needs no flag and no loader.
 
 The name matters. Next.js exposes an environment variable to the browser only if its name begins with `NEXT_PUBLIC_`, and inlines it into the client bundle when it does. `ANTHROPIC_API_KEY` has no such prefix, so it stays on the server &mdash; and renaming it to `NEXT_PUBLIC_ANTHROPIC_API_KEY` would publish your key to every visitor.
-
-## Verification
-
-With `npm run dev` running on `localhost:3000`. `-c jar -b jar` makes curl save the cookie and send it back, the way a browser does:
-
-```text
-curl -c jar -b jar -X POST localhost:3000/api/chat -d '{"prompt":"My name is Eric"}'
-->  {"text":"..."}   (and set-cookie: conversation=...)
-
-curl -c jar -b jar -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"What is my name?"}'
-->  data: {"text":"Eric"} ... event: done
-
-curl -b jar localhost:3000/api/conversation
-->  {"messages":[{"role":"user","content":"My name is Eric"}, ... ]}
-
-curl -b jar -X DELETE localhost:3000/api/conversation               ->  204
-curl -b jar localhost:3000/api/conversation                         ->  {"messages":[]}
-
-curl -X POST localhost:3000/api/chat -d 'not json'                  ->  400  Body must be JSON
-curl -X POST localhost:3000/api/chat -d '{}'                        ->  400  Body must have a `prompt` string
-curl -X POST localhost:3000/api/chat -d '{"prompt":"hi","model":"gpt-9"}'
-->  400  Unknown model
-curl -X POST localhost:3000/api/chat -d '{"prompt":"hi","model":"claude-haiku-4-5"}'
-->  {"text":"..."}
-curl -X GET localhost:3000/api/chat                                 ->  501  Not Implemented
-curl -X POST localhost:3000/api/nope                                ->  404  Not Found
-```
-
-The second request is the memory working: it sends one question and no history, and the answer depends on the first request. Drop `-b jar` from it and the server starts a new conversation, with no idea who you are.
-
-`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
-
-The last two are the reason the catch-all route is worth having: both come from the chain, on URLs Next.js was happy to hand over. The `501` appears because `GET` is exported for `/api/conversation` &mdash; with no `GET` export at all, Next.js would answer `405` first.
-
-Then open [http://localhost:3000](http://localhost:3000), which starts on the `/api/chat/stream` tab, and send a prompt. The answer should grow a few words at a time in a bubble on the left, under your prompt on the right. If it appears all at once, the frames are being buffered somewhere between the resource and the component rather than streamed. Then switch to the `/api/chat` tab and send a follow-up that only makes sense given the first answer, such as "shorter". The reply should arrive all at once and take the earlier turn into account, which shows that both endpoints share one stored conversation. Then reload the page: the whole conversation should come back. "Start new chat" clears it, and a reload after that stays empty. Through all of it the cursor should stay in the input: after each send, after "Start new chat", and after closing either modal.
-
-To see browsing, stay on the `/api/chat/stream` tab and ask something that needs today's information, such as "What is the latest version of Deno?" "Searching the web…" should pulse under the bubble while nothing is being written, the answer should follow, and a __Sources__ list of links should end it. A link should open in a new tab. Then paste a URL and ask for a summary of that page, which should show "Reading a page…" instead.
-
-### Proving the Streaming Caveat
-
-Point the application at a key you know is wrong and send the same prompt to both endpoints. The difference is the whole reason the warning above exists:
-
-```text
-curl -X POST localhost:3000/api/chat -d '{"prompt":"hi"}'
-->  500 Internal Server Error
-    The server's Anthropic API key was rejected.
-
-curl -N -X POST localhost:3000/api/chat/stream -d '{"prompt":"hi"}'
-->  200 OK, content-type: text/event-stream
-    event: error
-    data: {"message":"The server's Anthropic API key was rejected."}
-```
-
-Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body &mdash; and a client that ignores the `error` event sees a successful, empty answer.
-
-Load the page with the same wrong key and your prompt is marked "Not delivered", and the error modal says the key was rejected, on either tab. Put the right key back, press "Try again", and the same prompt goes through. The streaming tab gets there because the component acts on the `error` event. Delete that branch and the page sits there showing an empty reply bubble and no error, having received a perfectly successful response.
 
 ## Where to Next
 

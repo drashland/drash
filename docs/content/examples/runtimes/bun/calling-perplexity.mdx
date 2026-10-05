@@ -36,18 +36,7 @@ To gain familiarity with:
 - carrying structured extras alongside a streamed answer; and
 - reading a secret once, at startup, and sharing one client.
 
-## Prerequisites
-
-You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and a [Perplexity API key](https://www.perplexity.ai/settings/api). The SDK you install is OpenAI's; there is no Perplexity-specific package to add.
-
-```bash
-bun add @drashland/drash openai
-export PERPLEXITY_API_KEY="pplx-..."
-```
-
-## The Whole Application
-
-One file. Save it.
+## Steps
 
 ### Folder Structure End State
 
@@ -56,6 +45,19 @@ One file. Save it.
     <FileTree.File name="app.ts" />
   </FileTree.Folder>
 </FileTree>
+
+<Steps>
+
+### Set Up the Project
+
+You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and a [Perplexity API key](https://www.perplexity.ai/settings/api). The SDK you install is OpenAI's; there is no Perplexity-specific package to add.
+
+```bash
+bun add @drashland/drash openai
+export PERPLEXITY_API_KEY="pplx-..."
+```
+
+### Create the Following File
 
 ```ts filename="app.ts"
 import OpenAI from "openai";
@@ -265,11 +267,39 @@ Bun.serve({
 console.log(`\nDrash running at http://${hostname}:${port}`);
 ```
 
-Run it:
+### Run the Drash App
 
 ```bash
 bun run app.ts
 ```
+
+</Steps>
+
+## Verification
+
+With the application running on `localhost:1447`:
+
+```text
+curl -X POST localhost:1447/chat -d '{"prompt":"What shipped in Drash v3?"}'
+->  {"text":"...","sources":[{"title":"...","url":"https://..."}]}
+
+curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Who won?"}'
+->  data: {"text":"..."} ... event: sources ... event: done
+
+curl -X POST localhost:1447/chat -d '{"prompt":"What is 2 + 2?"}'
+->  {"text":"4","sources":[]}            # No search needed. Not an error.
+
+curl -X POST localhost:1447/chat -d 'not json'   ->  400  Body must be JSON
+curl -X POST localhost:1447/chat -d '{}'         ->  400  Body must have a `prompt` string
+curl -X GET localhost:1447/chat                  ->  501  Not Implemented
+curl -X POST localhost:1447/nope                 ->  404  Not Found
+```
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
+
+The third one is worth running deliberately. It is the case that proves `sources: []` is an ordinary answer, and it is the one a client written against the first example will crash on.
 
 ## Pointing the Client Somewhere Else
 
@@ -394,32 +424,6 @@ Clients have to handle that event for it to mean anything, so document it alongs
 ## Getting the API Key to the Resource
 
 The key is read once, at startup, from `process.env.PERPLEXITY_API_KEY`, and one client is built that both resources close over. Bun loads a `.env` file from the working directory on its own, so a key kept there needs no flag.
-
-## Verification
-
-With the application running on `localhost:1447`:
-
-```text
-curl -X POST localhost:1447/chat -d '{"prompt":"What shipped in Drash v3?"}'
-->  {"text":"...","sources":[{"title":"...","url":"https://..."}]}
-
-curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Who won?"}'
-->  data: {"text":"..."} ... event: sources ... event: done
-
-curl -X POST localhost:1447/chat -d '{"prompt":"What is 2 + 2?"}'
-->  {"text":"4","sources":[]}            # No search needed. Not an error.
-
-curl -X POST localhost:1447/chat -d 'not json'   ->  400  Body must be JSON
-curl -X POST localhost:1447/chat -d '{}'         ->  400  Body must have a `prompt` string
-curl -X GET localhost:1447/chat                  ->  501  Not Implemented
-curl -X POST localhost:1447/nope                 ->  404  Not Found
-```
-
-`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
-
-The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
-
-The third one is worth running deliberately. It is the case that proves `sources: []` is an ordinary answer, and it is the one a client written against the first example will crash on.
 
 ## Where to Next
 

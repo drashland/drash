@@ -33,7 +33,19 @@ To gain familiarity with:
 - turning an API client's errors into ones the chain can render; and
 - getting a secret to a resource on a runtime that has no `process.env`.
 
-## Prerequisites
+## Steps
+
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.File name="app.js" />
+  </FileTree.Folder>
+</FileTree>
+
+<Steps>
+
+### Set Up the Project
 
 You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [OpenAI API key](https://platform.openai.com/api-keys).
 
@@ -44,17 +56,7 @@ echo 'OPENAI_API_KEY="sk-..."' > .dev.vars
 
 `wrangler dev` reads the key from `.dev.vars`; keep that file out of version control. A deployed Worker does not see it, so before you deploy, run `npx wrangler secret put OPENAI_API_KEY` to give the Worker its own copy. A secret set that way is not visible to `wrangler dev`.
 
-## The Whole Application
-
-One file. Save it.
-
-### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="my-project" defaultOpen>
-    <FileTree.File name="app.js" />
-  </FileTree.Folder>
-</FileTree>
+### Create the Following File
 
 ```js filename="app.js"
 import OpenAI from "openai";
@@ -233,11 +235,44 @@ export default {
 };
 ```
 
-Run it:
+### Run the Drash App
 
 ```bash
 npx wrangler dev app.js
 ```
+
+</Steps>
+
+## Verification
+
+With the application running on `localhost:8787`:
+
+```text
+curl -X POST localhost:8787/chat -d '{"prompt":"Say hi"}'        ->  {"text":"..."}
+curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"Hi"}'  ->  data: {"text":"..."} ... event: done
+curl -X POST localhost:8787/chat -d 'not json'                   ->  400  Body must be JSON
+curl -X POST localhost:8787/chat -d '{}'                         ->  400  Body must have a `prompt` string
+curl -X GET localhost:8787/chat                                  ->  501  Not Implemented
+curl -X POST localhost:8787/nope                                 ->  404  Not Found
+```
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
+
+### Proving the Streaming Caveat
+
+Point the application at a key you know is wrong and send the same prompt to both endpoints:
+
+```text
+curl -X POST localhost:8787/chat -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+
+curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+```
+
+Both fail the same way, and that is the point of awaiting `create()` before building the `Response`: the rejection arrives while the status line is still unspent. Move the `await` inside the stream's `start()` and the second command starts answering `200 OK` with an `error` event in the body instead &mdash; a client that ignores that event then sees a successful, empty answer. The ordering is the whole protection.
 
 ## The Non-Streaming Endpoint
 
@@ -399,37 +434,6 @@ async POST(context) {
 ```
 
 That is the same context-object shape [Node uses](/docs/requests/handling-requests), reached for a different reason: Node needs one because it has no `Request`, Workers needs one because it has no startup-time access to secrets. It is one pattern, not two.
-
-## Verification
-
-With the application running on `localhost:8787`:
-
-```text
-curl -X POST localhost:8787/chat -d '{"prompt":"Say hi"}'        ->  {"text":"..."}
-curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"Hi"}'  ->  data: {"text":"..."} ... event: done
-curl -X POST localhost:8787/chat -d 'not json'                   ->  400  Body must be JSON
-curl -X POST localhost:8787/chat -d '{}'                         ->  400  Body must have a `prompt` string
-curl -X GET localhost:8787/chat                                  ->  501  Not Implemented
-curl -X POST localhost:8787/nope                                 ->  404  Not Found
-```
-
-`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
-
-The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
-
-### Proving the Streaming Caveat
-
-Point the application at a key you know is wrong and send the same prompt to both endpoints:
-
-```text
-curl -X POST localhost:8787/chat -d '{"prompt":"hi"}'
-->  500 Internal Server Error
-
-curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"hi"}'
-->  500 Internal Server Error
-```
-
-Both fail the same way, and that is the point of awaiting `create()` before building the `Response`: the rejection arrives while the status line is still unspent. Move the `await` inside the stream's `start()` and the second command starts answering `200 OK` with an `error` event in the body instead &mdash; a client that ignores that event then sees a successful, empty answer. The ordering is the whole protection.
 
 ## Where to Next
 

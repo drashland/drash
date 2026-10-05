@@ -10,6 +10,16 @@ Web `Request`, so it goes straight into the chain.
 
 ## Steps
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.Folder name="api" defaultOpen>
+      <FileTree.File name="index.ts" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install Drash and the Vercel CLI
@@ -22,16 +32,6 @@ npm install --global vercel
 ### Create the Following File
 
 `api/index.ts` is served at `/api`, so that is the path the resource claims.
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="my-project" defaultOpen>
-    <FileTree.Folder name="api" defaultOpen>
-      <FileTree.File name="index.ts" />
-    </FileTree.Folder>
-  </FileTree.Folder>
-</FileTree>
 
 ```ts filename="api/index.ts"
 import {
@@ -66,6 +66,10 @@ export default {
 };
 ```
 
+</Steps>
+
+## Verification
+
 ### Run the Drash App
 
 ```bash
@@ -76,7 +80,6 @@ vercel dev
 
 Go to http://localhost:3000/api. Pass `--listen` to use a different port.
 
-</Steps>
 
 ## Notes
 

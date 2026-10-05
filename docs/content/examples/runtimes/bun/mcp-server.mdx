@@ -245,6 +245,18 @@ Replace it with whatever your runtime gives you: a database, a KV store, [Worker
 
 ## Build It
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="drash-mcp" defaultOpen>
+    <FileTree.File name="app.ts" />
+    <FileTree.File name="resource.ts" />
+    <FileTree.File name="mcp.ts" />
+    <FileTree.File name="middleware.ts" />
+    <FileTree.File name="notes.ts" />
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install the Dependencies
@@ -256,18 +268,6 @@ bun add @drashland/drash @modelcontextprotocol/server zod
 ### Create the Following Files
 
 The application splits along the same seams the [overview](#overview) explains it in &mdash; one idea per file.
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="drash-mcp" defaultOpen>
-    <FileTree.File name="app.ts" />
-    <FileTree.File name="resource.ts" />
-    <FileTree.File name="mcp.ts" />
-    <FileTree.File name="middleware.ts" />
-    <FileTree.File name="notes.ts" />
-  </FileTree.Folder>
-</FileTree>
 
 Imports run one way and never loop back: `app.ts` wires up `resource.ts` and `middleware.ts`, `resource.ts` hands every request to `mcp.ts`, and `mcp.ts` is the only file that touches `notes.ts`. Nothing imports `app.ts`, which is what makes it the entry point.
 
@@ -491,14 +491,6 @@ That is the smoke test. The [Overview](#verification) has the full table &mdash;
 
 </Steps>
 
-## Notes
-
-Bun has no global `URLPattern`, so this imports the __polyfill__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). That is the only Drash-level difference from the [Deno build](/examples/runtimes/deno/mcp-server); everything else on this page is identical to it, line for line.
-
-What Bun does hand you is a Web `Request`, which is what the SDK handler takes. So `handler.fetch(request)` is the entire bridge, and the resource never touches the body.
-
-`Bun.serve` wants a `fetch` function rather than a `handler` one, and it starts listening as the call returns &mdash; there is no `onListen` callback, which is why the log line sits after it.
-
 ## Verification
 
 The protocol behaves identically on every runtime, so this is the same table everywhere. With the application running on `localhost:1447`:
@@ -590,6 +582,14 @@ The last two are worth pausing on. The transport mirrors `method` and `name` int
 <Callout type="info">
 Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls back rather than rejecting, since a missing header is how pre-`2025-06-18` clients look. Do not read that as the header being optional; it is required for every request this revision defines.
 </Callout>
+
+## Notes
+
+Bun has no global `URLPattern`, so this imports the __polyfill__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). That is the only Drash-level difference from the [Deno build](/examples/runtimes/deno/mcp-server); everything else on this page is identical to it, line for line.
+
+What Bun does hand you is a Web `Request`, which is what the SDK handler takes. So `handler.fetch(request)` is the entire bridge, and the resource never touches the body.
+
+`Bun.serve` wants a `fetch` function rather than a `handler` one, and it starts listening as the call returns &mdash; there is no `onListen` callback, which is why the log line sits after it.
 
 ## Where to Next
 

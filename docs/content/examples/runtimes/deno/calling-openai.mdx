@@ -33,18 +33,7 @@ To gain familiarity with:
 - turning an API client's errors into ones the chain can render; and
 - reading a secret on a runtime that asks permission for it.
 
-## Prerequisites
-
-You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [OpenAI API key](https://platform.openai.com/api-keys).
-
-```bash
-# No install step. Deno resolves both imports on first run.
-export OPENAI_API_KEY="sk-..."
-```
-
-## The Whole Application
-
-One file. Save it.
+## Steps
 
 ### Folder Structure End State
 
@@ -53,6 +42,19 @@ One file. Save it.
     <FileTree.File name="app.ts" />
   </FileTree.Folder>
 </FileTree>
+
+<Steps>
+
+### Set Up the Project
+
+You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [OpenAI API key](https://platform.openai.com/api-keys).
+
+```bash
+# No install step. Deno resolves both imports on first run.
+export OPENAI_API_KEY="sk-..."
+```
+
+### Create the Following File
 
 ```ts filename="app.ts"
 import OpenAI from "npm:openai";
@@ -228,7 +230,7 @@ Deno.serve({
 });
 ```
 
-Run it:
+### Run the Drash App
 
 ```bash
 deno run --allow-net --allow-env app.ts
@@ -237,6 +239,39 @@ deno run --allow-net --allow-env app.ts
 <Callout type="gray">
 Deno asks for permission per capability. `--allow-net` is what lets the process reach `api.openai.com` and listen on a port; `--allow-env` is what lets it read `OPENAI_API_KEY`. If the npm compatibility layer wants anything else, Deno stops and names the flag.
 </Callout>
+
+</Steps>
+
+## Verification
+
+With the application running on `localhost:1447`:
+
+```text
+curl -X POST localhost:1447/chat -d '{"prompt":"Say hi"}'        ->  {"text":"..."}
+curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Hi"}'  ->  data: {"text":"..."} ... event: done
+curl -X POST localhost:1447/chat -d 'not json'                   ->  400  Body must be JSON
+curl -X POST localhost:1447/chat -d '{}'                         ->  400  Body must have a `prompt` string
+curl -X GET localhost:1447/chat                                  ->  501  Not Implemented
+curl -X POST localhost:1447/nope                                 ->  404  Not Found
+```
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
+
+### Proving the Streaming Caveat
+
+Point the application at a key you know is wrong and send the same prompt to both endpoints:
+
+```text
+curl -X POST localhost:1447/chat -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+
+curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+```
+
+Both fail the same way, and that is the point of awaiting `create()` before building the `Response`: the rejection arrives while the status line is still unspent. Move the `await` inside the stream's `start()` and the second command starts answering `200 OK` with an `error` event in the body instead &mdash; a client that ignores that event then sees a successful, empty answer. The ordering is the whole protection.
 
 ## The Non-Streaming Endpoint
 
@@ -369,37 +404,6 @@ Clients have to handle that event for it to mean anything, so document it alongs
 ## Getting the API Key to the Resource
 
 The key is read once, at startup, with `Deno.env.get("OPENAI_API_KEY")`, and one client is built that both resources close over. Deno refuses that read without `--allow-env`, and it never loads a `.env` file unless `--env-file` tells it to.
-
-## Verification
-
-With the application running on `localhost:1447`:
-
-```text
-curl -X POST localhost:1447/chat -d '{"prompt":"Say hi"}'        ->  {"text":"..."}
-curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"Hi"}'  ->  data: {"text":"..."} ... event: done
-curl -X POST localhost:1447/chat -d 'not json'                   ->  400  Body must be JSON
-curl -X POST localhost:1447/chat -d '{}'                         ->  400  Body must have a `prompt` string
-curl -X GET localhost:1447/chat                                  ->  501  Not Implemented
-curl -X POST localhost:1447/nope                                 ->  404  Not Found
-```
-
-`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
-
-The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
-
-### Proving the Streaming Caveat
-
-Point the application at a key you know is wrong and send the same prompt to both endpoints:
-
-```text
-curl -X POST localhost:1447/chat -d '{"prompt":"hi"}'
-->  500 Internal Server Error
-
-curl -N -X POST localhost:1447/chat/stream -d '{"prompt":"hi"}'
-->  500 Internal Server Error
-```
-
-Both fail the same way, and that is the point of awaiting `create()` before building the `Response`: the rejection arrives while the status line is still unspent. Move the `await` inside the stream's `start()` and the second command starts answering `200 OK` with an `error` event in the body instead &mdash; a client that ignores that event then sees a successful, empty answer. The ordering is the whole protection.
 
 ## Where to Next
 

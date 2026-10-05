@@ -9,6 +9,14 @@ A single resource answering `GET /`, written with `import`
 
 ## Steps
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.File name="app.js" />
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install Node
@@ -30,7 +38,7 @@ Create a `package.json` file. The `-y` flag skips the questions `npm init` would
 npm init -y
 ```
 
-`npm init -y` does not add a `start` script, so add one that runs the app. The command in the "Run the Drash App" step runs this script.
+`npm init -y` does not add a `start` script, so add one that runs the app. The command in "Run the Drash App", under [Verification](#verification), runs this script.
 
 ```bash
 npm pkg set scripts.start="node app.js"
@@ -49,14 +57,6 @@ npm install @drashland/drash
 ```
 
 ### Create the Following File
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="my-project" defaultOpen>
-    <FileTree.File name="app.js" />
-  </FileTree.Folder>
-</FileTree>
 
 ```js filename="app.js"
 import {
@@ -118,6 +118,10 @@ server.listen(port, hostname, () => {
 });
 ```
 
+</Steps>
+
+## Verification
+
 ### Run the Drash App
 
 ```bash
@@ -134,7 +138,6 @@ Go to http://localhost:1447. You should see something like the following:
 Oh so easy (written at Wed Nov 01 2023 22:04:56 GMT-0400 (Eastern Daylight Time))
 ```
 
-</Steps>
 
 ## Notes
 

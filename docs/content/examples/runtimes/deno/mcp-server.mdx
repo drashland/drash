@@ -245,6 +245,18 @@ Replace it with whatever your runtime gives you: a database, a KV store, [Worker
 
 ## Build It
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="drash-mcp" defaultOpen>
+    <FileTree.File name="app.ts" />
+    <FileTree.File name="resource.ts" />
+    <FileTree.File name="mcp.ts" />
+    <FileTree.File name="middleware.ts" />
+    <FileTree.File name="notes.ts" />
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install the Dependencies
@@ -258,18 +270,6 @@ The SDK is a large package, so expect the first run to sit downloading for a whi
 ### Create the Following Files
 
 The application splits along the same seams the [overview](#overview) explains it in &mdash; one idea per file.
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="drash-mcp" defaultOpen>
-    <FileTree.File name="app.ts" />
-    <FileTree.File name="resource.ts" />
-    <FileTree.File name="mcp.ts" />
-    <FileTree.File name="middleware.ts" />
-    <FileTree.File name="notes.ts" />
-  </FileTree.Folder>
-</FileTree>
 
 Imports run one way and never loop back: `app.ts` wires up `resource.ts` and `middleware.ts`, `resource.ts` hands every request to `mcp.ts`, and `mcp.ts` is the only file that touches `notes.ts`. Nothing imports `app.ts`, which is what makes it the entry point.
 
@@ -496,14 +496,6 @@ That is the smoke test. The [Overview](#verification) has the full table &mdash;
 
 </Steps>
 
-## Notes
-
-Deno provides a global `URLPattern`, so this uses the __native__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns, so the request goes straight through with no context object in between.
-
-Drash comes from JSR and the SDK from npm, which is why the two import blocks use different specifiers. Both resolve on first run; there is no package file and no install step.
-
-`Deno.serve` logs through `onListen`, so the address it prints is the one it actually bound &mdash; useful, since `localhost` may resolve to `::1` rather than `127.0.0.1`.
-
 ## Verification
 
 The protocol behaves identically on every runtime, so this is the same table everywhere. With the application running on `localhost:1447`:
@@ -595,6 +587,14 @@ The last two are worth pausing on. The transport mirrors `method` and `name` int
 <Callout type="info">
 Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls back rather than rejecting, since a missing header is how pre-`2025-06-18` clients look. Do not read that as the header being optional; it is required for every request this revision defines.
 </Callout>
+
+## Notes
+
+Deno provides a global `URLPattern`, so this uses the __native__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). Its HTTP server hands you a Web `Request` and expects a `Response` back, which is exactly what the chain takes and returns, so the request goes straight through with no context object in between.
+
+Drash comes from JSR and the SDK from npm, which is why the two import blocks use different specifiers. Both resolve on first run; there is no package file and no install step.
+
+`Deno.serve` logs through `onListen`, so the address it prints is the one it actually bound &mdash; useful, since `localhost` may resolve to `::1` rather than `127.0.0.1`.
 
 ## Where to Next
 

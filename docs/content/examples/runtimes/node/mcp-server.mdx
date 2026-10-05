@@ -245,6 +245,19 @@ Replace it with whatever your runtime gives you: a database, a KV store, [Worker
 
 ## Build It
 
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="drash-mcp" defaultOpen>
+    <FileTree.File name="app.ts" />
+    <FileTree.File name="resource.ts" />
+    <FileTree.File name="mcp.ts" />
+    <FileTree.File name="middleware.ts" />
+    <FileTree.File name="context.ts" />
+    <FileTree.File name="notes.ts" />
+  </FileTree.Folder>
+</FileTree>
+
 <Steps>
 
 ### Install the Dependencies
@@ -259,19 +272,6 @@ Node is the only runtime that needs `@modelcontextprotocol/node`. It supplies `t
 ### Create the Following Files
 
 The application splits along the same seams the [overview](#overview) explains it in &mdash; one idea per file, plus one for the context type Node needs.
-
-#### Folder Structure End State
-
-<FileTree>
-  <FileTree.Folder name="drash-mcp" defaultOpen>
-    <FileTree.File name="app.ts" />
-    <FileTree.File name="resource.ts" />
-    <FileTree.File name="mcp.ts" />
-    <FileTree.File name="middleware.ts" />
-    <FileTree.File name="context.ts" />
-    <FileTree.File name="notes.ts" />
-  </FileTree.Folder>
-</FileTree>
 
 Imports run one way and never loop back: `app.ts` wires up `resource.ts` and `middleware.ts`, `resource.ts` hands every request to `mcp.ts`, and `mcp.ts` is the only file that touches `notes.ts`. `context.ts` holds the type both the resource and the middleware read from. Nothing imports `app.ts`, which is what makes it the entry point.
 
@@ -527,16 +527,6 @@ That is the smoke test. The [Overview](#verification) has the full table &mdash;
 
 </Steps>
 
-## Notes
-
-Node has no global `URLPattern`, so this imports the __polyfill__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). It also has no `Request`, which is the larger difference: the chain gets a __context object__ you build, and `Context` is the type that makes `context.request` and `context.response` resolve inside the resource.
-
-__The `url` on that context must be fully qualified.__ `request.url` on Node is just the path (`/mcp`), and the chain matches resources by parsing a whole URL &mdash; hand it the bare path and every request dies with `Invalid URL` before reaching your resource. Building `` `http://${hostname}:${port}${request.url}` `` is what the other runtimes get for free.
-
-`toNodeHandler()` returns a promise, which matters more than it looks. A middleware's `this.next()` throws a `500` if the wrapped call returns something falsy, so a resource method that writes to `response` and returns nothing breaks the moment you wrap it &mdash; see the warning in [Creating Middleware](/docs/middleware/creating-middleware). Returning the handler's promise from `POST`, `GET`, and `DELETE` is what keeps `OriginGuard` working.
-
-The error branch writes the JSON-RPC body onto `response` rather than returning one, since that is how Node responses are made. `app.handle<void>()` is typed accordingly.
-
 ## Verification
 
 The protocol behaves identically on every runtime, so this is the same table everywhere. With the application running on `localhost:1447`:
@@ -628,6 +618,16 @@ The last two are worth pausing on. The transport mirrors `method` and `name` int
 <Callout type="info">
 Omitting `MCP-Protocol-Version` entirely does not fail &mdash; the SDK falls back rather than rejecting, since a missing header is how pre-`2025-06-18` clients look. Do not read that as the header being optional; it is required for every request this revision defines.
 </Callout>
+
+## Notes
+
+Node has no global `URLPattern`, so this imports the __polyfill__ entry point &mdash; see [About > Concepts > Native vs. Polyfill](/about/concepts/native-vs-polyfill). It also has no `Request`, which is the larger difference: the chain gets a __context object__ you build, and `Context` is the type that makes `context.request` and `context.response` resolve inside the resource.
+
+__The `url` on that context must be fully qualified.__ `request.url` on Node is just the path (`/mcp`), and the chain matches resources by parsing a whole URL &mdash; hand it the bare path and every request dies with `Invalid URL` before reaching your resource. Building `` `http://${hostname}:${port}${request.url}` `` is what the other runtimes get for free.
+
+`toNodeHandler()` returns a promise, which matters more than it looks. A middleware's `this.next()` throws a `500` if the wrapped call returns something falsy, so a resource method that writes to `response` and returns nothing breaks the moment you wrap it &mdash; see the warning in [Creating Middleware](/docs/middleware/creating-middleware). Returning the handler's promise from `POST`, `GET`, and `DELETE` is what keeps `OriginGuard` working.
+
+The error branch writes the JSON-RPC body onto `response` rather than returning one, since that is how Node responses are made. `app.handle<void>()` is typed accordingly.
 
 ## Where to Next
 
