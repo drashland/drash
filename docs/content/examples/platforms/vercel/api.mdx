@@ -23,6 +23,16 @@ npm install --global vercel
 
 `api/index.ts` is served at `/api`, so that is the path the resource claims.
 
+#### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.Folder name="api" defaultOpen>
+      <FileTree.File name="index.ts" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
 ```ts filename="api/index.ts"
 import {
   Application,

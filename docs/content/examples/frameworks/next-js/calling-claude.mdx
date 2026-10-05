@@ -58,7 +58,22 @@ __Keep the key on the server.__ The route handler and the page shell run on the 
 
 ## The Whole Application
 
-Four files. Save them, and the rest of this page takes them apart.
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-app" defaultOpen>
+    <FileTree.Folder name="app" defaultOpen>
+      <FileTree.Folder name="api" defaultOpen>
+        <FileTree.Folder name="[...drash]" defaultOpen>
+          <FileTree.File name="route.ts" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.File name="chat-client.tsx" />
+      <FileTree.File name="models.ts" />
+      <FileTree.File name="page.tsx" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
 
 ```ts filename="app/api/[...drash]/route.ts"
 import Anthropic from "@anthropic-ai/sdk";

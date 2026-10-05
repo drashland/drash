@@ -389,23 +389,22 @@ body > div:has(> footer > [data-drash-footer]) > hr {
 }
 
 /*
- * The end-state directory tree fills the content column.
+ * Every file tree fills the content column.
  *
  * Nextra puts `x:inline-flex` on the file tree's `ul`, so the bordered box
- * shrink-wraps its widest row. On the step-by-step guide the tree holds a single
- * entry (`app.ts`), which leaves a thumbnail-sized card adrift at the left of a
- * full-width tab panel, directly under code blocks that span the whole column.
+ * shrink-wraps its widest row. Most trees here are short (the Examples pages'
+ * "Folder Structure End State" often holds one file), which leaves a
+ * thumbnail-sized card adrift at the left of the column, directly above code
+ * blocks that span all of it.
  *
  * Switching to block-level `flex` is the entire fix — a block-level flex
  * container fills its containing block on its own, so no `width` is needed. The
  * `x:flex-col` on the same element is untouched, so the rows still stack.
  *
- * Keyed off the `[data-drash-end-state-tree]` marker on our own component, like
- * the footer rules above: attribute plus class outweighs Nextra's single-class
- * `x:inline-flex` regardless of import order, and it leaves any other
- * `<FileTree>` on the site with its shrink-to-fit box.
+ * `main` plus the class outweighs Nextra's single-class `x:inline-flex`
+ * regardless of import order, and keeps the rule to page content.
  */
-[data-drash-end-state-tree] .nextra-filetree {
+main .nextra-filetree {
   display: flex;
 }
 
@@ -417,10 +416,10 @@ body > div:has(> footer > [data-drash-footer]) > hr {
  * same treatment — and the same reasoning — as the cards above: a real surface
  * turns the border into a boundary between two colours.
  *
- * Nothing in the theme sets a background here, so no specificity contest; the
- * marker keeps it to this component.
+ * Nothing in the theme sets a background here, so no specificity contest;
+ * `main` keeps it to page content, like the width rule above.
  */
-[data-drash-end-state-tree] .nextra-filetree {
+main .nextra-filetree {
   background-color: #fff;
 }
 
@@ -429,6 +428,6 @@ body > div:has(> footer > [data-drash-footer]) > hr {
  * sits just above Nextra's dark page background, which is the separation this
  * is after — white on near-black would be a different problem.
  */
-.dark [data-drash-end-state-tree] .nextra-filetree {
+.dark main .nextra-filetree {
   background-color: #171717;
 }
