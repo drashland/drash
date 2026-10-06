@@ -1,0 +1,16 @@
+{
+  "name": "drash-example-cloudflare-workers-js-mcp-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "wrangler dev"
+  },
+  "dependencies": {
+    "@drashland/drash": "^3.0.2",
+    "@modelcontextprotocol/server": "^2.2.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "wrangler": "^4.121.0"
+  }
+}

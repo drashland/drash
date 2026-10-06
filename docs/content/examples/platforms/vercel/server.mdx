@@ -1,0 +1,111 @@
+---
+title: Deploy a Basic App to Vercel (server.ts)
+description: A complete, runnable Drash application deployed via a Vercel server entrypoint.
+---
+
+# Deploy a Basic App to Vercel (server.ts)
+
+Vercel detects a `server` entrypoint at the project root that calls `server.listen()`, and
+routes requests to it. It receives Node's `IncomingMessage`/`ServerResponse`, so it takes a
+__context object__ like the [Node example](/examples/runtimes/node/basic-app-typescript).
+
+## Steps
+
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.File name="server.ts" />
+  </FileTree.Folder>
+</FileTree>
+
+<Steps>
+
+### Install Drash and the Vercel CLI
+
+```bash
+npm install @drashland/drash
+npm install --global vercel
+```
+
+### Create the Following File
+
+```ts filename="server.ts"
+import {
+  Application,
+  Resource,
+} from "@drashland/drash/modules/http.polyfill.js";
+import type { RequestMethod } from "@drashland/drash/core/Types.js";
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
+
+type NodeContext = {
+  url: string;
+  method: RequestMethod;
+  request: IncomingMessage;
+  response: ServerResponse;
+};
+
+class Home extends Resource {
+  paths = ["/"];
+
+  GET(context: NodeContext) {
+    context.response.end("Oh so easy");
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Home)
+  .build();
+
+const server = createServer((request, response) => {
+  const context = {
+    url: `http://${request.headers.host ?? "localhost"}${request.url}`,
+    method: request.method,
+    request,
+    response,
+  };
+
+  return app
+    .handle(context)
+    .catch((error) => {
+      response.statusCode = 500;
+      response.statusMessage = "Internal Server Error";
+      response.end("Sorry, but we hit an error!");
+    });
+});
+
+server.listen(Number(process.env.PORT ?? 3000));
+```
+
+</Steps>
+
+## Verification
+
+### Run the Drash App
+
+```bash
+vercel dev
+```
+
+### Open It
+
+Go to http://localhost:3000. Pass `--listen` to use a different port.
+
+
+## Notes
+
+`url` must be absolute. `request.url` from `node:http` is path-only (`/users/1`), which is
+why the example builds it from the `host` header &mdash; a bare path will not match.
+
+The port passed to `server.listen()` is only used when you run the file locally. On Vercel
+it is ignored; requests are routed through an internal port.
+
+Vercel Functions run on the Node runtime, whose `URLPattern` support varies by Node
+version, so this uses the __polyfill__ entry point.
+
+If you are writing plain JavaScript rather than TypeScript, set `"type": "module"` in your `package.json` or name the file `.mjs`, because the code above uses `import`. The polyfill entry point also works with `require()` &mdash; see the [CommonJS example](/examples/runtimes/node/basic-app-cjs).
+
+For the other Vercel entrypoint, see [api/ (fetch)](/examples/platforms/vercel/api).
+
+The finished app is in the repository at [`examples/platforms/vercel/server`](https://github.com/drashland/drash/tree/main/examples/platforms/vercel/server).

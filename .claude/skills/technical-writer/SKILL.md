@@ -22,11 +22,14 @@ exported statically. Follow this when writing or editing any page under
 - **Second person for instructions, present tense for behaviour.** "You hand the
   application a request." "The application rejects on error."
 
-## Assume the reader knows nothing
+## Know which audience the page has
 
-Write for someone meeting the subject for the first time. They have not read the
-other pages, they do not know Drash's vocabulary, and they will not infer what
-you left out — they will leave.
+The site has two audiences, and the difference decides how much a page explains.
+
+**`content/docs/` and `content/about/` assume nothing.** Write for someone
+meeting the subject for the first time. They have not read the other pages, they
+do not know Drash's vocabulary, and they will not infer what you left out — they
+will leave.
 
 - **Define a term the first time a page uses it,** or link to where it is
   defined. "Resource", "handler", "chain", "middleware", "entry point", and
@@ -36,8 +39,24 @@ you left out — they will leave.
   `AbstractChainBuilder` are labels for machinery the reader has never seen.
   "The handler that matches a request URL to a resource (`ResourcesIndex`)"
   teaches; "`ResourcesIndex` caches by fully-qualified URL" does not.
-- **Never write "as described above" across pages.** Each page is someone's
-  first. Link instead — the reader chooses whether to follow it.
+
+**`content/examples/` assumes the Docs have been read.** An example is downstream of
+Docs, not a parallel path through the same material. Link a concept the first
+time it appears; do not redefine it. Teach only what is specific to this target —
+the runtime, the framework, the API being called.
+
+- **Do not re-teach a Docs page.** What a resource is, how `paths` matches, that
+  `HTTPError` takes a `Status` rather than a number, how a throw reaches your
+  `.catch()` — all of that lives in `content/docs/` and is linked, not repeated.
+  If an example explains it again, the two copies drift and both rot.
+- **Link on first use, once.** One link where the concept first appears beats a
+  "Recommended Reading" list the reader scrolls past.
+- **Earn every paragraph.** Ask what this page knows that no other page does. A
+  paragraph that would read identically in four examples belongs in Docs, or is
+  the one runtime-specific fact stated plainly and then dropped.
+
+Both audiences share the rest:
+
 - **Show the whole thing, then take it apart.** A complete, runnable sample
   first; the explanation of each piece after. A reader who cannot see the shape
   of the finished thing cannot place the parts.
@@ -50,8 +69,10 @@ you left out — they will leave.
   covers them, but the reason here is different. To a reader who is stuck, those
   words say the difficulty is theirs.
 
-The test: could someone who has never used Drash read this page start to finish
-and end up with something that runs, without needing a tab you did not link?
+The test for a Docs page: could someone who has never used Drash read it start to
+finish and end up with something that runs, without needing a tab you did not
+link? The test for an example: could someone who has read the Docs build this
+target without being told again what they already know?
 
 ## Verify before asserting
 
@@ -63,6 +84,10 @@ Docs that describe code must be checked against the code.
 - **Versions**: take them from CI (`.github/workflows/*.yml`) or `package.json`.
   If a number cannot be sourced, say what is tested rather than inventing a
   minimum.
+- **"Today" carries its date.** Any "today", "currently", or "as of now" gets
+  the date in parentheses — "as of today (September 29, 2026)" — so a reader
+  can tell how stale the claim is. Use the date the claim was checked, not the
+  date of an unrelated later edit.
 - **The published package lags the source.** Docs show the source API:
   `@drashland/drash/modules/http.{native,polyfill}.js`, exporting `Application`.
   The last published build still uses the older `modules/chains/RequestChain/mod.*`
@@ -86,6 +111,14 @@ rot.
 
 Cross-link instead of repeating. When merging pages, delete the duplicate rather
 than keeping both phrasings.
+
+**Parallel pages say shared things identically.** The Examples pages come in
+families (one page per runtime, one per provider). A sentence that means the
+same thing on two of them is written word for word the same, differing only in
+the slot that must change: the runtime, provider, key name, port, file name, or
+link target. "wants back" on one page and "hands back" on another is drift, not
+variety. When editing one page in a family, copy the sentence from a sibling
+rather than rewording it, and check the siblings before inventing a new phrase.
 
 ## Nextra mechanics
 

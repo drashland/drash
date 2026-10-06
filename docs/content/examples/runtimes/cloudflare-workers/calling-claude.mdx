@@ -1,0 +1,454 @@
+---
+title: Calling Claude on Cloudflare Workers
+description: Two HTTP endpoints backed by the Claude API — one that answers all at once, one that streams, on Cloudflare Workers.
+---
+
+# Calling Claude on Cloudflare Workers
+
+Two endpoints backed by the Claude API &mdash; one that answers all at once, one that streams
+
+## Overview
+
+A [resource](/docs/resources/creating-a-resource) calls Claude the way it does anything else: an ordinary `await` inside `POST`.
+
+What does need thought is the shape of the answer. A model generates its reply a piece at a time, and a request that waits for the whole thing can sit for a minute before anything reaches the browser. So this example builds both:
+
+| Endpoint | Answers with |
+| --- | --- |
+| `POST /chat` | One JSON body, once the model has finished |
+| `POST /chat/stream` | A [server-sent event](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) per piece, as the model produces it |
+
+Your resource returns [whatever your runtime wants back](/docs/requests/handling-requests), and Drash passes that value through untouched. That is what makes a streamed body a non-event for the framework: the resource below returns a `Response`, and a streamed one is a `Response` whose body is a `ReadableStream`.
+
+### Objectives
+
+To gain familiarity with:
+
+- reading and validating a JSON request body inside a resource;
+- returning a `Response` whose body is a `ReadableStream`;
+- turning an API client's errors into ones the chain can render; and
+- getting a secret to a resource on a runtime that has no `process.env`.
+
+## Steps
+
+### Folder Structure End State
+
+<FileTree>
+  <FileTree.Folder name="my-project" defaultOpen>
+    <FileTree.File name="app.js" />
+  </FileTree.Folder>
+</FileTree>
+
+<Steps>
+
+### Set Up the Project
+
+You need the runtime itself &mdash; the [quickstart](/docs/quickstart) sets one up if you do not have one &mdash; and an [Anthropic API key](https://console.anthropic.com/settings/keys).
+
+```bash
+npm install @drashland/drash @anthropic-ai/sdk
+echo 'ANTHROPIC_API_KEY="sk-ant-..."' > .dev.vars
+```
+
+`wrangler dev` reads the key from `.dev.vars`; keep that file out of version control. A deployed Worker does not see it, so before you deploy, run `npx wrangler secret put ANTHROPIC_API_KEY` to give the Worker its own copy. A secret set that way is not visible to `wrangler dev`.
+
+<Callout type="warning">
+__Keep the key on the server.__ Every line below runs in your application, never in a browser. An Anthropic key in client-side code is readable by anyone who opens devtools, and every request they make with it is charged to your account.
+</Callout>
+
+### Create the Following File
+
+```js filename="app.js"
+import Anthropic from "@anthropic-ai/sdk";
+import {
+  Application,
+  HTTPError,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+import { Status } from "@drashland/drash/core/http/response/Status.js";
+
+const MODEL = "claude-opus-5";
+
+// No module-scoped client here. A Worker's secrets arrive as an argument to
+// `fetch`, so there is nothing to read at startup — see "Getting the API Key to
+// the Resource" below.
+
+// Both resources start here. A `Request` parses its own body, so this is the
+// same function the Deno and Bun builds use.
+async function readPrompt(request) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    throw new HTTPError(Status.BadRequest, "Body must be JSON");
+  }
+
+  if (typeof body.prompt !== "string" || body.prompt === "") {
+    throw new HTTPError(Status.BadRequest, "Body must have a `prompt` string");
+  }
+
+  return body.prompt;
+}
+
+// Anthropic's failures are not your caller's failures. Restate each one as the
+// status your caller should actually see. Order matters — the specific classes
+// come before `APIError`, which is their shared parent.
+function anthropicErrorToHTTPError(error) {
+  if (error instanceof Anthropic.AuthenticationError) {
+    return new HTTPError(Status.InternalServerError);  // Your key is wrong.
+  }
+
+  if (error instanceof Anthropic.RateLimitError) {
+    return new HTTPError(Status.TooManyRequests);      // Pass the limit on.
+  }
+
+  if (error instanceof Anthropic.BadRequestError) {
+    return new HTTPError(Status.BadRequest);           // Usually the prompt.
+  }
+
+  if (error instanceof Anthropic.APIError) {
+    return new HTTPError(Status.BadGateway);           // Upstream is down.
+  }
+
+  return error;                                        // Not ours. Leave it.
+}
+
+class Chat extends Resource {                          // Answers with the whole reply.
+  paths = ["/chat"];
+
+  async POST(context) {                                // A context object, not a bare
+    const prompt = await readPrompt(context.request);  // `Request` — it has to
+                                                       // carry `env` too.
+    const client = new Anthropic({ apiKey: context.env.ANTHROPIC_API_KEY });
+
+    let message;
+
+    try {
+      message = await client.messages.create({
+        model: MODEL,
+        max_tokens: 16000,
+        messages: [{ role: "user", content: prompt }],
+      });
+    } catch (error) {
+      throw anthropicErrorToHTTPError(error);
+    }
+
+    const text = message.content                       // `content` holds blocks of
+      .filter((block) => block.type === "text")        // several types. Keep the text
+      .map((block) => block.text)                      // ones before reading `.text`.
+      .join("");
+
+    return Response.json({ text });
+  }
+}
+
+class ChatStream extends Resource {                    // Answers a piece at a time.
+  paths = ["/chat/stream"];
+
+  async POST(context) {
+    const prompt = await readPrompt(context.request);  // Throws before the
+                                                       // `Response` exists.
+    const client = new Anthropic({ apiKey: context.env.ANTHROPIC_API_KEY });
+
+    const stream = client.messages.stream({
+      model: MODEL,
+      max_tokens: 64000,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const encoder = new TextEncoder();
+
+    const body = new ReadableStream({
+      async start(controller) {
+        const send = (frame) => controller.enqueue(encoder.encode(frame));
+
+        try {
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              send(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+            }
+          }
+
+          send("event: done\ndata: {}\n\n");
+        } catch (error) {                              // Too late for a status code.
+          send(                                        // Say so in the stream instead.
+            `event: error\ndata: ${
+              JSON.stringify({ message: "upstream failed" })
+            }\n\n`,
+          );
+          console.error(error);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(body, {
+      headers: {
+        "content-type": "text/event-stream",
+        "cache-control": "no-store",
+      },
+    });
+  }
+}
+
+const app = Application
+  .builder()
+  .resources(Chat, ChatStream)
+  .build();
+
+export default {
+  fetch(request, env) {
+    // The chain requires `url` and `method`. The rest of this object is
+    // yours to define, which is how `env` reaches the resource.
+    const context = {
+      url: request.url,
+      method: request.method,
+      request,
+      env,
+    };
+
+    return app
+      .handle(context)
+      .catch((error) => {
+        // `name` is checked before `instanceof` because `instanceof` fails when
+        // two copies of Drash end up in one bundle.
+        if (error.name === "HTTPError") {
+          return new Response(error.message, {
+            status: error.status_code,
+            statusText: error.status_code_description,
+          });
+        }
+
+        console.error(error);
+
+        return new Response("The server could not generate a response", {
+          status: 500,
+        });
+      });
+  },
+};
+```
+
+### Run the Drash App
+
+```bash
+npx wrangler dev app.js
+```
+
+</Steps>
+
+## Verification
+
+With the application running on `localhost:8787`:
+
+```text
+curl -X POST localhost:8787/chat -d '{"prompt":"Say hi"}'        ->  {"text":"..."}
+curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"Hi"}'  ->  data: {"text":"..."} ... event: done
+curl -X POST localhost:8787/chat -d 'not json'                   ->  400  Body must be JSON
+curl -X POST localhost:8787/chat -d '{}'                         ->  400  Body must have a `prompt` string
+curl -X GET localhost:8787/chat                                  ->  501  Not Implemented
+curl -X POST localhost:8787/nope                                 ->  404  Not Found
+```
+
+`-N` on the second one turns off curl's buffering. Without it you still get every frame, but they arrive in a lump at the end, which makes a working stream look like a broken one.
+
+The last two come from the chain rather than from your code, on URLs your server was happy to hand over.
+
+### Proving the Streaming Caveat
+
+Point the application at a key you know is wrong and send the same prompt to both endpoints. The difference is the whole reason the warning in [Handling Errors From the API](#handling-errors-from-the-api) exists:
+
+```text
+curl -X POST localhost:8787/chat -d '{"prompt":"hi"}'
+->  500 Internal Server Error
+
+curl -N -X POST localhost:8787/chat/stream -d '{"prompt":"hi"}'
+->  200 OK, content-type: text/event-stream
+    event: error
+    data: {"message":"upstream failed"}
+```
+
+Same failure, two shapes. The non-streaming endpoint still had its status line to spend, so `anthropicErrorToHTTPError` turned a bad key into a `500`. The streaming endpoint had already sent `200` before it ever called Claude, so all it can do is say so in the body &mdash; and a client that ignores the `error` event sees a successful, empty answer.
+
+## The Non-Streaming Endpoint
+
+`Chat` is the shorter of the two, and everything in it is an ordinary resource method.
+
+```ts
+class Chat extends Resource {
+  public paths = ["/chat"];
+
+  public async POST(request: Request) {
+    const prompt = await readPrompt(request);
+
+    const message = await client.messages.create({
+      model: "claude-opus-5",
+      max_tokens: 16000,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    // ...
+  }
+}
+```
+
+Two things are worth naming.
+
+__`content` is a list of blocks, not a string.__ A reply can contain reasoning blocks, tool calls, and text, so `message.content` is a mixed array. Filter to the text blocks before reading `.text`:
+
+```ts
+const text = message.content
+  .filter((block) => block.type === "text")
+  .map((block) => block.text)
+  .join("");
+```
+
+In TypeScript that filter is also what narrows the type &mdash; `block.text` does not compile on the unfiltered union.
+
+__`max_tokens` is a ceiling, not a target.__ 16,000 is a reasonable default for a request that waits for the full reply: large enough that answers are not cut off mid-sentence, small enough that the request finishes inside the SDK's ten-minute timeout. A reply that hits the ceiling comes back with `stop_reason` set to `"max_tokens"` and no indication in the text itself, so check it if truncation would matter to you.
+
+## The Streaming Endpoint
+
+`ChatStream` returns before the model has finished. The body is a `ReadableStream` that fills in as events arrive:
+
+```ts
+const stream = client.messages.stream({
+  model: "claude-opus-5",
+  max_tokens: 64000,
+  messages: [{ role: "user", content: prompt }],
+});
+
+const body = new ReadableStream({
+  async start(controller) {
+    for await (const event of stream) {
+      if (
+        event.type === "content_block_delta" &&
+        event.delta.type === "text_delta"
+      ) {
+        controller.enqueue(encoder.encode(
+          `data: ${JSON.stringify({ text: event.delta.text })}\n\n`,
+        ));
+      }
+    }
+
+    controller.close();
+  },
+});
+
+return new Response(body, {
+  headers: { "content-type": "text/event-stream" },
+});
+```
+
+`max_tokens` goes up to 64,000 here because the constraint it was working around is gone. A streaming connection does not time out waiting for a complete response, so the model gets room.
+
+The stream carries several event types; `content_block_delta` with a `text_delta` is the one that holds generated text. Everything else &mdash; block starts and stops, message-level usage totals &mdash; is skipped by the `if`.
+
+### The Frame Format
+
+Each `data:` line is one server-sent event, and the blank line is what ends it. A browser reads these with `EventSource`, or with `fetch` if you need to `POST`:
+
+```text
+data: {"text":"Hello"}
+
+data: {"text":" there"}
+
+event: done
+data: {}
+```
+
+The named `done` event exists because a closed connection and a finished reply look identical to the client otherwise.
+
+<Callout type="info">
+__Expect a pause before the first token.__ Claude Opus 5 thinks before it answers, and the thinking is not sent by default &mdash; the stream carries `thinking` blocks with empty text, then starts producing `text_delta` events. If you want to show the reader something during that gap, ask for a summary of the reasoning and forward it on its own event:
+
+```ts
+client.messages.stream({
+  model: "claude-opus-5",
+  max_tokens: 64000,
+  thinking: { type: "adaptive", display: "summarized" },
+  messages: [{ role: "user", content: prompt }],
+});
+```
+
+The deltas then arrive as `thinking_delta` on the same `content_block_delta` event, alongside the `text_delta` ones.
+</Callout>
+
+### What Your Runtime Expects Back
+
+A Worker's `fetch` hands your resource a Web `Request` and expects a `Response`, so a streamed body needs no adaptation: the `ReadableStream` goes back exactly as built. What does differ on Workers is where the API key comes from, which is its own section [below](#getting-the-api-key-to-the-resource).
+
+## Handling Errors From the API
+
+[Error handling](/docs/error-handling) covers how a throw reaches your `.catch()`. What is specific here is the translation step in front of it: a failure talking to Anthropic is a failure of *your* server, so the status you return is rarely the status you received:
+
+| The SDK throws | You throw | Why |
+| --- | --- | --- |
+| `Anthropic.AuthenticationError` | `Status.InternalServerError` | Your key is wrong or missing. The caller did nothing to cause it and can do nothing about it. |
+| `Anthropic.RateLimitError` | `Status.TooManyRequests` | The one case where passing the status through is right &mdash; your caller should back off too. |
+| `Anthropic.BadRequestError` | `Status.BadRequest` | Almost always the prompt, which came from the caller. |
+| `Anthropic.APIError` | `Status.BadGateway` | The parent class, so it catches outages and timeouts. It must be checked last. |
+
+`anthropicErrorToHTTPError` in the sample does exactly that and nothing else. Returning the unrecognized error unchanged matters: a `TypeError` in your own code is a bug, and turning it into a tidy `502` hides it.
+
+<Callout type="warning">
+__None of this applies once the stream is open.__ The status line and headers go out with the first byte. After that a failure cannot become a `500`, because a `200` has already been sent &mdash; the client has a successful response containing half an answer.
+
+Two habits follow. Validate the request body and construct the client __before__ you return the `Response`, so anything the caller got wrong still produces a real status code. And inside the stream, report failures in-band:
+
+```ts
+send(`event: error\ndata: ${JSON.stringify({ message: "upstream failed" })}\n\n`);
+```
+
+Clients have to handle that event for it to mean anything, so document it alongside the endpoint.
+</Callout>
+
+## Getting the API Key to the Resource
+
+Other runtimes read a key once, at startup, and build one client the resources close over. A Worker cannot. There is no `process.env`, and the binding is an argument to the `fetch` handler &mdash; code at module scope runs before any request exists, so there is nothing to read yet. The documented Workers application passes the `Request` straight into the chain, which leaves a resource with no way to reach `env` at all.
+
+The chain requires two fields on its input: a readable `url` and a readable `method`. Everything else on that object is yours. So hand it a context object and put `env` on it:
+
+```js
+export default {
+  fetch(request, env) {
+    const context = {
+      url: request.url,
+      method: request.method,
+      request,
+      env,
+    };
+
+    return app.handle(context).catch(/* ... */);
+  },
+};
+```
+
+The resource then reads `context.request` for the body and `context.env` for the key, and builds its client per request:
+
+```js
+async POST(context) {
+  const prompt = await readPrompt(context.request);
+  const client = new Anthropic({ apiKey: context.env.ANTHROPIC_API_KEY });
+  // ...
+}
+```
+
+That is the same context-object shape [Node uses](/docs/requests/handling-requests), reached for a different reason: Node needs one because it has no `Request`, Workers needs one because it has no startup-time access to secrets. It is one pattern, not two.
+
+## Where to Next
+
+- [Calling OpenAI](/examples/runtimes/cloudflare-workers/calling-openai) &mdash; the same two endpoints against the Chat Completions API, where the streaming client fails earlier and more usefully
+- [Calling Perplexity](/examples/runtimes/cloudflare-workers/calling-perplexity) &mdash; the same again, answering with the sources the reply was built from
+- [Creating Middleware](/docs/middleware/creating-middleware) &mdash; put an API key check or a request log in front of both endpoints
+- [Rate Limiter](/reference/modules/middleware/rate-limiter) &mdash; the bundled middleware for capping how often a caller can reach an endpoint this expensive
+- [Grouping Resources](/docs/resources/grouping-resources) &mdash; mount both under `/api/v1` and share middleware between them
+
+This example sends one prompt and gets one answer. Holding a conversation means sending the whole history on every request, since the API keeps no state between calls &mdash; the `messages` array grows, and where you store it is your decision, not Drash's.
+
+The finished app is in the repository at [`examples/runtimes/cloudflare-workers/calling-claude`](https://github.com/drashland/drash/tree/main/examples/runtimes/cloudflare-workers/calling-claude).
