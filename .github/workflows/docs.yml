@@ -65,7 +65,7 @@ jobs:
           DOCS_BASE_PATH: ${{ vars.DOCS_BASE_PATH }}
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v7
         with:
           path: docs/out
 
