@@ -507,8 +507,7 @@ deno x skills add denoland/skills --skill deno
 ```
 
 `deno x` runs npm and JSR command-line tools the way `npx` does, so this needs
-no Node. `deno x --install-alias` adds `dx` as a shorthand for it. If you would
-rather use Node, `npx skills add ...` is identical.
+no Node. If you would rather use Node, `npx skills add ...` is identical.
 
 Add `--skill migrate-to-deno` as well if the project is coming from Node, npm,
 Yarn, pnpm, or Bun. In Claude Code you can instead install the whole set as a
