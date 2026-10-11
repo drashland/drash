@@ -5,6 +5,7 @@
   "publish": {
     "include": [
       "src",
+      "skills",
       "README.md",
       "COPYING",
       "AUTHORS",

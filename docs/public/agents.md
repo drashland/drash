@@ -10,6 +10,28 @@ It runs on Deno, Node, Bun, and Cloudflare Workers. Exactly four things differ
 between them — the install command, the entry point, the server glue, and the
 run command. Everything else on this page is the same everywhere.
 
+This page sets up a project. The conventions for the code you write in it, such
+as how to name resource files, are Drash agent skills. Install them if the user
+agrees; they touch no project source:
+
+```sh
+npx skills add drashland/drash
+```
+
+In Claude Code you can instead install them as a plugin:
+
+```
+/plugin marketplace add drashland/drash
+/plugin install drash@drashland
+```
+
+Once Drash is installed, the skills for that exact version are also in
+`node_modules/@drashland/drash/skills/`. **If you cannot install skills**, read
+them directly:
+
+- <https://raw.githubusercontent.com/drashland/drash/v3.x/skills/drash-resources/SKILL.md>
+  — resource classes and their file names
+
 ## 0. Before you start
 
 **Ask the user which runtime this project targets, and wait for the answer.** Do
@@ -422,16 +444,14 @@ rather than guessing.
 
 - **Do not add Express middleware.** `body-parser`, `cors`, `helmet` and the
   rest expect Express's `req`/`res` objects and will not work here.
-- **Do not use `this.request` or `this.response`.** A resource receives the
-  request as an argument. v2 had those properties; v3 removed them deliberately.
 - **Do not mix entry points.** One app imports `http.native.js` or
   `http.polyfill.js`, never both.
 - **Do not assume `app.handle()` writes a response.** It rejects on error,
   including 404. Without a `.catch()` the request hangs.
 - **Do not restructure a project to adopt Drash.** It is a dependency and a few
   classes, not a project layout.
-- **Do not put unrelated logic in a resource.** A resource named `Users` serving
-  `/users` should hold user logic and nothing else.
+- **Do not write resources without the `drash-resources` skill.** It covers file
+  names, what a request method receives, and what belongs in a resource.
 
 Docs: <https://drash.crookse.com>. Per-runtime guides with complete runnable
 apps are under <https://drash.crookse.com/docs/quickstart>.
