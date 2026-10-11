@@ -8,11 +8,15 @@ Drash ships [agent skills](https://agentskills.io): Markdown instructions that c
 
 ## Install
 
-In any agent that supports skills, run this in your project:
+In any agent that supports skills, run the command for your runtime in your project:
 
 ```sh
-npx skills add drashland/drash
+npx skills add drashland/drash      # Node, Cloudflare Workers
+deno x skills add drashland/drash   # Deno
+bunx skills add drashland/drash     # Bun
 ```
+
+`deno x --install-alias` adds `dx` as a shorthand for it.
 
 In Claude Code, install them as a plugin:
 
