@@ -3,6 +3,7 @@ import { useMDXComponents as getDocsMDXComponents } from "nextra-theme-docs";
 import { Callout } from "./components/callout";
 import { CodeTab, CodeTabs } from "./components/code-tabs";
 import { Compare, CompareItem } from "./components/compare";
+import { Diagram } from "./components/diagram";
 import { SeeAlso } from "./components/see-also";
 import { Table, Td, Th, Tr } from "./components/table";
 
@@ -18,6 +19,7 @@ export const useMDXComponents = (components) => ({
   CodeTabs,
   Compare,
   CompareItem,
+  Diagram,
   FileTree,
   SeeAlso,
   Steps,

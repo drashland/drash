@@ -5,10 +5,6 @@ description: Charges for resources with the x402 protocol, answering 402 Payment
 
 # X402
 
-<Callout type="info" emoji={null}>
-The default facilitator, `https://x402.org/facilitator`, is for testnets. Point `facilitator_url` at a production facilitator before charging real money.
-</Callout>
-
 ## Summary
 
 The X402 middleware charges for resources using the [x402 protocol](https://github.com/coinbase/x402) (version 2). An unpaid request gets a `402 Payment Required` that says what to pay. A paid request is verified by a facilitator, handed to your resource, and settled once the resource responds. It is added to resources using a [resource group](/reference/standard/http/resource-group).
@@ -20,7 +16,7 @@ The highlighted section below shows how it is added:
 >
 <CodeTab>
 
-```js showLineNumbers  {8-17}
+```js showLineNumbers  {8-18}
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
@@ -38,6 +34,7 @@ const group = ResourceGroup
       maxTimeoutSeconds: 60,
       extra: { name: "USDC", version: "2" },
     }],
+    facilitator_url: "https://facilitator.example.com",
   }))
   .resources(PremiumData)
   .build();
@@ -46,7 +43,7 @@ const group = ResourceGroup
 </CodeTab>
 <CodeTab>
 
-```ts showLineNumbers  {8-17}
+```ts showLineNumbers  {8-18}
 // Code is shortened for brevity
 
 import { ResourceGroup } from "jsr:@drashland/drash/modules/http.native";
@@ -64,6 +61,7 @@ const group = ResourceGroup
       maxTimeoutSeconds: 60,
       extra: { name: "USDC", version: "2" },
     }],
+    facilitator_url: "https://facilitator.example.com",
   }))
   .resources(PremiumData)
   .build();
@@ -72,7 +70,7 @@ const group = ResourceGroup
 </CodeTab>
 <CodeTab>
 
-```ts showLineNumbers  {8-17}
+```ts showLineNumbers  {8-18}
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
@@ -90,6 +88,7 @@ const group = ResourceGroup
       maxTimeoutSeconds: 60,
       extra: { name: "USDC", version: "2" },
     }],
+    facilitator_url: "https://facilitator.example.com",
   }))
   .resources(PremiumData)
   .build();
@@ -98,7 +97,7 @@ const group = ResourceGroup
 </CodeTab>
 <CodeTab>
 
-```js showLineNumbers  {8-17}
+```js showLineNumbers  {8-18}
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
@@ -116,6 +115,7 @@ const group = ResourceGroup
       maxTimeoutSeconds: 60,
       extra: { name: "USDC", version: "2" },
     }],
+    facilitator_url: "https://facilitator.example.com",
   }))
   .resources(PremiumData)
   .build();
@@ -133,7 +133,7 @@ Like the other pre-built middleware, `X402` is a __factory__. Calling it returns
 | Option            | Type                    | Default                          | Notes                                              |
 | ----------------- | ----------------------- | -------------------------------- | -------------------------------------------------- |
 | `accepts`         | `PaymentRequirements[]` | None (required)                  | The payment methods the resource accepts           |
-| `facilitator_url` | `string`                | `"https://x402.org/facilitator"` | Base URL of the facilitator's `/verify` and `/settle` |
+| `facilitator_url` | `string`                | None (required)                  | Base URL of the facilitator's `/verify` and `/settle` |
 | `description`     | `string`                | `""`                             | Sent to the client in `PAYMENT-REQUIRED`           |
 | `mime_type`       | `string`                | `""`                             | Sent to the client in `PAYMENT-REQUIRED`           |
 | `fetch`           | `typeof fetch`          | The global `fetch`               | Used to call the facilitator                       |
@@ -145,11 +145,16 @@ Like the other pre-built middleware, `X402` is a __factory__. Calling it returns
 The client picks one entry from `accepts` and pays with it. List several to accept several networks or tokens:
 
 ```typescript showLineNumbers
+const BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";         // USDC on Base
+const BASE_SEPOLIA_USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e"; // USDC on Base Sepolia
+const payTo = "0xYourWalletAddress";
+
 X402({
   accepts: [
     { scheme: "exact", network: "eip155:8453", amount: "10000", asset: BASE_USDC, payTo, maxTimeoutSeconds: 60 },
     { scheme: "exact", network: "eip155:84532", amount: "10000", asset: BASE_SEPOLIA_USDC, payTo, maxTimeoutSeconds: 60 },
   ],
+  facilitator_url: "https://facilitator.example.com",
 });
 ```
 
@@ -205,47 +210,30 @@ The middleware keeps no state. Verification and settlement, including replay pro
 
 ### Data Flow
 
-<div className="tutorials:chains:introduction flowchart-drash-chain">
+<Diagram>
 ```mermaid
-flowchart LR
-  req([Request + PAYMENT-SIGNATURE])
-  h1([X402 verify])
-  h2([MyResource])
-  h3([X402 settle])
-  res([200 + PAYMENT-RESPONSE])
+%%{init: {"theme": "default"}}%%
+sequenceDiagram
+  participant Client
+  participant X402
+  participant MyResource
+  participant Facilitator
 
-  subgraph chain[Paid]
-    direction LR
-    req --> h1 --> h2 --> h3 --> res
+  alt Unpaid
+    Client->>X402: Request
+    X402-->>Client: 402 + PAYMENT-REQUIRED
+  else Paid
+    Client->>X402: Request + PAYMENT-SIGNATURE
+    X402->>Facilitator: /verify
+    Facilitator-->>X402: Valid
+    X402->>MyResource: Request
+    MyResource-->>X402: Response
+    X402->>Facilitator: /settle
+    Facilitator-->>X402: Settlement
+    X402-->>Client: 200 + PAYMENT-RESPONSE
   end
-
-  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
-
-  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
-
-  class req,h1,h2,h3,res blue
 ```
-</div>
-
-<div className="tutorials:chains:introduction flowchart-drash-chain">
-```mermaid
-flowchart LR
-  req([Request])
-  h1([X402])
-  res([402 + PAYMENT-REQUIRED])
-
-  subgraph chain[Unpaid]
-    direction LR
-    req --> h1 --> res
-  end
-
-  style chain fill:#4299e1,stroke:#4299e1,stroke-width:2px,color:#ebf8ff;
-
-  classDef blue fill:#ebf8ff,stroke:#4299e1,stroke-width:2px,color:#2b6cb0;
-
-  class req,h1,res blue
-```
-</div>
+</Diagram>
 
 An unpaid request stops at the middleware. Your resource is never called.
 
@@ -259,7 +247,7 @@ import { X402Middleware } from "@drashland/drash/modules/middleware/X402.js";
 class LoggedX402 extends X402Middleware {
   constructor() {
     // Your options go here, the same ones you would pass to X402().
-    super({ accepts });
+    super({ accepts, facilitator_url });
   }
 
   public override ALL(request: Request) {
