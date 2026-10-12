@@ -72,6 +72,7 @@ and exports:
 | [CORS](/reference/modules/middleware/cors)                          | Answers preflight `OPTIONS` requests and sets CORS response headers  |
 | [ETag](/reference/modules/middleware/etag)                          | Adds `ETag` headers and answers `304 Not Modified` on a match        |
 | [RateLimiter](/reference/modules/middleware/rate-limiter)           | Limits requests per client and sets the `X-RateLimit-*` headers      |
+| [X402](/reference/modules/middleware/x402)                          | Answers `402 Payment Required` until a client pays with x402         |
 
 Each pre-built middleware module is an instantiated class you pass to `.middleware()`. For example:
 
