@@ -28,20 +28,54 @@ rule applies as soon as a resource gets its own file.
 
 ## The request is an argument
 
-A request method receives the request as its argument. There is no
-`this.request` or `this.response`; v2 had them and v3 removed them.
+A request method receives, as its argument, whatever the app passed to
+`app.handle()`. There is no `this.request` or `this.response`; v2 had them and
+v3 removed them.
+
+On Deno, Bun, and Cloudflare Workers the argument is a Web `Request` with
+Drash's `params` attached. Type it as `HTTPRequest`, not `Request`, which has no
+`params`. Return a `Response`. Mark `paths` and request methods `override`; Deno
+enables `noImplicitOverride` by default:
 
 ```ts
+// Bun imports from http.polyfill.js instead.
+import {
+  type HTTPRequest,
+  Resource,
+} from "@drashland/drash/modules/http.native.js";
+
+export class UsersResource extends Resource {
+  override paths = ["/users/:id"];
+
+  override GET(request: HTTPRequest) {
+    return new Response(`User ${request.params.pathParam("id")}`);
+  }
+}
+```
+
+On Node the argument is the context object the app built around `node:http`'s
+`request` and `response`. Write to `context.response` and return nothing. A
+returned `Response` never reaches the client, and the request hangs:
+
+```js
 import { Resource } from "@drashland/drash/modules/http.polyfill.js";
 
 export class UsersResource extends Resource {
   paths = ["/users/:id"];
 
-  GET(request: Request) {
-    return new Response(`User ${request.params.pathParam("id")}`);
+  GET(context) {
+    context.response.end(`User ${context.params.pathParam("id")}`);
   }
 }
 ```
+
+If the Node app converts to a Web `Request` before calling `app.handle()`, the
+first example applies instead. Check what the app passes in before writing a
+resource. See §4 of <https://drash.crookse.com/agents.md> for the full
+per-runtime apps.
+
+The specifiers above are npm's. Deno installs Drash from JSR, whose specifiers
+drop the `.js`: `@drashland/drash/modules/http.native`.
 
 Import `Resource` from the same entry point (`http.native` or `http.polyfill`)
 as the rest of the app. Do not mix the two.
