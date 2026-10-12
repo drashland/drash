@@ -28,9 +28,9 @@ import {
 } from "../../../../../../../src/modules/http.native.ts";
 import {
   type Options,
-  X402,
-  X402Header,
-} from "../../../../../../../src/modules/middleware/X402.ts";
+  x402,
+  x402Header,
+} from "../../../../../../../src/modules/middleware/x402.ts";
 import {
   decode,
   encode,
@@ -43,7 +43,7 @@ import type {
   SettleResponse,
   VerifyResponse,
 } from "../../../../../../../src/modules/middleware/x402/Types.ts";
-import { X402ErrorResponse } from "../../../../../../../src/modules/middleware/x402/X402ErrorResponse.ts";
+import { x402ErrorResponse } from "../../../../../../../src/modules/middleware/x402/x402ErrorResponse.ts";
 
 const requirements: PaymentRequirements = {
   scheme: "exact",
@@ -100,7 +100,7 @@ function handle(
   path = "/",
 ): Promise<Response> {
   return chain({
-    middleware: [X402(options)],
+    middleware: [x402(options)],
     resources: [
       class Broken extends Resource {
         public override paths = ["/broken"];
@@ -113,13 +113,13 @@ function handle(
   })
     .handle<Response>(new Request(`http://localhost${path}`, { headers }))
     .catch((error) => {
-      return error instanceof X402ErrorResponse
+      return error instanceof x402ErrorResponse
         ? error.response
         : catchError(error);
     });
 }
 
-Deno.test("X402", async (t) => {
+Deno.test("x402", async (t) => {
   await t.step("402 with PAYMENT-REQUIRED when unpaid", async () => {
     const { calls, fetch } = facilitator({});
     const response = await handle({
@@ -131,7 +131,7 @@ Deno.test("X402", async (t) => {
     assertEquals(response.status, StatusCode.PaymentRequired);
 
     const paymentRequired = decode<PaymentRequired>(
-      response.headers.get(X402Header.PaymentRequired)!,
+      response.headers.get(x402Header.PaymentRequired)!,
     );
 
     assertEquals(paymentRequired.x402Version, 2);
@@ -148,7 +148,7 @@ Deno.test("X402", async (t) => {
       facilitator_url,
       fetch,
     }, {
-      [X402Header.PaymentSignature]: "not base64 json",
+      [x402Header.PaymentSignature]: "not base64 json",
     });
 
     assertEquals(response.status, StatusCode.BadRequest);
@@ -163,7 +163,7 @@ Deno.test("X402", async (t) => {
       facilitator_url,
       fetch,
     }, {
-      [X402Header.PaymentSignature]: encode({
+      [x402Header.PaymentSignature]: encode({
         ...payment,
         accepted: { ...requirements, amount: "1" },
       }),
@@ -183,13 +183,13 @@ Deno.test("X402", async (t) => {
       facilitator_url,
       fetch,
     }, {
-      [X402Header.PaymentSignature]: encode(payment),
+      [x402Header.PaymentSignature]: encode(payment),
     });
 
     assertEquals(response.status, StatusCode.PaymentRequired);
     assertEquals(
       decode<PaymentRequired>(
-        response.headers.get(X402Header.PaymentRequired)!,
+        response.headers.get(x402Header.PaymentRequired)!,
       ).error,
       "insufficient_funds",
     );
@@ -207,13 +207,13 @@ Deno.test("X402", async (t) => {
       facilitator_url: "https://facilitator.example/",
       fetch,
     }, {
-      [X402Header.PaymentSignature]: encode(payment),
+      [x402Header.PaymentSignature]: encode(payment),
     });
 
     assertEquals(response.status, StatusCode.OK);
     assertEquals(await response.text(), "Oh so easy");
     assertEquals(
-      decode<SettleResponse>(response.headers.get(X402Header.PaymentResponse)!),
+      decode<SettleResponse>(response.headers.get(x402Header.PaymentResponse)!),
       settlement,
     );
     assertEquals(calls.map((call) => call.endpoint), ["verify", "settle"]);
@@ -234,11 +234,11 @@ Deno.test("X402", async (t) => {
       facilitator_url,
       fetch,
     }, {
-      [X402Header.PaymentSignature]: encode(payment),
+      [x402Header.PaymentSignature]: encode(payment),
     }, "/broken");
 
     assertEquals(response.status, 500);
-    assertEquals(response.headers.has(X402Header.PaymentResponse), false);
+    assertEquals(response.headers.has(x402Header.PaymentResponse), false);
     await response.body?.cancel();
     assertEquals(calls.map((call) => call.endpoint), ["verify"]);
   });
@@ -259,12 +259,12 @@ Deno.test("X402", async (t) => {
       facilitator_url,
       fetch,
     }, {
-      [X402Header.PaymentSignature]: encode(payment),
+      [x402Header.PaymentSignature]: encode(payment),
     });
 
     assertEquals(response.status, StatusCode.PaymentRequired);
     assertEquals(
-      decode<SettleResponse>(response.headers.get(X402Header.PaymentResponse)!),
+      decode<SettleResponse>(response.headers.get(x402Header.PaymentResponse)!),
       failed,
     );
     await response.body?.cancel();
@@ -276,7 +276,7 @@ Deno.test("X402", async (t) => {
       facilitator_url,
       fetch: () => Promise.reject(new TypeError("network down")),
     }, {
-      [X402Header.PaymentSignature]: encode(payment),
+      [x402Header.PaymentSignature]: encode(payment),
     });
 
     assertEquals(response.status, StatusCode.InternalServerError);

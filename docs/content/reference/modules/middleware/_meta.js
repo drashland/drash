@@ -6,5 +6,5 @@ export default {
   cors: "CORS",
   etag: "ETag",
   "rate-limiter": "RateLimiter",
-  x402: "X402",
+  x402: "x402",
 };

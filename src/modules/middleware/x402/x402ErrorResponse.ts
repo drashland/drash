@@ -35,7 +35,7 @@ import { HTTPError } from "../../../core/errors/HTTPError.ts";
  * Carries a full response rather than just a message, because the client needs
  * the `PAYMENT-REQUIRED` header to know what to pay.
  */
-class X402ErrorResponse extends HTTPError {
+class x402ErrorResponse extends HTTPError {
   /**
    * The response to send, carrying the x402 headers.
    */
@@ -55,4 +55,4 @@ class X402ErrorResponse extends HTTPError {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { X402ErrorResponse };
+export { x402ErrorResponse };

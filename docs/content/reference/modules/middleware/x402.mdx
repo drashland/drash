@@ -1,13 +1,13 @@
 ---
-title: X402
+title: x402
 description: Charges for resources with the x402 protocol, answering 402 Payment Required until a client pays.
 ---
 
-# X402
+# x402
 
 ## Summary
 
-The X402 middleware charges for resources using the [x402 protocol](https://github.com/coinbase/x402) (version 2). An unpaid request gets a `402 Payment Required` that says what to pay. A paid request is verified by a facilitator, handed to your resource, and settled once the resource responds. It is added to resources using a [resource group](/reference/standard/http/resource-group).
+The x402 middleware charges for resources using the [x402 protocol](https://github.com/coinbase/x402) (version 2). An unpaid request gets a `402 Payment Required` that says what to pay. A paid request is verified by a facilitator, handed to your resource, and settled once the resource responds. It is added to resources using a [resource group](/reference/standard/http/resource-group).
 
 The highlighted section below shows how it is added:
 
@@ -20,11 +20,11 @@ The highlighted section below shows how it is added:
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
-import { X402 } from "@drashland/drash/modules/middleware/X402.js";
+import { x402 } from "@drashland/drash/modules/middleware/x402.js";
 
 const group = ResourceGroup
   .builder()
-  .middleware(X402({
+  .middleware(x402({
     accepts: [{
       scheme: "exact",
       network: "eip155:84532",                              // Base Sepolia
@@ -47,11 +47,11 @@ const group = ResourceGroup
 // Code is shortened for brevity
 
 import { ResourceGroup } from "jsr:@drashland/drash/modules/http.native";
-import { X402 } from "jsr:@drashland/drash/modules/middleware/X402";
+import { x402 } from "jsr:@drashland/drash/modules/middleware/x402";
 
 const group = ResourceGroup
   .builder()
-  .middleware(X402({
+  .middleware(x402({
     accepts: [{
       scheme: "exact",
       network: "eip155:84532",                              // Base Sepolia
@@ -74,11 +74,11 @@ const group = ResourceGroup
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
-import { X402 } from "@drashland/drash/modules/middleware/X402.js";
+import { x402 } from "@drashland/drash/modules/middleware/x402.js";
 
 const group = ResourceGroup
   .builder()
-  .middleware(X402({
+  .middleware(x402({
     accepts: [{
       scheme: "exact",
       network: "eip155:84532",                              // Base Sepolia
@@ -101,11 +101,11 @@ const group = ResourceGroup
 // Code is shortened for brevity
 
 import { ResourceGroup } from "@drashland/drash/modules/http.native.js";
-import { X402 } from "@drashland/drash/modules/middleware/X402.js";
+import { x402 } from "@drashland/drash/modules/middleware/x402.js";
 
 const group = ResourceGroup
   .builder()
-  .middleware(X402({
+  .middleware(x402({
     accepts: [{
       scheme: "exact",
       network: "eip155:84532",                              // Base Sepolia
@@ -124,7 +124,7 @@ const group = ResourceGroup
 </CodeTab>
 </CodeTabs>
 
-Like the other pre-built middleware, `X402` is a __factory__. Calling it returns a middleware class with your options already bound to it.
+Like the other pre-built middleware, `x402` is a __factory__. Calling it returns a middleware class with your options already bound to it.
 
 ## Configuring Options
 
@@ -149,7 +149,7 @@ const BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";         // USDC 
 const BASE_SEPOLIA_USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e"; // USDC on Base Sepolia
 const payTo = "0xYourWalletAddress";
 
-X402({
+x402({
   accepts: [
     { scheme: "exact", network: "eip155:8453", amount: "10000", asset: BASE_USDC, payTo, maxTimeoutSeconds: 60 },
     { scheme: "exact", network: "eip155:84532", amount: "10000", asset: BASE_SEPOLIA_USDC, payTo, maxTimeoutSeconds: 60 },
@@ -165,7 +165,7 @@ A payment is matched to an entry by `scheme`, `network`, `amount`, `asset`, and 
 `fetch` is how the middleware reaches the facilitator. Pass your own to add credentials a hosted facilitator requires:
 
 ```typescript showLineNumbers
-X402({
+x402({
   accepts,
   facilitator_url: "https://facilitator.example.com",
   fetch: (input, init) =>
@@ -200,7 +200,7 @@ The middleware answers with:
 | `400`  | `PAYMENT-SIGNATURE` is not base64 JSON or is not a payment payload               |
 | `500`  | The facilitator cannot be reached or does not answer with JSON                   |
 
-`402` and `400` are thrown as an `X402ErrorResponse` carrying the `PAYMENT-REQUIRED` header, so the client can retry with a payment. The `500` is a plain `HTTPError`.
+`402` and `400` are thrown as an `x402ErrorResponse` carrying the `PAYMENT-REQUIRED` header, so the client can retry with a payment. The `500` is a plain `HTTPError`.
 
 Settlement happens __after__ your resource. A response with a status of `400` or above is sent back unsettled, so a client is not charged for an error.
 
@@ -215,22 +215,22 @@ The middleware keeps no state. Verification and settlement, including replay pro
 %%{init: {"theme": "default"}}%%
 sequenceDiagram
   participant Client
-  participant X402
+  participant x402
   participant MyResource
   participant Facilitator
 
   alt Unpaid
-    Client->>X402: Request
-    X402-->>Client: 402 + PAYMENT-REQUIRED
+    Client->>x402: Request
+    x402-->>Client: 402 + PAYMENT-REQUIRED
   else Paid
-    Client->>X402: Request + PAYMENT-SIGNATURE
-    X402->>Facilitator: /verify
-    Facilitator-->>X402: Valid
-    X402->>MyResource: Request
-    MyResource-->>X402: Response
-    X402->>Facilitator: /settle
-    Facilitator-->>X402: Settlement
-    X402-->>Client: 200 + PAYMENT-RESPONSE
+    Client->>x402: Request + PAYMENT-SIGNATURE
+    x402->>Facilitator: /verify
+    Facilitator-->>x402: Valid
+    x402->>MyResource: Request
+    MyResource-->>x402: Response
+    x402->>Facilitator: /settle
+    Facilitator-->>x402: Settlement
+    x402-->>Client: 200 + PAYMENT-RESPONSE
   end
 ```
 </Diagram>
@@ -242,11 +242,11 @@ An unpaid request stops at the middleware. Your resource is never called.
 The module exports the class as well as the factory, so you can extend it:
 
 ```typescript showLineNumbers
-import { X402Middleware } from "@drashland/drash/modules/middleware/X402.js";
+import { x402Middleware } from "@drashland/drash/modules/middleware/x402.js";
 
-class LoggedX402 extends X402Middleware {
+class x402WithLogging extends x402Middleware {
   constructor() {
-    // Your options go here, the same ones you would pass to X402().
+    // Your options go here, the same ones you would pass to x402().
     super({ accepts, facilitator_url });
   }
 
@@ -261,20 +261,20 @@ class LoggedX402 extends X402Middleware {
 
 | Export           | What It Is                                         |
 | ---------------- | -------------------------------------------------- |
-| `X402`           | The factory. Returns a configured middleware class |
-| `X402Middleware` | The middleware class itself, for extending         |
-| `X402Header`     | The x402 header names                              |
+| `x402`           | The factory. Returns a configured middleware class |
+| `x402Middleware` | The middleware class itself, for extending         |
+| `x402Header`     | The x402 header names                              |
 | `defaultOptions` | The defaults listed above                          |
 | `Options`        | The options type                                   |
 
 ## Related Files
 
-`X402.ts` is the middleware. The files it is built from live in `modules/middleware/x402/`.
+`x402.ts` is the middleware. The files it is built from live in `modules/middleware/x402/`.
 
-### `X402ErrorResponse`
+### `x402ErrorResponse`
 
 ```ts
-import { X402ErrorResponse } from "@drashland/drash/modules/middleware/x402/X402ErrorResponse.js";
+import { x402ErrorResponse } from "@drashland/drash/modules/middleware/x402/x402ErrorResponse.js";
 
 constructor(status: ResponseStatus, response: Response)
 ```
@@ -287,7 +287,7 @@ Extends [`HTTPError`](/reference/core/errors/http-error), carrying the `Response
 chain
   .handle(request)
   .catch((error) => {
-    if (error instanceof X402ErrorResponse) {
+    if (error instanceof x402ErrorResponse) {
       return error.response;
     }
 
