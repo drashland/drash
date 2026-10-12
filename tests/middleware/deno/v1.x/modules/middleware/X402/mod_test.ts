@@ -61,6 +61,8 @@ const payment: PaymentPayload = {
   payload: { signature: "0xsignature" },
 };
 
+const facilitator_url = "https://facilitator.example";
+
 const settlement: SettleResponse = {
   success: true,
   transaction: "0xtransaction",
@@ -120,7 +122,11 @@ function handle(
 Deno.test("X402", async (t) => {
   await t.step("402 with PAYMENT-REQUIRED when unpaid", async () => {
     const { calls, fetch } = facilitator({});
-    const response = await handle({ accepts: [requirements], fetch });
+    const response = await handle({
+      accepts: [requirements],
+      facilitator_url,
+      fetch,
+    });
 
     assertEquals(response.status, StatusCode.PaymentRequired);
 
@@ -137,7 +143,11 @@ Deno.test("X402", async (t) => {
 
   await t.step("400 when PAYMENT-SIGNATURE is malformed", async () => {
     const { calls, fetch } = facilitator({});
-    const response = await handle({ accepts: [requirements], fetch }, {
+    const response = await handle({
+      accepts: [requirements],
+      facilitator_url,
+      fetch,
+    }, {
       [X402Header.PaymentSignature]: "not base64 json",
     });
 
@@ -148,7 +158,11 @@ Deno.test("X402", async (t) => {
 
   await t.step("402 when the payment matches no requirement", async () => {
     const { calls, fetch } = facilitator({});
-    const response = await handle({ accepts: [requirements], fetch }, {
+    const response = await handle({
+      accepts: [requirements],
+      facilitator_url,
+      fetch,
+    }, {
       [X402Header.PaymentSignature]: encode({
         ...payment,
         accepted: { ...requirements, amount: "1" },
@@ -164,7 +178,11 @@ Deno.test("X402", async (t) => {
     const { calls, fetch } = facilitator({
       verify: { isValid: false, invalidReason: "insufficient_funds" },
     });
-    const response = await handle({ accepts: [requirements], fetch }, {
+    const response = await handle({
+      accepts: [requirements],
+      facilitator_url,
+      fetch,
+    }, {
       [X402Header.PaymentSignature]: encode(payment),
     });
 
@@ -211,7 +229,11 @@ Deno.test("X402", async (t) => {
       verify: { isValid: true },
       settle: settlement,
     });
-    const response = await handle({ accepts: [requirements], fetch }, {
+    const response = await handle({
+      accepts: [requirements],
+      facilitator_url,
+      fetch,
+    }, {
       [X402Header.PaymentSignature]: encode(payment),
     }, "/broken");
 
@@ -232,7 +254,11 @@ Deno.test("X402", async (t) => {
       verify: { isValid: true },
       settle: failed,
     });
-    const response = await handle({ accepts: [requirements], fetch }, {
+    const response = await handle({
+      accepts: [requirements],
+      facilitator_url,
+      fetch,
+    }, {
       [X402Header.PaymentSignature]: encode(payment),
     });
 
@@ -247,6 +273,7 @@ Deno.test("X402", async (t) => {
   await t.step("500 when the facilitator is unreachable", async () => {
     const response = await handle({
       accepts: [requirements],
+      facilitator_url,
       fetch: () => Promise.reject(new TypeError("network down")),
     }, {
       [X402Header.PaymentSignature]: encode(payment),

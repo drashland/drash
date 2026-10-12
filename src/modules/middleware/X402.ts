@@ -98,10 +98,9 @@ type Options = {
   /**
    * Base URL of the facilitator that verifies and settles payments. The
    * middleware POSTs to `{facilitator_url}/verify` and
-   * `{facilitator_url}/settle`. Defaults to the public `x402.org` facilitator,
-   * which is meant for testnets.
+   * `{facilitator_url}/settle`.
    */
-  facilitator_url?: string;
+  facilitator_url: string;
 
   /**
    * Human-readable description of the resource, sent to the client in the
@@ -123,12 +122,11 @@ type Options = {
 };
 
 /**
- * Every option except `accepts` has a default; this is what is merged under the
- * options the middleware is given.
+ * Every option except `accepts` and `facilitator_url` has a default; this is
+ * what is merged under the options the middleware is given.
  */
-const defaultOptions: Required<Omit<Options, "accepts">> = {
+const defaultOptions: Required<Omit<Options, "accepts" | "facilitator_url">> = {
   description: "",
-  facilitator_url: "https://x402.org/facilitator",
   fetch: (input, init) => fetch(input, init),
   mime_type: "",
 };
