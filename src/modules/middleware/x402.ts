@@ -49,12 +49,12 @@ import {
   type VerifyResponse,
   X402_VERSION,
 } from "./x402/Types.ts";
-import { X402ErrorResponse } from "./x402/X402ErrorResponse.ts";
+import { x402ErrorResponse } from "./x402/x402ErrorResponse.ts";
 
 /**
  * The x402 HTTP headers.
  */
-const X402Header = {
+const x402Header = {
   /** Server to client: base64 `PaymentRequired`. */
   PaymentRequired: "PAYMENT-REQUIRED",
 
@@ -137,7 +137,7 @@ const defaultOptions: Required<Omit<Options, "accepts" | "facilitator_url">> = {
  * Only requests the wrapped resource answers successfully (status below `400`)
  * are settled, so a client is not charged for an error.
  */
-class X402Middleware extends Middleware {
+class x402Middleware extends Middleware {
   /**
    * Held as `Required<Options>` because it is the result of merging over
    * `defaultOptions` — every field is present by construction.
@@ -163,7 +163,7 @@ class X402Middleware extends Middleware {
    *
    * @param request The request being handled.
    * @returns The resource's response with the `PAYMENT-RESPONSE` header added.
-   * @throws {X402ErrorResponse} `402` if the request is unpaid or its payment
+   * @throws {x402ErrorResponse} `402` if the request is unpaid or its payment
    * fails, `400` if the payment is malformed.
    */
   public override ALL(request: Request): Promise<Response> {
@@ -182,17 +182,17 @@ class X402Middleware extends Middleware {
    * @param request The request carrying the payment.
    * @returns The context object (with the `payment` and `requirements` fields
    * set).
-   * @throws {X402ErrorResponse} `402` if the header is missing or the payment
+   * @throws {x402ErrorResponse} `402` if the header is missing or the payment
    * matches none of `accepts`, `400` if the header cannot be decoded.
    */
   protected readPayment(request: Request): PreNextContext {
-    const header = request.headers.get(X402Header.PaymentSignature);
+    const header = request.headers.get(x402Header.PaymentSignature);
 
     if (!header) {
       throw this.#error(
         request,
         Status.PaymentRequired,
-        `${X402Header.PaymentSignature} header is required`,
+        `${x402Header.PaymentSignature} header is required`,
       );
     }
 
@@ -204,7 +204,7 @@ class X402Middleware extends Middleware {
       throw this.#error(
         request,
         Status.BadRequest,
-        `${X402Header.PaymentSignature} header is not valid base64 JSON`,
+        `${x402Header.PaymentSignature} header is not valid base64 JSON`,
       );
     }
 
@@ -219,7 +219,7 @@ class X402Middleware extends Middleware {
       throw this.#error(
         request,
         Status.BadRequest,
-        `${X402Header.PaymentSignature} header is not a valid payment payload`,
+        `${x402Header.PaymentSignature} header is not a valid payment payload`,
       );
     }
 
@@ -259,7 +259,7 @@ class X402Middleware extends Middleware {
    *
    * @param context See {@link PreNextContext}.
    * @returns The context, unchanged, if the payment is valid.
-   * @throws {X402ErrorResponse} `402` if the facilitator says the payment is
+   * @throws {x402ErrorResponse} `402` if the facilitator says the payment is
    * invalid.
    */
   protected verify(context: PreNextContext): Promise<PreNextContext> {
@@ -304,7 +304,7 @@ class X402Middleware extends Middleware {
    *
    * @param context See {@link Context}.
    * @returns The resource's response.
-   * @throws {X402ErrorResponse} `402` if settlement fails.
+   * @throws {x402ErrorResponse} `402` if settlement fails.
    */
   protected settle(context: Context): Promise<Response> {
     const { response } = context;
@@ -324,7 +324,7 @@ class X402Middleware extends Middleware {
           );
 
           error.response.headers.set(
-            X402Header.PaymentResponse,
+            x402Header.PaymentResponse,
             encode(settlement),
           );
 
@@ -334,7 +334,7 @@ class X402Middleware extends Middleware {
         // The resource's response may have immutable headers (e.g., one that
         // came from `fetch()`), so copy it before adding the header
         const headers = new Headers(response.headers);
-        headers.set(X402Header.PaymentResponse, encode(settlement));
+        headers.set(x402Header.PaymentResponse, encode(settlement));
 
         return new Response(response.body, {
           status: response.status,
@@ -397,7 +397,7 @@ class X402Middleware extends Middleware {
     request: Request,
     status: ResponseStatus,
     message: string,
-  ): X402ErrorResponse {
+  ): x402ErrorResponse {
     const paymentRequired: PaymentRequired = {
       x402Version: X402_VERSION,
       error: message,
@@ -418,11 +418,11 @@ class X402Middleware extends Middleware {
       statusText: status.description,
       headers: {
         [Header.ContentType]: "application/json",
-        [X402Header.PaymentRequired]: encode(paymentRequired),
+        [x402Header.PaymentRequired]: encode(paymentRequired),
       },
     });
 
-    return new X402ErrorResponse(status, response);
+    return new x402ErrorResponse(status, response);
   }
 }
 
@@ -435,8 +435,8 @@ class X402Middleware extends Middleware {
  * @returns The middleware class that can be instantiated. When it is
  * instantiated, it instantiates with the provided `options`.
  */
-function X402(options: Options): new () => X402Middleware {
-  return class DefaultX402Middleware extends X402Middleware {
+function x402(options: Options): new () => x402Middleware {
+  return class x402DefaultMiddleware extends x402Middleware {
     constructor() {
       super(options);
     }
@@ -445,4 +445,4 @@ function X402(options: Options): new () => X402Middleware {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { defaultOptions, type Options, X402, X402Header, X402Middleware };
+export { defaultOptions, type Options, x402, x402Header, x402Middleware };
