@@ -149,7 +149,7 @@ decided by the runtime, not by preference:
 | Runtime            | `URLPattern`      | Entry point                |
 | ------------------ | ----------------- | -------------------------- |
 | Node               | Varies by version | `modules/http.polyfill.js` |
-| Deno               | Global            | `modules/http.native.js`   |
+| Deno               | Global            | `modules/http.native`      |
 | Bun                | Not dependable    | `modules/http.polyfill.js` |
 | Cloudflare Workers | Global            | `modules/http.native.js`   |
 
@@ -172,12 +172,13 @@ const { Application, Resource } = require(
 );
 ```
 
-On Deno, that bare specifier is what `deno add` mapped in `deno.json`. **Do not
-also prefix it with `npm:`** — that bypasses the mapping and pins nothing. For a
-single-file Deno script with no `deno.json`, skip `deno add` and import the full
-specifier directly — `jsr:@drashland/drash/modules/http.native`. Note it carries
-no file extension: JSR resolves through the package's export map, unlike the npm
-specifier the other runtimes use, which needs `.js`.
+On Deno, drop the extension too: `@drashland/drash/modules/http.native`.
+`deno add` installed Drash from JSR, which resolves through the package's export
+map and has no `.js` entries, so the npm specifier above fails with
+`Unknown export`. **Do not prefix it with `npm:`** — that bypasses the mapping
+in `deno.json` and pins nothing. For a single-file Deno script with no
+`deno.json`, skip `deno add` and import the full specifier directly —
+`jsr:@drashland/drash/modules/http.native`.
 
 ## 3. The shape of an app
 
@@ -304,7 +305,7 @@ Deno block below then applies almost unchanged.
 ### Deno — `app.ts`
 
 ```ts
-import { Application, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native";
 
 class Home extends Resource {
   paths = ["/"];
