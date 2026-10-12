@@ -10,6 +10,30 @@ It runs on Deno, Node, Bun, and Cloudflare Workers. Exactly four things differ
 between them — the install command, the entry point, the server glue, and the
 run command. Everything else on this page is the same everywhere.
 
+This page sets up a project. The conventions for the code you write in it, such
+as how to name resource files, are Drash agent skills. Install them if the user
+agrees; they touch no project source. Use the runtime's own package runner:
+
+```sh
+npx skills add drashland/drash      # Node, Cloudflare Workers
+deno x skills add drashland/drash   # Deno
+bunx skills add drashland/drash     # Bun
+```
+
+In Claude Code you can instead install them as a plugin:
+
+```
+/plugin marketplace add drashland/drash
+/plugin install drash@drashland
+```
+
+Once Drash is installed, the skills for that exact version are also in
+`node_modules/@drashland/drash/skills/`. **If you cannot install skills**, read
+them directly:
+
+- <https://raw.githubusercontent.com/drashland/drash/v3.x/skills/drash-resources/SKILL.md>
+  — resource classes and their file names
+
 ## 0. Before you start
 
 **Ask the user which runtime this project targets, and wait for the answer.** Do
@@ -125,7 +149,7 @@ decided by the runtime, not by preference:
 | Runtime            | `URLPattern`      | Entry point                |
 | ------------------ | ----------------- | -------------------------- |
 | Node               | Varies by version | `modules/http.polyfill.js` |
-| Deno               | Global            | `modules/http.native.js`   |
+| Deno               | Global            | `modules/http.native`      |
 | Bun                | Not dependable    | `modules/http.polyfill.js` |
 | Cloudflare Workers | Global            | `modules/http.native.js`   |
 
@@ -148,12 +172,13 @@ const { Application, Resource } = require(
 );
 ```
 
-On Deno, that bare specifier is what `deno add` mapped in `deno.json`. **Do not
-also prefix it with `npm:`** — that bypasses the mapping and pins nothing. For a
-single-file Deno script with no `deno.json`, skip `deno add` and import the full
-specifier directly — `jsr:@drashland/drash/modules/http.native`. Note it carries
-no file extension: JSR resolves through the package's export map, unlike the npm
-specifier the other runtimes use, which needs `.js`.
+On Deno, drop the extension too: `@drashland/drash/modules/http.native`.
+`deno add` installed Drash from JSR, which resolves through the package's export
+map and has no `.js` entries, so the npm specifier above fails with
+`Unknown export`. **Do not prefix it with `npm:`** — that bypasses the mapping
+in `deno.json` and pins nothing. For a single-file Deno script with no
+`deno.json`, skip `deno add` and import the full specifier directly —
+`jsr:@drashland/drash/modules/http.native`.
 
 ## 3. The shape of an app
 
@@ -280,7 +305,7 @@ Deno block below then applies almost unchanged.
 ### Deno — `app.ts`
 
 ```ts
-import { Application, Resource } from "@drashland/drash/modules/http.native.js";
+import { Application, Resource } from "@drashland/drash/modules/http.native";
 
 class Home extends Resource {
   paths = ["/"];
@@ -422,16 +447,14 @@ rather than guessing.
 
 - **Do not add Express middleware.** `body-parser`, `cors`, `helmet` and the
   rest expect Express's `req`/`res` objects and will not work here.
-- **Do not use `this.request` or `this.response`.** A resource receives the
-  request as an argument. v2 had those properties; v3 removed them deliberately.
 - **Do not mix entry points.** One app imports `http.native.js` or
   `http.polyfill.js`, never both.
 - **Do not assume `app.handle()` writes a response.** It rejects on error,
   including 404. Without a `.catch()` the request hangs.
 - **Do not restructure a project to adopt Drash.** It is a dependency and a few
   classes, not a project layout.
-- **Do not put unrelated logic in a resource.** A resource named `Users` serving
-  `/users` should hold user logic and nothing else.
+- **Do not write resources without the `drash-resources` skill.** It covers file
+  names, what a request method receives, and what belongs in a resource.
 
 Docs: <https://drash.crookse.com>. Per-runtime guides with complete runnable
 apps are under <https://drash.crookse.com/docs/quickstart>.
@@ -481,11 +504,11 @@ If the user agrees, install them. This touches no project source and adds no
 dependency:
 
 ```sh
-dx skills add denoland/skills --skill deno
+deno x skills add denoland/skills --skill deno
 ```
 
-`dx` is Deno's `npx` equivalent and ships with Deno itself, so this needs no
-Node. If you would rather use Node, `npx skills add ...` is identical.
+`deno x` runs npm and JSR command-line tools the way `npx` does, so this needs
+no Node. If you would rather use Node, `npx skills add ...` is identical.
 
 Add `--skill migrate-to-deno` as well if the project is coming from Node, npm,
 Yarn, pnpm, or Bun. In Claude Code you can instead install the whole set as a

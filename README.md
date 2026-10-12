@@ -357,6 +357,35 @@ app
 See [Error Handling](https://drash.crookse.com/docs/error-handling) for the
 per-runtime versions.
 
+## Building With an Agent
+
+Drash ships agent skills: instructions that coding agents such as Claude Code,
+Codex, Cursor, and Copilot load when a task needs them, so the code they write
+follows Drash's conventions. Install them in your project with your runtime's
+package runner:
+
+```sh
+npx skills add drashland/drash      # Node, Cloudflare Workers
+deno x skills add drashland/drash   # Deno
+bunx skills add drashland/drash     # Bun
+```
+
+In Claude Code, install them as a plugin instead:
+
+```
+/plugin marketplace add drashland/drash
+/plugin install drash@drashland
+```
+
+To have an agent set up a new project, give it this prompt:
+
+```
+Read https://drash.crookse.com/agents.md and set up a Drash project.
+```
+
+See [Agent Skills](https://drash.crookse.com/docs/misc/agent-skills) for the
+list of skills.
+
 ## License
 
 [GPL-3.0-or-later](./COPYING)

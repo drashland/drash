@@ -65,6 +65,22 @@ function copy(files: string[]) {
   }
 }
 
+/**
+ * Copy a directory, and everything under it, into the dist directory.
+ * @param dir The directory to copy, relative to the repo root.
+ */
+function copyDirectory(dir: string) {
+  for (const entry of walkSync(dir, { includeDirs: false })) {
+    // `walkSync` yields host-native separators. Normalize before splitting.
+    const path = entry.path.replaceAll("\\", "/");
+    console.log(`\nMoving ${path} to ./dist/${path}`);
+    Deno.mkdirSync(`dist/${path.slice(0, path.lastIndexOf("/"))}`, {
+      recursive: true,
+    });
+    Deno.copyFileSync(path, `dist/${path}`);
+  }
+}
+
 run(() => {
   Deno.removeSync("dist", { recursive: true });
 });
@@ -80,6 +96,12 @@ copy([
   "COPYING",
   "README.md",
 ]);
+
+// Ship the agent skills with the package, so an agent working in a project can
+// read the conventions for the Drash version that is actually installed. The
+// same directory is the Claude Code plugin listed in .claude-plugin/.
+
+copyDirectory("skills");
 
 // Refresh the JSR `exports` map in ./deno.json.
 //
