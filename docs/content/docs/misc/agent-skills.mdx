@@ -1,0 +1,34 @@
+---
+title: Agent Skills
+---
+
+# Agent Skills
+
+Drash ships [agent skills](https://agentskills.io): Markdown instructions that coding agents such as Claude Code, Codex, Cursor, and Copilot load when a task needs them. With the skills installed, an agent writing Drash code follows Drash's conventions, such as naming each resource file after its class in PascalCase.
+
+## Install
+
+In any agent that supports skills, run the command for your runtime in your project:
+
+```sh
+npx skills add drashland/drash      # Node, Cloudflare Workers
+deno x skills add drashland/drash   # Deno
+bunx skills add drashland/drash     # Bun
+```
+
+In Claude Code, install them as a plugin:
+
+```
+/plugin marketplace add drashland/drash
+/plugin install drash@drashland
+```
+
+The npm and JSR packages also include the skills, under `skills/`, so a project has the skills for the Drash version it installed.
+
+## Skills
+
+| Skill | Covers |
+| --- | --- |
+| [`drash-resources`](https://github.com/drashland/drash/blob/v3.x/skills/drash-resources/SKILL.md) | Resource classes: PascalCase file names, the request argument, and what belongs in a resource |
+
+For setting up a new project, point the agent at [agents.md](https://drash.crookse.com/agents.md).

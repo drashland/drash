@@ -1,0 +1,15 @@
+{
+  "name": "drashland",
+  "description": "Agent skills for building with Drash",
+  "owner": {
+    "name": "Drashland",
+    "url": "https://github.com/drashland"
+  },
+  "plugins": [
+    {
+      "name": "drash",
+      "source": "./",
+      "description": "Conventions for building HTTP systems with Drash"
+    }
+  ]
+}

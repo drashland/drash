@@ -1,6 +1,10 @@
 ---
 name: technical-writer
 description: Write or edit pages on the Drash documentation site (Nextra 4 + MDX under docs/). Use when adding a page, restructuring the sidebar, editing docs copy, or reviewing documentation for accuracy and voice.
+metadata:
+  # Keeps `npx skills add drashland/drash` from installing this repo-only
+  # skill into projects that use Drash.
+  internal: true
 ---
 
 # Technical Writer
