@@ -20,8 +20,6 @@
  */
 
 import * as asserts from "@std/assert";
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { Readable, Writable } from "node:stream";
 import {
   type NodeIncomingMessageLike,
   type NodeServerResponseLike,
@@ -29,50 +27,90 @@ import {
   writeWebResponse,
 } from "../../../../src/modules/adapters/NodeHTTP.ts";
 
-// The adapter types its parameters by shape instead of importing node:http.
-// These fail to type-check if the real node:http objects stop fitting them.
-const _acceptsIncomingMessage = (r: IncomingMessage): NodeIncomingMessageLike =>
-  r;
-const _acceptsServerResponse = (r: ServerResponse): NodeServerResponseLike => r;
+// The fakes below are plain objects, not `node:stream` streams. Type-checking
+// any `node:` import needs `@types/node` from node_modules, and the unit tests
+// run without an install. The real `node:http` objects are exercised by the
+// node-http-adapter compat tests.
 
 const decoder = new TextDecoder();
 
 /**
- * A request shaped like `node:http`'s `IncomingMessage`: a readable body plus
- * `url`, `method`, and `headers`.
+ * A request shaped like `node:http`'s `IncomingMessage`: an async-iterable body
+ * plus `url`, `method`, and `headers`.
  */
 function fakeRequest(
   fields: Omit<NodeIncomingMessageLike, typeof Symbol.asyncIterator>,
   body: (string | Uint8Array)[] = [],
 ): NodeIncomingMessageLike {
-  return Object.assign(Readable.from(body), fields);
+  return {
+    ...fields,
+    async *[Symbol.asyncIterator]() {
+      yield* body;
+    },
+  };
 }
 
 /**
  * A response shaped like `node:http`'s `ServerResponse`, recording what is
- * written to it. A small `highWaterMark` with a slow sink forces backpressure.
+ * written to it. Like Node, `write()` returns `false` once `highWaterMark`
+ * bytes are buffered and emits `drain` when the buffer empties.
  */
-class FakeServerResponse extends Writable {
+class FakeServerResponse implements NodeServerResponseLike {
   statusCode = 200;
   statusMessage = "";
   headers = new Map<string, string | string[]>();
   chunks: string[] = [];
   drains = 0;
+  writableFinished = false;
 
-  constructor(options: { highWaterMark?: number; slow?: boolean } = {}) {
-    super({
-      highWaterMark: options.highWaterMark,
-      write: (chunk: Uint8Array, _encoding, callback) => {
-        this.chunks.push(decoder.decode(chunk));
-        options.slow ? setTimeout(callback, 1) : callback();
-      },
-    });
-    this.on("drain", () => this.drains++);
+  #highWaterMark: number;
+  #buffered = 0;
+  #listeners = new Map<string, ((...args: unknown[]) => void)[]>();
+
+  constructor(options: { highWaterMark?: number } = {}) {
+    this.#highWaterMark = options.highWaterMark ?? Infinity;
   }
 
   setHeader(name: string, value: string | string[]) {
     this.headers.set(name, value);
-    return this;
+  }
+
+  write(chunk: Uint8Array): boolean {
+    this.chunks.push(decoder.decode(chunk));
+    this.#buffered += chunk.byteLength;
+
+    if (this.#buffered < this.#highWaterMark) {
+      return true;
+    }
+
+    // Flush asynchronously, as a socket would
+    setTimeout(() => {
+      this.#buffered = 0;
+      this.drains++;
+      this.#emit("drain");
+    }, 1);
+
+    return false;
+  }
+
+  end() {
+    setTimeout(() => {
+      this.writableFinished = true;
+      this.#emit("finish");
+    }, 0);
+  }
+
+  once(event: string, listener: (...args: unknown[]) => void) {
+    this.#listeners.set(event, [
+      ...(this.#listeners.get(event) ?? []),
+      listener,
+    ]);
+  }
+
+  #emit(event: string) {
+    const listeners = this.#listeners.get(event) ?? [];
+    this.#listeners.delete(event);
+    listeners.forEach((listener) => listener());
   }
 }
 
@@ -209,7 +247,7 @@ Deno.test("writeWebResponse()", async (t) => {
   await t.step(
     "streams the body chunk by chunk under backpressure",
     async () => {
-      const response = new FakeServerResponse({ highWaterMark: 1, slow: true });
+      const response = new FakeServerResponse({ highWaterMark: 1 });
       const parts = ["one ", "two ", "three"];
 
       const body = new ReadableStream<Uint8Array>({
