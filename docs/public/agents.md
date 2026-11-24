@@ -35,6 +35,8 @@ them directly:
   — OpenAPI v3 decorators and generating the document
 - <https://raw.githubusercontent.com/drashland/drash/v3.x/skills/drash-resources/SKILL.md>
   — resource classes and their file names
+- <https://raw.githubusercontent.com/drashland/drash/v3.x/skills/drash-x402/SKILL.md>
+  — charging for resources with x402 (HTTP 402)
 
 ## 0. Before you start
 
