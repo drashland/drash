@@ -445,4 +445,15 @@ function x402(options: Options): new () => x402Middleware {
 
 // FILE MARKER - PUBLIC API ////////////////////////////////////////////////////
 
-export { defaultOptions, type Options, x402, x402Header, x402Middleware };
+// `x402ErrorResponse` is re-exported so consumers can import it from this
+// entry point. The npm build bundles each entry point on its own, so the class
+// imported from `x402/x402ErrorResponse` is a different copy from the one this
+// module throws, and `instanceof` against it is always false.
+export {
+  defaultOptions,
+  type Options,
+  x402,
+  x402ErrorResponse,
+  x402Header,
+  x402Middleware,
+};
