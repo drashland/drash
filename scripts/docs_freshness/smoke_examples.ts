@@ -66,6 +66,35 @@ function tail(text: string, lines = 40) {
   return text.trimEnd().split("\n").slice(-lines).join("\n");
 }
 
+/**
+ * Kill `pid` and every process under it. Killing only the listener is not
+ * enough: `npm start` runs wrangler, wrangler runs workerd, and a surviving
+ * wrangler starts a new workerd on the same port, which the next example then
+ * cannot bind.
+ */
+async function killTree(pid: number) {
+  const ps = await new Deno.Command("ps", {
+    args: ["-A", "-o", "pid=,ppid="],
+    stdout: "piped",
+    stderr: "null",
+  }).output();
+  const children = new Map<number, number[]>();
+  for (const line of new TextDecoder().decode(ps.stdout).split("\n")) {
+    const [child, parent] = line.trim().split(/\s+/).map(Number);
+    if (!child || !parent) continue;
+    children.set(parent, [...(children.get(parent) ?? []), child]);
+  }
+  const tree = [pid];
+  for (let i = 0; i < tree.length; i++) {
+    tree.push(...(children.get(tree[i]) ?? []));
+  }
+  for (const target of tree) {
+    try {
+      Deno.kill(target, "SIGKILL");
+    } catch { /* already gone */ }
+  }
+}
+
 /** Kill whatever still listens on `port`: npm, tsx, and wrangler fork children. */
 async function freePort(port: number) {
   for (let attempt = 0; attempt < 20; attempt++) {
@@ -87,6 +116,23 @@ async function freePort(port: number) {
   }
 }
 
+/**
+ * `npm ci` when the example has a lockfile, `npm install` otherwise. The root
+ * `.gitignore` ignores `package-lock.json`, so a fresh checkout has none, and
+ * `npm ci` refuses to run without one. Readers run `npm install`, too.
+ */
+async function npmInstall(cwd: string, timeoutSeconds: number) {
+  let hasLockfile = false;
+  try {
+    await Deno.stat(`${cwd}/package-lock.json`);
+    hasLockfile = true;
+  } catch { /* no lockfile */ }
+  const cmd = hasLockfile
+    ? ["npm", "ci", "--no-audit", "--no-fund"]
+    : ["npm", "install", "--no-audit", "--no-fund", "--no-package-lock"];
+  return await run(cmd, cwd, timeoutSeconds);
+}
+
 async function install(example: Example) {
   const cwd = example.dir;
   switch (example.runtime) {
@@ -95,9 +141,10 @@ async function install(example: Example) {
     case "bun":
       return await run(["bun", "install"], cwd, 300);
     case "cloudflare":
-      await run(["npm", "ci", "--no-audit", "--no-fund"], cwd, 300);
-      // The lockfile pins wrangler, and wrangler pins workerd -- the actual
-      // Workers runtime. Override it so this tests the latest one.
+      await npmInstall(cwd, 300);
+      // A lockfile, when there is one, pins wrangler, and wrangler pins
+      // workerd -- the actual Workers runtime. Override it so this tests the
+      // latest one.
       return await run(
         [
           "npm",
@@ -111,7 +158,7 @@ async function install(example: Example) {
         300,
       );
     case "node":
-      return await run(["npm", "ci", "--no-audit", "--no-fund"], cwd, 600);
+      return await npmInstall(cwd, 600);
   }
 }
 
@@ -214,9 +261,7 @@ async function smoke(example: Example): Promise<Result> {
   } catch (error) {
     result.errors.push((error as Error).message);
   } finally {
-    try {
-      child?.kill("SIGTERM");
-    } catch { /* already exited */ }
+    if (child) await killTree(child.pid);
     await freePort(example.port);
     for (const path of created) await Deno.remove(path).catch(() => {});
   }

@@ -5,12 +5,12 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "ts-node-esm app.ts"
+    "start": "tsx app.ts"
   },
   "dependencies": {
     "@drashland/drash": "3.0.2"
   },
   "devDependencies": {
-    "ts-node": "^10.9.1"
+    "tsx": "^4.23.15"
   }
 }
