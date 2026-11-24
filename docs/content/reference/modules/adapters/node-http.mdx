@@ -1,0 +1,72 @@
+---
+title: NodeHTTP
+description: Converts node:http requests to Web Requests and writes Web Responses back, so a Node app can pass a real Request into Drash.
+---
+
+# NodeHTTP
+
+```ts
+import { toWebRequest, writeWebResponse } from "@drashland/drash/modules/adapters/NodeHTTP.js";
+```
+
+Converts between `node:http` and the Web `Request`/`Response` the rest of Drash uses. Convert at the boundary and your resources take a `Request` and return a `Response` on Node, the same as on Deno, Bun, and Cloudflare Workers. Middleware written against Web `Request`/`Response`, such as [x402](/reference/modules/middleware/x402), [CORS](/reference/modules/middleware/cors), and [ETag](/reference/modules/middleware/etag), then works on Node too.
+
+```ts showLineNumbers
+import { createServer } from "node:http";
+import { Application, HTTPError } from "@drashland/drash/modules/http.polyfill.js";
+import { toWebRequest, writeWebResponse } from "@drashland/drash/modules/adapters/NodeHTTP.js";
+
+const app = Application.builder().resources(Home).build();
+
+createServer((req, res) => {
+  app
+    .handle<Response>(toWebRequest(req))
+    .catch((error) =>
+      error instanceof HTTPError
+        ? new Response(error.message, { status: error.status_code })
+        : new Response("Internal Server Error", { status: 500 })
+    )
+    .then((response) => writeWebResponse(res, response));
+}).listen(1447);
+```
+
+The module does not import `node:http`. Its parameters are typed by shape, so it loads on every runtime Drash supports.
+
+## `toWebRequest(request, options?)`
+
+Returns a Web `Request` built from a `node:http` `IncomingMessage`.
+
+| Part    | How it is converted                                                                                       |
+| ------- | --------------------------------------------------------------------------------------------------------- |
+| URL     | The request's path, resolved against `options.origin`, or `http://` (`https://` on a TLS socket) plus the `Host` header, or `http://localhost` |
+| Method  | `request.method`, uppercased. `GET` if missing                                                            |
+| Headers | Every header. A repeated header (an array in Node) is appended once per value                            |
+| Body    | Streamed from the request, never buffered whole. `GET` and `HEAD` get no body                             |
+
+| Option   | Type     | Default                  | Notes                                                                                |
+| -------- | -------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| `origin` | `string` | Built from `Host`        | Scheme and host, e.g. `https://api.example.com`. Set it behind a proxy, or when the app should not trust `Host` |
+
+The URL is always absolute, so the chain can match it. A bare `node:http` path such as `/users/1` matches no resource.
+
+## `writeWebResponse(response, webResponse)`
+
+Writes a Web `Response` to a `node:http` `ServerResponse`. Returns a promise that resolves once the response finishes, or once the client disconnects.
+
+| Part        | How it is written                                                                                  |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| Status      | `status`, and `statusText` when it is set                                                          |
+| Headers     | Every header. Each `Set-Cookie` value is kept separate                                             |
+| Body        | Written chunk by chunk as the body stream produces it, waiting whenever Node's buffer is full. A streamed body, such as server-sent events, stays streamed |
+
+## Catching Errors From Other Entry Points
+
+On npm, each entry point is bundled on its own, so each has its own copy of every class it uses. `instanceof` only matches a class imported from the entry point that threw the error. Import `HTTPError` from `http.polyfill.js`, the entry point the chain comes from, and import a middleware's error class from that middleware's module, e.g. `x402ErrorResponse` from `modules/middleware/x402.js`.
+
+| Export                    | What It Is                                          |
+| ------------------------- | --------------------------------------------------- |
+| `toWebRequest`            | Converts an `IncomingMessage` to a `Request`        |
+| `writeWebResponse`        | Writes a `Response` to a `ServerResponse`           |
+| `ToWebRequestOptions`     | The options type for `toWebRequest`                |
+| `NodeIncomingMessageLike` | The shape `toWebRequest` accepts                    |
+| `NodeServerResponseLike`  | The shape `writeWebResponse` accepts                |
