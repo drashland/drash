@@ -124,6 +124,115 @@ const group = ResourceGroup
 </CodeTab>
 </CodeTabs>
 
+`PremiumData` is an ordinary resource with no payment code. An unpaid request is answered by the middleware and never reaches it:
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+>
+<CodeTab>
+
+```js showLineNumbers filename="PremiumData.js"
+import { Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+export class PremiumData extends Resource {
+  paths = ["/premium/reports/:id"];
+
+  GET(request) {
+    const report = REPORTS[request.params.pathParam("id") ?? ""];
+
+    if (!report) {
+      return new Response("Report not found", { status: 404 });
+    }
+
+    return Response.json(report);
+  }
+}
+
+const REPORTS = {
+  q3: { title: "Q3 revenue", revenue: 1_250_000 },
+};
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers filename="PremiumData.ts"
+import { type HTTPRequest, Resource } from "jsr:@drashland/drash/modules/http.native";
+
+export class PremiumData extends Resource {
+  override paths = ["/premium/reports/:id"];
+
+  override GET(request: HTTPRequest) {
+    const report = REPORTS[request.params.pathParam("id") ?? ""];
+
+    if (!report) {
+      return new Response("Report not found", { status: 404 });
+    }
+
+    return Response.json(report);
+  }
+}
+
+const REPORTS: Record<string, { title: string; revenue: number }> = {
+  q3: { title: "Q3 revenue", revenue: 1_250_000 },
+};
+```
+
+</CodeTab>
+<CodeTab>
+
+```ts showLineNumbers filename="PremiumData.ts"
+import { type HTTPRequest, Resource } from "@drashland/drash/modules/http.polyfill.js";
+
+export class PremiumData extends Resource {
+  override paths = ["/premium/reports/:id"];
+
+  override GET(request: HTTPRequest) {
+    const report = REPORTS[request.params.pathParam("id") ?? ""];
+
+    if (!report) {
+      return new Response("Report not found", { status: 404 });
+    }
+
+    return Response.json(report);
+  }
+}
+
+const REPORTS: Record<string, { title: string; revenue: number }> = {
+  q3: { title: "Q3 revenue", revenue: 1_250_000 },
+};
+```
+
+</CodeTab>
+<CodeTab>
+
+```js showLineNumbers filename="PremiumData.js"
+import { Resource } from "@drashland/drash/modules/http.native.js";
+
+export class PremiumData extends Resource {
+  paths = ["/premium/reports/:id"];
+
+  GET(request) {
+    const report = REPORTS[request.params.pathParam("id") ?? ""];
+
+    if (!report) {
+      return new Response("Report not found", { status: 404 });
+    }
+
+    return Response.json(report);
+  }
+}
+
+const REPORTS = {
+  q3: { title: "Q3 revenue", revenue: 1_250_000 },
+};
+```
+
+</CodeTab>
+</CodeTabs>
+
+The `404` is not settled, so a client is not charged for a report that does not exist. Return failures as a `4xx` or `5xx` status, never as a `200` with an error body.
+
 Like the other pre-built middleware, `x402` is a __factory__. Calling it returns a middleware class with your options already bound to it.
 
 The middleware reads a Web `Request` and returns a Web `Response`. On Node, convert `node:http`'s request and response at the boundary with [NodeHTTP](/reference/modules/adapters/node-http).
