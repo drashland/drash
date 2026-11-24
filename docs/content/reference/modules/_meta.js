@@ -14,6 +14,7 @@ export default {
   // module here is universally called OpenAPI v3, not openapiv3.
   openapiv3: "OpenAPI v3",
 
+  adapters: "Adapters",
   builders: "Builders",
   middleware: "Middleware",
 };

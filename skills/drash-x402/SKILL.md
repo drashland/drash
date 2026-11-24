@@ -23,8 +23,10 @@ import {
   HTTPError,
   ResourceGroup,
 } from "@drashland/drash/modules/http.native.js";
-import { x402 } from "@drashland/drash/modules/middleware/x402.js";
-import { x402ErrorResponse } from "@drashland/drash/modules/middleware/x402/x402ErrorResponse.js";
+import {
+  x402,
+  x402ErrorResponse,
+} from "@drashland/drash/modules/middleware/x402.js";
 
 const paid = ResourceGroup
   .builder()
@@ -85,14 +87,37 @@ app
 A handler that checks `HTTPError` first sends a bare `402` with no payment
 instructions, and no client can pay it.
 
-## It needs a Web `Request`
+Import `x402ErrorResponse` from `modules/middleware/x402.js`, and `HTTPError`
+from the app's entry point (`http.native.js` or `http.polyfill.js`). On npm,
+each entry point bundles its own copy of every class, so `instanceof` against a
+class imported from anywhere else is always false.
 
-The middleware reads headers with `request.headers.get()` and returns a
-`Response`. On Deno, Bun, and Cloudflare Workers that is what the app already
-passes in. On Node, an app that passes the `node:http` context object into
-`app.handle()` cannot use `x402`. Convert to a Web `Request` at the boundary
-first, write resources that return a `Response`, and write that response back
-to `node:http`'s `response`.
+## On Node, convert at the boundary
+
+The middleware reads a Web `Request` and returns a Web `Response`. On Deno, Bun,
+and Cloudflare Workers that is what the app already passes in. A Node app that
+passes the `node:http` context object into `app.handle()` cannot use `x402`.
+Convert with `toWebRequest` and `writeWebResponse`, and write the resources to
+take a `Request` and return a `Response`:
+
+```ts
+import { createServer } from "node:http";
+import {
+  toWebRequest,
+  writeWebResponse,
+} from "@drashland/drash/modules/adapters/NodeHTTP.js";
+
+createServer((req, res) => {
+  app
+    .handle<Response>(toWebRequest(req))
+    .catch(toErrorResponse) // the x402ErrorResponse-first handler above
+    .then((response) => writeWebResponse(res, response));
+});
+```
+
+Do not convert by hand with `new Request(url, { method })`. That drops the
+headers, so the middleware never sees `PAYMENT-SIGNATURE` and every request
+gets a `402`.
 
 ## Let the resource fail with a status, and keep it free of payment logic
 

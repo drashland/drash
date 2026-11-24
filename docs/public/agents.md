@@ -303,8 +303,11 @@ Two more things to get right, both of which fail quietly:
   reply never reaches the socket.
 
 If you would rather write resources against Web `Request`/`Response` under Node,
-convert at the boundary and pass a real `Request` into the chain instead. The
-Deno block below then applies almost unchanged.
+convert at the boundary with `toWebRequest` and `writeWebResponse` from
+`@drashland/drash/modules/adapters/NodeHTTP.js` and pass a real `Request` into
+the chain instead. The Deno block below then applies almost unchanged. Use this
+form whenever the app uses bundled middleware (`x402`, `CORS`, `ETag`,
+`RateLimiter`, `AcceptHeader`); they all expect a Web `Request`.
 
 ### Deno — `app.ts`
 

@@ -126,6 +126,8 @@ const group = ResourceGroup
 
 Like the other pre-built middleware, `x402` is a __factory__. Calling it returns a middleware class with your options already bound to it.
 
+The middleware reads a Web `Request` and returns a Web `Response`. On Node, convert `node:http`'s request and response at the boundary with [NodeHTTP](/reference/modules/adapters/node-http).
+
 ## Configuring Options
 
 ### The Defaults
@@ -263,6 +265,7 @@ class x402WithLogging extends x402Middleware {
 | ---------------- | -------------------------------------------------- |
 | `x402`           | The factory. Returns a configured middleware class |
 | `x402Middleware` | The middleware class itself, for extending         |
+| `x402ErrorResponse` | The `402`/`400` error it throws. See [below](#x402errorresponse) |
 | `x402Header`     | The x402 header names                              |
 | `defaultOptions` | The defaults listed above                          |
 | `Options`        | The options type                                   |
@@ -274,10 +277,12 @@ class x402WithLogging extends x402Middleware {
 ### `x402ErrorResponse`
 
 ```ts
-import { x402ErrorResponse } from "@drashland/drash/modules/middleware/x402/x402ErrorResponse.js";
+import { x402ErrorResponse } from "@drashland/drash/modules/middleware/x402.js";
 
 constructor(status: ResponseStatus, response: Response)
 ```
+
+Import it from `x402.js`, not from `x402/x402ErrorResponse.js`. On npm, each entry point bundles its own copy of the class, and `instanceof` only matches the copy in `x402.js`, which is the one the middleware throws.
 
 Extends [`HTTPError`](/reference/core/errors/http-error), carrying the `Response` the middleware already built alongside the status.
 

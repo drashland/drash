@@ -29,6 +29,9 @@ The pieces that do the work, composed from [Standard](/reference/standard) and [
 | `buildPathsObject`         | function | `modules/openapiv3.js`          | [openapiv3](/reference/modules/openapiv3) |
 | `getOperation`             | function | `modules/openapiv3.js`          | [openapiv3](/reference/modules/openapiv3) |
 | `getOperations`            | function | `modules/openapiv3.js`          | [openapiv3](/reference/modules/openapiv3) |
+| `x402`                     | function | `modules/middleware/x402.js`              | [x402](/reference/modules/middleware/x402)             |
+| `toWebRequest`             | function | `modules/adapters/NodeHTTP.js`            | [NodeHTTP](/reference/modules/adapters/node-http)      |
+| `writeWebResponse`         | function | `modules/adapters/NodeHTTP.js`            | [NodeHTTP](/reference/modules/adapters/node-http)      |
 
 Each pre-built middleware also exports its `XMiddleware` class, its `Options` type, and its `defaultOptions` &mdash; see the individual pages.
 
@@ -50,6 +53,7 @@ __Any change to one entry point has to be mirrored in the other.__ They are sepa
 ## Sections
 
 <Cards num={2}>
+  <Cards.Card title="Adapters" href="/reference/modules/adapters/node-http" arrow />
   <Cards.Card title="HTTP" href="/reference/modules/http-native" arrow />
   <Cards.Card title="openapiv3" href="/reference/modules/openapiv3" arrow />
   <Cards.Card title="Builders" href="/reference/modules/builders" arrow />

@@ -100,6 +100,7 @@
     "./core/types/ResponseStatusCode": "./src/core/types/ResponseStatusCode.ts",
     "./core/types/ResponseStatusDescription": "./src/core/types/ResponseStatusDescription.ts",
     "./core/types/ResponseStatusName": "./src/core/types/ResponseStatusName.ts",
+    "./modules/adapters/NodeHTTP": "./src/modules/adapters/NodeHTTP.ts",
     "./modules/builders/RequestBuilder": "./src/modules/builders/RequestBuilder.ts",
     "./modules/builders/RequestChainBuilder": "./src/modules/builders/RequestChainBuilder.ts",
     "./modules/builders/ResponseBuilder": "./src/modules/builders/ResponseBuilder.ts",
