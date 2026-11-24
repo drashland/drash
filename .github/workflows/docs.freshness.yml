@@ -1,0 +1,218 @@
+name: Docs - Freshness
+
+# Once a week, check the docs against the latest Node, Deno, Bun, and
+# Cloudflare Workers releases, and open a pull request when they have drifted.
+#
+# 1. `versions` compares the versions the docs and CI claim with the latest
+#    releases (scripts/docs_freshness/check_versions.ts).
+# 2. `examples` boots every app under examples/ -- each one mirrors a docs page
+#    -- on the latest release of its runtime and sends it the requests the page
+#    shows (scripts/docs_freshness/smoke_examples.ts).
+# 3. `fix` runs only when either found something. Claude Code updates the docs
+#    and examples, re-runs the checks, and the changes go up as one pull
+#    request on the `automation/docs-freshness` branch. A later run updates
+#    that pull request rather than opening another.
+#
+# Requires the ANTHROPIC_API_KEY repository secret for the `fix` job.
+#
+# Pull requests opened with GITHUB_TOKEN do not trigger other workflows, so the
+# pull request's own checks start when someone pushes to it or closes and
+# reopens it.
+on:
+  schedule:
+    # Mondays, 13:00 UTC.
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+# Deny by default, then grant per job below.
+permissions: {}
+
+# Never run two at once: both would push to the same branch.
+concurrency:
+  group: docs-freshness
+  cancel-in-progress: false
+
+jobs:
+  versions:
+    name: Version claims
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      drift: ${{ steps.check.outputs.drift }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Compare claims with the latest releases
+        id: check
+        env:
+          # Raises the GitHub API rate limit for the Bun release lookup.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: deno task docs:freshness:versions --report "$RUNNER_TEMP/versions.json"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docs-freshness-versions
+          path: ${{ runner.temp }}/versions.json
+          if-no-files-found: ignore
+
+  examples:
+    name: Examples - ${{ matrix.runtime }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      # One broken runtime must not hide the others.
+      fail-fast: false
+      matrix:
+        runtime: [node, deno, bun, cloudflare]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # Deno runs the smoke script for every runtime, and is the runtime under
+      # test in the `deno` row, so it is always the latest release.
+      - name: Install Deno (latest)
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: vx.x.x
+
+      # wrangler runs on Node, so the `cloudflare` row needs it too.
+      - name: Install Node (latest)
+        if: matrix.runtime == 'node' || matrix.runtime == 'cloudflare'
+        uses: actions/setup-node@v7
+        with:
+          node-version: latest
+
+      - name: Install Bun (latest)
+        if: matrix.runtime == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Runtime versions
+        run: |
+          deno --version | head -1
+          if command -v node >/dev/null; then node --version; fi
+          if command -v bun >/dev/null; then bun --version; fi
+
+      - name: Smoke-test the examples
+        run: deno task docs:freshness:examples ${{ matrix.runtime }} --report "$RUNNER_TEMP/examples-${{ matrix.runtime }}.json"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docs-freshness-examples-${{ matrix.runtime }}
+          path: ${{ runner.temp }}/examples-${{ matrix.runtime }}.json
+          if-no-files-found: ignore
+
+  fix:
+    name: Fix and open a pull request
+    needs: [versions, examples]
+    if: >-
+      always() &&
+      (needs.versions.outputs.drift == 'true' || needs.examples.result == 'failure')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      # The same latest runtimes the checks used, so Claude can re-run them.
+      - name: Install Deno (latest)
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: vx.x.x
+
+      - name: Install Node (latest)
+        uses: actions/setup-node@v7
+        with:
+          node-version: latest
+
+      - name: Install Bun (latest)
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Outside the workspace, so the reports are never committed.
+      - name: Download reports
+        uses: actions/download-artifact@v8
+        with:
+          pattern: docs-freshness-*
+          path: ${{ runner.temp }}/reports
+          merge-multiple: true
+
+      - name: Copy reports where Claude can read them
+        run: |
+          mkdir -p .docs-freshness
+          cp "$RUNNER_TEMP"/reports/*.json .docs-freshness/
+
+      - name: Fix the drift
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          claude_args: >-
+            --max-turns 100
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(deno:*),Bash(npm:*),Bash(npx:*),Bash(bun:*),Bash(pnpm:*),Bash(git diff:*),Bash(git status:*),Bash(ls:*),Bash(cat:*)"
+          prompt: |
+            The weekly docs freshness check found drift between this repo's docs and the latest Node, Deno, Bun, and Cloudflare Workers releases. Its reports are in `.docs-freshness/`:
+
+            - `versions.json`: version claims in the docs and CI that a new release made stale (`findings`), plus `notes` that are informational only.
+            - `examples-<runtime>.json`: each app under `examples/` booted on the latest runtime, with the requests that failed and the tail of its output.
+
+            Fix every finding and every failing example. Read CLAUDE.md and `.claude/skills/technical-writer/SKILL.md` first and follow them. In particular:
+
+            - Every app under `examples/` mirrors a docs page under `docs/content/examples/`, byte for byte. When you change an example file, change the matching code block on its page identically, and the reverse.
+            - Parallel pages for different runtimes use identical wording. Change all of them the same way, varying only the runtime, port, file, and link.
+            - MDX prose is never word-wrapped: one line per paragraph.
+            - Any "today" or "currently" carries the date it was checked, e.g. "today (November 24, 2026)". Use today's date.
+            - Take version numbers from CI and the reports, never from memory.
+            - Do not drop support for an end-of-life runtime version. The `notes` in `versions.json` are not findings; leave them alone.
+            - Adding a Node major means adding `tests/compat/node/node-vN.x` and `tests/compat/cloudflare/node-vN.x` (copy the newest existing directory) and adding `N.x` to every `node-version` matrix in `.github/workflows/*code_validation.yml`, as well as updating the docs.
+            - If an example's lockfile no longer matches its `package.json`, run `npm install` in that directory to bring it back in sync.
+            - Fix the cause in the example or the docs. Do not change the checks in `scripts/docs_freshness/` to make them pass, unless a check is itself wrong; if so, say so in the pull request body.
+
+            When you are done:
+
+            1. Re-run what failed: `deno task docs:freshness:versions` and `deno task docs:freshness:examples <runtime>` for each runtime that had a failing example. Then run `deno fmt --check` and `deno lint`.
+            2. Write the pull request body to `.docs-freshness/PR_BODY.md`: what drifted, what you changed, the re-run results, and anything you could not fix and why. Keep it short.
+            3. Do not commit, push, or open a pull request. The workflow does that.
+
+      - name: Move the pull request body out of the tree
+        run: |
+          if [ -f .docs-freshness/PR_BODY.md ]; then
+            mv .docs-freshness/PR_BODY.md "$RUNNER_TEMP/PR_BODY.md"
+          else
+            echo "Claude did not write a pull request body; see the run's reports." > "$RUNNER_TEMP/PR_BODY.md"
+          fi
+          printf '\n---\nOpened by the weekly [Docs - Freshness](%s/%s/actions/runs/%s) workflow.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n' \
+            "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> "$RUNNER_TEMP/PR_BODY.md"
+          rm -rf .docs-freshness
+
+      - name: Open or update the pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: automation/docs-freshness
+          base: main
+          delete-branch: true
+          title: "docs: update for the latest runtime releases"
+          body-path: ${{ runner.temp }}/PR_BODY.md
+          commit-message: |
+            docs: update for the latest runtime releases
+
+            Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

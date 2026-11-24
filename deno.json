@@ -65,6 +65,8 @@
     "check": "deno check src bin tests/unit tests/compat/deno tests/middleware",
     "docs:build": "cd docs && pnpm install && pnpm build",
     "docs:dev": "cd docs && pnpm install && pnpm dev",
+    "docs:freshness:examples": "deno run --allow-run --allow-net --allow-read --allow-write --allow-env ./scripts/docs_freshness/smoke_examples.ts",
+    "docs:freshness:versions": "deno run --allow-net --allow-read --allow-write --allow-env ./scripts/docs_freshness/check_versions.ts",
     "lint:tests:bun": "deno lint tests/compat/bun",
     "lint:tests:node": "deno lint tests/compat/node*/*",
     "npm:clean": "rm -rf node_modules && rm pnpm-lock.yaml || true",
