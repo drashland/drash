@@ -71,7 +71,7 @@ const SEGMENT_WILDCARD = "[^\\/]+?";
 const FULL_WILDCARD = ".*";
 
 const NAME_START = /[$_\p{ID_Start}]/u;
-const NAME_CONTINUE = /[$‌‍\p{ID_Continue}]/u;
+const NAME_CONTINUE = /[$\u200C\u200D\p{ID_Continue}]/u;
 
 /**
  * A `URLPattern` for runtimes that do not provide a dependable one.

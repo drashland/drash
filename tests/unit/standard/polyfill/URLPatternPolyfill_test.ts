@@ -49,6 +49,12 @@ const paths = [
   "/{foo}?bar",
   "/café",
   "/a b",
+  "/users/{id}",
+  "/a{/:x}*",
+  "/a{/:x}+",
+  "/:x(.*)",
+  "/f\\:x",
+  "/:x",
 ];
 
 const urls = [
@@ -85,6 +91,12 @@ const urls = [
   "/foobar",
   "/café",
   "/a%20b",
+  "/users/id",
+  "/users/5",
+  "/a",
+  "/a/1/2",
+  "/f:x",
+  "/%E2%82%AC",
 ];
 
 Deno.test("URLPatternPolyfill", async (t) => {
