@@ -44,6 +44,7 @@ export type {
   HeaderObject,
   LinkObject,
   MediaTypeObject,
+  OpenAPIv3Decorator,
   OperationObject,
   ParameterObject,
   PathItemObject,

@@ -6,7 +6,7 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "bin": {
-    "drash-openapi": "./bin/openapiv3.mjs"
+    "drash-openapi": "./bin/openapiv3.js"
   },
   "repository": {
     "type": "git",

@@ -50,6 +50,7 @@
       "pnpm-lock.yaml",
       "yarn.lock",
       "docs/.next",
+      "docs/pnpm-lock.yaml",
       "docs/out",
       "examples"
     ]

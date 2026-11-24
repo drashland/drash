@@ -292,6 +292,15 @@ type PathsObject = Record<string, PathItemObject>;
 type ResourceMethod = (...args: never[]) => unknown;
 
 /**
+ * The decorator `OpenAPIv3()` returns. It records the operation and hands the
+ * method back unchanged.
+ */
+type OpenAPIv3Decorator = <T extends ResourceMethod>(
+  value: T,
+  context: ClassMethodDecoratorContext,
+) => T;
+
+/**
  * Anything with a `paths` array and HTTP methods — that is, an instance of the
  * core `Resource` or of any chain's `Resource`.
  *
@@ -395,7 +404,7 @@ const methodNames = new Set<string>(Object.keys(Method));
  * }
  * ```
  */
-function OpenAPIv3(operation: OperationObject) {
+function OpenAPIv3(operation: OperationObject): OpenAPIv3Decorator {
   return function <T extends ResourceMethod>(
     value: T,
     context: ClassMethodDecoratorContext,
@@ -645,6 +654,7 @@ export {
   type LinkObject,
   type MediaTypeObject,
   OpenAPIv3,
+  type OpenAPIv3Decorator,
   type OperationObject,
   type ParameterObject,
   type PathItemObject,
