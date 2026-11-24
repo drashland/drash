@@ -33,6 +33,8 @@ type ReferenceObject = {
 };
 
 /**
+ * A link to documentation hosted outside the document.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#external-documentation-object}
  */
 type ExternalDocumentationObject = {
@@ -41,6 +43,9 @@ type ExternalDocumentationObject = {
 };
 
 /**
+ * A server the API is served from. `url` may contain `{variables}`
+ * that `variables` defines.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#server-object}
  */
 type ServerObject = {
@@ -107,6 +112,9 @@ type SchemaObject = {
 };
 
 /**
+ * A named example of a parameter or body value, given inline as `value` or
+ * by URL as `externalValue`.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#example-object}
  */
 type ExampleObject = {
@@ -117,6 +125,9 @@ type ExampleObject = {
 };
 
 /**
+ * How one property of a `multipart` or `application/x-www-form-urlencoded`
+ * body is serialized.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#encoding-object}
  */
 type EncodingObject = {
@@ -148,6 +159,9 @@ type MediaTypeObject = {
 type HeaderObject = Omit<ParameterObject, "name" | "in">;
 
 /**
+ * A single path, query, header, or cookie parameter of an operation,
+ * identified by `name` and `in` together.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#parameter-object}
  */
 type ParameterObject = {
@@ -171,6 +185,8 @@ type ParameterObject = {
 };
 
 /**
+ * The body an operation accepts, keyed by content type.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#request-body-object}
  */
 type RequestBodyObject = {
@@ -180,6 +196,9 @@ type RequestBodyObject = {
 };
 
 /**
+ * A design-time link from a response to another operation that can be
+ * called with values from it.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#link-object}
  */
 type LinkObject = {
@@ -192,6 +211,9 @@ type LinkObject = {
 };
 
 /**
+ * One response an operation can return: its description, headers, and body
+ * by content type.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#response-object}
  */
 type ResponseObject = {
@@ -215,6 +237,9 @@ type ResponsesObject = {
 };
 
 /**
+ * Requests the API may send back to the caller later, keyed by a runtime
+ * expression that resolves to the URL to call.
+ *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#callback-object}
  */
 type CallbackObject = {
@@ -230,7 +255,7 @@ type SecurityRequirementObject = Record<string, string[]>;
 
 /**
  * What a single HTTP method on a single path does. This is the shape
- * {@link OpenAPI} takes.
+ * {@link OpenAPIv3} takes.
  *
  * @see {@link https://spec.openapis.org/oas/v3.0.3#operation-object}
  */
@@ -326,7 +351,7 @@ type ResourceClass = new (...args: never[]) => ResourceLike;
  * inherited by subclasses that override the method — which would silently
  * attribute the parent's documentation to the child's implementation.
  *
- * The key is the method itself, and {@link OpenAPI} returns that same function
+ * The key is the method itself, and {@link OpenAPIv3} returns that same function
  * unchanged, so `Users.prototype.GET` is the key that was registered.
  */
 const registryKey = Symbol.for("drash.openapi.operations");
