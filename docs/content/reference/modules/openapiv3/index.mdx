@@ -1,0 +1,26 @@
+---
+title: openapiv3
+description: The OpenAPI Specification v3 (OAS v3) entry point. A decorator for describing what a resource's HTTP methods do, and a command that turns those descriptions into a document.
+---
+
+# openapiv3
+
+The [OpenAPI Specification v3](https://spec.openapis.org/oas/v3.0.3) (OAS v3) entry point, `modules/openapiv3.js`.
+
+You describe an HTTP method by decorating it, and Drash reads those descriptions back to build the `paths` member of an OAS v3 document. Nothing happens at request time &mdash; the decorator only records.
+
+<Cards num={2}>
+  <Cards.Card title="Decorators" href="/reference/modules/openapiv3/decorators" arrow />
+  <Cards.Card title="CLI" href="/reference/modules/openapiv3/cli" arrow />
+</Cards>
+
+## Which Page You Want
+
+| If you want to                                                   | Read                                                            |
+| ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| Describe what a resource's HTTP method does                       | [Decorators](/reference/modules/openapiv3/decorators)             |
+| Read a description back, or build `paths` yourself                | [Decorators](/reference/modules/openapiv3/decorators)             |
+| Generate a whole document from your resource files                | [CLI](/reference/modules/openapiv3/cli)                           |
+| Regenerate the document in CI and fail the build when it is stale | [CLI](/reference/modules/openapiv3/cli)                           |
+
+The two are the same machinery. `drash-openapi` imports your resources, calls the same functions the Decorators page documents, and wraps the result in a document &mdash; so anything the command does, you can do by hand if you need more control over the output.

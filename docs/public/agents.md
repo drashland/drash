@@ -31,6 +31,8 @@ Once Drash is installed, the skills for that exact version are also in
 `node_modules/@drashland/drash/skills/`. **If you cannot install skills**, read
 them directly:
 
+- <https://raw.githubusercontent.com/drashland/drash/v3.x/skills/drash-openapiv3/SKILL.md>
+  — OpenAPI v3 decorators and generating the document
 - <https://raw.githubusercontent.com/drashland/drash/v3.x/skills/drash-resources/SKILL.md>
   — resource classes and their file names
 
