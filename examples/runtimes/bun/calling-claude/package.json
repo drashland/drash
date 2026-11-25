@@ -7,6 +7,6 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
-    "@drashland/drash": "^3.0.2"
+    "@drashland/drash": "^3.1.0"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "drash",
   "description": "Conventions for building HTTP systems with Drash",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "author": {
     "name": "Eric Crooks",
     "url": "https://crookse.com"
