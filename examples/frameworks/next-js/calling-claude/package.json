@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
-    "@drashland/drash": "^3.0.2",
+    "@drashland/drash": "^3.1.0",
     "next": "16.4.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",

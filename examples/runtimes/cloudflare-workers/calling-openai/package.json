@@ -6,7 +6,7 @@
     "start": "wrangler dev app.js"
   },
   "dependencies": {
-    "@drashland/drash": "^3.0.2",
+    "@drashland/drash": "^3.1.0",
     "openai": "^7.23.0"
   },
   "devDependencies": {

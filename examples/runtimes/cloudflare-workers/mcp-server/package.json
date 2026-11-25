@@ -6,7 +6,7 @@
     "start": "wrangler dev"
   },
   "dependencies": {
-    "@drashland/drash": "^3.0.2",
+    "@drashland/drash": "^3.1.0",
     "@modelcontextprotocol/server": "^2.2.0",
     "zod": "^4.6.5"
   },

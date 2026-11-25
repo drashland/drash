@@ -9,9 +9,9 @@
  *   - ./package.json and ./deno.json hold the package's *own* version. npm
  *     reads the first, JSR the second, and `check:release-version-fields` fails a
  *     release when the two disagree -- so they always move together.
- *   - ./examples/*\/package.json depend *on* that version. They pin an exact
- *     version rather than a range so an example demonstrates a known-good
- *     combination.
+ *     ./.claude-plugin/plugin.json carries the same version for the plugin.
+ *   - ./examples/*\/package.json and ./examples/*\/deno.json depend *on* that
+ *     version. A range operator (`^`, `~`) is kept as written.
  *   - ./docs/components/version-badge.tsx *displays* it, in the navbar. This is
  *     the only one a reader sees, and the only one written with a leading `v`.
  *
@@ -22,8 +22,8 @@
  *     Rewriting one by hand produces a lockfile that installs the wrong bytes
  *     or fails outright. Run `npm install` in the example instead. This script
  *     reports the ones that have drifted.
- *   - ./examples/runtimes/deno/basic-app. It imports from esm.sh without a version, so there is
- *     nothing to pin.
+ *   - ./examples/*\/deno.lock and ./examples/*\/bun.lock*. Same reason. Run
+ *     `deno install` or `bun install` in the example instead.
  */
 
 // Imports > Standard
@@ -114,7 +114,9 @@ function planTargets(version: string): Target[] {
   const targets: Target[] = [];
 
   // The package's own version.
-  for (const path of ["package.json", "deno.json"]) {
+  for (
+    const path of ["package.json", "deno.json", ".claude-plugin/plugin.json"]
+  ) {
     const document = readJson(path);
     const from = typeof document.version === "string" ? document.version : null;
 
@@ -158,9 +160,60 @@ function planTargets(version: string): Target[] {
     });
   }
 
+  // The Deno examples' import of it, as an `npm:` or `jsr:` specifier.
+  for (const path of findExampleDenoManifests()) {
+    const document = readJson(path);
+    const imports = document.imports as Record<string, string> | undefined;
+    const from = imports?.["@drashland/drash"];
+
+    if (!imports || !from) {
+      continue;
+    }
+
+    const specifier = from.match(/^((?:npm|jsr):@drashland\/drash@)([\^~]?)/);
+
+    // An unversioned or non-registry specifier has nothing to pin.
+    if (!specifier) {
+      continue;
+    }
+
+    const to = specifier[1] + specifier[2] + version;
+
+    imports["@drashland/drash"] = to;
+
+    targets.push({
+      path,
+      field: 'imports["@drashland/drash"]',
+      from,
+      to,
+      write: () => writeJson(path, document),
+    });
+  }
+
   targets.push(planVersionBadge(version));
 
   return targets;
+}
+
+/**
+ * Find every Deno example manifest.
+ *
+ * @returns The paths of the example `deno.json` files, sorted.
+ */
+function findExampleDenoManifests(): string[] {
+  const paths: string[] = [];
+
+  for (
+    const entry of walkSync("examples", {
+      includeDirs: false,
+      match: [/deno\.json$/],
+      skip: [/node_modules/],
+    })
+  ) {
+    paths.push(entry.path.replaceAll("\\", "/"));
+  }
+
+  return paths.sort();
 }
 
 /**
