@@ -1,0 +1,190 @@
+---
+title: v3.1.0
+description: Adds OpenAPI v3 document generation, x402 payment middleware, a node:http adapter, and agent skills, and makes the URLPattern polyfill match native URLPattern.
+---
+
+# v3.1.0
+
+__Released:__ 2026-11-25
+
+__GitHub Release Notes:__ https://github.com/drashland/drash/releases/tag/v3.1.0
+
+---
+
+A minor release. Four new modules and features, a fix that makes `http.polyfill` match routes the way `http.native` does, and no breaking changes to the v3.0 API.
+
+## Added
+
+### OpenAPI v3
+
+The new `modules/openapiv3.js` entry point describes what a resource's HTTP methods do and builds an [OpenAPI Specification v3](https://spec.openapis.org/oas/v3.0.3) document from those descriptions.
+
+The `@OpenAPIv3` decorator attaches an Operation Object to an HTTP method. It does nothing at request time; it only records the description. `buildPathsObject()` reads the descriptions back and returns the document's `paths` member:
+
+```ts
+import { Resource } from "@drashland/drash/modules/http.native.js";
+import { buildPathsObject, OpenAPIv3 } from "@drashland/drash/modules/openapiv3.js";
+
+class Users extends Resource {
+  paths = ["/users/:id?"];
+
+  @OpenAPIv3({
+    summary: "Get a user",
+    responses: { "200": { description: "The user" } },
+  })
+  GET(request: Request) {
+    return new Response(`Getting ${request.params.pathParam("id")}`);
+  }
+}
+
+const document = {
+  openapi: "3.0.3",
+  info: { title: "My API", version: "1.0.0" },
+  paths: buildPathsObject([Users]),
+};
+```
+
+Drash path params (`:id`) become OpenAPI params (`{id}`). OpenAPI requires every path param, so an optional `:id?` becomes two paths: `/users` and `/users/{id}`.
+
+The `drash-openapi` command builds a whole document from a directory of resource files. It ships with the npm package, so there is nothing else to install:
+
+```bash
+npx --package @drashland/drash drash-openapi ./build --title "Users API" --api-version 2.1.0
+```
+
+See [openapiv3](/reference/modules/openapiv3), [Decorators](/reference/modules/openapiv3/decorators), and [CLI](/reference/modules/openapiv3/cli).
+
+### x402 Middleware
+
+The new `x402` middleware charges for resources with the [x402 protocol](https://github.com/coinbase/x402) (version 2). An unpaid request gets a `402 Payment Required` with a `PAYMENT-REQUIRED` header that says what to pay. A facilitator verifies a paid request before it reaches the resource. Settlement happens only if the resource responds with a status below 400, and its result goes back in the `PAYMENT-RESPONSE` header.
+
+```ts
+import { ResourceGroup } from "@drashland/drash/modules/http.polyfill.js";
+import { x402 } from "@drashland/drash/modules/middleware/x402.js";
+
+const group = ResourceGroup
+  .builder()
+  .middleware(x402({
+    accepts: [{
+      scheme: "exact",
+      network: "eip155:84532",
+      amount: "10000",
+      asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      payTo: "0xYourWalletAddress",
+      maxTimeoutSeconds: 60,
+      extra: { name: "USDC", version: "2" },
+    }],
+    facilitator_url: "https://facilitator.example.com",
+  }))
+  .resources(PremiumData)
+  .build();
+```
+
+`facilitator_url` is required. It has no default, so you always choose who verifies and settles your payments.
+
+See [x402](/reference/modules/middleware/x402).
+
+### NodeHTTP Adapter
+
+`modules/adapters/NodeHTTP.js` converts a `node:http` request to a Web `Request` and writes a Web `Response` back to the `node:http` response. On Node, your resources can now take a `Request` and return a `Response`, the same as on Deno, Bun, and Cloudflare Workers. Middleware written for Web `Request`/`Response`, such as x402, CORS, and ETag, then works on Node too.
+
+```ts
+import { createServer } from "node:http";
+import { Application, HTTPError } from "@drashland/drash/modules/http.polyfill.js";
+import { toWebRequest, writeWebResponse } from "@drashland/drash/modules/adapters/NodeHTTP.js";
+
+const app = Application.builder().resources(Home).build();
+
+createServer((req, res) => {
+  app
+    .handle<Response>(toWebRequest(req))
+    .catch((error) =>
+      error instanceof HTTPError
+        ? new Response(error.message, { status: error.status_code })
+        : new Response("Internal Server Error", { status: 500 })
+    )
+    .then((response) => writeWebResponse(res, response));
+}).listen(1447);
+```
+
+Context objects built on `node:http` still work. The adapter is optional.
+
+See [NodeHTTP](/reference/modules/adapters/node-http).
+
+### Agent Skills
+
+Drash now ships [agent skills](https://agentskills.io) for coding agents such as Claude Code, Codex, Cursor, and Copilot:
+
+| Skill | Covers |
+| --- | --- |
+| `drash-openapiv3` | Where `@OpenAPIv3` goes, the Operation Object rules, and generating the document on each runtime |
+| `drash-resources` | PascalCase resource file names, the request argument, and what belongs in a resource |
+| `drash-x402` | x402 options, error handling, and what the resource leaves to the facilitator |
+
+```sh
+npx skills add drashland/drash      # Node, Cloudflare Workers
+deno x skills add drashland/drash   # Deno
+bunx skills add drashland/drash     # Bun
+```
+
+Claude Code can also install them as a plugin with `/plugin marketplace add drashland/drash` and `/plugin install drash@drashland`. The npm and JSR packages include the skills under `skills/`.
+
+See [Agent Skills](/docs/misc/agent-skills).
+
+### Examples
+
+[Examples](/examples) is now sorted into runtimes, frameworks, and platforms. It adds apps that call Claude, OpenAI, and Perplexity, an MCP server, a Next.js app, and Vercel deployments.
+
+## Fixed
+
+### `http.polyfill` Now Matches Routes the Way `http.native` Does
+
+The URLPattern polyfill used by `http.polyfill` (Node, Bun) handled resource paths that contain anything other than plain segments and `:name` params incorrectly. It is now a tokenizer, parser, and regex generator that follows the URLPattern spec's pathname rules, and its unit tests check it against native `URLPattern`.
+
+| Path | URL | v3.0.2 | v3.1.0 and native |
+| --- | --- | --- | --- |
+| `/favicon.ico` | `/faviconXico` | Matched: `.` matched any character | No match |
+| `/files/:name.json` | `/files/report.json` | `{ "name.json": "report.json" }` | `{ name: "report" }` |
+| `/range/:a-:b` | `/range/1-5` | `{ "a-b": "1-5" }` | `{ a: "1", b: "5" }` |
+| `/q/:id(\d+)` | `/q/42` | `{ id: "4" }` | `{ id: "42" }` |
+| `/assets/*` | `/assets/css/site.css` | No match | `{ 0: "css/site.css" }` |
+
+A pattern that native `URLPattern` rejects, such as `/:` or `/{`, now throws a `TypeError` when the resource's pattern is built, as it does on `http.native`. Before, some of these never matched and others threw a `SyntaxError`.
+
+## Upgrading
+
+<CodeTabs
+  items={["Node", "Deno", "Bun", "Cloudflare Workers"]}
+  files={["Terminal", "Terminal", "Terminal", "Terminal"]}
+>
+<CodeTab>
+
+```bash
+npm install @drashland/drash@3.1.0
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+deno add jsr:@drashland/drash@3.1.0
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+bun add @drashland/drash@3.1.0
+```
+
+</CodeTab>
+<CodeTab>
+
+```bash
+npm install @drashland/drash@3.1.0
+```
+
+</CodeTab>
+</CodeTabs>
+
+If you use `http.polyfill`, check any resource path that contains `.`, `-`, `*`, or a `(regex)` group. These paths now match what `http.native` matches, which can differ from what they matched in v3.0.2, and their params can have different names. Paths made only of plain segments and `:name` params behave the same as before.
